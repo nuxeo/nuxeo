@@ -21,7 +21,6 @@ package org.nuxeo.elasticsearch.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -46,6 +45,7 @@ import org.nuxeo.elasticsearch.api.ESClientFactory;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchEmbeddedNode;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 9.3
@@ -65,14 +65,38 @@ public class ESRestClientFactory implements ESClientFactory {
 
     public static final String AUTH_PASSWORD_OPT = "password";
 
-    public static final String KEYSTORE_PATH_OPT = "keystore.path";
+    /** @since 10.3 */
+    public static final String TRUST_STORE_PATH_OPT = "trustStorePath";
 
-    public static final String KEYSTORE_PASSWORD_OPT = "keystore.password";
+    /** @since 10.3 */
+    public static final String TRUST_STORE_PASSWORD_OPT = "trustStorePassword";
+
+    /** @since 10.3 */
+    public static final String TRUST_STORE_TYPE_OPT = "trustStoreType";
+
+    /** @since 10.3 */
+    public static final String KEY_STORE_PATH_OPT = "keyStorePath";
+
+    /** @since 10.3 */
+    public static final String KEY_STORE_PASSWORD_OPT = "keyStorePassword";
+
+    /** @since 10.3 */
+    public static final String KEY_STORE_TYPE_OPT = "keyStoreType";
+
+    /** @deprecated since 10.3, misnamed, use {@link #TRUST_STORE_PATH_OPT} instead */
+    @Deprecated
+    public static final String DEPRECATED_TRUST_STORE_PATH_OPT = "keystore.path";
+
+    /** @deprecated since 10.3, misnamed, use {@link #TRUST_STORE_PATH_OPT} instead */
+    @Deprecated
+    public static final String DEPRECATED_TRUST_STORE_PASSWORD_OPT = "keystore.password";
 
     /**
      * @since 9.10-HF01
+     * @deprecated since 10.3, misnamed, use {@link #TRUST_STORE_PATH_OPT} instead
      */
-    public static final String KEYSTORE_TYPE_OPT = "keystore.type";
+    @Deprecated
+    public static final String DEPRECATED_TRUST_STORE_TYPE_OPT = "keystore.type";
 
     @Override
     public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig config) {
@@ -111,10 +135,7 @@ public class ESRestClientFactory implements ESClientFactory {
                                                               getConnectTimeoutMs(config)).setSocketTimeout(
                                                                       getSocketTimeoutMs(config)))
                                               .setMaxRetryTimeoutMillis(getConnectTimeoutMs(config));
-        if (StringUtils.isNotBlank(config.getOption(AUTH_USER_OPT))
-                || StringUtils.isNotBlank(config.getOption(KEYSTORE_PATH_OPT))) {
-            addClientCallback(config, builder);
-        }
+        addClientCallback(config, builder);
         RestHighLevelClient client = new RestHighLevelClient(builder);  // NOSONAR (factory)
         // checkConnection(client);
         return new ESRestClient(client.getLowLevelClient(), client);
@@ -123,13 +144,12 @@ public class ESRestClientFactory implements ESClientFactory {
     private void addClientCallback(ElasticSearchClientConfig config, RestClientBuilder builder) {
         BasicCredentialsProvider credentialProvider = getCredentialProvider(config);
         SSLContext sslContext = getSslContext(config);
+        if (sslContext == null && credentialProvider == null) {
+            return;
+        }
         builder.setHttpClientConfigCallback(httpClientBuilder -> {
-            if (sslContext != null) {
-                httpClientBuilder.setSSLContext(sslContext);
-            }
-            if (credentialProvider != null) {
-                httpClientBuilder.setDefaultCredentialsProvider(credentialProvider);
-            }
+            httpClientBuilder.setSSLContext(sslContext);
+            httpClientBuilder.setDefaultCredentialsProvider(credentialProvider);
             return httpClientBuilder;
         });
     }
@@ -146,24 +166,78 @@ public class ESRestClientFactory implements ESClientFactory {
     }
 
     protected SSLContext getSslContext(ElasticSearchClientConfig config) {
-        if (StringUtils.isBlank(config.getOption(KEYSTORE_PATH_OPT))) {
-            return null;
-        }
+        checkDeprecatedProperties();
+        String trustStorePath = StringUtils.defaultIfBlank(config.getOption(TRUST_STORE_PATH_OPT),
+                config.getOption(DEPRECATED_TRUST_STORE_PATH_OPT));
+        String trustStorePassword = StringUtils.defaultIfBlank(config.getOption(TRUST_STORE_PASSWORD_OPT),
+                config.getOption(DEPRECATED_TRUST_STORE_PASSWORD_OPT));
+        String trustStoreType = StringUtils.defaultIfBlank(config.getOption(TRUST_STORE_TYPE_OPT),
+                config.getOption(DEPRECATED_TRUST_STORE_TYPE_OPT));
+        String keyStorePath = config.getOption(KEY_STORE_PATH_OPT);
+        String keyStorePassword = config.getOption(KEY_STORE_PASSWORD_OPT);
+        String keyStoreType = config.getOption(KEY_STORE_TYPE_OPT);
         try {
-            Path keyStorePath = Paths.get(config.getOption(KEYSTORE_PATH_OPT));
-            String keyStorePass = config.getOption(KEYSTORE_PASSWORD_OPT);
-            String keyStoreType = StringUtils.defaultIfBlank(config.getOption(KEYSTORE_TYPE_OPT), KeyStore.getDefaultType());
-            char[] keyPass = StringUtils.isBlank(keyStorePass) ? null : keyStorePass.toCharArray();
-            KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-            try (InputStream is = Files.newInputStream(keyStorePath)) {
-                keyStore.load(is, keyPass);
+            KeyStore trustStore = loadKeyStore(trustStorePath, trustStorePassword, trustStoreType);
+            KeyStore keyStore = loadKeyStore(keyStorePath, keyStorePassword, keyStoreType);
+            if (trustStore == null && keyStore == null) {
+                return null;
             }
-            SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(keyStore, null);
-            return sslBuilder.build();
+            SSLContextBuilder sslContextBuilder = SSLContexts.custom();
+            if (trustStore != null) {
+                sslContextBuilder.loadTrustMaterial(trustStore, null);
+            }
+            if (keyStore != null) {
+                sslContextBuilder.loadKeyMaterial(keyStore, null);
+            }
+            return sslContextBuilder.build();
         } catch (GeneralSecurityException | IOException e) {
             throw new NuxeoException("Cannot setup SSL for RestClient: " + config, e);
         }
+    }
 
+    // deprecated and new system properties, used in warnings only
+    // actual values are used in templates and accessed through the options map of ElasticSearchClientConfig
+
+    protected static final String DEPRECATED_ES_TRUST_STORE_PATH_PROP = "elasticsearch.restClient.keystorePath";
+
+    protected static final String DEPRECATED_ES_TRUST_STORE_PASSWORD_PROP = "elasticsearch.restClient.keystorePassword";
+
+    protected static final String DEPRECATED_ES_TRUST_STORE_TYPE_PROP = "elasticsearch.restClient.keystoreType";
+
+    protected static final String ES_TRUST_STORE_PATH_PROP = "elasticsearch.restClient.truststore.path";
+
+    protected static final String ES_TRUST_STORE_PASSWORD_PROP = "elasticsearch.restClient.truststore.password";
+
+    protected static final String ES_TRUST_STORE_TYPE_PROP = "elasticsearch.restClient.truststore.type";
+
+    protected void checkDeprecatedProperties() {
+        checkDeprecatedProperty(DEPRECATED_ES_TRUST_STORE_PATH_PROP, ES_TRUST_STORE_PATH_PROP);
+        checkDeprecatedProperty(DEPRECATED_ES_TRUST_STORE_PASSWORD_PROP, ES_TRUST_STORE_PASSWORD_PROP);
+        checkDeprecatedProperty(DEPRECATED_ES_TRUST_STORE_TYPE_PROP, ES_TRUST_STORE_TYPE_PROP);
+    }
+
+    protected void checkDeprecatedProperty(String oldProp, String newProp) {
+        if (Framework.getRuntime() == null) {
+            // unit tests
+            return;
+        }
+        if (StringUtils.isNotBlank(Framework.getProperty(oldProp))) {
+            log.warn("Configuration property " + oldProp + " is deprecated, use " + newProp + " instead");
+        }
+    }
+
+    protected KeyStore loadKeyStore(String path, String password, String type)
+            throws GeneralSecurityException, IOException {
+        if (StringUtils.isBlank(path)) {
+            return null;
+        }
+        String keyStoreType = StringUtils.defaultIfBlank(type, KeyStore.getDefaultType());
+        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+        char[] passwordChars = StringUtils.isBlank(password) ? null : password.toCharArray();
+        try (InputStream is = Files.newInputStream(Paths.get(path))) {
+            keyStore.load(is, passwordChars);
+        }
+        return keyStore;
     }
 
     protected int getConnectTimeoutMs(ElasticSearchClientConfig config) {

@@ -134,12 +134,13 @@ elasticsearch.restClient.socketTimeoutMs=20000
 elasticsearch.restClient.username=
 # A password for client basic authentication
 elasticsearch.restClient.password=
-# A path to a valid keystore
-elasticsearch.restClient.keystorePath=
-# The keystore password
-elasticsearch.restClient.keystorePassword=
-# The type of keystore, e.g. jks (defaults to Java system keystore type)
-elasticsearch.restClient.keystoreType=
+# TLS/SSL trustStore/keyStore configuration
+elasticsearch.restClient.truststore.path=
+elasticsearch.restClient.truststore.password=
+elasticsearch.restClient.truststore.type=
+elasticsearch.restClient.keystore.path=
+elasticsearch.restClient.keystore.password=
+elasticsearch.restClient.keystore.type=
 
 # Kafka
 kafka.enabled=false
