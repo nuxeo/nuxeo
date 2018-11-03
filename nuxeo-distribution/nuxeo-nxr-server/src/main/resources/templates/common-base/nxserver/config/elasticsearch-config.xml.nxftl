@@ -19,9 +19,22 @@
       <option name="socket.timeout.ms">${elasticsearch.restClient.socketTimeoutMs}</option>
       <option name="username">${elasticsearch.restClient.username}</option>
       <option name="password">${elasticsearch.restClient.password}</option>
+      <option name="trustStorePath">${elasticsearch.restClient.truststore.path}</option>
+      <option name="trustStorePassword">${elasticsearch.restClient.truststore.password}</option>
+      <option name="trustStoreType">${elasticsearch.restClient.truststore.type}</option>
+      <option name="keyStorePath">${elasticsearch.restClient.keystore.path}</option>
+      <option name="keyStorePassword">${elasticsearch.restClient.keystore.password}</option>
+      <option name="keyStoreType">${elasticsearch.restClient.keystore.type}</option>
+      <!-- deprecated since 10.3, and actually referring to the trustStore -->
+<#if (elasticsearch.restClient.keystorePath)?has_content>
       <option name="keystore.path">${elasticsearch.restClient.keystorePath}</option>
+</#if>
+<#if (elasticsearch.restClient.keystorePassword)?has_content>
       <option name="keystore.password">${elasticsearch.restClient.keystorePassword}</option>
+</#if>
+<#if (elasticsearch.restClient.keystoreType)?has_content>
       <option name="keystore.type">${elasticsearch.restClient.keystoreType}</option>
+</#if>
     </elasticSearchClient>
 <#else>
   <elasticSearchClient class="org.nuxeo.elasticsearch.client.ESTransportClientFactory">
