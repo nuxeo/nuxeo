@@ -89,7 +89,7 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
             MongoDBConnectionConfig conf = fragment.object;
             log.debug("Initializing MongoClient with id=" + conf.getId());
             @SuppressWarnings("resource")
-            MongoClient client = MongoDBConnectionHelper.newMongoClient(conf.getServer());
+            MongoClient client = MongoDBConnectionHelper.newMongoClient(conf);
             clients.put(conf.getId(), client);
         }
     }

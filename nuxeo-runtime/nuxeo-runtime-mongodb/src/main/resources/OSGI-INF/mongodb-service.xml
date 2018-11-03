@@ -20,6 +20,13 @@
         <connection>
           <server>mongodb://bob:pass@localhost:27017,otherhost:27018/mydb?replicaSet=test;connectTimeoutMS=300000</server>
           <dbname>mydb</dbname>
+          <ssl>true</ssl>
+          <trustStorePath>/path/to/cacerts.jks</trustStorePath>
+          <trustStorePassword>changeit</trustStorePassword>
+          <trustStoreType>jks</trustStoreType>
+          <keyStorePath>/path/to/keystore.jks</keyStorePath>
+          <keyStorePassword>changeit</keyStorePassword>
+          <keyStoreType>jks</keyStoreType>
         </connection>
       </code>
       See http://docs.mongodb.org/manual/reference/connection-string/ for the mongodb:// URI syntax.

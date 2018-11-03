@@ -6,6 +6,13 @@
     <connection id="default">
       <server>${nuxeo.mongodb.server}</server>
       <dbname>${nuxeo.mongodb.dbname}</dbname>
+      <ssl>${nuxeo.mongodb.ssl}</ssl>
+      <trustStorePath>${nuxeo.mongodb.truststore.path}</trustStorePath>
+      <trustStorePassword>${nuxeo.mongodb.truststore.password}</trustStorePassword>
+      <trustStoreType>${nuxeo.mongodb.truststore.type}</trustStoreType>
+      <keyStorePath>${nuxeo.mongodb.keystore.path}</keyStorePath>
+      <keyStorePassword>${nuxeo.mongodb.keystore.password}</keyStorePassword>
+      <keyStoreType>${nuxeo.mongodb.keystore.type}</keyStoreType>
     </connection>
   </extension>
 
