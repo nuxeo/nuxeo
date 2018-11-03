@@ -82,9 +82,12 @@ public class TestESRestClient extends TestESClient {
         config.options.put("addressList", "localhost:9200");
         config.options.put(ESRestClientFactory.AUTH_USER_OPT, null);
         config.options.put(ESRestClientFactory.AUTH_PASSWORD_OPT, null);
-        config.options.put(ESRestClientFactory.KEYSTORE_PATH_OPT, null);
-        config.options.put(ESRestClientFactory.KEYSTORE_PASSWORD_OPT, null);
-        config.options.put(ESRestClientFactory.KEYSTORE_TYPE_OPT, null);
+        config.options.put(ESRestClientFactory.TRUST_STORE_PATH_OPT, null);
+        config.options.put(ESRestClientFactory.TRUST_STORE_PASSWORD_OPT, null);
+        config.options.put(ESRestClientFactory.TRUST_STORE_TYPE_OPT, null);
+        config.options.put(ESRestClientFactory.KEY_STORE_PATH_OPT, null);
+        config.options.put(ESRestClientFactory.KEY_STORE_PASSWORD_OPT, null);
+        config.options.put(ESRestClientFactory.KEY_STORE_TYPE_OPT, null);
         ESRestClient esClient = (ESRestClient) factory.create(null, config);
         assertNotNull(esClient);
         //Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
@@ -92,15 +95,18 @@ public class TestESRestClient extends TestESClient {
 
 
     @Test
-    public void testDefaultKeystore() throws Exception {
+    public void testDefaultTrustStore() throws Exception {
         ElasticSearchClientConfig config = new ElasticSearchClientConfig();
         String password = "difficultpass";
         File keystoreFile = getKeystoreFile(password, KeyStore.getDefaultType());
 
         config.options.put("addressList", "localhost:9200");
-        config.options.put(ESRestClientFactory.KEYSTORE_PATH_OPT, keystoreFile.getAbsolutePath());
-        config.options.put(ESRestClientFactory.KEYSTORE_PASSWORD_OPT, password);
-        config.options.put(ESRestClientFactory.KEYSTORE_TYPE_OPT, null);
+        config.options.put(ESRestClientFactory.TRUST_STORE_PATH_OPT, keystoreFile.getAbsolutePath());
+        config.options.put(ESRestClientFactory.TRUST_STORE_PASSWORD_OPT, password);
+        config.options.put(ESRestClientFactory.TRUST_STORE_TYPE_OPT, null);
+        config.options.put(ESRestClientFactory.KEY_STORE_PATH_OPT, keystoreFile.getAbsolutePath());
+        config.options.put(ESRestClientFactory.KEY_STORE_PASSWORD_OPT, password);
+        config.options.put(ESRestClientFactory.KEY_STORE_TYPE_OPT, null);
         ESRestClient esClient = (ESRestClient) factory.create(null, config);
         assertNotNull(esClient);
         //This would error if it couldn't open the keystore.
@@ -117,9 +123,12 @@ public class TestESRestClient extends TestESClient {
         File keystoreFile = getKeystoreFile(password, keystoreType);
 
         config.options.put("addressList", "localhost:9200");
-        config.options.put(ESRestClientFactory.KEYSTORE_PATH_OPT, keystoreFile.getAbsolutePath());
-        config.options.put(ESRestClientFactory.KEYSTORE_PASSWORD_OPT, password);
-        config.options.put(ESRestClientFactory.KEYSTORE_TYPE_OPT, keystoreType);
+        config.options.put(ESRestClientFactory.TRUST_STORE_PATH_OPT, keystoreFile.getAbsolutePath());
+        config.options.put(ESRestClientFactory.TRUST_STORE_PASSWORD_OPT, password);
+        config.options.put(ESRestClientFactory.TRUST_STORE_TYPE_OPT, keystoreType);
+        config.options.put(ESRestClientFactory.KEY_STORE_PATH_OPT, keystoreFile.getAbsolutePath());
+        config.options.put(ESRestClientFactory.KEY_STORE_PASSWORD_OPT, password);
+        config.options.put(ESRestClientFactory.KEY_STORE_TYPE_OPT, keystoreType);
         ESRestClient esClient = (ESRestClient) factory.create(null, config);
         assertNotNull(esClient);
         //Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
