@@ -26,6 +26,13 @@
       <host>${nuxeo.redis.host}</host>
       <port>${nuxeo.redis.port}</port>
       <password>${nuxeo.redis.password}</password>
+      <ssl>${nuxeo.redis.ssl}</ssl>
+      <trustStorePath>${nuxeo.redis.truststore.path}</trustStorePath>
+      <trustStorePassword>${nuxeo.redis.truststore.password}</trustStorePassword>
+      <trustStoreType>${nuxeo.redis.truststore.type}</trustStoreType>
+      <keyStorePath>${nuxeo.redis.keystore.path}</keyStorePath>
+      <keyStorePassword>${nuxeo.redis.keystore.password}</keyStorePassword>
+      <keyStoreType>${nuxeo.redis.keystore.type}</keyStoreType>
       <database>${nuxeo.redis.database}</database>
       <timeout>${nuxeo.redis.timeout}</timeout>
       <maxTotal>${nuxeo.redis.maxTotal}</maxTotal>

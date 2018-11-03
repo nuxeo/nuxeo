@@ -16,7 +16,7 @@
 
   <extension-point name="configuration">
 
-        <documentation>
+    <documentation>
       Extension allowing the configuration of a Redis pool.
       <p />
       Server configuration:
@@ -27,6 +27,13 @@
           <password>secret</password>
           <database>0</database>
           <timeout>2000</timeout>
+          <ssl>true</ssl>
+          <trustStorePath>/path/to/cacerts.jks</trustStorePath>
+          <trustStorePassword>changeit</trustStorePassword>
+          <trustStoreType>jks</trustStoreType>
+          <keyStorePath>/path/to/keystore.jks</keyStorePath>
+          <keyStorePassword>changeit</keyStorePassword>
+          <keyStoreType>jks</keyStoreType>
         </server>
       </code>
       Sentinel configuration:
