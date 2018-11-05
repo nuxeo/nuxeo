@@ -104,7 +104,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         } else if (prop.isList()) {
             writeListProperty(jg, prop);
         } else if (prop instanceof BlobProperty) { // a blob
-            writeBlobProperty(jg, prop);
+            writeBlobProperty(jg, (BlobProperty) prop);
         } else if (prop.isComplex()) {
             writeComplexProperty(jg, prop);
         } else if (prop.isPhantom()) {
@@ -209,7 +209,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         jg.writeEndObject();
     }
 
-    protected void writeBlobProperty(JsonGenerator jg, Property prop) throws IOException {
+    protected void writeBlobProperty(JsonGenerator jg, BlobProperty prop) throws IOException {
         Blob blob = (Blob) prop.getValue();
         if (blob == null) {
             jg.writeNull();
@@ -251,7 +251,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         String blobUrl = getBlobUrl(prop);
         jg.writeStringField("data", blobUrl);
 
-        enrichBlob(jg, blob);
+        enrichBlobProperty(jg, prop);
 
         jg.writeEndObject();
     }
@@ -259,13 +259,13 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
     /**
      * @since 10.3
      */
-    private void enrichBlob(JsonGenerator jg, Blob blob) throws IOException {
+    private void enrichBlobProperty(JsonGenerator jg, BlobProperty property) throws IOException {
         Set<String> enrichers = ctx.getEnrichers("blob");
         if (!enrichers.isEmpty()) {
             WrappedContext wrappedCtx = ctx.wrap();
             OutputStreamWithJsonWriter out = new OutputStreamWithJsonWriter(jg);
-            Enriched<Blob> enriched = new Enriched<>(blob);
-            ParameterizedType genericType = TypeUtils.parameterize(Enriched.class, Blob.class);
+            Enriched<BlobProperty> enriched = new Enriched<>(property);
+            ParameterizedType genericType = TypeUtils.parameterize(Enriched.class, BlobProperty.class);
             for (String enricherName : enrichers) {
                 try (Closeable ignored = wrappedCtx.with(ENTITY_ENRICHER_NAME, enricherName).open()) {
                     Collection<Writer<Enriched>> writers = registry.getAllWriters(ctx, Enriched.class, genericType,
