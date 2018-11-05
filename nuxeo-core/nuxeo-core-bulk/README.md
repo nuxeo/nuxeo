@@ -187,7 +187,7 @@ or to by pass a command that fails systematically which blocks the entire action
 
 ```
 ## Abort a command
-curl -s -X PUT "http://localhost:8080/nuxeo/api/v1/bulk/$commandId/abortion"  -u Administrator:Administrator  -H 'content-type: application/json' | jq .
+curl -s -X PUT "http://localhost:8080/nuxeo/api/v1/bulk/$commandId/abort"  -u Administrator:Administrator  -H 'content-type: application/json' | jq .
 
 ```
 
