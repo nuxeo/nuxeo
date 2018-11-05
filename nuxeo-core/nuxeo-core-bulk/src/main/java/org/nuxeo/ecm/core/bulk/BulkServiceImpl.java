@@ -143,7 +143,7 @@ public class BulkServiceImpl implements BulkService {
         switch (status.getState()) {
         case ABORTED:
             kvStore.put(status.getCommandId() + STATUS_SUFFIX, statusAsBytes, ABORTED_TTL_SECONDS);
-            // we remove the command from the kv store, so computation have to handle the abortion
+            // we remove the command from the kv store, so computation have to handle abort
             kvStore.put(status.getCommandId() + COMMAND_SUFFIX, (String) null);
             break;
         case COMPLETED:

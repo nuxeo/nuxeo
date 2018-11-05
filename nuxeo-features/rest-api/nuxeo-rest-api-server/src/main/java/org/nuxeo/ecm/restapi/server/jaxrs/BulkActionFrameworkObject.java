@@ -53,7 +53,7 @@ public class BulkActionFrameworkObject extends DefaultObject {
     }
 
     @PUT
-    @Path("{commandId}/abortion")
+    @Path("{commandId}/abort")
     @Produces(MediaType.APPLICATION_JSON)
     public BulkStatus abortBulkAction(@PathParam("commandId") String commandId) {
         BulkStatus status = Framework.getService(BulkService.class).abort(commandId);
