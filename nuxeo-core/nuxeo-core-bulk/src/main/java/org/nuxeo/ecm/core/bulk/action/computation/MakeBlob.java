@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,9 +48,13 @@ public class MakeBlob extends AbstractTransientBlobComputation {
 
     public static final String NAME = "makeBlob";
 
+    protected static final long CHECK_DELAY_MS = 1000;
+
     protected final Map<String, Long> counters = new HashMap<>();
 
     protected final Map<String, Long> totals = new HashMap<>();
+
+    protected final Map<String, DataBucket> lastBuckets = new HashMap<>();
 
     protected final boolean produceImmediate;
 
@@ -62,6 +68,25 @@ public class MakeBlob extends AbstractTransientBlobComputation {
     }
 
     @Override
+    public void init(ComputationContext context) {
+        super.init(context);
+        context.setTimer("check", System.currentTimeMillis() + CHECK_DELAY_MS);
+    }
+
+    @Override
+    public void processTimer(ComputationContext context, String key, long timestamp) {
+        // This timer is useful only to solve race condition that happens when the total is known
+        // after the records have already been processed
+        List<String> commands = counters.keySet()
+                                        .stream()
+                                        .filter(commandId -> !totals.containsKey(commandId)
+                                                && counters.get(commandId) >= getTotal(commandId))
+                                        .collect(Collectors.toList());
+        commands.forEach(commandId -> finishBlob(context, commandId));
+        context.setTimer("check", System.currentTimeMillis() + CHECK_DELAY_MS);
+    }
+
+    @Override
     public void processRecord(ComputationContext context, String documentIdsStreamName, Record record) {
         Codec<DataBucket> codec = BulkCodecs.getDataBucketCodec();
         DataBucket in = codec.decode(record.getData());
@@ -70,32 +95,16 @@ public class MakeBlob extends AbstractTransientBlobComputation {
 
         appendToFile(commandId, in.getData());
         // TODO append header and footer when the sort parameter is available and equals false
-
         if (counters.containsKey(commandId)) {
             counters.put(commandId, nbDocuments + counters.get(commandId));
         } else {
             counters.put(commandId, nbDocuments);
         }
+        lastBuckets.put(commandId, in);
         if (counters.get(commandId) < getTotal(commandId)) {
             return;
         }
-        // all docs for the command are processed
-        String storeName = Framework.getService(BulkService.class).getStatus(commandId).getAction();
-        String value = saveInTransientStore(commandId, storeName);
-        DataBucket out = new DataBucket(commandId, totals.get(commandId), value, in.getHeaderAsString(),
-                in.getFooterAsString());
-        if (produceImmediate) {
-            ((ComputationContextImpl) context).produceRecordImmediate(OUTPUT_1,
-                    Record.of(commandId, codec.encode(out)));
-        } else {
-            context.produceRecord(OUTPUT_1, Record.of(commandId, codec.encode(out)));
-        }
-        totals.remove(commandId);
-        counters.remove(commandId);
-        // we checkpoint only if there is not another command in progress
-        if (counters.isEmpty()) {
-            context.askForCheckpoint();
-        }
+        finishBlob(context, commandId);
     }
 
     protected Long getTotal(String commandId) {
@@ -128,6 +137,28 @@ public class MakeBlob extends AbstractTransientBlobComputation {
             log.error("Unable to delete file", e);
         }
         return getTransientStoreKey(commandId);
+    }
+
+    protected void finishBlob(ComputationContext context, String commandId) {
+        String storeName = Framework.getService(BulkService.class).getStatus(commandId).getAction();
+        String value = saveInTransientStore(commandId, storeName);
+        DataBucket in = lastBuckets.get(commandId);
+        DataBucket out = new DataBucket(commandId, totals.get(commandId), value, in.getHeaderAsString(),
+                in.getFooterAsString());
+        Codec<DataBucket> codec = BulkCodecs.getDataBucketCodec();
+        if (produceImmediate) {
+            ((ComputationContextImpl) context).produceRecordImmediate(OUTPUT_1,
+                    Record.of(commandId, codec.encode(out)));
+        } else {
+            context.produceRecord(OUTPUT_1, Record.of(commandId, codec.encode(out)));
+        }
+        totals.remove(commandId);
+        counters.remove(commandId);
+        lastBuckets.remove(commandId);
+        // we checkpoint only if there is not another command in progress
+        if (counters.isEmpty()) {
+            context.askForCheckpoint();
+        }
     }
 
 }
