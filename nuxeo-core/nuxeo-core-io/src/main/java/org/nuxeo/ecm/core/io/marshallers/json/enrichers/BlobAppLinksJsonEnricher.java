@@ -68,7 +68,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * @since 10.3
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
-public class BlobAppLinksJsonEnricher extends AbstractJsonEnricher<Blob> {
+public class BlobAppLinksJsonEnricher extends AbstractJsonEnricher<BlobProperty> {
 
     public static final String NAME = "appLinks";
 
@@ -77,7 +77,8 @@ public class BlobAppLinksJsonEnricher extends AbstractJsonEnricher<Blob> {
     }
 
     @Override
-    public void write(JsonGenerator jg, Blob blob) throws IOException {
+    public void write(JsonGenerator jg, BlobProperty blobProperty) throws IOException {
+        Blob blob = (Blob) blobProperty.getValue();
         if (!(blob instanceof ManagedBlob)) {
             return;
         }
