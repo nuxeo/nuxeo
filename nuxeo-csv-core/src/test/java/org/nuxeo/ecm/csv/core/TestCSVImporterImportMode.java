@@ -19,6 +19,7 @@ package org.nuxeo.ecm.csv.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -47,8 +48,7 @@ public class TestCSVImporterImportMode extends AbstractCSVImporterTest {
         CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.IMPORT).build();
         TransactionHelper.commitOrRollbackTransaction();
 
-        String importId = csvImporter.launchImport(session, "/", getCSVBlob(DOCS_WITH_CREATOR_CSV),
-                options);
+        String importId = csvImporter.launchImport(session, "/", getCSVBlob(DOCS_WITH_CREATOR_CSV), options);
 
         workManager.awaitCompletion(10000, TimeUnit.SECONDS);
         TransactionHelper.startTransaction();
@@ -71,7 +71,7 @@ public class TestCSVImporterImportMode extends AbstractCSVImporterTest {
         assertFalse(contributors.contains("Administrator"));
         Calendar creationDate = (Calendar) doc.getPropertyValue("dc:created");
         assertEquals("12/12/2012", new SimpleDateFormat(options.getDateFormat()).format(creationDate.getTime()));
-        assertEquals(null, doc.getPropertyValue("dc:modified"));
+        assertNull(doc.getPropertyValue("dc:modified"));
 
         assertTrue(session.exists(new PathRef("/myfile2")));
         doc = session.getDocument(new PathRef("/myfile2"));

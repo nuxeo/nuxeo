@@ -39,7 +39,7 @@ public class CSVImporterOptions implements Serializable {
 
         private String listSeparatorRegex = "\\|";
 
-        private Character commentMarker = null;
+        private Character commentMarker;
 
         private Character escapeCharacter = '\\';
 
@@ -47,7 +47,7 @@ public class CSVImporterOptions implements Serializable {
 
         private boolean checkAllowedSubTypes = true;
 
-        private boolean sendEmail = false;
+        private boolean sendEmail;
 
         private int batchSize = 50;
 
@@ -110,7 +110,7 @@ public class CSVImporterOptions implements Serializable {
     }
 
     public enum ImportMode {
-        CREATE, IMPORT;
+        CREATE, IMPORT
     }
 
     protected ImportMode importMode;

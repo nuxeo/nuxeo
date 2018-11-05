@@ -51,8 +51,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -150,7 +150,7 @@ public class CSVImporterWork extends TransientStoreWork {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(CSVImporterWork.class);
+    private static final Logger log = LogManager.getLogger(CSVImporterWork.class);
 
     private static final String TEMPLATE_IMPORT_RESULT = "templates/csvImportResult.ftl";
 
@@ -225,8 +225,9 @@ public class CSVImporterWork extends TransientStoreWork {
         TransientStore store = getStore();
         setStatus("Importing");
         openUserSession();
-        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withEscape(options.getEscapeCharacter()).withCommentMarker(
-                options.getCommentMarker());
+        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader()
+                                               .withEscape(options.getEscapeCharacter())
+                                               .withCommentMarker(options.getCommentMarker());
         try (Reader in = newReader(getBlob()); CSVParser parser = csvFormat.parse(in)) {
             doImport(parser);
         } catch (IOException e) {
@@ -287,7 +288,7 @@ public class CSVImporterWork extends TransientStoreWork {
     }
 
     protected void doImport(CSVParser parser) {
-        log.info(String.format("Importing CSV file: %s", getBlob().getFilename()));
+        log.info("Importing CSV file: {}", () -> getBlob().getFilename());
         Map<String, Integer> header = parser.getHeaderMap();
         if (header == null) {
             logError(0, "No header line, empty file?", LABEL_CSV_IMPORTER_EMPTY_FILE);
@@ -349,7 +350,7 @@ public class CSVImporterWork extends TransientStoreWork {
             commitOrRollbackTransaction();
             startTransaction();
         }
-        log.info(String.format("Done importing CSV file: %s", getBlob().getFilename()));
+        log.info("Done importing CSV file: {}", () -> getBlob().getFilename());
     }
 
     /**
@@ -361,7 +362,7 @@ public class CSVImporterWork extends TransientStoreWork {
     protected boolean importRecord(CSVRecord record, Map<String, Integer> header) {
         String name = record.get(CSV_NAME_COL);
         if (StringUtils.isBlank(name)) {
-            log.debug("record.isSet=" + record.isSet(CSV_NAME_COL));
+            log.debug("record.isSet={}", () -> record.isSet(CSV_NAME_COL));
             logError(getLineNumber(record), "Missing 'name' value", LABEL_CSV_IMPORTER_MISSING_NAME_VALUE);
             return false;
         }
@@ -381,7 +382,7 @@ public class CSVImporterWork extends TransientStoreWork {
                 type = record.get(CSV_TYPE_COL);
             }
             if (StringUtils.isBlank(type)) {
-                log.debug("record.isSet=" + record.isSet(CSV_TYPE_COL));
+                log.debug("record.isSet={}", () -> record.isSet(CSV_TYPE_COL));
                 logError(getLineNumber(record), "Missing 'type' value", LABEL_CSV_IMPORTER_MISSING_TYPE_VALUE);
                 return false;
             }
@@ -626,8 +627,8 @@ public class CSVImporterWork extends TransientStoreWork {
                     logError(lineNumber, "'%s' type is not allowed in '%s'", LABEL_CSV_IMPORTER_NOT_ALLOWED_SUB_TYPE,
                             type, parent.getType());
                 } else {
-                    options.getCSVImporterDocumentFactory().createDocument(session, newParentPath, name, type,
-                            properties);
+                    options.getCSVImporterDocumentFactory()
+                           .createDocument(session, newParentPath, name, type, properties);
                     importLogs.add(new CSVImportLog(lineNumber, Status.SUCCESS, "Document created",
                             LABEL_CSV_IMPORTER_DOCUMENT_CREATED));
                     return true;
@@ -670,7 +671,7 @@ public class CSVImporterWork extends TransientStoreWork {
                 params));
         String lineMessage = String.format("Line %d", lineNumber);
         String errorMessage = String.format(message, (Object[]) params);
-        log.error(String.format("%s: %s", lineMessage, errorMessage));
+        log.error("{}: {}", lineMessage, errorMessage);
         getStore().putParameter(id, "status",
                 new CSVImportStatus(CSVImportStatus.State.ERROR, docsCreatedCount, docsCreatedCount));
     }
@@ -680,7 +681,7 @@ public class CSVImporterWork extends TransientStoreWork {
         NuxeoPrincipal principal = userManager.getPrincipal(username);
         String email = principal.getEmail();
         if (email == null) {
-            log.info(String.format("Not sending import result email to '%s', no email configured", username));
+            log.info("Not sending import result email to '{}', no email configured", username);
             return;
         }
 
@@ -719,8 +720,8 @@ public class CSVImporterWork extends TransientStoreWork {
             Framework.getService(AutomationService.class).run(ctx, chain);
         } catch (Exception e) {
             ExceptionUtils.checkInterrupt(e);
-            log.error(String.format("Unable to notify user '%s' for import result of '%s': %s", username,
-                    getBlob().getFilename(), e.getMessage()));
+            log.error("Unable to notify user '{}' for import result of '{}': {}", () -> username,
+                    () -> getBlob().getFilename(), e::getMessage);
             log.debug(e, e);
             throw ExceptionUtils.runtimeException(e);
         }

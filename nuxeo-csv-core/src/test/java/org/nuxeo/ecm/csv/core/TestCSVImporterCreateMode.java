@@ -21,6 +21,7 @@ package org.nuxeo.ecm.csv.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -225,7 +226,7 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         assertTrue(session.exists(new PathRef("/mynote")));
         doc = session.getDocument(new PathRef("/mynote"));
         assertEquals("Existing Note", doc.getTitle());
-        assertFalse("a simple note".equals(doc.getPropertyValue("dc:description")));
+        assertNotEquals("a simple note", doc.getPropertyValue("dc:description"));
 
         assertTrue(session.exists(new PathRef("/mycomplexfile")));
         doc = session.getDocument(new PathRef("/mycomplexfile"));
@@ -323,9 +324,8 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         importLog = importLogs.get(6);
         assertEquals(8, importLog.getLine());
         assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
-        assertEquals(
-                "Unable to convert field 'complexTest:complexItem' with value "
-                        + "'{\"dateProp\":\"2009-02-13BAD04:40:00.00Z\"],\"boolProp\":true,\"stringProp\":\"testString1\"}'",
+        assertEquals("Unable to convert field 'complexTest:complexItem' with value "
+                + "'{\"dateProp\":\"2009-02-13BAD04:40:00.00Z\"],\"boolProp\":true,\"stringProp\":\"testString1\"}'",
                 importLog.getMessage());
 
         assertFalse(session.exists(new PathRef("/myfile")));
@@ -425,10 +425,7 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
 
         assertTrue(session.exists(new PathRef("/myfile")));
-        DocumentModel doc = session.getDocument(new PathRef("/myfile"));
-
         assertTrue(session.exists(new PathRef("/myfile2")));
-        doc = session.getDocument(new PathRef("/myfile2"));
     }
 
     @Test
