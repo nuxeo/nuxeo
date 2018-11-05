@@ -30,6 +30,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +51,11 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -84,6 +87,10 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
     private static final String DOCS_WITH_MISSING_TYPE_CSV = "docs_with_missing_type.csv";
 
     private static final String DOCS_WITH_BLOBS_CSV = "docs_with_blobs.csv";
+
+    private static final String DOCS_WITH_LEGACY_DATE_FORMAT_CSV = "docs_with_legacy_date_format.csv";
+
+    private static final String DOCS_WITH_CUSTOM_DATE_FORMAT_CSV = "docs_with_custom_date_format.csv";
 
     @Inject
     protected CoreFeature coreFeature;
@@ -137,7 +144,8 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         assertTrue(contributors.contains("contributor3"));
         assertTrue(contributors.contains("Administrator"));
         Calendar issueDate = (Calendar) doc.getPropertyValue("dc:issued");
-        assertEquals("10/01/2010", new SimpleDateFormat(options.getDateFormat()).format(issueDate.getTime()));
+        Date expectedDate = DateParser.parseW3CDateTime("2010-10-01T00:00:00.000Z");
+        assertEquals(expectedDate.getTime(), issueDate.getTimeInMillis());
 
         assertTrue(session.exists(new PathRef("/mynote")));
         doc = session.getDocument(new PathRef("/mynote"));
@@ -151,7 +159,8 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         assertTrue(contributors.contains("fry"));
         assertTrue(contributors.contains("Administrator"));
         issueDate = (Calendar) doc.getPropertyValue("dc:issued");
-        assertEquals("12/12/2012", new SimpleDateFormat(options.getDateFormat()).format(issueDate.getTime()));
+        expectedDate = DateParser.parseW3CDateTime("2012-12-12T00:00:00.000Z");
+        assertEquals(expectedDate.getTime(), issueDate.getTimeInMillis());
 
         assertTrue(session.exists(new PathRef("/mycomplexfile")));
         doc = session.getDocument(new PathRef("/mycomplexfile"));
@@ -162,7 +171,8 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         assertTrue(contributors.contains("joe"));
         assertTrue(contributors.contains("Administrator"));
         issueDate = (Calendar) doc.getPropertyValue("dc:issued");
-        assertEquals("12/21/2013", new SimpleDateFormat(options.getDateFormat()).format(issueDate.getTime()));
+        expectedDate = DateParser.parseW3CDateTime("2013-12-21");
+        assertEquals(expectedDate.getTime(), issueDate.getTimeInMillis());
         HashMap<String, Object> expectedMap = new HashMap<>();
         expectedMap.put("stringProp", "testString1");
         expectedMap.put("dateProp", null);
@@ -297,7 +307,7 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         CSVImportLog importLog = importLogs.get(0);
         assertEquals(2, importLog.getLine());
         assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
-        assertEquals("Unable to convert field 'dc:issued' with value '10012010'", importLog.getMessage());
+        assertEquals("Unable to create document: For input string: \"10/0\"", importLog.getMessage());
         importLog = importLogs.get(1);
         assertEquals(3, importLog.getLine());
         assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
@@ -563,6 +573,77 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         assertNotNull(blob);
         assertEquals("foo.txt", blob.getFilename());
         assertEquals("A simple text file", blob.getString());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-properties-contrib.xml")
+    public void shouldCreateDocumentWithLegacyDateFormat() throws IOException, InterruptedException {
+        CSVImporterOptions options = new CSVImporterOptions.Builder().build();
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        String importId = csvImporter.launchImport(session, "/", getCSVBlob(DOCS_WITH_LEGACY_DATE_FORMAT_CSV), options);
+
+        workManager.awaitCompletion(10000, TimeUnit.SECONDS);
+        TransactionHelper.startTransaction();
+
+        CSVImportStatus importStatus = csvImporter.getImportStatus(importId);
+        assertNotNull(importStatus);
+        assertTrue(importStatus.isComplete());
+
+        List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
+        assertEquals(2, importLogs.size());
+        CSVImportLog importLog;
+        for (int i = 0; i < 2; i++) {
+            importLog = importLogs.get(i);
+            assertEquals(i + 2, importLog.getLine());
+            assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
+        }
+
+        DocumentModel doc = session.getDocument(new PathRef("/myfile"));
+        assertEquals("My File", doc.getTitle());
+        Calendar issueDate = (Calendar) doc.getPropertyValue("dc:issued");
+        assertEquals("10/01/2010", options.getDateFormat().format(issueDate.getTime()));
+
+        doc = session.getDocument(new PathRef("/mynote"));
+        assertEquals("My Note", doc.getTitle());
+        issueDate = (Calendar) doc.getPropertyValue("dc:issued");
+        assertEquals("12/12/2012", options.getDateFormat().format(issueDate.getTime()));
+    }
+
+    @Test
+    public void shouldCreateDocumentWithCustomDateformat() throws IOException, InterruptedException {
+        CSVImporterOptions options = new CSVImporterOptions.Builder().dateFormat("yyyy/MM/dd").build();
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        String importId = csvImporter.launchImport(session, "/", getCSVBlob(DOCS_WITH_CUSTOM_DATE_FORMAT_CSV), options);
+
+        workManager.awaitCompletion(10000, TimeUnit.SECONDS);
+        TransactionHelper.startTransaction();
+
+        CSVImportStatus importStatus = csvImporter.getImportStatus(importId);
+        assertNotNull(importStatus);
+        assertTrue(importStatus.isComplete());
+
+        List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
+        assertEquals(2, importLogs.size());
+        CSVImportLog importLog;
+        for (int i = 0; i < 2; i++) {
+            importLog = importLogs.get(i);
+            assertEquals(i + 2, importLog.getLine());
+            assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
+        }
+
+        DocumentModel doc = session.getDocument(new PathRef("/myfile"));
+        assertEquals("My File", doc.getTitle());
+        Calendar issueDate = (Calendar) doc.getPropertyValue("dc:issued");
+        assertEquals("2010/01/01", options.getDateFormat().format(issueDate.getTime()));
+
+        doc = session.getDocument(new PathRef("/mynote"));
+        assertEquals("My Note", doc.getTitle());
+        issueDate = (Calendar) doc.getPropertyValue("dc:issued");
+        assertEquals("2012/12/12", options.getDateFormat().format(issueDate.getTime()));
     }
 
     public CloseableCoreSession openSessionAs(String username) {

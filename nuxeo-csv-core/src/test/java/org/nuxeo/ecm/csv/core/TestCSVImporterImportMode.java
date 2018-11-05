@@ -23,9 +23,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -70,7 +71,8 @@ public class TestCSVImporterImportMode extends AbstractCSVImporterTest {
         assertTrue(contributors.contains("leela"));
         assertFalse(contributors.contains("Administrator"));
         Calendar creationDate = (Calendar) doc.getPropertyValue("dc:created");
-        assertEquals("12/12/2012", new SimpleDateFormat(options.getDateFormat()).format(creationDate.getTime()));
+        Date expectedDate = DateParser.parseW3CDateTime("2012-12-12T00:00:00");
+        assertEquals(expectedDate.getTime(), creationDate.getTimeInMillis());
         assertNull(doc.getPropertyValue("dc:modified"));
 
         assertTrue(session.exists(new PathRef("/myfile2")));
@@ -83,8 +85,10 @@ public class TestCSVImporterImportMode extends AbstractCSVImporterTest {
         assertTrue(contributors.contains("leela"));
         assertFalse(contributors.contains("Administrator"));
         creationDate = (Calendar) doc.getPropertyValue("dc:created");
-        assertEquals("12/12/2012", new SimpleDateFormat(options.getDateFormat()).format(creationDate.getTime()));
+        expectedDate = DateParser.parseW3CDateTime("2012-12-12T00:00:00.000Z");
+        assertEquals(expectedDate.getTime(), creationDate.getTimeInMillis());
         Calendar modificationDate = (Calendar) doc.getPropertyValue("dc:modified");
-        assertEquals("04/12/2015", new SimpleDateFormat(options.getDateFormat()).format(modificationDate.getTime()));
+        expectedDate = DateParser.parseW3CDateTime("2015-04-12T00:00:00.000Z");
+        assertEquals(expectedDate.getTime(), modificationDate.getTimeInMillis());
     }
 }

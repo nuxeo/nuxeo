@@ -34,7 +34,6 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -172,8 +171,6 @@ public class CSVImporterWork extends TransientStoreWork {
     protected String username;
 
     protected CSVImporterOptions options;
-
-    protected transient DateFormat dateformat;
 
     protected boolean hasTypeColumn;
 
@@ -507,7 +504,8 @@ public class CSVImporterWork extends TransientStoreWork {
                                 } else if (type instanceof BooleanType) {
                                     fieldValue = Boolean.valueOf(stringValue);
                                 } else if (type instanceof DateType) {
-                                    fieldValue = getDateFormat().parse(stringValue);
+                                    DateFormat dateFormat = options.getDateFormat();
+                                    fieldValue = dateFormat != null ? dateFormat.parse(stringValue) : stringValue;
                                 }
                             }
                         }
@@ -605,14 +603,6 @@ public class CSVImporterWork extends TransientStoreWork {
                 replaceBlobs((Map<String, Object>) value);
             }
         }
-    }
-
-    protected DateFormat getDateFormat() {
-        // transient field so may become null
-        if (dateformat == null) {
-            dateformat = new SimpleDateFormat(options.getDateFormat());
-        }
-        return dateformat;
     }
 
     protected boolean createDocument(long lineNumber, String newParentPath, String name, String type,
