@@ -84,7 +84,6 @@ import com.google.common.hash.Hashing;
 @Deploy("org.nuxeo.ecm.platform.csv.export")
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class)
-@Ignore("NXP-26039")
 public class TestCSVExportAction {
 
     @Inject
