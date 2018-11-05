@@ -25,6 +25,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
@@ -32,7 +33,6 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -80,9 +80,16 @@ public class ESAuditMigrationWork extends AbstractWork {
             int pageIdx = 1;
 
             while (nbEntriesMigrated < nbEntriesToMigrate) {
-                @SuppressWarnings("unchecked")
-                List<LogEntry> entries = (List<LogEntry>) sourceBackend.nativeQuery(
-                        "from LogEntry log order by log.id asc", pageIdx, batchSize);
+                boolean txStarted = TransactionHelper.startTransaction();
+                List<LogEntry> entries;
+                if (txStarted) {
+                    // @SuppressWarnings("unchecked")
+                    entries = (List<LogEntry>) sourceBackend.nativeQuery(
+            	                         "from LogEntry log order by log.id asc", pageIdx, batchSize);
+                    TransactionHelper.commitOrRollbackTransaction();
+                } else {
+                    throw new NuxeoException("Cannot start a transaction");
+                }
 
                 if (entries.size() == 0) {
                     log.warn("Migration ending after " + nbEntriesMigrated + " entries");
