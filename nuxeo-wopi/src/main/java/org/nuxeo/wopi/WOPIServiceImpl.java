@@ -87,8 +87,8 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     protected void registerApp(WOPIDiscovery.App app) {
         app.getActions().forEach(action -> {
             extensionAppNames.put(action.getExt(), app.getName());
-            extensionActionURLs.computeIfAbsent(action.getExt(), k -> new HashMap<>())
-                               .put(action.getName(), action.getUrl().replaceFirst("<.*$", ""));
+            extensionActionURLs.computeIfAbsent(action.getExt(), k -> new HashMap<>()).put(action.getName(),
+                    action.getUrl().replaceFirst("<.*$", ""));
         });
     }
 
@@ -151,7 +151,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
             return true; // assume valid
         }
 
-        long timestamp = Long.valueOf(timestampHeader);
+        long timestamp = Long.parseLong(timestampHeader);
         if (!ProofKeyHelper.verifyTimestamp(timestamp)) {
             return false;
         }
