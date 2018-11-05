@@ -89,7 +89,11 @@ public class LogEntryProvider implements BaseLogEntryProvider {
         Object entry = entries.get(0);
         if (entry instanceof LogEntry) {
             for (Object logEntry : entries) {
-                doPublish((LogEntry) logEntry);
+            	try {
+                    doPublish((LogEntry)logEntry);
+                } catch (Exception e) {
+                    log.error("unable to read log entry");
+                }
             }
         }
         return entries;
@@ -515,6 +519,6 @@ public class LogEntryProvider implements BaseLogEntryProvider {
     @SuppressWarnings("unchecked")
     public List<String> findEventIds() {
         Query query = em.createNamedQuery("LogEntry.findEventIds");
-        return (List<String>) query.getResultList();
+        return query.getResultList();
     }
 }
