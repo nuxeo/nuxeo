@@ -249,9 +249,6 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         jg.writeStringField("length", Long.toString(blob.getLength()));
 
         String blobUrl = getBlobUrl(prop);
-        if (blobUrl == null) {
-            blobUrl = "";
-        }
         jg.writeStringField("data", blobUrl);
 
         enrichBlob(jg, blob);
@@ -271,8 +268,8 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
             ParameterizedType genericType = TypeUtils.parameterize(Enriched.class, Blob.class);
             for (String enricherName : enrichers) {
                 try (Closeable ignored = wrappedCtx.with(ENTITY_ENRICHER_NAME, enricherName).open()) {
-                    Collection<Writer<Enriched>> writers = registry.getAllWriters(ctx, Enriched.class,
-                            genericType, APPLICATION_JSON_TYPE);
+                    Collection<Writer<Enriched>> writers = registry.getAllWriters(ctx, Enriched.class, genericType,
+                            APPLICATION_JSON_TYPE);
                     for (Writer<Enriched> writer : writers) {
                         writer.write(enriched, Enriched.class, genericType, APPLICATION_JSON_TYPE, out);
                     }
