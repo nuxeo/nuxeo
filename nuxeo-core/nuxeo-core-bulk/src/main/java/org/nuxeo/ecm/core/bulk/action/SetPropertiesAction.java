@@ -34,7 +34,10 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
@@ -44,6 +47,11 @@ import org.nuxeo.runtime.stream.StreamProcessorTopology;
 public class SetPropertiesAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "setProperties";
+
+    // duplicated from NXAuditEventsService.DISABLE_AUDIT_LOGGER
+    public static final String PARAM_DISABLE_AUDIT = "disableAuditLogger";
+
+    public static final String PARAM_VERSIONING_OPTION = VersioningService.VERSIONING_OPTION;
 
     @Override
     public Topology getTopology(Map<String, String> options) {
@@ -58,19 +66,41 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
         private static final Logger log = LogManager.getLogger(SetPropertyComputation.class);
 
+        protected VersioningOption versioningOption;
+
+        protected boolean disableAudit;
+
         public SetPropertyComputation() {
             super(ACTION_NAME);
         }
 
         @Override
+        public void startBucket(String bucketKey) {
+            BulkCommand command = getCurrentCommand();
+            Serializable auditParam = command.getParam(PARAM_DISABLE_AUDIT);
+            disableAudit = auditParam != null && Boolean.parseBoolean(auditParam.toString());
+            Serializable versioningParam = command.getParam(PARAM_VERSIONING_OPTION);
+            versioningOption = VersioningOption.NONE.toString().equals(versioningParam) ? VersioningOption.NONE : null;
+        }
+
+        @Override
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
             for (DocumentModel doc : loadDocuments(session, ids)) {
+                if (disableAudit) {
+                    doc.putContextData(PARAM_DISABLE_AUDIT, Boolean.TRUE);
+                }
+                if (versioningOption != null) {
+                    doc.putContextData(VersioningService.VERSIONING_OPTION, versioningOption);
+                }
+                // update properties
                 for (Entry<String, Serializable> es : properties.entrySet()) {
-                    try {
-                        doc.setPropertyValue(es.getKey(), es.getValue());
-                    } catch (PropertyException e) {
-                        // TODO send to error stream
-                        log.warn("Cannot write property: {} of document: {}", es.getKey(), doc.getId(), e);
+                    if (!PARAM_DISABLE_AUDIT.equals(es.getKey()) && !PARAM_VERSIONING_OPTION.equals(es.getKey())) {
+                        try {
+                            doc.setPropertyValue(es.getKey(), es.getValue());
+                        } catch (PropertyException e) {
+                            // TODO send to error stream
+                            log.warn("Cannot write property: {} of document: {}", es.getKey(), doc.getId(), e);
+                        }
                     }
                 }
                 try {
