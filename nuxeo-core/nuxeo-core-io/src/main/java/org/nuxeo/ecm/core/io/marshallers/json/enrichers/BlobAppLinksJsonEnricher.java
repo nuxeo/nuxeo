@@ -19,10 +19,16 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.enrichers;
 
-import com.fasterxml.jackson.core.JsonGenerator;
+import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
+import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+
+import java.io.IOException;
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
@@ -32,21 +38,17 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.runtime.api.Framework;
 
-import java.io.IOException;
-import java.util.List;
-
-import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
-import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Enrich {@link Blob} json with list of {@link AppLink}.
- *
+ * <p>
  * Enabled when parameter enrichers-blob=appLinks is present.
- *
  * <p>
  * Blob format is:
  *
- * <pre>{@code
+ * <pre>
+ * {@code
  * {
  *  "name": "...",
  *  "mime-type": "...",
@@ -60,7 +62,8 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
  *    ...
  *  ]
  * }
- * }</pre>
+ * }
+ * </pre>
  *
  * @since 10.3
  */
