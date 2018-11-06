@@ -19,10 +19,7 @@
 
 package org.nuxeo.wopi;
 
-import java.util.List;
-
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * WOPI Service.
@@ -39,9 +36,9 @@ public interface WOPIService {
     boolean isEnabled();
 
     /**
-     * Returns a list of {@link WOPIBlobInfo} for the document's blobs supported by WOPI.
+     * Returns a {@link WOPIBlobInfo} for the given blob if it is supported by WOPI, {@code null} otherwise.
      */
-    List<WOPIBlobInfo> getWOPIBlobInfos(DocumentModel doc);
+    WOPIBlobInfo getWOPIBlobInfo(Blob blob);
 
     /**
      * Returns the WOPI action url given a {@code blob} and an {@code action}.

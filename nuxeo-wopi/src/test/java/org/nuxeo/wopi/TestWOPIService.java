@@ -24,14 +24,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.Blobs.createBlob;
-import static org.nuxeo.wopi.TestConstants.FILE_CONTENT_PROPERTY;
-
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -40,7 +32,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -102,34 +93,23 @@ public class TestWOPIService {
     }
 
     @Test
-    public void testGetWOPIBlobInfos() {
-        // create a document with 3 blobs
-        DocumentModel doc = session.createDocumentModel("/", "wopiDoc", "File");
-        doc = session.createDocument(doc);
-
+    public void testGetWOPIBlobInfo() {
         Blob blob = createBlob("dummy content", null, null, "content.xlsx");
-        doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
-        List<Blob> blobs = Arrays.asList(createBlob("one", null, null, "one.bin"),
-                createBlob("two", null, null, "two.rtf"));
-        List<Map<String, Serializable>> files = blobs.stream()
-                                                     .map(b -> Collections.singletonMap("file", (Serializable) b))
-                                                     .collect(Collectors.toList());
-        doc.setPropertyValue("files:files", (Serializable) files);
-        doc = session.createDocument(doc);
+        Blob blobOne = createBlob("one", null, null, "one.bin");
+        Blob blobTwo = createBlob("two", null, null, "two.rtf");
 
-        List<WOPIBlobInfo> wopiBlobInfos = wopiService.getWOPIBlobInfos(doc);
-        assertEquals(2, wopiBlobInfos.size());
-        WOPIBlobInfo info = wopiBlobInfos.get(0);
+        WOPIBlobInfo info = wopiService.getWOPIBlobInfo(blob);
         assertEquals("Excel", info.appName);
-        assertEquals("file:content", info.xpath);
         assertEquals(2, info.actions.size());
-        assertTrue(info.actions.remove("view"));
-        assertTrue(info.actions.remove("edit"));
-        info = wopiBlobInfos.get(1);
+        assertTrue(info.actions.contains("view"));
+        assertTrue(info.actions.contains("edit"));
+
+        assertNull(wopiService.getWOPIBlobInfo(blobOne));
+
+        info = wopiService.getWOPIBlobInfo(blobTwo);
         assertEquals("Word", info.appName);
-        assertEquals("files:files/1/file", info.xpath);
         assertEquals(1, info.actions.size());
-        assertTrue(info.actions.remove("edit"));
+        assertTrue(info.actions.contains("edit"));
     }
 
 }

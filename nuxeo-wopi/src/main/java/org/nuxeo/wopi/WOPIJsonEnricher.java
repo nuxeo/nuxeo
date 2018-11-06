@@ -16,86 +16,109 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
+
 package org.nuxeo.wopi;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
-import java.util.List;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.wopi.lock.LockHelper;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Gets the WOPI action URLs available for each blob of the document.
  * <p>
- * Format is:
+ * Enabled when parameter {@code enrichers.blob:wopi} is present.
+ * <p>
+ * Blob format is:
  *
  * <pre>
+ * {@code
  * {
  *   "entity-type":"document",
- *   ...
- *   "contextParameters": {
- *     "wopi": {
- *         "file:content": {
- *             "appName": "Word",
- *             "view": "http://localhost:8080/nuxeo/wopi/view/REPOSITORY/DOC_ID/file:content",
- *             "view": "http://localhost:8080/nuxeo/wopi/edit/REPOSITORY/DOC_ID/file:content",
- *         },
- *         "other:xpath": {
- *             "appName": "Excel",
- *             "view": "http://localhost:8080/nuxeo/wopi/view/REPOSITORY/DOC_ID/other:xpath",
- *             "view": "http://localhost:8080/nuxeo/wopi/edit/REPOSITORY/DOC_ID/other:xpath",
- *         },
- *         "locked": true|false
+ *   "properties": {
+ *     "file:content": {
+ *       "name": "...",
+ *       "mime-type": "...",
+ *       ...,
+ *       "wopi": {
+ *         "appName": "Word",
+ *         "view": "http://localhost:8080/nuxeo/wopi/view/REPOSITORY/DOC_ID/file:content",
+ *         "edit": "http://localhost:8080/nuxeo/wopi/edit/REPOSITORY/DOC_ID/file:content"
+ *       }
+ *     },
+ *     "other:xpath": {
+ *       "name": "...",
+ *       "mime-type": "...",
+ *       ...,
+ *       "wopi": {
+ *         "appName": "Excel",
+ *         "view": "http://localhost:8080/nuxeo/wopi/view/REPOSITORY/DOC_ID/other:xpath",
+ *         "edit": "http://localhost:8080/nuxeo/wopi/edit/REPOSITORY/DOC_ID/other:xpath"
+ *       }
  *     }
  *   }
+ * }
  * }
  * </pre>
  *
  * @since 10.3
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
-public class WOPIJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
+public class WOPIJsonEnricher extends AbstractJsonEnricher<BlobProperty> {
 
     public static final String NAME = "wopi";
 
     public static final String APP_NAME_FIELD = "appName";
-
-    public static final String LOCKED_FIELD = "locked";
 
     public WOPIJsonEnricher() {
         super(NAME);
     }
 
     @Override
-    public void write(JsonGenerator jg, DocumentModel doc) throws IOException {
-        List<WOPIBlobInfo> infos = Framework.getService(WOPIService.class).getWOPIBlobInfos(doc);
-        if (!infos.isEmpty()) {
-            jg.writeFieldName(NAME);
-            jg.writeStartObject();
-            for (WOPIBlobInfo info : infos) {
-                writeWOPIBlobInfo(jg, info, doc);
-            }
-            jg.writeBooleanField(LOCKED_FIELD, LockHelper.isLocked(doc.getRepositoryName(), doc.getId()));
-            jg.writeEndObject();
+    public void write(JsonGenerator jg, BlobProperty blobProperty) throws IOException {
+        DocumentModel doc = ctx.getParameter(DocumentModelJsonWriter.ENTITY_TYPE);
+        if (doc == null) {
+            return;
+        }
+
+        Blob blob = (Blob) blobProperty.getValue();
+        WOPIBlobInfo info = Framework.getService(WOPIService.class).getWOPIBlobInfo(blob);
+        if (info == null) {
+            return;
+        }
+
+        jg.writeFieldName(NAME);
+        jg.writeStartObject();
+        writeWOPIBlobInfo(jg, info, doc, getXPath(blobProperty));
+        jg.writeEndObject();
+    }
+
+    protected void writeWOPIBlobInfo(JsonGenerator jg, WOPIBlobInfo info, DocumentModel doc, String xpath)
+            throws IOException {
+        jg.writeStringField(APP_NAME_FIELD, info.appName);
+        for (String action : info.actions) {
+            jg.writeStringField(action, Helpers.getWOPIURL(ctx.getBaseUrl(), action, doc, xpath));
         }
     }
 
-    protected void writeWOPIBlobInfo(JsonGenerator jg, WOPIBlobInfo info, DocumentModel doc) throws IOException {
-        jg.writeFieldName(info.xpath);
-        jg.writeStartObject();
-        jg.writeStringField(APP_NAME_FIELD, info.appName);
-        for (String action : info.actions) {
-            jg.writeStringField(action, Helpers.getWOPIURL(ctx.getBaseUrl(), action, doc, info.xpath));
+    protected String getXPath(Property property) {
+        String xpath = property.getXPath();
+        // if no prefix, use schema name as prefix
+        if (!xpath.contains(":")) {
+            xpath = property.getSchema().getName() + ":" + xpath;
         }
-        jg.writeEndObject();
+        return xpath;
     }
 
 }

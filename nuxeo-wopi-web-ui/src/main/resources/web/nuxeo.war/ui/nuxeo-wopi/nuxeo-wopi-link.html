@@ -22,57 +22,35 @@ Contributors:
 -->
 <dom-module id="nuxeo-wopi-link">
   <template>
-    <style include="nuxeo-action-button-styles">
-      .action {
-        text-decoration: none;
-        color: var(--nuxeo-text-default);
-      }
-    </style>
-
     <template is="dom-if" if="[[_isAvailable(url)]]">
-      <a class="action" href="[[url]]" tabindex="-1" target="_blank">
-        <paper-icon-button src="[[_wopiIcon(appName)]]" id="wopiLink"></paper-icon-button>
-        <span class="label" hidden$="[[!showLabel]]">[[_label]]</span>
-      </a>
-      <paper-tooltip for="wopiLink">[[_label]]</paper-tooltip>
+      <nuxeo-link-button href="[[url]]" icon-src="[[_wopiIcon(appName)]]" label="[[_wopiTooltip(appName)]]" target="_blank"></nuxeo-link-button>
     </template>
-
   </template>
 
   <script>
     Polymer({
       is: 'nuxeo-wopi-link',
 
-      behaviors: [Nuxeo.I18nBehavior, Nuxeo.FiltersBehavior],
+      behaviors: [Nuxeo.FiltersBehavior],
 
       properties: {
         document: Object,
-        xpath: String,
+        blob: Object,
         appName: {
           type: String,
-          computed: '_appName(document, xpath)'
+          computed: '_appName(blob)'
         },
         url: {
           type: String,
-          computed: '_wopiURL(document, xpath)'
-        },
-        /**
-         * `true` if the action should display the label, `false` otherwise.
-         */
-        showLabel: {
-          type: Boolean,
-          value: false,
-        },
-        _label: {
-          type: String,
-          computed: '_wopiTooltip(appName, i18n)'
+          computed: '_wopiURL(document, blob)'
         }
       },
 
       _appName() {
-        return this.document.contextParameters && this.document.contextParameters.wopi
-          && this.document.contextParameters.wopi[this.xpath] && this.document.contextParameters.wopi[this.xpath].appName
-          && this.document.contextParameters.wopi[this.xpath].appName.toLowerCase();
+        return this.blob
+          && this.blob.wopi
+          && this.blob.wopi.appName
+          && this.blob.wopi.appName.toLowerCase();
       },
 
       _isAvailable() {
@@ -80,16 +58,15 @@ Contributors:
       },
 
       _wopiIcon() {
-        return 'images/' + this.appName +'.png'
+        return 'images/' + this.appName + '.png'
       },
 
       _wopiTooltip() {
-        return this.i18n('wopiLink.' + this.appName + '.tooltip');
+        return 'wopiLink.' + this.appName + '.tooltip';
       },
 
       _wopiURL() {
-        var blobInfo = this.document.contextParameters && this.document.contextParameters.wopi
-          && this.document.contextParameters.wopi[this.xpath];
+        var blobInfo = this.blob && this.blob.wopi;
         if (!blobInfo) {
           return null;
         }

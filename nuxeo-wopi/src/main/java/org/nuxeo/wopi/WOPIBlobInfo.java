@@ -29,11 +29,6 @@ import java.util.Set;
 public class WOPIBlobInfo {
 
     /**
-     * The xpath of the blob.
-     */
-    public final String xpath;
-
-    /**
      * Set of WOPI actions supported for the blob.
      */
     public final Set<String> actions;
@@ -45,8 +40,7 @@ public class WOPIBlobInfo {
      */
     public final String appName;
 
-    public WOPIBlobInfo(String xpath, String appName, Set<String> actions) {
-        this.xpath = xpath;
+    public WOPIBlobInfo(String appName, Set<String> actions) {
         this.actions = actions;
         this.appName = appName;
     }

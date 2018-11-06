@@ -25,10 +25,7 @@ import java.nio.file.Paths;
 import java.security.PublicKey;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,9 +33,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -52,8 +46,6 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     public static final String WOPI_DIR = "wopi";
 
     public static final String DISCOVERY_XML = "discovery.xml";
-
-    protected static final BlobsExtractor BLOBS_EXTRACTOR = new BlobsExtractor();
 
     // extension => app name
     protected Map<String, String> extensionAppNames = new HashMap<>();
@@ -98,16 +90,15 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     }
 
     @Override
-    public List<WOPIBlobInfo> getWOPIBlobInfos(DocumentModel doc) {
-        if (!isEnabled()) {
-            return Collections.emptyList();
+    public WOPIBlobInfo getWOPIBlobInfo(Blob blob) {
+        if (!isEnabled() || Helpers.isExternalBlobProvider(blob)) {
+            return null;
         }
 
-        List<Property> blobsProperties = BLOBS_EXTRACTOR.getBlobsProperties(doc);
-        return blobsProperties.stream()
-                              .map(p -> getWOPIBlobInfo(p, doc))
-                              .filter(Objects::nonNull)
-                              .collect(Collectors.toList());
+        String extension = getExtension(blob);
+        String appName = extensionAppNames.get(extension);
+        Map<String, String> actionURLs = extensionActionURLs.get(extension);
+        return appName == null || actionURLs.isEmpty() ? null : new WOPIBlobInfo(appName, actionURLs.keySet());
     }
 
     @Override
@@ -124,24 +115,6 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
         String extension = FilenameUtils.getExtension(filename);
         return StringUtils.isNotBlank(extension) ? extension : null;
-    }
-
-    protected WOPIBlobInfo getWOPIBlobInfo(Property blobProperty, DocumentModel doc) {
-        String xpath = blobProperty.getXPath();
-        if (!xpath.contains(":")) {
-            // for schema without prefix: we need to add schema name as prefix
-            xpath = blobProperty.getSchema().getName() + ":" + xpath;
-        }
-
-        Blob blob = Helpers.getEditableBlob(doc, xpath);
-        if (blob == null) {
-            return null;
-        }
-
-        String extension = getExtension(blob);
-        String appName = extensionAppNames.get(extension);
-        Map<String, String> actionURLs = extensionActionURLs.get(extension);
-        return appName == null || actionURLs.isEmpty() ? null : new WOPIBlobInfo(xpath, appName, actionURLs.keySet());
     }
 
     @Override

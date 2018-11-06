@@ -101,15 +101,19 @@ public class Helpers {
             return null;
         }
         // ignore external blob providers
-        BlobManager blobManager = Framework.getService(BlobManager.class);
-        BlobProvider blobProvider = blobManager.getBlobProvider(blob);
-        if (blobProvider != null && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
+        if (isExternalBlobProvider(blob)) {
             log.debug(
                     "Blobs: repository={} docId={} xpath={} Ignoring blob as it is backed by a BlobProvider preventing updates",
                     doc::getRepositoryName, doc::getId, () -> xpath);
             return null;
         }
         return blob;
+    }
+
+    protected static boolean isExternalBlobProvider(Blob blob) {
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        BlobProvider blobProvider = blobManager.getBlobProvider(blob);
+        return blobProvider != null && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null);
     }
 
     public static String getWOPIURL(String baseURL, String action, DocumentModel doc, String xpath) {

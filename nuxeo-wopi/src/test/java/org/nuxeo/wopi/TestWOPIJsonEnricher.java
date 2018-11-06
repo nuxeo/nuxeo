@@ -21,7 +21,9 @@ package org.nuxeo.wopi;
 import static org.nuxeo.ecm.core.api.Blobs.createBlob;
 import static org.nuxeo.wopi.JSONHelper.readFile;
 import static org.nuxeo.wopi.TestConstants.DOC_ID_VAR;
+import static org.nuxeo.wopi.TestConstants.FILES_SCHEMA;
 import static org.nuxeo.wopi.TestConstants.FILE_CONTENT_PROPERTY;
+import static org.nuxeo.wopi.TestConstants.FILE_SCHEMA;
 import static org.nuxeo.wopi.TestConstants.REPOSITORY_VAR;
 
 import java.io.File;
@@ -48,10 +50,10 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.wopi.lock.LockHelper;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
@@ -83,18 +85,19 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
         setPermission(rootDocument, SecurityConstants.READ);
 
         // no blob
-        JsonAssert json = jsonAssert(doc, CtxBuilder.enrichDoc(WOPIJsonEnricher.NAME).get());
-        json = json.has("contextParameters").isObject();
-        json.properties(0);
+        JsonAssert json = jsonAssert(doc, getRenderingContext());
+        json = json.has("properties").has(FILE_CONTENT_PROPERTY);
+        json.isNull();
 
         // blob with an unsupported extension
         Blob blob = createBlob("dummy content");
         blob.setFilename("content.txt");
         doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
         session.saveDocument(doc);
-        json = jsonAssert(doc, CtxBuilder.enrichDoc(WOPIJsonEnricher.NAME).get());
-        json = json.has("contextParameters").isObject();
-        json.properties(0);
+        json = jsonAssert(doc, getRenderingContext());
+        json = json.has("properties").has(FILE_CONTENT_PROPERTY);
+        json = json.isObject();
+        json.hasNot("wopi");
 
         // blob with a supported extension
         blob.setFilename("content.docx");
@@ -105,21 +108,11 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
         toReplace.put(DOC_ID_VAR, doc.getId());
 
         try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            // document not locked
             doc = joeSession.getDocument(doc.getRef());
-            json = jsonAssert(doc, CtxBuilder.enrichDoc(WOPIJsonEnricher.NAME).get());
+            json = jsonAssert(doc, getRenderingContext());
 
-            File file = FileUtils.getResourceFileFromContext("json/testWOPIJsonEnricher-unlocked.json");
+            File file = FileUtils.getResourceFileFromContext("json/testWOPIJsonEnricher.json");
             String expected = readFile(file, toReplace);
-            JSONAssert.assertEquals(expected, json.toString(), false);
-
-            // add lock, expecting locked to be true
-            String fileId = FileInfo.computeFileId(doc, FILE_CONTENT_PROPERTY);
-            LockHelper.addLock(fileId, "wopiLock");
-            json = jsonAssert(doc, CtxBuilder.enrichDoc(WOPIJsonEnricher.NAME).get());
-
-            file = FileUtils.getResourceFileFromContext("json/testWOPIJsonEnricher-locked.json");
-            expected = readFile(file, toReplace);
             JSONAssert.assertEquals(expected, json.toString(), false);
         }
     }
@@ -147,14 +140,17 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
         toReplace.put(DOC_ID_VAR, doc.getId());
 
         try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            // document not locked
             doc = joeSession.getDocument(doc.getRef());
-            JsonAssert json = jsonAssert(doc, CtxBuilder.enrichDoc(WOPIJsonEnricher.NAME).get());
+            JsonAssert json = jsonAssert(doc, getRenderingContext());
 
             File file = FileUtils.getResourceFileFromContext("json/testMultipleBlobsWOPIJsonEnricher.json");
             String expected = readFile(file, toReplace);
             JSONAssert.assertEquals(expected, json.toString(), false);
         }
+    }
+
+    protected RenderingContext getRenderingContext() {
+        return CtxBuilder.properties(FILE_SCHEMA, FILES_SCHEMA).enrich("blob", WOPIJsonEnricher.NAME).get();
     }
 
     protected void setPermission(DocumentModel doc, String permission) {
