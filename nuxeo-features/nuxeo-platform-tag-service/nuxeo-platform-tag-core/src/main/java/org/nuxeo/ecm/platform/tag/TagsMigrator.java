@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -223,8 +224,16 @@ public class TagsMigrator extends AbstractRepositoryMigrator {
     protected void addTags(CoreSession session, String docId, Set<Tag> tags) {
         DocumentModel doc;
         try {
+            if (StringUtils.isEmpty(docId)) {
+                log.warn("TagsRelationsToFacetsMigrator : docId found null in addTags");
+                // ignore null docId
+                return;
+            }
             doc = session.getDocument(new IdRef(docId));
-        } catch (DocumentNotFoundException e) {
+        } catch (DocumentNotFoundException | IllegalArgumentException e) {
+            if (e instanceof IllegalArgumentException) {
+                log.warn("TagsRelationsToFacetsMigrator : Ignoring document leading to Illegal Argument and reference docId=" + docId, e);
+            }
             // ignore document that was already removed, or whose type is unknown
             return;
         }
