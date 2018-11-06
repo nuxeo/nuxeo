@@ -301,7 +301,7 @@ public class WebActionsBean implements WebActions, Serializable {
         if (category != null && category.equals(MAIN_TABS_CATEGORY) && tabId != null
                 && currentTabActions.getCurrentTabIds() != null
                 && !tabId.equals(getCurrentTabId(MAIN_TABS_CATEGORY))) {
-            Events.instance().raiseEvent(EventNames.MAIN_TABS_CHANGED);
+            Events.instance().raiseEvent(EventNames.MAIN_TAB_CHANGED);
         }
         currentTabActions.setCurrentTabId(actionManager, createActionContext(), category, tabId, subTabIds);
         // additional cleanup of this cache
@@ -319,7 +319,7 @@ public class WebActionsBean implements WebActions, Serializable {
     public void setCurrentTabIds(String tabIds) {
         if (tabIds != null && tabIds.startsWith(MAIN_TABS_CATEGORY) && currentTabActions.getCurrentTabIds() != null
                 && !currentTabActions.getCurrentTabIds().startsWith(tabIds)) {
-            Events.instance().raiseEvent(EventNames.MAIN_TABS_CHANGED);
+            Events.instance().raiseEvent(EventNames.MAIN_TAB_CHANGED);
         }
         currentTabActions.setCurrentTabIds(actionManager, createActionContext(), tabIds);
         // reset subtabs just in case

@@ -192,7 +192,7 @@ public final class EventNames {
     /**
      * @since 10.3
      */
-    public static final String MAIN_TABS_CHANGED = "mainTabsChanged";
+    public static final String MAIN_TAB_CHANGED = "mainTabChanged";
 
     // Constant utility class.
     private EventNames() {

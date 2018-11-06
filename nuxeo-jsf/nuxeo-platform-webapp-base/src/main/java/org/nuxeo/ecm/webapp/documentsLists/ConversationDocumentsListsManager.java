@@ -88,9 +88,9 @@ public class ConversationDocumentsListsManager extends BaseDocumentsListsManager
      *
      * @since 10.3
      */
-    @Observer(value = { EventNames.MAIN_TABS_CHANGED }, create = false)
+    @Observer(value = { EventNames.MAIN_TAB_CHANGED }, create = false)
     public void refreshListsOnMainTabsChanged() {
-        refreshLists(EventNames.MAIN_TABS_CHANGED);
+        refreshLists(EventNames.MAIN_TAB_CHANGED);
     }
 
     /**
