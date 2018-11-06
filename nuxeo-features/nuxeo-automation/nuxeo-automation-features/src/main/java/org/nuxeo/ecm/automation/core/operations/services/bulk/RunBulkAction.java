@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -38,6 +40,8 @@ import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 
 /**
+ * Automation operation that can run an http enabled Bulk Action.
+ *
  * @since 10.2
  */
 @Operation(id = RunBulkAction.ID, category = Constants.CAT_SERVICES, label = "Run a bulk command", addToStudio = true, description = "Run a bulk action on a set of documents expressed by a NXQL.")
@@ -76,10 +80,10 @@ public class RunBulkAction {
     public Blob run() throws IOException {
 
         if (!admin.getActions().contains(action)) {
-            throw new NuxeoException("The operation does not exist");
+            throw new NuxeoException("Action '" + action + "' not found", HttpServletResponse.SC_NOT_FOUND);
         }
         if (!admin.isHttpEnabled(action) && !session.getPrincipal().isAdministrator()) {
-            throw new NuxeoException("The operation is not accessible");
+            throw new NuxeoException("Action '" + action + "' denied", HttpServletResponse.SC_FORBIDDEN);
         }
 
         String userName = session.getPrincipal().getName();

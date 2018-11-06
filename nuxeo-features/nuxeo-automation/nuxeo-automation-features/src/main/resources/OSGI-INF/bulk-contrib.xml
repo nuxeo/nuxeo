@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.automation.features.bulk" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.bulk.config</require>
+
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="automation" bucketSize="100" batchSize="10" httpEnabled="true" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="automation"
+      class="org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkAction" logConfig="bulk"
+      defaultConcurrency="2" defaultPartitions="2" />
+  </extension>
+
+</component>
