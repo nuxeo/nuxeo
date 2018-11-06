@@ -47,6 +47,7 @@ import org.nuxeo.elasticsearch.Timestamp;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.lib.stream.computation.ComputationContext;
+import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
 
@@ -63,19 +64,14 @@ public class IndexRequestComputation extends AbstractBulkComputation {
 
     protected static final String INDEX_OPTION = "indexName";
 
-    protected final boolean continueOnFailure;
-
-    protected boolean abort;
-
     protected BulkRequest bulkRequest;
 
     protected List<BulkRequest> bulkRequests = new ArrayList<>();
 
     protected String bucketKey;
 
-    public IndexRequestComputation(boolean continueOnFailure) {
-        super(ACTION_NAME);
-        this.continueOnFailure = continueOnFailure;
+    public IndexRequestComputation(ComputationPolicy policy) {
+        super(ACTION_NAME, 1, policy);
     }
 
     @Override
@@ -97,10 +93,7 @@ public class IndexRequestComputation extends AbstractBulkComputation {
                                                                          .versionType(VersionType.EXTERNAL)
                                                                          .version(now));
             } catch (IOException e) {
-                log.error("Cannot build source for document: " + doc.getId(), e);
-                if (!continueOnFailure) {
-                    abort = true;
-                }
+                throw new NuxeoException("Cannot build source for document: " + doc.getId(), e);
             }
         }
     }
@@ -122,11 +115,6 @@ public class IndexRequestComputation extends AbstractBulkComputation {
 
     @Override
     public void endBucket(ComputationContext context, int bucketSize) {
-        if (abort) {
-            context.askForTermination();
-            log.error("Terminate computation due to previous error");
-            return;
-        }
         bulkRequests.add(bulkRequest);
         String commandId = getCurrentCommand().getId();
         int i = 0;

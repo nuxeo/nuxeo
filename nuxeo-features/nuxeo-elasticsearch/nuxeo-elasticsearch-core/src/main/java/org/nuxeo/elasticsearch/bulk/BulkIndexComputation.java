@@ -46,6 +46,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
+import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
 
@@ -67,6 +68,10 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
 
     protected final boolean continueOnFailure;
 
+    protected final int retries;
+
+    protected final long backoffDelayMs;
+
     protected BulkProcessor bulkProcessor;
 
     protected Codec<DataBucket> codec;
@@ -75,9 +80,12 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
 
     protected volatile boolean abort;
 
-    public BulkIndexComputation(boolean continueOnFailure, int esBulkSize, int esBulkActions, int flushInterval) {
-        super(NAME, 1, 1);
-        this.continueOnFailure = continueOnFailure;
+    public BulkIndexComputation(ComputationPolicy policy, int esBulkSize, int esBulkActions, int flushInterval) {
+        // Retries is handled at the elasticsearch bulk processor
+        super(NAME, 1, 1, ComputationPolicy.NONE);
+        this.continueOnFailure = policy.isSkipFailure();
+        this.retries = policy.getRetryPolicy().getMaxRetries();
+        this.backoffDelayMs = policy.getRetryPolicy().getDelay().toMillis();
         this.esBulkSize = esBulkSize;
         this.esBulkActions = esBulkActions;
         this.flushIntervalMs = flushInterval * 1000;
@@ -92,7 +100,8 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
                                      .setBulkSize(new ByteSizeValue(esBulkSize, ByteSizeUnit.BYTES))
                                      .setBulkActions(esBulkActions)
                                      .setBackoffPolicy(
-                                             BackoffPolicy.exponentialBackoff(TimeValue.timeValueSeconds(1), 3))
+                                             BackoffPolicy.exponentialBackoff(TimeValue.timeValueMillis(backoffDelayMs),
+                                                     retries))
                                      .build();
         codec = BulkCodecs.getDataBucketCodec();
         context.setTimer("flush", System.currentTimeMillis() + flushIntervalMs);
