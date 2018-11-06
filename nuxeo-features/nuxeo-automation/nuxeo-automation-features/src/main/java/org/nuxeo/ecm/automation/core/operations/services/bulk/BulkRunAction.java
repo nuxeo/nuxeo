@@ -44,8 +44,8 @@ import org.nuxeo.ecm.core.bulk.message.BulkCommand;
  *
  * @since 10.2
  */
-@Operation(id = RunBulkAction.ID, category = Constants.CAT_SERVICES, label = "Run a bulk command", addToStudio = true, description = "Run a bulk action on a set of documents expressed by a NXQL.")
-public class RunBulkAction {
+@Operation(id = BulkRunAction.ID, category = Constants.CAT_SERVICES, label = "Run a bulk command", addToStudio = true, description = "Run a bulk action on a set of documents expressed by a NXQL.")
+public class BulkRunAction {
 
     public static final String ID = "Bulk.RunAction";
 

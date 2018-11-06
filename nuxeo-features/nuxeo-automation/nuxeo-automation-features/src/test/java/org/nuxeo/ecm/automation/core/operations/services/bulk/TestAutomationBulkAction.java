@@ -78,7 +78,7 @@ public class TestAutomationBulkAction {
         actionParams.put(AutomationBulkAction.OPERATION_ID, "Document.Update");
         actionParams.put(AutomationBulkAction.OPERATION_PARAMETERS, automationParams);
 
-        // param for the automation RunBulkAction operation
+        // param for the automation BulkRunAction operation
         Map<String, Serializable> bulkActionParam = new HashMap<>();
         String nxql = "SELECT * FROM Document";
         bulkActionParam.put("action", AutomationBulkAction.ACTION_NAME);
@@ -88,7 +88,7 @@ public class TestAutomationBulkAction {
         bulkActionParam.put("parameters", actionParams);
 
         OperationContext ctx = new OperationContext(session);
-        Blob runResult = (Blob) service.run(ctx, RunBulkAction.ID, bulkActionParam);
+        Blob runResult = (Blob) service.run(ctx, BulkRunAction.ID, bulkActionParam);
 
         assertNotNull(runResult);
         // runResult is a json containing commandId

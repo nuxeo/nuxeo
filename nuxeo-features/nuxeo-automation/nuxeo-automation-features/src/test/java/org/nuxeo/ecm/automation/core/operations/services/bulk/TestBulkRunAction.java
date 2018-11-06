@@ -60,7 +60,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Deploy("org.nuxeo.ecm.automation.features")
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class, cleanup = Granularity.CLASS)
-public class TestRunBulkAction {
+public class TestBulkRunAction {
 
     @Inject
     protected CoreSession session;
@@ -97,7 +97,7 @@ public class TestRunBulkAction {
         actionParams.put("cpx:complex", complex);
         params.put("parameters", actionParams);
 
-        Blob runResult = (Blob) service.run(ctx, RunBulkAction.ID, params);
+        Blob runResult = (Blob) service.run(ctx, BulkRunAction.ID, params);
 
         assertNotNull(runResult);
         // runResult is a json containing commandId
