@@ -40,12 +40,16 @@ public class TestWOPIDiscovery {
 
     protected static Map<String, String> EXPECTED_WORD_ACTIONS = new HashMap<>();
 
+    protected static Map<String, String> EXPECTED_WORDPDF_ACTIONS = new HashMap<>();
+
     static {
         EXPECTED_EXCEL_ACTIONS.put("view", "xlsx");
         EXPECTED_EXCEL_ACTIONS.put("edit", "xlsx");
 
         EXPECTED_WORD_ACTIONS.put("view", "docx");
         EXPECTED_WORD_ACTIONS.put("edit", "rtf");
+
+        EXPECTED_WORDPDF_ACTIONS.put("view", "pdf");
     }
 
     @Test
@@ -55,10 +59,11 @@ public class TestWOPIDiscovery {
         assertNotNull(discovery);
         List<WOPIDiscovery.App> apps = discovery.getNetZone().getApps();
         assertNotNull(apps);
-        assertEquals(2, apps.size());
+        assertEquals(3, apps.size());
 
         checkApp(apps.get(0), "Excel", EXPECTED_EXCEL_ACTIONS);
         checkApp(apps.get(1), "Word", EXPECTED_WORD_ACTIONS);
+        checkApp(apps.get(2), "WordPdf", EXPECTED_WORDPDF_ACTIONS);
     }
 
     protected void checkApp(WOPIDiscovery.App app, String expectedAppName, Map<String, String> expectedActions) {

@@ -10,6 +10,9 @@
       <action name="view" ext="docx" default="true" urlsrc="https://word-view.officeapps-df.live.com/wv/wordviewerframe.aspx?&lt;ui=UI_LLCC&amp;&gt;&lt;rs=DC_LLCC&amp;&gt;&lt;dchat=DISABLE_CHAT&amp;&gt;&lt;hid=HOST_SESSION_ID&amp;&gt;&lt;showpagestats=PERFSTATS&amp;&gt;&lt;IsLicensedUser=BUSINESS_USER&amp;&gt;&lt;actnavid=ACTIVITY_NAVIGATION_ID&amp;&gt;" />
       <action name="edit" ext="rtf" requires="locks,update" urlsrc="https://word-edit.officeapps-df.live.com/we/wordeditorframe.aspx?&lt;ui=UI_LLCC&amp;&gt;&lt;rs=DC_LLCC&amp;&gt;&lt;dchat=DISABLE_CHAT&amp;&gt;&lt;hid=HOST_SESSION_ID&amp;&gt;&lt;showpagestats=PERFSTATS&amp;&gt;&lt;IsLicensedUser=BUSINESS_USER&amp;&gt;&lt;actnavid=ACTIVITY_NAVIGATION_ID&amp;&gt;" />
     </app>
+    <app name="WordPdf" favIconUrl="https://word-view.officeapps-df.live.com/wv/resources/1033/FavIcon_Word.ico" checkLicense="true">
+      <action name="view" ext="pdf" default="true" urlsrc="https://word-view.officeapps-df.live.com/wv/wordviewerframe.aspx?PdfMode=1&amp;&lt;ui=UI_LLCC&amp;&gt;&lt;rs=DC_LLCC&amp;&gt;&lt;dchat=DISABLE_CHAT&amp;&gt;&lt;hid=HOST_SESSION_ID&amp;&gt;&lt;showpagestats=PERFSTATS&amp;&gt;"/>
+    </app>
   </net-zone>
   <proof-key
     oldmodulus="u/ppb/da4jeKQ+XzKr69VJTqR7wgQp2jzDIaEPQVzfwod+pc1zvO7cwjNgfzF/KQGkltoOi9KdtMzR0qmX8C5wZI6wGpS8S4pTFAZPhXg5w4EpyR8fAagrnlOgaVLs0oX5UuBqKndCQyM7Vj5nFd+r53giS0ch7zDW0uB1G+ZWqTZ1TwbtV6dmlpVuJYeIPonOJgo2iuh455KuS2gvxZKOKR27Uq7W949oM8sqRjvfaVf4xDmyor++98XX0zadnf4pMWfPr3XE+bCXtB9jIPAxxMrALf5ncNRhnx0Wyf8zfM7Rfq+omp/HxCgusF5MC2/Ffnn7me/628zzioAMy5pQ=="

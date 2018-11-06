@@ -56,8 +56,11 @@ public class TestWOPIService {
         assertEquals("Excel", wopiServiceImpl.extensionAppNames.get("xlsx"));
         assertEquals("Word", wopiServiceImpl.extensionAppNames.get("docx"));
         assertEquals("Word", wopiServiceImpl.extensionAppNames.get("rtf"));
+        // extensions not supported by WOPI
         assertNull(wopiServiceImpl.extensionAppNames.get("png"));
         assertNull(wopiServiceImpl.extensionAppNames.get("bin"));
+        // extension not supported by Nuxeo
+        assertNull(wopiServiceImpl.extensionAppNames.get("pdf"));
         // proof keys
         assertNotNull(wopiServiceImpl.proofKey);
         assertNotNull(wopiServiceImpl.oldProofKey);
@@ -70,8 +73,13 @@ public class TestWOPIService {
         assertNull(wopiService.getActionURL(blob, "view"));
         assertNull(wopiService.getActionURL(blob, "edit"));
 
-        // unsupported extension
+        // extension not supported by WOPI
         blob.setFilename("file.txt");
+        assertNull(wopiService.getActionURL(blob, "view"));
+        assertNull(wopiService.getActionURL(blob, "edit"));
+
+        // extension not supported by Nuxeo
+        blob.setFilename("file.pdf");
         assertNull(wopiService.getActionURL(blob, "view"));
         assertNull(wopiService.getActionURL(blob, "edit"));
 
@@ -95,8 +103,11 @@ public class TestWOPIService {
     @Test
     public void testGetWOPIBlobInfo() {
         Blob blob = createBlob("dummy content", null, null, "content.xlsx");
+        // extension not supported by WOPI
         Blob blobOne = createBlob("one", null, null, "one.bin");
-        Blob blobTwo = createBlob("two", null, null, "two.rtf");
+        // extension not supported by Nuxeo
+        Blob blobTwo = createBlob("two", null, null, "two.pdf");
+        Blob blobThree = createBlob("three", null, null, "three.rtf");
 
         WOPIBlobInfo info = wopiService.getWOPIBlobInfo(blob);
         assertEquals("Excel", info.appName);
@@ -105,8 +116,9 @@ public class TestWOPIService {
         assertTrue(info.actions.contains("edit"));
 
         assertNull(wopiService.getWOPIBlobInfo(blobOne));
+        assertNull(wopiService.getWOPIBlobInfo(blobTwo));
 
-        info = wopiService.getWOPIBlobInfo(blobTwo);
+        info = wopiService.getWOPIBlobInfo(blobThree);
         assertEquals("Word", info.appName);
         assertEquals(1, info.actions.size());
         assertTrue(info.actions.contains("edit"));

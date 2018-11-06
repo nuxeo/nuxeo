@@ -19,12 +19,15 @@
 
 package org.nuxeo.wopi;
 
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
@@ -33,8 +36,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * @since 10.3
@@ -46,6 +51,10 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     public static final String WOPI_DIR = "wopi";
 
     public static final String DISCOVERY_XML = "discovery.xml";
+
+    public static final String WOPI_PROPERTY_NAMESPACE = "org.nuxeo.wopi";
+
+    public static final String SUPPORTED_APP_NAMES_PROPERTY_KEY = "supportedAppNames";
 
     // extension => app name
     protected Map<String, String> extensionAppNames = new HashMap<>();
@@ -67,13 +76,25 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         }
 
         WOPIDiscovery discovery = WOPIDiscovery.read(discoveryPath.toFile());
-        discovery.getNetZone().getApps().forEach(this::registerApp);
+        List<String> supportedAppNames = getSupportedAppNames();
+        discovery.getNetZone().getApps().stream().filter(app -> supportedAppNames.contains(app.getName())).forEach(
+                this::registerApp);
 
         WOPIDiscovery.ProofKey pk = discovery.getProofKey();
         proofKey = ProofKeyHelper.getPublicKey(pk.getModulus(), pk.getExponent());
         oldProofKey = ProofKeyHelper.getPublicKey(pk.getOldModulus(), pk.getOldExponent());
         log.debug("Registered proof key: {}", proofKey);
         log.debug("Registered old proof key: {}", oldProofKey);
+    }
+
+    protected List<String> getSupportedAppNames() {
+        Serializable supportedAppNames = Framework.getService(ConfigurationService.class)
+                                                  .getProperties(WOPI_PROPERTY_NAMESPACE)
+                                                  .get(SUPPORTED_APP_NAMES_PROPERTY_KEY);
+        if (!(supportedAppNames instanceof String[])) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList((String[]) supportedAppNames);
     }
 
     protected void registerApp(WOPIDiscovery.App app) {

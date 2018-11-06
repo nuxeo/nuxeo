@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.wopi.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.wopi.supportedAppNames" list="true">Word</property>
+    <property name="org.nuxeo.wopi.supportedAppNames">Excel</property>
+    <property name="org.nuxeo.wopi.supportedAppNames">PowerPoint</property>
+    <property name="org.nuxeo.wopi.supportedAppNames">WopiTest</property>
+  </extension>
+
+</component>
