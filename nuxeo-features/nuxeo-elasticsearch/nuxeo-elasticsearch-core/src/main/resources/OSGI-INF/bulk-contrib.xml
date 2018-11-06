@@ -15,9 +15,12 @@
       <!-- concurrency to execute indexing requests -->
       <computation name="bulkIndex" concurrency="2" />
       <computation name="indexCompletion" concurrency="1" />
-      <!-- what to do on failure -->
+      <!-- retries on failure with back off -->
+      <option name="maxRetries">3</option>
+      <option name="backoffDelayMs">1000</option>
+      <option name="backoffMaxDelayMs">10000</option>
+      <!-- what to do after failure on retries -->
       <option name="continueOnFailure">false</option>
-
       <!-- optimal size of the elasticsearch bulk request -->
       <option name="esBulkSizeBytes">5242880</option>
       <!-- max number of actions in the elasticsearch bulk request -->
