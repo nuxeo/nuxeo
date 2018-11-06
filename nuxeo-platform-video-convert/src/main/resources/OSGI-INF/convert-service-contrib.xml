@@ -13,6 +13,8 @@
       <sourceMimeType>video/x-ms-asf</sourceMimeType>
       <sourceMimeType>video/x-msvideo</sourceMimeType>
       <sourceMimeType>video/flv</sourceMimeType>
+      <sourceMimeType>application/gxf</sourceMimeType>
+      <sourceMimeType>application/mxf</sourceMimeType>
       <destinationMimeType>image/jpeg</destinationMimeType>
     </converter>
 
@@ -25,6 +27,8 @@
       <sourceMimeType>video/x-ms-asf</sourceMimeType>
       <sourceMimeType>video/x-msvideo</sourceMimeType>
       <sourceMimeType>video/flv</sourceMimeType>
+      <sourceMimeType>application/gxf</sourceMimeType>
+      <sourceMimeType>application/mxf</sourceMimeType>
       <destinationMimeType>image/jpeg</destinationMimeType>
     </converter>
 
@@ -37,6 +41,8 @@
       <sourceMimeType>video/x-ms-asf</sourceMimeType>
       <sourceMimeType>video/x-msvideo</sourceMimeType>
       <sourceMimeType>video/flv</sourceMimeType>
+      <sourceMimeType>application/gxf</sourceMimeType>
+      <sourceMimeType>application/mxf</sourceMimeType>
       <destinationMimeType>video/webm</destinationMimeType>
       <parameters>
         <parameter name="CommandLineName">ffmpeg-towebm</parameter>
@@ -55,6 +61,8 @@
       <sourceMimeType>video/x-ms-asf</sourceMimeType>
       <sourceMimeType>video/x-msvideo</sourceMimeType>
       <sourceMimeType>video/flv</sourceMimeType>
+      <sourceMimeType>application/gxf</sourceMimeType>
+      <sourceMimeType>application/mxf</sourceMimeType>
       <destinationMimeType>video/mp4</destinationMimeType>
       <parameters>
         <parameter name="CommandLineName">ffmpeg-tomp4</parameter>
@@ -73,6 +81,8 @@
       <sourceMimeType>video/x-ms-asf</sourceMimeType>
       <sourceMimeType>video/x-msvideo</sourceMimeType>
       <sourceMimeType>video/flv</sourceMimeType>
+      <sourceMimeType>application/gxf</sourceMimeType>
+      <sourceMimeType>application/mxf</sourceMimeType>
       <destinationMimeType>video/ogg</destinationMimeType>
       <parameters>
         <parameter name="CommandLineName">ffmpeg-toogg</parameter>
@@ -91,6 +101,8 @@
       <sourceMimeType>video/x-ms-asf</sourceMimeType>
       <sourceMimeType>video/x-msvideo</sourceMimeType>
       <sourceMimeType>video/flv</sourceMimeType>
+      <sourceMimeType>application/gxf</sourceMimeType>
+      <sourceMimeType>application/mxf</sourceMimeType>
       <destinationMimeType>video/x-msvideo</destinationMimeType>
       <parameters>
         <parameter name="CommandLineName">ffmpeg-toavi</parameter>
