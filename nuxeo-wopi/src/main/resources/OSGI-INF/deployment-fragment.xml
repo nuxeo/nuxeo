@@ -18,6 +18,21 @@
       <servlet-name>Nuxeo WOPI Servlet</servlet-name>
       <url-pattern>/wopi/*</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+      <servlet-name>Nuxeo WOPI JAXRS Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.webengine.app.jersey.WebEngineServlet
+      </servlet-class>
+      <init-param>
+        <param-name>application.name</param-name>
+        <param-value>wopi</param-value>
+      </init-param>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo WOPI JAXRS Servlet</servlet-name>
+      <url-pattern>/site/wopi/*</url-pattern>
+    </servlet-mapping>
   </extension>
 
   <extension target="web#STD-AUTH-FILTER">

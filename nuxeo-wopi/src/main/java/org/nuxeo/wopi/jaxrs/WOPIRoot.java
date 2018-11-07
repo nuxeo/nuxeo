@@ -50,7 +50,7 @@ import org.nuxeo.wopi.lock.LockHelper;
 /**
  * @since 10.3
  */
-@Path("/wopi")
+@Path("/")
 @WebObject(type = "wopi")
 public class WOPIRoot extends ModuleRoot {
 
@@ -94,8 +94,8 @@ public class WOPIRoot extends ModuleRoot {
         String accessToken = request.getParameter(Constants.ACCESS_TOKEN_PARAMETER);
         String url = String.format("%s%s?%s", VirtualHostHelper.getServerURL(request),
                 request.getRequestURI().substring(1), request.getQueryString());
-        if (!Framework.getService(WOPIService.class).verifyProofKey(proofKeyHeader, oldProofKeyHeader, url, accessToken,
-                timestampHeader)) {
+        if (!Framework.getService(WOPIService.class)
+                      .verifyProofKey(proofKeyHeader, oldProofKeyHeader, url, accessToken, timestampHeader)) {
             throw new InternalServerErrorException();
         }
     }

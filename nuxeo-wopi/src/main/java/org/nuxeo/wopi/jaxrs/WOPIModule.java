@@ -19,24 +19,25 @@
 
 package org.nuxeo.wopi.jaxrs;
 
-import java.io.Serializable;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.nuxeo.ecm.webengine.app.WebEngineModule;
+import org.nuxeo.ecm.webengine.model.io.BlobWriter;
+
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 /**
- * Custom object returned by WOPI endpoints wrapping a Map object to make it writable.
- *
  * @since 10.3
  */
-public class WOPIMap {
+public class WOPIModule extends WebEngineModule {
 
-    protected final Map<String, Serializable> map;
-
-    protected WOPIMap(Map<String, Serializable> map) {
-        this.map = map;
+    @Override
+    public Set<Object> getSingletons() {
+        Set<Object> result = new HashSet<>();
+        result.add(new BlobWriter());
+        result.add(new JacksonJsonProvider());
+        result.add(new WOPIExceptionMapper());
+        return result;
     }
-
-    public static WOPIMap of(Map<String, Serializable> map) {
-        return new WOPIMap(map);
-    }
-
 }

@@ -21,7 +21,6 @@ package org.nuxeo.wopi.jaxrs;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
 
 import org.nuxeo.wopi.exception.WOPIException;
 
@@ -30,7 +29,6 @@ import org.nuxeo.wopi.exception.WOPIException;
  *
  * @since 10.3
  */
-@Provider
 public class WOPIExceptionMapper implements ExceptionMapper<WOPIException> {
 
     @Override
