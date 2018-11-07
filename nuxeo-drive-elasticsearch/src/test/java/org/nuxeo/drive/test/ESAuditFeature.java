@@ -55,20 +55,27 @@ public class ESAuditFeature implements RunnerFeature {
     @Override
     public void initialize(FeaturesRunner runner) {
         runner.getFeature(TransactionalFeature.class).addWaiter(duration -> {
-            long deadline = duration.toMillis() + System.currentTimeMillis();
+            // Wait for audit completion
+            long before = System.currentTimeMillis();
             if (!Framework.getService(AuditLogger.class).await(duration.toMillis(), TimeUnit.MILLISECONDS)) {
                 return false;
             }
+            // compute remaining duration
+            long elapsed = System.currentTimeMillis() - before;
+            duration = duration.minusMillis(elapsed);
+
+            // Wait for ES indexing
             ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
             if (esa == null) {
                 return true;
             }
-            // Wait for indexing
+
             try {
-                esa.prepareWaitForIndexing().get(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                esa.prepareWaitForIndexing().get(duration.toMillis(), TimeUnit.MILLISECONDS);
             } catch (ExecutionException | TimeoutException cause) {
                 return false;
             }
+
             // Explicit refresh
             esa.refresh();
             // Explicit refresh for the audit index until it is handled by esa.refresh
