@@ -61,7 +61,7 @@ public class TestRestorationFromDirectoryAuditStorage {
         String testEventId = "testEventId";
         int nbEntries = 5000;
 
-        QueryBuilder queryBuilder = new AuditQueryBuilder().predicates(Predicates.eq(LOG_EVENT_ID, testEventId));
+        QueryBuilder queryBuilder = new AuditQueryBuilder().predicate(Predicates.eq(LOG_EVENT_ID, testEventId));
 
         ObjectMapper mapper = new ObjectMapper();
         List<String> jsonEntries = new ArrayList<>();

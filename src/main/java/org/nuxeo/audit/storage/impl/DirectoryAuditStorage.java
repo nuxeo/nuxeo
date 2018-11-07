@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CursorService;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
@@ -108,9 +109,11 @@ public class DirectoryAuditStorage implements AuditStorage {
         // Get the predicates filter map from the query builder.
         Map<String, Serializable> filter = new HashMap<>();
         Set<String> fulltext = null;
-        MultiExpression predicate = (MultiExpression) queryBuilder.predicate();
-        @SuppressWarnings("unchecked")
-        List<Predicate> predicateList = (List<Predicate>) ((List<?>) predicate.values);
+        MultiExpression multiExpr = queryBuilder.predicate();
+        if (multiExpr.operator != Operator.AND) {
+            throw new NuxeoException("Operator not supported: " + multiExpr.operator);
+        }
+        List<Predicate> predicateList = multiExpr.predicates;
         for (Predicate p : predicateList) {
             String rvalue;
             if (p.rvalue instanceof StringLiteral) {
