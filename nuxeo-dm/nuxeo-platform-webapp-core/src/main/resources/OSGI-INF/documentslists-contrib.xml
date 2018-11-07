@@ -31,7 +31,7 @@
       <events>
         <event>folderishDocumentSelectionChanged</event>
         <event>searchPerformed</event>
-        <event>mainTabChanged</event>
+        <event>mainTabsChanged</event>
       </events>
       <isSession>false</isSession>
     </documentsList>
