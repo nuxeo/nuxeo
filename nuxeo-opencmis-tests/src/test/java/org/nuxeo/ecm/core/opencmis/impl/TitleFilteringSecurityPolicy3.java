@@ -67,7 +67,7 @@ public class TitleFilteringSecurityPolicy3 extends TitleFilteringSecurityPolicy 
             } else {
                 predicate = new Predicate(NO_SECRET_TITLE, Operator.AND, where.predicate);
             }
-            return query.withPredicate(predicate);
+            return query.withWhereExpression(predicate);
         }
     }
 
