@@ -75,6 +75,7 @@ public class DocumentsListsService extends DefaultComponent {
         oldDescriptor.setDefaultInCategory(newContrib.getDefaultInCategory());
         oldDescriptor.setIsSession(newContrib.getIsSession());
         oldDescriptor.setPersistent(newContrib.getPersistent());
+        oldDescriptor.setEvenstName(newContrib.getEventsName());
         if (newContrib.getImageURL() != null) {
             oldDescriptor.setImageURL(newContrib.getImageURL());
         }

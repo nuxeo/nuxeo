@@ -84,6 +84,16 @@ public class ConversationDocumentsListsManager extends BaseDocumentsListsManager
     }
 
     /**
+     * Refresh lists when main tab is changed
+     *
+     * @since 10.3
+     */
+    @Observer(value = { EventNames.MAIN_TABS_CHANGED }, create = false)
+    public void refreshListsOnMainTabsChanged() {
+        refreshLists(EventNames.MAIN_TABS_CHANGED);
+    }
+
+    /**
      * @since 5.6
      */
     public void refreshLists(String eventName, DocumentModel selectedDocument) {
@@ -92,6 +102,17 @@ public class ConversationDocumentsListsManager extends BaseDocumentsListsManager
             return;
         }
 
+        refreshLists(eventName);
+
+        lastDocumentRef = selectedDocument.getRef();
+    }
+
+    /**
+     * Refresh lists for the event in parameter
+     *
+     * @since 10.3
+     */
+    protected void refreshLists(String eventName) {
         if (!documentsLists_events.containsKey(eventName)) {
             return;
         }
@@ -103,8 +124,6 @@ public class ConversationDocumentsListsManager extends BaseDocumentsListsManager
                 notifyListUpdated(listName);
             }
         }
-
-        lastDocumentRef = selectedDocument.getRef();
     }
 
     /**
