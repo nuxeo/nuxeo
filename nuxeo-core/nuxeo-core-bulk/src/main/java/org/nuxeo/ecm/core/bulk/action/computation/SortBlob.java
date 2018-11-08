@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.core.bulk.action.computation.ZipBlob.ZIP_PARAMETER;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.io.IOUtils;
@@ -79,7 +80,7 @@ public class SortBlob extends AbstractTransientBlobComputation {
             IOUtils.copy(is, os);
             os.write(in.getFooter());
             os.flush();
-            tmpBlob.getFile().delete();
+            Files.delete(tmpBlob.getFile().toPath());
         } catch (IOException e) {
             log.error("Unable to copy header/footer", e);
         }

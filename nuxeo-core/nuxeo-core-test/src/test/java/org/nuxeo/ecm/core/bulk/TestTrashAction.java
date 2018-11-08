@@ -25,8 +25,8 @@ import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_TRASHED;
 import static org.nuxeo.ecm.core.bulk.action.TrashAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
-import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.created_non_proxy;
-import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.created_total;
+import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_NON_PROXY;
+import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_TOTAL;
 import static org.nuxeo.ecm.core.trash.PropertyTrashService.SYSPROP_IS_TRASHED;
 
 import java.time.Duration;
@@ -105,7 +105,7 @@ public class TestTrashAction {
         BulkStatus status = service.getStatus(commandId);
         assertNotNull(status);
         assertEquals(COMPLETED, status.getState());
-        assertEquals(created_total, status.getProcessed());
+        assertEquals(CREATED_TOTAL, status.getProcessed());
 
         txFeature.nextTransaction();
 
@@ -115,7 +115,7 @@ public class TestTrashAction {
 
         eventService.waitForAsyncCompletion();
 
-        assertEquals(created_non_proxy, listener.count);
+        assertEquals(CREATED_NON_PROXY, listener.count);
 
         eventService.removeEventListener(listener);
     }
