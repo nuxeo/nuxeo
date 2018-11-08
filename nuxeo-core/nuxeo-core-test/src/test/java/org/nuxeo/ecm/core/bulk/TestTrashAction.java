@@ -112,6 +112,9 @@ public class TestTrashAction {
         for (DocumentModel descendant : session.query(nxql)) {
             assertEquals(TRUE, session.getDocumentSystemProp(descendant.getRef(), SYSPROP_IS_TRASHED, Boolean.class));
         }
+
+        eventService.waitForAsyncCompletion();
+
         assertEquals(created_non_proxy, listener.count);
 
         eventService.removeEventListener(listener);
