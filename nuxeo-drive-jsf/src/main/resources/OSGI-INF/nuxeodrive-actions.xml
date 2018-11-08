@@ -30,6 +30,9 @@
 
     <action id="driveEdit" link="#{nuxeoDriveActions.driveEditURL}"
       order="200" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
+      <properties>
+        <property name="target">_top</property>
+      </properties>
       <category>BLOB_ACTIONS</category>
       <filter-id>has_one_auth_token</filter-id>
       <filter-id>can_drive_edit</filter-id>
@@ -38,6 +41,9 @@
 
     <action id="driveEditListing" link="#{nuxeoDriveActions.getDriveEditURL(actionContextDocument)}"
       order="200" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
+      <properties>
+        <property name="target">_top</property>
+      </properties>
       <category>BLOB_ACTIONS_LISTING</category>
       <filter-id>has_one_auth_token</filter-id>
       <filter-id>can_drive_edit</filter-id>
@@ -53,6 +59,9 @@
 
     <action id="infoViewDriveEdit" link="#{nuxeoDriveActions.driveEditURL}"
       order="50" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
+      <properties>
+        <property name="target">_top</property>
+      </properties>
       <category>INFO_VIEW_ACTIONS</category>
       <filter-id>has_one_auth_token</filter-id>
       <filter-id>can_drive_edit</filter-id>
