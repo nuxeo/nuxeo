@@ -21,10 +21,10 @@ package org.nuxeo.ecm.core.bulk;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.bulk.action.RemoveProxyAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.created_non_proxy;
 import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.created_proxy;
 import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.created_total;
-import static org.nuxeo.ecm.core.bulk.action.RemoveProxyAction.ACTION_NAME;
 
 import java.time.Duration;
 
@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -55,6 +56,9 @@ public class TestRemoveProxyAction {
 
     @Inject
     public CoreSession session;
+
+    @Inject
+    public TransactionalFeature txFeature;
 
     @Test
     public void testRemoveProxy() throws Exception {
@@ -76,6 +80,8 @@ public class TestRemoveProxyAction {
         assertNotNull(status);
         assertEquals(BulkStatus.State.COMPLETED, status.getState());
         assertEquals(created_total, status.getProcessed());
+
+        txFeature.nextTransaction();
 
         assertEquals(0, session.query(nxql + " and ecm:isProxy=1").size());
         assertEquals(created_non_proxy, session.query(nxql + " and ecm:isProxy=0").size());
