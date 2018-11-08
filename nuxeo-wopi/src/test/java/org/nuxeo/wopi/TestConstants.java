@@ -30,6 +30,8 @@ public class TestConstants {
 
     public static final String FILE_CONTENT_PROPERTY = "file:content";
 
+    public static final String FILES_FIRST_FILE_PROPERTY = "files:files/0/file";
+
     public static final String FILE_SCHEMA = "file";
 
     public static final String FILES_SCHEMA = "files";

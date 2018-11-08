@@ -68,6 +68,8 @@ public class Constants {
 
     public static final String OPERATION_UNLOCK = "Unlock";
 
+    public static final String OPERATION_UNLOCK_AND_RELOCK = "UnlockAndRelock";
+
     public static final String WOPI_JSP = "/wopi.jsp";
 
     public static final String WOPI_SERVLET_PATH = "wopi";

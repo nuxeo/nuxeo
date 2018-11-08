@@ -53,6 +53,7 @@ import static org.nuxeo.wopi.Constants.OPERATION_PUT_RELATIVE_FILE;
 import static org.nuxeo.wopi.Constants.OPERATION_REFRESH_LOCK;
 import static org.nuxeo.wopi.Constants.OPERATION_RENAME_FILE;
 import static org.nuxeo.wopi.Constants.OPERATION_UNLOCK;
+import static org.nuxeo.wopi.Constants.OPERATION_UNLOCK_AND_RELOCK;
 import static org.nuxeo.wopi.Constants.OWNER_ID;
 import static org.nuxeo.wopi.Constants.READ_ONLY;
 import static org.nuxeo.wopi.Constants.SHARE_URL;
@@ -233,7 +234,7 @@ public class FilesEndpoint extends DefaultObject {
         case GET_SHARE_URL:
             return getShareUrl();
         case LOCK:
-            return lock();
+            return lockOrUnlockAndRelock();
         case PUT_RELATIVE:
             return putRelativeFile();
         case REFRESH_LOCK:
@@ -248,28 +249,23 @@ public class FilesEndpoint extends DefaultObject {
     }
 
     /**
-     * Implements the Lock operation.
+     * Implements the Lock and UnlockAndRelock operations.
      * <p>
-     * See <a href="https://wopirest.readthedocs.io/en/latest/files/Lock.html"></a>.
+     * See <a href="https://wopirest.readthedocs.io/en/latest/files/Lock.html">Lock</a> and
+     * <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/UnlockAndRelock.html">UnlockAndRelock</a>.
      */
-    protected Object lock() {
+    protected Object lockOrUnlockAndRelock() {
         String lock = getHeader(OPERATION_LOCK, LOCK);
         String oldLock = getHeader(OPERATION_LOCK, OLD_LOCK, true);
-        logRequest(OPERATION_LOCK, LOCK, lock, OLD_LOCK, oldLock);
+        return StringUtils.isEmpty(oldLock) ? lock(lock) : unlockAndRelock(lock, oldLock);
+    }
 
+    protected Object lock(String lock) {
+        logRequest(OPERATION_LOCK, LOCK, lock);
         boolean isLocked = doc.isLocked();
         // document not locked or locked with another WOPI lock
         if (!isLocked || LockHelper.hasOtherLock(fileId)) {
             logCondition("Document isn't locked or has another WOPI lock");
-            if (!StringUtils.isEmpty(oldLock)) {
-                logCondition(() -> OLD_LOCK + " header is present");
-                // cannot unlock and relock
-                String lockHeader = "";
-                response.addHeader(LOCK, lockHeader);
-                logResponse(OPERATION_LOCK, CONFLICT.getStatusCode(), LOCK, lockHeader);
-                throw new ConflictException();
-            }
-
             checkWritePropertiesPermission(OPERATION_LOCK);
             // lock if needed
             if (!isLocked) {
@@ -285,29 +281,47 @@ public class FilesEndpoint extends DefaultObject {
             return Response.ok().build();
         }
 
+        logCondition("Document is locked and doesn't have another WOPI lock");
         String currentLock = getCurrentLock(OPERATION_LOCK);
-        if (StringUtils.isEmpty(oldLock)) {
-            logCondition(() -> OLD_LOCK + " header is not present");
-            if (lock.equals(currentLock)) {
-                logCondition(() -> LOCK + " header is equal to current WOPI lock"); // NOSONAR
-                // refresh lock
-                LockHelper.refreshLock(fileId);
-                String versionLabel = doc.getVersionLabel();
-                response.addHeader(ITEM_VERSION, versionLabel);
-                logResponse(OPERATION_LOCK, OK.getStatusCode(), ITEM_VERSION, versionLabel);
-                return Response.ok().build();
-            }
+        if (lock.equals(currentLock)) {
+            logCondition(() -> LOCK + " header is equal to current WOPI lock"); // NOSONAR
+            // refresh lock
+            LockHelper.refreshLock(fileId);
+            String versionLabel = doc.getVersionLabel();
+            response.addHeader(ITEM_VERSION, versionLabel);
+            logResponse(OPERATION_LOCK, OK.getStatusCode(), ITEM_VERSION, versionLabel);
+            return Response.ok().build();
         } else {
-            if (oldLock.equals(currentLock)) {
-                logCondition(() -> OLD_LOCK + " header is equal to current WOPI lock");
-                // unlock and relock
-                LockHelper.updateLock(fileId, lock);
-                logResponse(OPERATION_LOCK, OK.getStatusCode());
-                return Response.ok().build();
-            }
+            logCondition(() -> LOCK + " header is not equal to current WOPI lock");
+            return buildConflictResponse(OPERATION_LOCK, currentLock);
+        }
+    }
+
+    protected Object unlockAndRelock(String lock, String oldLock) {
+        logRequest(OPERATION_UNLOCK_AND_RELOCK, LOCK, lock, OLD_LOCK, oldLock);
+        boolean isLocked = doc.isLocked();
+        // document not locked
+        if (!isLocked) {
+            logCondition("Document isn't locked");
+            // cannot unlock and relock
+            String lockHeader = "";
+            response.addHeader(LOCK, lockHeader);
+            logResponse(OPERATION_UNLOCK_AND_RELOCK, CONFLICT.getStatusCode(), LOCK, lockHeader);
+            throw new ConflictException();
         }
 
-        return buildConflictResponse(OPERATION_LOCK, currentLock);
+        logCondition("Document is locked");
+        String currentLock = getCurrentLock(OPERATION_UNLOCK_AND_RELOCK);
+        if (oldLock.equals(currentLock)) {
+            logCondition(() -> OLD_LOCK + " header is equal to current WOPI lock");
+            // unlock and relock
+            LockHelper.updateLock(fileId, lock);
+            logResponse(OPERATION_UNLOCK_AND_RELOCK, OK.getStatusCode());
+            return Response.ok().build();
+        } else {
+            logCondition(() -> OLD_LOCK + " header is not equal to current WOPI lock");
+            return buildConflictResponse(OPERATION_UNLOCK_AND_RELOCK, currentLock);
+        }
     }
 
     /**
@@ -395,9 +409,10 @@ public class FilesEndpoint extends DefaultObject {
                 logResponse(operation, OK.getStatusCode());
             }
             return Response.ok().build();
+        } else {
+            logCondition(() -> LOCK + " header is not equal to current WOPI lock");
+            return buildConflictResponse(operation, currentLock);
         }
-
-        return buildConflictResponse(operation, currentLock);
     }
 
     /**
@@ -496,9 +511,10 @@ public class FilesEndpoint extends DefaultObject {
         if (lock.equals(currentLock)) {
             logCondition(() -> LOCK + " header is equal to current WOPI lock");
             return renameBlob(requestedName);
+        } else {
+            logCondition(() -> LOCK + " header is not equal to current WOPI lock");
+            return buildConflictResponse(OPERATION_RENAME_FILE, currentLock);
         }
-
-        return buildConflictResponse(OPERATION_RENAME_FILE, currentLock);
     }
 
     /**
@@ -585,9 +601,10 @@ public class FilesEndpoint extends DefaultObject {
         if (lock.equals(currentLock)) {
             logCondition(() -> LOCK + " header is equal to current WOPI lock");
             return updateBlob();
+        } else {
+            logCondition(() -> LOCK + " header is not equal to current WOPI lock");
+            return buildConflictResponse(OPERATION_PUT_FILE, currentLock);
         }
-
-        return buildConflictResponse(OPERATION_PUT_FILE, currentLock);
     }
 
     /**
