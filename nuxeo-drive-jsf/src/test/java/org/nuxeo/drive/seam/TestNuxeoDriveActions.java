@@ -18,18 +18,33 @@
  */
 package org.nuxeo.drive.seam;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.Collections;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
+import org.jboss.seam.mock.MockApplication;
+import org.jboss.seam.mock.MockExternalContext;
+import org.jboss.seam.mock.MockFacesContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -59,7 +74,7 @@ public class TestNuxeoDriveActions {
 
     @Before
     public void setUp() {
-        nuxeoDriveActions = new NuxeoDriveActions();
+        nuxeoDriveActions = new MockNuxeoDriveActions(session);
         principal = session.getPrincipal();
     }
 
@@ -86,6 +101,68 @@ public class TestNuxeoDriveActions {
         token = acquireToken("Nuxeo+Drive");
         assertTrue(nuxeoDriveActions.hasOneDriveToken(principal));
         revokeToken(token);
+    }
+
+    @Test
+    public void testGetDriveEditURL() {
+        /*
+        In the code we are testing, we have the following instructions to retrieve the current server URL:
+        ```
+        ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance()
+                                                                     .getExternalContext()
+                                                                     .getRequest();
+        String baseURL = VirtualHostHelper.getBaseURL(servletRequest).replaceFirst("://", "/");
+        ```
+        While testing, there is no relevant context, which results in a NullPointerException.
+        To prevent this, we are mocking the objects so that the execution of this snippet results
+        in having the correct baseURL.
+        */
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getServerName()).thenReturn("localhost");
+        when(request.getServerPort()).thenReturn(8080);
+        when(request.getScheme()).thenReturn("http");
+
+        MockExternalContext externalContext = new MockExternalContext();
+        externalContext.setRequest(request);
+        MockFacesContext facesContext = new MockFacesContext(externalContext, new MockApplication());
+        facesContext.setCurrent();
+
+        session.createDocument(session.createDocumentModel("/", "foo", "Folder"));
+        DocumentModel doc = session.createDocumentModel("/foo", "bar", "File");
+
+        Blob mainBlob = new StringBlob("bla bla bla");
+        mainBlob.setFilename("bla.odt");
+        Blob secondBlob = new StringBlob("bli bli bli");
+        secondBlob.setFilename("bli.odt");
+
+        doc.setPropertyValue("file:content", (Serializable) mainBlob);
+        doc.setPropertyValue(
+            "files:files", (Serializable) Collections.singletonList(Collections.singletonMap("file", secondBlob)));
+        doc = session.createDocument(doc);
+
+        String mainBlobURL = nuxeoDriveActions.getDriveEditURL(doc);
+        String expectedMainBlobURL = String.format(
+            "nxdrive://edit/http/localhost:8080/nuxeo/user/Administrator/repo/test/nxdocid/%s/filename/bla.odt/downloadUrl/nxfile/test/%s/blobholder:0/bla.odt", doc.getId(), doc.getId());
+        assertEquals(expectedMainBlobURL, mainBlobURL);
+
+        String secondBlobURL = nuxeoDriveActions.getDriveEditURL(doc, "files:files/0/file");
+        String expectedSecondBlobURL = String.format(
+            "nxdrive://edit/http/localhost:8080/nuxeo/user/Administrator/repo/test/nxdocid/%s/filename/bli.odt/downloadUrl/nxfile/test/%s/files:files/0/file/bli.odt", doc.getId(), doc.getId());
+        assertEquals(expectedSecondBlobURL, secondBlobURL);
+
+        try {
+            String invalidXPath = nuxeoDriveActions.getDriveEditURL(doc, "files:files/1/file");
+            fail("There is no blob at this xPath");
+        } catch (Exception e) {
+            assertTrue(e instanceof PropertyNotFoundException);
+        }
+
+        try {
+            String nullXPath = nuxeoDriveActions.getDriveEditURL(doc, null);
+            fail("The xPath should not be null");
+        } catch (Exception e) {
+            assertTrue(e instanceof PropertyNotFoundException);
+        }
     }
 
     protected String acquireToken(String applicationName) {

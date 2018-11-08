@@ -60,6 +60,7 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -175,6 +176,10 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return getFileSystemItem(doc) != null;
     }
 
+    public boolean canEditBlob(DocumentModel doc, String xPath) {
+        return canEditDocument(doc) && doc.getPropertyValue(xPath) instanceof Blob;
+    }
+
     public boolean hasOneDriveToken(Principal user) throws UnsupportedEncodingException {
         TokenAuthenticationService tokenService = Framework.getService(TokenAuthenticationService.class);
         for (DocumentModel token : tokenService.getTokenBindings(user.getName())) {
@@ -229,30 +234,50 @@ public class NuxeoDriveActions extends InputController implements Serializable {
             throw new NuxeoException(String.format("Document %s (%s) has no blob, cannot get Drive Edit URL.",
                     currentDocument.getPathAsString(), currentDocument.getId()));
         }
-        String fileName = blob.getFilename();
+        return getDriveEditURL(currentDocument, blob, null);
+    }
+
+    public String getDriveEditURL(DocumentModel doc, String xPath) {
+        if (doc == null) {
+            return null;
+        }
+
+        Object obj = doc.getPropertyValue(xPath);
+        if (!(obj instanceof Blob)) {
+            throw new NuxeoException(String.format(
+                "Property %s of document %s (%s) is not a blob, cannot get Drive Edit URL.",
+                xPath, doc.getPathAsString(), doc.getId()));
+        }
+        Blob blob = (Blob) obj;
+
+        return getDriveEditURL(doc, blob, xPath);
+    }
+
+    public String getDriveEditURL(DocumentModel doc, Blob blob, String xPath) {
+        if (doc == null || blob == null) {
+            return null;
+        }
+
+        String editURL = "%s://%s/%suser/%s/repo/%s/nxdocid/%s/filename/%s/downloadUrl/%s";
         ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance()
                                                                      .getExternalContext()
                                                                      .getRequest();
-        String baseURL = VirtualHostHelper.getBaseURL(servletRequest);
-        StringBuffer sb = new StringBuffer();
-        sb.append(NXDRIVE_PROTOCOL).append("://");
-        sb.append(PROTOCOL_COMMAND_EDIT).append("/");
-        sb.append(baseURL.replaceFirst("://", "/"));
-        sb.append("user/");
-        sb.append(documentManager.getPrincipal().getName());
-        sb.append("/");
-        sb.append("repo/");
-        sb.append(documentManager.getRepositoryName());
-        sb.append("/nxdocid/");
-        sb.append(currentDocument.getId());
-        sb.append("/filename/");
-        String escapedFilename = fileName.replaceAll("(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
-        sb.append(URIUtils.quoteURIPathComponent(escapedFilename, true));
-        sb.append("/downloadUrl/");
+        String baseURL = VirtualHostHelper.getBaseURL(servletRequest).replaceFirst("://", "/");
+
+        String user = documentManager.getPrincipal().getName();
+        String repo = documentManager.getRepositoryName();
+        String docId = doc.getId();
+        String filename = blob.getFilename();
+        filename = filename.replaceAll("(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
+        filename = URIUtils.quoteURIPathComponent(filename, true);
         DownloadService downloadService = Framework.getService(DownloadService.class);
-        String downloadUrl = downloadService.getDownloadUrl(currentDocument, DownloadService.BLOBHOLDER_0, "");
-        sb.append(downloadUrl);
-        return sb.toString();
+        if (xPath == null) {
+            xPath = DownloadService.BLOBHOLDER_0;
+        }
+        String downloadUrl = downloadService.getDownloadUrl(doc, xPath, filename);
+
+        return String.format(
+            editURL, NXDRIVE_PROTOCOL, PROTOCOL_COMMAND_EDIT, baseURL, user, repo, docId, filename, downloadUrl);
     }
 
     public String navigateToUserCenterNuxeoDrive() {
