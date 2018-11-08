@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.created_total;
+import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_TOTAL;
 import static org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.trash.PropertyTrashService.SYSPROP_IS_TRASHED;
@@ -80,7 +80,7 @@ public class TestSetSystemPropertiesAction {
         BulkStatus status = service.getStatus(commandId);
         assertNotNull(status);
         assertEquals(COMPLETED, status.getState());
-        assertEquals(created_total, status.getProcessed());
+        assertEquals(CREATED_TOTAL, status.getProcessed());
 
         txFeature.nextTransaction();
 

@@ -42,19 +42,21 @@ public class DocumentSetRepositoryInit extends DefaultRepositoryInit {
 
     public static final int DOC_BY_LEVEL = SIZE * 2;
 
-    public static int created_non_proxy;
+    public static final int CREATED_NON_PROXY;
 
-    public static int created_proxy;
+    public static final int CREATED_PROXY;
 
-    public static int created_total;
+    public static final int CREATED_TOTAL;
 
     static {
         // with SIZE = 3, 9 + 27 + 81 = 117 documents are created
+        int total = 0;
         for (int i = 1; i <= SIZE; i++) {
-            created_total += 3 * Math.pow(SIZE, i);
+            total += 3 * Math.pow(SIZE, i);
         }
-        created_proxy = created_total / 3;
-        created_non_proxy = created_total / 3 * 2;
+        CREATED_TOTAL = total;
+        CREATED_PROXY = total / 3;
+        CREATED_NON_PROXY = total / 3 * 2;
     }
 
     @Override

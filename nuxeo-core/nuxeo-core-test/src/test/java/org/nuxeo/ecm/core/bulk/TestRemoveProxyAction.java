@@ -21,10 +21,10 @@ package org.nuxeo.ecm.core.bulk;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_NON_PROXY;
+import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_PROXY;
+import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_TOTAL;
 import static org.nuxeo.ecm.core.bulk.action.RemoveProxyAction.ACTION_NAME;
-import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.created_non_proxy;
-import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.created_proxy;
-import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.created_total;
 
 import java.time.Duration;
 
@@ -66,8 +66,8 @@ public class TestRemoveProxyAction {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", model.getId());
 
-        assertEquals(created_proxy, session.query(nxql + " and ecm:isProxy=1").size());
-        assertEquals(created_non_proxy, session.query(nxql + " and ecm:isProxy=0").size());
+        assertEquals(CREATED_PROXY, session.query(nxql + " and ecm:isProxy=1").size());
+        assertEquals(CREATED_NON_PROXY, session.query(nxql + " and ecm:isProxy=0").size());
 
         String commandId = service.submit(
                 new BulkCommand.Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
@@ -79,12 +79,12 @@ public class TestRemoveProxyAction {
         BulkStatus status = service.getStatus(commandId);
         assertNotNull(status);
         assertEquals(BulkStatus.State.COMPLETED, status.getState());
-        assertEquals(created_total, status.getProcessed());
+        assertEquals(CREATED_TOTAL, status.getProcessed());
 
         txFeature.nextTransaction();
 
         assertEquals(0, session.query(nxql + " and ecm:isProxy=1").size());
-        assertEquals(created_non_proxy, session.query(nxql + " and ecm:isProxy=0").size());
+        assertEquals(CREATED_NON_PROXY, session.query(nxql + " and ecm:isProxy=0").size());
 
     }
 }
