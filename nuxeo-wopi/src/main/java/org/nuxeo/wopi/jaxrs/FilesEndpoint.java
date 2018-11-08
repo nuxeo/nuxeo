@@ -144,7 +144,7 @@ import org.nuxeo.wopi.lock.LockHelper;
 /**
  * Implementation of the Files endpoint.
  * <p>
- * See <a href="https://wopirest.readthedocs.io/en/latest/endpoints.html#files-endpoint"></a>.
+ * See <a href="https://wopirest.readthedocs.io/en/latest/endpoints.html#files-endpoint">Files endpoint</a>.
  *
  * @since 10.3
  */
@@ -190,7 +190,7 @@ public class FilesEndpoint extends DefaultObject {
     /**
      * Implements the CheckFileInfo operation.
      * <p>
-     * See <a href="https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html"></a>.
+     * See <a href="https://wopirest.readthedocs.io/en/latest/files/CheckFileInfo.html">CheckFileInfo</a>.
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -204,7 +204,7 @@ public class FilesEndpoint extends DefaultObject {
     /**
      * Implements the GetFile operation.
      * <p>
-     * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/GetFile.html"></a>.
+     * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/GetFile.html">GetFile</a>.
      */
     @GET
     @Path("contents")
@@ -341,7 +341,7 @@ public class FilesEndpoint extends DefaultObject {
     /**
      * Implements the GetLock operation.
      * <p>
-     * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/GetLock.html"></a>.
+     * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/GetLock.html">GetLock</a>.
      */
     protected Object getLock() {
         logRequest(OPERATION_GET_LOCK);
@@ -406,7 +406,8 @@ public class FilesEndpoint extends DefaultObject {
      * We do not handle any conflict or overwrite here. Nuxeo can have more than one document with the same title and
      * blob file name.
      * <p>
-     * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/PutRelativeFile.html"></a>.
+     * See
+     * <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/PutRelativeFile.html">PutRelativeFile</a>.
      */
     public Object putRelativeFile() {
         String suggestedTarget = getHeader(OPERATION_PUT_RELATIVE_FILE, SUGGESTED_TARGET, true);
@@ -476,7 +477,7 @@ public class FilesEndpoint extends DefaultObject {
     /**
      * Implements the RenameFile operation.
      * <p>
-     * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/RenameFile.html"></a>.
+     * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/RenameFile.html">RenameFile</a>.
      */
     @Produces(MediaType.APPLICATION_JSON)
     public Object renameFile() {
@@ -523,7 +524,7 @@ public class FilesEndpoint extends DefaultObject {
     /**
      * Implements the GetShareUrl operation.
      * <p>
-     * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/GetShareUrl.html"></a>.
+     * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/GetShareUrl.html">GetShareUrl</a>.
      */
     @Produces(MediaType.APPLICATION_JSON)
     public Object getShareUrl() {
@@ -559,7 +560,7 @@ public class FilesEndpoint extends DefaultObject {
     /**
      * Implements the PutFile operation.
      * <p>
-     * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/PutFile.html"></a>.
+     * See <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/PutFile.html">PutFile</a>.
      */
     public Object putFile() {
         checkWritePropertiesPermission(OPERATION_PUT_FILE);
@@ -626,7 +627,7 @@ public class FilesEndpoint extends DefaultObject {
     /**
      * Implements the Unlock operation.
      * <p>
-     * See <a href="https://wopirest.readthedocs.io/en/latest/files/Unlock.html"></a>.
+     * See <a href="https://wopirest.readthedocs.io/en/latest/files/Unlock.html">Unlock</a>.
      */
     protected Object unlock() {
         String lock = getHeader(OPERATION_UNLOCK, LOCK);
@@ -637,7 +638,7 @@ public class FilesEndpoint extends DefaultObject {
     /**
      * Implements the RefreshLock operation.
      * <p>
-     * See <a href="https://wopirest.readthedocs.io/en/latest/files/RefreshLock.html"></a>.
+     * See <a href="https://wopirest.readthedocs.io/en/latest/files/RefreshLock.html">RefreshLock</a>.
      */
     protected Object refreshLock() {
         String lock = getHeader(OPERATION_REFRESH_LOCK, LOCK);
