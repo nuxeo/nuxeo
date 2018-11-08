@@ -28,15 +28,14 @@
       </filter-id>
     </action>
 
-    <action id="driveEdit" link="#{nuxeoDriveActions.driveEditURL}"
+    <action id="driveEdit" link="#{nuxeoDriveActions.getDriveEditURL(document, blobXPath)}"
       order="200" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
       <properties>
         <property name="target">_top</property>
       </properties>
       <category>BLOB_ACTIONS</category>
       <filter-id>has_one_auth_token</filter-id>
-      <filter-id>can_drive_edit</filter-id>
-      <filter-id>isMainBlob</filter-id>
+      <filter-id>can_drive_edit_any</filter-id>
     </action>
 
     <action id="driveEditListing" link="#{nuxeoDriveActions.getDriveEditURL(actionContextDocument)}"
@@ -107,6 +106,15 @@
     <filter id="can_drive_edit">
       <rule grant="true">
         <condition>#{nuxeoDriveActions.canEditDocument(document)}</condition>
+      </rule>
+      <rule grant="false">
+        <facet>Collection</facet>
+      </rule>
+    </filter>
+
+    <filter id="can_drive_edit_any">
+      <rule grant="true">
+        <condition>#{nuxeoDriveActions.canEditBlob(document, blobXPath)}</condition>
       </rule>
       <rule grant="false">
         <facet>Collection</facet>
