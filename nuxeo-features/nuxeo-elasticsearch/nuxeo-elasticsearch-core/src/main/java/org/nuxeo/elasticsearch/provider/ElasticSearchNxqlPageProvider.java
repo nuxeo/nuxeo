@@ -132,7 +132,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
     protected int getLimit() {
         int ret = (int) getMinMaxPageSize();
         if (ret == 0) {
-            ret = -1;
+            ret = (int) Long.min(getMaxResultWindow(), Integer.MAX_VALUE);
         }
         return ret;
     }

@@ -20,6 +20,7 @@
 package org.nuxeo.elasticsearch.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
@@ -942,6 +943,35 @@ public class TestPageProvider {
         pp.nextPage();
         Assert.assertFalse(pp.isNextPageAvailable());
         Assert.assertFalse(pp.isLastPageAvailable());
+    }
+
+    /**
+     * Testing an ES page provider when not specifying limit. This shouldn't crash and be boxed by
+     * {@link ElasticSearchNxqlPageProvider#ES_MAX_RESULT_WINDOW_PROPERTY}.
+     *
+     * @since 10.3
+     */
+    @Test
+    public void iCanPerformUnlimitedQuery() throws Exception {
+        // create 10 docs
+        startTransaction();
+        for (int i = 0; i < 10; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
+            doc.setPropertyValue("dc:title", "TestMe" + i);
+            doc = session.createDocument(doc);
+        }
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("NXQL_PP_UNLIMITED");
+        HashMap<String, Serializable> props = new HashMap<>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+        PageProvider<?> pp = pps.getPageProvider("NXQL_PP_UNLIMITED", ppdef, null, null, null, 0L, props);
+        List<?> page = pp.getCurrentPage();
+        // here we test that ES doesn't throw an exception + we're able to retrieve something
+        assertFalse(page.isEmpty());
     }
 
     protected void assertEqualsEvenUnderWindows(String expected, String actual) {
