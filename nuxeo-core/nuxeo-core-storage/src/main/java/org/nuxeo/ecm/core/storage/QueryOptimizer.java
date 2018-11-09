@@ -515,8 +515,6 @@ public abstract class QueryOptimizer {
 
     protected static class ProjectionWildcardsFinder extends DefaultQueryVisitor {
 
-        private static final long serialVersionUID = 1L;
-
         protected final Set<String> projectionWildcards = new HashSet<>();
 
         protected final Set<String> uncorrelatedProjectionWildcards = new HashSet<>();
@@ -615,8 +613,6 @@ public abstract class QueryOptimizer {
      * @since 9.3
      */
     public class ReferencePrefixAnalyzer extends DefaultQueryVisitor {
-
-        private static final long serialVersionUID = 1L;
 
         @Override
         public void visitReference(Reference node) {
