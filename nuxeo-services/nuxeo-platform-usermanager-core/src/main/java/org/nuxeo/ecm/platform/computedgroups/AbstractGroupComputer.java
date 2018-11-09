@@ -22,10 +22,15 @@ package org.nuxeo.ecm.platform.computedgroups;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
+import org.nuxeo.ecm.directory.BaseSession.FieldDetector;
+import org.nuxeo.ecm.directory.memory.MapExpressionEvaluator;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -60,6 +65,24 @@ public abstract class AbstractGroupComputer implements GroupComputer {
             }
         }
         return result;
+    }
+
+    @Override
+    public List<String> searchGroups(QueryBuilder queryBuilder) {
+        ArrayList<String> groupIds = new ArrayList<>();
+        String groupIdField = Framework.getService(UserManager.class).getGroupIdField();
+        List<String> allGroupIds = getAllGroupIds();
+        if (allGroupIds != null) {
+            MultiExpression expression = queryBuilder.predicate();
+            MapExpressionEvaluator evaluator = new MapExpressionEvaluator();
+            for (String groupId : allGroupIds) {
+                Map<String, Object> entry = Collections.singletonMap(groupIdField, groupId);
+                if (evaluator.matchesEntry(expression, entry)) {
+                    groupIds.add(groupId);
+                }
+            }
+        }
+        return groupIds;
     }
 
     /**

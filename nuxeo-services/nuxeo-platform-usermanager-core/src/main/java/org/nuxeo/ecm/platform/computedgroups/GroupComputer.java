@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 /**
@@ -64,6 +65,15 @@ public interface GroupComputer {
      * Searches for a group. (This method is used in particular from UI to search/select a group).
      */
     List<String> searchGroups(Map<String, Serializable> filter, Set<String> fulltext);
+
+    /**
+     * Searches for groups.
+     *
+     * @param queryBuilder the query
+     * @return the list of computed group ids
+     * @since 10.3
+     */
+    List<String> searchGroups(QueryBuilder queryBuilder);
 
     /**
      * Returns true if the given group exists.

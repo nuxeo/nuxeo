@@ -117,7 +117,7 @@ public class TestUserManagerWithContext extends UserManagerTestCase {
 
         DocumentModelList users = mtum.searchUsers("%%", null);
 
-        assertEquals(2, users.size());
+        assertEquals(3, users.size()); // including Guest
 
         DocumentModel fakeDoc = getContextDoc();
         users = mtum.searchUsers("Administrator", fakeDoc);

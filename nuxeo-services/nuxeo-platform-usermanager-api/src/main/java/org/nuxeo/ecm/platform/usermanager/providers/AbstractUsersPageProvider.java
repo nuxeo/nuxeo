@@ -128,7 +128,7 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
     }
 
     protected List<DocumentModel> searchAllUsers(UserManager userManager) {
-        return userManager.searchUsers(null);
+        return userManager.searchUsers((String) null);
     }
 
     protected List<DocumentModel> searchUsers(UserManager userManager) {
@@ -157,7 +157,7 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
     }
 
     protected void updateUserCatalog(UserManager userManager) {
-        DocumentModelList allUsers = userManager.searchUsers(null);
+        DocumentModelList allUsers = userManager.searchUsers((String) null);
         userCatalog = new HashMap<>();
         String userSortField = userManager.getUserSortField();
         for (DocumentModel user : allUsers) {

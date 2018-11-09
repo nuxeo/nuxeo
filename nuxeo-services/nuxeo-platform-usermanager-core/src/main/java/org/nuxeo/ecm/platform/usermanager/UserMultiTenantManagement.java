@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 
 /**
  * Implementations of this interface manages the multi-tenant behavior for UserManager. This class will be used to fetch
@@ -46,6 +47,14 @@ public interface UserMultiTenantManagement {
      * @param context that bring the tenant information
      */
     DocumentModel groupTransformer(UserManager um, DocumentModel group, DocumentModel context);
+
+    /**
+     * Transforms the query builder to add tenant-related information.
+     *
+     * @return the transformed query builder
+     * @since 10.3
+     */
+    QueryBuilder groupQueryTransformer(UserManager um, QueryBuilder queryBuilder, DocumentModel context);
 
     /**
      * Transform the GroupName to add to tenant characteristic.

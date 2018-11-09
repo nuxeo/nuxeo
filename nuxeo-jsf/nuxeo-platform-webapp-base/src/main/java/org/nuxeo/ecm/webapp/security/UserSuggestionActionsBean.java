@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
+import org.nuxeo.ecm.platform.computedgroups.UserManagerWithComputedGroups;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -136,7 +137,7 @@ public class UserSuggestionActionsBean implements Serializable {
                     filter.put(field, pattern);
                 }
                 if (Boolean.TRUE.equals(hideVirtualGroups)) {
-                    filter.put("__virtualGroup", false);
+                    filter.put(UserManagerWithComputedGroups.VIRTUAL_GROUP_MARKER, false);
                 }
 
                 for (DocumentModel group : userManager.searchGroups(filter, filter.keySet())) {

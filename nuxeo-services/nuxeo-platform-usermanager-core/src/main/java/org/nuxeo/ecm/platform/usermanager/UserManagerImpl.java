@@ -61,10 +61,22 @@ import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
+import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
+import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
+import org.nuxeo.ecm.directory.AbstractDirectory;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 import org.nuxeo.ecm.directory.BaseSession;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.memory.MemoryDirectoryExpressionEvaluator;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.InvalidPasswordException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
@@ -705,6 +717,21 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         return true;
     }
 
+    protected boolean isAnonymousMatching(QueryBuilder queryBuilder, Directory dir) {
+        String anonymousUserId = getAnonymousUserId();
+        if (anonymousUserId == null) {
+            return false;
+        }
+        MultiExpression expression = queryBuilder.predicate();
+        if (expression.predicates.isEmpty()) {
+            return true;
+        }
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        Map<String, Object> entry = (Map) anonymousUser.getProperties();
+        entry.put(userIdField, anonymousUserId);
+        return new MemoryDirectoryExpressionEvaluator(dir).matchesEntry(expression, entry);
+    }
+
     @Override
     public List<NuxeoPrincipal> searchPrincipals(String pattern) {
         DocumentModelList entries = searchUsers(pattern);
@@ -729,8 +756,18 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         return getDirectorySortMap(userSortField, userIdField);
     }
 
+    protected OrderByExpr getUserOrderBy() {
+        String sortField = StringUtils.defaultString(userSortField, userIdField);
+        return OrderByExprs.asc(sortField);
+    }
+
     protected Map<String, String> getGroupSortMap() {
         return getDirectorySortMap(groupSortField, groupIdField);
+    }
+
+    protected OrderByExpr getGroupOrderBy() {
+        String sortField = StringUtils.defaultString(groupSortField, groupIdField);
+        return OrderByExprs.asc(sortField);
     }
 
     protected Map<String, String> getDirectorySortMap(String descriptorSortField, String fallBackField) {
@@ -910,9 +947,53 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
     }
 
+    protected QueryBuilder getQueryForPattern(String pattern, String dirName, Map<String, MatchType> searchFields,
+            OrderByExpr orderBy) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        if (!StringUtils.isBlank(pattern)) {
+            // build query
+            pattern = pattern.trim().toLowerCase();
+            List<Predicate> predicates = new ArrayList<>();
+            for (Entry<String, MatchType> fieldEntry : searchFields.entrySet()) {
+                String key = fieldEntry.getKey();
+                Predicate predicate;
+                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
+                    Directory dir = dirService.getDirectory(dirName);
+                    SubstringMatchType substringMatchType = dir.getDescriptor().getSubstringMatchType();
+                    String value;
+                    switch (substringMatchType) {
+                    case subany:
+                        value = '%' + pattern + '%';
+                        break;
+                    case subinitial:
+                        value = pattern + '%';
+                        break;
+                    case subfinal:
+                        value = '%' + pattern;
+                        break;
+                    default:
+                        throw new IllegalStateException(substringMatchType.toString());
+                    }
+                    predicate = Predicates.ilike(key, value);
+                } else { // MatchType.EXACT
+                    predicate = Predicates.eq(key, pattern);
+                }
+                predicates.add(predicate);
+            }
+            queryBuilder.filter(new MultiExpression(Operator.OR, predicates));
+        }
+        queryBuilder.order(orderBy);
+        return queryBuilder;
+    }
+
     @Override
     public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext) {
         return searchGroups(filter, fulltext, null);
+    }
+
+    @Override
+    public DocumentModelList searchGroups(QueryBuilder queryBuilder) {
+        return searchGroups(queryBuilder, null);
     }
 
     @Override
@@ -923,6 +1004,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     @Override
     public DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext) {
         return searchUsers(filter, fulltext, getUserSortMap(), null);
+    }
+
+    @Override
+    public DocumentModelList searchUsers(QueryBuilder queryBuilder) {
+        return searchUsers(queryBuilder, null);
     }
 
     @Override
@@ -1003,32 +1089,72 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     @Override
     public DocumentModelList searchUsers(String pattern, DocumentModel context) {
-        DocumentModelList entries = new DocumentModelListImpl();
-        if (pattern == null || pattern.length() == 0) {
-            entries = searchUsers(Collections.<String, Serializable> emptyMap(), null);
-        } else {
-            pattern = pattern.trim();
-            Map<String, DocumentModel> uniqueEntries = new HashMap<>();
+        QueryBuilder queryBuilder = getQueryForPattern(pattern, userDirectoryName, userSearchFields, getUserOrderBy());
+        return searchUsers(queryBuilder, context);
+    }
 
-            for (Entry<String, MatchType> fieldEntry : userSearchFields.entrySet()) {
-                Map<String, Serializable> filter = new HashMap<>();
-                filter.put(fieldEntry.getKey(), pattern);
-                DocumentModelList fetchedEntries;
-                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
-                    fetchedEntries = searchUsers(filter, filter.keySet(), null, context);
-                } else {
-                    fetchedEntries = searchUsers(filter, null, null, context);
-                }
-                for (DocumentModel entry : fetchedEntries) {
-                    uniqueEntries.put(entry.getId(), entry);
-                }
+    @Override
+    public DocumentModelList searchUsers(QueryBuilder queryBuilder, DocumentModel context) {
+        Directory dir = dirService.getDirectory(userDirectoryName, context);
+        try (Session session = dir.getSession()) {
+            if (isAnonymousMatching(queryBuilder, dir)) {
+                DocumentModel anonymousEntry = makeVirtualUserEntry(getAnonymousUserId(), anonymousUser);
+                List<DocumentModel> virtualEntries = Collections.singletonList(anonymousEntry);
+                return queryWithVirtualEntries(session, queryBuilder, virtualEntries);
+            } else {
+                return session.query(queryBuilder, false);
             }
-            log.debug(String.format("found %d unique entries", uniqueEntries.size()));
-            entries.addAll(uniqueEntries.values());
         }
-        // sort
-        entries.sort(new DocumentModelComparator(userSchemaName, getUserSortMap()));
+    }
 
+    /**
+     * Executes a query then adds virtual entries (already supposed to match the query). Then does
+     * limit/offset/order/countTotal.
+     *
+     * @since 10.3
+     */
+    protected DocumentModelList queryWithVirtualEntries(Session session, QueryBuilder queryBuilder,
+            List<DocumentModel> virtualEntries) {
+        AbstractDirectory dir = (AbstractDirectory) ((BaseSession) session).getDirectory();
+
+        // do the basic query
+        DocumentModelList entries = session.query(queryBuilder, false);
+
+        int limit = Math.max(0, (int) queryBuilder.limit());
+        int offset = Math.max(0, (int) queryBuilder.offset());
+        boolean countTotal = queryBuilder.countTotal();
+        OrderByList orders = queryBuilder.orders();
+        int size = entries.size();
+        long totalSize = entries.totalSize();
+
+        // if we have all the results or a page small enough that all virtual entries fit, just add them
+        if (offset == 0 && (limit == 0 || size + virtualEntries.size() <= limit)) {
+            // add virtual entries
+            entries.addAll(virtualEntries);
+            if (totalSize >= 0) {
+                ((DocumentModelListImpl) entries).setTotalSize(totalSize + virtualEntries.size());
+            }
+            // re-sort
+            dir.orderEntries(entries, AbstractDirectory.makeOrderBy(orders));
+            return entries;
+        }
+
+        // else we have to do a manual paging/sorting...
+        // re-do the full query with limit/offset
+        queryBuilder = new QueryBuilder(queryBuilder).limit(0).offset(0).orders(Collections.emptyList());
+        entries = session.query(queryBuilder, false);
+        // add virtual entries
+        entries.addAll(virtualEntries);
+        // sort
+        if (!orders.isEmpty()) {
+            dir.orderEntries(entries, AbstractDirectory.makeOrderBy(orders));
+        }
+        // manual limit/offset
+        entries = ((BaseSession) session).applyQueryLimits(entries, limit, offset);
+        if (!countTotal) { // offset != 0 always here
+            // compat with other directories
+            ((DocumentModelListImpl) entries).setTotalSize(-2);
+        }
         return entries;
     }
 
@@ -1053,6 +1179,14 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         try (Session groupDir = dirService.open(groupDirectoryName, context)) {
             removeVirtualFilters(filter);
             return groupDir.query(filter, fulltextClone, getGroupSortMap(), false);
+        }
+    }
+
+    @Override
+    public DocumentModelList searchGroups(QueryBuilder queryBuilder, DocumentModel context) {
+        queryBuilder = multiTenantManagement.groupQueryTransformer(this, queryBuilder, context);
+        try (Session session = dirService.open(groupDirectoryName, context)) {
+            return session.query(queryBuilder, false);
         }
     }
 
@@ -1147,33 +1281,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     @Override
     public DocumentModelList searchGroups(String pattern, DocumentModel context) {
-        DocumentModelList entries = new DocumentModelListImpl();
-        if (pattern == null || pattern.length() == 0) {
-            entries = searchGroups(Collections.<String, Serializable> emptyMap(), null);
-        } else {
-            pattern = pattern.trim();
-            Map<String, DocumentModel> uniqueEntries = new HashMap<>();
-
-            for (Entry<String, MatchType> fieldEntry : groupSearchFields.entrySet()) {
-                Map<String, Serializable> filter = new HashMap<>();
-                filter.put(fieldEntry.getKey(), pattern);
-                DocumentModelList fetchedEntries;
-                if (fieldEntry.getValue() == MatchType.SUBSTRING) {
-                    fetchedEntries = searchGroups(filter, filter.keySet(), context);
-                } else {
-                    fetchedEntries = searchGroups(filter, null, context);
-                }
-                for (DocumentModel entry : fetchedEntries) {
-                    uniqueEntries.put(entry.getId(), entry);
-                }
-            }
-            log.debug(String.format("found %d unique group entries", uniqueEntries.size()));
-            entries.addAll(uniqueEntries.values());
-        }
-        // sort
-        entries.sort(new DocumentModelComparator(groupSchemaName, getGroupSortMap()));
-
-        return entries;
+        QueryBuilder queryBuilder = getQueryForPattern(pattern, groupDirectoryName, groupSearchFields,
+                getGroupOrderBy());
+        return searchGroups(queryBuilder, context);
     }
 
     @Override

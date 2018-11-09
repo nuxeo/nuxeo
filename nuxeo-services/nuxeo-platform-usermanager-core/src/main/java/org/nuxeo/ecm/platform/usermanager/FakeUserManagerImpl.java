@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.runtime.services.event.Event;
 
 /**
@@ -387,12 +388,22 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     @Override
+    public DocumentModelList searchGroups(QueryBuilder queryBuilder) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public DocumentModelList searchUsers(String pattern) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DocumentModelList searchUsers(QueryBuilder queryBuilder) {
         throw new UnsupportedOperationException();
     }
 

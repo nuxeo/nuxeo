@@ -58,7 +58,7 @@ public abstract class UserManagerTestCase {
 
     @After
     public void cleanup() {
-        DocumentModelList users = userManager.searchUsers(null);
+        DocumentModelList users = userManager.searchUsers((String) null);
         for (DocumentModel user : users) {
             String userId = user.getId();
             if (userId.equals(userManager.getAnonymousUserId())) {

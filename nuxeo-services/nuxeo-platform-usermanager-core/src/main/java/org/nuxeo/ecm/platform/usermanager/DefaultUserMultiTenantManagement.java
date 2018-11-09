@@ -29,6 +29,18 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
+import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.query.sql.model.Expression;
+import org.nuxeo.ecm.core.query.sql.model.IdentityQueryTransformer;
+import org.nuxeo.ecm.core.query.sql.model.Literal;
+import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
+import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
+import org.nuxeo.ecm.core.query.sql.model.Reference;
+import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
+import org.nuxeo.ecm.directory.BaseSession.FieldDetector;
 import org.nuxeo.ecm.directory.localconfiguration.DirectoryConfiguration;
 import org.nuxeo.runtime.api.Framework;
 
@@ -81,6 +93,93 @@ public class DefaultUserMultiTenantManagement implements UserMultiTenantManageme
 
         String filterIdValue = (String) filter.get(um.getGroupIdField());
         filter.put(groupId, filterIdValue + groupIdSuffix);
+    }
+
+    @Override
+    public QueryBuilder groupQueryTransformer(UserManager um, QueryBuilder queryBuilder, DocumentModel context) {
+        String suffix = getDirectorySuffix(context);
+        if (suffix == null) {
+            log.debug("No tenant configuration");
+            return queryBuilder;
+        }
+        queryBuilder = new QueryBuilder(queryBuilder); // copy
+        MultiExpression multiExpr = queryBuilder.predicate();
+        String groupIdField = um.getGroupIdField();
+        if (FieldDetector.hasField(multiExpr, groupIdField)) {
+            QueryTenantAdder qta = new QueryTenantAdder(groupIdField, suffix);
+            multiExpr = qta.transform(multiExpr);
+        }
+        Predicate predicate = Predicates.like(groupIdField, "%" + suffix); // filter for this tenant
+        queryBuilder.predicate(predicate).and(multiExpr);
+        return queryBuilder;
+    }
+
+    /**
+     * Changes group equality or difference matches to take into account a suffix.
+     * <p>
+     * Throws for any more complex query on groups.
+     *
+     * @since 10.3
+     */
+    public static class QueryTenantAdder extends IdentityQueryTransformer {
+
+        protected final String groupIdField;
+
+        protected final String suffix;
+
+        protected boolean isGroupPredicate;
+
+        public QueryTenantAdder(String groupIdField, String suffix) {
+            this.groupIdField = groupIdField;
+            this.suffix = suffix;
+        }
+
+        @Override
+        public Expression transform(Expression node) {
+            if (node.lvalue instanceof Reference && ((Reference) node.lvalue).name.equals(groupIdField)) {
+                if (node.operator == Operator.EQ || node.operator == Operator.NOTEQ || node.operator == Operator.IN
+                        || node.operator == Operator.NOTIN) {
+                    isGroupPredicate = true;
+                    node = super.transform(node);
+                    isGroupPredicate = false;
+                    return node;
+                }
+            }
+            return super.transform(node);
+        }
+
+        @Override
+        public Predicate transform(Predicate node) {
+            if (node.lvalue instanceof Reference && ((Reference) node.lvalue).name.equals(groupIdField)) {
+                if (node.operator == Operator.EQ || node.operator == Operator.NOTEQ || node.operator == Operator.IN
+                        || node.operator == Operator.NOTIN) {
+                    isGroupPredicate = true;
+                    node = super.transform(node);
+                    isGroupPredicate = false;
+                    return node;
+                }
+            }
+            return super.transform(node);
+        }
+
+        @Override
+        public Literal transform(StringLiteral node) {
+            if (!isGroupPredicate) {
+                return node;
+            }
+            return new StringLiteral(node.value + suffix);
+        }
+
+        @Override
+        public Reference transform(Reference node) {
+            if (isGroupPredicate) {
+                return node;
+            }
+            if (node.name.equals(groupIdField)) {
+                throw new QueryParseException("Cannot evaluate expression in multi-tenant mode");
+            }
+            return node;
+        }
     }
 
     @Override
