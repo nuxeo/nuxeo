@@ -7,10 +7,11 @@
     <directory name="multiOptional">
       <schema>schema3</schema>
       <idField>uid</idField>
-      <passwordField>thefoo</passwordField>
+      <passwordField>thepass</passwordField>
 
       <source name="source1" creation="true">
         <subDirectory name="dir1">
+          <field for="thepass">password</field>
           <field for="thefoo">foo</field>
           <optional>true</optional>
         </subDirectory>
@@ -28,10 +29,11 @@
     <directory name="multiOptionalInvalid">
       <schema>schema3</schema>
       <idField>uid</idField>
-      <passwordField>thefoo</passwordField>
+      <passwordField>thepass</passwordField>
 
       <source name="source1" creation="true">
         <subDirectory name="dir1">
+          <field for="thepass">password</field>
           <field for="thefoo">foo</field>
           <optional>true</optional>
         </subDirectory>

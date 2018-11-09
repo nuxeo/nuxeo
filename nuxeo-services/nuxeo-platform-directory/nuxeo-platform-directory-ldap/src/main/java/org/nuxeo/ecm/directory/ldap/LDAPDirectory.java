@@ -30,6 +30,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -70,6 +71,8 @@ public class LDAPDirectory extends AbstractDirectory {
     public static final String DN_SPECIAL_ATTRIBUTE_KEY = "dn";
 
     protected Properties contextProperties;
+
+    protected volatile SearchControls idSearchControls;
 
     // used in double-checked locking for lazy init
     protected volatile SearchControls searchControls;
@@ -126,6 +129,7 @@ public class LDAPDirectory extends AbstractDirectory {
         // register the search controls after having registered the references
         // since the list of attributes to fetch my depend on registered
         // LDAPReferences
+        idSearchControls = computeIdSearchControls();
         searchControls = computeSearchControls();
 
         log.debug(String.format("initialized LDAP directory %s with fields [%s] and references [%s]", getName(),
@@ -216,6 +220,17 @@ public class LDAPDirectory extends AbstractDirectory {
         return contextProperties;
     }
 
+    protected SearchControls computeIdSearchControls() {
+        LDAPDirectoryDescriptor desc = getDescriptor();
+        SearchControls scts = new SearchControls();
+        scts.setSearchScope(desc.getSearchScope());
+        String idAttr = fieldMapper.getBackendField(getIdField());
+        scts.setReturningAttributes(new String[] { idAttr });
+        scts.setCountLimit(desc.getQuerySizeLimit());
+        scts.setTimeLimit(desc.getQueryTimeLimit());
+        return scts;
+    }
+
     /**
      * Search controls that only fetch attributes defined by the schema
      *
@@ -263,6 +278,15 @@ public class LDAPDirectory extends AbstractDirectory {
         scts.setTimeLimit(ldapDirectoryDesc.getQueryTimeLimit());
 
         return scts;
+    }
+
+    /**
+     * Search controls that only fetch the id.
+     *
+     * @since 10.3
+     */
+    public SearchControls getIdSearchControls() {
+        return idSearchControls;
     }
 
     public SearchControls getSearchControls() {
@@ -332,6 +356,23 @@ public class LDAPDirectory extends AbstractDirectory {
         } else {
             return idFilter;
         }
+    }
+
+    public String addBaseFilter(String filter) {
+        List<String> filters = new ArrayList<>();
+        // NXP-2461: always add control on id field in base filter
+        String idFilter = '(' + getFieldMapper().getBackendField(getIdField()) + "=*)";
+        filters.add(idFilter);
+        if (StringUtils.isNotBlank(baseFilter)) {
+            if (!baseFilter.startsWith("(")) {
+                baseFilter = '(' + baseFilter + ')';
+            }
+            filters.add(baseFilter);
+        }
+        if (StringUtils.isNotBlank(filter)) {
+            filters.add(filter);
+        }
+        return "(&" + StringUtils.join(filters, "") + ')';
     }
 
     protected ContextProvider getTestServer() {

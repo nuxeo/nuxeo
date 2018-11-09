@@ -64,16 +64,18 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
+import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
 import org.nuxeo.ecm.directory.EntryAdaptor;
 import org.nuxeo.ecm.directory.PasswordHelper;
-import org.nuxeo.ecm.directory.Reference;
 
 /**
  * This class represents a session against an LDAPDirectory.
@@ -177,11 +179,11 @@ public class LDAPSession extends BaseSession {
                     attr.add(password);
                     attrs.put(attr);
                 } else if (getDirectory().isReference(fieldId)) {
-                    List<Reference> references = directory.getReferences(fieldId);
+                    List<org.nuxeo.ecm.directory.Reference> references = directory.getReferences(fieldId);
                     if (references.size() > 1) {
                         // not supported
                     } else {
-                        Reference reference = references.get(0);
+                        org.nuxeo.ecm.directory.Reference reference = references.get(0);
                         if (reference instanceof LDAPReference) {
                             attr = new BasicAttribute(((LDAPReference) reference).getStaticAttributeId());
                             attr.add(descriptor.getEmptyRefMarker());
@@ -538,6 +540,121 @@ public class LDAPSession extends BaseSession {
     }
 
     @Override
+    public DocumentModelList query(QueryBuilder queryBuilder, boolean fetchReferences) {
+        if (!hasPermission(SecurityConstants.READ)) {
+            return new DocumentModelListImpl();
+        }
+        if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
+            throw new DirectoryException("Cannot filter on password");
+        }
+        queryBuilder = addTenantId(queryBuilder);
+
+        // build filter from query
+        LDAPFilterBuilder builder = new LDAPFilterBuilder(getDirectory());
+        builder.walk(queryBuilder.predicate());
+        String filter = builder.filter.toString();
+        List<Serializable> filterParams = builder.params;
+        // add static filters
+        filter = getDirectory().addBaseFilter(filter);
+
+        int limit = Math.max(0, (int) queryBuilder.limit());
+        int offset = Math.max(0, (int) queryBuilder.offset());
+        boolean countTotal = queryBuilder.countTotal();
+        // TODO orderby using SortControl
+        OrderByList orders = queryBuilder.orders();
+        Map<String, String> orderBy = AbstractDirectory.makeOrderBy(orders);
+        SearchControls scts = getDirectory().getSearchControls(true);
+
+        if (log.isDebugEnabled()) {
+            log.debug(
+                    String.format("LDAPSession.query(...): LDAP search base='%s' filter='%s' args='%s' scope='%s' [%s]",
+                            searchBaseDn, filter, filterParams, scts.getSearchScope(), this));
+        }
+        try {
+            NamingEnumeration<SearchResult> results = getContext().search(searchBaseDn, filter, filterParams.toArray(),
+                    scts);
+            DocumentModelList entries = ldapResultsToDocumentModels(results, fetchReferences);
+            if (!orderBy.isEmpty()) {
+                getDirectory().orderEntries(entries, orderBy);
+            }
+            // TODO paging using PagedResultsControl
+            entries = applyQueryLimits(entries, limit, offset);
+            if ((limit != 0 || offset != 0) && !countTotal) {
+                // compat with other directories
+                ((DocumentModelListImpl) entries).setTotalSize(-2);
+            }
+            return entries;
+        } catch (NameNotFoundException nnfe) {
+            // sometimes ActiveDirectory have some query fail with:
+            // LDAP: error code 32 - 0000208D: NameErr: DSID-031522C9, problem 2001 (NO_OBJECT).
+            // To keep the application usable return no results instead of crashing but log the error
+            // so that the AD admin can fix the issue.
+            log.error("Unexpected response from server while performing query: " + nnfe.getMessage(), nnfe);
+            return new DocumentModelListImpl();
+        } catch (LimitExceededException e) {
+            throw new org.nuxeo.ecm.directory.SizeLimitExceededException(e);
+        } catch (NamingException e) {
+            throw new DirectoryException("executeQuery failed", e);
+        }
+    }
+
+    @Override
+    public List<String> queryIds(QueryBuilder queryBuilder) {
+        if (!hasPermission(SecurityConstants.READ)) {
+            return Collections.emptyList();
+        }
+        if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
+            throw new DirectoryException("Cannot filter on password");
+        }
+        queryBuilder = addTenantId(queryBuilder);
+
+        // build filter from query
+        LDAPFilterBuilder builder = new LDAPFilterBuilder(getDirectory());
+        builder.walk(queryBuilder.predicate());
+        String filter = builder.filter.toString();
+        List<Serializable> filterParams = builder.params;
+        // add static filters
+        filter = getDirectory().addBaseFilter(filter);
+
+        int limit = Math.max(0, (int) queryBuilder.limit());
+        int offset = Math.max(0, (int) queryBuilder.offset());
+        // TODO orderby using SortControl
+        OrderByList orders = queryBuilder.orders();
+        boolean order = !orders.isEmpty();
+        SearchControls scts = order ? getDirectory().getSearchControls(true) : getDirectory().getIdSearchControls();
+
+        if (log.isDebugEnabled()) {
+            log.debug(
+                    String.format("LDAPSession.query(...): LDAP search base='%s' filter='%s' args='%s' scope='%s' [%s]",
+                            searchBaseDn, filter, filterParams, scts.getSearchScope(), this));
+        }
+        try {
+            NamingEnumeration<SearchResult> results = getContext().search(searchBaseDn, filter, filterParams.toArray(),
+                    scts);
+            List<String> ids = new ArrayList<>();
+            DocumentModelList entries = ldapResultsToDocumentModels(results, false);
+            // order entries if needed
+            if (order) {
+                getDirectory().orderEntries(entries, AbstractDirectory.makeOrderBy(orders));
+            }
+            entries.forEach(doc -> ids.add(doc.getId()));
+            // TODO paging using PagedResultsControl
+            return applyQueryLimits(ids, limit, offset);
+        } catch (NameNotFoundException nnfe) {
+            // sometimes ActiveDirectory have some query fail with:
+            // LDAP: error code 32 - 0000208D: NameErr: DSID-031522C9, problem 2001 (NO_OBJECT).
+            // To keep the application usable return no results instead of crashing but log the error
+            // so that the AD admin can fix the issue.
+            log.error("Unexpected response from server while performing query: " + nnfe.getMessage(), nnfe);
+            return Collections.emptyList();
+        } catch (LimitExceededException e) {
+            throw new org.nuxeo.ecm.directory.SizeLimitExceededException(e);
+        } catch (NamingException e) {
+            throw new DirectoryException("executeQuery failed", e);
+        }
+    }
+
+    @Override
     public void close() {
         try {
             getContext().close();
@@ -752,11 +869,11 @@ public class LDAPSession extends BaseSession {
             return null;
         }
         for (String fieldName : directory.getSchemaFieldMap().keySet()) {
-            List<Reference> references = directory.getReferences(fieldName);
+            List<org.nuxeo.ecm.directory.Reference> references = directory.getReferences(fieldName);
             if (references != null && references.size() > 0) {
                 if (fetchReferences) {
                     Map<String, List<String>> referencedIdsMap = new HashMap<>();
-                    for (Reference reference : references) {
+                    for (org.nuxeo.ecm.directory.Reference reference : references) {
                         // reference resolution
                         List<String> referencedIds;
                         if (reference instanceof LDAPReference) {

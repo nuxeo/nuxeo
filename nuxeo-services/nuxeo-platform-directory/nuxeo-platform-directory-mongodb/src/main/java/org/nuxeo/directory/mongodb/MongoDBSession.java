@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -44,11 +45,19 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.query.sql.model.Expression;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.core.storage.State;
+import org.nuxeo.ecm.core.storage.mongodb.MongoDBAbstractQueryBuilder;
+import org.nuxeo.ecm.core.storage.mongodb.MongoDBConverter;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
@@ -62,6 +71,7 @@ import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
@@ -416,6 +426,159 @@ public class MongoDBSession extends BaseSession {
     }
 
     @Override
+    public DocumentModelList query(QueryBuilder queryBuilder, boolean fetchReferences) {
+        if (!hasPermission(SecurityConstants.READ)) {
+            return new DocumentModelListImpl();
+        }
+        if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
+            throw new DirectoryException("Cannot filter on password");
+        }
+        queryBuilder = addTenantId(queryBuilder);
+
+        MongoDBConverter converter = new MongoDBConverter();
+        MongoDBDirectoryQueryBuilder builder = new MongoDBDirectoryQueryBuilder(converter, queryBuilder.predicate());
+        builder.walk();
+        Document filter = builder.getQuery();
+        int limit = Math.max(0, (int) queryBuilder.limit());
+        int offset = Math.max(0, (int) queryBuilder.offset());
+        boolean countTotal = queryBuilder.countTotal();
+        // we should also use getDirectory().getDescriptor().getQuerySizeLimit() like in SQL
+        Document sort = builder.walkOrderBy(queryBuilder.orders());
+
+        DocumentModelListImpl entries = new DocumentModelListImpl();
+
+        // use a MongoCursor instead of a simple MongoIterable to avoid fetching everything at once
+        try (MongoCursor<Document> cursor = getCollection().find(filter)
+                                                           .limit(limit)
+                                                           .skip(offset)
+                                                           .sort(sort)
+                                                           .iterator()) {
+            for (Document doc : (Iterable<Document>) () -> cursor) {
+                if (!readAllColumns) {
+                    // remove password from results
+                    doc.remove(getPasswordField());
+                }
+                State state = converter.bsonToState(doc);
+                Map<String, Object> fieldMap = new HashMap<>();
+                for (Entry<String, Serializable> es : state.entrySet()) {
+                    fieldMap.put(es.getKey(), es.getValue());
+                }
+                DocumentModel docModel = fieldMapToDocumentModel(fieldMap);
+
+                if (fetchReferences) {
+                    Map<String, List<String>> targetIdsMap = new HashMap<>();
+                    for (Reference reference : directory.getReferences()) {
+                        List<String> targetIds;
+                        if (reference instanceof MongoDBReference) {
+                            MongoDBReference mongoReference = (MongoDBReference) reference;
+                            targetIds = mongoReference.getTargetIdsForSource(docModel.getId(), this);
+                        } else {
+                            targetIds = reference.getTargetIdsForSource(docModel.getId());
+                        }
+                        targetIds = new ArrayList<>(targetIds);
+                        Collections.sort(targetIds);
+                        String fieldName = reference.getFieldName();
+                        targetIdsMap.computeIfAbsent(fieldName, key -> new ArrayList<>()).addAll(targetIds);
+                    }
+                    for (Entry<String, List<String>> entry : targetIdsMap.entrySet()) {
+                        String fieldName = entry.getKey();
+                        List<String> targetIds = entry.getValue();
+                        docModel.setProperty(schemaName, fieldName, targetIds);
+                    }
+                }
+                entries.add(docModel);
+            }
+        }
+        if (limit != 0 || offset != 0) {
+            long count;
+            if (countTotal) {
+                // we have to do an additional query to count the total number of results
+                count = getCollection().count(filter);
+            } else {
+                count = -2; // unknown
+            }
+            entries.setTotalSize(count);
+        }
+        return entries;
+    }
+
+    @Override
+    public List<String> queryIds(QueryBuilder queryBuilder) {
+        if (!hasPermission(SecurityConstants.READ)) {
+            return Collections.emptyList();
+        }
+        if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
+            throw new DirectoryException("Cannot filter on password");
+        }
+        queryBuilder = addTenantId(queryBuilder);
+
+        MongoDBConverter converter = new MongoDBConverter();
+        MongoDBDirectoryQueryBuilder builder = new MongoDBDirectoryQueryBuilder(converter, queryBuilder.predicate());
+        builder.walk();
+        Document filter = builder.getQuery();
+        String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
+        Document projection = new Document(idFieldName, 1L);
+        int limit = Math.max(0, (int) queryBuilder.limit());
+        int offset = Math.max(0, (int) queryBuilder.offset());
+        // we should also use getDirectory().getDescriptor().getQuerySizeLimit() like in SQL
+        Document sort = builder.walkOrderBy(queryBuilder.orders());
+
+        List<String> ids = new ArrayList<>();
+
+        // use a MongoCursor instead of a simple MongoIterable to avoid fetching everything at once
+        try (MongoCursor<Document> cursor = getCollection().find(filter)
+                                                           .projection(projection)
+                                                           .limit(limit)
+                                                           .skip(offset)
+                                                           .sort(sort)
+                                                           .iterator()) {
+            for (Document doc : (Iterable<Document>) () -> cursor) {
+                State state = converter.bsonToState(doc);
+                String id = getIdFromState(state);
+                ids.add(id);
+            }
+        }
+        return ids;
+    }
+
+    /**
+     * MongoDB Query Builder that knows how to resolved directory properties.
+     *
+     * @since 10.3
+     */
+    public class MongoDBDirectoryQueryBuilder extends MongoDBAbstractQueryBuilder {
+
+        public MongoDBDirectoryQueryBuilder(MongoDBConverter converter, Expression expression) {
+            super(converter, expression);
+        }
+
+        @Override
+        protected FieldInfo walkReference(String name) {
+            Field field = directory.getSchemaFieldMap().get(name);
+            if (field == null) {
+                throw new QueryParseException("No column: " + name + " for directory: " + getDirectory().getName());
+            }
+            String key = field.getName().getPrefixedName();
+            String queryField = stripElemMatchPrefix(key);
+            return new FieldInfo(name, queryField, key, field.getType(), false);
+        }
+
+        protected Document walkOrderBy(OrderByList orderByList) {
+            if (orderByList.isEmpty()) {
+                return null;
+            }
+            Document orderBy = new Document();
+            for (OrderByExpr ob : orderByList) {
+                String field = walkReference(ob.reference).queryField;
+                if (!orderBy.containsKey(field)) {
+                    orderBy.put(field, ob.isDescending ? MINUS_ONE : ONE);
+                }
+            }
+            return orderBy;
+        }
+    }
+
+    @Override
     public void close() {
         getDirectory().removeSession(this);
     }
@@ -485,6 +648,14 @@ public class MongoDBSession extends BaseSession {
         }
         String id = String.valueOf(fieldMap.get(idFieldName));
         return createEntryModel(null, schemaName, id, fieldMap, isReadOnly());
+    }
+
+    protected String getIdFromState(State state) {
+        String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
+        if (!state.containsKey(idFieldName)) {
+            idFieldName = getIdField();
+        }
+        return String.valueOf(state.get(idFieldName));
     }
 
     protected boolean checkEntryTenantId(String entryTenantId) {

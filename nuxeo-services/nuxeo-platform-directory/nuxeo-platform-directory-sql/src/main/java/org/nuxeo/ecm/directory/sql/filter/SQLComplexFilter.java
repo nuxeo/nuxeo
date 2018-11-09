@@ -34,7 +34,9 @@ import org.nuxeo.ecm.directory.DirectoryException;
  *
  * @since 5.7
  * @see org.nuxeo.ecm.directory.sql.SQLSession#query(java.util.Map, java.util.Set, java.util.Map, boolean, int, int)
+ * @deprecated since 10.3, use {@link org.nuxeo.ecm.directory.sql.SQLSession#query(org.nuxeo.ecm.core.query.sql.model.QueryBuilder)} instead
  */
+@Deprecated
 public abstract class SQLComplexFilter implements Serializable {
 
     protected String operator;

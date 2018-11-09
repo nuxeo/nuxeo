@@ -33,6 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.cache.CacheService;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -234,6 +236,20 @@ public abstract class AbstractDirectory implements Directory {
      */
     public void orderEntries(List<DocumentModel> entries, Map<String, String> orderBy) {
         entries.sort(new DocumentModelComparator(getSchema(), orderBy));
+    }
+
+    /**
+     * Helper to create an old-style ordering map.
+     *
+     * @since 10.3
+     */
+    public static Map<String, String> makeOrderBy(OrderByList orders) {
+        Map<String, String> orderBy = new HashMap<>();
+        for (OrderByExpr ob : orders) {
+            String ascOrDesc = ob.isDescending ? "desc" : DocumentModelComparator.ORDER_ASC;
+            orderBy.put(ob.reference.name, ascOrDesc);
+        }
+        return orderBy;
     }
 
     @Override

@@ -91,19 +91,21 @@ public class TestMultiDirectoryOptional {
         desc1 = new MemoryDirectoryDescriptor();
         desc1.name = "dir1";
         desc1.schemaName = "schema1";
-        desc1.schemaSet = new HashSet<String>(Arrays.asList("uid", "foo"));
+        desc1.schemaSet = new HashSet<String>(Arrays.asList("uid", "password", "foo"));
         desc1.idField = "uid";
-        desc1.passwordField = "foo";
+        desc1.passwordField = "password";
         directoryService.registerDirectoryDescriptor(desc1);
         memdir1 = (MemoryDirectory) directoryService.getDirectory("dir1");
 
         try (Session dir1 = memdir1.getSession()) {
             e = new HashMap<String, Object>();
             e.put("uid", "2");
+            e.put("password", "pw2");
             e.put("foo", "foo2");
             dir1.createEntry(e);
             e = new HashMap<String, Object>();
             e.put("uid", "baz");
+            e.put("password", "pwbaz");
             e.put("foo", "baz");
             dir1.createEntry(e);
         }
@@ -133,20 +135,22 @@ public class TestMultiDirectoryOptional {
         desc3 = new MemoryDirectoryDescriptor();
         desc3.name = "dir3";
         desc3.schemaName = "schema3";
-        desc3.schemaSet = new HashSet<String>(Arrays.asList("uid", "thefoo", "thebar"));
+        desc3.schemaSet = new HashSet<String>(Arrays.asList("uid", "thepass", "thefoo", "thebar"));
         desc3.idField = "uid";
-        desc3.passwordField = "thefoo";
+        desc3.passwordField = "thepass";
         directoryService.registerDirectoryDescriptor(desc3);
         memdir3 = (MemoryDirectory) directoryService.getDirectory("dir3");
 
         try (Session dir3 = memdir3.getSession()) {
             e = new HashMap<String, Object>();
             e.put("uid", "3");
+            e.put("thepass", "pw3");
             e.put("thefoo", "foo3");
             e.put("thebar", "bar3");
             dir3.createEntry(e);
             e = new HashMap<String, Object>();
             e.put("uid", "4");
+            e.put("thepass", "pw4");
             e.put("thefoo", "foo4");
             e.put("thebar", "bar4");
             dir3.createEntry(e);
@@ -262,17 +266,17 @@ public class TestMultiDirectoryOptional {
         // sub dirs
         try (Session dir1 = memdir1.getSession(); Session dir3 = memdir3.getSession()) {
             // cannot authenticate using default value on sub directory directly
-            assertFalse(dir1.authenticate("1", "defaultFooValue"));
+            assertFalse(dir1.authenticate("1", "defaultPassword"));
             assertFalse(dir1.authenticate("1", "haha"));
-            assertFalse(dir1.authenticate("3", "foo3"));
-            assertFalse(dir3.authenticate("1", "defaultFooValue"));
-            assertTrue(dir3.authenticate("3", "foo3"));
+            assertFalse(dir1.authenticate("3", "pw3"));
+            assertFalse(dir3.authenticate("1", "defaultPassword"));
+            assertTrue(dir3.authenticate("3", "pw3"));
             assertFalse(dir3.authenticate("3", "haha"));
             // multi dir
-            assertTrue(dir.authenticate("1", "defaultFooValue"));
+            assertTrue(dir.authenticate("1", "defaultPassword"));
             assertFalse(dir.authenticate("1", "lalala"));
             assertFalse(dir.authenticate("1", "haha"));
-            assertTrue(dir.authenticate("3", "foo3"));
+            assertTrue(dir.authenticate("3", "pw3"));
             assertFalse(dir.authenticate("3", "haha"));
         }
     }

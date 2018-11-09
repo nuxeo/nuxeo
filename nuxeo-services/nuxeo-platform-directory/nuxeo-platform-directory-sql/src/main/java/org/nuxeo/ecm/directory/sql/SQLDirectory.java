@@ -110,6 +110,9 @@ public class SQLDirectory extends AbstractDirectory {
     // columns to fetch when an entry is read (excludes the password)
     protected List<Column> readColumns;
 
+    // id column
+    protected Column idColumn;
+
     // columns to fetch when an entry is read (with the password), as SQL
     protected String readColumnsAllSQL;
 
@@ -191,6 +194,7 @@ public class SQLDirectory extends AbstractDirectory {
                         }
                         column.setPrimary(true);
                         column.setNullable(false);
+                        idColumn = column;
                         hasPrimary = true;
                     }
                     readColumnsAll.add(column);
