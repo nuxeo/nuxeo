@@ -35,12 +35,19 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -61,6 +68,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(RenditionFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestRenditionOperation {
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -188,6 +198,14 @@ public class TestRenditionOperation {
         DocumentModel section = session.createDocumentModel("/", "section", "Section");
         section = session.createDocument(section);
 
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(ACE.builder("toto", "Browse").creator("Administrator").build());
+        acp.addACL(acl);
+        file.setACP(acp, true);
+        section.setACP(acp, true);
+        session.save();
+
         session.publishDocument(file, section);
         RenditionService rs = Framework.getService(RenditionService.class);
         rs.publishRendition(file, section, "pdf", false);
@@ -197,6 +215,17 @@ public class TestRenditionOperation {
                 NXQL.escapeString(file.getId()));
         List<DocumentModel> publishedDocs = session.query(publishedDocQuery);
         assertEquals(2, publishedDocs.size());
+
+        try (CloseableCoreSession totoSession = coreFeature.openCoreSession("toto")) {
+            publishedDocs = totoSession.query(publishedDocQuery);
+            assertEquals(2, publishedDocs.size());
+            try (OperationContext ctx = new OperationContext(totoSession)) {
+                ctx.setInput(file);
+                automationService.run(ctx, UnpublishAll.ID);
+            }
+            publishedDocs = totoSession.query(publishedDocQuery);
+            assertEquals(2, publishedDocs.size());
+        }
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(file);
             automationService.run(ctx, UnpublishAll.ID);
