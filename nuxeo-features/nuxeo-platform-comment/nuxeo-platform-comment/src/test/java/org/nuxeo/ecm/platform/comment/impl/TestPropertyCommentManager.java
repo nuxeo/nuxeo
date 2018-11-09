@@ -34,6 +34,7 @@ import java.time.Instant;
 import java.util.Calendar;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -44,7 +45,6 @@ import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.RandomBug;
 
 /**
  * @since 10.3
@@ -338,7 +338,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
     }
 
     @Test
-    @RandomBug.Repeat(issue = "NXP-26144")
+    @Ignore("NXP-26144")
     public void shouldReturnAllCommentsSortedByCreationDateDescendingWhenDocumentHasComments() {
         DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
         doc = session.createDocument(doc);
