@@ -44,11 +44,9 @@ public class BulkActionFrameworkObject extends DefaultObject {
     @GET
     @Path("{commandId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public BulkStatus executeBulkAction(@PathParam("commandId") String commandId) {
+    public BulkStatus getBulkStatus(@PathParam("commandId") String commandId) {
         BulkStatus status = Framework.getService(BulkService.class).getStatus(commandId);
-        if (status.getState() == State.UNKNOWN) {
-            throw new WebResourceNotFoundException("Bulk command with id=" + commandId + " doesn't exist");
-        }
+        checkStatus(status);
         return status;
     }
 
@@ -56,11 +54,15 @@ public class BulkActionFrameworkObject extends DefaultObject {
     @Path("{commandId}/abort")
     @Produces(MediaType.APPLICATION_JSON)
     public BulkStatus abortBulkAction(@PathParam("commandId") String commandId) {
-        BulkStatus status = Framework.getService(BulkService.class).abort(commandId);
-        if (status.getState() == State.UNKNOWN) {
-            throw new WebResourceNotFoundException("Bulk command with id=" + commandId + " doesn't exist");
-        }
-        return status;
+        BulkStatus status = Framework.getService(BulkService.class).getStatus(commandId);
+        checkStatus(status);
+        return Framework.getService(BulkService.class).abort(commandId);
     }
 
+    protected void checkStatus(BulkStatus status) {
+        if (status.getState() == State.UNKNOWN || !getContext().getPrincipal().isAdministrator()
+                && !getContext().getPrincipal().getName().equals(status.getUsername())) {
+            throw new WebResourceNotFoundException("Bulk command with id=" + status.getCommandId() + " doesn't exist");
+        }
+    }
 }
