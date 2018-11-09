@@ -155,6 +155,7 @@ public class HotReloadTestRule implements TestRule {
         // it may cause spurious exception in the logs (NXP-23286)
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("timeoutSecond", Integer.valueOf(110));
+        parameters.put("refresh", Boolean.TRUE);
         parameters.put("waitForAudit", Boolean.TRUE);
         RestHelper.operation("Elasticsearch.WaitForIndexing", parameters);
 
