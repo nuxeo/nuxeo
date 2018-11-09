@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -64,7 +64,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
     // This is the default ES index.max_result_window
     public static final String DEFAULT_ES_MAX_RESULT_WINDOW_VALUE = "10000";
 
-    protected static final Log log = LogFactory.getLog(ElasticSearchNxqlPageProvider.class);
+    protected static final Logger log = LogManager.getLogger(ElasticSearchNxqlPageProvider.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -83,10 +83,8 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
         }
         error = null;
         errorMessage = null;
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Perform query for provider '%s': with pageSize=%d, offset=%d", getName(),
-                    getMinMaxPageSize(), getCurrentPageOffset()));
-        }
+        log.debug("Perform query for provider '{}': with pageSize={}, offset={}", this::getName,
+                this::getMinMaxPageSize, this::getCurrentPageOffset);
         currentPageDocuments = new ArrayList<>();
         CoreSession coreSession = getCoreSession();
         if (query == null) {
@@ -169,10 +167,12 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
     }
 
     private List<AggregateEsBase<? extends Aggregation, ? extends Bucket>> buildAggregates() {
-        ArrayList<AggregateEsBase<? extends Aggregation, ? extends Bucket>> ret = new ArrayList<>(getAggregateDefinitions().size());
+        ArrayList<AggregateEsBase<? extends Aggregation, ? extends Bucket>> ret = new ArrayList<>(
+                getAggregateDefinitions().size());
         boolean skip = isSkipAggregates();
         for (AggregateDefinition def : getAggregateDefinitions()) {
-            AggregateEsBase<? extends Aggregation, ? extends Bucket> agg = AggregateFactory.create(def, getSearchDocumentModel());
+            AggregateEsBase<? extends Aggregation, ? extends Bucket> agg = AggregateFactory.create(def,
+                    getSearchDocumentModel());
             if (!skip || !agg.getSelection().isEmpty()) {
                 // if we want to skip aggregates but one is selected, it has to be computed to filter the result set
                 ret.add(AggregateFactory.create(def, getSearchDocumentModel()));
@@ -261,9 +261,8 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
             try {
                 maxResultWindow = Long.valueOf(maxResultWindowStr);
             } catch (NumberFormatException e) {
-                log.warn(String.format(
-                        "Invalid maxResultWindow property value: %s for page provider: %s, fallback to default.",
-                        maxResultWindowStr, getName()));
+                log.warn("Invalid maxResultWindow property value: %s for page provider: %s, fallback to default.",
+                        maxResultWindowStr, name);
                 maxResultWindow = Long.valueOf(DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
             }
         }
