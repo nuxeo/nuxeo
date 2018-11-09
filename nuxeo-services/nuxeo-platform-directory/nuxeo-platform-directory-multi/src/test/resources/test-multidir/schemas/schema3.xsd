@@ -3,6 +3,7 @@
   targetNamespace="http://www.nuxeo.org/ecm/schemas/test">
 
   <xs:element name="uid" type="xs:string" />
+  <xs:element name="thepass" type="xs:string" />
   <xs:element name="thefoo" type="xs:string" />
   <xs:element name="thebar" type="xs:string" />
 

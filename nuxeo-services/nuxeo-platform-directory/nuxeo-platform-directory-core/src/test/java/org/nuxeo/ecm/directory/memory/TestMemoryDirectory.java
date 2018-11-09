@@ -35,6 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,9 +43,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.ecm.platform.login.test.DummyNuxeoLoginModule;
@@ -121,7 +127,7 @@ public class TestMemoryDirectory {
     public void testCreate() throws Exception {
         // created in setUp
         assertEquals("1", entry.getProperty(SCHEMA_NAME, "i"));
-        assertEquals("secr", entry.getProperty(SCHEMA_NAME, "pw"));
+        assertNull(entry.getProperty(SCHEMA_NAME, "pw"));
         assertEquals("AAA", entry.getProperty(SCHEMA_NAME, "a"));
         assertEquals("BCD", entry.getProperty(SCHEMA_NAME, "b"));
         assertNull(entry.getProperty(SCHEMA_NAME, "x"));
@@ -272,7 +278,7 @@ public class TestMemoryDirectory {
 
         e = entries.get(0);
         assertEquals("1", e.getId());
-        assertEquals("secr", e.getProperty(SCHEMA_NAME, "pw"));
+        assertNull(e.getProperty(SCHEMA_NAME, "pw"));
 
         // query not matching although each criterion matches one entry
         filter.put("a", "AAA");
@@ -319,6 +325,104 @@ public class TestMemoryDirectory {
         filter.put("a", "");
         fulltext.add("a");
         assertEquals(1, dir.query(filter, fulltext).size());
+    }
+
+    @Test
+    public void testQueryWithBuilder() throws Exception {
+        Map<String, Object> map;
+        map = new HashMap<>();
+        map.put("i", "2");
+        dir.createEntry(map);
+        map = new HashMap<>();
+        map.put("i", "3");
+        dir.createEntry(map);
+
+        try (Session session = (MemoryDirectorySession) memDir.getSession()) {
+            // everything (empty predicates)
+            QueryBuilder queryBuilder = new QueryBuilder();
+            checkQueryResult(session, queryBuilder, "1", "2", "3");
+
+            // i = '1'
+            queryBuilder = new QueryBuilder().predicate(Predicates.eq("i", "1"));
+            checkQueryResult(session, queryBuilder, "1");
+
+            // i = '1' OR i = '2'
+            queryBuilder = new QueryBuilder().predicate(Predicates.eq("i", "1")).or(Predicates.eq("i", "2"));
+            checkQueryResult(session, queryBuilder, "1", "2");
+
+            // i = '1' AND a = 'NotMe'
+            queryBuilder = new QueryBuilder().predicate(Predicates.eq("i", "1")).and(Predicates.eq("a", "NotMe"));
+            checkQueryResult(session, queryBuilder); // empty
+
+            // order/paging/totalSize
+
+            // no count total
+            queryBuilder = new QueryBuilder().order(OrderByExprs.asc("i")).limit(1);
+            checkQueryResult(session, queryBuilder, "1");
+
+            // count total
+            queryBuilder = new QueryBuilder().order(OrderByExprs.desc("i")).limit(1).countTotal(true);
+            checkQueryResult(session, queryBuilder, 3, "3");
+
+            // offset
+            queryBuilder = new QueryBuilder().order(OrderByExprs.desc("i")).limit(1).offset(1).countTotal(true);
+            checkQueryResult(session, queryBuilder, 3, "2");
+
+            // error cases
+
+            // cannot filter on password
+            queryBuilder = new QueryBuilder().predicate(Predicates.eq("pw", "secreet"));
+            try {
+                session.query(queryBuilder, false);
+                fail("should throw");
+            } catch (DirectoryException e) {
+                assertEquals("Cannot filter on password", e.getMessage());
+            }
+            try {
+                session.queryIds(queryBuilder);
+                fail("should throw");
+            } catch (DirectoryException e) {
+                assertEquals("Cannot filter on password", e.getMessage());
+            }
+
+            // no such column
+            queryBuilder = new QueryBuilder().predicate(Predicates.eq("notAProperty", "foo"));
+            try {
+                session.query(queryBuilder, false);
+                fail("should throw");
+            } catch (QueryParseException e) {
+                assertEquals("No column: notAProperty for directory: mydir", e.getMessage());
+            }
+            try {
+                session.queryIds(queryBuilder);
+                fail("should throw");
+            } catch (QueryParseException e) {
+                assertEquals("No column: notAProperty for directory: mydir", e.getMessage());
+            }
+        }
+    }
+
+    protected static void checkQueryResult(Session session, QueryBuilder queryBuilder, String... expected) {
+        checkQueryResult(session, queryBuilder, -99, expected);
+    }
+
+    protected static void checkQueryResult(Session session, QueryBuilder queryBuilder, int expectedTotalSize,
+            String... expected) {
+        DocumentModelList list = session.query(queryBuilder, false);
+        List<String> ids = session.queryIds(queryBuilder);
+        assertIds(list, ids, expected);
+        if (queryBuilder.countTotal()) {
+            assertEquals(expectedTotalSize, list.totalSize());
+        }
+    }
+
+    protected static void assertIds(DocumentModelList list, List<String> ids, String... expected) {
+        Set<String> expectedIds = new HashSet<>(Arrays.asList(expected));
+        assertEquals(expectedIds, new HashSet<>(ids));
+        Set<String> fromList = list.stream()
+                                   .map(doc -> (String) doc.getProperty(SCHEMA_NAME, "i"))
+                                   .collect(Collectors.toSet());
+        assertEquals(expectedIds, fromList);
     }
 
     @Test

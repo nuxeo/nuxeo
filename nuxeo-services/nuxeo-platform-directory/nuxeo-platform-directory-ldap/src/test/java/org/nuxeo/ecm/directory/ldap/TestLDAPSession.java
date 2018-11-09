@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -48,6 +49,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
+import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -936,6 +941,98 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertEquals("user2", entries.get(2).getId());
             assertEquals("user1", entries.get(3).getId());
         }
+    }
+
+    @Test
+    public void testQueryWithBuilder() throws Exception {
+        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+            // everything (empty predicates)
+            QueryBuilder queryBuilder = new QueryBuilder();
+            checkQueryResult(session, queryBuilder, "Administrator", "user1", "user2", "user3");
+
+            // username = 'user1'
+            queryBuilder = new QueryBuilder().predicate(Predicates.eq("username", "user1"));
+            checkQueryResult(session, queryBuilder, "user1");
+
+            // username = 'user1' OR username = 'Administrator'
+            queryBuilder = new QueryBuilder().predicate(Predicates.eq("username", "user1"))
+                                             .or(Predicates.eq("username", "Administrator"));
+            checkQueryResult(session, queryBuilder, "Administrator", "user1");
+
+            // username = 'user1' AND firstName = 'NotMe'
+            queryBuilder = new QueryBuilder().predicate(Predicates.eq("username", "user1"))
+                                             .and(Predicates.eq("firstName", "NotMe"));
+            checkQueryResult(session, queryBuilder); // empty
+
+            // order/paging/totalSize
+
+            // no count total
+            queryBuilder = new QueryBuilder().order(OrderByExprs.asc("username")).limit(1);
+            checkQueryResult(session, queryBuilder, "Administrator");
+
+            // count total
+            queryBuilder = new QueryBuilder().order(OrderByExprs.desc("username")).limit(1).countTotal(true);
+            checkQueryResult(session, queryBuilder, 4, "user3");
+
+            // offset
+            queryBuilder = new QueryBuilder().order(OrderByExprs.desc("username")).limit(1).offset(1).countTotal(true);
+            checkQueryResult(session, queryBuilder, 4, "user2");
+
+            // error cases
+
+            // cannot filter on password
+            queryBuilder = new QueryBuilder().predicate(Predicates.eq("password", "pw"));
+            try {
+                session.query(queryBuilder, false);
+                fail("should throw");
+            } catch (DirectoryException e) {
+                assertEquals("Cannot filter on password", e.getMessage());
+            }
+            try {
+                session.queryIds(queryBuilder);
+                fail("should throw");
+            } catch (DirectoryException e) {
+                assertEquals("Cannot filter on password", e.getMessage());
+            }
+
+            // no such column
+            queryBuilder = new QueryBuilder().predicate(Predicates.eq("notAProperty", "foo"));
+            try {
+                session.query(queryBuilder, false);
+                fail("should throw");
+            } catch (QueryParseException e) {
+                assertEquals("No column: notAProperty for directory: userDirectory", e.getMessage());
+            }
+            try {
+                session.queryIds(queryBuilder);
+                fail("should throw");
+            } catch (QueryParseException e) {
+                assertEquals("No column: notAProperty for directory: userDirectory", e.getMessage());
+            }
+        }
+    }
+
+    protected static void checkQueryResult(Session session, QueryBuilder queryBuilder, String... expected) {
+        checkQueryResult(session, queryBuilder, -99, expected);
+    }
+
+    protected static void checkQueryResult(Session session, QueryBuilder queryBuilder, int expectedTotalSize,
+            String... expected) {
+        DocumentModelList list = session.query(queryBuilder, false);
+        List<String> ids = session.queryIds(queryBuilder);
+        assertIds(list, ids, expected);
+        if (queryBuilder.countTotal()) {
+            assertEquals(expectedTotalSize, list.totalSize());
+        }
+    }
+
+    protected static void assertIds(DocumentModelList list, List<String> ids, String... expected) {
+        Set<String> expectedIds = new HashSet<>(Arrays.asList(expected));
+        assertEquals(expectedIds, new HashSet<>(ids));
+        Set<String> fromList = list.stream()
+                                   .map(doc -> (String) doc.getProperty(USER_SCHEMANAME, "username"))
+                                   .collect(Collectors.toSet());
+        assertEquals(expectedIds, fromList);
     }
 
     @Test

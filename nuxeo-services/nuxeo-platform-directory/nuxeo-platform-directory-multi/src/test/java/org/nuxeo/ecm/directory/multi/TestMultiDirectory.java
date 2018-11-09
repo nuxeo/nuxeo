@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -46,6 +47,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectorySecurityException;
@@ -93,19 +98,21 @@ public class TestMultiDirectory {
         desc1 = new MemoryDirectoryDescriptor();
         desc1.name = "dir1";
         desc1.schemaName = "schema1";
-        desc1.schemaSet = new HashSet<>(Arrays.asList("uid", "foo"));
+        desc1.schemaSet = new HashSet<>(Arrays.asList("uid", "password", "foo"));
         desc1.idField = "uid";
-        desc1.passwordField = "foo";
+        desc1.passwordField = "password";
         directoryService.registerDirectoryDescriptor(desc1);
         memdir1 = (MemoryDirectory) directoryService.getDirectory("dir1");
 
         try (Session dir1 = memdir1.getSession()) {
             e = new HashMap<>();
             e.put("uid", "1");
+            e.put("password", "pw1");
             e.put("foo", "foo1");
             dir1.createEntry(e);
             e = new HashMap<>();
             e.put("uid", "2");
+            e.put("password", "pw2");
             e.put("foo", "foo2");
             dir1.createEntry(e);
         }
@@ -135,20 +142,22 @@ public class TestMultiDirectory {
         desc3 = new MemoryDirectoryDescriptor();
         desc3.name = "dir3";
         desc3.schemaName = "schema3";
-        desc3.schemaSet = new HashSet<>(Arrays.asList("uid", "thefoo", "thebar"));
+        desc3.schemaSet = new HashSet<>(Arrays.asList("uid", "thepass", "thefoo", "thebar"));
         desc3.idField = "uid";
-        desc3.passwordField = "thefoo";
+        desc3.passwordField = "thepass";
         directoryService.registerDirectoryDescriptor(desc3);
         memdir3 = (MemoryDirectory) directoryService.getDirectory("dir3");
 
         try (Session dir3 = memdir3.getSession()) {
             e = new HashMap<>();
             e.put("uid", "3");
+            e.put("thepass", "pw3");
             e.put("thefoo", "foo3");
             e.put("thebar", "bar3");
             dir3.createEntry(e);
             e = new HashMap<>();
             e.put("uid", "4");
+            e.put("thepass", "pw4");
             e.put("thefoo", "foo4");
             e.put("thebar", "bar4");
             dir3.createEntry(e);
@@ -255,16 +264,16 @@ public class TestMultiDirectory {
         try (Session dir1 = memdir1.getSession(); //
                 Session dir3 = memdir3.getSession()) {
 
-            assertTrue(dir1.authenticate("1", "foo1"));
+            assertTrue(dir1.authenticate("1", "pw1"));
             assertFalse(dir1.authenticate("1", "haha"));
-            assertFalse(dir1.authenticate("3", "foo3"));
-            assertFalse(dir3.authenticate("1", "foo1"));
-            assertTrue(dir3.authenticate("3", "foo3"));
+            assertFalse(dir1.authenticate("3", "pw3"));
+            assertFalse(dir3.authenticate("1", "pw1"));
+            assertTrue(dir3.authenticate("3", "pw3"));
             assertFalse(dir3.authenticate("3", "haha"));
             // multi dir
-            assertTrue(dir.authenticate("1", "foo1"));
+            assertTrue(dir.authenticate("1", "pw1"));
             assertFalse(dir.authenticate("1", "haha"));
-            assertTrue(dir.authenticate("3", "foo3"));
+            assertTrue(dir.authenticate("3", "pw3"));
             assertFalse(dir.authenticate("3", "haha"));
         }
     }
@@ -510,6 +519,134 @@ public class TestMultiDirectory {
         // null fulltext set should be equivalent to empty one
         entries = dir.query(filter, null);
         assertEquals(4, entries.size());
+    }
+
+    @Test
+    public void testQueryWithBuilder() throws Exception {
+
+        // everything (empty predicates)
+        QueryBuilder queryBuilder = new QueryBuilder();
+        checkQueryResult(dir, queryBuilder, "1", "2", "3", "4");
+
+        // ===== toplevel AND =====
+
+        // thefoo = 'foo1'
+        queryBuilder = new QueryBuilder().predicate(Predicates.eq("thefoo", "foo1"));
+        checkQueryResult(dir, queryBuilder, "1");
+
+        // thefoo = 'foo1' AND thebar = 'bar1'
+        queryBuilder = new QueryBuilder().predicate(Predicates.eq("thefoo", "foo1"))
+                                         .and(Predicates.like("thebar", "bar1"));
+        checkQueryResult(dir, queryBuilder, "1");
+
+        // uid = '1' AND thebar = 'NoSuchBar'
+        queryBuilder = new QueryBuilder().predicate(Predicates.eq("uid", "1"))
+                                         .and(Predicates.eq("thebar", "NoSuchBar"));
+        checkQueryResult(dir, queryBuilder); // empty
+
+        // ===== toplevel OR =====
+
+        // thefoo = 'foo1' OR thebar = 'bar2'
+        queryBuilder = new QueryBuilder().predicate(Predicates.eq("thefoo", "foo1"))
+                                         .or(Predicates.eq("thebar", "bar2"));
+        checkQueryResult(dir, queryBuilder, "1", "2");
+
+        // uid = '1' OR thefoo = 'foo2'
+        queryBuilder = new QueryBuilder().predicate(Predicates.eq("uid", "1")).or(Predicates.eq("thefoo", "foo2"));
+        checkQueryResult(dir, queryBuilder, "1", "2");
+
+        // ===== mixed query, needing post-filtering =====
+
+        // thefoo = 'foo1' OR (thefoo = 'foo2' AND thebar = 'bar2')
+        queryBuilder = new QueryBuilder().predicate(Predicates.eq("thefoo", "foo1"))
+                                         .or(Predicates.and(Predicates.eq("thefoo", "foo2"),
+                                                 Predicates.eq("thebar", "bar2")));
+        checkQueryResult(dir, queryBuilder, "1", "2");
+
+        // thefoo LIKE 'foo%' AND (thefoo = 'foo1' OR thebar = 'bar2')
+        queryBuilder = new QueryBuilder().predicate(Predicates.like("thefoo", "foo%"))
+                                         .and(Predicates.or(Predicates.eq("thefoo", "foo1"),
+                                                 Predicates.eq("thebar", "bar2")));
+        checkQueryResult(dir, queryBuilder, "1", "2");
+
+        // ===== order/paging/totalSize =====
+
+        // no count total
+        queryBuilder = new QueryBuilder().order(OrderByExprs.asc("uid")).limit(1);
+        checkQueryResult(dir, queryBuilder, "1");
+
+        // count total
+        queryBuilder = new QueryBuilder().order(OrderByExprs.desc("uid")).limit(1).countTotal(true);
+        checkQueryResult(dir, queryBuilder, 4, "4");
+
+        // offset
+        queryBuilder = new QueryBuilder().order(OrderByExprs.desc("uid")).limit(1).offset(1).countTotal(true);
+        checkQueryResult(dir, queryBuilder, 4, "3");
+
+        // ===== error cases =====
+
+        // cannot filter on password (thepass is the password field)
+        queryBuilder = new QueryBuilder().predicate(Predicates.eq("thepass", "pw"));
+        try {
+            dir.query(queryBuilder, false);
+            fail("should throw");
+        } catch (DirectoryException e) {
+            assertEquals("Cannot filter on password", e.getMessage());
+        }
+        try {
+            dir.queryIds(queryBuilder);
+            fail("should throw");
+        } catch (DirectoryException e) {
+            assertEquals("Cannot filter on password", e.getMessage());
+        }
+
+        // no such column
+        queryBuilder = new QueryBuilder().predicate(Predicates.eq("notAProperty", "xyz"));
+        try {
+            dir.query(queryBuilder, false);
+            fail("should throw");
+        } catch (QueryParseException e) {
+            assertEquals("No column: notAProperty for directory: multi", e.getMessage());
+        }
+        try {
+            dir.queryIds(queryBuilder);
+            fail("should throw");
+        } catch (QueryParseException e) {
+            assertEquals("No column: notAProperty for directory: multi", e.getMessage());
+        }
+    }
+
+    protected static void checkQueryResult(Session session, QueryBuilder queryBuilder, String... expected) {
+        checkQueryResult(session, queryBuilder, -99, expected);
+    }
+
+    protected static void checkQueryResult(Session session, QueryBuilder queryBuilder, int expectedTotalSize,
+            String... expected) {
+        DocumentModelList list = session.query(queryBuilder, false);
+        List<String> ids = session.queryIds(queryBuilder);
+        assertIds(list, ids, expected);
+        if (queryBuilder.countTotal()) {
+            assertEquals(expectedTotalSize, list.totalSize());
+        }
+    }
+
+    protected static void assertIds(DocumentModelList list, List<String> ids, String... expected) {
+        Set<String> expectedIds = new HashSet<>(Arrays.asList(expected));
+        assertEquals(expectedIds, new HashSet<>(ids));
+        Set<String> fromList = list.stream()
+                                   .map(doc -> (String) doc.getProperty("schema3", "uid"))
+                                   .collect(Collectors.toSet());
+        assertEquals(expectedIds, fromList);
+        // also check full content of entry
+        list.forEach(TestMultiDirectory::assertEntryOk);
+    }
+
+    protected static void assertEntryOk(DocumentModel entry) {
+        String id = entry.getId();
+        assertEquals(id, entry.getPropertyValue("schema3:uid"));
+        assertEquals("foo" + id, entry.getPropertyValue("schema3:thefoo"));
+        assertEquals("bar" + id, entry.getPropertyValue("schema3:thebar"));
+        assertNull("for id=" + id, entry.getPropertyValue("schema3:thepass"));
     }
 
     @Test

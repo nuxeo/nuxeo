@@ -39,9 +39,12 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -364,17 +367,25 @@ public class MultiDirectorySession extends BaseSession {
                 if (entry != null && StringUtils.isNotBlank(entry.getId())) {
                     entryId = entry.getId();
                 }
+                String passwordField = dirInfo.getSession().getPasswordField();
                 for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
+                    String dirProp = e.getKey();
+                    if (dirProp.equals(passwordField)) {
+                        // subdirectory entry are already returned without password
+                        // but a default schema value could still be returned
+                        continue;
+                    }
+                    String prop = e.getValue();
                     if (entry != null) {
                         try {
-                            map.put(e.getValue(), entry.getProperty(dirInfo.dirSchemaName, e.getKey()));
+                            map.put(prop, entry.getProperty(dirInfo.dirSchemaName, dirProp));
                         } catch (PropertyException e1) {
                             throw new DirectoryException(e1);
                         }
                     } else {
                         // fill with default values for this directory
-                        if (!map.containsKey(e.getValue())) {
-                            map.put(e.getValue(), dirInfo.defaultEntry.get(e.getKey()));
+                        if (!map.containsKey(prop)) {
+                            map.put(prop, dirInfo.defaultEntry.get(dirProp));
                         }
                     }
                 }
@@ -738,6 +749,108 @@ public class MultiDirectorySession extends BaseSession {
             getDirectory().orderEntries(results, orderBy);
         }
         return applyQueryLimits(results, limit, offset);
+    }
+
+    @Override
+    public DocumentModelList query(QueryBuilder queryBuilder, boolean fetchReferences) {
+        if (!hasPermission(SecurityConstants.READ)) {
+            return new DocumentModelListImpl();
+        }
+        if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
+            throw new DirectoryException("Cannot filter on password");
+        }
+        init();
+
+        Map<String, String> sources = new HashMap<>(); // map of id to source
+        DocumentModelList results = new DocumentModelListImpl();
+
+        for (SourceInfo sourceInfo : sourceInfos) {
+
+            // find all ids by evaluating the expression with this source of subdirectories
+            MultiDirectoryExpressionEvaluator evaluator = new MultiDirectoryExpressionEvaluator(sourceInfo,
+                    schemaIdField, getName());
+            Set<String> ids = evaluator.eval(queryBuilder.predicate());
+
+            // create entries from ids
+
+            ((ArrayList<?>) results).ensureCapacity(results.size() + ids.size());
+            // TODO batch fetch entries
+            for (String id : ids) {
+                String otherSource = sources.putIfAbsent(id, sourceInfo.source.name);
+                if (otherSource != null) {
+                    log.warn(String.format("Entry '%s' is present in source '%s' but also in source '%s'. "
+                            + "The second one will be ignored.", id, otherSource, sourceInfo.source.name));
+                    continue;
+                }
+                DocumentModel entry = getEntry(id, fetchReferences);
+                results.add(entry);
+            }
+        }
+
+        // order/limit/offset
+        int limit = Math.max(0, (int) queryBuilder.limit());
+        int offset = Math.max(0, (int) queryBuilder.offset());
+        boolean countTotal = queryBuilder.countTotal();
+        OrderByList orders = queryBuilder.orders();
+        Map<String, String> orderBy = AbstractDirectory.makeOrderBy(orders);
+        if (!orderBy.isEmpty()) {
+            getDirectory().orderEntries(results, orderBy);
+        }
+        results = applyQueryLimits(results, limit, offset);
+        if ((limit != 0 || offset != 0) && !countTotal) {
+            // compat with other directories
+            ((DocumentModelListImpl) results).setTotalSize(-2);
+        }
+        return results;
+    }
+
+    @Override
+    public List<String> queryIds(QueryBuilder queryBuilder) {
+        if (!hasPermission(SecurityConstants.READ)) {
+            return Collections.emptyList();
+        }
+        if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
+            throw new DirectoryException("Cannot filter on password");
+        }
+        init();
+
+        Map<String, String> sources = new HashMap<>(); // map of id to source
+        DocumentModelList entries = new DocumentModelListImpl(); // needed if we have ordering
+        List<String> ids = new ArrayList<>();
+        // order/limit/offset
+        int limit = Math.max(0, (int) queryBuilder.limit());
+        int offset = Math.max(0, (int) queryBuilder.offset());
+        OrderByList orders = queryBuilder.orders();
+        boolean order = !orders.isEmpty();
+
+        for (SourceInfo sourceInfo : sourceInfos) {
+
+            // find all ids by evaluating the expression with this source of subdirectories
+            MultiDirectoryExpressionEvaluator evaluator = new MultiDirectoryExpressionEvaluator(sourceInfo,
+                    schemaIdField, getName());
+            Set<String> sourceIds = evaluator.eval(queryBuilder.predicate());
+
+            // TODO batch fetch entries
+            for (String id : sourceIds) {
+                String otherSource = sources.putIfAbsent(id, sourceInfo.source.name);
+                if (otherSource != null) {
+                    log.warn(String.format("Entry '%s' is present in source '%s' but also in source '%s'. "
+                            + "The second one will be ignored.", id, otherSource, sourceInfo.source.name));
+                    continue;
+                }
+                if (order) {
+                    entries.add(getEntry(id, false));
+                } else {
+                    ids.add(id);
+                }
+            }
+        }
+
+        if (order) {
+            getDirectory().orderEntries(entries, AbstractDirectory.makeOrderBy(orders));
+            entries.forEach(doc -> ids.add(doc.getId()));
+        }
+        return applyQueryLimits(ids, limit, offset);
     }
 
     @Override

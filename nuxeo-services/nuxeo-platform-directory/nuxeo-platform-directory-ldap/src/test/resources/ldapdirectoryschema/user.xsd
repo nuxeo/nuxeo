@@ -31,7 +31,11 @@
   </xs:element>
 
   <xs:element name="intField" type="xs:integer" default="0" />
+  <xs:element name="longField" type="xs:long" default="1L" />
+  <xs:element name="doubleField" type="xs:double" default="1.1" />
   <xs:element name="dateField" type="xs:date" />
+  <xs:element name="booleanField" type="xs:boolean" default="true" />
+
   <xs:element name="employeeType" type="nxs:stringList" />
 
   <xs:element name="avatar" type="nxs:content" />

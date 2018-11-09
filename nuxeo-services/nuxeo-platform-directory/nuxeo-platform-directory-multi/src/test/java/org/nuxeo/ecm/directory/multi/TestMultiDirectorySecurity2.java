@@ -88,9 +88,9 @@ public class TestMultiDirectorySecurity2 {
         desc1 = new MemoryDirectoryDescriptor();
         desc1.name = "dir1";
         desc1.schemaName = "schema1";
-        desc1.schemaSet = new HashSet<>(Arrays.asList("uid", "foo"));
+        desc1.schemaSet = new HashSet<>(Arrays.asList("uid", "password", "foo"));
         desc1.idField = "uid";
-        desc1.passwordField = "foo";
+        desc1.passwordField = "password";
         desc1.permissions = permissions;
         directoryService.registerDirectoryDescriptor(desc1);
         memdir1 = (MemoryDirectory) directoryService.getDirectory("dir1");
@@ -98,10 +98,12 @@ public class TestMultiDirectorySecurity2 {
         try (Session dir1 = memdir1.getSession()) {
             e = new HashMap<>();
             e.put("uid", "1");
+            e.put("password", "pw1");
             e.put("foo", "foo1");
             dir1.createEntry(e);
             e = new HashMap<>();
             e.put("uid", "2");
+            e.put("password", "pw2");
             e.put("foo", "foo2");
             dir1.createEntry(e);
         }
@@ -132,9 +134,9 @@ public class TestMultiDirectorySecurity2 {
         desc3 = new MemoryDirectoryDescriptor();
         desc3.name = "dir3";
         desc3.schemaName = "schema3";
-        desc3.schemaSet = new HashSet<>(Arrays.asList("uid", "thefoo", "thebar"));
+        desc3.schemaSet = new HashSet<>(Arrays.asList("uid", "thepass", "thefoo", "thebar"));
         desc3.idField = "uid";
-        desc3.passwordField = "thefoo";
+        desc3.passwordField = "thepass";
         desc3.permissions = permissions;
         directoryService.registerDirectoryDescriptor(desc3);
         memdir3 = (MemoryDirectory) directoryService.getDirectory("dir3");
@@ -142,11 +144,13 @@ public class TestMultiDirectorySecurity2 {
         try (Session dir3 = memdir3.getSession()) {
             e = new HashMap<>();
             e.put("uid", "3");
+            e.put("thepass", "pw3");
             e.put("thefoo", "foo3");
             e.put("thebar", "bar3");
             dir3.createEntry(e);
             e = new HashMap<>();
             e.put("uid", "4");
+            e.put("thepass", "pw4");
             e.put("thefoo", "foo4");
             e.put("thebar", "bar4");
             dir3.createEntry(e);

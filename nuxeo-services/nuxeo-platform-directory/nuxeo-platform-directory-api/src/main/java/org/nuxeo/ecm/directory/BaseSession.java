@@ -22,6 +22,7 @@ package org.nuxeo.ecm.directory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,6 +43,12 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.query.sql.model.DefaultQueryVisitor;
+import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
+import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
@@ -488,10 +495,37 @@ public abstract class BaseSession implements Session, EntrySource {
      * @since 10.1
      * @see Session#query(Map, Set, Map, boolean, int, int)
      */
-    protected DocumentModelList applyQueryLimits(DocumentModelList results, int limit, int offset) {
+    public DocumentModelList applyQueryLimits(DocumentModelList results, int limit, int offset) {
+        int size = results.size();
         offset = Math.max(0, offset);
-        int toIndex = limit >= 1 ? Math.min(results.size(), offset + limit) : results.size();
-        return new DocumentModelListImpl(results.subList(offset, toIndex));
+        int toIndex = limit < 1 ? size : Math.min(size, offset + limit);
+        if (offset == 0 && toIndex == size) {
+            return results;
+        } else {
+            DocumentModelListImpl sublist = new DocumentModelListImpl(results.subList(offset, toIndex));
+            sublist.setTotalSize(size);
+            return sublist;
+        }
+    }
+
+    /**
+     * Applies offset and limit to a List.
+     *
+     * @param list the original list
+     * @param limit maximum number of results, ignored if less than 1
+     * @param offset number of rows skipped before starting, will be 0 if less than 0
+     * @return the result with applied limit and offset
+     * @since 10.3
+     */
+    public <T> List<T> applyQueryLimits(List<T> list, int limit, int offset) {
+        int size = list.size();
+        offset = Math.max(0, offset);
+        int toIndex = limit < 1 ? size : Math.min(size, offset + limit);
+        if (offset == 0 && toIndex == size) {
+            return list;
+        } else {
+            return new ArrayList<>(list.subList(offset, toIndex));
+        }
     }
 
     @Override
@@ -541,6 +575,38 @@ public abstract class BaseSession implements Session, EntrySource {
     }
 
     /**
+     * Adds the tenant id to the query if needed.
+     *
+     * @since 10.3
+     */
+    protected QueryBuilder addTenantId(QueryBuilder queryBuilder) {
+        if (!isMultiTenant()) {
+            return queryBuilder;
+        }
+        String tenantId = getCurrentTenantId();
+        if (StringUtils.isEmpty(tenantId)) {
+            return queryBuilder;
+        }
+
+        // predicate to add
+        Predicate predicate = Predicates.eq(TENANT_ID_FIELD, tenantId);
+
+        // add to query
+        queryBuilder = new QueryBuilder(queryBuilder); // copy
+        MultiExpression multiExpression = queryBuilder.predicate();
+        if (multiExpression.predicates.isEmpty()) {
+            queryBuilder.predicate(predicate);
+        } else if (multiExpression.operator == Operator.AND || multiExpression.predicates.size() == 1) {
+            queryBuilder.and(predicate);
+        } else {
+            // query is an OR multiexpression
+            queryBuilder.filter(
+                    new MultiExpression(Operator.AND, new ArrayList<>(Arrays.asList(predicate, multiExpression))));
+        }
+        return queryBuilder;
+    }
+
+    /**
      * Returns the tenant id of the logged user if any, {@code null} otherwise.
      */
     protected String getCurrentTenantId() {
@@ -556,5 +622,37 @@ public abstract class BaseSession implements Session, EntrySource {
 
     /** To be implemented for specific deletion. */
     protected abstract void deleteEntryWithoutReferences(String id);
+
+    /**
+     * Visitor for a query to check if it contains a reference to a given field.
+     *
+     * @since 10.3
+     */
+    public static class FieldDetector extends DefaultQueryVisitor {
+
+        protected final String field;
+
+        protected boolean hasField;
+
+        /**
+         * Checks if the predicate contains the field.
+         */
+        public static boolean hasField(MultiExpression predicate, String field) {
+            FieldDetector visitor = new FieldDetector(field);
+            visitor.visitMultiExpression(predicate);
+            return visitor.hasField;
+        }
+
+        public FieldDetector(String passwordField) {
+            this.field = passwordField;
+        }
+
+        @Override
+        public void visitReference(org.nuxeo.ecm.core.query.sql.model.Reference node) {
+            if (node.name.equals(field)) {
+                hasField = true;
+            }
+        }
+    }
 
 }

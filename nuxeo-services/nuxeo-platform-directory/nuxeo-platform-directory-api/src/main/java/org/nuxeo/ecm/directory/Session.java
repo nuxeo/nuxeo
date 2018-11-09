@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 
 /**
  * A session used to access entries in a directory.
@@ -198,8 +199,24 @@ public interface Session extends AutoCloseable {
     DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences, int limit, int offset);
 
-    // TODO: create an API to allow sql AND/OR/NOT/LIKE conditions
-    // public DocumentModelList query(Criteria criteria )
+    /**
+     * Executes a query with the possibility to fetch a subset of the results.
+     *
+     * @param queryBuilder the query to use, including limit, offset, ordering and countTotal
+     * @param fetchReferences boolean stating if references have to be fetched
+     * @return the list of documents, where the total size may be present if countTotal was true
+     * @since 10.3
+     */
+    DocumentModelList query(QueryBuilder queryBuilder, boolean fetchReferences);
+
+    /**
+     * Executes a query with the possibility to fetch a subset of the results. Returns the matching ids.
+     *
+     * @param queryBuilder the query to use, including limit, offset and ordering
+     * @return the list of document ids
+     * @since 10.3
+     */
+    List<String> queryIds(QueryBuilder queryBuilder);
 
     /**
      * Closes the session and all open result sets obtained from this session.

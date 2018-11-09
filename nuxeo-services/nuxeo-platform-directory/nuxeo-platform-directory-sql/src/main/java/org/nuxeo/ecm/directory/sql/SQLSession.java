@@ -47,6 +47,10 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.storage.sql.ColumnSpec;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
@@ -62,7 +66,7 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.PasswordHelper;
-import org.nuxeo.ecm.directory.Reference;
+import org.nuxeo.ecm.directory.sql.SQLQueryBuilder.ColumnAndValue;
 import org.nuxeo.ecm.directory.sql.filter.SQLComplexFilter;
 
 /**
@@ -83,7 +87,7 @@ public class SQLSession extends BaseSession {
 
     Connection sqlConnection;
 
-    private final Dialect dialect;
+    protected final Dialect dialect;
 
     protected JDBCLogger logger = new JDBCLogger("SQLDirectory");
 
@@ -160,7 +164,7 @@ public class SQLSession extends BaseSession {
             // fetch the reference fields
             if (fetchReferences) {
                 Map<String, List<String>> targetIdsMap = new HashMap<>();
-                for (Reference reference : directory.getReferences()) {
+                for (org.nuxeo.ecm.directory.Reference reference : directory.getReferences()) {
                     List<String> targetIds = reference.getTargetIdsForSource(entry.getId());
                     targetIds = new ArrayList<>(targetIds);
                     Collections.sort(targetIds);
@@ -193,6 +197,10 @@ public class SQLSession extends BaseSession {
 
     protected String getReadColumnsSQL() {
         return readAllColumns ? getDirectory().readColumnsAllSQL : getDirectory().readColumnsSQL;
+    }
+
+    protected Column getIdColumn() {
+        return getDirectory().idColumn;
     }
 
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
@@ -256,6 +264,23 @@ public class SQLSession extends BaseSession {
             }
         }
         return whereClause;
+    }
+
+    protected void addFilterWhereClause(StringBuilder clause, List<ColumnAndValue> params) {
+        if (staticFilters.length == 0) {
+            return;
+        }
+        for (SQLStaticFilter filter : staticFilters) {
+            if (clause.length() > 0) {
+                clause.append(" AND ");
+            }
+            Column column = filter.getDirectoryColumn(table, getDirectory().useNativeCase());
+            clause.append(column.getQuotedName());
+            clause.append(" ");
+            clause.append(filter.getOperator());
+            clause.append(" ?");
+            params.add(new ColumnAndValue(column, filter.getValue()));
+        }
     }
 
     protected void addFilterValues(PreparedStatement ps, int startIdx) {
@@ -599,7 +624,7 @@ public class SQLSession extends BaseSession {
                         // fetch the reference fields
                         if (fetchReferences) {
                             Map<String, List<String>> targetIdsMap = new HashMap<>();
-                            for (Reference reference : directory.getReferences()) {
+                            for (org.nuxeo.ecm.directory.Reference reference : directory.getReferences()) {
                                 List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
                                 String fieldName = reference.getFieldName();
                                 if (targetIdsMap.containsKey(fieldName)) {
@@ -641,6 +666,232 @@ public class SQLSession extends BaseSession {
             try {
                 sqlConnection.close();
             } catch (SQLException e1) {
+            }
+            throw new DirectoryException("query failed", e);
+        }
+    }
+
+    @Override
+    public DocumentModelList query(QueryBuilder queryBuilder, boolean fetchReferences) {
+        if (!hasPermission(SecurityConstants.READ)) {
+            return new DocumentModelListImpl();
+        }
+        if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
+            throw new DirectoryException("Cannot filter on password");
+        }
+        queryBuilder = addTenantId(queryBuilder);
+
+        // build where clause from query
+        SQLQueryBuilder builder = new SQLQueryBuilder(getDirectory());
+        builder.visitMultiExpression(queryBuilder.predicate());
+        // add static filters
+        addFilterWhereClause(builder.clause, builder.params);
+        // get resulting clause
+        String whereClause = builder.clause.toString();
+
+        int limit = Math.max(0, (int) queryBuilder.limit());
+        int offset = Math.max(0, (int) queryBuilder.offset());
+        boolean countTotal = queryBuilder.countTotal();
+
+        try {
+            acquireConnection();
+
+            Select select = new Select(table);
+            select.setWhat(getReadColumnsSQL());
+            select.setFrom(table.getQuotedName());
+            select.setWhere(whereClause);
+
+            StringBuilder orderBy = new StringBuilder();
+            OrderByList orders = queryBuilder.orders();
+            if (!orders.isEmpty()) {
+                for (OrderByExpr ob : orders) {
+                    if (orderBy.length() != 0) {
+                        orderBy.append(", ");
+                    }
+                    orderBy.append(dialect.openQuote());
+                    orderBy.append(ob.reference.name);
+                    orderBy.append(dialect.closeQuote());
+                    if (ob.isDescending) {
+                        orderBy.append(" DESC");
+                    }
+                }
+                select.setOrderBy(orderBy.toString());
+            }
+            String query = select.getStatement();
+            if (limit != 0 || offset != 0) {
+                if (!dialect.supportsPaging()) {
+                    throw new QueryParseException("Cannot use limit/offset, not supported by database");
+                }
+                query = dialect.addPagingClause(query, limit, offset);
+            }
+
+            if (logger.isLogEnabled()) {
+                List<Serializable> values = builder.params.stream()
+                                                          .map(ColumnAndValue::getValue)
+                                                          .collect(Collectors.toList());
+                logger.logSQL(query, values);
+            }
+
+            // execute the query and create a documentModel list
+            DocumentModelListImpl list = new DocumentModelListImpl();
+            try (PreparedStatement ps = sqlConnection.prepareStatement(query)) {
+                int i = 1;
+                for (ColumnAndValue columnAndValue : builder.params) {
+                    setFieldValue(ps, i++, columnAndValue.column, columnAndValue.value);
+                }
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        // fetch values for stored fields
+                        Map<String, Object> map = new HashMap<>();
+                        for (Column column : getReadColumns()) {
+                            Object o = getFieldValue(rs, column);
+                            map.put(column.getKey(), o);
+                        }
+                        DocumentModel docModel = fieldMapToDocumentModel(map);
+                        // fetch the reference fields
+                        if (fetchReferences) {
+                            Map<String, List<String>> targetIdsMap = new HashMap<>();
+                            for (org.nuxeo.ecm.directory.Reference reference : directory.getReferences()) {
+                                List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
+                                String fieldName = reference.getFieldName();
+                                targetIdsMap.computeIfAbsent(fieldName, key -> new ArrayList<>()).addAll(targetIds);
+                            }
+                            for (Entry<String, List<String>> en : targetIdsMap.entrySet()) {
+                                String fieldName = en.getKey();
+                                List<String> targetIds = en.getValue();
+                                docModel.setProperty(schemaName, fieldName, targetIds);
+                            }
+                        }
+                        list.add(docModel);
+                    }
+                }
+            }
+
+            if (limit != 0 || offset != 0) {
+                int count;
+                if (countTotal) {
+                    // count the total number of results
+                    Select selectCount = new Select(table);
+                    selectCount.setWhat("COUNT(*)");
+                    selectCount.setFrom(table.getQuotedName());
+                    selectCount.setWhere(whereClause);
+                    String countQuery = selectCount.getStatement();
+                    if (logger.isLogEnabled()) {
+                        List<Serializable> values = builder.params.stream()
+                                                                  .map(ColumnAndValue::getValue)
+                                                                  .collect(Collectors.toList());
+                        logger.logSQL(countQuery, values);
+                    }
+                    try (PreparedStatement ps = sqlConnection.prepareStatement(countQuery)) {
+                        int i = 1;
+                        for (ColumnAndValue columnAndValue : builder.params) {
+                            setFieldValue(ps, i++, columnAndValue.column, columnAndValue.value);
+                        }
+                        try (ResultSet rs = ps.executeQuery()) {
+                            rs.next();
+                            count = rs.getInt(1);
+                            if (logger.isLogEnabled()) {
+                                logger.logCount(count);
+                            }
+                        }
+                    }
+                } else {
+                    count = -2; // unknown
+                }
+                list.setTotalSize(count);
+            }
+            return list;
+        } catch (SQLException e) {
+            try {
+                sqlConnection.close();
+            } catch (SQLException ee) {
+                log.error(ee, ee);
+            }
+            throw new DirectoryException("query failed", e);
+        }
+    }
+
+    @Override
+    public List<String> queryIds(QueryBuilder queryBuilder) {
+        if (!hasPermission(SecurityConstants.READ)) {
+            return Collections.emptyList();
+        }
+        if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
+            throw new DirectoryException("Cannot filter on password");
+        }
+        queryBuilder = addTenantId(queryBuilder);
+
+        // build where clause from query
+        SQLQueryBuilder builder = new SQLQueryBuilder(getDirectory());
+        builder.visitMultiExpression(queryBuilder.predicate());
+        // add static filters
+        addFilterWhereClause(builder.clause, builder.params);
+        // get resulting clause
+        String whereClause = builder.clause.toString();
+
+        int limit = Math.max(0, (int) queryBuilder.limit());
+        int offset = Math.max(0, (int) queryBuilder.offset());
+
+        try {
+            acquireConnection();
+
+            Column idColumn = getIdColumn();
+            Select select = new Select(table);
+            select.setWhat(idColumn.getQuotedName());
+            select.setFrom(table.getQuotedName());
+            select.setWhere(whereClause);
+
+            StringBuilder orderBy = new StringBuilder();
+            OrderByList orders = queryBuilder.orders();
+            if (!orders.isEmpty()) {
+                for (OrderByExpr ob : orders) {
+                    if (orderBy.length() != 0) {
+                        orderBy.append(", ");
+                    }
+                    orderBy.append(dialect.openQuote());
+                    orderBy.append(ob.reference.name);
+                    orderBy.append(dialect.closeQuote());
+                    if (ob.isDescending) {
+                        orderBy.append(" DESC");
+                    }
+                }
+                select.setOrderBy(orderBy.toString());
+            }
+            String query = select.getStatement();
+            if (limit != 0 || offset != 0) {
+                if (!dialect.supportsPaging()) {
+                    throw new QueryParseException("Cannot use limit/offset, not supported by database");
+                }
+                query = dialect.addPagingClause(query, limit, offset);
+            }
+
+            if (logger.isLogEnabled()) {
+                List<Serializable> values = builder.params.stream()
+                                                          .map(ColumnAndValue::getValue)
+                                                          .collect(Collectors.toList());
+                logger.logSQL(query, values);
+            }
+
+            // execute the query and create a documentModel list
+            List<String> ids = new ArrayList<>();
+            try (PreparedStatement ps = sqlConnection.prepareStatement(query)) {
+                int i = 1;
+                for (ColumnAndValue columnAndValue : builder.params) {
+                    setFieldValue(ps, i++, columnAndValue.column, columnAndValue.value);
+                }
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        String id = (String) idColumn.getFromResultSet(rs, 1);
+                        ids.add(id);
+                    }
+                }
+            }
+            return ids;
+        } catch (SQLException e) {
+            try {
+                sqlConnection.close();
+            } catch (SQLException ee) {
+                log.error(ee, ee);
             }
             throw new DirectoryException("query failed", e);
         }
