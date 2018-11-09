@@ -172,7 +172,6 @@ public class BulkServiceImpl implements BulkService {
             log.debug("Cannot abort a completed command: " + commandId);
             return status;
         }
-        // TODO: Check that the current user is either admin either the command username
         status.setState(ABORTED);
         // set the status in the KV store
         setStatus(status);

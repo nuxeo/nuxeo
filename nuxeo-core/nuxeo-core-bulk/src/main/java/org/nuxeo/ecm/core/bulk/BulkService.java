@@ -26,6 +26,10 @@ import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 
 /**
  * API to manage Bulk Computation.
+ * <p>
+ * At this level, there is no verification of the user calling the method against command's user.
+ * <p>
+ * This kind of verification has to be done by caller if needed.
  *
  * @since 10.2
  */
