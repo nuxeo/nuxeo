@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
@@ -147,6 +148,14 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      */
     DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext);
 
+    /**
+     * Returns users matching the given query.
+     *
+     * @param queryBuilder the query to use, including limit, offset, ordering and countTotal
+     * @since 10.3
+     */
+    DocumentModelList searchUsers(QueryBuilder queryBuilder);
+
     String getUserListingMode();
 
     String getUserSortField();
@@ -168,6 +177,14 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @since 5.2M4
      */
     DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext);
+
+    /**
+     * Returns groups matching the given query.
+     *
+     * @param queryBuilder the query to use, including limit, offset, ordering and countTotal
+     * @since 10.3
+     */
+    DocumentModelList searchGroups(QueryBuilder queryBuilder);
 
     /**
      * Creates a group from given model

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.computedgroups;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +32,11 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.BaseSession;
+import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
@@ -183,6 +188,33 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
             }
         }
         return groups;
+    }
+
+    @Override
+    public DocumentModelList searchGroups(QueryBuilder queryBuilder) {
+        return searchGroups(queryBuilder, null);
+    }
+
+    @Override
+    public DocumentModelList searchGroups(QueryBuilder queryBuilder, DocumentModel context) {
+        // TODO find a way to pass a flag to allow callers do disable searching in virtual groups
+        DocumentModelList virtualEntries = new DocumentModelListImpl();
+        for (String groupName : getService().searchComputedGroups(queryBuilder)) {
+            DocumentModel entry = getComputedGroupAsDocumentModel(groupName);
+            if (entry != null && !virtualEntries.contains(entry)) {
+                virtualEntries.add(entry);
+            }
+        }
+        if (virtualEntries.isEmpty()) {
+            // no computed groups match
+            return super.searchGroups(queryBuilder, context);
+        } else {
+            // we have some computed groups to add, we'll need to do limit/offset/order by post-filtering
+            queryBuilder = multiTenantManagement.groupQueryTransformer(this, queryBuilder, context);
+            try (Session session = dirService.open(groupDirectoryName, context)) {
+                return queryWithVirtualEntries(session, queryBuilder, virtualEntries);
+            }
+        }
     }
 
     protected DocumentModel getComputedGroupAsDocumentModel(String grpName) {

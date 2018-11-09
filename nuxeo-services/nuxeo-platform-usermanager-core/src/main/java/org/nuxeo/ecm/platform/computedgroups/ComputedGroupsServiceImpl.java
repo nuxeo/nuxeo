@@ -32,6 +32,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.platform.usermanager.GroupConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -220,6 +221,17 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
         }
         Collections.sort(foundGroups);
         return foundGroups;
+    }
+
+    @Override
+    public List<String> searchComputedGroups(QueryBuilder queryBuilder) {
+        List<String> groups = new ArrayList<>();
+        for (String name : computerNames) {
+            GroupComputerDescriptor desc = computers.get(name);
+            groups.addAll(desc.getComputer().searchGroups(queryBuilder));
+        }
+        Collections.sort(groups);
+        return groups;
     }
 
     @Override

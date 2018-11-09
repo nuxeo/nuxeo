@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.usermanager;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -56,6 +57,9 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
@@ -289,6 +293,75 @@ public class TestUserManager extends UserManagerTestCase {
         }
         assertEquals("Guest", name1);
         assertEquals("Gudule", name2);
+    }
+
+    @Test
+    public void testSearchAnonymousWithQueryBuilder() throws Exception {
+        QueryBuilder queryBuilder;
+        DocumentModelList users;
+
+        // add other users
+        DocumentModel user1 = getUser("Gudule");
+        userManager.createUser(user1);
+        DocumentModel user2 = getUser("Gustave");
+        userManager.createUser(user2);
+
+        // no match
+        queryBuilder = new QueryBuilder().predicate(Predicates.like("firstName", "NoSuchUserFirstName"))
+                                         .countTotal(true);
+        users = userManager.searchUsers(queryBuilder);
+        assertEquals(0, users.size());
+        assertEquals(0, users.totalSize());
+        // same without counting total
+        queryBuilder.countTotal(false);
+        users = userManager.searchUsers(queryBuilder);
+        assertEquals(0, users.size());
+        assertEquals(0, users.totalSize()); // total is available anyway
+
+        // search all
+        queryBuilder = new QueryBuilder().order(OrderByExprs.asc("username")).countTotal(true);
+        users = userManager.searchUsers(queryBuilder);
+        assertEquals(4, users.size());
+        assertEquals(4, users.totalSize());
+        assertEquals("Administrator", users.get(0).getId());
+        assertEquals("Gudule", users.get(1).getId());
+        assertEquals("Guest", users.get(2).getId());
+        assertEquals("Gustave", users.get(3).getId());
+        // same without counting total
+        queryBuilder.countTotal(false);
+        users = userManager.searchUsers(queryBuilder);
+        assertEquals(4, users.size());
+        assertEquals(4, users.totalSize()); // total is available anyway
+
+        // match 3 users including Guest
+        queryBuilder = new QueryBuilder().predicate(Predicates.like("username", "Gu%"))
+                                         .order(OrderByExprs.asc("username"))
+                                         .countTotal(true);
+        // search all
+        users = userManager.searchUsers(queryBuilder);
+        assertEquals(3, users.size());
+        assertEquals(3, users.totalSize());
+        assertEquals("Gudule", users.get(0).getId());
+        assertEquals("Guest", users.get(1).getId());
+        assertEquals("Gustave", users.get(2).getId());
+        // same without counting total
+        queryBuilder.countTotal(false);
+        users = userManager.searchUsers(queryBuilder);
+        assertEquals(3, users.size());
+        assertEquals(3, users.totalSize()); // total is available anyway
+
+        // with offset
+        queryBuilder.limit(10).offset(1).countTotal(true);
+        users = userManager.searchUsers(queryBuilder);
+        assertEquals(2, users.size());
+        assertEquals(3, users.totalSize());
+        assertEquals("Guest", users.get(0).getId());
+        assertEquals("Gustave", users.get(1).getId());
+        // same without counting total
+        queryBuilder.countTotal(false);
+        users = userManager.searchUsers(queryBuilder);
+        assertEquals(2, users.size());
+        assertEquals(-2, users.totalSize());
     }
 
     public void deleteTestObjects() throws Exception {
@@ -660,6 +733,100 @@ public class TestUserManager extends UserManagerTestCase {
         doc.setProperty("group", "grouplabel", "group");
         userManager.createGroup(doc);
         assertEquals(3, userManager.searchGroups("group").size());
+    }
+
+    @Test
+    public void testSearchUsersWithQueryBuilder() throws Exception {
+        QueryBuilder queryBuilder;
+        DocumentModelList users;
+
+        // add other users
+        DocumentModel user1 = getUser("Alfred");
+        userManager.createUser(user1);
+        DocumentModel user2 = getUser("Arthur");
+        userManager.createUser(user2);
+
+        // no match
+        queryBuilder = new QueryBuilder().predicate(Predicates.like("username", "NoSuchUserName")).countTotal(true);
+        users = userManager.searchUsers(queryBuilder);
+        assertEquals(0, users.size());
+
+        // match 3 users (but not Guest)
+        queryBuilder = new QueryBuilder().predicate(Predicates.like("username", "A%"))
+                                         .order(OrderByExprs.asc("username"))
+                                         .countTotal(true);
+        // search all
+        users = userManager.searchUsers(queryBuilder);
+        assertEquals(Arrays.asList("Administrator", "Alfred", "Arthur"),
+                users.stream().map(DocumentModel::getId).collect(toList()));
+        assertEquals(3, users.totalSize());
+        // same without counting total
+        queryBuilder.countTotal(false);
+        users = userManager.searchUsers(queryBuilder);
+        assertEquals(3, users.size());
+        assertEquals(3, users.totalSize()); // total is available anyway
+
+        // with limit/offset
+        queryBuilder.limit(1).offset(1).countTotal(true);
+        users = userManager.searchUsers(queryBuilder);
+        assertEquals(Arrays.asList("Alfred"), users.stream().map(DocumentModel::getId).collect(toList()));
+        assertEquals(3, users.totalSize());
+        // same without counting total
+        queryBuilder.countTotal(false);
+        users = userManager.searchUsers(queryBuilder);
+        assertEquals(Arrays.asList("Alfred"), users.stream().map(DocumentModel::getId).collect(toList()));
+        assertEquals(-2, users.totalSize());
+    }
+
+    @Test
+    public void testSearchGroupsWithQueryBuilder() throws Exception {
+        QueryBuilder queryBuilder;
+        DocumentModelList groups;
+
+        // no match
+        queryBuilder = new QueryBuilder().predicate(Predicates.like("groupname", "NoSuchGroupName")).countTotal(true);
+        groups = userManager.searchGroups(queryBuilder);
+        assertEquals(0, groups.size());
+
+        // add another group
+        DocumentModel g1 = getGroup("g1");
+        userManager.createGroup(g1);
+
+        // match all
+        queryBuilder = new QueryBuilder().order(OrderByExprs.asc("groupname")).countTotal(true);
+        groups = userManager.searchGroups(queryBuilder);
+        assertEquals(4, groups.size());
+        assertEquals(4, groups.totalSize());
+        assertEquals(Arrays.asList("administrators", "g1", "members", "powerusers"),
+                groups.stream().map(DocumentModel::getId).collect(toList()));
+
+        // match 3 groups (not g1)
+        queryBuilder = new QueryBuilder().predicate(Predicates.like("groupname", "%r%"))
+                                         .order(OrderByExprs.asc("groupname"))
+                                         .countTotal(true);
+        // search all
+        groups = userManager.searchGroups(queryBuilder);
+        assertEquals(3, groups.size());
+        assertEquals(3, groups.totalSize());
+        assertEquals(Arrays.asList("administrators", "members", "powerusers"),
+                groups.stream().map(DocumentModel::getId).collect(toList()));
+        // same without counting total
+        queryBuilder.countTotal(false);
+        groups = userManager.searchGroups(queryBuilder);
+        assertEquals(3, groups.size());
+        assertEquals(3, groups.totalSize()); // total is available anyway
+
+        // with limit/offset
+        queryBuilder.limit(1).offset(1).countTotal(true);
+        groups = userManager.searchGroups(queryBuilder);
+        assertEquals(1, groups.size());
+        assertEquals(3, groups.totalSize());
+        assertEquals(Arrays.asList("members"), groups.stream().map(DocumentModel::getId).collect(toList()));
+        // same without counting total
+        queryBuilder.countTotal(false);
+        groups = userManager.searchGroups(queryBuilder);
+        assertEquals(1, groups.size());
+        assertEquals(-2, groups.totalSize());
     }
 
     @Test

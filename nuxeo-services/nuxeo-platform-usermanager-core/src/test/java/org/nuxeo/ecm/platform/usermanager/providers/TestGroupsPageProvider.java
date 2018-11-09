@@ -22,9 +22,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -110,7 +112,7 @@ public class TestGroupsPageProvider {
         properties.put(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
                 AbstractGroupsPageProvider.SEARCH_ONLY_MODE);
         PageProvider<DocumentModel> groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                PROVIDER_NAME, null, null, null, properties, "gr");
+                PROVIDER_NAME, null, null, null, properties, "group");
         List<DocumentModel> groups = groupsProvider.getCurrentPage();
         assertNotNull(groups);
         assertEquals(2, groups.size());
@@ -129,6 +131,16 @@ public class TestGroupsPageProvider {
         assertEquals("Grp1", group.getId());
         group = groups.get(1);
         assertEquals("Grp2", group.getId());
+
+        // regular and computed groups together
+        groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(PROVIDER_NAME, null, null, null,
+                properties, "gr");
+        groups = groupsProvider.getCurrentPage();
+        assertEquals(4, groups.size());
+        assertEquals("group1", groups.get(0).getId());
+        assertEquals("group2", groups.get(1).getId());
+        assertEquals("Grp1", groups.get(2).getId());
+        assertEquals("Grp2", groups.get(3).getId());
     }
 
 }
