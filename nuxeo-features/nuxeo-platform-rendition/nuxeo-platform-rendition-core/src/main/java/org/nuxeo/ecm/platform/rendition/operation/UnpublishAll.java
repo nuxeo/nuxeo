@@ -30,11 +30,11 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
- * Unpublish all publications of the document.
+ * Unpublish all publications of the document. Only publications that current user can remove will be unpublished.
  *
  * @since 10.3
  */
-@Operation(id = UnpublishAll.ID, category = Constants.CAT_DOCUMENT, label = "Unpublish Document's Publications", description = "Unpublish all publications of the input document..")
+@Operation(id = UnpublishAll.ID, category = Constants.CAT_DOCUMENT, label = "Unpublish Document's Publications", description = "Unpublish all publications of the input document. Only publications that current user can remove will be unpublished.")
 public class UnpublishAll {
 
     public static final String ID = "Document.UnpublishAll";
@@ -50,6 +50,7 @@ public class UnpublishAll {
                 0, 0)
                .stream()
                .map(publication -> new IdRef(publication.get(ECM_UUID).toString()))
+               .filter(session::canRemoveDocument)
                .forEach(session::removeDocument);
         // XXX in case of published renditions, do we want to clean up the placeless stored rendition?
         // AFAIK, if a document is published a couple of time with the same rendition,
