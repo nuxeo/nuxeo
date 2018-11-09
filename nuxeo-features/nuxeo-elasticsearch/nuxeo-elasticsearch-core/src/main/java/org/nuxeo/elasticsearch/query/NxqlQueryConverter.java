@@ -129,8 +129,6 @@ public final class NxqlQueryConverter {
         final ArrayList<String> fromList = new ArrayList<>();
         nxqlQuery.accept(new DefaultQueryVisitor() {
 
-            private static final long serialVersionUID = 1L;
-
             @Override
             public void visitFromClause(FromClause node) {
                 FromList elements = node.elements;
@@ -738,8 +736,6 @@ public final class NxqlQueryConverter {
         SQLQuery nxqlQuery = getSqlQuery(nxql);
         nxqlQuery.accept(new DefaultQueryVisitor() {
 
-            private static final long serialVersionUID = 1L;
-
             @Override
             public void visitOrderByExpr(OrderByExpr node) {
                 String name = getFieldName(node.reference.name, null);
@@ -756,8 +752,6 @@ public final class NxqlQueryConverter {
         final Map<String, Type> fieldsAndTypes = new LinkedHashMap<>();
         SQLQuery nxqlQuery = getSqlQuery(nxql);
         nxqlQuery.accept(new DefaultQueryVisitor() {
-
-            private static final long serialVersionUID = 1L;
 
             @Override
             public void visitSelectClause(SelectClause selectClause) {

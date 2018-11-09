@@ -997,8 +997,6 @@ public class NXQLQueryMaker implements QueryMaker {
      */
     protected class QueryAnalyzer extends DefaultQueryVisitor {
 
-        private static final long serialVersionUID = 1L;
-
         protected FacetFilter facetFilter;
 
         protected boolean inSelect;
@@ -1493,8 +1491,6 @@ public class NXQLQueryMaker implements QueryMaker {
      * Builds the database-level WHERE query from the AST.
      */
     protected class WhereBuilder extends DefaultQueryVisitor {
-
-        private static final long serialVersionUID = 1L;
 
         public static final String PATH_SEP = "/";
 

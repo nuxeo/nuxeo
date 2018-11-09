@@ -25,8 +25,6 @@ package org.nuxeo.ecm.core.query.sql.model;
  */
 public class DefaultQueryVisitor implements IVisitor {
 
-    private static final long serialVersionUID = 1L;
-
     @Override
     public void visitQuery(SQLQuery node) {
         node.select.accept(this);

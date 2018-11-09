@@ -20,13 +20,11 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
-import java.io.Serializable;
-
 /**
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
-public interface IVisitor extends Serializable {
+public interface IVisitor {
 
     void visitLiteral(Literal node);
 
