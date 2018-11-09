@@ -28,7 +28,7 @@ Contributors:
 
     <nuxeo-resource id="token" path="/token" params='{"application": "Nuxeo Drive"}'></nuxeo-resource>
 
-    <template is="dom-if" if="[[_isAvailable(blob)]]">
+    <template is="dom-if" if="[[_isAvailable(document,blob)]]">
       <div class="action" on-tap="_go">
         <paper-icon-button noink icon="icons:open-in-new" id="driveBtn"></paper-icon-button>
         <span class="label" hidden$="[[!showLabel]]">[[i18n('driveEditButton.tooltip')]]</span>
@@ -50,7 +50,7 @@ Contributors:
   <script>
     Polymer({
       is: 'nuxeo-drive-edit-button',
-      behaviors: [Nuxeo.I18nBehavior],
+      behaviors: [Nuxeo.I18nBehavior, Nuxeo.FiltersBehavior],
       properties: {
         user: Object,
         document: Object,
@@ -65,8 +65,8 @@ Contributors:
         }
       },
 
-      _isAvailable: function(blob) {
-        return Boolean(blob);
+      _isAvailable: function(doc, blob) {
+        return doc && blob && this.hasPermission(doc, 'Write');
       },
 
       _go: function() {
