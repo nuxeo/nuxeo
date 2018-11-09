@@ -34,7 +34,6 @@ import java.time.Instant;
 import java.util.Calendar;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -338,29 +337,30 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
     }
 
     @Test
-    @Ignore("NXP-26144")
     public void shouldReturnAllCommentsSortedByCreationDateDescendingWhenDocumentHasComments() {
         DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
         doc = session.createDocument(doc);
 
-        Comment firstComment = commentManager.createComment(session,
-                getSampleComment(doc.getId(), session.getPrincipal().getName(), "first comment"));
-        Comment secondComment = commentManager.createComment(session,
-                getSampleComment(doc.getId(), session.getPrincipal().getName(), "second comment"));
-        Comment thirdComment = commentManager.createComment(session,
-                getSampleComment(doc.getId(), session.getPrincipal().getName(), "third comment"));
-        Comment fourthComment = commentManager.createComment(session,
-                getSampleComment(doc.getId(), session.getPrincipal().getName(), "fourth comment"));
+        Instant initialDate = Instant.now();
+
+        Comment firstComment = commentManager.createComment(session, getSampleComment(doc.getId(),
+                session.getPrincipal().getName(), "first comment", initialDate.plusSeconds(1)));
+        Comment secondComment = commentManager.createComment(session, getSampleComment(doc.getId(),
+                session.getPrincipal().getName(), "second comment", initialDate.plusSeconds(2)));
+        Comment thirdComment = commentManager.createComment(session, getSampleComment(doc.getId(),
+                session.getPrincipal().getName(), "third comment", initialDate.plusSeconds(3)));
+        Comment fourthComment = commentManager.createComment(session, getSampleComment(doc.getId(),
+                session.getPrincipal().getName(), "fourth comment", initialDate.plusSeconds(4)));
 
         session.save();
 
         List<Comment> comments = commentManager.getComments(session, doc.getId(), false);
         assertNotNull(comments);
         assertEquals(4, comments.size());
-        assertEquals(comments.get(0), fourthComment);
-        assertEquals(comments.get(1), thirdComment);
-        assertEquals(comments.get(2), secondComment);
-        assertEquals(comments.get(3), firstComment);
+        assertEquals(comments.get(0).getText(), fourthComment.getText());
+        assertEquals(comments.get(1).getText(), thirdComment.getText());
+        assertEquals(comments.get(2).getText(), secondComment.getText());
+        assertEquals(comments.get(3).getText(), firstComment.getText());
     }
 
     @Test
@@ -477,12 +477,16 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         assertEquals(comment.getText(), children.get(0).getPropertyValue("comment:text"));
     }
 
-    protected static Comment getSampleComment(String parentId, String author, String text) {
+    protected Comment getSampleComment(String parentId, String author, String text) {
+        return getSampleComment(parentId, author, text, Instant.now());
+    }
+
+    protected Comment getSampleComment(String parentId, String author, String text, Instant creationDate) {
         Comment comment = new CommentImpl();
         comment.setParentId(parentId);
         comment.setAuthor(author);
         comment.setText(text);
-        comment.setCreationDate(Instant.now());
+        comment.setCreationDate(creationDate);
         return comment;
     }
 }
