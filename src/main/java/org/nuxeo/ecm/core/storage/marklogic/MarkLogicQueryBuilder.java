@@ -611,14 +611,14 @@ class MarkLogicQueryBuilder {
     }
 
     private QueryBuilder walkMultiExpression(MultiExpression expression) {
-        return walkAnd(expression.values);
+        return walkAnd(expression.predicates);
     }
 
     private QueryBuilder walkAnd(Operand lvalue, Operand rvalue) {
         return walkAnd(Arrays.asList(lvalue, rvalue));
     }
 
-    private QueryBuilder walkAnd(List<Operand> values) {
+    private QueryBuilder walkAnd(List<? extends Operand> values) {
         List<QueryBuilder> children = walkOperandAsExpression(values);
         // Check wildcards in children in order to perform correlated constraints
         Map<String, List<QueryBuilder>> propBaseToBuilders = new LinkedHashMap<>();
@@ -696,7 +696,7 @@ class MarkLogicQueryBuilder {
     /**
      * Method used to walk on a list of {@link Expression} typed as {@link Operand}.
      */
-    private List<QueryBuilder> walkOperandAsExpression(List<Operand> operands) {
+    private List<QueryBuilder> walkOperandAsExpression(List<? extends Operand> operands) {
         return operands.stream().map(this::walkOperandAsExpression).collect(Collectors.toList());
     }
 

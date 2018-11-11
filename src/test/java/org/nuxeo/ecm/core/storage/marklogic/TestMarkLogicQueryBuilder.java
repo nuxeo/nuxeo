@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
-import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
@@ -39,6 +38,7 @@ import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
@@ -57,25 +57,25 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.core.storage.marklogic.test:OSGI-INF/test-types-contrib.xml")
 public class TestMarkLogicQueryBuilder extends AbstractTest {
 
-    protected static DBSExpressionEvaluator newEvaluator(DBSSession session, SelectClause select, Expression expression,
+    protected static DBSExpressionEvaluator newEvaluator(DBSSession session, SelectClause select, Predicate predicate,
             OrderByClause orderBy, String[] principals, boolean fulltextSearchDisabled) {
-        return new DBSExpressionEvaluator(session, query(select, expression, orderBy), principals,
+        return new DBSExpressionEvaluator(session, query(select, predicate, orderBy), principals,
                 fulltextSearchDisabled);
     }
 
-    protected static DBSExpressionEvaluator newEvaluator(SelectClause select, Expression expression) {
-        return new DBSExpressionEvaluator(null, query(select, expression, null), null, false);
+    protected static DBSExpressionEvaluator newEvaluator(SelectClause select, Predicate predicate) {
+        return new DBSExpressionEvaluator(null, query(select, predicate, null), null, false);
     }
 
-    protected static SQLQuery query(SelectClause select, Expression expression, OrderByClause orderByClause) {
-        return new SQLQuery(select, null, new WhereClause(expression), orderByClause);
+    protected static SQLQuery query(SelectClause select, Predicate predicate, OrderByClause orderByClause) {
+        return new SQLQuery(select, null, new WhereClause(predicate), orderByClause);
     }
 
     @Test
     public void testEqOperatorOnEcmPath() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_PATH), Operator.EQ,
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_PATH), Operator.EQ,
                 new StringLiteral("/default-domain"));
 
         // Mock session
@@ -85,7 +85,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
             }
             return invocation.callRealMethod();
         });
-        DBSExpressionEvaluator evaluator = newEvaluator(session, selectClause, expression, null, null, false);
+        DBSExpressionEvaluator evaluator = newEvaluator(session, selectClause, predicate, null, null, false);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -97,7 +97,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testStartsWithOperatorOnEcmPath() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_PATH), Operator.STARTSWITH,
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_PATH), Operator.STARTSWITH,
                 new StringLiteral("/default-domain"));
 
         // Mock session
@@ -107,7 +107,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
             }
             return invocation.callRealMethod();
         });
-        DBSExpressionEvaluator evaluator = newEvaluator(session, selectClause, expression, null, null, false);
+        DBSExpressionEvaluator evaluator = newEvaluator(session, selectClause, predicate, null, null, false);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -119,10 +119,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testStartsWithOperatorOnPath() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference("dc:title"), Operator.STARTSWITH,
+        Predicate predicate = new Predicate(new Reference("dc:title"), Operator.STARTSWITH,
                 new StringLiteral("/default-domain"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -134,9 +134,9 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testEqOperatorOnBoolean() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_ISPROXY), Operator.EQ, new IntegerLiteral(0));
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_ISPROXY), Operator.EQ, new IntegerLiteral(0));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -148,10 +148,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testEqOperatorOnDate() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference("dc:created"), Operator.EQ,
+        Predicate predicate = new Predicate(new Reference("dc:created"), Operator.EQ,
                 new DateLiteral("2007-01-01", true));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -163,10 +163,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testEqOperatorOnMixinType() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.EQ,
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_MIXINTYPE), Operator.EQ,
                 new StringLiteral("Aged"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -178,9 +178,9 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testEqOperatorOnRangeElementIndex() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_NAME), Operator.EQ, new StringLiteral("NAME"));
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_NAME), Operator.EQ, new StringLiteral("NAME"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         MarkLogicRangeElementIndexDescriptor reid = new MarkLogicRangeElementIndexDescriptor();
         reid.element = NXQL.ECM_NAME;
@@ -196,9 +196,9 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testEqOperatorOnRangeElementIndexOnArray() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference("dc:contributors"), Operator.EQ, new StringLiteral("bob"));
+        Predicate predicate = new Predicate(new Reference("dc:contributors"), Operator.EQ, new StringLiteral("bob"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         MarkLogicRangeElementIndexDescriptor reid = new MarkLogicRangeElementIndexDescriptor();
         reid.element = "dc:contributors";
@@ -217,9 +217,9 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testEqOperatorWithAmpersand() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference("dc:title"), Operator.EQ, new StringLiteral("bob &"));
+        Predicate predicate = new Predicate(new Reference("dc:title"), Operator.EQ, new StringLiteral("bob &"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -231,9 +231,9 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testEqOperatorOnArray() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference("dc:contributors"), Operator.EQ, new StringLiteral("bob"));
+        Predicate predicate = new Predicate(new Reference("dc:contributors"), Operator.EQ, new StringLiteral("bob"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -245,10 +245,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testEqOperatorOnArrayWildcard() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference("dc:contributors/*"), Operator.EQ,
+        Predicate predicate = new Predicate(new Reference("dc:contributors/*"), Operator.EQ,
                 new StringLiteral("bob"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -260,10 +260,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testNoteqOperatorOnMixinType() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.NOTEQ,
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_MIXINTYPE), Operator.NOTEQ,
                 new StringLiteral("Aged"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -275,10 +275,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testNoteqOperatorOnArray() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference("dc:contributors"), Operator.NOTEQ,
+        Predicate predicate = new Predicate(new Reference("dc:contributors"), Operator.NOTEQ,
                 new StringLiteral("bob"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -290,10 +290,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testNoteqOperatorOnArrayWildcard() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference("dc:contributors/*"), Operator.NOTEQ,
+        Predicate predicate = new Predicate(new Reference("dc:contributors/*"), Operator.NOTEQ,
                 new StringLiteral("bob"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -305,9 +305,9 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testNoteqOperatorOnRangeElementIndex() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_NAME), Operator.NOTEQ, new StringLiteral("NAME"));
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_NAME), Operator.NOTEQ, new StringLiteral("NAME"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         MarkLogicRangeElementIndexDescriptor reid = new MarkLogicRangeElementIndexDescriptor();
         reid.element = NXQL.ECM_NAME;
@@ -323,10 +323,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testNoteqOperatorOnRangeElementIndexOnArray() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference("dc:contributors"), Operator.NOTEQ,
+        Predicate predicate = new Predicate(new Reference("dc:contributors"), Operator.NOTEQ,
                 new StringLiteral("bob"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         MarkLogicRangeElementIndexDescriptor reid = new MarkLogicRangeElementIndexDescriptor();
         reid.element = "dc:contributors";
@@ -342,9 +342,9 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testLtOperator() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_NAME), Operator.LT, new IntegerLiteral(10L));
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_NAME), Operator.LT, new IntegerLiteral(10L));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -359,9 +359,9 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         LiteralList literals = new LiteralList();
         literals.add(new DateLiteral("2007-01-01", true));
         literals.add(new DateLiteral("2008-01-01", true));
-        Expression expression = new Expression(new Reference("dc:created"), Operator.BETWEEN, literals);
+        Predicate predicate = new Predicate(new Reference("dc:created"), Operator.BETWEEN, literals);
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -373,8 +373,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testLikeOperator() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference("dc:title"), Operator.LIKE, new StringLiteral("Docu%_"));
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        Predicate predicate = new Predicate(new Reference("dc:title"), Operator.LIKE, new StringLiteral("Docu%_"));
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -386,8 +386,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testIlikeOperator() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference("dc:title"), Operator.ILIKE, new StringLiteral("Docu%_"));
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        Predicate predicate = new Predicate(new Reference("dc:title"), Operator.ILIKE, new StringLiteral("Docu%_"));
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -402,8 +402,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         LiteralList inPrimaryTypes = new LiteralList();
         inPrimaryTypes.add(new StringLiteral("Document"));
         inPrimaryTypes.add(new StringLiteral("Folder"));
-        Expression expression = new Expression(new Reference(KEY_PRIMARY_TYPE), Operator.IN, inPrimaryTypes);
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        Predicate predicate = new Predicate(new Reference(KEY_PRIMARY_TYPE), Operator.IN, inPrimaryTypes);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -418,8 +418,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         LiteralList inContributors = new LiteralList();
         inContributors.add(new StringLiteral("bob"));
         inContributors.add(new StringLiteral("pete"));
-        Expression expression = new Expression(new Reference("dc:contributors"), Operator.NOTIN, inContributors);
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        Predicate predicate = new Predicate(new Reference("dc:contributors"), Operator.NOTIN, inContributors);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -431,9 +431,9 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testIsNullOperator() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_LOCK_CREATED), Operator.ISNULL, null);
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_LOCK_CREATED), Operator.ISNULL, null);
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -445,11 +445,11 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testNotOperator() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(
-                new Expression(new Reference("dc:title"), Operator.EQ, new StringLiteral("Document 1")), Operator.NOT,
+        Predicate predicate = new Predicate(
+                new Predicate(new Reference("dc:title"), Operator.EQ, new StringLiteral("Document 1")), Operator.NOT,
                 null);
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -461,13 +461,13 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testNotOperatorOnComposition() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression orExpression = new Expression( //
-                new Expression(new Reference("dc:title"), Operator.EQ, new StringLiteral("Document 1")), //
+        Predicate orPredicate = new Predicate( //
+                new Predicate(new Reference("dc:title"), Operator.EQ, new StringLiteral("Document 1")), //
                 Operator.OR, //
-                new Expression(new Reference("dc:description"), Operator.EQ, new StringLiteral("Description 1")));
-        Expression expression = new Expression(orExpression, Operator.NOT, null);
+                new Predicate(new Reference("dc:description"), Operator.EQ, new StringLiteral("Description 1")));
+        Predicate predicate = new Predicate(orPredicate, Operator.NOT, null);
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -479,10 +479,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testWildcardReference() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference("picture:views/*/title"), Operator.EQ,
+        Predicate predicate = new Predicate(new Reference("picture:views/*/title"), Operator.EQ,
                 new StringLiteral("Original"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -494,11 +494,11 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testCorrelatedWildcardReference() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new MultiExpression(Operator.AND, Arrays.asList( //
-                new Expression(new Reference("picture:views/*1/width"), Operator.EQ, new IntegerLiteral(640)), //
-                new Expression(new Reference("picture:views/*1/height"), Operator.EQ, new IntegerLiteral(480))));
+        Predicate predicate = new MultiExpression(Operator.AND, Arrays.asList( //
+                new Predicate(new Reference("picture:views/*1/width"), Operator.EQ, new IntegerLiteral(640)), //
+                new Predicate(new Reference("picture:views/*1/height"), Operator.EQ, new IntegerLiteral(480))));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -511,10 +511,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         SelectClause selectClause = new SelectClause();
         selectClause.add(new Reference("dc:subjects/*1"));
 
-        Expression expression = new Expression(new Reference("dc:subjects/*1"), Operator.LIKE,
+        Predicate predicate = new Predicate(new Reference("dc:subjects/*1"), Operator.LIKE,
                 new StringLiteral("abc%"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -530,11 +530,11 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         LiteralList inPermissions = new LiteralList();
         inPermissions.add(new StringLiteral("Read"));
         inPermissions.add(new StringLiteral("Browse"));
-        Expression expression = new MultiExpression(Operator.AND, Arrays.asList( //
-                new Expression(new Reference("ecm:acl/*1/permission"), Operator.IN, inPermissions), //
-                new Expression(new Reference("ecm:acl/*1/grant"), Operator.EQ, new IntegerLiteral(1))));
+        Predicate predicate = new MultiExpression(Operator.AND, Arrays.asList( //
+                new Predicate(new Reference("ecm:acl/*1/permission"), Operator.IN, inPermissions), //
+                new Predicate(new Reference("ecm:acl/*1/grant"), Operator.EQ, new IntegerLiteral(1))));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -546,9 +546,9 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testQueryWithPrincipals() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference("dc:title"), Operator.EQ, new StringLiteral("title"));
+        Predicate predicate = new Predicate(new Reference("dc:title"), Operator.EQ, new StringLiteral("title"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(null, selectClause, expression, null,
+        DBSExpressionEvaluator evaluator = newEvaluator(null, selectClause, predicate, null,
                 new String[] { "Everyone", "bob" }, false);
 
         // Test
@@ -561,13 +561,13 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testQueryWithSort() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_NAME), Operator.EQ, new StringLiteral("NAME"));
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_NAME), Operator.EQ, new StringLiteral("NAME"));
 
         OrderByList orderBys = new OrderByList(new OrderByExpr(new Reference("dc:title"), false));
         orderBys.add(new OrderByExpr(new Reference("dc:created"), true));
         OrderByClause orderByClause = new OrderByClause(orderBys);
 
-        DBSExpressionEvaluator evaluator = newEvaluator(null, selectClause, expression, orderByClause, null, false);
+        DBSExpressionEvaluator evaluator = newEvaluator(null, selectClause, predicate, orderByClause, null, false);
 
         MarkLogicRangeElementIndexDescriptor reid1 = new MarkLogicRangeElementIndexDescriptor();
         reid1.element = "dc:title";
@@ -586,10 +586,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testQueryFulltext() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
                 new StringLiteral("NAME"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -601,10 +601,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testQueryFulltextOr() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
                 new StringLiteral("pete OR world"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -616,10 +616,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testQueryFulltextAnd() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
                 new StringLiteral("world Oyster"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -631,10 +631,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testQueryFulltextNot() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
                 new StringLiteral("Kangaroo -oyster"));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -646,10 +646,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testQueryFulltextPhrase() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
                 new StringLiteral("\"Learn commerce\""));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -661,10 +661,10 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     public void testQueryFulltextNotPhrase() throws Exception {
         SelectClause selectClause = newSelectClause();
 
-        Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
+        Predicate predicate = new Predicate(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
                 new StringLiteral("Bobby -\"commerce easily\""));
 
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
@@ -682,13 +682,13 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 "TestDocumentWithDefaultPrefetch", "SectionRoot", "Document", "Folder", "WorkspaceRoot", "HiddenFolder",
                 "Section", "TestDocument", "Relation", "FolderWithSearch", "MyDocType", "Book", "Note", "ComplexDoc",
                 "Domain", "File", "Workspace").map(StringLiteral::new).collect(Collectors.toList()));
-        MultiExpression expression = new MultiExpression(Operator.AND, Collections.singletonList(
-                new Expression(new Reference(KEY_PRIMARY_TYPE), Operator.IN, inPrimaryTypes)));
+        Predicate predicate = new MultiExpression(Operator.AND, Collections.singletonList(
+                new Predicate(new Reference(KEY_PRIMARY_TYPE), Operator.IN, inPrimaryTypes)));
         // SELECT 'ecm:id' WHERE ecm:primaryType IN 'OrderedFolder', 'HiddenFile', 'DocWithAge', 'TemplateRoot',
         // 'TestDocument2', 'TestDocumentWithDefaultPrefetch', 'SectionRoot', 'Document', 'Folder', 'WorkspaceRoot',
         // 'HiddenFolder', 'Section', 'TestDocument', 'Relation', 'FolderWithSearch', 'MyDocType', 'Book', 'Note',
         // 'ComplexDoc', 'Domain', 'File', 'Workspace'
-        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, expression);
+        DBSExpressionEvaluator evaluator = newEvaluator(selectClause, predicate);
 
         // Test
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
