@@ -115,13 +115,10 @@ public class SuggestionServiceTest {
         // create some documents to be looked up
         makeSomeDocuments();
 
+        // login as admin and stay logged in for the tests
         loginFeature.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
         // create some users and groups
-        try {
-            makeSomeUsersAndGroups();
-        } finally {
-            loginFeature.logout();
-        }
+        makeSomeUsersAndGroups();
 
         suggestionService = Framework.getService(SuggestionService.class);
         assertNotNull(suggestionService);
