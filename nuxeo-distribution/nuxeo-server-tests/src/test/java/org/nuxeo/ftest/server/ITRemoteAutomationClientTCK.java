@@ -45,7 +45,6 @@ import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
-import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;
@@ -200,12 +199,12 @@ public class ITRemoteAutomationClientTCK {
 
     public void testQueryPage1() throws Exception {
         Document root = (Document) session.newRequest("Document.Fetch").set("value", "/TestFolder2").execute();
-        PaginableDocuments docs = (PaginableDocuments) session.newRequest(DocumentPageProviderOperation.ID)
+        PaginableDocuments docs = (PaginableDocuments) session.newRequest(DocumentPaginatedQuery.ID)
                                                               .set("query",
                                                                       "select * from Document where ecm:parentId = ?")
                                                               .set("queryParams", root.getId())
                                                               .set("pageSize", "2")
-                                                              .set("page", "0")
+                                                              .set("currentPageIndex", "0")
                                                               .execute();
         assertEquals(2, docs.size());
         assertEquals(2, docs.getPageSize());
@@ -215,12 +214,12 @@ public class ITRemoteAutomationClientTCK {
 
     public void testQueryPage2() throws Exception {
         Document root = (Document) session.newRequest("Document.Fetch").set("value", "/TestFolder2").execute();
-        PaginableDocuments docs = (PaginableDocuments) session.newRequest(DocumentPageProviderOperation.ID)
+        PaginableDocuments docs = (PaginableDocuments) session.newRequest(DocumentPaginatedQuery.ID)
                                                               .set("query",
                                                                       "select * from Document where ecm:parentId = ?")
                                                               .set("queryParams", root.getId())
                                                               .set("pageSize", "2")
-                                                              .set("page", "1")
+                                                              .set("currentPageIndex", "1")
                                                               .execute();
         assertEquals(1, docs.size());
         assertEquals(2, docs.getPageSize());

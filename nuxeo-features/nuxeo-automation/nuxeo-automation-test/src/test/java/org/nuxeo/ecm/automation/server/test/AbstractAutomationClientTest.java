@@ -75,13 +75,11 @@ import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 import org.nuxeo.ecm.automation.core.operations.document.LockDocument;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
-import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
-import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
+import org.nuxeo.ecm.automation.core.operations.services.query.ResultSetPaginatedQuery;
 import org.nuxeo.ecm.automation.core.operations.traces.JsonStackToggleDisplayOperation;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
-import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractAutomationClientTest {
@@ -416,7 +414,7 @@ public abstract class AbstractAutomationClientTest {
                .execute();
 
         // now query the two files
-        RecordSet result = (RecordSet) session.newRequest(ResultSetPageProviderOperation.ID)
+        RecordSet result = (RecordSet) session.newRequest(ResultSetPaginatedQuery.ID)
                                               .set("query",
                                                       "SELECT dc:title, ecm:uuid, dc:description FROM Note WHERE ecm:path STARTSWITH '/automation-test-folder/queryTest' order by dc:title ")
                                               .execute();
@@ -661,7 +659,7 @@ public abstract class AbstractAutomationClientTest {
                                                     "SELECT * from Document WHERE ecm:path STARTSWITH '/automation-test-folder/'")
                                             .execute();
 
-        PaginableDocuments cursor = (PaginableDocuments) session.newRequest(DocumentPageProviderOperation.ID)
+        PaginableDocuments cursor = (PaginableDocuments) session.newRequest(DocumentPaginatedQuery.ID)
                                                                 .set("query",
                                                                         "SELECT * from Document WHERE ecm:path STARTSWITH '/automation-test-folder/'")
                                                                 .set("pageSize", 2)

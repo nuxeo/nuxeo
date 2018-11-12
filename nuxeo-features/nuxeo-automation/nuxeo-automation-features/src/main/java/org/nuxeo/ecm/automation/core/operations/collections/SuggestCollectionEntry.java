@@ -38,6 +38,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
+import org.nuxeo.ecm.automation.core.util.PageProviderHelper;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.features.SuggestConstants;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
@@ -89,7 +90,7 @@ public class SuggestCollectionEntry {
         {
             StringList sl = new StringList();
             sl.add(searchTerm + (searchTerm.endsWith("%") ? "" : "%"));
-            sl.add(DocumentPageProviderOperation.CURRENT_USERID_PATTERN);
+            sl.add(PageProviderHelper.CURRENT_USERID_PATTERN);
             vars.put("queryParams", sl);
             vars.put("providerName", CollectionConstants.COLLECTION_PAGE_PROVIDER);
         }

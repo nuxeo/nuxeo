@@ -44,24 +44,22 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
-import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.automation.core.util.PageProviderHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
-import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
-import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.search.core.InvalidSearchParameterException;
 import org.nuxeo.ecm.platform.search.core.SavedSearch;
 import org.nuxeo.ecm.platform.search.core.SavedSearchConstants;
 import org.nuxeo.ecm.platform.search.core.SavedSearchRequest;
 import org.nuxeo.ecm.platform.search.core.SavedSearchService;
-import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.runtime.api.Framework;
@@ -287,7 +285,7 @@ public class SearchObject extends QueryExecutor {
                     currentPageOffset != null ? currentPageOffset : search.getCurrentPageOffset(),
                     search.getQueryParams(), search.getNamedParams(),
                     sortInfo != null ? sortInfo : getSortInfo(search.getSortBy(), search.getSortOrder()), quickFilters,
-                    search.getDocument().getType() != SavedSearchConstants.PARAMETERIZED_SAVED_SEARCH_TYPE_NAME
+                    !search.getDocument().getType().equals(SavedSearchConstants.PARAMETERIZED_SAVED_SEARCH_TYPE_NAME)
                             ? search.getDocument()
                             : null);
         } else if (!StringUtils.isEmpty(search.getQuery()) && !StringUtils.isEmpty(search.getQueryLanguage())) {
@@ -306,33 +304,33 @@ public class SearchObject extends QueryExecutor {
     protected DocumentModelList querySavedSearchByLang(String queryLanguage, String query, Long pageSize,
             Long currentPageIndex, Long currentPageOffset, Long maxResults, String orderedParams,
             Map<String, String> namedParameters, List<SortInfo> sortInfo) {
-        Properties namedParametersProps = getNamedParameters(namedParameters);
+        Map<String, String> namedParametersProps = getNamedParameters(namedParameters);
         Object[] parameters = replaceParameterPattern(new Object[] { orderedParams });
         Map<String, Serializable> props = getProperties();
 
-        DocumentModel searchDocumentModel = getSearchDocumentModel(ctx.getCoreSession(), pageProviderService, null,
+        DocumentModel searchDocumentModel = PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(), null,
                 namedParametersProps);
 
-        return queryByLang(query, pageSize, currentPageIndex, currentPageOffset, maxResults, sortInfo, parameters,
-                props, searchDocumentModel);
+        return queryByLang(query, pageSize, currentPageIndex, currentPageOffset, maxResults, sortInfo,
+                props, searchDocumentModel, parameters);
     }
 
     protected DocumentModelList querySavedSearchByPageProvider(String pageProviderName, Long pageSize,
             Long currentPageIndex, Long currentPageOffset, String orderedParams, Map<String, String> namedParameters,
             List<SortInfo> sortInfo, List<QuickFilter> quickFilters, DocumentModel searchDocumentModel) {
-        Properties namedParametersProps = getNamedParameters(namedParameters);
+        Map<String, String> namedParametersProps = getNamedParameters(namedParameters);
         Object[] parameters = orderedParams != null ? replaceParameterPattern(new Object[] { orderedParams })
                 : new Object[0];
         Map<String, Serializable> props = getProperties();
 
         DocumentModel documentModel;
         if (searchDocumentModel == null) {
-            documentModel = getSearchDocumentModel(ctx.getCoreSession(), pageProviderService, pageProviderName,
+            documentModel = PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(), pageProviderName,
                     namedParametersProps);
         } else {
             documentModel = searchDocumentModel;
             if (namedParametersProps.size() > 0) {
-                documentModel.putContextData(PageProviderService.NAMED_PARAMETERS, namedParametersProps);
+                documentModel.putContextData(PageProviderService.NAMED_PARAMETERS, (Serializable) namedParametersProps);
             }
         }
 
@@ -342,59 +340,27 @@ public class SearchObject extends QueryExecutor {
 
     /**
      * Retrieves the query string from the page provider and/or the query parameters.
-     *
-     * @param pageProviderName the page provider name
-     * @param queryParams the query parameters
+     * 
+     * @param providerName the page provider name
+     * @param parameters the parameters
      * @return the query string
      */
-    protected String getQueryString(String pageProviderName, MultivaluedMap<String, String> queryParams) {
+    protected String getQueryString(String providerName, MultivaluedMap<String, String> parameters) {
 
-        Properties namedParameters = getNamedParameters(queryParams);
-        List<QuickFilter> quickFilters = pageProviderName == null ? Collections.emptyList()
-                : getQuickFilters(pageProviderName, queryParams);
-        Object[] parameters = getParameters(queryParams);
+        Map<String, String> namedParameters = getNamedParameters(parameters);
+        Object[] queryParameters = getParameters(parameters);
+        List<String> quickfilters = asStringList(parameters.getFirst(QUICK_FILTERS));
+        Long pageSize = getPageSize(parameters);
+        Long currentPageIndex = getCurrentPageIndex(parameters);
+        List<String> sortBy = asStringList(parameters.getFirst(SORT_BY));
+        List<String> sortOrder = asStringList(parameters.getFirst(SORT_ORDER));
 
-        DocumentModel searchDocumentModel = getSearchDocumentModel(ctx.getCoreSession(), pageProviderService,
-                pageProviderName, namedParameters);
+        String query = getQuery(parameters);
 
-        if (pageProviderName == null) {
-            pageProviderName = SearchAdapter.pageProviderName;
-        }
+        PageProviderDefinition def = providerName == null ? PageProviderHelper.getQueryPageProviderDefinition(query)
+                : PageProviderHelper.getPageProviderDefinition(providerName);
 
-        String quickFiltersClause = "";
-        for (QuickFilter quickFilter : quickFilters) {
-            String clause = quickFilter.getClause();
-            if (!quickFiltersClause.isEmpty() && clause != null) {
-                quickFiltersClause = NXQLQueryBuilder.appendClause(quickFiltersClause, clause);
-            } else {
-                quickFiltersClause = StringUtils.defaultString(clause);
-            }
-        }
-
-        String query;
-        PageProviderDefinition def = Framework.getService(PageProviderService.class)
-                                              .getPageProviderDefinition(pageProviderName);
-        WhereClauseDefinition whereClause = def.getWhereClause();
-        if (whereClause == null) {
-            String originalPattern = def.getPattern();
-            if (originalPattern == null) {
-                originalPattern = getQuery(queryParams);
-            }
-            String pattern = quickFiltersClause.isEmpty() ? originalPattern
-                    : StringUtils.containsIgnoreCase(originalPattern, " WHERE ")
-                            ? NXQLQueryBuilder.appendClause(originalPattern, quickFiltersClause)
-                            : originalPattern + " WHERE " + quickFiltersClause;
-
-            query = NXQLQueryBuilder.getQuery(pattern, parameters, def.getQuotePatternParameters(),
-                    def.getEscapePatternParameters(), searchDocumentModel, null);
-        } else {
-            if (searchDocumentModel == null) {
-                throw new NuxeoException(String.format(
-                        "Cannot build query of provider '%s': " + "no search document model is set", getName()));
-            }
-            query = NXQLQueryBuilder.getQuery(searchDocumentModel, whereClause, quickFiltersClause, parameters, null);
-        }
-        return query;
+        PageProvider provider = PageProviderHelper.getPageProvider(ctx.getCoreSession(), def, namedParameters, sortBy, sortOrder, pageSize, currentPageIndex, null, quickfilters, queryParameters);
+        return PageProviderHelper.buildQueryString(provider);
     }
-
 }

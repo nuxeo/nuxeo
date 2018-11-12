@@ -91,6 +91,8 @@
     if (typeof (opName) == 'undefined' || opName == '') {
       if (params.directoryName && params.directoryName.length > 0) {
         opName = 'Directory.SuggestEntries';
+      } else if (params.query) {
+        opName = 'Repository.Query';
       } else {
         opName = 'Repository.PageProvider';
       }
@@ -126,13 +128,16 @@
     } else if (params.operationId == 'UserGroup.Suggestion') {
       temp.searchTerm = query.term;
       temp.searchType = params.userSuggestionSearchType;
-    } else if (params.operationId == 'Repository.PageProvider') {
+    } else if (params.operationId == 'Repository.PageProvider' || params.operationId == 'Repository.Query') {
       // build default operation for Document
       temp.searchTerm = query.term;
-      temp.query = params.query;
-      temp.providerName = params.pageProviderName;
       temp.page = "0";
       temp.pageSize = params.pageSize || "20";
+      if (params.operationId  == 'Repository.PageProvider') {
+        temp.providerName = params.pageProviderName;
+      } else {
+        temp.query = params.query;
+      }
       if (typeof temp.quotePatternParameters === "undefined") {
         temp.quotePatternParameters = false;
       }

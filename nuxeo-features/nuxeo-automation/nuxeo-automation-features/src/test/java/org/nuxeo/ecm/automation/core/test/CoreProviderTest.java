@@ -39,6 +39,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
+import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
@@ -181,7 +182,7 @@ public class CoreProviderTest {
             params.put("pageSize", 2);
 
             OperationChain chain = new OperationChain("fakeChain");
-            OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
+            OperationParameters oparams = new OperationParameters(DocumentPaginatedQuery.ID, params);
             chain.add(oparams);
 
             PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
@@ -205,7 +206,7 @@ public class CoreProviderTest {
             params.put("queryParams", "$currentUser");
 
             OperationChain chain = new OperationChain("fakeChain");
-            OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
+            OperationParameters oparams = new OperationParameters(DocumentPaginatedQuery.ID, params);
             chain.add(oparams);
 
             PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
@@ -238,7 +239,7 @@ public class CoreProviderTest {
             params.put("maxResults", "2");
 
             OperationChain chain = new OperationChain("fakeChain");
-            OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
+            OperationParameters oparams = new OperationParameters(DocumentPaginatedQuery.ID, params);
             chain.add(oparams);
 
             PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
