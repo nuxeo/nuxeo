@@ -497,52 +497,108 @@ public abstract class TestStreamProcessor {
 
     @Test
     public void testComputationPolicy() throws Exception {
-        // Default topology: no retry, abort on failure
+        // Define a topology
         Topology topology = Topology.builder()
                                     .addComputation(() -> new ComputationFailureForward("C1", 1, 1),
                                             Arrays.asList("i1:input", "o1:output"))
                                     .build();
-        // Topology continue on error
-        ComputationPolicy policySkip = new ComputationPolicyBuilder().retryPolicy(
-                new RetryPolicy(ComputationPolicy.NO_RETRY)).continueOnFailure(true).build();
-        Topology topologySkip = Topology.builder()
-                                        .addComputation(() -> new ComputationFailureForward("C2", 1, 1, policySkip),
-                                                Arrays.asList("i1:input", "o1:output"))
-                                        .build();
-        // Topology retry abort on failure
-        ComputationPolicy policyRetry = new ComputationPolicyBuilder().retryPolicy(
-                new RetryPolicy().withMaxRetries(ComputationFailureForward.FAILURE_COUNT)
-                                 .retryOn(IllegalStateException.class))
-                                                                      .continueOnFailure(false)
-
-                                                                      .build();
-        Topology topologyRetry = Topology.builder()
-                                         .addComputation(() -> new ComputationFailureForward("C3", 1, 1, policyRetry),
-                                                 Arrays.asList("i1:input", "o1:output"))
-                                         .build();
-
-        Settings settings = new Settings(1, 1);
+        // Default policy (no retry, abort on failure)
         try (LogManager manager = getLogManager()) {
+            // Run the processor
             StreamProcessor processor = getStreamProcessor(manager);
+            Settings settings = new Settings(1, 1);
             processor.init(topology, settings).start();
+            processor.waitForAssignments(Duration.ofSeconds(10));
+            // Add an input record
             LogAppender<Record> appender = manager.getAppender("input");
             appender.append("foo", Record.of("foo", null));
-
-            // default policy: abort on error resulting in lag on input
+            // wait
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
             LogLag lag = manager.getLag("input", "C1");
+            // we expect a lag because the computation fails
             assertEquals(lag.toString(), 1, lag.lag());
-
-            // Skip policy:
-            processor.init(topologySkip, settings).start();
+        }
+        // Policy no retry and continue on failure
+        ComputationPolicy policy = new ComputationPolicyBuilder().retryPolicy(
+                new RetryPolicy(ComputationPolicy.NO_RETRY)).continueOnFailure(true).build();
+        try (LogManager manager = getSameLogManager()) {
+            StreamProcessor processor = getStreamProcessor(manager);
+            Settings settings = new Settings(1, 1, policy);
+            processor.init(topology, settings).start();
+            processor.waitForAssignments(Duration.ofSeconds(10));
+            // wait
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
-            lag = manager.getLag("input", "C2");
+            LogLag lag = manager.getLag("input", "C1");
+            // this times the after failure we have checkpoint so no lag expected
             assertEquals(lag.toString(), 0, lag.lag());
-
-            // Retry policy
-            processor.init(topologyRetry, settings).start();
+        }
+        // Policy with retries, abort on failure
+        policy = new ComputationPolicyBuilder().retryPolicy(
+                new RetryPolicy().withMaxRetries(ComputationFailureForward.FAILURE_COUNT)
+                                 .retryOn(IllegalStateException.class)).continueOnFailure(false).build();
+        try (LogManager manager = getSameLogManager()) {
+            StreamProcessor processor = getStreamProcessor(manager);
+            Settings settings = new Settings(1, 1, policy);
+            processor.init(topology, settings).start();
+            processor.waitForAssignments(Duration.ofSeconds(10));
+            // add a new input
+            LogAppender<Record> appender = manager.getAppender("input");
+            appender.append("bar", Record.of("bar", null));
+            // wait
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
-            lag = manager.getLag("input", "C3");
+            LogLag lag = manager.getLag("input", "C1");
+            // no lag because last retry is expected to work
+            assertEquals(lag.toString(), 0, lag.lag());
+        }
+
+    }
+
+    @Test
+    public void testPolicyBatchComputation() throws Exception {
+        // Define a topology
+        Topology topology = Topology.builder()
+                                    .addComputation(() -> new ComputationBatchFailureForward("C1", 1),
+                                            Arrays.asList("i1:input", "o1:output"))
+                                    .build();
+        int batchCapacity = 3;
+        Duration batchThreshold = Duration.ofMillis(20);
+
+        // Default no retry policy
+        ComputationPolicy policy = new ComputationPolicyBuilder().batchPolicy(batchCapacity, batchThreshold).build();
+        try (LogManager manager = getLogManager()) {
+            // Run the processor
+            StreamProcessor processor = getStreamProcessor(manager);
+            Settings settings = new Settings(1, 1, policy);
+            processor.init(topology, settings).start();
+            processor.waitForAssignments(Duration.ofSeconds(10));
+            // Add an input record
+            LogAppender<Record> appender = manager.getAppender("input");
+            appender.append("foo", Record.of("foo", null));
+            // wait
+            assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
+            LogLag lag = manager.getLag("input", "C1");
+            // wa expect a lag because the computation fails
+            assertEquals(lag.toString(), 1, lag.lag());
+        }
+
+        // Policy with retries, abort on failure
+        policy = new ComputationPolicyBuilder().batchPolicy(batchCapacity, batchThreshold)
+                                               .retryPolicy(new RetryPolicy().withMaxRetries(
+                                                       ComputationBatchFailureForward.FAILURE_COUNT)
+                                                                             .retryOn(IllegalStateException.class))
+                                               .continueOnFailure(false)
+                                               .build();
+        try (LogManager manager = getSameLogManager()) {
+            StreamProcessor processor = getStreamProcessor(manager);
+            Settings settings = new Settings(1, 1, policy);
+            processor.init(topology, settings).start();
+            LogLag lag = manager.getLag("input", "C1");
+            assertEquals(lag.toString(), 1, lag.lag());
+            processor.waitForAssignments(Duration.ofSeconds(10));
+            // wait
+            assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
+            lag = manager.getLag("input", "C1");
+            // this times the after failure we have checkpoint so no lag expected
             assertEquals(lag.toString(), 0, lag.lag());
         }
 

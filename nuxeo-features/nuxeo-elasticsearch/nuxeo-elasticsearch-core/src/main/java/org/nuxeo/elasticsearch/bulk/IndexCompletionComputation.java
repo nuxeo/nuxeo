@@ -31,7 +31,6 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
-import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
 
@@ -47,8 +46,8 @@ public class IndexCompletionComputation extends AbstractComputation {
 
     protected Codec<BulkStatus> codec;
 
-    public IndexCompletionComputation(ComputationPolicy policy) {
-        super(NAME, 1, 0, policy);
+    public IndexCompletionComputation() {
+        super(NAME, 1, 0);
     }
 
     @Override
