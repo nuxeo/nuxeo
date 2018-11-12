@@ -169,8 +169,10 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         CodecService codecService = Framework.getService(CodecService.class);
         Codec<Record> actualCodec = descriptor.defaultCodec == null ? codecService.getCodec(DEFAULT_CODEC, Record.class)
                 : codecService.getCodec(descriptor.defaultCodec, Record.class);
-        Settings settings = new Settings(descriptor.defaultConcurrency, descriptor.defaultPartitions, actualCodec);
+        Settings settings = new Settings(descriptor.defaultConcurrency, descriptor.defaultPartitions, actualCodec,
+                descriptor.getDefaultPolicy());
         descriptor.computations.forEach(comp -> settings.setConcurrency(comp.name, comp.concurrency));
+        descriptor.policies.forEach(policy -> settings.setPolicy(policy.name, descriptor.getPolicy(policy.name)));
         descriptor.streams.forEach(stream -> settings.setPartitions(stream.name, stream.partitions));
         descriptor.streams.stream()
                           .filter(stream -> Objects.nonNull(stream.codec))

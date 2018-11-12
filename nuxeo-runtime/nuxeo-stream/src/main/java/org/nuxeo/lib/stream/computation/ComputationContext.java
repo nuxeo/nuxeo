@@ -74,4 +74,13 @@ public interface ComputationContext {
      * @since 10.3
      */
     LogOffset getLastOffset();
+
+    /**
+     * Gets the policy used to run the computation.
+     *
+     * @since 10.3
+     */
+    ComputationPolicy getPolicy();
+
 }
+

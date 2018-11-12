@@ -46,12 +46,13 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
-import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * A computation that submits elasticsearch requests using the bulk API.
+ * <p>
+ * Note that the retry policy is handled by the elasticsearch bulk processor.
  *
  * @since 10.3
  */
@@ -66,26 +67,18 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
 
     protected final int flushIntervalMs;
 
-    protected final boolean continueOnFailure;
-
-    protected final int retries;
-
-    protected final long backoffDelayMs;
-
     protected BulkProcessor bulkProcessor;
 
     protected Codec<DataBucket> codec;
 
     protected boolean updates;
 
+    protected boolean continueOnFailure;
+
     protected volatile boolean abort;
 
-    public BulkIndexComputation(ComputationPolicy policy, int esBulkSize, int esBulkActions, int flushInterval) {
-        // Retries is handled at the elasticsearch bulk processor
-        super(NAME, 1, 1, ComputationPolicy.NONE);
-        this.continueOnFailure = policy.isSkipFailure();
-        this.retries = policy.getRetryPolicy().getMaxRetries();
-        this.backoffDelayMs = policy.getRetryPolicy().getDelay().toMillis();
+    public BulkIndexComputation(int esBulkSize, int esBulkActions, int flushInterval) {
+        super(NAME, 1, 1);
         this.esBulkSize = esBulkSize;
         this.esBulkActions = esBulkActions;
         this.flushIntervalMs = flushInterval * 1000;
@@ -95,6 +88,10 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
     public void init(ComputationContext context) {
         super.init(context);
         // note that we don't use setFlushInterval because this is done by our timer
+        continueOnFailure = context.getPolicy().isSkipFailure();
+        long backoffDelayMs = context.getPolicy().getRetryPolicy().getDelay().toMillis();
+        int retries = context.getPolicy().getRetryPolicy().getMaxRetries();
+
         bulkProcessor = getESClient().bulkProcessorBuilder(this)
                                      .setConcurrentRequests(0)
                                      .setBulkSize(new ByteSizeValue(esBulkSize, ByteSizeUnit.BYTES))

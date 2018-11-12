@@ -21,7 +21,6 @@ package org.nuxeo.lib.stream.tests.computation;
 import java.util.List;
 
 import org.nuxeo.lib.stream.computation.ComputationContext;
-import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.Record;
 
 /**
@@ -29,10 +28,10 @@ import org.nuxeo.lib.stream.computation.Record;
  */
 public class ComputationBatchFailureForward extends ComputationBatchForward {
 
-    protected final int FAILURE_COUNT = 3;
+    public static final int FAILURE_COUNT = 3;
 
-    public ComputationBatchFailureForward(String name, int nbInputStream, ComputationPolicy policy) {
-        super(name, nbInputStream, policy);
+    public ComputationBatchFailureForward(String name, int nbInputStream) {
+        super(name, nbInputStream);
     }
 
     @Override
