@@ -120,6 +120,12 @@
       </pattern>
       <pageSize>50</pageSize>
     </genericPageProvider>
+
+    <coreQueryPageProvider name="bulkPP">
+      <pattern>
+        SELECT * from ComplexDoc where ecm:parentId=?
+      </pattern>
+    </coreQueryPageProvider>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
