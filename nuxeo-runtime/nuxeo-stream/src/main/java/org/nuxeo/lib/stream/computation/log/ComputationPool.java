@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
+import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -66,13 +67,16 @@ public class ComputationPool {
 
     protected final Codec<Record> outputCodec;
 
+    protected final ComputationPolicy policy;
+
     protected ExecutorService threadPool;
 
     public ComputationPool(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
             List<List<LogPartition>> defaultAssignments, LogManager manager, Codec<Record> inputCodec,
-            Codec<Record> outputCodec) {
+            Codec<Record> outputCodec, ComputationPolicy policy) {
         Objects.requireNonNull(inputCodec);
         Objects.requireNonNull(outputCodec);
+        Objects.requireNonNull(policy);
         this.supplier = supplier;
         this.manager = manager;
         this.metadata = metadata;
@@ -80,6 +84,7 @@ public class ComputationPool {
         this.inputCodec = inputCodec;
         this.outputCodec = outputCodec;
         this.defaultAssignments = defaultAssignments;
+        this.policy = policy;
         this.runners = new ArrayList<>(threads);
     }
 
@@ -93,7 +98,7 @@ public class ComputationPool {
         threadPool = newFixedThreadPool(threads, new NamedThreadFactory(metadata.name() + "Pool"));
         defaultAssignments.forEach(assignments -> {
             ComputationRunner runner = new ComputationRunner(supplier, metadata, assignments, manager, inputCodec,
-                    outputCodec);
+                    outputCodec, policy);
             threadPool.submit(runner);
             runners.add(runner);
         });

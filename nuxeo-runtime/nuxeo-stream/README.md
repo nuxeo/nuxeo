@@ -182,6 +182,8 @@ The processing can be distributed in different ways:
 
 The topology/setting can be generated easily using plantuml.
 
+The Computation is run with a configurable policy that defines a retry mechanism based on [failsafe library](https://github.com/jhalterman/failsafe).
+
 See [TestStreamProcessor](./src/test/java/org/nuxeo/lib/stream/tests/computation/TestStreamProcessor.java) for examples.
 
 

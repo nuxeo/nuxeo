@@ -69,8 +69,8 @@ public class ComputationPolicy {
 
     @Override
     public String toString() {
-        return "ComputationPolicy{" + "retryMax=" + retryPolicy.getMaxRetries() + ", retryDelay="
-                + retryPolicy.getDelay() + ", batchCapacity=" + batchCapacity + ", batchThreshold=" + batchThreshold
-                + ", skipFailure=" + skipFailure + '}';
+        return "ComputationPolicy{" + "maxRetries=" + retryPolicy.getMaxRetries() + ", delay=" + retryPolicy.getDelay()
+                + ", delayMax=" + retryPolicy.getMaxDelay() + ", skipFailure=" + skipFailure + ", batchCapacity="
+                + batchCapacity + ", batchThreshold=" + batchThreshold + '}';
     }
 }

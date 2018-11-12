@@ -193,7 +193,7 @@ public class LogStreamProcessor implements StreamProcessor {
                        .map(meta -> new ComputationPool(topology.getSupplier(meta.name()), meta,
                                getDefaultAssignments(meta), manager,
                                getCodecForStreams(meta.name(), meta.inputStreams()),
-                               getCodecForStreams(meta.name(), meta.outputStreams())))
+                               getCodecForStreams(meta.name(), meta.outputStreams()), settings.getPolicy(meta.name())))
                        .collect(Collectors.toList());
     }
 
