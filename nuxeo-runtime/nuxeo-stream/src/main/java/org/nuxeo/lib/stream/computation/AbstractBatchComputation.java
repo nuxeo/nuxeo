@@ -24,10 +24,10 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import net.jodah.failsafe.Failsafe;
-
 /**
- * An abstract {@link Computation} that processes records by batch with a retry mechanism.<br/>
+ * An abstract {@link Computation} that processes records by batch.
+ * <p>
+ * The batch capacity and threshold are defined in the computation policy.
  *
  * @since 10.3
  */
@@ -37,15 +37,15 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
 
     public static final String TIMER_BATCH = "batch";
 
-    protected final List<Record> batchRecords;
-
-    protected final ComputationPolicy batchPolicy;
+    protected List<Record> batchRecords;
 
     protected String currentInputStream;
 
     protected boolean newBatch = true;
 
-    protected final long thresholdMillis;
+    protected long thresholdMillis;
+
+    protected boolean removeLastRecordOnRetry;
 
     /**
      * Constructor
@@ -53,14 +53,9 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
      * @param name the name of the computation
      * @param nbInputStreams the number of input streams
      * @param nbOutputStreams the number of output streams
-     * @param policy the policy to manage batch, retries and fallback
      */
-    public AbstractBatchComputation(String name, int nbInputStreams, int nbOutputStreams, ComputationPolicy policy) {
-        // the policy is managed at the batch level
-        super(name, nbInputStreams, nbOutputStreams, ComputationPolicy.NONE);
-        thresholdMillis = policy.getBatchThreshold().toMillis();
-        batchRecords = new ArrayList<>(policy.batchCapacity);
-        this.batchPolicy = policy;
+    public AbstractBatchComputation(String name, int nbInputStreams, int nbOutputStreams) {
+        super(name, nbInputStreams, nbOutputStreams);
     }
 
     /**
@@ -74,7 +69,7 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
      * @param inputStreamName the input streams where the records are coming from
      * @param records the batch of records
      */
-    public abstract void batchProcess(ComputationContext context, String inputStreamName, List<Record> records);
+    protected abstract void batchProcess(ComputationContext context, String inputStreamName, List<Record> records);
 
     /**
      * Called when the retry policy has failed.
@@ -83,7 +78,9 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
 
     @Override
     public void init(ComputationContext context) {
+        thresholdMillis = context.getPolicy().getBatchThreshold().toMillis();
         context.setTimer(TIMER_BATCH, System.currentTimeMillis() + thresholdMillis);
+        batchRecords = new ArrayList<>(context.getPolicy().batchCapacity);
     }
 
     @Override
@@ -92,7 +89,7 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
             return;
         }
         if (!batchRecords.isEmpty()) {
-            processBatch(context);
+            batchProcess(context);
         }
         context.setTimer(TIMER_BATCH, System.currentTimeMillis() + thresholdMillis);
     }
@@ -100,51 +97,23 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
     @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
         if (!inputStreamName.equals(currentInputStream) && !batchRecords.isEmpty()) {
-            processBatch(context);
+            batchProcess(context);
         }
         if (newBatch) {
             currentInputStream = inputStreamName;
             newBatch = false;
         }
         batchRecords.add(record);
-        if (batchRecords.size() >= batchPolicy.getBatchCapacity()) {
-            processBatch(context);
+        if (batchRecords.size() >= context.getPolicy().getBatchCapacity()) {
+            removeLastRecordOnRetry = true;
+            batchProcess(context);
+            removeLastRecordOnRetry = false;
         }
     }
 
-    protected void processBatch(ComputationContext context) {
-        Failsafe.with(batchPolicy.getRetryPolicy())
-                .onSuccess(ret -> checkpointBatch(context))
-                .onFailure(failure -> processFailure(context, failure))
-                .onRetry(failure -> processRetry(context, failure))
-                .withFallback(() -> processFallback(context))
-                .run(() -> batchProcess(context, currentInputStream, batchRecords));
-    }
-
-    protected void processFallback(ComputationContext context) {
-        if (batchPolicy.isSkipFailure()) {
-            batchRecords.forEach(record -> log.error(
-                    String.format("Computation %s skips processing of record because of batch failure: %s",
-                            metadata.name(), record)));
-            checkpointBatch(context);
-        } else {
-            log.error(String.format("Computation %s aborts after a failure in batch", metadata.name()));
-            batchRecords.forEach(record -> log.warn("Record not processed because of the batch failure: " + record));
-            context.cancelAskForCheckpoint();
-            context.askForTermination();
-        }
-    }
-
-    /**
-     * Called before retrying, can be overridden
-     *
-     * @param context Computation context that could be used
-     * @param failure The throwable
-     */
-    public void processRetry(ComputationContext context, Throwable failure) {
-        log.warn(String.format(
-                "Computation: %s fails to process batch of %d records from stream: %s, policy: %s, retrying ...",
-                metadata.name(), batchRecords.size(), currentInputStream, batchPolicy), failure);
+    private void batchProcess(ComputationContext context) {
+        batchProcess(context, currentInputStream, batchRecords);
+        checkpointBatch(context);
     }
 
     protected void checkpointBatch(ComputationContext context) {
@@ -153,11 +122,26 @@ public abstract class AbstractBatchComputation extends AbstractComputation {
         newBatch = true;
     }
 
+    @Override
+    public void processRetry(ComputationContext context, Throwable failure) {
+        if (removeLastRecordOnRetry) {
+            // the batchProcess has failed, processRecord will be retried with the same record
+            // but first we have to remove the record from the batch
+            batchRecords.remove(batchRecords.size() -1);
+            removeLastRecordOnRetry = false;
+        }
+        log.warn(String.format("Computation: %s fails to process batch of %d records, last record: %s, retrying ...",
+                metadata.name(), batchRecords.size(), context.getLastOffset()), failure);
+    }
+
+    @Override
     public void processFailure(ComputationContext context, Throwable failure) {
         log.error(String.format(
-                "Computation: %s fails to process batch of %d records from stream: %s, after applying retries: %s",
-                metadata.name(), batchRecords.size(), currentInputStream, batchPolicy), failure);
+                "Computation: %s fails to process batch of %d records after retries, last record: %s, policy: %s",
+                metadata.name(), batchRecords.size(), context.getLastOffset(), context.getPolicy()), failure);
         batchFailure(context, currentInputStream, batchRecords);
+        batchRecords.clear();
+        newBatch = true;
     }
 
 }
