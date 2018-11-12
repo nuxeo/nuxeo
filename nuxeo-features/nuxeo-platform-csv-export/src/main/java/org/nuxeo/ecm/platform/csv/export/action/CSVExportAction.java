@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.bulk.action.computation.ExposeBlob;
 import org.nuxeo.ecm.core.bulk.action.computation.MakeBlob;
 import org.nuxeo.ecm.core.bulk.action.computation.SortBlob;
 import org.nuxeo.ecm.core.bulk.action.computation.ZipBlob;
-import org.nuxeo.ecm.platform.csv.export.computation.CSVProjection;
+import org.nuxeo.ecm.platform.csv.export.computation.CSVProjectionComputation;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
@@ -47,21 +47,24 @@ public class CSVExportAction implements StreamProcessorTopology {
     public Topology getTopology(Map<String, String> options) {
         boolean produceImmediate = getOptionAsBoolean(options, PRODUCE_IMMEDIATE_OPTION, false);
         return Topology.builder()
-                       .addComputation(CSVProjection::new,
+                       .addComputation(CSVProjectionComputation::new, //
                                Arrays.asList(INPUT_1 + ":" + ACTION_NAME, //
                                        OUTPUT_1 + ":" + MakeBlob.NAME))
-                       .addComputation(() -> new MakeBlob(produceImmediate),
+                       .addComputation(() -> new MakeBlob(produceImmediate), //
                                Arrays.asList(INPUT_1 + ":" + MakeBlob.NAME, //
                                        OUTPUT_1 + ":" + SortBlob.NAME, //
                                        OUTPUT_2 + ":" + ZipBlob.NAME, //
                                        OUTPUT_3 + ":" + ExposeBlob.NAME))
-                       .addComputation(SortBlob::new, Arrays.asList(INPUT_1 + ":" + SortBlob.NAME, //
-                               OUTPUT_1 + ":" + ZipBlob.NAME, //
-                               OUTPUT_2 + ":" + ExposeBlob.NAME))
-                       .addComputation(ZipBlob::new, Arrays.asList(INPUT_1 + ":" + ZipBlob.NAME, //
-                               OUTPUT_1 + ":" + ExposeBlob.NAME))
-                       .addComputation(ExposeBlob::new, Arrays.asList(INPUT_1 + ":" + ExposeBlob.NAME, //
-                               OUTPUT_1 + ":" + STATUS_STREAM))
+                       .addComputation(SortBlob::new, //
+                               Arrays.asList(INPUT_1 + ":" + SortBlob.NAME, //
+                                       OUTPUT_1 + ":" + ZipBlob.NAME, //
+                                       OUTPUT_2 + ":" + ExposeBlob.NAME))
+                       .addComputation(ZipBlob::new, //
+                               Arrays.asList(INPUT_1 + ":" + ZipBlob.NAME, //
+                                       OUTPUT_1 + ":" + ExposeBlob.NAME))
+                       .addComputation(ExposeBlob::new, //
+                               Arrays.asList(INPUT_1 + ":" + ExposeBlob.NAME, //
+                                       OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
 

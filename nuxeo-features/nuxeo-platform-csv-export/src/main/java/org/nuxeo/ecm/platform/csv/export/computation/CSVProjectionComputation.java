@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -38,13 +39,13 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
-import org.nuxeo.ecm.core.bulk.message.BulkCommand;
-import org.nuxeo.ecm.platform.csv.export.action.CSVExportAction;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
+import org.nuxeo.ecm.platform.csv.export.action.CSVExportAction;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
@@ -58,37 +59,38 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 10.3
  */
-public class CSVProjection extends AbstractBulkComputation {
+public class CSVProjectionComputation extends AbstractBulkComputation {
 
-    private static final Logger log = LogManager.getLogger(CSVProjection.class);
+    private static final Logger log = LogManager.getLogger(CSVProjectionComputation.class);
 
-    public static final String SCHEMAS_PARAM = "schemas";
+    public static final String PARAM_SCHEMAS = "schemas";
 
-    public static final String XPATHS_PARAM = "xpaths";
+    public static final String PARAM_XPATHS = "xpaths";
 
-    public static final String LANG_PARAM = "lang";
+    public static final String PARAM_LANG = "lang";
 
     protected ByteArrayOutputStream out;
 
-    public CSVProjection() {
+    protected RenderingContext renderingCtx;
+
+    public CSVProjectionComputation() {
         super(CSVExportAction.ACTION_NAME);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
+    public void startBucket(String bucketKey) {
         out = new ByteArrayOutputStream();
-        List<String> schemas = properties.get(SCHEMAS_PARAM) != null ? (List<String>) properties.get(SCHEMAS_PARAM)
-                : new ArrayList<>();
-        List<String> xpaths = properties.get(XPATHS_PARAM) != null ? (List<String>) properties.get(XPATHS_PARAM)
-                : new ArrayList<>();
-        DocumentModelList docs = loadDocuments(session, ids);
+        BulkCommand command = getCurrentCommand();
+        renderingCtx = RenderingContext.CtxBuilder.get();
+        renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, getList(command.getParams().get(PARAM_SCHEMAS)));
+        renderingCtx.setParameterValues(XPATHS_CTX_DATA, getList(command.getParams().get(PARAM_XPATHS)));
+        renderingCtx.setParameterValues(LANG_CTX_DATA, getString(command.getParams().get(PARAM_LANG)));
+    }
 
+    @Override
+    protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
+        DocumentModelList docs = loadDocuments(session, ids);
         MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
-        RenderingContext renderingCtx = RenderingContext.CtxBuilder.get();
-        renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, schemas);
-        renderingCtx.setParameterValues(XPATHS_CTX_DATA, xpaths);
-        renderingCtx.setParameterValues(LANG_CTX_DATA, properties.get(LANG_PARAM));
         Writer<DocumentModelList> writer = registry.getWriter(renderingCtx, DocumentModelList.class, TEXT_CSV_TYPE);
         try {
             writer.write(docs, DocumentModelList.class, null, TEXT_CSV_TYPE, out);
@@ -123,6 +125,33 @@ public class CSVProjection extends AbstractBulkComputation {
 
     protected String getData(String csv, String recordSeparator) {
         return csv.substring(csv.indexOf(recordSeparator) + recordSeparator.length());
+    }
+
+    protected List<String> getList(Serializable value) {
+        if (value == null) {
+            return Collections.emptyList();
+        }
+        if (value instanceof List<?>) {
+            List<?> objects = (List<?>) value;
+            List<String> values = new ArrayList<>(objects.size());
+            for (Object object : objects) {
+                if (object != null) {
+                    values.add(object.toString());
+                }
+            }
+            Collections.sort(values);
+            return values;
+        } else {
+            log.debug("Illegal parameter '{}'", value);
+            return Collections.emptyList();
+        }
+    }
+
+    protected String getString(Serializable value) {
+        if (value instanceof String) {
+            return (String) value;
+        }
+        return null;
     }
 
 }

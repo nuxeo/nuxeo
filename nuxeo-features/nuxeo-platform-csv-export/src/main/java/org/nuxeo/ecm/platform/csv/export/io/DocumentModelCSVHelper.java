@@ -44,9 +44,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -86,10 +89,9 @@ public class DocumentModelCSVHelper {
     public static void printPropertiesHeader(List<String> schemas, List<String> xpaths, CSVPrinter printer)
             throws IOException {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        if (schemas != null) {
-            Collections.sort(schemas);
-            for (String schemaName : schemas) {
-                Schema schema = schemaManager.getSchema(schemaName);
+        for (String schemaName : schemas) {
+            Schema schema = schemaManager.getSchema(schemaName);
+            if (schema != null) {
                 List<Field> fields = new ArrayList<>(schema.getFields());
                 fields.sort(Comparator.comparing(o -> o.getName().getLocalName()));
                 String prefix = schema.getNamespace().prefix;
@@ -106,11 +108,11 @@ public class DocumentModelCSVHelper {
                 }
             }
         }
-        if (xpaths != null) {
-            Collections.sort(xpaths);
-            for (String xpath : xpaths) {
+        for (String xpath : xpaths) {
+            Field field = schemaManager.getField(xpath);
+            if (field != null) {
                 printer.print(xpath);
-                if (isVocabulary(schemaManager.getField(xpath).getType())) {
+                if (isVocabulary(field.getType())) {
                     printer.print(xpath + "[label]");
                 }
             }
@@ -140,6 +142,15 @@ public class DocumentModelCSVHelper {
             return ((DirectoryEntryResolver) type.getObjectResolver()).getDirectory();
         }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<String> getList(RenderingContext ctx, String key) {
+        Object value = ctx.getParameter(key);
+        if (value == null) {
+            return Collections.emptyList();
+        }
+        return ((List<String>) value).stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     private DocumentModelCSVHelper() {

@@ -20,12 +20,12 @@ package org.nuxeo.ecm.platform.csv.export.io;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVHelper.getList;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -58,17 +58,15 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
     @Override
     protected void write(DocumentModel entity, CSVPrinter printer) throws IOException {
         writeSystem(entity, printer);
-        // If no specific schema is defined, all schemas are written
-        List<String> schemas = ctx.getParameter(SCHEMAS_CTX_DATA) != null ? ctx.getParameter(SCHEMAS_CTX_DATA)
-                : Arrays.asList(entity.getSchemas());
-        List<String> xpaths = ctx.getParameter(XPATHS_CTX_DATA);
-        Collections.sort(schemas);
-        for (String schema : schemas) {
-            writeSchema(entity, schema, printer);
+        for (String schemaName : getList(ctx, SCHEMAS_CTX_DATA)) {
+            Schema schema = schemaManager.getSchema(schemaName);
+            if (schema != null) {
+                writeSchema(entity, schema, printer);
+            }
         }
-        if (xpaths != null) {
-            Collections.sort(xpaths);
-            for (String xpath : xpaths) {
+        for (String xpath : getList(ctx, XPATHS_CTX_DATA)) {
+            Field field = schemaManager.getField(xpath);
+            if (field != null) {
                 writeProperty(entity, xpath, printer);
             }
         }
@@ -77,9 +75,8 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
     @Override
     protected void writeHeader(DocumentModel entity, CSVPrinter printer) throws IOException {
         DocumentModelCSVHelper.printSystemPropertiesHeader(printer);
-        List<String> schemas = ctx.getParameter(SCHEMAS_CTX_DATA) != null ? ctx.getParameter(SCHEMAS_CTX_DATA)
-                : Arrays.asList(entity.getSchemas());
-        List<String> xpaths = ctx.getParameter(XPATHS_CTX_DATA);
+        List<String> schemas = getList(ctx, SCHEMAS_CTX_DATA);
+        List<String> xpaths = getList(ctx, XPATHS_CTX_DATA);
         DocumentModelCSVHelper.printPropertiesHeader(schemas, xpaths, printer);
         printer.println();
     }
@@ -120,9 +117,8 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
         }
     }
 
-    protected void writeSchema(DocumentModel entity, String schemaName, CSVPrinter printer) throws IOException {
+    protected void writeSchema(DocumentModel entity, Schema schema, CSVPrinter printer) throws IOException {
         // provides the current document to the property writer
-        Schema schema = schemaManager.getSchema(schemaName);
         List<Field> fields = new ArrayList<>(schema.getFields());
         // fields are sorted for reproducibility
         fields.sort(Comparator.comparing(o -> o.getName().getLocalName()));
