@@ -95,7 +95,7 @@ public class TestAutomationBulkAction {
 
         assertNotNull(runResult);
         // runResult is a json containing commandId
-        String commandId = runResult.getCommandId();
+        String commandId = runResult.getId();
 
         boolean waitResult = (boolean) service.run(ctx, BulkWaitForAction.ID, singletonMap("commandId", commandId));
         assertTrue("Bulk action didn't finish", waitResult);
