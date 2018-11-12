@@ -35,16 +35,12 @@ import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.core.util.DocumentHelper;
-import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.automation.core.util.PageProviderHelper;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -218,8 +214,8 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         return highlightFields;
     }
 
-    protected Properties getNamedParameters(MultivaluedMap<String, String> queryParams) {
-        Properties namedParameters = new Properties();
+    protected Map<String, String> getNamedParameters(MultivaluedMap<String, String> queryParams) {
+        Map<String, String> namedParameters = new HashMap<>();
         for (String namedParameterKey : queryParams.keySet()) {
             if (!EnumUtils.isValidEnum(QueryParams.class, namedParameterKey)) {
                 String value = queryParams.getFirst(namedParameterKey);
@@ -229,8 +225,8 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         return namedParameters;
     }
 
-    protected Properties getNamedParameters(Map<String, String> queryParams) {
-        Properties namedParameters = new Properties();
+    protected Map<String, String> getNamedParameters(Map<String, String> queryParams) {
+        Map<String, String> namedParameters = new HashMap<>();
         for (String namedParameterKey : queryParams.keySet()) {
             if (!EnumUtils.isValidEnum(QueryParams.class, namedParameterKey)) {
                 String value = queryParams.get(namedParameterKey);
@@ -294,16 +290,16 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         Long currentPageIndex = getCurrentPageIndex(queryParams);
         Long currentPageOffset = getCurrentPageOffset(queryParams);
         Long maxResults = getMaxResults(queryParams);
-        Properties namedParameters = getNamedParameters(queryParams);
+        Map<String, String> namedParameters = getNamedParameters(queryParams);
         Object[] parameters = getParameters(queryParams);
         List<SortInfo> sortInfo = getSortInfo(queryParams);
         Map<String, Serializable> props = getProperties();
 
-        DocumentModel searchDocumentModel = getSearchDocumentModel(ctx.getCoreSession(), pageProviderService, null,
+        DocumentModel searchDocumentModel = PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(), null,
                 namedParameters);
 
-        return queryByLang(query, pageSize, currentPageIndex, currentPageOffset, maxResults, sortInfo, parameters,
-                props, searchDocumentModel);
+        return queryByLang(query, pageSize, currentPageIndex, currentPageOffset, maxResults, sortInfo,
+                props, searchDocumentModel, parameters);
     }
 
     protected DocumentModelList queryByPageProvider(String pageProviderName,
@@ -315,24 +311,24 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         Long pageSize = getPageSize(queryParams);
         Long currentPageIndex = getCurrentPageIndex(queryParams);
         Long currentPageOffset = getCurrentPageOffset(queryParams);
-        Properties namedParameters = getNamedParameters(queryParams);
+        Map<String, String> namedParameters = getNamedParameters(queryParams);
         Object[] parameters = getParameters(queryParams);
         List<SortInfo> sortInfo = getSortInfo(queryParams);
         List<QuickFilter> quickFilters = getQuickFilters(pageProviderName, queryParams);
         List<String> highlights = getHighlights(queryParams);
         Map<String, Serializable> props = getProperties();
 
-        DocumentModel searchDocumentModel = getSearchDocumentModel(ctx.getCoreSession(), pageProviderService,
+        DocumentModel searchDocumentModel = PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(),
                 pageProviderName, namedParameters);
 
         return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, currentPageOffset, sortInfo,
-                highlights, quickFilters, parameters, props, searchDocumentModel);
+                highlights, quickFilters, props, searchDocumentModel, parameters);
     }
 
     @SuppressWarnings("unchecked")
     protected DocumentModelList queryByLang(String query, Long pageSize, Long currentPageIndex, Long currentPageOffset,
-            Long maxResults, List<SortInfo> sortInfo, Object[] parameters, Map<String, Serializable> props,
-            DocumentModel searchDocumentModel) {
+            Long maxResults, List<SortInfo> sortInfo, Map<String, Serializable> props,
+            DocumentModel searchDocumentModel, Object... parameters) {
         PageProviderDefinition ppdefinition = pageProviderService.getPageProviderDefinition(
                 SearchAdapter.pageProviderName);
         ppdefinition.setPattern(query);
@@ -358,13 +354,13 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
             Long currentPageOffset, List<SortInfo> sortInfo, List<QuickFilter> quickFilters, Object[] parameters,
             Map<String, Serializable> props, DocumentModel searchDocumentModel) {
         return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, currentPageOffset, sortInfo, null,
-                quickFilters, parameters, props, searchDocumentModel);
+                quickFilters, props, searchDocumentModel, parameters);
     }
 
     @SuppressWarnings("unchecked")
     protected DocumentModelList queryByPageProvider(String pageProviderName, Long pageSize, Long currentPageIndex,
             Long currentPageOffset, List<SortInfo> sortInfo, List<String> highlights, List<QuickFilter> quickFilters,
-            Object[] parameters, Map<String, Serializable> props, DocumentModel searchDocumentModel) {
+            Map<String, Serializable> props, DocumentModel searchDocumentModel, Object... parameters) {
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
                 (PageProvider<DocumentModel>) pageProviderService.getPageProvider(pageProviderName, searchDocumentModel,
                         sortInfo, pageSize, currentPageIndex, currentPageOffset, props, highlights, quickFilters,
@@ -380,46 +376,6 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         return pageProviderService.getPageProviderDefinition(pageProviderName);
     }
 
-    protected DocumentModel getSearchDocumentModel(CoreSession session, PageProviderService pps, String providerName,
-            Properties namedParameters) {
-        // generate search document model if type specified on the definition
-        DocumentModel searchDocumentModel = null;
-        if (!StringUtils.isBlank(providerName)) {
-            PageProviderDefinition pageProviderDefinition = pps.getPageProviderDefinition(providerName);
-            if (pageProviderDefinition != null) {
-                String searchDocType = pageProviderDefinition.getSearchDocumentType();
-                if (searchDocType != null) {
-                    searchDocumentModel = session.createDocumentModel(searchDocType);
-                } else if (pageProviderDefinition.getWhereClause() != null) {
-                    // avoid later error on null search doc, in case where clause is only referring to named parameters
-                    // (and no namedParameters are given)
-                    searchDocumentModel = new SimpleDocumentModel();
-                }
-            } else {
-                log.error("No page provider definition found for " + providerName);
-            }
-        }
-
-        if (namedParameters != null && !namedParameters.isEmpty()) {
-            // fall back on simple document if no type defined on page provider
-            if (searchDocumentModel == null) {
-                searchDocumentModel = new SimpleDocumentModel();
-            }
-            for (Map.Entry<String, String> entry : namedParameters.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                try {
-                    DocumentHelper.setProperty(session, searchDocumentModel, key, value, true);
-                } catch (PropertyNotFoundException | IOException e) {
-                    // assume this is a "pure" named parameter, not part of the search doc schema
-                    continue;
-                }
-            }
-            searchDocumentModel.putContextData(PageProviderService.NAMED_PARAMETERS, namedParameters);
-        }
-        return searchDocumentModel;
-    }
-
     protected Response buildResponse(Response.StatusType status, String type, Object object) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         String message = mapper.writeValueAsString(object);
@@ -430,4 +386,7 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
                        .build();
     }
 
+    protected List<String> asStringList(String value) {
+        return StringUtils.isBlank(value) ? null : Arrays.asList(value.split(","));
+    }
 }

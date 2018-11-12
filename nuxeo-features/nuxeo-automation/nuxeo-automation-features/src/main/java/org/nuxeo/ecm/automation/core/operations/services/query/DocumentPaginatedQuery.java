@@ -18,49 +18,37 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.query;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.util.DocumentHelper;
+import org.nuxeo.ecm.automation.core.util.PageProviderHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * @since 6.0 Document query operation to perform queries on the repository.
  */
 @Operation(id = DocumentPaginatedQuery.ID, category = Constants.CAT_FETCH, label = "Query", description = "Perform a query on the repository. "
-        + "The document list returned will become the input for the next "
-        + "operation.", since = "6.0", addToStudio = true, aliases = { "Document.Query" })
+        + "The document list returned will become the input for the next operation."
+        + "If no provider name is given, a query returning all the documents that the user has access to will be executed.",
+        since = "6.0", addToStudio = true, aliases = { "Document.Query" })
 public class DocumentPaginatedQuery {
 
     public static final String ID = "Repository.Query";
-
-    public static final String CURRENT_USERID_PATTERN = "$currentUser";
-
-    public static final String CURRENT_REPO_PATTERN = "$currentRepository";
 
     public static final String DESC = "DESC";
 
@@ -69,113 +57,63 @@ public class DocumentPaginatedQuery {
     @Context
     protected CoreSession session;
 
-    @Context
-    protected PageProviderService pageProviderService;
-
-    @Param(name = "query", required = true, description = "The query to " + "perform.")
+    @Param(name = "query", required = false, description = "The query to perform.")
     protected String query;
 
-    @Param(name = "language", required = false, description = "The query "
-            + "language.", widget = Constants.W_OPTION, values = { NXQL.NXQL })
+    @Param(name = "language", required = false, description = "The query language.",
+            widget = Constants.W_OPTION, values = { NXQL.NXQL })
     protected String lang = NXQL.NXQL;
 
-    @Param(name = "currentPageIndex", required = false, description = "Target listing page.")
+    @Param(name = "currentPageIndex", alias = "page", required = false, description = "Target listing page.")
     protected Integer currentPageIndex;
 
-    @Param(name = "pageSize", required = false, description = "Entries number" + " per page.")
+    @Param(name = "pageSize", required = false, description = "Entries number per page.")
     protected Integer pageSize;
 
-    @Param(name = "queryParams", required = false, description = "Ordered " + "query parameters.")
+    @Param(name = "queryParams", required = false, description = "Ordered query parameters.")
     protected StringList strParameters;
 
-    @Param(name = "sortBy", required = false, description = "Sort by " + "properties (separated by comma)")
-    protected String sortBy;
+    @Param(name = "sortBy", required = false, description = "Sort by properties (separated by comma)")
+    protected StringList sortBy;
 
-    @Param(name = "sortOrder", required = false, description = "Sort order, "
-            + "ASC or DESC", widget = Constants.W_OPTION, values = { ASC, DESC })
-    protected String sortOrder;
+    @Param(name = "sortOrder", required = false, description = "Sort order, ASC or DESC",
+            widget = Constants.W_OPTION, values = { ASC, DESC })
+    protected StringList sortOrder;
 
-    @Param(name = PageProviderService.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
-            + "fill in query variables.")
+    @Param(name = PageProviderService.NAMED_PARAMETERS, required = false,
+            description = "Named parameters to pass to the page provider to fill in query variables.")
     protected Properties namedParameters;
+
+    /**
+     * @since 10.3
+     */
+    @Param(name = "maxResults", required = false)
+    protected Integer maxResults;
 
     @SuppressWarnings("unchecked")
     @OperationMethod
     public DocumentModelList run() throws OperationException {
-        // Ordered parameters
-        Object[] orderedParameters = null;
-        if (strParameters != null && !strParameters.isEmpty()) {
-            orderedParameters = strParameters.toArray(new String[strParameters.size()]);
-            // expand specific parameters
-            for (int idx = 0; idx < orderedParameters.length; idx++) {
-                String value = (String) orderedParameters[idx];
-                if (value.equals(CURRENT_USERID_PATTERN)) {
-                    orderedParameters[idx] = session.getPrincipal().getName();
-                } else if (value.equals(CURRENT_REPO_PATTERN)) {
-                    orderedParameters[idx] = session.getRepositoryName();
-                }
-            }
+        if (query == null) {
+            // provide a defaut query
+            query = "SELECT * from Document";
         }
-        // Target query page
-        Long targetPage = null;
-        if (currentPageIndex != null) {
-            targetPage = currentPageIndex.longValue();
+        Map<String, String> properties = null;
+        if (maxResults != null) {
+            properties = Collections.singletonMap("maxResults", maxResults.toString());
         }
-        // Target page size
-        Long targetPageSize = null;
-        if (pageSize != null) {
-            targetPageSize = pageSize.longValue();
-        }
+        PageProviderDefinition def = PageProviderHelper.getQueryPageProviderDefinition(query, properties);
 
-        // Sort Info Management
-        List<SortInfo> sortInfoList = new ArrayList<>();
-        if (!StringUtils.isBlank(sortBy)) {
-            String[] sorts = sortBy.split(",");
-            String[] orders = null;
-            if (!StringUtils.isBlank(sortOrder)) {
-                orders = sortOrder.split(",");
-            }
-            for (int i = 0; i < sorts.length; i++) {
-                String sort = sorts[i];
-                boolean sortAscending = (orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase()));
-                sortInfoList.add(new SortInfo(sort, sortAscending));
-            }
-        }
+        Long targetPage = currentPageIndex != null ? currentPageIndex.longValue() : null;
+        Long targetPageSize = pageSize != null ? pageSize.longValue() : null;
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        DocumentModel searchDocumentModel = getSearchDocumentModel(session, namedParameters);
-        CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
-        desc.setPattern(query);
-        PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
-                (PageProvider<DocumentModel>) pageProviderService.getPageProvider(StringUtils.EMPTY, desc,
-                        searchDocumentModel, sortInfoList, targetPageSize, targetPage, props, orderedParameters),
-                null);
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) PageProviderHelper.getPageProvider(session, def,
+                namedParameters, sortBy, sortOrder, targetPageSize, targetPage,
+                strParameters != null ? strParameters.toArray(new String[0]) : null);
+
+        PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(pp);
         if (res.hasError()) {
             throw new OperationException(res.getErrorMessage());
         }
         return res;
-
-    }
-
-    /**
-     * @since 8.2
-     */
-    public static DocumentModel getSearchDocumentModel(CoreSession session, Properties namedParameters) {
-        SimpleDocumentModel searchDocumentModel = new SimpleDocumentModel();
-        if (namedParameters != null && !namedParameters.isEmpty()) {
-            for (Map.Entry<String, String> entry : namedParameters.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                try {
-                    DocumentHelper.setProperty(session, searchDocumentModel, key, value, true);
-                } catch (PropertyNotFoundException | IOException e) {
-                    // assume this is a "pure" named parameter, not part of the search doc schema
-                    continue;
-                }
-            }
-            searchDocumentModel.putContextData(PageProviderService.NAMED_PARAMETERS, namedParameters);
-        }
-        return searchDocumentModel;
     }
 }
