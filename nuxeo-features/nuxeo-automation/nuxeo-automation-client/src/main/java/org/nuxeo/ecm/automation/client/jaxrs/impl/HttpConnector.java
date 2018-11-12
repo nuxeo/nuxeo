@@ -137,11 +137,9 @@ public class HttpConnector implements Connector {
         HttpEntity entity = resp.getEntity();
         try {
             int status = resp.getStatusLine().getStatusCode();
-            // TODO kevin: check if it's enough regarding to entity content type
-            String ctype = getHeaderValue(resp, "Content-Type");
-            String disp = getHeaderValue(resp, "Content-Disposition");
+            Header[] headers = resp.getAllHeaders();
             InputStream content = entity == null ? null : entity.getContent();
-            return request.handleResult(status, ctype, disp, content);
+            return request.handleResult(status, headers, content);
         } finally {
             // needed to properly release resources and return the connection to the pool
             EntityUtils.consume(entity);
@@ -158,14 +156,6 @@ public class HttpConnector implements Connector {
             httpParams.setIntParameter("http.connection.timeout", httpConnectionTimeout);
         }
         return http.execute(httpReq, ctx);
-    }
-
-    private String getHeaderValue(HttpResponse response, String key) {
-        Header header = response.getFirstHeader(key);
-        if (header == null) {
-            return null;
-        }
-        return header.getValue();
     }
 
 }

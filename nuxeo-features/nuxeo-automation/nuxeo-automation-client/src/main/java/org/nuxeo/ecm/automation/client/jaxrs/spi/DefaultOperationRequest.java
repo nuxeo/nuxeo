@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.client.OperationRequest;
+import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.model.DateUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
@@ -41,7 +42,7 @@ public class DefaultOperationRequest implements OperationRequest {
 
     protected final OperationDocumentation op;
 
-    protected final DefaultSession session;
+    protected final Session session;
 
     protected final Map<String, Object> params;
 
@@ -51,11 +52,11 @@ public class DefaultOperationRequest implements OperationRequest {
 
     protected Object input;
 
-    public DefaultOperationRequest(DefaultSession session, OperationDocumentation op) {
+    public DefaultOperationRequest(Session session, OperationDocumentation op) {
         this(session, op, new HashMap<String, Object>());
     }
 
-    public DefaultOperationRequest(DefaultSession session, OperationDocumentation op, Map<String, Object> ctx) {
+    public DefaultOperationRequest(Session session, OperationDocumentation op, Map<String, Object> ctx) {
         this.session = session;
         this.op = op;
         params = new HashMap<String, Object>();
@@ -63,7 +64,7 @@ public class DefaultOperationRequest implements OperationRequest {
         this.ctx = ctx;
     }
 
-    public DefaultSession getSession() {
+    public Session getSession() {
         return session;
     }
 
@@ -187,4 +188,5 @@ public class DefaultOperationRequest implements OperationRequest {
     public OperationDocumentation getOperation() {
         return op;
     }
+
 }

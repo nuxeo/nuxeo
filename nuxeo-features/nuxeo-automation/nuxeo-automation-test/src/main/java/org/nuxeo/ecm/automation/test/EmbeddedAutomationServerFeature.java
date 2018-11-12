@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.test;
 import java.io.IOException;
 
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.client.adapters.AsyncSession;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.core.test.DetectThreadDeadlocksFeature;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
@@ -76,6 +77,19 @@ public class EmbeddedAutomationServerFeature implements RunnerFeature {
                 }
             }
             return session;
+        }).in(Scopes.SINGLETON);
+        binder.bind(AsyncSession.class).toProvider(() -> {
+            if (client == null) {
+                client = getHttpAutomationClient();
+            }
+            if (session == null) {
+                try {
+                    session = client.getSession("Administrator", "Administrator");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return session.getAdapter(AsyncSession.class);
         }).in(Scopes.SINGLETON);
     }
 

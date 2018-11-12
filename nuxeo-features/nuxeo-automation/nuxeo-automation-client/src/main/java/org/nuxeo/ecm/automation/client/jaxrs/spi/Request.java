@@ -38,11 +38,12 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.Response;
 
-import com.fasterxml.jackson.core.JsonParser;
+import org.apache.http.Header;
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.ExceptionMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.util.IOUtils;
 import org.nuxeo.ecm.automation.client.jaxrs.util.InputStreamDataSource;
+import org.nuxeo.ecm.automation.client.jaxrs.util.MultipartInput;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Blobs;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
@@ -121,8 +122,11 @@ public class Request extends HashMap<String, String> {
      * Must read the object from the server response and return it or throw a {@link RemoteException} if server sent an
      * error.
      */
-    public Object handleResult(int status, String ctype, String disp, InputStream stream)
+    public Object handleResult(int status, Header[] headers, InputStream stream)
             throws RemoteException, IOException {
+        // TODO kevin: check if it's enough regarding to entity content type
+        String ctype = getHeaderValue(headers, "Content-Type");
+
         // Specific http status handling
         if (status >= Response.Status.BAD_REQUEST.getStatusCode()) {
             handleException(status, ctype, stream);
@@ -144,6 +148,7 @@ public class Request extends HashMap<String, String> {
             return null;
         }
         // Handle result
+        String disp = getHeaderValue(headers, "Content-Disposition");
         String lctype = ctype.toLowerCase();
         if (lctype.startsWith(CTYPE_AUTOMATION)) {
             return JsonMarshalling.readRegistry(IOUtils.read(stream));
@@ -159,6 +164,20 @@ public class Request extends HashMap<String, String> {
         } else { // a blob?
             return readBlob(ctype, getFileName(disp), stream);
         }
+    }
+
+    public static MultipartInput buildMultipartInput(Object input, String content) throws IOException {
+        MultipartInput mpinput = new MultipartInput();
+        mpinput.setRequest(content);
+        if (input instanceof Blob) {
+            Blob blob = (Blob) input;
+            mpinput.setBlob(blob);
+        } else if (input instanceof Blobs) {
+            mpinput.setBlobs((Blobs) input);
+        } else {
+            throw new IllegalArgumentException("Unsupported binary input object: " + input);
+        }
+        return mpinput;
     }
 
     protected static Blobs readBlobs(String ctype, InputStream in) throws IOException {
@@ -238,6 +257,15 @@ public class Request extends HashMap<String, String> {
             // no JSON payload
             throw new RemoteException(status, "ServerError", "Server Error", content);
         }
+    }
+
+    public static String getHeaderValue(Header[] headers, String name) {
+        for(Header header : headers) {
+            if (header.getName().equalsIgnoreCase(name)) {
+                return header.getValue();
+            }
+        }
+        return null;
     }
 
 }
