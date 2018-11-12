@@ -31,6 +31,8 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.PageProviderHelper;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -38,6 +40,9 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkAdminService;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 
 /**
  * Automation operation that can run an http enabled Bulk Action.
@@ -58,8 +63,21 @@ public class BulkRunAction {
     @Context
     protected CoreSession session;
 
-    @Param(name = "query", required = true)
+    @Param(name = "query", required = false)
     protected String query;
+
+    @Param(name = "providerName", required = false)
+    protected String providerName;
+
+    @Param(name = "queryParams", required = false)
+    protected StringList queryParams;
+
+    @Param(name = PageProviderService.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
+            + "fill in query variables.")
+    protected Map<String, String> namedParameters;
+
+    @Param(name = "quickFilters", required = false, description = "Quick filter " + "properties (separated by comma)")
+    protected StringList quickFilters;
 
     @Param(name = "action", required = true)
     protected String action;
@@ -87,6 +105,13 @@ public class BulkRunAction {
         }
 
         String userName = session.getPrincipal().getName();
+
+        PageProviderDefinition def = query != null ? PageProviderHelper.getQueryPageProviderDefinition(query)
+                : PageProviderHelper.getPageProviderDefinition(providerName);
+        PageProvider provider = PageProviderHelper.getPageProvider(session, def, namedParameters,
+                queryParams != null ? queryParams.toArray(new String[0]) : null);
+        query = PageProviderHelper.buildQueryString(provider);
+
         BulkCommand.Builder builder = new BulkCommand.Builder(action, query).user(userName).params(parameters);
         if (repositoryName != null) {
             builder.repository(repositoryName);
@@ -102,5 +127,4 @@ public class BulkRunAction {
         String commandId = service.submit(builder.build());
         return Blobs.createJSONBlobFromValue(Collections.singletonMap("commandId", commandId));
     }
-
 }
