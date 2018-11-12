@@ -23,6 +23,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.PropertyNotWritableException;
@@ -222,5 +228,24 @@ public class TestDocumentModelResolver {
         et.setValue(context, "${doc.file.content.digest}", "foo");
         assertEquals("foo", ((Blob) doc.getPropertyValue("file:content")).getDigest());
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testFileWithBlobsResolver() throws Exception {
+        doc.addFacet("WithFiles");
+        List<Map<String, Serializable>> fileList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            StringBlob blob = new StringBlob("sample content " + i);
+            blob.setFilename("testcontent" + i + ".txt");
+            fileList.add(Collections.singletonMap("file", blob));
+        }
+        doc.setPropertyValue("files:files", (Serializable) fileList);
+
+        et.setValue(context, "${doc.files.files[0].file}", null);
+
+        fileList = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
+        assertEquals(9, fileList.size());
+    }
+
 
 }
