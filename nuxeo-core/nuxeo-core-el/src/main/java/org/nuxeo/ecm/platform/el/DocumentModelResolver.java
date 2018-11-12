@@ -23,6 +23,8 @@ package org.nuxeo.ecm.platform.el;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.el.BeanELResolver;
 import javax.el.ELContext;
@@ -234,6 +236,7 @@ public class DocumentModelResolver extends BeanELResolver {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setValue(ELContext context, Object base, Object property, Object value) {
         if (base instanceof DocumentModel) {
             try {
@@ -245,7 +248,16 @@ public class DocumentModelResolver extends BeanELResolver {
             DocumentPropertyContext ctx = (DocumentPropertyContext) base;
             value = FieldAdapterManager.getValueForStorage(value);
             try {
-                ctx.doc.setPropertyValue(getDocumentPropertyName(ctx, property), (Serializable) value);
+                if ("files".equals(ctx.getSchema())) {
+                    // Remove possible null values if a file was deleted
+                    List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) value;
+                    List<Map<String, Serializable>> filteredFiles = files.stream()
+                                                                         .filter(file -> file.get("file") != null)
+                                                                         .collect(Collectors.toList());
+                    ctx.doc.setPropertyValue(getDocumentPropertyName(ctx, property), (Serializable) filteredFiles);
+                } else {
+                    ctx.doc.setPropertyValue(getDocumentPropertyName(ctx, property), (Serializable) value);
+                }
             } catch (PropertyException e) {
                 // avoid errors here too
                 log.warn(e.toString());
@@ -254,9 +266,14 @@ public class DocumentModelResolver extends BeanELResolver {
         } else if (base instanceof Property) {
             try {
                 Property docProperty = (Property) base;
-                Property subProperty = getDocumentProperty(docProperty, property);
-                value = FieldAdapterManager.getValueForStorage(value);
-                subProperty.setValue(value);
+                // Remove possible null values if a file was deleted
+                if ("files".equals(docProperty.getSchema().getName()) && value == null) {
+                    docProperty.remove();
+                } else {
+                    Property subProperty = getDocumentProperty(docProperty, property);
+                    value = FieldAdapterManager.getValueForStorage(value);
+                    subProperty.setValue(value);
+                }
             } catch (PropertyException pe) {
                 try {
                     // try property setters to resolve doc.schema.field.type
