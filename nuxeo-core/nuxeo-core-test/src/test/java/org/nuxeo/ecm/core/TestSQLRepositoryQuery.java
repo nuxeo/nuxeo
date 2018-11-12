@@ -3777,4 +3777,35 @@ public class TestSQLRepositoryQuery {
         assertEquals(NB_TRHEADS, total);
     }
 
+    @Test
+    public void testScrollCheckUserPermission() throws Exception {
+        createDocs();
+        DocumentModel root = session.getRootDocument();
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(new ACE("bob", "Browse", true));
+        acp.addACL(acl);
+        root.setACP(acp, true);
+        DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
+        acp = new ACPImpl();
+        acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(ACE.BLOCK);
+        acp.addACL(acl);
+        folder1.setACP(acp, true);
+        session.save();
+
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            ScrollResult<String> ret = bobSession.scroll("SELECT * FROM Document", 1, 10);
+            int total = 0;
+            while (ret.hasResults()) {
+                List<String> ids = ret.getResults();
+                total += ids.size();
+                ret = bobSession.scroll(ret.getScrollId());
+            }
+            assertEquals(3, total);
+        }
+    }
+
 }

@@ -915,16 +915,25 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             return defaultScroll(query);
         }
         checkForTimedoutScroll();
-        return scrollSearch(query, batchSize, keepAliveSeconds);
+        QueryFilter queryFilter = new QueryFilter(null, null, null, null, Collections.emptyList(), 0, 0);
+        return scrollSearch(query, queryFilter, batchSize, keepAliveSeconds);
+    }
+
+    @Override
+    public ScrollResult<String> scroll(String query, QueryFilter queryFilter, int batchSize, int keepAliveSeconds) {
+        if (!dialect.supportsScroll()) {
+            return defaultScroll(query);
+        }
+        checkForTimedoutScroll();
+        return scrollSearch(query, queryFilter, batchSize, keepAliveSeconds);
     }
 
     protected void checkForTimedoutScroll() {
         cursorResults.forEach((id, cursor) -> cursor.timedOut(id));
     }
 
-    protected ScrollResult<String> scrollSearch(String query, int batchSize, int keepAliveSeconds) {
+    protected ScrollResult<String> scrollSearch(String query, QueryFilter queryFilter, int batchSize, int keepAliveSeconds) {
         QueryMaker queryMaker = findQueryMaker("NXQL");
-        QueryFilter queryFilter = new QueryFilter(null, null, null, null, Collections.emptyList(), 0, 0);
         QueryMaker.Query q = queryMaker.buildQuery(sqlInfo, model, pathResolver, query, queryFilter);
         if (q == null) {
             logger.log("Query cannot return anything due to conflicting clauses");

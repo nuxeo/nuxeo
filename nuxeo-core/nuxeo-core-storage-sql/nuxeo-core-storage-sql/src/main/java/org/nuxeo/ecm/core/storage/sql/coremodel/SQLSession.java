@@ -167,6 +167,11 @@ public class SQLSession implements Session<QueryFilter> {
     }
 
     @Override
+    public ScrollResult<String> scroll(String query, QueryFilter queryFilter, int batchSize, int keepAliveSeconds) {
+        return session.scroll(query, queryFilter, batchSize, keepAliveSeconds);
+    }
+
+    @Override
     public ScrollResult<String> scroll(String scrollId) {
         return session.scroll(scrollId);
     }

@@ -1300,7 +1300,17 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public ScrollResult<String> scroll(String query, int batchSize, int keepAliveSeconds) {
-        return getSession().scroll(query, batchSize, keepAliveSeconds);
+        if (isAdministrator()) {
+            return getSession().scroll(query, batchSize, keepAliveSeconds);
+        }
+        SecurityService securityService = getSecurityService();
+        NuxeoPrincipal principal = getPrincipal();
+        String[] principals = getPrincipalsToCheck();
+        String permission = BROWSE;
+        String[] permissions = securityService.getPermissionsToCheck(permission);
+        Collection<Transformer> transformers = getPoliciesQueryTransformers(NXQL.NXQL);
+        QueryFilter queryFilter = new QueryFilter(principal, principals, permissions, null, transformers, 0, 0);
+        return getSession().scroll(query, queryFilter, batchSize, keepAliveSeconds);
     }
 
     @Override
