@@ -43,15 +43,15 @@ public class RemoveDocumentAction implements StreamProcessorTopology {
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
-                       .addComputation(() -> new DeleteComputation(10),
+                       .addComputation(DeleteComputation::new,
                                Arrays.asList("i1:" + ACTION_NAME, "o1:" + STATUS_STREAM))
                        .build();
     }
 
     public static class DeleteComputation extends AbstractBulkComputation {
 
-        public DeleteComputation(int size) {
-            super(ACTION_NAME, size);
+        public DeleteComputation() {
+            super(ACTION_NAME, 1);
         }
 
         @Override
