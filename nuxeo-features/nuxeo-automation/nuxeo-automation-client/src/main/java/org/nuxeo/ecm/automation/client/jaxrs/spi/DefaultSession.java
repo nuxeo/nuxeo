@@ -91,18 +91,9 @@ public class DefaultSession implements Session {
         String ctype;
         Object input = request.getInput();
         if (input instanceof OperationInput && ((OperationInput) input).isBinary()) {
-            MultipartInput mpinput = new MultipartInput();
-            mpinput.setRequest(content);
-            ctype = mpinput.getContentType();
-            if (input instanceof Blob) {
-                Blob blob = (Blob) input;
-                mpinput.setBlob(blob);
-            } else if (input instanceof Blobs) {
-                mpinput.setBlobs((Blobs) input);
-            } else {
-                throw new IllegalArgumentException("Unsupported binary input object: " + input);
-            }
+            MultipartInput mpinput = Request.buildMultipartInput(input, content);
             req = new Request(Request.POST, request.getUrl(), mpinput);
+            ctype = mpinput.getContentType();
         } else {
             req = new Request(Request.POST, request.getUrl(), content);
             ctype = CTYPE_REQUEST_NOCHARSET;

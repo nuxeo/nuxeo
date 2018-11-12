@@ -22,6 +22,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.nuxeo.ecm.automation.CompiledChain;
+import org.nuxeo.ecm.automation.OperationCallback;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
@@ -58,6 +61,11 @@ public class OperationResource extends ExecutableResource {
         return service.run(createContext(xreq), type.getId(), xreq.getParams());
     }
 
+    public Object execute(ExecutionRequest xreq, OperationCallback callback) throws OperationException {
+        OperationContext ctx = createContext(xreq);
+        ctx.setCallback(callback);
+        return service.run(ctx, type.getId(), xreq.getParams());
+    }
     protected static String entityType(Class<?> clazz) {
         return clazz.getSimpleName().toLowerCase();
     }

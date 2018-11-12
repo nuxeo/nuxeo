@@ -24,6 +24,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.nuxeo.ecm.automation.client.adapters.AsyncSessionFactory;
 import org.nuxeo.ecm.automation.client.adapters.BusinessServiceFactory;
 import org.nuxeo.ecm.automation.client.adapters.DocumentServiceFactory;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.AsyncAutomationClient;
@@ -77,6 +78,7 @@ public class HttpAutomationClient extends AsyncAutomationClient {
         // http.setCookieStore(null);
         registerAdapter(new DocumentServiceFactory());
         registerAdapter(new BusinessServiceFactory());
+        registerAdapter(new AsyncSessionFactory());
     }
 
     public void setProxy(String host, int port) {
