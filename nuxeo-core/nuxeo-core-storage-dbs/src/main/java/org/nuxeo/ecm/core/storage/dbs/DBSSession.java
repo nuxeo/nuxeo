@@ -1748,6 +1748,19 @@ public class DBSSession implements Session<QueryFilter> {
     }
 
     @Override
+    public ScrollResult<String> scroll(String query, QueryFilter queryFilter, int batchSize, int keepAliveSeconds) {
+        SQLQuery sqlQuery = SQLQueryParser.parse(query);
+        SelectClause selectClause = sqlQuery.select;
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+        sqlQuery = new DBSQueryOptimizer().optimize(sqlQuery);
+        for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
+            sqlQuery = transformer.transform(queryFilter.getPrincipal(), sqlQuery);
+        }
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, sqlQuery, null, fulltextSearchDisabled);
+        return repository.scroll(evaluator, batchSize, keepAliveSeconds);
+    }
+
+    @Override
     public ScrollResult<String> scroll(String scrollId) {
         return repository.scroll(scrollId);
     }

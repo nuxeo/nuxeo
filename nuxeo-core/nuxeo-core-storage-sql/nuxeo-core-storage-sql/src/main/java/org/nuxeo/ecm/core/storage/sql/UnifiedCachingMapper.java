@@ -59,6 +59,11 @@ public class UnifiedCachingMapper extends UnifiedCachingRowMapper implements Cac
     }
 
     @Override
+    public ScrollResult scroll(String query, QueryFilter queryFilter, int batchSize, int keepAliveSeconds) {
+        return mapper.scroll(query, queryFilter, batchSize, keepAliveSeconds);
+    }
+
+    @Override
     public ScrollResult scroll(String scrollId) {
         return mapper.scroll(scrollId);
     }

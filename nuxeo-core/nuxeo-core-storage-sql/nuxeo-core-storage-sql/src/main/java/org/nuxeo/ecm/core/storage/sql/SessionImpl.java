@@ -742,6 +742,11 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
+    public ScrollResult<String> scroll(String query, QueryFilter queryFilter, int batchSize, int keepAliveSeconds) {
+        return mapper.scroll(query, queryFilter, batchSize, keepAliveSeconds);
+    }
+
+    @Override
     public ScrollResult<String> scroll(String scrollId) {
         return mapper.scroll(scrollId);
     }

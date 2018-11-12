@@ -46,6 +46,14 @@ public interface Mapper extends RowMapper, XAResource {
     ScrollResult<String> scroll(String query, int batchSize, int keepAliveSeconds);
 
     /**
+     * Executes the given query and returns the first batch of results containing id of documents, next batch must be
+     * requested within the {@code keepAliveSeconds} delay.
+     *
+     * @since 10.3
+     */
+    ScrollResult<String> scroll(String query, QueryFilter queryFilter, int batchSize, int keepAliveSeconds);
+
+    /**
      * Get the next batch of results containing id of documents, the {@code scrollId} is part of the previous
      * {@link ScrollResult} response.
      *

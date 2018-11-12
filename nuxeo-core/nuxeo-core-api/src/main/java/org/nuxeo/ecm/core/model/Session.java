@@ -79,6 +79,14 @@ public interface Session<T extends QueryFilter> {
     ScrollResult<String> scroll(String query, int batchSize, int keepAliveSeconds);
 
     /**
+     * Executes the given query and returns the first batch of results containing id of documents, next batch must be
+     * requested within the keepAliveSeconds delay.
+     *
+     * @since 10.3
+     */
+    ScrollResult<String> scroll(String query, T queryFilter, int batchSize, int keepAliveSeconds);
+
+    /**
      * Get the next batch of result containing id of documents.
      *
      * @since 8.4
