@@ -161,7 +161,7 @@ public class TestNuxeoDriveActions {
             String nullXPath = nuxeoDriveActions.getDriveEditURL(doc, null);
             fail("The xPath should not be null");
         } catch (Exception e) {
-            assertTrue(e instanceof PropertyNotFoundException);
+            assertTrue(e instanceof NullPointerException);
         }
     }
 
