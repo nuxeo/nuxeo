@@ -19,9 +19,14 @@
 
 package org.nuxeo.ecm.platform.csv.export.io;
 
+import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.SCHEMAS_CTX_DATA;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.XPATHS_CTX_DATA;
 
-import static org.nuxeo.ecm.platform.csv.export.io.DocumentPropertyCSVWriter.LIST_DELIMITER;
-import static org.nuxeo.ecm.platform.csv.export.io.DocumentPropertyCSVWriter.NULL_PROPERTY_LABEL;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -33,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.csv.CSVAssert;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -68,7 +74,9 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
 
     @Test
     public void testDefault() throws Exception {
-        CSVAssert csv = csvAssert(document);
+        RenderingContext renderingCtx = RenderingContext.CtxBuilder.get();
+        renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, Arrays.asList("dublincore"));
+        CSVAssert csv = csvAssert(document, renderingCtx);
         csv.has("repository").isEquals("test");
         csv.has("uid").isEquals(document.getId());
         csv.has("path").isEquals("/myDoc");
@@ -86,5 +94,25 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         csv.has("dc:nature").isEquals("article");
         csv.has("dc:nature[label]").isEquals("Article EN");
         csv.has("dc:subjects[label]").isEquals("Art\nnull property");
+    }
+
+    @Test
+    public void testInvalidSchemasAndXpaths() throws IOException {
+        for (List<String> value : getValues()) {
+            RenderingContext renderingCtx = RenderingContext.CtxBuilder.get();
+            for (String param : Arrays.asList(SCHEMAS_CTX_DATA, XPATHS_CTX_DATA)) {
+                renderingCtx.setParameterValues(param, value);
+            }
+            assertNotNull(csvAssert(document, renderingCtx));
+        }
+    }
+
+    protected List<List<String>> getValues() {
+        List<List<String>> values = new ArrayList<>();
+        values.add(Arrays.asList((String) null));
+        values.add(Arrays.asList(""));
+        values.add(Arrays.asList("toto"));
+        values.add(Arrays.asList("toto, tata, titi"));
+        return values;
     }
 }

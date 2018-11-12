@@ -18,13 +18,13 @@
  */
 package org.nuxeo.ecm.platform.csv.export.io;
 
-import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.SCHEMAS_CTX_DATA;
-import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.XPATHS_CTX_DATA;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVHelper.getList;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.SCHEMAS_CTX_DATA;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.XPATHS_CTX_DATA;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.csv.CSVPrinter;
@@ -57,9 +57,8 @@ public class DocumentModelListCSVWriter extends AbstractCSVWriter<List<DocumentM
     @Override
     protected void writeHeader(List<DocumentModel> entity, CSVPrinter printer) throws IOException {
         DocumentModelCSVHelper.printSystemPropertiesHeader(printer);
-        List<String> schemas = ctx.getParameter(SCHEMAS_CTX_DATA) != null ? ctx.getParameter(SCHEMAS_CTX_DATA)
-                : Arrays.asList(entity.get(0).getSchemas());
-        List<String> xpaths = ctx.getParameter(XPATHS_CTX_DATA);
+        List<String> schemas = getList(ctx, SCHEMAS_CTX_DATA);
+        List<String> xpaths = getList(ctx, XPATHS_CTX_DATA);
         DocumentModelCSVHelper.printPropertiesHeader(schemas, xpaths, printer);
         printer.println();
     }
