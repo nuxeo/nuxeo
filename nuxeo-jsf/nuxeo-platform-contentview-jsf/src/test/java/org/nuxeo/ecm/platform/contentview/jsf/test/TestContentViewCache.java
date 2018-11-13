@@ -77,7 +77,7 @@ public class TestContentViewCache {
 
     Boolean booleanParam = Boolean.FALSE;
 
-    List<String> listParam = Arrays.asList("deleted", "validated");
+    List<String> listParam = Arrays.asList("approved", "validated");
 
     @Before
     public void setUp() {
