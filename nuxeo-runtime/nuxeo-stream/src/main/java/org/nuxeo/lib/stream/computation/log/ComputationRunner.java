@@ -169,7 +169,6 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             if (Thread.currentThread().isInterrupted()) {
                 // this can happen when pool is shutdownNow throwing ClosedByInterruptException
                 log.info(metadata.name() + ": Interrupted", e);
-                // TODO: test if we should set interrupted = true to rearm the interrupt flag
             } else {
                 log.error(metadata.name() + ": Exception in processLoop: " + e.getMessage(), e);
                 throw e;
@@ -315,7 +314,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     protected void processFallback(ComputationContextImpl context) {
-        if (policy.isSkipFailure()) {
+        if (policy.continueOnFailure()) {
             log.error(String.format("Skip record after failure: %s", context.getLastOffset()));
             context.askForCheckpoint();
         } else {
