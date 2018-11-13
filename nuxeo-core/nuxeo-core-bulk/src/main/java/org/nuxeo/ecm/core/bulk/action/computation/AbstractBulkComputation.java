@@ -113,9 +113,14 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
     }
 
     protected BulkCommand getCommand(String commandId) {
-        // This is to remove expired/completed commands from the cache map
-        commands.size();
-        return commands.computeIfAbsent(commandId, id -> Framework.getService(BulkService.class).getCommand(id));
+        BulkCommand ret = commands.get(commandId);
+        if (ret == null) {
+            ret = Framework.getService(BulkService.class).getCommand(commandId);
+            commands.put(commandId, ret);
+            // This is to remove expired/completed commands from the cache map
+            commands.size();
+        }
+        return ret;
     }
 
     public BulkCommand getCurrentCommand() {

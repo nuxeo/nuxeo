@@ -63,14 +63,6 @@ public class ComputationPolicy {
         return batchThreshold;
     }
 
-    public boolean continueOnFailure() {
-        return skipFailure;
-    }
-
-    /**
-     * @deprecated since 10.3 use {@link #continueOnFailure()} instead
-     */
-    @Deprecated
     public boolean isSkipFailure() {
         return skipFailure;
     }
@@ -78,7 +70,7 @@ public class ComputationPolicy {
     @Override
     public String toString() {
         return "ComputationPolicy{" + "maxRetries=" + retryPolicy.getMaxRetries() + ", delay=" + retryPolicy.getDelay()
-                + ", delayMax=" + retryPolicy.getMaxDelay() + ", continueOnFailure=" + skipFailure + ", batchCapacity="
+                + ", delayMax=" + retryPolicy.getMaxDelay() + ", skipFailure=" + skipFailure + ", batchCapacity="
                 + batchCapacity + ", batchThreshold=" + batchThreshold + '}';
     }
 }

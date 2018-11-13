@@ -88,7 +88,7 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
     public void init(ComputationContext context) {
         super.init(context);
         // note that we don't use setFlushInterval because this is done by our timer
-        continueOnFailure = context.getPolicy().continueOnFailure();
+        continueOnFailure = context.getPolicy().isSkipFailure();
         long backoffDelayMs = context.getPolicy().getRetryPolicy().getDelay().toMillis();
         int retries = context.getPolicy().getRetryPolicy().getMaxRetries();
 
