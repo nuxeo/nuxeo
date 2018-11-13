@@ -25,6 +25,7 @@ import static org.nuxeo.wopi.Constants.ACCESS_TOKEN_ATTRIBUTE;
 import static org.nuxeo.wopi.Constants.ACCESS_TOKEN_TTL_ATTRIBUTE;
 import static org.nuxeo.wopi.Constants.FILES_ENDPOINT_PATH;
 import static org.nuxeo.wopi.Constants.FORM_URL;
+import static org.nuxeo.wopi.Constants.WOPI_BASE_URL_PROPERTY;
 import static org.nuxeo.wopi.Constants.WOPI_JSP;
 import static org.nuxeo.wopi.Constants.WOPI_SRC;
 
@@ -106,8 +107,9 @@ public class WOPIServlet extends HttpServlet {
             request.setAttribute(ACCESS_TOKEN_ATTRIBUTE, token);
             request.setAttribute(ACCESS_TOKEN_TTL_ATTRIBUTE, Helpers.getJWTTokenExp(token));
             String baseURL = VirtualHostHelper.getBaseURL(request);
+            String wopiBaseURL = Framework.getProperty(WOPI_BASE_URL_PROPERTY, baseURL);
             String fileId = FileInfo.computeFileId(doc, xpath);
-            String wopiSrc = URLEncoder.encode(String.format("%s%s%s", baseURL, FILES_ENDPOINT_PATH, fileId),
+            String wopiSrc = URLEncoder.encode(String.format("%s%s%s", wopiBaseURL, FILES_ENDPOINT_PATH, fileId),
                     UTF_8.name());
             request.setAttribute(FORM_URL, String.format("%s%s=%s", actionURL, WOPI_SRC, wopiSrc));
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(WOPI_JSP);

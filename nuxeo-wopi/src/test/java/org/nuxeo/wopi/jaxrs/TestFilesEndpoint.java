@@ -35,6 +35,7 @@ import static org.nuxeo.wopi.Constants.NAME;
 import static org.nuxeo.wopi.Constants.SHARE_URL_READ_ONLY;
 import static org.nuxeo.wopi.Constants.SHARE_URL_READ_WRITE;
 import static org.nuxeo.wopi.Constants.URL;
+import static org.nuxeo.wopi.Constants.WOPI_BASE_URL_PROPERTY;
 import static org.nuxeo.wopi.Headers.ITEM_VERSION;
 import static org.nuxeo.wopi.Headers.LOCK;
 import static org.nuxeo.wopi.Headers.MAX_EXPECTED_SIZE;
@@ -120,7 +121,9 @@ import com.sun.jersey.api.client.WebResource;
 @ServletContainer(port = 18090)
 public class TestFilesEndpoint {
 
-    public static final String BASE_URL = "http://localhost:18090/wopi/files";
+    public static final String BASE_URL = "http://localhost:18090/";
+
+    public static final String WOPI_FILES_BASE_URL = "http://localhost:18090/wopi/files";
 
     public static final String CONTENTS_PATH = "contents";
 
@@ -836,31 +839,50 @@ public class TestFilesEndpoint {
 
         // success - 200 - new file from relative target
         try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
-            assertPutRelativeFileResponse(response, "new file.docx");
+            assertPutRelativeFileResponse(response, "new file.docx", BASE_URL);
         }
 
         // success - 200 - new file from suggested extension
         headers.remove(RELATIVE_TARGET);
         headers.put(SUGGESTED_TARGET, ".docx");
         try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
-            assertPutRelativeFileResponse(response, "test-file.docx");
+            assertPutRelativeFileResponse(response, "test-file.docx", BASE_URL);
         }
 
         // success - 200 - new file from suggested filename
         headers.put(SUGGESTED_TARGET, "foo.docx");
         try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
-            assertPutRelativeFileResponse(response, "foo.docx");
+            assertPutRelativeFileResponse(response, "foo.docx", BASE_URL);
+        }
+
+        try {
+            String customWOPIBaseURL = "http://foo";
+            // success - 200 - new file from suggested filename with a custom WOPI base URL
+            Framework.getProperties().setProperty(WOPI_BASE_URL_PROPERTY, customWOPIBaseURL);
+            try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
+                assertPutRelativeFileResponse(response, "foo.docx", customWOPIBaseURL);
+            }
+        } finally {
+            Framework.getProperties().remove(WOPI_BASE_URL_PROPERTY);
         }
     }
 
-    protected void assertPutRelativeFileResponse(CloseableClientResponse response, String newName) throws IOException {
+    protected void assertPutRelativeFileResponse(CloseableClientResponse response, String newName, String wopiBaseURL)
+            throws IOException {
         assertEquals(200, response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(newName, node.get(NAME).asText());
-        assertTrue(node.has(URL));
-        assertTrue(node.has(HOST_VIEW_URL));
-        assertTrue(node.has(HOST_EDIT_URL));
-        String hostViewUrl = node.get(HOST_VIEW_URL).asText();
+        JsonNode jsonNode = node.get(URL);
+        assertNotNull(jsonNode);
+        assertTrue(jsonNode.asText().startsWith(wopiBaseURL));
+        jsonNode = node.get(HOST_EDIT_URL);
+        assertNotNull(jsonNode);
+        assertTrue(jsonNode.asText().startsWith(BASE_URL));
+        jsonNode = node.get(HOST_VIEW_URL);
+        assertNotNull(jsonNode);
+        String hostViewUrl = jsonNode.asText();
+        assertTrue(hostViewUrl.startsWith(BASE_URL));
+
         String[] split = hostViewUrl.split("/");
         String docId = split[split.length - 2];
 
@@ -1141,7 +1163,7 @@ public class TestFilesEndpoint {
     }
 
     protected CloseableClientResponse get(String token, Map<String, String> headers, String... path) {
-        WebResource wr = client.resource(BASE_URL)
+        WebResource wr = client.resource(WOPI_FILES_BASE_URL)
                                .path(String.join("/", path))
                                .queryParam(ACCESS_TOKEN_PARAMETER, token);
         WebResource.Builder builder = wr.getRequestBuilder();
@@ -1156,7 +1178,7 @@ public class TestFilesEndpoint {
     }
 
     protected CloseableClientResponse post(String token, String data, Map<String, String> headers, String... path) {
-        WebResource wr = client.resource(BASE_URL)
+        WebResource wr = client.resource(WOPI_FILES_BASE_URL)
                                .path(String.join("/", path))
                                .queryParam(ACCESS_TOKEN_PARAMETER, token);
         WebResource.Builder builder = wr.getRequestBuilder();

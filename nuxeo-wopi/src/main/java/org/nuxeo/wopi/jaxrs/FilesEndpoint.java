@@ -75,6 +75,7 @@ import static org.nuxeo.wopi.Constants.USER_CAN_WRITE;
 import static org.nuxeo.wopi.Constants.USER_FRIENDLY_NAME;
 import static org.nuxeo.wopi.Constants.USER_ID;
 import static org.nuxeo.wopi.Constants.VERSION;
+import static org.nuxeo.wopi.Constants.WOPI_BASE_URL_PROPERTY;
 import static org.nuxeo.wopi.Constants.WOPI_SOURCE;
 import static org.nuxeo.wopi.Headers.ITEM_VERSION;
 import static org.nuxeo.wopi.Headers.LOCK;
@@ -176,6 +177,8 @@ public class FilesEndpoint extends DefaultObject {
 
     protected String baseURL;
 
+    protected String wopiBaseURL;
+
     @Override
     public void initialize(Object... args) {
         if (args == null || args.length != 4) {
@@ -187,6 +190,7 @@ public class FilesEndpoint extends DefaultObject {
         xpath = (String) args[3];
         fileId = FileInfo.computeFileId(doc, xpath);
         baseURL = VirtualHostHelper.getBaseURL(request);
+        wopiBaseURL = Framework.getProperty(WOPI_BASE_URL_PROPERTY, baseURL);
     }
 
     /**
@@ -476,8 +480,8 @@ public class FilesEndpoint extends DefaultObject {
 
         String token = Helpers.getJWTToken(request);
         String newFileId = FileInfo.computeFileId(newDoc, xpath);
-        String wopiSrc = String.format("%s%s%s?%s=%s", baseURL, FILES_ENDPOINT_PATH, newFileId, ACCESS_TOKEN_PARAMETER,
-                token);
+        String wopiSrc = String.format("%s%s%s?%s=%s", wopiBaseURL, FILES_ENDPOINT_PATH, newFileId,
+                ACCESS_TOKEN_PARAMETER, token);
         String hostViewUrl = Helpers.getWOPIURL(baseURL, ACTION_VIEW, newDoc, xpath);
         String hostEditUrl = Helpers.getWOPIURL(baseURL, ACTION_EDIT, newDoc, xpath);
 
