@@ -26,7 +26,7 @@ import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.ecm.core.api.trash.TrashService;
 
 /**
  * @since 10.1
