@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,10 +105,10 @@ public class TestDefaultPageProviders {
 
     Boolean booleanParam = Boolean.FALSE;
 
-    List<String> listParam = Arrays.asList(new String[] { "deleted", "validated" });
+    List<String> listParam = Arrays.asList("deleted", "validated");
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // set rights to user "bob" on root
         ACP acp = new ACPImpl();
         ACL acl = new ACLImpl();
@@ -187,7 +188,7 @@ public class TestDefaultPageProviders {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCoreQuery() throws Exception {
+    public void testCoreQuery() {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
 
@@ -218,7 +219,7 @@ public class TestDefaultPageProviders {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testCoreQueryReference() throws Exception {
+    public void testCoreQueryReference() {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
         assertNotNull(contentView);
 
@@ -254,8 +255,7 @@ public class TestDefaultPageProviders {
         assertEquals(50L, options.get(7).longValue());
     }
 
-    protected void checkCoreQuery(String parentIdParam, PageProvider<DocumentModel> pp) throws Exception {
-
+    protected void checkCoreQuery(String parentIdParam, PageProvider<DocumentModel> pp) {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
@@ -304,7 +304,7 @@ public class TestDefaultPageProviders {
         assertEquals("Document number3", docs.get(1).getPropertyValue("dc:title"));
 
         // test selection
-        pp.setSelectedEntries(Arrays.asList(new DocumentModel[] { docs.get(1) }));
+        pp.setSelectedEntries(Collections.singletonList(docs.get(1)));
         PageSelections<DocumentModel> selections = pp.getCurrentSelectPage();
         assertNotNull(selections);
         assertEquals(2, selections.getSize());
@@ -319,13 +319,13 @@ public class TestDefaultPageProviders {
     // calls
     @SuppressWarnings("unchecked")
     @Test
-    public void testCoreQueryWithXMLParameters() throws Exception {
+    public void testCoreQueryWithXMLParameters() {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
 
         String parentIdParam = session.getRootDocument().getId();
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider();
-        checkCoreQueryWithXMLParameter(parentIdParam, pp);
+        checkCoreQuery(parentIdParam, pp);
 
         // Test that a new page provider is returned when one of the parameter
         // changes.
@@ -338,78 +338,17 @@ public class TestDefaultPageProviders {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCoreQueryWithXMLParametersReference() throws Exception {
+    public void testCoreQueryWithXMLParametersReference() {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
         assertNotNull(contentView);
 
         String parentIdParam = session.getRootDocument().getId();
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider();
-        checkCoreQueryWithXMLParameter(parentIdParam, pp);
-    }
-
-    protected void checkCoreQueryWithXMLParameter(String parentIdParam, PageProvider<DocumentModel> pp)
-            throws Exception {
-        assertNotNull(pp);
-
-        assertEquals(-1, pp.getResultsCount());
-        assertEquals(0, pp.getNumberOfPages());
-
-        // init results
-        List<DocumentModel> docs = pp.getCurrentPage();
-
-        // check query
-        assertTrue(pp instanceof CoreQueryDocumentPageProvider);
-        assertEquals(
-                String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'"
-                        + " AND ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
-                        + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('deleted', 'validated')"
-                        + " ORDER BY dc:title", parentIdParam, dummyParam),
-                ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
-
-        assertEquals(5, pp.getResultsCount());
-        assertEquals(3, pp.getNumberOfPages());
-        assertFalse(pp.isPreviousPageAvailable());
-        assertTrue(pp.isNextPageAvailable());
-
-        assertNotNull(docs);
-        assertEquals(2, docs.size());
-        assertEquals("Document number0", docs.get(0).getPropertyValue("dc:title"));
-        assertEquals("Document number1", docs.get(1).getPropertyValue("dc:title"));
-
-        pp.nextPage();
-        docs = pp.getCurrentPage();
-
-        assertEquals(
-                String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'"
-                        + " AND ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
-                        + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('deleted', 'validated')"
-                        + " ORDER BY dc:title", parentIdParam, dummyParam),
-                ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
-
-        assertEquals(5, pp.getResultsCount());
-        assertEquals(3, pp.getNumberOfPages());
-        assertTrue(pp.isPreviousPageAvailable());
-        assertTrue(pp.isNextPageAvailable());
-
-        assertNotNull(docs);
-        assertEquals(2, docs.size());
-        assertEquals("Document number2", docs.get(0).getPropertyValue("dc:title"));
-        assertEquals("Document number3", docs.get(1).getPropertyValue("dc:title"));
-
-        // test selection
-        pp.setSelectedEntries(Arrays.asList(new DocumentModel[] { docs.get(1) }));
-        PageSelections<DocumentModel> selections = pp.getCurrentSelectPage();
-        assertNotNull(selections);
-        assertEquals(2, selections.getSize());
-        assertFalse(selections.isSelected());
-        assertEquals("Document number2", selections.getEntries().get(0).getData().getPropertyValue("dc:title"));
-        assertFalse(selections.getEntries().get(0).isSelected());
-        assertEquals("Document number3", selections.getEntries().get(1).getData().getPropertyValue("dc:title"));
-        assertTrue(selections.getEntries().get(1).isSelected());
+        checkCoreQuery(parentIdParam, pp);
     }
 
     @Test
-    public void testCoreQueryMaxResults() throws Exception {
+    public void testCoreQueryMaxResults() {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
 
@@ -497,7 +436,7 @@ public class TestDefaultPageProviders {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCoreQueryAndFetch() throws Exception {
+    public void testCoreQueryAndFetch() {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
         assertNotNull(contentView);
 
@@ -509,7 +448,7 @@ public class TestDefaultPageProviders {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCoreQueryAndFetchReference() throws Exception {
+    public void testCoreQueryAndFetchReference() {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH_REF");
         assertNotNull(contentView);
 
@@ -519,8 +458,7 @@ public class TestDefaultPageProviders {
         checkCoreQueryAndFetch(parentIdParam, pp);
     }
 
-    protected void checkCoreQueryAndFetch(String parentIdParam, PageProvider<Map<String, Serializable>> pp)
-            throws Exception {
+    protected void checkCoreQueryAndFetch(String parentIdParam, PageProvider<Map<String, Serializable>> pp) {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
@@ -568,7 +506,7 @@ public class TestDefaultPageProviders {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCoreQueryAndFetchWithError() throws Exception {
+    public void testCoreQueryAndFetchWithError() {
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
         assertNotNull(contentView);
@@ -580,7 +518,7 @@ public class TestDefaultPageProviders {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCoreQueryAndFetchWithErrorReference() throws Exception {
+    public void testCoreQueryAndFetchWithErrorReference() {
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH_REF");
         assertNotNull(contentView);
@@ -590,7 +528,7 @@ public class TestDefaultPageProviders {
         checkCoreQueryAndFetchWithError(pp);
     }
 
-    protected void checkCoreQueryAndFetchWithError(PageProvider<Map<String, Serializable>> pp) throws Exception {
+    protected void checkCoreQueryAndFetchWithError(PageProvider<Map<String, Serializable>> pp) {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
@@ -611,7 +549,7 @@ public class TestDefaultPageProviders {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCoreQueryWithSearchDocument() throws Exception {
+    public void testCoreQueryWithSearchDocument() {
         assumeTrue(coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
@@ -627,7 +565,7 @@ public class TestDefaultPageProviders {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCoreQueryWithSimpleDocumentModel() throws Exception {
+    public void testCoreQueryWithSimpleDocumentModel() {
         assumeTrue(coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SIMPLE_DOC_MODEL");
@@ -644,7 +582,7 @@ public class TestDefaultPageProviders {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCoreQueryWithSearchDocumentReference() throws Exception {
+    public void testCoreQueryWithSearchDocumentReference() {
         assumeTrue(coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF");
@@ -658,8 +596,7 @@ public class TestDefaultPageProviders {
         checkCoreQueryWithSearchDocument(parentIdParam, pp);
     }
 
-    protected void checkCoreQueryWithSimpleDocumentModel(String parentIdParam, PageProvider<DocumentModel> pp)
-            throws Exception {
+    protected void checkCoreQueryWithSimpleDocumentModel(String parentIdParam, PageProvider<DocumentModel> pp) {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
@@ -688,8 +625,7 @@ public class TestDefaultPageProviders {
 
     }
 
-    protected void checkCoreQueryWithSearchDocument(String parentIdParam, PageProvider<DocumentModel> pp)
-            throws Exception {
+    protected void checkCoreQueryWithSearchDocument(String parentIdParam, PageProvider<DocumentModel> pp) {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
@@ -742,7 +678,7 @@ public class TestDefaultPageProviders {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testCoreQueryWithSearchDocumentWithWhereClause() throws Exception {
+    public void testCoreQueryWithSearchDocumentWithWhereClause() {
         ContentView contentView = service.getContentView("QUERY_WITH_SUBCLAUSE");
         assertNotNull(contentView);
 
@@ -754,8 +690,7 @@ public class TestDefaultPageProviders {
         checkCoreQueryWithSearchDocumentWithWhereClause(parentIdParam, pp);
     }
 
-    protected void checkCoreQueryWithSearchDocumentWithWhereClause(String parentIdParam, PageProvider<DocumentModel> pp)
-            throws Exception {
+    protected void checkCoreQueryWithSearchDocumentWithWhereClause(String parentIdParam, PageProvider<DocumentModel> pp) {
         // init results
         pp.getCurrentPage();
 
@@ -770,7 +705,7 @@ public class TestDefaultPageProviders {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testCoreQueryWithQuickFilter() throws Exception {
+    public void testCoreQueryWithQuickFilter() {
         ContentView contentView = service.getContentView("QUERY_WITH_QUICK_FILTER");
         assertNotNull(contentView);
 
@@ -786,7 +721,7 @@ public class TestDefaultPageProviders {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testCoreQueryWithQuickFilterOverrideSort() throws Exception {
+    public void testCoreQueryWithQuickFilterOverrideSort() {
         ContentView contentView = service.getContentView("QUERY_WITH_QUICK_FILTER_OVERRIDE_SORT");
         assertNotNull(contentView);
 
@@ -800,8 +735,7 @@ public class TestDefaultPageProviders {
         checkCoreQueryWithQuickFilter(parentIdParam, pp);
     }
 
-    protected void checkCoreQueryWithQuickFilter(String parentIdParam, PageProvider<DocumentModel> pp)
-            throws Exception {
+    protected void checkCoreQueryWithQuickFilter(String parentIdParam, PageProvider<DocumentModel> pp) {
         // init results
         pp.getCurrentPage();
 
@@ -815,7 +749,7 @@ public class TestDefaultPageProviders {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testCoreQueryUnrestricted() throws Exception {
+    public void testCoreQueryUnrestricted() {
         ContentView contentView = service.getContentView("QUERY_RESTRICTED");
         assertNotNull(contentView);
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider();
@@ -845,18 +779,18 @@ public class TestDefaultPageProviders {
         for (DocumentModel doc : docs) {
             if ("doc_restricted".equals(doc.getName())) {
                 boolean isDetached = doc.getSessionId() == null;
-                assertTrue(shouldBeDetached == isDetached);
+                assertEquals(shouldBeDetached, isDetached);
                 break;
             }
         }
     }
 
     @Test
-    public void testCoreQueryWithMaxResults() throws Exception {
+    public void testCoreQueryWithMaxResults() {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
 
-        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (AbstractSession) session);
         PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_MAX_PAGE_SIZE", (DocumentModel) null, null, null,
                 null, props);
@@ -873,7 +807,7 @@ public class TestDefaultPageProviders {
     }
 
     @Test
-    public void testWaitForExecutionPP() throws Exception {
+    public void testWaitForExecutionPP() {
         ContentView cv = service.getContentView("NAMED_PAGE_PROVIDER");
         assertNotNull(cv);
         assertTrue(cv.isWaitForExecution());

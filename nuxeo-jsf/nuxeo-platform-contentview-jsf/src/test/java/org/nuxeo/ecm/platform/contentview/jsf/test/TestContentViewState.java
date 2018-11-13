@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ public class TestContentViewState {
     String ENC_CURRENT_DOC_CHILDREN_WITH_SEARCH_DOC = "H4sIAAAAAAAAAKWR3U4CMRCFX8XMrUuyC6hJ78iCgQSR8KMXxmw23Vls7LY4bcWV7Ls7BeUF7NX09JxvTtIjSGs8Gv%2Bk8LAoGwQB%2BXa1miw2xfgx3z7EIZ%2FO5mOWiufZZlqsJ6NVPr28QgL7codLsp%2BqQvoPY62%2BOdtPQAYi7rRkDUSawEdAapclMdsjORAvrwk4LEm%2Bja0MDXtBHMG3%2B7j7XmmMRLJ7JK%2FQxbeaxd9gJUVjK1UrrNjdT7NhLx32sttNdiMGd2I4uE75wMnoldeReV529Y7twVLloOu4gCU%2FM7WN2OPpllsdGsP2S%2FLsGjmJplJmB8JTwI5LELqg%2FbxsbeDuJmj9p50hEcp%2FE8ciAw7gF8rgY%2BW61A67H%2B4OaOu6AQAA";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         searchDocument = session.createDocumentModel("File");
         searchDocument.setPropertyValue("dc:title", "search keywords");
         searchDocument.setPropertyValue("dc:modified", getModifiedDate());
@@ -132,7 +132,7 @@ public class TestContentViewState {
     }
 
     @Test
-    public void testSaveContentView() throws Exception {
+    public void testSaveContentView() {
         assertNull(service.saveContentView(null));
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
@@ -151,7 +151,7 @@ public class TestContentViewState {
         assertEquals(4, queryParams.length);
         assertEquals(currentDocument.getId(), queryParams[0]);
         assertEquals(booleanParam, queryParams[1]);
-        assertEquals(null, queryParams[2]);
+        assertNull(queryParams[2]);
         assertEquals(listParam, queryParams[3]);
         assertNull(state.getResultColumns());
 
@@ -188,7 +188,7 @@ public class TestContentViewState {
         assertEquals(4, queryParams.length);
         assertEquals("test_parent_id", queryParams[0]);
         assertEquals(booleanParam, queryParams[1]);
-        assertEquals(null, queryParams[2]);
+        assertNull(queryParams[2]);
         assertEquals(listParam, queryParams[3]);
 
         List<String> resultColumns = state.getResultColumns();
@@ -213,7 +213,7 @@ public class TestContentViewState {
     }
 
     @Test
-    public void testRestoreContentView() throws Exception {
+    public void testRestoreContentView() {
         assertNull(service.restoreContentView(null));
 
         // dummy state, to test errors
@@ -256,7 +256,7 @@ public class TestContentViewState {
         assertEquals(4, queryParams.length);
         assertEquals("test_parent_id", queryParams[0]);
         assertEquals(booleanParam, queryParams[1]);
-        assertEquals(null, queryParams[2]);
+        assertNull(queryParams[2]);
         assertEquals(listParam, queryParams[3]);
 
         sortInfos = pp.getSortInfos();
@@ -294,9 +294,12 @@ public class TestContentViewState {
         ContentViewState state = service.saveContentView(contentView);
 
         String json = JSONContentViewState.toJSON(state, false);
-        String expectedJson = "{" + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN\","
-                + "\"pageProviderName\":\"CURRENT_DOCUMENT_CHILDREN\"," + "\"pageSize\":2," + "\"currentPage\":0,"
-                + "\"queryParameters\":[\"test_parent_id\",false,null,[\"deleted\", \"validated\"]],"
+        String expectedJson = "{" //
+                + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN\"," //
+                + "\"pageProviderName\":\"CURRENT_DOCUMENT_CHILDREN\"," //
+                + "\"pageSize\":2," //
+                + "\"currentPage\":0," //
+                + "\"queryParameters\":[\"test_parent_id\",false,null,[\"deleted\", \"validated\"]]," //
                 + "\"searchDocument\":null," + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":{\"name\":\"document_listing\",\"title\":\"label.document_listing.layout\",\"translateTitle\":true,\"iconPath\":\"/icons/myicon.png\",\"showCSVExport\":true},"
                 + "\"resultColumns\":[\"column_1\"]," + "\"executed\":false" + "}";
@@ -310,14 +313,18 @@ public class TestContentViewState {
     public void testRestoreJSONContentViewWithNullArray() throws Exception {
         assertNull(service.saveContentView(null));
 
-        String json = "{" + "\"contentViewName\":\"SEARCH_DOCUMENT\"," + "\"pageSize\":2,"
-                + "\"currentPage\":0,"
-                + "\"queryParameters\":[],"
-                + "\"searchDocument\":{\"type\":\"File\",\n" +
-                "    \"properties\":{\"dc:contributors\":[null]}},"
-                + "\"sortInfos\":[],"
+        String json = "{" //
+                + "\"contentViewName\":\"SEARCH_DOCUMENT\"," //
+                + "\"pageSize\":2," //
+                + "\"currentPage\":0," //
+                + "\"queryParameters\":[]," //
+                + "\"searchDocument\":{\"type\":\"File\",\n" //
+                + "    \"properties\":{\"dc:contributors\":[null]}" //
+                + "}," //
+                + "\"sortInfos\":[]," //
                 + "\"resultLayout\":{\"name\":\"document_listing\",\"title\":\"label.document_listing.layout\",\"translateTitle\":true,\"iconPath\":\"/icons/myicon.png\",\"showCSVExport\":true},"
-                + "\"resultColumns\":[\"column_1\"]" + "}";
+                + "\"resultColumns\":[\"column_1\"]" //
+                + "}";
         ContentViewState state = JSONContentViewState.fromJSON(json, false);
         assertNotNull(state);
         assertEquals("SEARCH_DOCUMENT", state.getContentViewName());
@@ -345,7 +352,7 @@ public class TestContentViewState {
     }
 
     @Test
-    public void testSaveContentViewWithSearchDoc() throws Exception {
+    public void testSaveContentViewWithSearchDoc() {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         assertNotNull(contentView);
 
@@ -375,11 +382,10 @@ public class TestContentViewState {
         contentView.getPageProvider();
         contentView.setCurrentResultLayoutColumns(Collections.singletonList("column_1"));
         state = service.saveContentView(contentView);
-        checkContentViewStateWithSearchDoc(state, true, true);
+        checkContentViewStateWithSearchDoc(state, true);
     }
 
-    protected void checkContentViewStateWithSearchDoc(ContentViewState state, boolean withQueryParams,
-            boolean withSortInfos) {
+    protected void checkContentViewStateWithSearchDoc(ContentViewState state, boolean withQueryParams) {
         assertNotNull(state);
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", state.getContentViewName());
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", state.getPageProviderName());
@@ -407,18 +413,14 @@ public class TestContentViewState {
         assertNull(searchDoc.getPropertyValue("dc:description"));
 
         List<SortInfo> sortInfos = state.getSortInfos();
-        if (withSortInfos) {
-            assertNotNull(sortInfos);
-            assertEquals(1, sortInfos.size());
-            assertEquals("dc:title", sortInfos.get(0).getSortColumn());
-            assertTrue(sortInfos.get(0).getSortAscending());
-        } else {
-            assertNull(sortInfos);
-        }
+        assertNotNull(sortInfos);
+        assertEquals(1, sortInfos.size());
+        assertEquals("dc:title", sortInfos.get(0).getSortColumn());
+        assertTrue(sortInfos.get(0).getSortAscending());
     }
 
     @Test
-    public void testRestoreContentViewWithSearchDoc() throws Exception {
+    public void testRestoreContentViewWithSearchDoc() {
         ContentViewService service = Framework.getService(ContentViewService.class);
         assertNotNull(service);
 
@@ -480,7 +482,7 @@ public class TestContentViewState {
      * Non regression test for NXP-11419, showing an issue when restoring with a search doc and a current page > 0
      */
     @Test
-    public void testRestoreContentViewWithSearchDocAndCurrentPage() throws Exception {
+    public void testRestoreContentViewWithSearchDocAndCurrentPage() {
         ContentViewService service = Framework.getService(ContentViewService.class);
         assertNotNull(service);
 
@@ -566,10 +568,10 @@ public class TestContentViewState {
                 + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}]," + "\"resultLayout\":null,"
                 + "\"resultColumns\":[\"column_1\"]" + "}";
         ContentViewState state = JSONContentViewState.fromJSON(json, false);
-        checkContentViewStateWithSearchDoc(state, false, true);
+        checkContentViewStateWithSearchDoc(state, false);
 
         state = JSONContentViewState.fromJSON(ENC_CURRENT_DOC_CHILDREN_WITH_SEARCH_DOC, true);
-        checkContentViewStateWithSearchDoc(state, false, true);
+        checkContentViewStateWithSearchDoc(state, false);
     }
 
     @Test
