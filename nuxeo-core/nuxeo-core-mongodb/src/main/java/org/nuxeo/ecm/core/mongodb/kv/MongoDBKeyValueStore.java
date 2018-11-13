@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -115,6 +116,13 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
     @Override
     public Stream<String> keyStream() {
         return StreamSupport.stream(coll.find().projection(include(ID_KEY)).spliterator(), false)
+                            .map(doc -> doc.getString(ID_KEY));
+    }
+
+    @Override
+    public Stream<String> keyStream(String prefix) {
+        Document filter = new Document(ID_KEY, Pattern.compile('^' + Pattern.quote(prefix)));
+        return StreamSupport.stream(coll.find(filter).projection(include(ID_KEY)).spliterator(), false)
                             .map(doc -> doc.getString(ID_KEY));
     }
 

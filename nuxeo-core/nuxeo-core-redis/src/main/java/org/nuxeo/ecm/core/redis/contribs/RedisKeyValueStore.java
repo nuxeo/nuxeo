@@ -101,6 +101,24 @@ public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
     }
 
     @Override
+    public Stream<String> keyStream(String prefix) {
+        final String prefixf = ecapeGlob(prefix);
+        RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
+        int namespaceLength = namespace.length();
+        Set<String> keys = redisExecutor.execute(jedis -> jedis.keys(namespace + prefixf + "*"));
+        return keys.stream().map(key -> key.substring(namespaceLength));
+    }
+
+    /** Escape glob-like wildcards and [] char ranges with a backslash. */
+    public static String ecapeGlob(String prefix) {
+        if (prefix.indexOf('\\') >= 0 || prefix.indexOf('?') >= 0 || prefix.indexOf('*') >= 0
+                || prefix.indexOf('[') >= 0) {
+            prefix = prefix.replace("\\", "\\\\").replace("?", "\\?").replace("*", "\\*").replace("[", "\\[");
+        }
+        return prefix;
+    }
+
+    @Override
     public void close() {
         log.debug("Closed");
     }

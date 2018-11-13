@@ -45,6 +45,16 @@ public interface KeyValueStoreProvider extends KeyValueStore {
     Stream<String> keyStream();
 
     /**
+     * Returns a {@link Stream} of the keys with the given prefix contained in this Key/Value store provider.
+     * <p>
+     * This operation may be slow and should only be used for management or debug purposes.
+     *
+     * @return the stream of keys
+     * @since 10.3
+     */
+    Stream<String> keyStream(String prefix);
+
+    /**
      * Closes this Key/Value store provider.
      */
     void close();
