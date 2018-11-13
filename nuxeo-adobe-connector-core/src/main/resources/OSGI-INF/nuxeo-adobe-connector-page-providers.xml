@@ -9,7 +9,7 @@
         <predicate parameter="ecm:fulltext" operator="FULLTEXT">
           <field schema="adobe-connector-all-images_pp" name="system_fulltext"/>
         </predicate>
-        <fixedPart>ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' AND ecm:mixinType = 'Picture'</fixedPart>
+        <fixedPart>ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:mixinType = 'Picture'</fixedPart>
       </whereClause>
       <searchDocumentType>adobe-connector-all-images_pp</searchDocumentType>
       <pageSize>10</pageSize>
@@ -24,8 +24,7 @@
         <predicate parameter="ecm:parentId" operator="=">
           <field schema="adobe-connector-search_pp" name="system_parentId"/>
         </predicate>
-        <fixedPart>ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
-        </fixedPart>
+        <fixedPart>ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0</fixedPart>
       </whereClause>
       <searchDocumentType>adobe-connector-search_pp</searchDocumentType>
       <quickFilters>
