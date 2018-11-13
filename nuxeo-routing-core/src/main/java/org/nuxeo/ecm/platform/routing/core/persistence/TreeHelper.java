@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.trash.TrashService;
 
 /**
  * Helper to create tree structure based on date
@@ -39,7 +40,7 @@ public class TreeHelper {
     public static final String TITLE_PROPERTY_NAME = "dc:title";
 
     /**
-     * @deprecated since 10.1, unused
+     * @deprecated since 10.3, use {@link TrashService} instead
      */
     @Deprecated
     public static final String DELETED_STATE = "deleted";
