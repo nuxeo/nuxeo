@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
 
     private static final Logger log = LogManager.getLogger(AuditChangeFinder.class);
 
-    protected Map<String, String> parameters = new HashMap<String, String>();
+    protected Map<String, String> parameters = new HashMap<>();
 
     @Override
     public void handleParameters(Map<String, String> parameters) {
@@ -71,7 +71,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound,
             int limit) throws TooManyChangesException {
         String principalName = session.getPrincipal().getName();
-        List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
+        List<FileSystemItemChange> changes = new ArrayList<>();
 
         // Note: lastActiveRootRefs is not used: we could remove it from the
         // public API
@@ -233,7 +233,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     public long getUpperBound(Set<String> repositoryNames) {
         long clusteringDelay = getClusteringDelay(repositoryNames);
         AuditReader auditService = Framework.getService(AuditReader.class);
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         StringBuilder auditQuerySb = new StringBuilder("from LogEntry log");
         if (clusteringDelay > -1) {
             // Double the delay in case of overlapping, see https://jira.nuxeo.com/browse/NXP-14826
@@ -287,7 +287,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, int limit) {
         AuditReader auditService = Framework.getService(AuditReader.class);
         // Set fixed query parameters
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("repositoryId", session.getRepositoryName());
 
         // Build query and set dynamic parameters
@@ -343,7 +343,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
 
         // Post filter the output to remove (un)registration that are unrelated
         // to the current user.
-        List<LogEntry> postFilteredEntries = new ArrayList<LogEntry>();
+        List<LogEntry> postFilteredEntries = new ArrayList<>();
         String principalName = session.getPrincipal().getName();
         for (LogEntry entry : entries) {
             ExtendedInfo impactedUserInfo = entry.getExtendedInfos().get("impactedUserName");
