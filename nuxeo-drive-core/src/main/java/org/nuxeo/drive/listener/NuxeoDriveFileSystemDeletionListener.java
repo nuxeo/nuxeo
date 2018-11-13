@@ -63,7 +63,7 @@ import org.nuxeo.runtime.api.Framework;
  * document). In particular this includes:
  * <ul>
  * <li>Synchronization root unregistration (user specific).</li>
- * <li>Simple document or synchronization root lifecycle change to the 'deleted' state.</li>
+ * <li>Simple document or synchronization root trashed state change to trashed.</li>
  * <li>Simple document or synchronization root physical removal from the directory.</li>
  * <li>Update of a document after which it has no blob.</li>
  * <li>Move of a document to a non synchronized folder.</li>
