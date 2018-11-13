@@ -129,7 +129,7 @@ public class TestMultiTenantService {
             }
         }
         multiTenantService.disableTenantIsolation(session);
-        List<DocumentModel> groups = userManager.searchGroups(null);
+        List<DocumentModel> groups = userManager.searchGroups((String) null);
         for (DocumentModel group : groups) {
             userManager.deleteGroup(group);
         }
@@ -309,7 +309,7 @@ public class TestMultiTenantService {
         NuxeoGroup nuxeoGroup = createGroup("testGroup");
         assertEquals("tenant_" + domain.getName() + "_testGroup", nuxeoGroup.getName());
 
-        List<DocumentModel> groups = userManager.searchGroups(null);
+        List<DocumentModel> groups = userManager.searchGroups((String) null);
         assertEquals(1, groups.size());
         DocumentModel group = groups.get(0);
         assertEquals("tenant_" + domain.getName() + "_testGroup", group.getPropertyValue("group:groupname"));
@@ -321,7 +321,7 @@ public class TestMultiTenantService {
         createUser("leela", false, "nonExistingTenant");
         loginContext = Framework.loginAsUser("leela");
 
-        groups = userManager.searchGroups(null);
+        groups = userManager.searchGroups((String) null);
         assertEquals(0, groups.size());
 
         loginContext.logout();
