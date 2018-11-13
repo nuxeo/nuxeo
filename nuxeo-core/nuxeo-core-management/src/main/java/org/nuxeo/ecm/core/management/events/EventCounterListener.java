@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
-import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.runtime.management.counters.CounterHelper;
 
 /**
