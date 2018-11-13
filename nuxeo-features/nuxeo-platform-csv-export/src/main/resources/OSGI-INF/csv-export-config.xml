@@ -11,7 +11,6 @@
     <!-- CSV exporter processor -->
     <streamProcessor name="csvExport" class="org.nuxeo.ecm.platform.csv.export.action.CSVExportAction" logConfig="bulk"
       defaultConcurrency="2" defaultPartitions="2">
-      <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
       <option name="produceImmediate">false</option>
     </streamProcessor>
   </extension>

@@ -33,6 +33,8 @@ import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation.DEFAULT_POLICY;
+
 /**
  * @since 10.3
  */
@@ -53,11 +55,11 @@ public abstract class AbstractTransientBlobComputation extends AbstractComputati
     }
 
     public AbstractTransientBlobComputation(String name) {
-        super(name, 1, 1);
+        super(name, 1, 1, DEFAULT_POLICY);
     }
 
     public AbstractTransientBlobComputation(String name, int nbOutputStreams) {
-        super(name, 1, nbOutputStreams);
+        super(name, 1, nbOutputStreams, DEFAULT_POLICY);
     }
 
 

@@ -27,7 +27,6 @@ import java.util.Objects;
 
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
-import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -45,8 +44,6 @@ public class ComputationContextImpl implements ComputationContext {
 
     protected final LogManager manager;
 
-    protected final ComputationPolicy policy;
-
     protected boolean checkpointFlag;
 
     protected long lowWatermark;
@@ -55,17 +52,11 @@ public class ComputationContextImpl implements ComputationContext {
 
     protected LogOffset lastOffset;
 
-    public ComputationContextImpl(LogManager logManager, ComputationMetadataMapping metadata,
-            ComputationPolicy policy) {
+    public ComputationContextImpl(LogManager logManager, ComputationMetadataMapping metadata) {
         this.manager = logManager;
         this.metadata = metadata;
         this.timers = new HashMap<>();
         this.streamRecords = new HashMap<>();
-        this.policy = policy;
-    }
-
-    public ComputationContextImpl(LogManager logManager, ComputationMetadataMapping metadata) {
-        this(logManager, metadata, ComputationPolicy.NONE);
     }
 
     public ComputationContextImpl(ComputationMetadataMapping computationMetadataMapping) {
@@ -123,11 +114,6 @@ public class ComputationContextImpl implements ComputationContext {
     @Override
     public LogOffset getLastOffset() {
         return lastOffset;
-    }
-
-    @Override
-    public ComputationPolicy getPolicy() {
-        return policy;
     }
 
     public void setLastOffset(LogOffset lastOffset) {

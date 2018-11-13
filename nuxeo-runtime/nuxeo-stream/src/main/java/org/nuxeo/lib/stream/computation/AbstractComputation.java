@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
  * An abstract {@link Computation} that manages the metadata init.<br/>
  * By convention the inputs streams are named internally: i1, i2 ...<br/>
  * and the output streams are named: o1, o2 ... <br/>
+ * A retry policy can be used to catch possible exception during {@link #processRecord} and {@link #processTimer}
  *
  * @since 9.3
  */
@@ -50,15 +51,23 @@ public abstract class AbstractComputation implements Computation {
 
     public static final String OUTPUT_4 = "o4";
 
+    protected ComputationPolicy policy;
+
+    public AbstractComputation(String name, int nbInputStreams, int nbOutputStreams) {
+        this(name, nbInputStreams, nbOutputStreams, ComputationPolicy.NONE);
+    }
+
     /**
      * Creates a computation with the requested number of input and output streams.<br/>
+     * The computation policy defines a retry mechanism and a fallback, the batching is ignored.
      *
      * @since 10.3
      */
-    public AbstractComputation(String name, int nbInputStreams, int nbOutputStreams) {
+    public AbstractComputation(String name, int nbInputStreams, int nbOutputStreams, ComputationPolicy policy) {
         this.metadata = new ComputationMetadata(name,
                 IntStream.range(1, nbInputStreams + 1).boxed().map(i -> "i" + i).collect(Collectors.toSet()),
                 IntStream.range(1, nbOutputStreams + 1).boxed().map(i -> "o" + i).collect(Collectors.toSet()));
+        this.policy = policy;
     }
 
     @Override
@@ -76,13 +85,29 @@ public abstract class AbstractComputation implements Computation {
         return metadata;
     }
 
-    @Override
+    public ComputationPolicy getPolicy() {
+        return policy;
+    }
+
+    protected void setPolicy(ComputationPolicy policy) {
+        this.policy = policy;
+    }
+
+    /**
+     * Called after a failure in {@link #processRecord} or {@link #processTimer} before retrying.
+     *
+     * @since 10.3
+     */
     public void processRetry(ComputationContext context, Throwable failure) {
         log.warn(String.format("Computation: %s fails last record: %s, retrying ...", metadata.name(),
                 context.getLastOffset()), failure);
     }
 
-    @Override
+    /**
+     * Called when {@link #processRecord} or {@link #processTimer} fails and cannot be retried.
+     *
+     * @since 10.3
+     */
     public void processFailure(ComputationContext context, Throwable failure) {
         log.error(String.format("Computation: %s fails last record: %s, after retries.", metadata.name(),
                 context.getLastOffset()), failure);

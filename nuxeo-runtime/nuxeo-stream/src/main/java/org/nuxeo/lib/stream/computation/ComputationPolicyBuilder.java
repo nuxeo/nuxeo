@@ -29,7 +29,7 @@ import net.jodah.failsafe.RetryPolicy;
  */
 public class ComputationPolicyBuilder {
 
-    protected static final int DEFAULT_BATCH_CAPACITY = 1;
+    protected static final int DEFAULT_BATCH_CAPACITY = 10;
 
     protected static final int DEFAULT_BATCH_THRESHOLD_SECOND = 1;
 
@@ -47,8 +47,6 @@ public class ComputationPolicyBuilder {
 
     /**
      * Defines how to group records by batch using a capacity and a time threshold.
-     * <p>
-     * This is used only by computation that extends AbstractBatchComputation.
      *
      * @param capacity the number of records in the batch
      * @param timeThreshold process the batch even if not full after this duration

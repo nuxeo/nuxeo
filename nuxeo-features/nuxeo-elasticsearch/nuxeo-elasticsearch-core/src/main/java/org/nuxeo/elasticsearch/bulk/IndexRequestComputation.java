@@ -47,6 +47,7 @@ import org.nuxeo.elasticsearch.Timestamp;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.lib.stream.computation.ComputationContext;
+import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
 
@@ -69,8 +70,8 @@ public class IndexRequestComputation extends AbstractBulkComputation {
 
     protected String bucketKey;
 
-    public IndexRequestComputation() {
-        super(ACTION_NAME, 1);
+    public IndexRequestComputation(ComputationPolicy policy) {
+        super(ACTION_NAME, 1, policy);
     }
 
     @Override

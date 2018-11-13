@@ -23,10 +23,12 @@ import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STR
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,12 +37,16 @@ import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.lib.stream.computation.AbstractBatchComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
+import org.nuxeo.lib.stream.computation.ComputationPolicy;
+import org.nuxeo.lib.stream.computation.ComputationPolicyBuilder;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import net.jodah.failsafe.RetryPolicy;
 
 /**
  * Computation that consumes a stream of log entries and write them to the audit backend.
@@ -52,19 +58,32 @@ public class StreamAuditWriter implements StreamProcessorTopology {
 
     public static final String COMPUTATION_NAME = "AuditLogWriter";
 
+    public static final String BATCH_SIZE_OPT = "batchSize";
+
+    public static final String BATCH_THRESHOLD_MS_OPT = "batchThresholdMs";
+
+    public static final int DEFAULT_BATCH_SIZE = 100;
+
+    public static final int DEFAULT_BATCH_THRESHOLD_MS = 200;
+
     @Override
     public Topology getTopology(Map<String, String> options) {
+        int batchSize = getOptionAsInteger(options, BATCH_SIZE_OPT, DEFAULT_BATCH_SIZE);
+        int batchThresholdMs = getOptionAsInteger(options, BATCH_THRESHOLD_MS_OPT, DEFAULT_BATCH_THRESHOLD_MS);
+        RetryPolicy retryPolicy = new RetryPolicy().withBackoff(1, 65, TimeUnit.SECONDS);
+        ComputationPolicy policy = new ComputationPolicyBuilder().batchPolicy(batchSize,
+                Duration.ofMillis(batchThresholdMs)).retryPolicy(retryPolicy).continueOnFailure(false).build();
         return Topology.builder()
                        .addComputation(
-                               () -> new AuditLogWriterComputation(COMPUTATION_NAME),
+                               () -> new AuditLogWriterComputation(COMPUTATION_NAME, policy),
                                Collections.singletonList("i1:" + STREAM_NAME))
                        .build();
     }
 
     public static class AuditLogWriterComputation extends AbstractBatchComputation {
 
-        public AuditLogWriterComputation(String name) {
-            super(name, 1, 0);
+        public AuditLogWriterComputation(String name, ComputationPolicy policy) {
+            super(name, 1, 0, policy);
         }
 
         @Override
@@ -82,7 +101,7 @@ public class StreamAuditWriter implements StreamProcessorTopology {
 
         @Override
         public void batchFailure(ComputationContext context, String inputStreamName, List<Record> records) {
-            // error log already done by abstract
+            log.error("Stopping AuditLogWriter computation after failures");
         }
 
         protected void writeEntriesToAudit(List<LogEntry> logEntries) {
@@ -108,6 +127,11 @@ public class StreamAuditWriter implements StreamProcessorTopology {
                 throw new NuxeoException("Invalid json logEntry" + json, e);
             }
         }
+    }
+
+    protected int getOptionAsInteger(Map<String, String> options, String option, int defaultValue) {
+        String value = options.get(option);
+        return value == null ? defaultValue : Integer.valueOf(value);
     }
 
 }

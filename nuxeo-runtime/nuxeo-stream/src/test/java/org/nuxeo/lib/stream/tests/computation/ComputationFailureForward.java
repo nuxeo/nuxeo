@@ -19,6 +19,7 @@
 package org.nuxeo.lib.stream.tests.computation;
 
 import org.nuxeo.lib.stream.computation.ComputationContext;
+import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.Record;
 
 /**
@@ -30,6 +31,11 @@ public class ComputationFailureForward extends ComputationForward {
     public static final int FAILURE_COUNT = 3;
 
     protected int processCounter;
+
+    public ComputationFailureForward(String name, int inputs, int outputs, ComputationPolicy policy) {
+        super(name, inputs, outputs);
+        setPolicy(policy);
+    }
 
     public ComputationFailureForward(String name, int inputs, int outputs) {
         super(name, inputs, outputs);

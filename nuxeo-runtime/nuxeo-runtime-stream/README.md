@@ -118,11 +118,6 @@ It is possible to register stream processors, this way they are initialized and 
 
 The extension point refer to a class that returns the topology of computations, 
 the settings are configurable in the contribution.
-Also the retry policy can be set to a specific computation or for all using `default` as policy name,
-the `delay` between retries, exponentially backing off to the `maxDelay` and multiplying successive delays by a 2 factor
-the `maxRetries` sets the max number of retries to perform. If `continueOnFailure` is true then the computation
-will checkpoint the record in error and continue processing new record.
-The default policy when unspecified is no retry and abort on failure (`continueOnFailure` is false).
 
 ```xml
 <?xml version="1.0"?>
@@ -132,7 +127,6 @@ The default policy when unspecified is no retry and abort on failure (`continueO
       class="org.nuxeo.runtime.stream.tests.MyStreamProcessor">
       <stream name="output" partitions="1" />
       <computation name="myComputation" concurrency="8" />
-      <policy name="myComputation" continueOnFailure="false" maxRetries="3" delay="500ms" maxDelay="10s" />
     </streamProcessor>
   </extension>
 </component>

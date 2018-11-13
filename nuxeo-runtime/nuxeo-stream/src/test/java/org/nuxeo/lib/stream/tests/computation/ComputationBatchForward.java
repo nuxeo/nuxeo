@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.nuxeo.lib.stream.computation.AbstractBatchComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
+import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.Record;
 
 /**
@@ -33,8 +34,8 @@ public class ComputationBatchForward extends AbstractBatchComputation {
 
     protected int failureCounter = 0;
 
-    public ComputationBatchForward(String name, int nbInputStream) {
-        super(name, nbInputStream, 1);
+    public ComputationBatchForward(String name, int nbInputStream, ComputationPolicy policy) {
+        super(name, nbInputStream, 1, policy);
     }
 
     @Override

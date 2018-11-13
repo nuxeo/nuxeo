@@ -3,10 +3,7 @@
 
   <require>org.nuxeo.runtime.stream.service</require>
 
-  <!-- ======================================================================================= -->
-  <!-- Bulk Service configuration -->
-
-  <!-- Initialize bulk service streams before action processors -->
+  <!-- Initialize bulk streams before action processors -->
   <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
     <logConfig name="bulk">
       <!-- command stream size sets the maximum concurrency for the scroller computation in the Nuxeo cluster -->
@@ -18,61 +15,43 @@
     </logConfig>
   </extension>
 
-  <!-- Configure the bulk service processor for this instance, we are using the configuration service -->
-  <!-- because the bulk processor is initialized manually after the Stream service has started the action processors -->
+  <!-- Configure the bulk service for this nuxeo instance, the max concurrency is define above in the logConfig -->
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
-    <!-- Scroll computation -->
-    <property name="nuxeo.core.bulk.scroller.continueOnFailure">false</property>
     <property name="nuxeo.core.bulk.scroller.concurrency">2</property>
     <property name="nuxeo.core.bulk.scroller.scroll.size">200</property>
     <property name="nuxeo.core.bulk.scroller.scroll.keepAliveSeconds">60</property>
     <property name="nuxeo.core.bulk.scroller.produceImmediate">false</property>
-    <!-- Status computation -->
-    <property name="nuxeo.core.bulk.status.continueOnFailure">false</property>
-    <property name="nuxeo.core.bulk.status.maxRetries">3</property>
-    <property name="nuxeo.core.bulk.status.delayMillis">1000</property>
-    <property name="nuxeo.core.bulk.status.maxDelayMillis">10000</property>
     <property name="nuxeo.core.bulk.status.concurrency">1</property>
+    <property name="nuxeo.core.bulk.done.concurrency">1</property>
   </extension>
 
-
-  <!-- ======================================================================================= -->
-  <!-- Actions configuration -->
-
+  <!-- Defines some actions -->
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <!-- Internal -->
+    <!-- internal -->
     <action name="trash" bucketSize="100" batchSize="25" />
     <action name="removeProxy" bucketSize="100" batchSize="25" />
     <action name="setSystemProperties" bucketSize="100" batchSize="25" />
-    <!-- Exposed through REST API -->
+    <!-- actions available through REST API -->
     <action name="setProperties" bucketSize="100" batchSize="25" httpEnabled="true" />
+    <action name="csvExport" bucketSize="100" batchSize="50" httpEnabled="true" />
   </extension>
 
-  <!-- Action's processor -->
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <!-- SetProperty processor -->
     <streamProcessor name="setProperties" class="org.nuxeo.ecm.core.bulk.action.SetPropertiesAction" logConfig="bulk"
-      defaultConcurrency="2" defaultPartitions="2">
-      <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
-    </streamProcessor>
+      defaultConcurrency="2" defaultPartitions="2" />
 
     <!-- SetSystemProperty processor -->
     <streamProcessor name="setSystemProperties" class="org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction"
-      logConfig="bulk" defaultConcurrency="2" defaultPartitions="2">
-      <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
-    </streamProcessor>
+      logConfig="bulk" defaultConcurrency="2" defaultPartitions="2" />
 
     <!-- RemoveProxy processor -->
-    <streamProcessor name="removeProxy" class="org.nuxeo.ecm.core.bulk.action.RemoveProxyAction" logConfig="bulk"
-      defaultConcurrency="2" defaultPartitions="2">
-      <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
-    </streamProcessor>
+    <streamProcessor name="removeProxy" class="org.nuxeo.ecm.core.bulk.action.RemoveProxyAction"
+      logConfig="bulk" defaultConcurrency="2" defaultPartitions="2" />
 
     <!-- Trash processor -->
-    <streamProcessor name="trash" class="org.nuxeo.ecm.core.bulk.action.TrashAction" logConfig="bulk"
-      defaultConcurrency="2" defaultPartitions="2">
-      <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
-    </streamProcessor>
+    <streamProcessor name="trash" class="org.nuxeo.ecm.core.bulk.action.TrashAction"
+      logConfig="bulk" defaultConcurrency="2" defaultPartitions="2" />
 
   </extension>
 

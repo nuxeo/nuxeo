@@ -79,20 +79,6 @@ public interface Computation {
      */
     @SuppressWarnings("EmptyMethod")
     default void signalStop() {
+
     }
-
-    /**
-     * Called after a failure in {@link #processRecord} or {@link #processTimer} before retrying.
-     *
-     * @since 10.3
-     */
-    void processRetry(ComputationContext context, Throwable failure);
-
-    /**
-     * Called when {@link #processRecord} or {@link #processTimer} fails and cannot be retried.
-     *
-     * @since 10.3
-     */
-    void processFailure(ComputationContext context, Throwable failure);
-
 }

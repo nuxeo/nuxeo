@@ -27,7 +27,7 @@ import java.util.Objects;
 import org.nuxeo.lib.stream.codec.Codec;
 
 /**
- * Settings defines stream's partitions and computation's concurrency and policy.
+ * Settings defines stream's partitions and computation's concurrency.
  *
  * @since 9.3
  */
@@ -38,37 +38,25 @@ public class Settings {
 
     protected final Codec<Record> defaultCodec;
 
-    protected final ComputationPolicy defaultPolicy;
-
     protected final Map<String, Integer> concurrencies = new HashMap<>();
 
     protected final Map<String, Integer> partitions = new HashMap<>();
 
     protected final Map<String, Codec<Record>> codecs = new HashMap<>();
 
-    protected final Map<String, ComputationPolicy> policies = new HashMap<>();
-
     /**
-     * Default concurrency and partition to use if not specified explicitly.
+     * Default concurrency and partition to use if not specified explicitly
      */
-    public Settings(int defaultConcurrency, int defaultPartitions) {
-        this(defaultConcurrency, defaultPartitions, null, null);
-    }
-
-    /**
-     * Default concurrency and partition to use if not specified explicitly.
-     */
-    public Settings(int defaultConcurrency, int defaultPartitions, Codec<Record> defaultCodec) {
-        this(defaultConcurrency, defaultPartitions, defaultCodec, null);
-    }
-
-    public Settings(int defaultConcurrency, int defaultPartitions, ComputationPolicy defaultPolicy) {
-        this(defaultConcurrency, defaultPartitions, null, defaultPolicy);
-    }
-
     @SuppressWarnings("unchecked")
-    public Settings(int defaultConcurrency, int defaultPartitions, Codec<Record> defaultCodec,
-            ComputationPolicy defaultPolicy) {
+    public Settings(int defaultConcurrency, int defaultPartitions) {
+        this(defaultConcurrency, defaultPartitions, NO_CODEC);
+    }
+
+    /**
+     * Default concurrency and partition to use if not specified explicitly
+     */
+    @SuppressWarnings("unchecked")
+    public Settings(int defaultConcurrency, int defaultPartitions, Codec<Record> defaultCodec) {
         this.defaultConcurrency = defaultConcurrency;
         this.defaultPartitions = defaultPartitions;
         if (defaultCodec == null) {
@@ -76,15 +64,10 @@ public class Settings {
         } else {
             this.defaultCodec = defaultCodec;
         }
-        if (defaultPolicy == null) {
-            this.defaultPolicy = ComputationPolicy.NONE;
-        } else {
-            this.defaultPolicy = defaultPolicy;
-        }
     }
 
     /**
-     * Sets the computation thread pool size.
+     * Set the computation thread pool size.
      */
     public Settings setConcurrency(String computationName, int concurrency) {
         concurrencies.put(computationName, concurrency);
@@ -96,7 +79,7 @@ public class Settings {
     }
 
     /**
-     * Sets the number of partitions for a stream.
+     * Set the number of partitions for a stream.
      */
     public Settings setPartitions(String streamName, int partitions) {
         this.partitions.put(streamName, partitions);
@@ -108,7 +91,7 @@ public class Settings {
     }
 
     /**
-     * Sets the codec for a stream.
+     * Set the codec for a stream
      *
      * @since 10.2
      */
@@ -119,36 +102,11 @@ public class Settings {
     }
 
     /**
-     * Gets the codec for a stream.
+     * Get a codec for a stream
      *
      * @since 10.2
      */
     public Codec<Record> getCodec(String streamName) {
         return codecs.getOrDefault(streamName, defaultCodec);
     }
-
-    /**
-     * Sets the policy for a computation, when using default as computationName this sets the default policy for all
-     * computations in the processor.
-     *
-     * @since 10.3
-     */
-    public Settings setPolicy(String computationName, ComputationPolicy policy) {
-        if (policy == null) {
-            policies.remove(computationName);
-        } else {
-            policies.put(computationName, policy);
-        }
-        return this;
-    }
-
-    /**
-     * Gets the policy for a computation.
-     *
-     * @since 10.3
-     */
-    public ComputationPolicy getPolicy(String computationName) {
-        return policies.getOrDefault(computationName, defaultPolicy);
-    }
-
 }

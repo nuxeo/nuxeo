@@ -19,6 +19,8 @@
 package org.nuxeo.lib.stream.tests.computation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -32,6 +34,8 @@ import org.nuxeo.lib.stream.computation.ComputationPolicyBuilder;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.internals.ComputationContextImpl;
 
+import net.jodah.failsafe.RetryPolicy;
+
 /**
  * @since 9.3
  */
@@ -42,11 +46,11 @@ public class TestBatchComputation {
         int batchCapacity = 5;
         ComputationPolicy policy = new ComputationPolicyBuilder().batchPolicy(batchCapacity, Duration.ofMillis(500))
                                                                  .build();
-        ComputationBatchForward comp = new ComputationBatchForward("foo", 2);
+        ComputationBatchForward comp = new ComputationBatchForward("foo", 2, policy);
 
         // create a context
-        ComputationContextImpl context = new ComputationContextImpl(null,
-                new ComputationMetadataMapping(comp.metadata(), Collections.emptyMap()), policy);
+        ComputationContextImpl context = new ComputationContextImpl(
+                new ComputationMetadataMapping(comp.metadata(), Collections.emptyMap()));
 
         // init the computation
         comp.init(context);
@@ -98,6 +102,70 @@ public class TestBatchComputation {
         assertEquals(3, comp.processCounter);
 
         comp.destroy();
+    }
+
+    @Test
+    public void testComputationBatchFailureForward() {
+        Record aRecord = Record.of("foo", "bar".getBytes(StandardCharsets.UTF_8));
+        int batchCapacity = 3;
+        ComputationPolicy policyNoRetry = new ComputationPolicyBuilder().batchPolicy(batchCapacity,
+                Duration.ofMillis(500)).build();
+        ComputationPolicy policyWithRetry = new ComputationPolicyBuilder().batchPolicy(batchCapacity,
+                Duration.ofMillis(500)).retryPolicy(new RetryPolicy().withMaxRetries(3)).build();
+
+        ComputationBatchForward comp = new ComputationBatchFailureForward("foo", 1, policyNoRetry);
+
+        // create a context
+        ComputationContextImpl context = new ComputationContextImpl(
+                new ComputationMetadataMapping(comp.metadata(), Collections.emptyMap()));
+        // init the computation
+        comp.init(context);
+        for (int i = 0; i < batchCapacity; i++) {
+            comp.processRecord(context, "i1", aRecord);
+        }
+        assertFalse(context.requireCheckpoint());
+        assertTrue(context.requireTerminate());
+        assertEquals(1, comp.failureCounter);
+        assertEquals(1, comp.processCounter);
+
+        // now try with our retry policy
+        // create a context
+        context = new ComputationContextImpl(new ComputationMetadataMapping(comp.metadata(), Collections.emptyMap()));
+        comp = new ComputationBatchFailureForward("foo", 1, policyWithRetry);
+
+        for (int i = 0; i < batchCapacity; i++) {
+            comp.processRecord(context, "i1", aRecord);
+        }
+        assertTrue(context.requireCheckpoint());
+        assertFalse(context.requireTerminate());
+        assertEquals(0, comp.failureCounter);
+        assertEquals(3, comp.processCounter);
+
+    }
+
+    @Test
+    public void testComputationBatchFailureBatchForwardThatFails() {
+        Record aRecord = Record.of("foo", "bar".getBytes(StandardCharsets.UTF_8));
+        int batchCapacity = 3;
+        ComputationPolicy policyWithRetry = new ComputationPolicyBuilder().batchPolicy(batchCapacity,
+                Duration.ofMillis(500))
+                                                                          .retryPolicy(
+                                                                                  new RetryPolicy().withMaxRetries(1))
+                                                                          .continueOnFailure(true)
+                                                                          .build();
+        ComputationBatchForward comp = new ComputationBatchFailureForward("foo", 1, policyWithRetry);
+        // create a context
+        ComputationContextImpl context = new ComputationContextImpl(
+                new ComputationMetadataMapping(comp.metadata(), Collections.emptyMap()));
+        // init the computation
+        comp.init(context);
+        for (int i = 0; i < batchCapacity; i++) {
+            comp.processRecord(context, "i1", aRecord);
+        }
+        assertTrue(context.requireCheckpoint());
+        assertFalse(context.requireTerminate());
+        assertEquals(1, comp.failureCounter);
+        assertEquals(2, comp.processCounter);
     }
 
 }

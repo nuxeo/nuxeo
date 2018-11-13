@@ -31,9 +31,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
-import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.computation.internals.ComputationContextImpl;
@@ -79,8 +79,6 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected final Codec<Record> outputCodec;
 
-    protected final ComputationPolicy policy;
-
     protected ComputationContextImpl context;
 
     protected volatile boolean stop;
@@ -103,17 +101,18 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected String threadName;
 
+    protected AbstractComputation retryComputation;
+
     @SuppressWarnings("unchecked")
     public ComputationRunner(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
             List<LogPartition> defaultAssignment, LogManager logManager, Codec<Record> inputCodec,
-            Codec<Record> outputCodec, ComputationPolicy policy) {
+            Codec<Record> outputCodec) {
         this.supplier = supplier;
         this.metadata = metadata;
         this.logManager = logManager;
-        this.context = new ComputationContextImpl(logManager, metadata, policy);
+        this.context = new ComputationContextImpl(logManager, metadata);
         this.inputCodec = inputCodec;
         this.outputCodec = outputCodec;
-        this.policy = policy;
         if (metadata.inputStreams().isEmpty()) {
             this.tailer = null;
             assignmentLatch.countDown();
@@ -151,6 +150,11 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         threadName = Thread.currentThread().getName();
         boolean interrupted = false;
         computation = supplier.get();
+        if (computation instanceof AbstractComputation) {
+            retryComputation = (AbstractComputation) computation;
+        } else {
+            retryComputation = null;
+        }
         log.debug(metadata.name() + ": Init");
         computation.init(context);
         log.debug(metadata.name() + ": Start");
@@ -266,9 +270,13 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     protected void processTimerWithRetry(String key, Long value) {
-        Failsafe.with(policy.getRetryPolicy())
-                .onRetry(failure -> computation.processRetry(context, failure))
-                .onFailure(failure -> computation.processFailure(context, failure))
+        if (retryComputation == null) {
+            computation.processTimer(context, key, value);
+            return;
+        }
+        Failsafe.with(retryComputation.getPolicy().getRetryPolicy())
+                .onRetry(failure -> retryComputation.processRetry(context, failure))
+                .onFailure(failure -> retryComputation.processFailure(context, failure))
                 .withFallback(() -> processFallback(context))
                 .run(() -> computation.processTimer(context, key, value));
     }
@@ -307,15 +315,19 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     protected void processRecordWithRetry(String from, Record record) {
-        Failsafe.with(policy.getRetryPolicy())
-                .onRetry(failure -> computation.processRetry(context, failure))
-                .onFailure(failure -> computation.processFailure(context, failure))
+        if (retryComputation == null) {
+            computation.processRecord(context, from, record);
+            return;
+        }
+        Failsafe.with(retryComputation.getPolicy().getRetryPolicy())
+                .onRetry(failure -> retryComputation.processRetry(context, failure))
+                .onFailure(failure -> retryComputation.processFailure(context, failure))
                 .withFallback(() -> processFallback(context))
                 .run(() -> computation.processRecord(context, from, record));
     }
 
     protected void processFallback(ComputationContextImpl context) {
-        if (policy.isSkipFailure()) {
+        if (retryComputation.getPolicy().isSkipFailure()) {
             log.error(String.format("Skip record after failure: %s", context.getLastOffset()));
             context.askForCheckpoint();
         } else {
@@ -428,7 +440,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         lastReadTime = System.currentTimeMillis();
         setThreadName("rebalance assigned");
         // reset the context
-        this.context = new ComputationContextImpl(logManager, metadata, policy);
+        this.context = new ComputationContextImpl(logManager, metadata);
         log.debug(metadata.name() + ": Init");
         computation.init(context);
         lastReadTime = System.currentTimeMillis();

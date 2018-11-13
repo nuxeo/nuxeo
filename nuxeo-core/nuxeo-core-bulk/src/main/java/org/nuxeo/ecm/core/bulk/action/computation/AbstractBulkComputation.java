@@ -44,11 +44,15 @@ import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
+import org.nuxeo.lib.stream.computation.ComputationPolicy;
+import org.nuxeo.lib.stream.computation.ComputationPolicyBuilder;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.collect.Lists;
+
+import net.jodah.failsafe.RetryPolicy;
 
 /**
  * Base class for bulk action computation.
@@ -70,6 +74,15 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
 
     protected static final String SELECT_DOCUMENTS_IN = "SELECT * FROM Document, Relation WHERE ecm:uuid IN ('%s')";
 
+    protected static final int DEFAULT_MAX_RETRIES = 3;
+
+    protected static final RetryPolicy DEFAULT_RETRY_POLICY = new RetryPolicy().withMaxRetries(DEFAULT_MAX_RETRIES)
+                                                                               .withBackoff(1, 10, TimeUnit.SECONDS);
+
+    // Retry 3 times on any exception with backoff: t+1s, t+3s, t+7s
+    protected static final ComputationPolicy DEFAULT_POLICY = new ComputationPolicyBuilder().continueOnFailure(
+            false).retryPolicy(DEFAULT_RETRY_POLICY).build();
+
     protected Map<String, BulkCommand> commands = new PassiveExpiringMap<>(60, TimeUnit.SECONDS);
 
     protected BulkCommand command;
@@ -79,7 +92,11 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
     }
 
     public AbstractBulkComputation(String name, int nbOutputStreams) {
-        super(name, 1, nbOutputStreams);
+        this(name, nbOutputStreams, DEFAULT_POLICY);
+    }
+
+    public AbstractBulkComputation(String name, int nbOutputStreams, ComputationPolicy policy) {
+        super(name, 1, nbOutputStreams, policy);
     }
 
     @Override

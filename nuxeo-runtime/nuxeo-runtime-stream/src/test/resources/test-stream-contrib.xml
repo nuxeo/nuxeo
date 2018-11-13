@@ -33,10 +33,7 @@
 
     <streamProcessor name="myStreamProcessor" class="org.nuxeo.runtime.stream.tests.MyStreamProcessor"
       defaultConcurrency="4" defaultPartitions="2" logConfig="default">
-      <policy name="default" maxRetry="2" delay="200ms" maxDelay="2s" continueOnFailure="false" />
-      <policy name="myComputation" maxRetry="2" delay="200ms" maxDelay="2s" continueOnFailure="false" />
-      <policy name="myComputation2" class="org.nuxeo.runtime.stream.tests.MyPolicy" />
-      <computation name="myComputation" concurrency="1" />
+      <computation name="C1" concurrency="1" />
       <stream name="input" partitions="1" codec="avro" />
       <stream name="output" codec="avroJson" />
       <option name="myOption">value</option>
