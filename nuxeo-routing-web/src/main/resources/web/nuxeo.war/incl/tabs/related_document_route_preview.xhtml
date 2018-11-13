@@ -11,7 +11,7 @@
   <c:choose>
 
   <c:when test="#{routingActions.hasRelatedRoute()}">
-  <c:if test="#{currentDocument.currentLifeCycleState != 'deleted'}">
+  <c:if test="#{!currentDocument.trashed}">
     <ui:decorate template="/incl/actions_fragment.xhtml">
       <ui:param name="category" value="ATTACHED_ROUTE_LIST" />
     </ui:decorate>
@@ -30,7 +30,7 @@
       </nxu:set>
     </nxu:set>
   </c:if>
-  <c:if test="#{currentDocument.currentLifeCycleState == 'deleted'}">
+  <c:if test="#{currentDocument.trashed}">
     <ui:include src="/incl/tabs/document_trash_content.xhtml" />
   </c:if>
   </c:when>

@@ -304,7 +304,7 @@ NodeVariables["comment"]= null;}</param>
         <type>Note</type>
         <type>Picture</type>
         <type>Video</type>
-        <condition>#{!currentDocument.locked and currentDocument.currentLifeCycleState != 'approved' and currentDocument.currentLifeCycleState != 'deleted'}</condition>
+        <condition>#{!currentDocument.locked and currentDocument.currentLifeCycleState != 'approved' and !currentDocument.trashed}</condition>
       </rule>
       <rule grant="false">
         <condition>document.isImmutable()</condition>
@@ -318,7 +318,7 @@ NodeVariables["comment"]= null;}</param>
         <type>Note</type>
         <type>Picture</type>
         <type>Video</type>
-        <condition>#{currentDocument.currentLifeCycleState != 'approved' and currentDocument.currentLifeCycleState != 'deleted'}</condition>
+        <condition>#{currentDocument.currentLifeCycleState != 'approved' and !currentDocument.trashed}</condition>
       </rule>
       <rule grant="false">
         <condition>document.isImmutable()</condition>
