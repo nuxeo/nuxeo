@@ -41,7 +41,7 @@ public class FileAvroSchemaStore implements AvroSchemaStore {
 
     protected static final String AVRO_SCHEMA_EXT = ".avsc";
 
-    protected Path schemaDirectoryPath;
+    protected final Path schemaDirectoryPath;
 
     protected final Map<Long, Schema> schemas = new MapMaker().makeMap();
 
