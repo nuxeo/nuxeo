@@ -28,7 +28,7 @@
     </p:font>
   </f:facet>
 
-  <c:if test="#{currentDocument.currentLifeCycleState != 'deleted'}">
+  <c:if test="#{!currentDocument.trashed}">
     <nxu:set var="documents" value="#{relatedRouteElementsSelectModel}">
       <ui:decorate template="/incl/documents_layout_in_pdf_table.xhtml">
         <ui:param name="documents" value="#{documents}" />
