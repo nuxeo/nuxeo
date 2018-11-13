@@ -462,7 +462,7 @@
 WHERE dc:title ILIKE ?
 AND ecm:isProxy = 0
 AND ecm:isVersion = 0
-AND ecm:currentLifeCycleState != 'deleted' </property>
+AND ecm:isTrashed = 0</property>
         </properties>
       </widget>
     </layout>
@@ -539,7 +539,7 @@ AND ecm:currentLifeCycleState != 'deleted' </property>
 WHERE dc:title ILIKE ?
 AND ecm:isProxy = 0
 AND ecm:isVersion = 0
-AND ecm:currentLifeCycleState != 'deleted' </property>
+AND ecm:isTrashed = 0</property>
         </properties>
       </widget>
     </layout>
