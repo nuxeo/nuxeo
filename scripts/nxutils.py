@@ -295,6 +295,7 @@ class Repository(object):
         else:
             try:
                 mp_config.readfp(urllib2.urlopen(marketplace_conf))
+                log("Read configuration from: '%s'" % marketplace_conf)
                 no_remote = False
             except urllib2.URLError:
                 no_remote = True
@@ -308,12 +309,12 @@ class Repository(object):
         """Save the Marketplace packages configuration."""
         configfile_path = os.path.join(self.mp_dir, "release.ini")
         if read_first and os.path.isfile(configfile_path):
+            log("Read configuration from: '%s'" % configfile_path)
             mp_config.read(configfile_path)
         if fail_if_no_file and not os.path.isfile(configfile_path):
-            raise ExitException(1, "Missing configuration: '%s'" %
-                                configfile_path)
+            raise ExitException(1, "Missing configuration: '%s'" % configfile_path)
         mp_config.write(open(configfile_path, 'w'))
-        log("Configuration saved: " + configfile_path)
+        log("Configuration saved: '%s'" % configfile_path)
         return mp_config
 
     def clone_mp(self, marketplace_conf, fallback_branch=None):
