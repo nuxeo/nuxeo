@@ -18,8 +18,8 @@
  */
 package org.nuxeo.drive.listener;
 
-import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_TRASHED;
-import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_UNTRASHED;
+import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_TRASHED;
+import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_UNTRASHED;
 
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
