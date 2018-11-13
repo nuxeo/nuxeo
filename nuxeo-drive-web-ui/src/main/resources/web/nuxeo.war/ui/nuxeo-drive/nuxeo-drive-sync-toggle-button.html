@@ -105,7 +105,7 @@ Contributors:
           var excludedDoctypes = ['Domain', 'SectionRoot', 'TemplateRoot', 'WorkspaceRoot', 'Forum', 'Collections'];
           var isExcluded = excludedDoctypes.indexOf(this.document.type) !== -1;
           var isFolder = this.document.facets.indexOf('Folderish') !== -1;
-          var isSyncRootCandidate = isFolder && this.document.state !== 'deleted';
+          var isSyncRootCandidate = isFolder && !this.isTrashed(this.document);
           return !isExcluded && isSyncRootCandidate && !this.synchronizationRoot;
         },
 

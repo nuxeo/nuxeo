@@ -144,7 +144,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
             // 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' )
             String eventIds[] = { "documentCreated", "documentModified", "documentMoved", "documentCreatedByCopy",
                     "documentRestored", "addedToCollection", "documentProxyPublished", "documentLocked",
-                    "documentUnlocked" };
+                    "documentUnlocked", "documentTrashed" };
             BoolQueryBuilder orEventsFilter = QueryBuilders.boolQuery();
             orEventsFilter.should(getEventsClause("eventDocumentCategory", eventIds, true));
             orEventsFilter.should(
