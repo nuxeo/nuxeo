@@ -10,6 +10,7 @@
   "SupportsRename": true,
   "SupportsUpdate": true,
   "IsAnonymousUser": false,
+  "LicenseCheckForEditIsEnabled": true,
   "UserFriendlyName": "John Doe",
   "ReadOnly": false,
   "SupportsExtendedLockLength": true,

@@ -52,6 +52,10 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
     public static final String DISCOVERY_XML = "discovery.xml";
 
+    public static final String PLACEHOLDER_IS_LICENSED_USER = "IsLicensedUser";
+
+    public static final String PLACEHOLDER_IS_LICENSED_USER_VALUE = "1";
+
     public static final String WOPI_PROPERTY_NAMESPACE = "org.nuxeo.wopi";
 
     public static final String SUPPORTED_APP_NAMES_PROPERTY_KEY = "supportedAppNames";
@@ -101,7 +105,8 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         app.getActions().forEach(action -> {
             extensionAppNames.put(action.getExt(), app.getName());
             extensionActionURLs.computeIfAbsent(action.getExt(), k -> new HashMap<>()).put(action.getName(),
-                    action.getUrl().replaceFirst("<.*$", ""));
+                    String.format("%s%s=%s&", action.getUrl().replaceFirst("<.*$", ""), PLACEHOLDER_IS_LICENSED_USER,
+                            PLACEHOLDER_IS_LICENSED_USER_VALUE));
         });
     }
 

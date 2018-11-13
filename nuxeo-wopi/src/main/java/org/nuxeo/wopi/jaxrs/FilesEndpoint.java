@@ -41,6 +41,7 @@ import static org.nuxeo.wopi.Constants.FILE_VERSION_URL;
 import static org.nuxeo.wopi.Constants.HOST_EDIT_URL;
 import static org.nuxeo.wopi.Constants.HOST_VIEW_URL;
 import static org.nuxeo.wopi.Constants.IS_ANONYMOUS_USER;
+import static org.nuxeo.wopi.Constants.LICENSE_CHECK_FOR_EDIT_IS_ENABLED;
 import static org.nuxeo.wopi.Constants.NAME;
 import static org.nuxeo.wopi.Constants.NOTIFICATION_DOCUMENT_ID_CODEC_NAME;
 import static org.nuxeo.wopi.Constants.OPERATION_CHECK_FILE_INFO;
@@ -292,7 +293,7 @@ public class FilesEndpoint extends DefaultObject {
             logResponse(OPERATION_LOCK, OK.getStatusCode(), ITEM_VERSION, versionLabel);
             return Response.ok().build();
         } else {
-            logCondition(() -> LOCK + " header is not equal to current WOPI lock");
+            logCondition(() -> LOCK + " header is not equal to current WOPI lock"); // NOSONAR
             return buildConflictResponse(OPERATION_LOCK, currentLock);
         }
     }
@@ -727,6 +728,7 @@ public class FilesEndpoint extends DefaultObject {
     protected void addUserMetadataProperties(Map<String, Serializable> map) {
         NuxeoPrincipal principal = session.getPrincipal();
         map.put(IS_ANONYMOUS_USER, principal.isAnonymous());
+        map.put(LICENSE_CHECK_FOR_EDIT_IS_ENABLED, true);
         map.put(USER_FRIENDLY_NAME, Helpers.principalFullName(principal));
     }
 

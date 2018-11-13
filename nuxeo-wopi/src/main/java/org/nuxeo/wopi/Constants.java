@@ -132,6 +132,8 @@ public class Constants {
 
     public static final String IS_ANONYMOUS_USER = "IsAnonymousUser";
 
+    public static final String LICENSE_CHECK_FOR_EDIT_IS_ENABLED = "LicenseCheckForEditIsEnabled";
+
     public static final String USER_FRIENDLY_NAME = "UserFriendlyName";
 
     // -------- User permissions properties ---------------

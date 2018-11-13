@@ -85,18 +85,18 @@ public class TestWOPIService {
 
         // Excel
         blob.setFilename("file.xlsx");
-        assertEquals("https://excel.officeapps-df.live.com/x/_layouts/xlviewerinternal.aspx?",
+        assertEquals("https://excel.officeapps-df.live.com/x/_layouts/xlviewerinternal.aspx?IsLicensedUser=1&",
                 wopiService.getActionURL(blob, "view"));
-        assertEquals("https://excel.officeapps-df.live.com/x/_layouts/xlviewerinternal.aspx?edit=1&",
+        assertEquals("https://excel.officeapps-df.live.com/x/_layouts/xlviewerinternal.aspx?edit=1&IsLicensedUser=1&",
                 wopiService.getActionURL(blob, "edit"));
 
         // Word
         blob.setFilename("file.rtf");
         assertNull(wopiService.getActionURL(blob, "view"));
-        assertEquals("https://word-edit.officeapps-df.live.com/we/wordeditorframe.aspx?",
+        assertEquals("https://word-edit.officeapps-df.live.com/we/wordeditorframe.aspx?IsLicensedUser=1&",
                 wopiService.getActionURL(blob, "edit"));
         blob.setFilename("file.docx");
-        assertEquals("https://word-view.officeapps-df.live.com/wv/wordviewerframe.aspx?",
+        assertEquals("https://word-view.officeapps-df.live.com/wv/wordviewerframe.aspx?IsLicensedUser=1&",
                 wopiService.getActionURL(blob, "view"));
     }
 
