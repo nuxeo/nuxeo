@@ -105,7 +105,7 @@ public class TestDefaultPageProviders {
 
     Boolean booleanParam = Boolean.FALSE;
 
-    List<String> listParam = Arrays.asList("deleted", "validated");
+    List<String> listParam = Arrays.asList("approved", "validated");
 
     @Before
     public void setUp() {
@@ -269,7 +269,7 @@ public class TestDefaultPageProviders {
         assertEquals(
                 String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'"
                         + " AND ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
-                        + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('deleted', 'validated')"
+                        + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('approved', 'validated')"
                         + " ORDER BY dc:title", parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
@@ -289,7 +289,7 @@ public class TestDefaultPageProviders {
         assertEquals(
                 String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'"
                         + " AND ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
-                        + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('deleted', 'validated')"
+                        + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('approved', 'validated')"
                         + " ORDER BY dc:title", parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 

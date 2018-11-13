@@ -93,9 +93,9 @@ public class TestContentViewState {
 
     Boolean booleanParam = Boolean.FALSE;
 
-    List<String> listParam = Arrays.asList("deleted", "validated");
+    List<String> listParam = Arrays.asList("approved", "validated");
 
-    String ENC_CURRENT_DOC_CHILDREN = "H4sIAAAAAAAAAI2Qu27DMAxF%2F4Wz4LQdtRVOgAZIUyOvJQgMVWJiAbLk6pFHjfx7KTtdOnXSFXF4eckepLMRbdxpvCxFi8Ch3K5Ws%2BWmnn6U2%2Fcsyrf5YkolYNCJE1benbVC%2F098rb8Je2Egk%2Fc0qaIa8CcGXwn9rRKebCL6AHwPEUOsO5GxWitgR2ECMpuMYXtQaAikKpyF0UpkfTgwCCi8bKZOppb6gA84BOfj3B5d9u2HX%2BlMai0lVpJHHQ3CSL0GiVZpewIefcI7WXoMycSFuLlEhj3YcVX1mFEbHWJuYDAacTDiE03xFyjMaEGcFzYYyrwZG%2FIkBpquX4nYkMEk6zBpb%2FktusE8NO5Srneza0cxH%2Bl%2Bw43bDFeTg6yfgZLjFWXKl%2BHD7e4%2FF8rF5OEBAAA%3D";
+    String ENC_CURRENT_DOC_CHILDREN = "H4sIAAAAAAAAAI1Qy27CMBD8lz1b0PboWxWQikRpxOuCULR1FmLJsVM%2FeBTx710n9NJTTx6vZmdm5wbK2Ug2bjWdF9gSSCg2y%2BV0sa4mH8XmPYPibTaf8AgEdHik0ruTrsn%2Fk77S30x7EaCS9%2BxU8gzkk4CvRP5aomeZSD6A3EGkEKsOM63SNYgDmkDCJmPEDrDr2Jl4DCc0usbIeL8XEAi9aiZOpZYXQfZ8CM7HmT24LHzrf4UzqbUcuVYy6mgIBtZrUGRrbY8go090Z0lPIZk4x6tLLHgDO9xaPzwqo0PMCwIGIQkGP8mM%2FhJGZpBgnkcbDGdeDwvZSYDm%2BkuMDQuMMw7j9prfUdeLh8adi9V2euk45iPdb7jhmr421cPqGTg5XUil3Izsy7v%2FAB8GOT7iAQAA";
 
     String ENC_CURRENT_DOC_CHILDREN_WITH_SEARCH_DOC = "H4sIAAAAAAAAAKWR3U4CMRCFX8XMrUuyC6hJ78iCgQSR8KMXxmw23Vls7LY4bcWV7Ls7BeUF7NX09JxvTtIjSGs8Gv%2Bk8LAoGwQB%2BXa1miw2xfgx3z7EIZ%2FO5mOWiufZZlqsJ6NVPr28QgL7codLsp%2BqQvoPY62%2BOdtPQAYi7rRkDUSawEdAapclMdsjORAvrwk4LEm%2Bja0MDXtBHMG3%2B7j7XmmMRLJ7JK%2FQxbeaxd9gJUVjK1UrrNjdT7NhLx32sttNdiMGd2I4uE75wMnoldeReV529Y7twVLloOu4gCU%2FM7WN2OPpllsdGsP2S%2FLsGjmJplJmB8JTwI5LELqg%2FbxsbeDuJmj9p50hEcp%2FE8ciAw7gF8rgY%2BW61A67H%2B4OaOu6AQAA";
 
@@ -299,7 +299,7 @@ public class TestContentViewState {
                 + "\"pageProviderName\":\"CURRENT_DOCUMENT_CHILDREN\"," //
                 + "\"pageSize\":2," //
                 + "\"currentPage\":0," //
-                + "\"queryParameters\":[\"test_parent_id\",false,null,[\"deleted\", \"validated\"]]," //
+                + "\"queryParameters\":[\"test_parent_id\",false,null,[\"approved\", \"validated\"]]," //
                 + "\"searchDocument\":null," + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":{\"name\":\"document_listing\",\"title\":\"label.document_listing.layout\",\"translateTitle\":true,\"iconPath\":\"/icons/myicon.png\",\"showCSVExport\":true},"
                 + "\"resultColumns\":[\"column_1\"]," + "\"executed\":false" + "}";
@@ -340,7 +340,7 @@ public class TestContentViewState {
 
         String json = "{" + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN\"," + "\"pageSize\":2,"
                 + "\"currentPage\":0,"
-                + "\"queryParameters\":[\"test_parent_id\",false,null,[\"deleted\", \"validated\"]],"
+                + "\"queryParameters\":[\"test_parent_id\",false,null,[\"approved\", \"validated\"]],"
                 + "\"searchDocument\":null," + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":{\"name\":\"document_listing\",\"title\":\"label.document_listing.layout\",\"translateTitle\":true,\"iconPath\":\"/icons/myicon.png\",\"showCSVExport\":true},"
                 + "\"resultColumns\":[\"column_1\"]" + "}";

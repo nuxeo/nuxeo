@@ -89,7 +89,7 @@ public class LogEntryWriterTest {
         entry.setRepositoryId("test");
         entry.setCategory("Workflow");
         entry.setComment("comment");
-        entry.setDocLifeCycle("deleted");
+        entry.setDocLifeCycle("approved");
         entry.setLogDate(new Date());
         Map<String, ExtendedInfo> extendedInfo = new HashMap<>();
 
