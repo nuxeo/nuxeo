@@ -178,7 +178,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             if (trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)) {
                 expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "lifecycle_transition_event", "test"));
             } else {
-                expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "deleted", "test"));
+                expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "documentUntrashed", "test"));
             }
             assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
 

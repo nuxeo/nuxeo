@@ -36,7 +36,6 @@
       <event>aboutToMove</event>
       <event>lifecycle_transition_event</event>
       <event>documentTrashed</event>
-      <event>documentUntrashed</event>
       <event>aboutToRemove</event>
       <event>beforeDocumentSecurityModification</event>
       <event>aboutToUnregisterRoot</event>
