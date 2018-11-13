@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -200,12 +200,12 @@ public class LayoutDemoContext implements Serializable {
     @Factory(value = "layoutDemoDocuments", scope = EVENT)
     public PageSelections<DocumentModel> getDemoDocuments() {
         if (demoDocuments == null) {
-            List<PageSelection<DocumentModel>> docs = new ArrayList<PageSelection<DocumentModel>>();
+            List<PageSelection<DocumentModel>> docs = new ArrayList<>();
             DocumentModel demoDocument1 = getListingDemoDocument(1);
-            docs.add(new PageSelection<DocumentModel>(demoDocument1, false));
+            docs.add(new PageSelection<>(demoDocument1, false));
             DocumentModel demoDocument2 = getListingDemoDocument(2);
-            docs.add(new PageSelection<DocumentModel>(demoDocument2, false));
-            demoDocuments = new PageSelections<DocumentModel>(docs);
+            docs.add(new PageSelection<>(demoDocument2, false));
+            demoDocuments = new PageSelections<>(docs);
         }
         return demoDocuments;
     }
@@ -239,8 +239,8 @@ public class LayoutDemoContext implements Serializable {
             doc.setPropertyValue("lds:fileField", (Serializable) blob);
 
             // complex props
-            ArrayList<Map<String, Serializable>> cl = new ArrayList<Map<String, Serializable>>();
-            HashMap<String, Serializable> clItem = new HashMap<String, Serializable>();
+            ArrayList<Map<String, Serializable>> cl = new ArrayList<>();
+            HashMap<String, Serializable> clItem = new HashMap<>();
             clItem.put("stringComplexItem", "Some sample text");
             clItem.put("dateComplexItem", Calendar.getInstance());
             clItem.put("intComplexItem", new Integer(33));
@@ -248,7 +248,7 @@ public class LayoutDemoContext implements Serializable {
             clItem.put("stringComplexItem2", "Hello, ");
             clItem.put("stringComplexItem3", "is it me you're looking for?");
 
-            HashMap<String, Serializable> clItem2 = new HashMap<String, Serializable>();
+            HashMap<String, Serializable> clItem2 = new HashMap<>();
             clItem2.put("stringComplexItem", "Some other sample text");
             clItem2.put("dateComplexItem", Calendar.getInstance());
             clItem2.put("intComplexItem", new Integer(-2));
@@ -331,7 +331,7 @@ public class LayoutDemoContext implements Serializable {
     @Factory(value = "layoutDemoCustomActions", scope = EVENT)
     public List<Action> getLayoutDemoCustomActions() {
         if (layoutDemoCustomActions == null) {
-            layoutDemoCustomActions = new ArrayList<Action>();
+            layoutDemoCustomActions = new ArrayList<>();
             FacesContext faces = FacesContext.getCurrentInstance();
             if (faces == null) {
                 throw new NuxeoException("Faces context is null");
@@ -360,7 +360,7 @@ public class LayoutDemoContext implements Serializable {
             buckets.add(new BucketTerm("eric", 10));
             buckets.add(new BucketTerm("stan", 5));
             buckets.add(new BucketTerm("kyle", 2));
-            Aggregate<Bucket> stringTerms = new AggregateBase<Bucket>(mockDef, null);
+            Aggregate<Bucket> stringTerms = new AggregateBase<>(mockDef, null);
             stringTerms.setBuckets(buckets);
             layoutDemoAggregates.put("string_terms", stringTerms);
 
@@ -368,7 +368,7 @@ public class LayoutDemoContext implements Serializable {
             buckets.add(new BucketTerm("cartman", 10));
             buckets.add(new BucketTerm("marsh", 5));
             buckets.add(new BucketTerm("broflovski", 2));
-            Aggregate<Bucket> dirTerms = new AggregateBase<Bucket>(mockDef, null);
+            Aggregate<Bucket> dirTerms = new AggregateBase<>(mockDef, null);
             dirTerms.setBuckets(buckets);
             layoutDemoAggregates.put("dir_terms", dirTerms);
 
@@ -376,7 +376,7 @@ public class LayoutDemoContext implements Serializable {
             buckets.add(new BucketTerm("oceania", 10));
             buckets.add(new BucketTerm("antarctica", 5));
             buckets.add(new BucketTerm("europe", 2));
-            Aggregate<Bucket> dirTermsL10n = new AggregateBase<Bucket>(mockDef, null);
+            Aggregate<Bucket> dirTermsL10n = new AggregateBase<>(mockDef, null);
             dirTermsL10n.setBuckets(buckets);
             layoutDemoAggregates.put("dir_terms_translated", dirTermsL10n);
 
@@ -384,7 +384,7 @@ public class LayoutDemoContext implements Serializable {
             buckets.add(new BucketTerm("oceania/Australia", 10));
             buckets.add(new BucketTerm("antarctica", 5));
             buckets.add(new BucketTerm("europe/France", 2));
-            Aggregate<Bucket> dirTermsL10nHier = new AggregateBase<Bucket>(mockDef, null);
+            Aggregate<Bucket> dirTermsL10nHier = new AggregateBase<>(mockDef, null);
             dirTermsL10nHier.setBuckets(buckets);
             layoutDemoAggregates.put("dir_terms_l10n", dirTermsL10nHier);
         }
