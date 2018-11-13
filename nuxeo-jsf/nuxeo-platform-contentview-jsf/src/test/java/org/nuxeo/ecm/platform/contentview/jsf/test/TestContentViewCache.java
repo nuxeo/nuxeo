@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class TestContentViewCache {
 
     Boolean booleanParam = Boolean.FALSE;
 
-    List<String> listParam = Arrays.asList(new String[] { "deleted", "validated" });
+    List<String> listParam = Arrays.asList("deleted", "validated");
 
     @Before
     public void setUp() {
@@ -126,7 +126,7 @@ public class TestContentViewCache {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testContentViewCache() throws Exception {
+    public void testContentViewCache() {
         ContentViewCache cache = new ContentViewCache();
 
         DocumentModel currentDocument = container1;
@@ -197,7 +197,7 @@ public class TestContentViewCache {
      * @since 5.9.2
      */
     @Test
-    public void testContentViewCacheRefreshAndRewind() throws Exception {
+    public void testContentViewCacheRefreshAndRewind() {
         ContentViewCache cache = new ContentViewCache();
         ContentView cv = service.getContentView("MOCK_DAM_CV");
         assertNotNull(cv);
