@@ -19,6 +19,8 @@
 
 package org.nuxeo.elasticsearch.test.aggregates;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_CARDINALITY;
 
@@ -41,7 +43,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -105,13 +106,13 @@ public class TestAggregates {
         // wait for async jobs
         WorkManager wm = Framework.getService(WorkManager.class);
         assertTrue(wm.awaitCompletion(60, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        assertEquals(0, esa.getPendingWorkerCount());
         esa.refresh();
         TransactionHelper.startTransaction();
     }
 
     @Test
-    public void testCustomAggregates() throws Exception {
+    public void testCustomAggregates() {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setId("cardinal");
         aggDef.setType(AGG_CARDINALITY);
@@ -120,15 +121,17 @@ public class TestAggregates {
         aggDef.setProperty("minDocCount", "10");
         aggDef.setProperty("size", "10");
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
-                .addAggregate( AggregateFactory.create(aggDef, null));
+                                                       .addAggregate(AggregateFactory.create(aggDef, null));
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"cardinal_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"cardinal\":{\"cardinality\":{\"field\":\"dc:source\"}}}}}}",
+        assertEqualsEvenUnderWindows(
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"cardinal_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"cardinal\":{\"cardinality\":{\"field\":\"dc:source\"}}}}}}",
                 request.toString());
     }
+
     @Test
-    public void testAggregateTermsQuery() throws Exception {
+    public void testAggregateTermsQuery() {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setType("terms");
         aggDef.setId("source");
@@ -151,7 +154,7 @@ public class TestAggregates {
     }
 
     @Test
-    public void testAggregateTermsFulltextQuery() throws Exception {
+    public void testAggregateTermsFulltextQuery() {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setType("terms");
         aggDef.setId("fulltext");
@@ -167,7 +170,7 @@ public class TestAggregates {
     }
 
     @Test
-    public void testAggregateSignificantTermsQuery() throws Exception {
+    public void testAggregateSignificantTermsQuery() {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setType("significant_terms");
         aggDef.setId("source");
@@ -181,12 +184,13 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"significant_terms\":{\"field\":\"dc:source\",\"size\":10,\"min_doc_count\":10,\"shard_min_doc_count\":0,\"jlh\":{}}}}}}}",
+        assertEqualsEvenUnderWindows(
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"significant_terms\":{\"field\":\"dc:source\",\"size\":10,\"min_doc_count\":10,\"shard_min_doc_count\":0,\"jlh\":{}}}}}}}",
                 request.toString());
     }
 
     @Test
-    public void testAggregateRangeQuery() throws Exception {
+    public void testAggregateRangeQuery() {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setType("range");
         aggDef.setId("source");
@@ -209,7 +213,7 @@ public class TestAggregates {
     }
 
     @Test
-    public void testAggregateRangeDateQuery() throws Exception {
+    public void testAggregateRangeDateQuery() {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setType("date_range");
         aggDef.setId("created");
@@ -226,12 +230,13 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_range\":{\"field\":\"dc:created\",\"ranges\":[{\"key\":\"10monthAgo\",\"to\":\"now-10M/M\"},{\"key\":\"1monthAgo\",\"from\":\"now-10M/M\",\"to\":\"now-1M/M\"},{\"key\":\"thisMonth\",\"from\":\"now-1M/M\"}],\"keyed\":false}}}}}}",
+        assertEqualsEvenUnderWindows(
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_range\":{\"field\":\"dc:created\",\"ranges\":[{\"key\":\"10monthAgo\",\"to\":\"now-10M/M\"},{\"key\":\"1monthAgo\",\"from\":\"now-10M/M\",\"to\":\"now-1M/M\"},{\"key\":\"thisMonth\",\"from\":\"now-1M/M\"}],\"keyed\":false}}}}}}",
                 request.toString());
     }
 
     @Test
-    public void testAggregateHistogramQuery() throws Exception {
+    public void testAggregateHistogramQuery() {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setType("histogram");
         aggDef.setId("size");
@@ -244,12 +249,13 @@ public class TestAggregates {
                                                        .addAggregate(AggregateFactory.create(aggDef, null));
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
-        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"size_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"size\":{\"histogram\":{\"field\":\"common:size\",\"interval\":1024.0,\"offset\":0.0,\"order\":{\"_key\":\"asc\"},\"keyed\":false,\"min_doc_count\":0,\"extended_bounds\":{\"min\":0.0,\"max\":10240.0}}}}}}}",
+        assertEqualsEvenUnderWindows(
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"size_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"size\":{\"histogram\":{\"field\":\"common:size\",\"interval\":1024.0,\"offset\":0.0,\"order\":{\"_key\":\"asc\"},\"keyed\":false,\"min_doc_count\":0,\"extended_bounds\":{\"min\":0.0,\"max\":10240.0}}}}}}}",
                 request.toString());
     }
 
     @Test
-    public void testAggregateDateHistogramQuery() throws Exception {
+    public void testAggregateDateHistogramQuery() {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setType("date_histogram");
         aggDef.setId("created");
@@ -266,12 +272,13 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"post_filter\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"range\":{\"dc:created\":{\"from\":1470009600000,\"to\":1472688000000,\"include_lower\":true,\"include_upper\":false,\"format\":\"epoch_millis\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_histogram\":{\"field\":\"dc:created\",\"format\":\"yyy-MM\",\"time_zone\":\"UTC\",\"interval\":\"month\",\"offset\":0,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}],\"keyed\":false,\"min_doc_count\":0}}}}}}",
+        assertEqualsEvenUnderWindows(
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"post_filter\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"range\":{\"dc:created\":{\"from\":1470009600000,\"to\":1472688000000,\"include_lower\":true,\"include_upper\":false,\"format\":\"epoch_millis\",\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_histogram\":{\"field\":\"dc:created\",\"format\":\"yyy-MM\",\"time_zone\":\"UTC\",\"interval\":\"month\",\"offset\":0,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}],\"keyed\":false,\"min_doc_count\":0}}}}}}",
                 request.toString());
     }
 
     @Test
-    public void testAggregateDateHistogramQueryWithoutTimeZone() throws Exception {
+    public void testAggregateDateHistogramQueryWithoutTimeZone() {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setType("date_histogram");
         aggDef.setId("created");
@@ -285,12 +292,14 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
         // The request will use the JVM time_zone
-        assertTrue(request.toString(), request.toString().startsWith("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_histogram\":{\"field\":\"dc:created\",\"time_zone\":"));
-        assertTrue(request.toString(), request.toString().endsWith("\"interval\":\"month\",\"offset\":0,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}],\"keyed\":false,\"min_doc_count\":0}}}}}}"));
+        assertTrue(request.toString(), request.toString().startsWith(
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_histogram\":{\"field\":\"dc:created\",\"time_zone\":"));
+        assertTrue(request.toString(), request.toString().endsWith(
+                "\"interval\":\"month\",\"offset\":0,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}],\"keyed\":false,\"min_doc_count\":0}}}}}}"));
     }
 
     @Test
-    public void testAggregateMultiAggregatesQuery() throws Exception {
+    public void testAggregateMultiAggregatesQuery() {
 
         AggregateDefinition aggDef1 = new AggregateDescriptor();
         aggDef1.setType("terms");
@@ -317,12 +326,13 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"post_filter\":{\"bool\":{\"must\":[{\"terms\":{\"dc:source\":[\"foo\",\"bar\"],\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"terms\":{\"field\":\"dc:source\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}},\"nature_filter\":{\"filter\":{\"bool\":{\"must\":[{\"terms\":{\"dc:source\":[\"foo\",\"bar\"],\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"aggregations\":{\"nature\":{\"terms\":{\"field\":\"dc:nature\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}}}}",
+        assertEqualsEvenUnderWindows(
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"post_filter\":{\"bool\":{\"must\":[{\"terms\":{\"dc:source\":[\"foo\",\"bar\"],\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"terms\":{\"field\":\"dc:source\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}},\"nature_filter\":{\"filter\":{\"bool\":{\"must\":[{\"terms\":{\"dc:source\":[\"foo\",\"bar\"],\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"aggregations\":{\"nature\":{\"terms\":{\"field\":\"dc:nature\",\"size\":10,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}}}}",
                 request.toString());
     }
 
     @Test
-    public void testAggregateOnComplexTypeQuery() throws Exception {
+    public void testAggregateOnComplexTypeQuery() {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setType("significant_terms");
         aggDef.setId("source");
@@ -336,7 +346,8 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows("{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"significant_terms\":{\"field\":\"prefix:foo.bar\",\"size\":10,\"min_doc_count\":10,\"shard_min_doc_count\":0,\"jlh\":{}}}}}}}",
+        assertEqualsEvenUnderWindows(
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"source_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"source\":{\"significant_terms\":{\"field\":\"prefix:foo.bar\",\"size\":10,\"min_doc_count\":10,\"shard_min_doc_count\":0,\"jlh\":{}}}}}}}",
                 request.toString());
     }
 
@@ -345,10 +356,10 @@ public class TestAggregates {
         buildDocs();
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
-        Assert.assertNotNull(pps);
+        assertNotNull(pps);
 
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
-        Assert.assertNotNull(ppdef);
+        assertNotNull(ppdef);
 
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] sources = { "Source1", "Source2" };
@@ -359,30 +370,30 @@ public class TestAggregates {
 
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
-        Assert.assertEquals(7, pp.getAggregates().size());
-        Assert.assertEquals(2, pp.getResultsCount());
-        Assert.assertEquals(
+        assertEquals(7, pp.getAggregates().size());
+        assertEquals(2, pp.getResultsCount());
+        assertEquals(
                 "Aggregate(source, terms, dc:source, [Source1, Source2], [BucketTerm(Source0, 1), BucketTerm(Source1, 1), BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1)])",
                 pp.getAggregates().get("source").toString());
-        Assert.assertEquals(
+        assertEquals(
                 "Aggregate(coverage, terms, dc:coverage, [], [BucketTerm(Coverage1, 1), BucketTerm(Coverage2, 1)])",
                 pp.getAggregates().get("coverage").toString());
-        Assert.assertEquals("Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 1), BucketTerm(Nature1, 1)])",
+        assertEquals("Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 1), BucketTerm(Nature1, 1)])",
                 pp.getAggregates().get("nature").toString());
-        Assert.assertEquals(
+        assertEquals(
                 "Aggregate(size, range, file:content.length, [], [BucketRange(small, 1, -Infinity, 2048.00), BucketRange(medium, 1, 2048.00, 6144.00), BucketRange(big, 0, 6144.00, Infinity)])",
                 pp.getAggregates().get("size").toString());
-        Assert.assertEquals(
+        assertEquals(
                 "Aggregate(size_histo, histogram, file:content.length, [], [BucketRange(1024.0, 1, 1024.00, 2048.00), BucketRange(2048.0, 1, 2048.00, 3072.00)])",
                 pp.getAggregates().get("size_histo").toString());
-        Assert.assertEquals(3, pp.getAggregates().get("created").getBuckets().size());
-        Assert.assertEquals(2, pp.getAggregates().get("created_histo").getBuckets().size());
+        assertEquals(3, pp.getAggregates().get("created").getBuckets().size());
+        assertEquals(2, pp.getAggregates().get("created_histo").getBuckets().size());
         // output depends on current date
-        // Assert.assertEquals("Aggregate(created, date_range, dc:created, [], [BucketRangeDate(long_time_ago, 0, null,
+        // assertEquals("Aggregate(created, date_range, dc:created, [], [BucketRangeDate(long_time_ago, 0, null,
         // 2014-07-11T14:26:32.590+02:00), BucketRangeDate(some_time_ago, 0, 2014-07-11T14:26:32.590+02:00,
         // 2014-08-29T14:26:32.590+02:00), BucketRangeDate(last_month, 2, 2014-08-29T14:26:32.590+02:00, null)])",
         // pp.getAggregates().get("created").toString());
-        // Assert.assertEquals("Aggregate(created_histo, date_histogram, dc:created, [], [BucketRangeDate(31-08-2014, 1,
+        // assertEquals("Aggregate(created_histo, date_histogram, dc:created, [], [BucketRangeDate(31-08-2014, 1,
         // 2014-08-31T23:30:00.000+02:00, 2014-09-07T23:30:00.000+02:00), BucketRangeDate(07-09-2014, 1,
         // 2014-09-07T23:30:00.000+02:00, 2014-09-14T23:30:00.000+02:00)])",
         // pp.getAggregates().get("created_histo").toString());
@@ -393,10 +404,10 @@ public class TestAggregates {
         buildDocs();
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
-        Assert.assertNotNull(pps);
+        assertNotNull(pps);
 
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
-        Assert.assertNotNull(ppdef);
+        assertNotNull(ppdef);
 
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] sizes = { "big", "medium" };
@@ -407,17 +418,17 @@ public class TestAggregates {
 
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
-        Assert.assertEquals(7, pp.getAggregates().size());
-        Assert.assertEquals(8, pp.getResultsCount());
-        Assert.assertEquals(
+        assertEquals(7, pp.getAggregates().size());
+        assertEquals(8, pp.getResultsCount());
+        assertEquals(
                 "Aggregate(source, terms, dc:source, [], [BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1), BucketTerm(Source5, 1), BucketTerm(Source6, 1)])",
                 pp.getAggregates().get("source").toString());
-        Assert.assertEquals(
+        assertEquals(
                 "Aggregate(coverage, terms, dc:coverage, [], [BucketTerm(Coverage0, 3), BucketTerm(Coverage2, 3), BucketTerm(Coverage1, 2)])",
                 pp.getAggregates().get("coverage").toString());
-        Assert.assertEquals("Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 4), BucketTerm(Nature1, 4)])",
+        assertEquals("Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature0, 4), BucketTerm(Nature1, 4)])",
                 pp.getAggregates().get("nature").toString());
-        Assert.assertEquals(
+        assertEquals(
                 "Aggregate(size, range, file:content.length, [big, medium], [BucketRange(small, 2, -Infinity, 2048.00), BucketRange(medium, 4, 2048.00, 6144.00), BucketRange(big, 4, 6144.00, Infinity)])",
                 pp.getAggregates().get("size").toString());
 
@@ -428,10 +439,10 @@ public class TestAggregates {
         buildDocs();
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
-        Assert.assertNotNull(pps);
+        assertNotNull(pps);
 
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
-        Assert.assertNotNull(ppdef);
+        assertNotNull(ppdef);
 
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] created = { "long_time_ago", "some_time_ago" };
@@ -442,21 +453,21 @@ public class TestAggregates {
 
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
-        Assert.assertEquals(7, pp.getAggregates().size());
-        Assert.assertEquals(7, pp.getResultsCount());
-        Assert.assertEquals(
+        assertEquals(7, pp.getAggregates().size());
+        assertEquals(7, pp.getResultsCount());
+        assertEquals(
                 "Aggregate(coverage, terms, dc:coverage, [], [BucketTerm(Coverage0, 3), BucketTerm(Coverage1, 2), BucketTerm(Coverage2, 2)])",
                 pp.getAggregates().get("coverage").toString());
-        Assert.assertEquals("Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature1, 4), BucketTerm(Nature0, 3)])",
+        assertEquals("Aggregate(nature, terms, dc:nature, [], [BucketTerm(Nature1, 4), BucketTerm(Nature0, 3)])",
                 pp.getAggregates().get("nature").toString());
         @SuppressWarnings("unchecked")
         List<BucketRangeDate> buckets = (List<BucketRangeDate>) pp.getAggregates().get("created").getBuckets();
-        Assert.assertEquals(3, buckets.size());
-        Assert.assertEquals("long_time_ago", buckets.get(0).getKey());
-        Assert.assertEquals(0, buckets.get(0).getDocCount());
-        Assert.assertEquals(7, buckets.get(1).getDocCount());
-        Assert.assertEquals("last_month", buckets.get(2).getKey());
-        Assert.assertEquals(3, buckets.get(2).getDocCount());
+        assertEquals(3, buckets.size());
+        assertEquals("long_time_ago", buckets.get(0).getKey());
+        assertEquals(0, buckets.get(0).getDocCount());
+        assertEquals(7, buckets.get(1).getDocCount());
+        assertEquals("last_month", buckets.get(2).getKey());
+        assertEquals(3, buckets.get(2).getDocCount());
     }
 
     @Test
@@ -464,10 +475,10 @@ public class TestAggregates {
         buildDocs();
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
-        Assert.assertNotNull(pps);
+        assertNotNull(pps);
 
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
-        Assert.assertNotNull(ppdef);
+        assertNotNull(ppdef);
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] sizes = { "1024", "4096" };
         model.setProperty("advanced_search", "size_histo_agg", sizes);
@@ -477,12 +488,12 @@ public class TestAggregates {
 
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
-        Assert.assertEquals(7, pp.getAggregates().size());
-        Assert.assertEquals(2, pp.getResultsCount());
-        Assert.assertEquals(
+        assertEquals(7, pp.getAggregates().size());
+        assertEquals(2, pp.getResultsCount());
+        assertEquals(
                 "Aggregate(size_histo, histogram, file:content.length, [1024, 4096], [BucketRange(0.0, 1, 0.00, 1024.00), BucketRange(1024.0, 1, 1024.00, 2048.00), BucketRange(2048.0, 1, 2048.00, 3072.00), BucketRange(3072.0, 1, 3072.00, 4096.00), BucketRange(4096.0, 1, 4096.00, 5120.00), BucketRange(5120.0, 1, 5120.00, 6144.00), BucketRange(6144.0, 1, 6144.00, 7168.00), BucketRange(7168.0, 1, 7168.00, 8192.00), BucketRange(8192.0, 1, 8192.00, 9216.00), BucketRange(9216.0, 1, 9216.00, 10240.00)])",
                 pp.getAggregates().get("size_histo").toString());
-        Assert.assertEquals("Aggregate(source, terms, dc:source, [], [BucketTerm(Source1, 1), BucketTerm(Source4, 1)])",
+        assertEquals("Aggregate(source, terms, dc:source, [], [BucketTerm(Source1, 1), BucketTerm(Source4, 1)])",
                 pp.getAggregates().get("source").toString());
     }
 
@@ -491,10 +502,10 @@ public class TestAggregates {
         buildDocs();
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
-        Assert.assertNotNull(pps);
+        assertNotNull(pps);
 
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
-        Assert.assertNotNull(ppdef);
+        assertNotNull(ppdef);
         DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
         DateTimeFormatter fmt = DateTimeFormat.forPattern("dd-MM-yyy");
         DateTime yesterdayNoon = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().minusDays(1).plusHours(12);
@@ -506,12 +517,12 @@ public class TestAggregates {
 
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
-        Assert.assertEquals(7, pp.getAggregates().size());
-        Assert.assertEquals(2, pp.getResultsCount());
-        Assert.assertEquals(
+        assertEquals(7, pp.getAggregates().size());
+        assertEquals(2, pp.getResultsCount());
+        assertEquals(
                 "Aggregate(size_histo, histogram, file:content.length, [], [BucketRange(3072.0, 1, 3072.00, 4096.00), BucketRange(6144.0, 1, 6144.00, 7168.00)])",
                 pp.getAggregates().get("size_histo").toString());
-        Assert.assertEquals("Aggregate(source, terms, dc:source, [], [BucketTerm(Source3, 1), BucketTerm(Source6, 1)])",
+        assertEquals("Aggregate(source, terms, dc:source, [], [BucketTerm(Source3, 1), BucketTerm(Source6, 1)])",
                 pp.getAggregates().get("source").toString());
     }
 
@@ -525,7 +536,7 @@ public class TestAggregates {
             actual = actual.replace("\n", "");
             actual = actual.replace("\r", "");
         }
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     private static class DummyLengthBlob extends AbstractBlob {
