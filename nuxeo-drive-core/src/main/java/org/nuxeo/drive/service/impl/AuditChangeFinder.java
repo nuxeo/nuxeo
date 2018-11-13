@@ -91,7 +91,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         // This event can be:
         // - a root registration
         // - a root unregistration
-        // - a "deleted" transition
+        // - a "deleted" transition / documentTrashed event
         // - an "undeleted" transition
         // - a removal
         // - a move to an non synchronization root
