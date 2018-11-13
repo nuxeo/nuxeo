@@ -107,7 +107,6 @@ public class DataFetch {
      * @return
      */
     protected static String baseRequest() {
-        return "ecm:mixinType != 'HiddenInNavigation'" + " AND ecm:isCheckedInVersion = 0"
-                + " AND ecm:currentLifeCycleState != 'deleted'";
+        return "ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0";
     }
 }
