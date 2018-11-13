@@ -18,9 +18,13 @@
  */
 package org.nuxeo.ecm.core.redis;
 
+import static org.junit.Assert.assertEquals;
+
 import javax.inject.Inject;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.redis.contribs.RedisKeyValueStore;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreTest;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStoreProvider;
@@ -39,6 +43,13 @@ public class TestRedisKeyValueStore extends AbstractKeyValueStoreTest {
         KeyValueStoreProvider store = (KeyValueStoreProvider) keyValueService.getKeyValueStore("redis");
         store.clear();
         return store;
+    }
+
+    @Test
+    public void testEscapeGlob() {
+        String string = "a[b]?ok*\\computer";
+        String expected = "a\\[b]\\?ok\\*\\\\computer";
+        assertEquals(expected, RedisKeyValueStore.ecapeGlob(string));
     }
 
 }

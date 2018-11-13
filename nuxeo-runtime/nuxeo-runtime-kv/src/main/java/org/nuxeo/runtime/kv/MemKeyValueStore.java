@@ -62,6 +62,11 @@ public class MemKeyValueStore extends AbstractKeyValueStoreProvider {
     }
 
     @Override
+    public Stream<String> keyStream(String prefix) {
+        return map.keySet().stream().filter(key -> key.startsWith(prefix));
+    }
+
+    @Override
     public void close() {
     }
 

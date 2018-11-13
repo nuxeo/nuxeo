@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -486,6 +487,43 @@ public abstract class AbstractKeyValueStoreTest {
         } catch (NumberFormatException e) {
             // ok
         }
+    }
+
+    @Test
+    public void testKeyStream() throws Exception {
+        // keyStream() already tested by all other test methods indirectly
+
+        store.put("foo", "test");
+        store.put("foox", "test");
+        store.put("foo?", "test");
+        store.put("foo?a", "test");
+        store.put("foo*", "test");
+        store.put("foo*b", "test");
+
+        store.put("bar", "test");
+        store.put("barx", "test");
+        store.put("bar.", "test"); // . should not be matched by MongoDB as a wildcard
+        store.put("bar.1", (String) null);
+        store.put("bar.2", (byte[]) null);
+        store.put("bar.3", (Long) null);
+        store.put("bar.4", "test");
+        store.put("bar.5", "test".getBytes(UTF_8));
+        store.put("bar.6", Long.valueOf(123));
+
+        // ? should not be matched by Redis or MongoDB as a wildcard
+        String prefix = "foo?";
+        List<String> expected = Arrays.asList("foo?", "foo?a");
+        assertEquals(new HashSet<>(expected), store.keyStream(prefix).collect(Collectors.toSet()));
+
+        // * should not be matched by Redis or MongoDB as a wildcard
+        prefix = "foo*";
+        expected = Arrays.asList("foo*", "foo*b");
+        assertEquals(new HashSet<>(expected), store.keyStream(prefix).collect(Collectors.toSet()));
+
+        // . should not be matched by MongoDB as a wildcard
+        prefix = "bar.";
+        expected = Arrays.asList("bar.", "bar.4", "bar.5", "bar.6");
+        assertEquals(new HashSet<>(expected), store.keyStream(prefix).collect(Collectors.toSet()));
     }
 
 }
