@@ -2112,7 +2112,7 @@ public class TestSQLRepositoryQuery {
     public void testEmptyLifecycle() throws Exception {
         DocumentModelList dml;
         createDocs();
-        String sql = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'deleted' AND ecm:isVersion = 0";
+        String sql = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'approved' AND ecm:isVersion = 0";
 
         dml = session.query(sql);
         assertEquals(7, dml.size());

@@ -57,6 +57,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.ecm.platform.mail.action.MessageActionPipe;
 import org.nuxeo.ecm.platform.mail.action.Visitor;
@@ -80,6 +81,10 @@ public final class MailCoreHelper {
 
     public static final String INBOX = "INBOX";
 
+    /**
+     * @deprecated since 10.3, use {@link TrashService} instead
+     */
+    @Deprecated
     public static final String DELETED_LIFECYCLE_STATE = "deleted";
 
     public static final long EMAILS_LIMIT_DEFAULT = 100;
