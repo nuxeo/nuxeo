@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -66,11 +65,8 @@ public class LogEntryWriterTest {
     @Inject
     CoreSession session;
 
-    @Inject
-    JsonFactory factory;
-
     @Before
-    public void doBefore() throws Exception {
+    public void doBefore() {
         DocumentModel doc = session.createDocumentModel("/", "folder1", "Folder");
         session.createDocument(doc);
 
