@@ -34,8 +34,8 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_B
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_TRASHED;
-import static org.nuxeo.ecm.core.trash.TrashService.DOCUMENT_UNTRASHED;
+import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_TRASHED;
+import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_UNTRASHED;
 
 import java.util.Arrays;
 import java.util.Collections;
