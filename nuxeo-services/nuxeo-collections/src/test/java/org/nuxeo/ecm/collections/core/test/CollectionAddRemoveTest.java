@@ -77,6 +77,33 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
         assertFalse(collectionMemberAdapter.getCollectionIds().contains(newlyCreatedCollectionId));
     }
 
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void testAddRemoveDocsToDetachedCollection() {
+        List<DocumentModel> files = createTestFiles(session, 2);
+
+        collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, files.get(0), session);
+
+        assertTrue(session.exists(new PathRef(COLLECTION_FOLDER_PATH)));
+
+        final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME;
+
+        DocumentRef newCollectionRef = new PathRef(newlyCreatedCollectionPath);
+        assertTrue(session.exists(newCollectionRef));
+
+        DocumentModel collection = session.getDocument(newCollectionRef);
+        collection.detach(true);
+        collectionManager.addToCollection(collection, files.get(1), session);
+        Collection collectionAdapter = collection.getAdapter(Collection.class);
+        assertEquals(2, collectionAdapter.getCollectedDocumentIds().size());
+        collectionManager.removeFromCollection(collection, files.get(0), session);
+        collectionManager.removeFromCollection(collection, files.get(1), session);
+        assertEquals(0, collectionAdapter.getCollectedDocumentIds().size());
+
+    }
+
     @Test
     public void testAddManyDocsToNewCollectionAndRemove() {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",

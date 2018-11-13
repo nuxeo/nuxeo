@@ -82,7 +82,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         fireEvent(documentToBeAdded, session, CollectionConstants.BEFORE_ADDED_TO_COLLECTION, props);
         Collection colAdapter = collection.getAdapter(Collection.class);
         colAdapter.addDocument(documentToBeAdded.getId());
-        collection.getCoreSession().saveDocument(colAdapter.getDocument());
+        session.saveDocument(colAdapter.getDocument());
 
         new UnrestrictedSessionRunner(session) {
 
@@ -337,7 +337,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         fireEvent(documentToBeRemoved, session, CollectionConstants.BEFORE_REMOVED_FROM_COLLECTION, props);
         Collection colAdapter = collection.getAdapter(Collection.class);
         colAdapter.removeDocument(documentToBeRemoved.getId());
-        collection.getCoreSession().saveDocument(colAdapter.getDocument());
+        session.saveDocument(colAdapter.getDocument());
 
         new UnrestrictedSessionRunner(session) {
 
