@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.DocumentSetRepositoryInit;
 import org.nuxeo.ecm.core.bulk.action.SetPropertiesAction;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -105,11 +106,11 @@ public class TestBulkRunAction {
         actionParams.put("cpx:complex", complex);
         params.put("parameters", actionParams);
 
-        Blob runResult = (Blob) service.run(ctx, BulkRunAction.ID, params);
+        BulkStatus runResult = (BulkStatus) service.run(ctx, BulkRunAction.ID, params);
 
         assertNotNull(runResult);
-        // runResult is a json containing commandId
-        String commandId = new ObjectMapper().readTree(runResult.getString()).get("commandId").asText();
+
+        String commandId = runResult.getCommandId();
 
         boolean waitResult = (boolean) service.run(ctx, BulkWaitForAction.ID, singletonMap("commandId", commandId));
         assertTrue("Bulk action didn't finish", waitResult);
@@ -153,11 +154,11 @@ public class TestBulkRunAction {
         params.put("providerName", "bulkPP");
         params.put("queryParams", model.getId());
 
-        Blob runResult = (Blob) service.run(ctx, BulkRunAction.ID, params);
+        BulkStatus runResult = (BulkStatus) service.run(ctx, BulkRunAction.ID, params);
 
         assertNotNull(runResult);
-        // runResult is a json containing commandId
-        String commandId = new ObjectMapper().readTree(runResult.getString()).get("commandId").asText();
+
+        String commandId = runResult.getCommandId();
 
         boolean waitResult = (boolean) service.run(ctx, BulkWaitForAction.ID, singletonMap("commandId", commandId));
         assertTrue("Bulk action didn't finish", waitResult);

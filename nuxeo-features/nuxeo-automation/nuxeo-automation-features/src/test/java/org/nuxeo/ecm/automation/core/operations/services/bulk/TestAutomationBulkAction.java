@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DocumentSetRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -89,11 +90,11 @@ public class TestAutomationBulkAction {
         bulkActionParam.put("parameters", actionParams);
 
         OperationContext ctx = new OperationContext(session);
-        Blob runResult = (Blob) service.run(ctx, BulkRunAction.ID, bulkActionParam);
+        BulkStatus runResult = (BulkStatus) service.run(ctx, BulkRunAction.ID, bulkActionParam);
 
         assertNotNull(runResult);
         // runResult is a json containing commandId
-        String commandId = new ObjectMapper().readTree(runResult.getString()).get("commandId").asText();
+        String commandId = runResult.getCommandId();
 
         boolean waitResult = (boolean) service.run(ctx, BulkWaitForAction.ID, singletonMap("commandId", commandId));
         assertTrue("Bulk action didn't finish", waitResult);
