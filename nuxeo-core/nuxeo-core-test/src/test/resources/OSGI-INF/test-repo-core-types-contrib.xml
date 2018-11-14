@@ -79,6 +79,9 @@
     <facet name="WithFile2">
       <schema name="file" />
     </facet>
+    <facet name="WithFiles">
+      <schema name="files" />
+    </facet>
     <doctype name="DocWithAge" extends="Document">
       <schema name="common" />
       <schema name="dublincore" />
