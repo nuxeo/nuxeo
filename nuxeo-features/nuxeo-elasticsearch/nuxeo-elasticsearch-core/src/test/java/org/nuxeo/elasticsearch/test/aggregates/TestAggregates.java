@@ -154,6 +154,25 @@ public class TestAggregates {
     }
 
     @Test
+    public void testAggregateBooleanTermsQuery() {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setType("terms");
+        aggDef.setId("trashed");
+        aggDef.setDocumentField("ecm:isTrashed");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "trashed_agg"));
+        aggDef.setProperty("size", "2");
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+                                                       .addAggregate(AggregateFactory.create(aggDef, null));
+
+        SearchSourceBuilder request = new SearchSourceBuilder();
+        qb.updateRequest(request);
+
+        assertEqualsEvenUnderWindows(
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"trashed_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"trashed\":{\"terms\":{\"field\":\"ecm:isTrashed\",\"size\":2,\"min_doc_count\":1,\"shard_min_doc_count\":0,\"show_term_doc_count_error\":false,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}]}}}}}}", //
+                request.toString());
+    }
+
+    @Test
     public void testAggregateTermsFulltextQuery() {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setType("terms");
@@ -370,11 +389,13 @@ public class TestAggregates {
 
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
-        assertEquals(7, pp.getAggregates().size());
+        assertEquals(8, pp.getAggregates().size());
         assertEquals(2, pp.getResultsCount());
         assertEquals(
                 "Aggregate(source, terms, dc:source, [Source1, Source2], [BucketTerm(Source0, 1), BucketTerm(Source1, 1), BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1)])",
                 pp.getAggregates().get("source").toString());
+        assertEquals("Aggregate(trashed, terms, ecm:isTrashed, [], [BucketTerm(false, 2)])",
+                pp.getAggregates().get("trashed").toString());
         assertEquals(
                 "Aggregate(coverage, terms, dc:coverage, [], [BucketTerm(Coverage1, 1), BucketTerm(Coverage2, 1)])",
                 pp.getAggregates().get("coverage").toString());
@@ -400,6 +421,31 @@ public class TestAggregates {
     }
 
     @Test
+    public void testPageProviderBooleanAggregate() throws Exception {
+        buildDocs();
+
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        assertNotNull(pps);
+
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("aggregates_1");
+        assertNotNull(ppdef);
+
+        DocumentModel model = session.createDocumentModel("/", "doc", "AdvancedSearch");
+        String[] trashedStates = { "true", "false" };
+        model.setProperty("advanced_search", "trashed_agg", trashedStates);
+
+        HashMap<String, Serializable> props = new HashMap<>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
+
+        assertEquals(8, pp.getAggregates().size());
+        assertEquals(10, pp.getResultsCount());
+        assertEquals("Aggregate(trashed, terms, ecm:isTrashed, [true, false], [BucketTerm(false, 10)])",
+                pp.getAggregates().get("trashed").toString());
+    }
+
+    @Test
     public void testPageProviderWithRangeSelection() throws Exception {
         buildDocs();
 
@@ -418,7 +464,7 @@ public class TestAggregates {
 
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
-        assertEquals(7, pp.getAggregates().size());
+        assertEquals(8, pp.getAggregates().size());
         assertEquals(8, pp.getResultsCount());
         assertEquals(
                 "Aggregate(source, terms, dc:source, [], [BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1), BucketTerm(Source5, 1), BucketTerm(Source6, 1)])",
@@ -453,7 +499,7 @@ public class TestAggregates {
 
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
-        assertEquals(7, pp.getAggregates().size());
+        assertEquals(8, pp.getAggregates().size());
         assertEquals(7, pp.getResultsCount());
         assertEquals(
                 "Aggregate(coverage, terms, dc:coverage, [], [BucketTerm(Coverage0, 3), BucketTerm(Coverage1, 2), BucketTerm(Coverage2, 2)])",
@@ -488,7 +534,7 @@ public class TestAggregates {
 
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
-        assertEquals(7, pp.getAggregates().size());
+        assertEquals(8, pp.getAggregates().size());
         assertEquals(2, pp.getResultsCount());
         assertEquals(
                 "Aggregate(size_histo, histogram, file:content.length, [1024, 4096], [BucketRange(0.0, 1, 0.00, 1024.00), BucketRange(1024.0, 1, 1024.00, 2048.00), BucketRange(2048.0, 1, 2048.00, 3072.00), BucketRange(3072.0, 1, 3072.00, 4096.00), BucketRange(4096.0, 1, 4096.00, 5120.00), BucketRange(5120.0, 1, 5120.00, 6144.00), BucketRange(6144.0, 1, 6144.00, 7168.00), BucketRange(7168.0, 1, 7168.00, 8192.00), BucketRange(8192.0, 1, 8192.00, 9216.00), BucketRange(9216.0, 1, 9216.00, 10240.00)])",
@@ -517,7 +563,7 @@ public class TestAggregates {
 
         PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model, null, null, 0L, props);
 
-        assertEquals(7, pp.getAggregates().size());
+        assertEquals(8, pp.getAggregates().size());
         assertEquals(2, pp.getResultsCount());
         assertEquals(
                 "Aggregate(size_histo, histogram, file:content.length, [], [BucketRange(3072.0, 1, 3072.00, 4096.00), BucketRange(6144.0, 1, 6144.00, 7168.00)])",

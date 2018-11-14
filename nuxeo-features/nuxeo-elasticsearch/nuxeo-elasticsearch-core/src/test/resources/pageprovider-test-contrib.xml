@@ -146,6 +146,12 @@
             <property name="size">5</property>
           </properties>
         </aggregate>
+        <aggregate id="trashed" parameter="ecm:isTrashed" type="terms">
+          <field name="trashed_agg" schema="advanced_search" />
+          <properties>
+            <property name="size">2</property>
+          </properties>
+        </aggregate>
         <aggregate id="coverage" parameter="dc:coverage" type="terms">
           <field name="coverage_agg" schema="advanced_search" />
           <properties>
