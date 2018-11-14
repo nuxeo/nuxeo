@@ -23,18 +23,19 @@ import static com.google.common.net.HttpHeaders.REFERER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoCorsCsrfFilter.PRIVACY_SENSITIVE;
 
-import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.FilterChain;
@@ -42,6 +43,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.http.client.methods.HttpGet;
@@ -69,6 +71,16 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/cors-configuration.xml")
 public class TestNuxeoCorsCsrfFilter {
 
+    protected static final String SCHEME = "http";
+
+    protected static final String HOST = "example.com";
+
+    protected static final int PORT = 8080;
+
+    protected static final String URL_BASE = SCHEME + "://" + HOST + ":" + PORT + "/";
+
+    protected static final String CONTEXT = "/nuxeo";
+
     protected static final String NUXEO_VIRTUAL_HOST = "nuxeo-virtual-host";
 
     // lowercase because that's what VirtualHostHelper is using when calling getHeader
@@ -89,6 +101,10 @@ public class TestNuxeoCorsCsrfFilter {
 
     protected DummyFilterChain chain;
 
+    protected HttpServletRequest request;
+
+    protected HttpServletResponse response;
+
     protected static class DummyFilterChain implements FilterChain {
 
         protected boolean called;
@@ -104,6 +120,8 @@ public class TestNuxeoCorsCsrfFilter {
         filter = new NuxeoCorsCsrfFilter();
         filter.init(null);
         chain = new DummyFilterChain();
+        request = mock(HttpServletRequest.class);
+        response = mock(HttpServletResponse.class);
     }
 
     @After
@@ -111,117 +129,67 @@ public class TestNuxeoCorsCsrfFilter {
         filter.destroy();
     }
 
-    // test basic extraction methods
-
-    @Test
-    public void testSourceURIOrigin() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(eq(ORIGIN))).thenReturn("http://example.com:8080");
-        assertEquals("http://example.com:8080", filter.getSourceURI(request).toASCIIString());
+    protected void maybeSetupToken() {
+        // overridden in token-checking subclass
     }
 
-    @Test
-    public void testSourceURIOriginList() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(eq(ORIGIN))).thenReturn("http://example.com:8080 http://other.com");
-        assertEquals("http://example.com:8080", filter.getSourceURI(request).toASCIIString());
+    protected Map<String, Object> mockSessionAttributes() {
+        HttpSession session = mock(HttpSession.class);
+        Map<String, Object> attributes = new HashMap<>();
+        mockSessionAttributes(session, attributes);
+        when(request.getSession()).thenReturn(session);
+        when(request.getSession(anyBoolean())).thenReturn(session);
+        return attributes;
     }
 
-    @Test
-    public void testSourceURIOriginNullDefault() {
-        doTestSourceURIOriginNull(false);
-    }
-
-    @Test
-    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-null-origin-forbidden.xml")
-    public void testSourceURIOriginNullForbidden() throws Exception {
-        doTestMismatchPostNullOrigin(false);
-    }
-
-    @Test
-    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-null-origin-allowed.xml")
-    public void testSourceURIOriginNullAllowed() throws Exception {
-        doTestMismatchPostNullOrigin(true);
-    }
-
-    protected void doTestSourceURIOriginNull(boolean allowNullOrigin) {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(eq(ORIGIN))).thenReturn("null");
-        URI uri = filter.getSourceURI(request);
-        if (allowNullOrigin) {
-            assertNull(uri);
-        } else {
-            assertNotNull(uri);
-            assertEquals("privacy-sensitive:///", uri.toASCIIString());
-        }
-    }
-
-    @Test
-    public void testSourceURIReferer() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(eq(REFERER))).thenReturn("http://example.com:8080/nuxeo");
-        assertEquals("http://example.com:8080/nuxeo", filter.getSourceURI(request).toASCIIString());
+    protected void mockSessionAttributes(HttpSession session, Map<String, Object> attributes) {
+        // getAttribute
+        doAnswer(i -> {
+            String key = (String) i.getArguments()[0];
+            return attributes.get(key);
+        }).when(session).getAttribute(anyString());
+        // setAttribute
+        doAnswer(i -> {
+            String key = (String) i.getArguments()[0];
+            Object value = i.getArguments()[1];
+            attributes.put(key, value);
+            return null;
+        }).when(session).setAttribute(anyString(), any());
+        // removeAttribute
+        doAnswer(i -> {
+            String key = (String) i.getArguments()[0];
+            attributes.remove(key);
+            return null;
+        }).when(session).removeAttribute(anyString());
+        // invalidate
+        doAnswer(i -> {
+            attributes.clear();
+            return null;
+        }).when(session).invalidate();
     }
 
     @SuppressWarnings("boxing")
-    @Test
-    public void testTargetURI() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getScheme()).thenReturn("http");
-        when(request.getServerName()).thenReturn("example.com");
-        when(request.getServerPort()).thenReturn(8080);
-        assertEquals("http://example.com:8080/", filter.getTargetURI(request).toASCIIString());
+    protected void mockRequestURI(HttpServletRequest request, String method, String servletPath) {
+        String requestURI = CONTEXT + servletPath;
+        // good enough for tests that don't use encoded/decoded URLs
+        when(request.getMethod()).thenReturn(method);
+        when(request.getScheme()).thenReturn(SCHEME);
+        when(request.getServerName()).thenReturn(HOST);
+        when(request.getServerPort()).thenReturn(PORT);
+        when(request.getRequestURI()).thenReturn(requestURI);
+        when(request.getContextPath()).thenReturn(CONTEXT);
+        when(request.getServletPath()).thenReturn(servletPath);
+        when(request.getPathInfo()).thenReturn(null);
+        when(request.getQueryString()).thenReturn(null);
     }
-
-    @Test
-    public void testTargetURINuxeoVirtualHostHeader() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn("http://example.com:8080/nuxeo/");
-        assertEquals("http://example.com:8080/nuxeo/", filter.getTargetURI(request).toASCIIString());
-    }
-
-    @Test
-    public void testTargetURIForwardedHeaders() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(eq(X_FORWARDED_PROTO))).thenReturn("http");
-        when(request.getHeader(eq(X_FORWARDED_HOST))).thenReturn("example.com");
-        when(request.getHeader(eq(X_FORWARDED_PORT))).thenReturn("80");
-        assertEquals("http://example.com/", filter.getTargetURI(request).toASCIIString());
-    }
-
-    @Test
-    public void testTargetURIForwardedHeadersHttps() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(eq(X_FORWARDED_PROTO))).thenReturn("https");
-        when(request.getHeader(eq(X_FORWARDED_HOST))).thenReturn("example.com");
-        when(request.getHeader(eq(X_FORWARDED_PORT))).thenReturn("443");
-        assertEquals("https://example.com/", filter.getTargetURI(request).toASCIIString());
-    }
-
-    @Test
-    public void testTargetURIForwardedHeadersCustomPort() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(eq(X_FORWARDED_PROTO))).thenReturn("http");
-        when(request.getHeader(eq(X_FORWARDED_HOST))).thenReturn("example.com");
-        when(request.getHeader(eq(X_FORWARDED_PORT))).thenReturn("8080"); // TODO bug in VHH, ignored
-        assertEquals("http://example.com/", filter.getTargetURI(request).toASCIIString());
-    }
-
-    @Test
-    public void testPrivacySensitiveURIDoesNotMatch() {
-        assertFalse(filter.sourceAndTargetMatch(PRIVACY_SENSITIVE, URI.create("http://example.com:8080")));
-    }
-
-    // test full filter
 
     /**
      * User agent sending no Origin nor Referer header.
      */
     @Test
     public void testNoOriginNorReferer() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn("http://example.com:8080/");
+        mockRequestURI(request, "GET", "");
+        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn(URL_BASE);
 
         filter.doFilter(request, response, chain);
         assertTrue(chain.called);
@@ -230,15 +198,10 @@ public class TestNuxeoCorsCsrfFilter {
     /**
      * Browser sending the Origin header, no proxy.
      */
-    @SuppressWarnings("boxing")
     @Test
     public void testMatchOrigin() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getHeader(eq(ORIGIN))).thenReturn("http://example.com:8080");
-        when(request.getScheme()).thenReturn("http");
-        when(request.getServerName()).thenReturn("example.com");
-        when(request.getServerPort()).thenReturn(8080);
+        mockRequestURI(request, "GET", "");
+        when(request.getHeader(eq(ORIGIN))).thenReturn(URL_BASE);
 
         filter.doFilter(request, response, chain);
         assertTrue(chain.called);
@@ -249,10 +212,9 @@ public class TestNuxeoCorsCsrfFilter {
      */
     @Test
     public void testMatchOriginWithVirtualHost() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getHeader(eq(ORIGIN))).thenReturn("http://example.com:8080");
-        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn("http://example.com:8080/");
+        mockRequestURI(request, "GET", "");
+        when(request.getHeader(eq(ORIGIN))).thenReturn(URL_BASE);
+        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn(URL_BASE);
 
         filter.doFilter(request, response, chain);
         assertTrue(chain.called);
@@ -263,8 +225,7 @@ public class TestNuxeoCorsCsrfFilter {
      */
     @Test
     public void testMatchOriginWithForwardedHeaders() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
+        mockRequestURI(request, "GET", "");
         when(request.getHeader(eq(ORIGIN))).thenReturn("https://nicesite.example.com");
         when(request.getHeader(eq(X_FORWARDED_PROTO))).thenReturn("https");
         when(request.getHeader(eq(X_FORWARDED_HOST))).thenReturn("nicesite.example.com");
@@ -279,10 +240,9 @@ public class TestNuxeoCorsCsrfFilter {
      */
     @Test
     public void testMatchReferer() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getHeader(eq(REFERER))).thenReturn("http://example.com:8080/nuxeo/somepage.html");
-        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn("http://example.com:8080/");
+        mockRequestURI(request, "GET", "");
+        when(request.getHeader(eq(REFERER))).thenReturn(URL_BASE + "nuxeo/somepage.html");
+        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn(URL_BASE);
 
         filter.doFilter(request, response, chain);
         assertTrue(chain.called);
@@ -312,11 +272,10 @@ public class TestNuxeoCorsCsrfFilter {
      * Browser sending the Referer header from an external page with a non-state-changing method.
      */
     public void doTestMismatchButNonStateChangingMethod(String method) throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
+        mockRequestURI(request, "GET", "");
         when(request.getMethod()).thenReturn(method);
         when(request.getHeader(eq(REFERER))).thenReturn("http://google.com/");
-        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn("http://example.com:8080/");
+        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn(URL_BASE);
 
         filter.doFilter(request, response, chain);
         assertTrue(chain.called);
@@ -328,12 +287,10 @@ public class TestNuxeoCorsCsrfFilter {
     @Test
     @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-config.xml")
     public void testOriginFromBrowserExtension() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getMethod()).thenReturn("POST");
+        mockRequestURI(request, "POST", "/site/something");
         when(request.getHeader(eq(ORIGIN))).thenReturn("moz-extension://12345678-1234-1234-1234-1234567890ab");
-        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn("http://example.com:8080/");
-        when(request.getRequestURI()).thenReturn("/nuxeo/site/something");
+        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn(URL_BASE);
+        maybeSetupToken();
 
         filter.doFilter(request, response, chain);
         assertTrue(chain.called);
@@ -345,12 +302,10 @@ public class TestNuxeoCorsCsrfFilter {
     @Test
     @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-config.xml")
     public void testMismatchPostButAllowedByCORS() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getMethod()).thenReturn("POST");
+        mockRequestURI(request, "POST", "/site/something");
         when(request.getHeader(eq(ORIGIN))).thenReturn("http://friendly.com");
-        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn("http://example.com:8080/");
-        when(request.getRequestURI()).thenReturn("/nuxeo/site/something");
+        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn(URL_BASE);
+        maybeSetupToken();
 
         filter.doFilter(request, response, chain);
         assertTrue(chain.called);
@@ -363,12 +318,10 @@ public class TestNuxeoCorsCsrfFilter {
     @Test
     @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-cors-config.xml")
     public void testMismatchPostFromBuggyBrowser() throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getMethod()).thenReturn("POST");
+        mockRequestURI(request, "POST", "/site/something");
         when(request.getHeader(eq(REFERER))).thenReturn("http://friendly.com/myapp/login?key=123"); // SSO
-        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn("http://example.com:8080/");
-        when(request.getRequestURI()).thenReturn("/nuxeo/site/something");
+        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn(URL_BASE);
+        maybeSetupToken();
 
         filter.doFilter(request, response, chain);
         assertTrue(chain.called);
@@ -411,12 +364,10 @@ public class TestNuxeoCorsCsrfFilter {
 
     @SuppressWarnings("boxing")
     protected void doTestMismatchPost(String origin, boolean allowNullOrigin) throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getMethod()).thenReturn("POST");
+        mockRequestURI(request, "POST", "/site/something");
         when(request.getHeader(eq(ORIGIN))).thenReturn(origin);
-        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn("http://example.com:8080/");
-        when(request.getRequestURI()).thenReturn("/nuxeo/site/something");
+        when(request.getHeader(eq(NUXEO_VIRTUAL_HOST))).thenReturn(URL_BASE);
+        maybeSetupToken();
         MutableObject<InvocationOnMock> error = new MutableObject<>();
         doAnswer(invocation -> {
             error.setValue(invocation);
@@ -443,8 +394,8 @@ public class TestNuxeoCorsCsrfFilter {
             assertFalse("Expected WARN", events.isEmpty());
             String warn = events.get(events.size() - 1);
             String originInMessage = origin.equals("null") ? "privacy-sensitive:///" : origin;
-            assertEquals("CSRF check failure: source: " + originInMessage
-                    + " does not match target: http://example.com:8080/ and not allowed by CORS config", warn);
+            assertEquals("CSRF check failure: source: " + originInMessage + " does not match target: " + URL_BASE
+                    + " and not allowed by CORS config", warn);
         }
     }
 
