@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ public class TestDownloadService {
         HttpServletResponse response = mock(HttpServletResponse.class);
         ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
-            public void write(int b) throws IOException {
+            public void write(int b) {
                 out.write(b);
             }
         };
@@ -164,7 +164,7 @@ public class TestDownloadService {
         HttpServletResponse resp = mock(HttpServletResponse.class);
         ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
-            public void write(int b) throws IOException {
+            public void write(int b) {
                 out.write(b);
             }
         };
@@ -200,7 +200,7 @@ public class TestDownloadService {
         HttpServletResponse resp = mock(HttpServletResponse.class);
         ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
-            public void write(int b) throws IOException {
+            public void write(int b) {
                 out.write(b);
             }
         };
@@ -233,7 +233,7 @@ public class TestDownloadService {
         HttpServletResponse response = mock(HttpServletResponse.class);
         ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
-            public void write(int b) throws IOException {
+            public void write(int b) {
                 out.write(b);
             }
         };
@@ -290,7 +290,7 @@ public class TestDownloadService {
         HttpServletResponse response = mock(HttpServletResponse.class);
         ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
-            public void write(int b) throws IOException {
+            public void write(int b) {
                 out.write(b);
             }
         };
@@ -334,7 +334,7 @@ public class TestDownloadService {
         HttpServletResponse response = mock(HttpServletResponse.class);
         ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
-            public void write(int b) throws IOException {
+            public void write(int b) {
                 out.write(b);
             }
         };
@@ -432,7 +432,7 @@ public class TestDownloadService {
         HttpServletResponse response = mock(HttpServletResponse.class);
         ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
-            public void write(int b) throws IOException {
+            public void write(int b) {
                 out.write(b);
             }
         };
@@ -496,7 +496,7 @@ public class TestDownloadService {
     }
 
     @Test
-    public void testDownloadUrl() throws IOException {
+    public void testDownloadUrl() {
         // Windows path separators
         String filename = "C:\\My Documents\\foo.txt";
         String url = downloadService.getDownloadUrl("default", "1234", "file:content", filename);
@@ -523,7 +523,7 @@ public class TestDownloadService {
         HttpServletResponse response = mock(HttpServletResponse.class);
         ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
-            public void write(int b) throws IOException {
+            public void write(int b) {
                 out.write(b);
             }
         };
@@ -541,7 +541,7 @@ public class TestDownloadService {
     }
 
     @Test
-    public void testDownloadUrlWithURLSanitization() throws IOException {
+    public void testDownloadUrlWithURLSanitization() {
         String filename = "/home/john/foo.txt;jsessionid=FooBarBaz;otherparam=foobarbaz";
         String url = downloadService.getDownloadUrl("default", "1234", "file:content", filename);
         assertEquals("nxfile/default/1234/file:content/foo.txt", url);
@@ -552,7 +552,7 @@ public class TestDownloadService {
     }
 
     @Test
-    public void testDownloadUrlWithSemiColonInTheFilename() throws IOException {
+    public void testDownloadUrlWithSemiColonInTheFilename() {
         String filename = "/home/john/foo;bar.txt";
         String url = downloadService.getDownloadUrl("default", "1234", "file:content", filename);
         assertEquals("nxfile/default/1234/file:content/foo%3Bbar.txt", url);
@@ -623,7 +623,7 @@ public class TestDownloadService {
         HttpServletResponse resp = mock(HttpServletResponse.class);
         ServletOutputStream sos = new DummyServletOutputStream() {
             @Override
-            public void write(int b) throws IOException {
+            public void write(int b) {
                 out.write(b);
             }
         };

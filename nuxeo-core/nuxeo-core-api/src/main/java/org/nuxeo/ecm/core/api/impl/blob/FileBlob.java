@@ -144,7 +144,6 @@ public class FileBlob extends AbstractBlob implements Serializable {
      * Creates a {@link FileBlob} with an empty temporary file with the given extension.
      *
      * @param ext the temporary file extension
-     * @return a file blob
      * @since 7.2
      */
     public FileBlob(String ext) throws IOException {
