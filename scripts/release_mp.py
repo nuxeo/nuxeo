@@ -157,7 +157,10 @@ class ReleaseMP(object):
             self.mp_config.set(marketplace, "prepared", str(prepared))
             self.repo.save_mp_config(self.mp_config)
             if prepared and not upgrade_only:
-                self.upload(CONNECT_TEST_URL, marketplace, dryrun=dryrun)
+                owner = None
+                if self.mp_config.has_option(marketplace, "owner"):
+                    owner = self.mp_config.get(marketplace, "owner")
+                self.upload(CONNECT_TEST_URL, marketplace, dryrun=dryrun, owner=owner)
         os.chdir(cwd)
 
     def release_branch(self, dryrun=False):
@@ -279,25 +282,30 @@ class ReleaseMP(object):
             self.mp_config.set(marketplace, "performed", str(performed))
             self.repo.save_mp_config(self.mp_config)
             if performed and not upgrade_only:
-                self.upload(CONNECT_PROD_URL, marketplace, dryrun=dryrun)
+                owner = None
+                if self.mp_config.has_option(marketplace, "owner"):
+                    owner = self.mp_config.get(marketplace, "owner")
+                self.upload(CONNECT_PROD_URL, marketplace, dryrun=dryrun, owner=owner)
         os.chdir(cwd)
 
-    def upload(self, url, marketplace, dryrun=False):
+    def upload(self, url, marketplace, dryrun=False, owner=None):
         """ Upload the given Marketplace package and update the config file."""
         uploaded = [url + ":"]
         mp_to_upload = self.mp_config.get(marketplace, "mp_to_upload")
         for pkg in glob.glob(mp_to_upload):
             if os.path.isfile(pkg):
-                retcode = self.upload_file(url, pkg, dryrun=dryrun)
+                retcode = self.upload_file(url, pkg, dryrun=dryrun, owner=owner)
                 if retcode == 0:
                     uploaded.append(os.path.realpath(pkg))
         if len(uploaded) > 1:
             self.mp_config.set(marketplace, "uploaded", " ".join(uploaded))
             self.repo.save_mp_config(self.mp_config)
 
-    def upload_file(self, url, mp_file, dryrun=False):
+    def upload_file(self, url, mp_file, dryrun=False, owner=None):
         """ Upload the given mp_file on the given Connect URL."""
         cmd = "curl -i -n -F package=@%s %s%s" % (mp_file, url, "/site/marketplace/upload?batch=true")
+        if owner:
+            cmd += "&owner=%s" % (owner,)
         return system(cmd, failonerror=False, run=(not dryrun))
 
     def test(self):
@@ -314,7 +322,7 @@ def main():
        %prog clone [-r alias] [-m URL] [-d PATH]
        %prog branch [-r alias] [-m URL] [-d PATH] [--rf package] [--dryrun]
        %prog prepare [-r alias] [-m URL] [-d PATH] [--rf package] [--dryrun]
-       %prog perform [-r alias] [-m URL] [-d PATH] [--rf package] [--dryrun]
+       %prog perform [-r alias] [-m URL] [-d PATH] [-o owner] [--rf package] [--dryrun]
 \nCommands:
        clone: Clone or update Nuxeo Package repositories.
        branch: Create the release branch so that the branch to release is freed for ongoing development. Following \
@@ -347,6 +355,9 @@ Default: '%default'""")
                           default=None, help="""The Nuxeo Packages configuration URL (usually named 'marketplace.ini').
 You can use a local file URL ('file://').\n
 If set to '' (empty string), then it will default to '""" + DEFAULT_MP_CONF_URL + """'. Default: '%default'""")
+        parser.add_option('-o', "--owner", action="store", type="string", dest='owner',
+                          default=None, help="""The Nuxeo Package owner, if the package is private.
+This is the id of the connect client document on Connect. Sample value: 45a78af-7f83-44b2-79e1-f102abf7e435.""")
         parser.add_option('-i', '--interactive', action="store_true", dest='interactive', default=False,
                           help="""Not implemented (TODO NXP-8573). Interactive mode. Default: '%default'""")
         parser.add_option('--rf', '--restart-from', action="store", dest='restart_from', default=None,
