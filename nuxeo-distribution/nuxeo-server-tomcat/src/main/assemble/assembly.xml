@@ -33,9 +33,9 @@
     <antcall target="prepare-tomcat" />
     <artifact:attach file="pom.xml" type="pom" />
     <antcall target="build-nuxeo-server" />
-    <delete dir="${tomcat}" failonerror="false" /> <!-- cleanup -->
-
-    <!-- cleanup -->
+    <!-- cleanups -->
+    <delete dir="${tomcat}" failonerror="false" />
+    <delete dir="${distribution.dir}" failonerror="false" />
     <delete dir="${distribution.sdk.dir}" failonerror="false" />
   </target>
 
