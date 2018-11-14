@@ -39,6 +39,7 @@
                           action="#{routingTaskActions.endTask(task)}"
                           value="#{messages[btn_action.label]}"
                           styleClass="button smallButton"
+                          immediate="#{btn_action.immediate}"
                           onclick="setClickButton('#{btn_action.id}');return true;">
                         </h:commandButton>
                       </span>

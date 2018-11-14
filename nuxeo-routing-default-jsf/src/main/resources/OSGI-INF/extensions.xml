@@ -81,7 +81,7 @@
           <property name="placeholder">label.security.search</property>
           <property name="prefixed">true</property>
           <property name="orderable">true</property>
-          <property name="required">#{request.getParameter('button') == 'start_review'}</property>
+          <property name="required">true</property>
         </properties>
       </widget>
       <widget name="comment" type="textarea">
@@ -105,7 +105,7 @@
           <field>['end_date']</field>
         </fields>
         <properties widgetMode="edit">
-          <property name="required">#{request.getParameter('button') == 'start_review'}</property>
+          <property name="required">true</property>
         </properties>
       </widget>
     </layout>
@@ -199,7 +199,7 @@
           <property name="orderable">true</property>
           <property name="width">70%</property>
           <property name="placeholder">label.security.search</property>
-          <property name="required">#{request.getParameter('button') == 'start_review'}</property>
+          <property name="required">true</property>
         </properties>
       </widget>
       <widget name="validationOrReview" type="selectOneDirectory">
@@ -216,7 +216,7 @@
         <properties widgetMode="edit">
           <property name="localize">true</property>
           <property name="directoryName">WorkflowType</property>
-          <property name="required">#{request.getParameter('button') == 'start_review'}</property>
+          <property name="required">true</property>
         </properties>
         <properties widgetMode="view">
           <property name="directoryName">WorkflowType</property>

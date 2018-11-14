@@ -198,6 +198,7 @@ public class RoutingTaskActionsBean implements Serializable {
         for (Button button : buttons) {
             Action action = new Action(button.getName(), Action.EMPTY_CATEGORIES);
             action.setLabel(button.getLabel());
+            action.setImmediate(!button.getValidate());
             boolean displayAction = true;
             if (StringUtils.isNotEmpty(button.getFilter())) {
                 ActionContext actionContext = actionContextProvider.createActionContext();
