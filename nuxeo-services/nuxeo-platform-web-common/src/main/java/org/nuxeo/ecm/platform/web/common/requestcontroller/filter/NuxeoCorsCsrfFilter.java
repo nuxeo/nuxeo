@@ -20,14 +20,23 @@ package org.nuxeo.ecm.platform.web.common.requestcontroller.filter;
 
 import static com.google.common.net.HttpHeaders.ORIGIN;
 import static com.google.common.net.HttpHeaders.REFERER;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -38,7 +47,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.methods.HttpGet;
@@ -72,6 +84,9 @@ public class NuxeoCorsCsrfFilter implements Filter {
 
     public static final String TRACE = HttpTrace.METHOD_NAME;
 
+    // safe methods according to RFC 7231 4.2.1
+    protected static final Set<String> SAFE_METHODS = new HashSet<>(Arrays.asList(GET, HEAD, OPTIONS, TRACE));
+
     // RFC 6454
     // 6.2 If the origin is not a scheme/host/port triple, then return the string null
     // 7.3 Whenever a user agent issues an HTTP request from a "privacy-sensitive" context,
@@ -93,15 +108,84 @@ public class NuxeoCorsCsrfFilter implements Filter {
      */
     public static final String ALLOW_NULL_ORIGIN_PROP = "nuxeo.cors.allowNullOrigin";
 
+    /** @since 10.3 */
     public static final String ALLOW_NULL_ORIGIN_DEFAULT = "false";
 
+    /**
+     * Configuration property (namespace) for CSRF tokens.
+     *
+     * @since 10.3
+     */
+    public static final String CSRF_TOKEN_NS_PROP = "nuxeo.csrf.token";
+
+    /**
+     * Allows enforcing the use of a CSRF token. Configuration property (under the {@value #CSRF_TOKEN_NS_PROP}
+     * namespace).
+     *
+     * @since 10.3
+     */
+    public static final String CSRF_TOKEN_ENABLED_SUBPROP = "enabled";
+
+    /** @since 10.3 */
+    public static final String CSRF_TOKEN_ENABLED_DEFAULT = "false";
+
+    /**
+     * Allows definition of endpoints for which no CSRF token check is done. Configuration <em>list</em> property (under
+     * the {@value #CSRF_TOKEN_NS_PROP} namespace).
+     *
+     * @since 10.3
+     */
+    public static final String CSRF_TOKEN_SKIP_SUBPROP = "skip";
+
+    /**
+     * Session attribute in which token is stored.
+     *
+     * @since 10.3
+     */
+    public static final String CSRF_TOKEN_ATTRIBUTE = "NuxeoCSRFToken";
+
+    /**
+     * Request header to pass a token, or fetch one.
+     *
+     * @since 10.3
+     */
+    public static final String CSRF_TOKEN_HEADER = "CSRF-Token";
+
+    /**
+     * Pseudo-value to fetch a token.
+     *
+     * @since 10.3
+     */
+    public static final String CSRF_TOKEN_FETCH = "fetch";
+
+    /**
+     * Request parameter to pass a token.
+     *
+     * @since 10.3
+     */
+    public static final String CSRF_TOKEN_PARAM = "csrf-token";
+
+    protected static final Random RANDOM = new SecureRandom();
+
     protected boolean allowNullOrigin;
+
+    protected boolean csrfTokenEnabled;
+
+    protected List<String> csrfTokenSkipPaths;
 
     @Override
     public void init(FilterConfig filterConfig) {
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
         allowNullOrigin = Boolean.parseBoolean(
                 configurationService.getProperty(ALLOW_NULL_ORIGIN_PROP, ALLOW_NULL_ORIGIN_DEFAULT));
+        Map<String, Serializable> csrfTokenConfig = configurationService.getProperties(CSRF_TOKEN_NS_PROP);
+        csrfTokenEnabled = Boolean.parseBoolean(StringUtils.defaultString(
+                (String) csrfTokenConfig.get(CSRF_TOKEN_ENABLED_SUBPROP), CSRF_TOKEN_ENABLED_DEFAULT));
+        csrfTokenSkipPaths = new ArrayList<>();
+        Serializable skipPaths = csrfTokenConfig.get(CSRF_TOKEN_SKIP_SUBPROP);
+        if (skipPaths instanceof String[]) {
+            csrfTokenSkipPaths.addAll(Arrays.asList((String[]) skipPaths));
+        }
     }
 
     @Override
@@ -115,6 +199,10 @@ public class NuxeoCorsCsrfFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
+        if (manageCSRFToken(request, response)) {
+            return;
+        }
+
         RequestControllerManager service = Framework.getService(RequestControllerManager.class);
         CORSFilter corsFilter = service.getCorsFilterForRequest(request);
         CORSConfiguration corsConfig = corsFilter == null ? null : corsFilter.getConfiguration();
@@ -126,7 +214,7 @@ public class NuxeoCorsCsrfFilter implements Filter {
         }
 
         boolean allow;
-        if (GET.equals(method) || HEAD.equals(method) || OPTIONS.equals(method) || TRACE.equals(method)) {
+        if (isSafeMethod(method)) {
             // safe method according to RFC 7231 4.2.1
             log.debug("Safe method: allow");
             allow = true;
@@ -170,6 +258,97 @@ public class NuxeoCorsCsrfFilter implements Filter {
         log.warn(message + ": source: " + sourceURI + " does not match target: " + targetURI
                 + " and not allowed by CORS config");
         response.sendError(HttpServletResponse.SC_FORBIDDEN, message);
+    }
+
+    /**
+     * Check safe method according to RFC 7231 4.2.1.
+     */
+    protected boolean isSafeMethod(String method) {
+        return SAFE_METHODS.contains(method);
+    }
+
+    /**
+     * Manages the CSRF token.
+     * <p>
+     * This method may return a response with token fetch information or with an error if needed, in which case it will
+     * return {@code true}.
+     *
+     * @return {@code true} if the caller doesn't need to do more work (a response has been sent)
+     * @since 10.3
+     */
+    protected boolean manageCSRFToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (!csrfTokenEnabled) {
+            log.debug("No CSRF token check configured");
+            return false; // no check to do
+        }
+
+        String method = request.getMethod();
+        String path = request.getServletPath();
+        if (path == null) {
+            path = "";
+        }
+        String pathInfo = request.getPathInfo();
+        if (pathInfo != null) {
+            path += pathInfo;
+        }
+        String requestToken = request.getHeader(CSRF_TOKEN_HEADER);
+
+        // token fetch request
+        if (GET.equals(method) && path.isEmpty() && CSRF_TOKEN_FETCH.equals(requestToken)) {
+            HttpSession session = request.getSession(); // create if needed
+            String token = (String) session.getAttribute(CSRF_TOKEN_ATTRIBUTE);
+            if (token == null) {
+                token = generateNewToken();
+                session.setAttribute(CSRF_TOKEN_ATTRIBUTE, token);
+            }
+            log.debug("Returning CSRF token fetch");
+            response.setHeader(CSRF_TOKEN_HEADER, token);
+            response.setStatus(SC_OK);
+            return true;
+
+        }
+
+        // do we need to check the token?
+        if (isSafeMethod(method)) {
+            log.debug("No CSRF token check on safe method");
+            return false;
+        }
+
+        // is the endpoint specially configured to skip the token check?
+        if (csrfTokenSkipPaths.contains(path)) {
+            log.debug("No CSRF token check on configured endpoint");
+            return false;
+        }
+
+        // check the token
+        HttpSession session = request.getSession(false);
+        String token;
+        if (session == null || (token = (String) session.getAttribute(CSRF_TOKEN_ATTRIBUTE)) == null) {
+            log.debug("Error, no session or no CSRF token in session");
+            String message = "CSRF check failure";
+            log.warn(message + ": invalid token");
+            response.sendError(SC_FORBIDDEN, message);
+            return true;
+        }
+        if (StringUtils.isEmpty(requestToken)) {
+            // allow request parameter to contain the token too
+            requestToken = request.getParameter(CSRF_TOKEN_PARAM);
+        }
+        if (!token.equals(requestToken)) {
+            log.debug("Error, CSRF token does not match");
+            String message = "CSRF check failure";
+            log.warn(message + ": invalid token");
+            response.sendError(SC_FORBIDDEN, message);
+            return true;
+        }
+
+        // token is ok, proceed
+        log.debug("CSRF token matches");
+        return false;
+    }
+
+    protected String generateNewToken() {
+        return RandomStringUtils.random(40, 0, 0, true, true, null, RANDOM);
     }
 
     /**
