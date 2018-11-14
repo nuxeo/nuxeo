@@ -20,8 +20,6 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -49,7 +47,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.Response.StatusType;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -186,7 +183,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
     protected Response uploadNoTransaction(@Context HttpServletRequest request,
             @PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx)
-                    throws IOException {
+            throws IOException {
         BatchManager bm = Framework.getService(BatchManager.class);
 
         if (!bm.hasBatch(batchId)) {
@@ -248,7 +245,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             addBlob(uploadType, batchId, fileIdx, blob, fileName, mimeType, uploadedSize, chunkCount, uploadChunkIndex,
                     fileSize);
         } else {
-            if (fileName != null) {
+            if (StringUtils.isNotEmpty(fileName)) {
                 fileName = URLDecoder.decode(fileName, "UTF-8");
             }
             try (InputStream is = request.getInputStream()) {
@@ -287,8 +284,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected void addBlob(String uploadType, String batchId, String fileIdx, Blob blob, String fileName,
-            String mimeType, long uploadedSize, int chunkCount, int uploadChunkIndex, long fileSize)
-            throws IOException {
+            String mimeType, long uploadedSize, int chunkCount, int uploadChunkIndex, long fileSize) {
         BatchManager bm = Framework.getService(BatchManager.class);
         String uploadedSizeDisplay = uploadedSize > -1 ? uploadedSize + "b" : "unknown size";
         Batch batch = bm.getBatch(batchId);
@@ -421,7 +417,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     @POST
     @Path("{batchId}/{fileIdx}/complete")
     public Response uploadCompleted(@PathParam(REQUEST_BATCH_ID) String batchId,
-                                    @PathParam(REQUEST_FILE_IDX) String fileIdx, String body) throws IOException {
+            @PathParam(REQUEST_FILE_IDX) String fileIdx, String body) throws IOException {
         BatchManager bm = Framework.getService(BatchManager.class);
         JsonNode jsonNode = new ObjectMapper().readTree(body);
 
@@ -460,9 +456,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
         if (!Boolean.parseBoolean(
                 RequestContext.getActiveContext(request).getRequest().getHeader(BatchManagerConstants.NO_DROP_FLAG))) {
-            RequestContext.getActiveContext(request).addRequestCleanupHandler(req -> {
-                bm.clean(batchId);
-            });
+            RequestContext.getActiveContext(request).addRequestCleanupHandler(req -> bm.clean(batchId));
         }
 
         try {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManagerComponent.DEFAULT_BATCH_HANDLER;
 
@@ -101,13 +100,7 @@ public class BatchUploadFixture extends BaseTest {
     private void itCanUseBatchUpload(boolean noDrop) throws IOException {
 
         // Get batch id, used as a session id
-        String batchId;
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
-            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
-            batchId = node.get("batchId").asText();
-            assertNotNull(batchId);
-        }
+        String batchId = initializeDeprecatedNewBatch();
 
         // Upload a file not in multipart
         String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", "UTF-8");
@@ -238,13 +231,7 @@ public class BatchUploadFixture extends BaseTest {
         Map<String, String> headers;
 
         // Get batch id, used as a session id
-        String batchId;
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
-            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
-            batchId = node.get("batchId").asText();
-            assertNotNull(batchId);
-        }
+        String batchId = initializeDeprecatedNewBatch();
 
         // Upload a file in multipart, first without the X-File-Type header, the second with
         String fileName1 = "No header.txt";
@@ -443,13 +430,7 @@ public class BatchUploadFixture extends BaseTest {
     public void testChunkedUpload() throws IOException {
 
         // Get batch id, used as a session id
-        String batchId;
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
-            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
-            batchId = node.get("batchId").asText();
-            assertNotNull(batchId);
-        }
+        String batchId = initializeDeprecatedNewBatch();
 
         // Upload chunks in desorder
         String fileName = URLEncoder.encode("Fichier accentué.txt", "UTF-8");
@@ -883,13 +864,7 @@ public class BatchUploadFixture extends BaseTest {
     @Test
     public void testRemoveFile() throws IOException {
         // Get batch id, used as a session id
-        String batchId;
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
-            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
-            batchId = node.get("batchId").asText();
-            assertNotNull(batchId);
-        }
+        String batchId = initializeDeprecatedNewBatch();
 
         int numfiles = 5;
 
@@ -973,13 +948,7 @@ public class BatchUploadFixture extends BaseTest {
     @Test
     public void testEmptyFileUpload() throws IOException {
         // Get batch id, used as a session id
-        String batchId;
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
-            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
-            batchId = node.get("batchId").asText();
-            assertNotNull(batchId);
-        }
+        String batchId = initializeDeprecatedNewBatch();
 
         // Upload an empty file not in multipart
         String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", "UTF-8");
@@ -1039,13 +1008,7 @@ public class BatchUploadFixture extends BaseTest {
     @Test
     public void testDefaultProviderAsLegacyFallback() throws Exception {
         // Get batch id, used as a session id
-        String batchId;
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
-            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
-            batchId = node.get("batchId").asText();
-            assertNotNull(batchId);
-        }
+        String batchId = initializeDeprecatedNewBatch();
 
         try (CloseableClientResponse response = getResponse(RequestType.GET, "upload/" + batchId + "/info")) {
             assertEquals(Status.OK.getStatusCode(), response.getStatus());
@@ -1067,13 +1030,7 @@ public class BatchUploadFixture extends BaseTest {
 
     @Test
     public void testConflictOnCompleteUploadError() throws Exception {
-        String batchId;
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/new/dummy")) {
-            assertEquals(Status.OK.getStatusCode(), response.getStatus());
-            JsonNode responseJson = mapper.readTree(response.getEntityInputStream());
-            batchId = responseJson.get("batchId").asText();
-            assertNotNull(batchId);
-        }
+        String batchId = initializeNewBatch();
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/0/complete",
                 "{}")) {
@@ -1083,13 +1040,7 @@ public class BatchUploadFixture extends BaseTest {
 
     @Test
     public void testBatchUploadRemoveFileEntryWithProvider() throws Exception {
-        String batchId;
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/new/dummy")) {
-            assertEquals(Status.OK.getStatusCode(), response.getStatus());
-            JsonNode responseJson = mapper.readTree(response.getEntityInputStream());
-            batchId = responseJson.get("batchId").asText();
-            assertNotNull(batchId);
-        }
+        String batchId = initializeNewBatch();
 
         // Upload a file not in multipart
         String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", "UTF-8");
@@ -1161,13 +1112,7 @@ public class BatchUploadFixture extends BaseTest {
     public void testBatchUploadWithMultivaluedBlobProperty() throws Exception {
 
         // Get batch id, used as a session id
-        String batchId;
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
-            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
-            JsonNode node = mapper.readTree(response.getEntityInputStream());
-            batchId = node.get("batchId").asText();
-            assertNotNull(batchId);
-        }
+        String batchId = initializeDeprecatedNewBatch();
 
         // Upload a file not in multipart
         String fileName1 = URLEncoder.encode("File.txt", "UTF-8");
@@ -1209,9 +1154,29 @@ public class BatchUploadFixture extends BaseTest {
         Blob blob1 = (Blob) doc.getPropertyValue("files:files/0/file");
         assertNotNull(blob1);
         assertEquals("File.txt", blob1.getFilename());
-
-
     }
 
+    /**
+     * Deprecated since 7.10, but it seems we leverage it at several places.
+     */
+    protected String initializeDeprecatedNewBatch() throws IOException {
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload")) {
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            String batchId = node.get("batchId").asText();
+            assertNotNull(batchId);
+            return batchId;
+        }
+    }
+
+    protected String initializeNewBatch() throws IOException {
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/new/dummy")) {
+            assertEquals(Status.OK.getStatusCode(), response.getStatus());
+            JsonNode responseJson = mapper.readTree(response.getEntityInputStream());
+            String batchId = responseJson.get("batchId").asText();
+            assertNotNull(batchId);
+            return batchId;
+        }
+    }
 
 }
