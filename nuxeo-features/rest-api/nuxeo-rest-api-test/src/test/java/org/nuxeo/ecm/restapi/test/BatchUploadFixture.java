@@ -23,12 +23,16 @@ package org.nuxeo.ecm.restapi.test;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManagerComponent.DEFAULT_BATCH_HANDLER;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -37,6 +41,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +51,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.io.NginxConstants;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -1154,6 +1160,71 @@ public class BatchUploadFixture extends BaseTest {
         Blob blob1 = (Blob) doc.getPropertyValue("files:files/0/file");
         assertNotNull(blob1);
         assertEquals("File.txt", blob1.getFilename());
+    }
+
+    @Test
+    public void testBatchUploadWithNginxAccel() throws Exception {
+        Framework.getProperties().put(NginxConstants.X_ACCEL_ENABLED, "true");
+        try {
+            // create a temporary file
+            File txtFile = Framework.createTempFile("nginx-", ".txt");
+            try (FileOutputStream fos = new FileOutputStream(txtFile)) {
+                fos.write("Some content".getBytes(UTF_8));
+                fos.flush();
+            }
+
+            // Get batch id, used as a session id
+            String batchId = initializeDeprecatedNewBatch();
+
+            // Upload a file not in multipart
+            String fileName1 = URLEncoder.encode("File.txt", "UTF-8");
+            String mimeType = "text/plain";
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "text/plain");
+            headers.put("X-Upload-Type", "normal");
+            headers.put("X-File-Name", fileName1);
+            headers.put("X-File-Type", mimeType);
+            headers.put(NginxConstants.X_REQUEST_BODY_FILE_HEADER, txtFile.getAbsolutePath());
+            try (FileInputStream fis = new FileInputStream(txtFile)) {
+                headers.put(NginxConstants.X_CONTENT_MD5_HEADER, DigestUtils.md5Hex(fis));
+            }
+
+            try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/0",
+                    headers)) {
+                assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+                JsonNode node = mapper.readTree(response.getEntityInputStream());
+                assertEquals("true", node.get("uploaded").asText());
+                assertEquals(batchId, node.get("batchId").asText());
+                assertEquals("0", node.get("fileIdx").asText());
+            }
+
+            // attach blob to document
+            String json = "{" + //
+                    "  \"entity-type\":\"document\"," + //
+                    "  \"name\":\"testBatchUploadDoc\"," + //
+                    "  \"type\":\"File\"," + //
+                    "  \"properties\" : {" + //
+                    "    \"file:content\" : {" + //
+                    "      \"upload-batch\": \"" + batchId + "\"," + //
+                    "      \"upload-fileId\": \"0\"" + //
+                    "    }" + //
+                    "  }" + //
+                    "}";
+
+            try (CloseableClientResponse response = getResponse(RequestType.POST, "path/", json)) {
+                assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+            }
+
+            DocumentModel doc = session.getDocument(new PathRef("/testBatchUploadDoc"));
+            Blob blob = (Blob) doc.getPropertyValue("file:content");
+            assertNotNull(blob);
+            assertEquals("File.txt", blob.getFilename());
+            assertEquals("Some content", new String(blob.getByteArray(), UTF_8));
+            assertNotEquals(txtFile.getAbsolutePath(), blob.getFile().getAbsolutePath());
+            assertFalse(txtFile.exists());
+        } finally {
+            Framework.getProperties().remove(NginxConstants.X_ACCEL_ENABLED);
+        }
     }
 
     /**
