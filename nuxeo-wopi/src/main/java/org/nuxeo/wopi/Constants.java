@@ -72,7 +72,13 @@ public class Constants {
 
     public static final String WOPI_BASE_URL_PROPERTY = "nuxeo.wopi.baseURL";
 
+    public static final String WOPI_DISCOVERY_KEY = "wopiDiscovery";
+
+    public static final String WOPI_DISCOVERY_URL_PROPERTY = "nuxeo.wopi.discoveryURL";
+
     public static final String WOPI_JSP = "/wopi.jsp";
+
+    public static final String WOPI_KEY_VALUE_STORE_NAME = "wopi";
 
     public static final String WOPI_SERVLET_PATH = "wopi";
 

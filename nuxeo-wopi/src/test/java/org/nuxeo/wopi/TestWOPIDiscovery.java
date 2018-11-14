@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,9 +54,10 @@ public class TestWOPIDiscovery {
     }
 
     @Test
-    public void testReadDiscovery() {
+    public void testReadDiscovery() throws IOException {
         File discoveryFile = FileUtils.getResourceFileFromContext("test-discovery.xml");
-        WOPIDiscovery discovery = WOPIDiscovery.read(discoveryFile);
+        WOPIDiscovery discovery = WOPIDiscovery.read(
+                org.apache.commons.io.FileUtils.readFileToByteArray(discoveryFile));
         assertNotNull(discovery);
         List<WOPIDiscovery.App> apps = discovery.getNetZone().getApps();
         assertNotNull(apps);

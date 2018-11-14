@@ -116,14 +116,14 @@ import com.sun.jersey.api.client.WebResource;
 @RunWith(FeaturesRunner.class)
 @Features({ WOPIFeature.class, WebEngineFeature.class })
 @Deploy("org.nuxeo.ecm.jwt")
-@Deploy("org.nuxeo.wopi:test-jwt-contrib.xml")
-@Deploy("org.nuxeo.wopi:test-servletcontainer-config.xml")
+@Deploy("org.nuxeo.wopi:OSGI-INF/test-jwt-contrib.xml")
+@Deploy("org.nuxeo.wopi:OSGI-INF/test-webengine-servletcontainer-contrib.xml")
 @ServletContainer(port = 18090)
 public class TestFilesEndpoint {
 
     public static final String BASE_URL = "http://localhost:18090/";
 
-    public static final String WOPI_FILES_BASE_URL = "http://localhost:18090/wopi/files";
+    public static final String WOPI_FILES_BASE_URL = "http://localhost:18090/site/wopi/files";
 
     public static final String CONTENTS_PATH = "contents";
 

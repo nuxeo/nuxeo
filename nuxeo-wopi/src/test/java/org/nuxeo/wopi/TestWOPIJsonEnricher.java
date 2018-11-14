@@ -61,7 +61,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
  *
  * @since 10.3
  */
-@Features(WOPIFeature.class)
+@Features({ WOPIFeature.class, WOPIDiscoveryFeature.class })
 public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
     public TestWOPIJsonEnricher() {

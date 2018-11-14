@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -39,17 +38,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(WOPIFeature.class)
+@Features({ WOPIFeature.class, WOPIDiscoveryFeature.class })
 public class TestWOPIService {
-
-    @Inject
-    protected CoreSession session;
 
     @Inject
     protected WOPIService wopiService;
 
     @Test
-    public void testLoadDiscovery() {
+    public void testDiscoveryLoaded() {
         assertTrue(wopiService.isEnabled());
         WOPIServiceImpl wopiServiceImpl = (WOPIServiceImpl) wopiService;
         assertEquals(3, wopiServiceImpl.extensionAppNames.size());

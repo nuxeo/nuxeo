@@ -19,10 +19,13 @@
 
 package org.nuxeo.wopi;
 
+import static org.nuxeo.wopi.Constants.WOPI_DISCOVERY_KEY;
+import static org.nuxeo.wopi.Constants.WOPI_DISCOVERY_URL_PROPERTY;
+import static org.nuxeo.wopi.Constants.WOPI_KEY_VALUE_STORE_NAME;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,12 +34,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.services.config.ConfigurationService;
@@ -47,10 +56,6 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
 public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
     private static final Logger log = LogManager.getLogger(WOPIServiceImpl.class);
-
-    public static final String WOPI_DIR = "wopi";
-
-    public static final String DISCOVERY_XML = "discovery.xml";
 
     public static final String PLACEHOLDER_IS_LICENSED_USER = "IsLicensedUser";
 
@@ -70,25 +75,66 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
     protected PublicKey oldProofKey;
 
+    protected String discoveryURL;
+
     @Override
     public void start(ComponentContext context) {
-        Path discoveryPath = Paths.get(Environment.getDefault().getData().getAbsolutePath(), WOPI_DIR, DISCOVERY_XML);
-        if (Files.notExists(discoveryPath)) {
-            log.error("Discovery file does not exist, WOPI disabled.");
-            log.debug("Discovery file path: {}", discoveryPath);
+        String wopiDiscoveryURL = Framework.getProperty(WOPI_DISCOVERY_URL_PROPERTY);
+        if (wopiDiscoveryURL == null) {
+            log.warn("No WOPI discovery URL configured: WOPI disabled");
+            log.warn("WOPI can be enabled by configuring the '{}' property", WOPI_DISCOVERY_URL_PROPERTY);
             return;
         }
 
-        WOPIDiscovery discovery = WOPIDiscovery.read(discoveryPath.toFile());
+        discoveryURL = wopiDiscoveryURL;
+        loadDiscovery();
+    }
+
+    protected void loadDiscovery() {
+        KeyValueService service = Framework.getService(KeyValueService.class);
+        KeyValueStore keyValueStore = service.getKeyValueStore(WOPI_KEY_VALUE_STORE_NAME);
+        byte[] discoveryBytes = keyValueStore.get(WOPI_DISCOVERY_KEY);
+        if (discoveryBytes == null) {
+            discoveryBytes = fetchDiscovery();
+        }
+
+        if (discoveryBytes == null) {
+            log.error("Cannot fetch WOPI discovery: WOPI disabled");
+            return;
+        }
+
+        keyValueStore.put(WOPI_DISCOVERY_KEY, discoveryBytes);
+        loadDiscovery(discoveryBytes);
+    }
+
+    protected void loadDiscovery(byte[] discoveryBytes) {
+        WOPIDiscovery discovery = WOPIDiscovery.read(discoveryBytes);
         List<String> supportedAppNames = getSupportedAppNames();
-        discovery.getNetZone().getApps().stream().filter(app -> supportedAppNames.contains(app.getName())).forEach(
-                this::registerApp);
+        discovery.getNetZone()
+                 .getApps()
+                 .stream()
+                 .filter(app -> supportedAppNames.contains(app.getName()))
+                 .forEach(this::registerApp);
 
         WOPIDiscovery.ProofKey pk = discovery.getProofKey();
         proofKey = ProofKeyHelper.getPublicKey(pk.getModulus(), pk.getExponent());
         oldProofKey = ProofKeyHelper.getPublicKey(pk.getOldModulus(), pk.getOldExponent());
         log.debug("Registered proof key: {}", proofKey);
         log.debug("Registered old proof key: {}", oldProofKey);
+    }
+
+    protected byte[] fetchDiscovery() {
+        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+        HttpGet request = new HttpGet(discoveryURL);
+        try (CloseableHttpClient httpClient = httpClientBuilder.build();
+                CloseableHttpResponse response = httpClient.execute(request);
+                InputStream is = response.getEntity().getContent()) {
+            return IOUtils.toByteArray(is);
+        } catch (IOException e) {
+            log.error("Error while fetching WOPI discovery: {}", e::getMessage);
+            log.debug(e, e);
+        }
+        return null;
     }
 
     protected List<String> getSupportedAppNames() {
@@ -104,9 +150,10 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     protected void registerApp(WOPIDiscovery.App app) {
         app.getActions().forEach(action -> {
             extensionAppNames.put(action.getExt(), app.getName());
-            extensionActionURLs.computeIfAbsent(action.getExt(), k -> new HashMap<>()).put(action.getName(),
-                    String.format("%s%s=%s&", action.getUrl().replaceFirst("<.*$", ""), PLACEHOLDER_IS_LICENSED_USER,
-                            PLACEHOLDER_IS_LICENSED_USER_VALUE));
+            extensionActionURLs.computeIfAbsent(action.getExt(), k -> new HashMap<>())
+                               .put(action.getName(),
+                                       String.format("%s%s=%s&", action.getUrl().replaceFirst("<.*$", ""),
+                                               PLACEHOLDER_IS_LICENSED_USER, PLACEHOLDER_IS_LICENSED_USER_VALUE));
         });
     }
 

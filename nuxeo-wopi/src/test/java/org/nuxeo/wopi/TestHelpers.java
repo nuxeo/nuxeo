@@ -55,7 +55,7 @@ import org.nuxeo.wopi.exception.UnauthorizedException;
 @RunWith(FeaturesRunner.class)
 @Features(WOPIFeature.class)
 @Deploy("org.nuxeo.ecm.jwt")
-@Deploy("org.nuxeo.wopi:test-jwt-contrib.xml")
+@Deploy("org.nuxeo.wopi:OSGI-INF/test-jwt-contrib.xml")
 @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/dummy-blob-provider.xml")
 public class TestHelpers {
 

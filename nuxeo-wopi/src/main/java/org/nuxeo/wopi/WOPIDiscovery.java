@@ -19,7 +19,6 @@
 
 package org.nuxeo.wopi;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -62,9 +61,9 @@ public class WOPIDiscovery {
 
     protected static final XmlMapper XML_MAPPER = new XmlMapper();
 
-    public static WOPIDiscovery read(File discoveryFile) {
+    public static WOPIDiscovery read(byte[] discoveryBytes) {
         try {
-            return XML_MAPPER.readValue(discoveryFile, WOPIDiscovery.class);
+            return XML_MAPPER.readValue(discoveryBytes, WOPIDiscovery.class);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
