@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkAdminService;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -95,7 +96,7 @@ public class BulkRunAction {
     protected Map<String, Serializable> parameters = new HashMap<>();
 
     @OperationMethod
-    public Blob run() throws IOException {
+    public BulkStatus run() throws IOException {
 
         if (!admin.getActions().contains(action)) {
             throw new NuxeoException("Action '" + action + "' not found", HttpServletResponse.SC_NOT_FOUND);
@@ -125,6 +126,6 @@ public class BulkRunAction {
             builder.batch(batchSize);
         }
         String commandId = service.submit(builder.build());
-        return Blobs.createJSONBlobFromValue(Collections.singletonMap("commandId", commandId));
+        return service.getStatus(commandId);
     }
 }
