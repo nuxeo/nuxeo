@@ -26,13 +26,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -59,11 +62,16 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.local.LoginStack;
+import org.nuxeo.ecm.core.blob.binary.Binary;
+import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
+import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
+import org.nuxeo.ecm.core.io.NginxConstants;
 import org.nuxeo.ecm.core.io.download.DownloadServiceImpl.Action;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
@@ -77,6 +85,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.core.cache")
 public class TestDownloadService {
+
+    private static final String CONTENT = "this is a file au caf\u00e9";
 
     protected static abstract class DummyServletOutputStream extends ServletOutputStream {
         @Override
@@ -636,6 +646,55 @@ public class TestDownloadService {
 
         assertEquals(expectedResult, out.toString("UTF-8"));
         assertEquals(expectedSize, DummyDownloadListener.getEvents().size());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-default-blob-provider.xml")
+    public void testDownloadWithNginxAccel() throws IOException {
+        Framework.getProperties().put(NginxConstants.X_ACCEL_ENABLED, "true");
+        try {
+            // create a temporary FileBlob
+            DefaultBinaryManager binaryManager = new DefaultBinaryManager();
+            binaryManager.initialize("repo", Collections.emptyMap());
+            Blob source = new FileBlob(new ByteArrayInputStream(CONTENT.getBytes("UTF-8")));
+            Binary binary = binaryManager.getBinary(source);
+            String digest = binary.getDigest();
+            String filename = "cafe.txt";
+            long length = binary.getFile().length();
+            Blob blob = new BinaryBlob(binary, digest, filename, "text/plain", "utf-8", digest, length);
+
+            // mock request response
+            HttpServletRequest req = mock(HttpServletRequest.class);
+            when(req.getHeader(NginxConstants.X_ACCEL_LOCATION_HEADER)).thenReturn("/protected_files");
+            HttpServletResponse resp = mock(HttpServletResponse.class);
+            ServletOutputStream sos = new DummyServletOutputStream() {
+                @Override
+                public void write(int b) {
+                    throw new NuxeoException("Not supposed to write to response");
+                }
+            };
+            PrintWriter printWriter = new PrintWriter(sos);
+            when(resp.getOutputStream()).thenReturn(sos);
+            when(resp.getWriter()).thenReturn(printWriter);
+
+            // download it
+            downloadService.downloadBlob(req, resp, null, null, blob, null, "test");
+
+            // assert headers (mockito wants us to assert all header in same order they were set)
+            verify(resp).setHeader(eq("ETag"), eq('"' + digest + '"'));
+            verify(resp).setHeader(eq("Content-Disposition"), eq("attachment; filename*=UTF-8''cafe.txt"));
+            verify(resp).setHeader(eq("Accept-Ranges"), eq("bytes"));
+            verify(resp).setHeader(eq(NginxConstants.X_ACCEL_REDIRECT_HEADER),
+                    eq("/protected_files/d2/5e/d25ea4f4642073b7f218024d397dbaef"));
+            // assert others interactions
+            verify(resp).setContentType(eq("text/plain"));
+            verify(resp).setCharacterEncoding("utf-8");
+            verify(resp).setContentLengthLong(eq(blob.getLength()));
+            // assert we end the download
+            verifyNoMoreInteractions(resp);
+        } finally {
+            Framework.getProperties().remove(NginxConstants.X_ACCEL_ENABLED);
+        }
     }
 
 }
