@@ -21,6 +21,7 @@
         <filter><![CDATA[]]></filter>
         <name><![CDATA[cancel]]></name>
         <label><![CDATA[wf.serialDocumentReview.cancel]]></label>
+        <validate><![CDATA[false]]></validate>
       </button>
       <button>
         <filter><![CDATA[]]></filter>

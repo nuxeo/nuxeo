@@ -234,7 +234,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
                 escalationRule("rule4", "true", "testchain_stringfield2", false));
         String[] users = { user1.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
-        setButtons(node1, button("btn1", "label-btn1", "filterr"));
+        setButtons(node1, button("btn1", "label-btn1", "filterr", null));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);

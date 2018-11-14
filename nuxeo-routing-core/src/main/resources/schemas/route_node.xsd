@@ -79,6 +79,7 @@
       <xs:element name="name" type="xs:string" />
       <xs:element name="label" type="xs:string" />
       <xs:element name="filter" type="xs:string" />
+      <xs:element name="validate" type="xs:boolean" default="true"/>
     </xs:sequence>
   </xs:complexType>
 

@@ -108,6 +108,8 @@ public interface GraphNode {
 
     String PROP_BTN_FILTER = "filter";
 
+    String PROP_BTN_VALIDATE = "validate";
+
     String PROP_NODE_X_COORDINATE = "rnode:taskX";
 
     String PROP_NODE_Y_COORDINATE = "rnode:taskY";
@@ -379,6 +381,8 @@ public interface GraphNode {
 
         public String filter;
 
+        public Boolean validate;
+
         public MapProperty prop;
 
         public Button(GraphNode source, Property p) {
@@ -387,6 +391,7 @@ public interface GraphNode {
             name = (String) prop.get(PROP_BTN_NAME).getValue();
             label = (String) prop.get(PROP_BTN_LABEL).getValue();
             filter = (String) prop.get(PROP_BTN_FILTER).getValue();
+            validate = prop.getValue(Boolean.class, PROP_BTN_VALIDATE);
         }
 
         @Override
@@ -404,6 +409,10 @@ public interface GraphNode {
 
         public String getFilter() {
             return filter;
+        }
+
+        public Boolean getValidate() {
+            return validate;
         }
     }
 

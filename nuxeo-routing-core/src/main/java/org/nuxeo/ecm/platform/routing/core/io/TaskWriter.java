@@ -192,6 +192,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
                         jg.writeStringField("url", ctx.getBaseUrl() + "api/v1/task/" + item.getDocument().getId() + "/"
                                 + button.getName());
                         jg.writeStringField("label", button.getLabel());
+                        jg.writeBooleanField("validate", button.getValidate());
                         jg.writeEndObject();
                     }
                 }

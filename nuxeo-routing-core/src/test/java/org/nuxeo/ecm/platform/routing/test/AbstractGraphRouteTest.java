@@ -98,11 +98,12 @@ public class AbstractGraphRouteTest {
         node.setPropertyValue(GraphNode.PROP_TRANSITIONS, (Serializable) Arrays.asList(transitions));
     }
 
-    protected Map<String, Serializable> button(String name, String label, String filter) {
+    protected Map<String, Serializable> button(String name, String label, String filter, Boolean validate) {
         Map<String, Serializable> m = new HashMap<String, Serializable>();
         m.put(GraphNode.PROP_BTN_NAME, name);
         m.put(GraphNode.PROP_BTN_LABEL, label);
         m.put(GraphNode.PROP_BTN_FILTER, filter);
+        m.put(GraphNode.PROP_BTN_VALIDATE, validate);
         return m;
     }
 

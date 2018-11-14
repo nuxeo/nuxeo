@@ -450,7 +450,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users = { user1.getName() };
         node2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
-        setButtons(node2, button("btn1", "label-btn1", "filterrr"));
+        setButtons(node2, button("btn1", "label-btn1", "filterrr", null));
         node2 = session.saveDocument(node2);
 
         DocumentModel node3 = createNode(routeDoc, "node3", session);
@@ -463,7 +463,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node3.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users2 = { user2.getName() };
         node3.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users2);
-        setButtons(node1, button("btn2", "label-btn2", "filterrr"));
+        setButtons(node1, button("btn2", "label-btn2", "filterrr", null));
         node3 = session.saveDocument(node3);
 
         DocumentModel node4 = createNode(routeDoc, "node4", session);
@@ -476,7 +476,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node4.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users3 = { user3.getName() };
         node4.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users3);
-        setButtons(node1, button("btn2", "label-btn2", "filterrr"));
+        setButtons(node1, button("btn2", "label-btn2", "filterrr", null));
         node4 = session.saveDocument(node4);
 
         DocumentModel node5 = createNode(routeDoc, "node5", session);
@@ -935,7 +935,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
         String[] users = { user1.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
-        setButtons(node1, button("btn1", "label-btn1", "filterrr"));
+        setButtons(node1, button("btn1", "label-btn1", "filterrr", null));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -1010,7 +1010,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
         String[] users = { user1.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
-        setButtons(node1, button("btn1", "label-btn1", "filterrr"));
+        setButtons(node1, button("btn1", "label-btn1", "filterrr", null));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -1203,7 +1203,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         setTransitions(node1, transition("trans1", "node2", "true", "test_setGlobalVariableToWorkflowInitiator"));
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, new String[] { user2.getName() });
-        setButtons(node1, button("btn1", "label-btn1", "filterrr"));
+        setButtons(node1, button("btn1", "label-btn1", "filterrr", null));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -1682,7 +1682,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // pass 3 assignees to create 3 tasks at this node
         String[] users = { user1.getName(), user2.getName(), user3.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
-        setButtons(node1, button("btn1", "label-btn1", "filterrr"));
+        setButtons(node1, button("btn1", "label-btn1", "filterrr", null));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -1828,7 +1828,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
         String[] users = { user1.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
-        setButtons(node1, button("btn1", "label-btn1", "filterrr"));
+        setButtons(node1, button("btn1", "label-btn1", "filterrr", null));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -1921,7 +1921,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
         String[] users = { user1.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
-        setButtons(node1, button("btn1", "label-btn1", "filterrr"));
+        setButtons(node1, button("btn1", "label-btn1", "filterrr", null));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -2033,7 +2033,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
         String[] users = { user1.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
-        setButtons(node1, button("btn1", "label-btn1", "filterrr"));
+        setButtons(node1, button("btn1", "label-btn1", "filterrr", null));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -2090,6 +2090,19 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             assertFalse(adminSession.hasPermission(user1, docs.get(0).getRef(), "Write"));
             assertFalse(adminSession.hasPermission(user1, docs.get(1).getRef(), "Write"));
         }
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void testDefaultValidateNode() {
+        DocumentModel node = createNode(routeDoc, "node1", session);
+        node.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
+        setButtons(node, button("btn1", "label-btn1", "filterrr", null));
+        node = session.saveDocument(node);
+        GraphNode graphNode = node.getAdapter(GraphNode.class);
+        assertTrue(graphNode.getTaskButtons().get(0).getValidate());
     }
 
 }
