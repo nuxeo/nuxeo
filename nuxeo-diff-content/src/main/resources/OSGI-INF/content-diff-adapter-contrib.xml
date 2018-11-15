@@ -19,4 +19,36 @@
       <pattern>text/xml</pattern>
     </contentDiffer>
   </extension>
+
+  <extension
+    target="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManagerComponent"
+    point="htmlConversionBlacklistedMimeTypes">
+    <mimeTypes>
+      <!-- PDF -->
+      <mimeType>application/pdf</mimeType>
+
+      <!-- Office spreadsheet -->
+      <mimeType>application/vnd.ms-excel</mimeType>
+      <mimeType>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      </mimeType>
+      <mimeType>application/vnd.sun.xml.calc</mimeType>
+      <mimeType>application/vnd.sun.xml.calc.template</mimeType>
+      <mimeType>application/vnd.oasis.opendocument.spreadsheet
+      </mimeType>
+      <mimeType>application/vnd.oasis.opendocument.spreadsheet-template
+      </mimeType>
+
+      <!-- Office presentation -->
+      <mimeType>application/vnd.ms-powerpoint</mimeType>
+      <mimeType>application/vnd.openxmlformats-officedocument.presentationml.presentation
+      </mimeType>
+      <mimeType>application/vnd.sun.xml.impress</mimeType>
+      <mimeType>application/vnd.sun.xml.impress.template</mimeType>
+      <mimeType>application/vnd.oasis.opendocument.presentation
+      </mimeType>
+      <mimeType>application/vnd.oasis.opendocument.presentation-template
+      </mimeType>
+    </mimeTypes>
+  </extension>
+
 </component>

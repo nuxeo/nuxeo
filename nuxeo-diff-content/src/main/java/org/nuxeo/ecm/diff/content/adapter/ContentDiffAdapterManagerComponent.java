@@ -15,7 +15,11 @@
 package org.nuxeo.ecm.diff.content.adapter;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -24,6 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
+import org.nuxeo.ecm.diff.content.MimeTypeDescriptor;
+import org.nuxeo.ecm.diff.content.MimeTypesDescriptor;
 import org.nuxeo.ecm.diff.content.adapter.factories.BlobHolderContentDiffAdapterFactory;
 import org.nuxeo.ecm.diff.content.adapter.factories.FileBasedContentDiffAdapterFactory;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -40,6 +46,11 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
 
     public static final String MIME_TYPE_CONTENT_DIFFER_EP = "mimeTypeContentDiffer";
 
+    /**
+     * @since 10.10
+     */
+    public static final String HTML_CONVERSION_BLACKLISTED_MIME_TYPES_EP = "htmlConversionBlacklistedMimeTypes";
+
     private static final Log log = LogFactory.getLog(ContentDiffAdapterManagerComponent.class);
 
     protected Map<String, ContentDiffAdapterFactory> factoryRegistry = new HashMap<String, ContentDiffAdapterFactory>();
@@ -47,6 +58,8 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
     protected Map<String, MimeTypeContentDiffer> contentDifferFactory = new HashMap<String, MimeTypeContentDiffer>();
 
     protected Map<String, MimeTypeContentDiffer> contentDifferFactoryByName = new HashMap<String, MimeTypeContentDiffer>();
+
+    protected Set<String> htmlConversionBlacklistedMimeTypes = new HashSet<>();
 
     // Component and EP management
 
@@ -76,6 +89,22 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
                 }
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
+            }
+        } else if (HTML_CONVERSION_BLACKLISTED_MIME_TYPES_EP.equals(extensionPoint)) {
+            MimeTypesDescriptor desc = (MimeTypesDescriptor) contribution;
+            if (desc.isOverride()) {
+                // override the whole list
+                htmlConversionBlacklistedMimeTypes = desc.getMimeTypes()
+                                                         .stream()
+                                                         .filter(MimeTypeDescriptor::isEnabled)
+                                                         .map(MimeTypeDescriptor::getName)
+                                                         .collect(Collectors.toSet());
+            } else {
+                desc.getMimeTypes().forEach(mimeType -> {
+                    Consumer<String> consumer = mimeType.isEnabled() ? htmlConversionBlacklistedMimeTypes::add
+                            : htmlConversionBlacklistedMimeTypes::remove;
+                    consumer.accept(mimeType.getName());
+                });
             }
         }
     }
@@ -164,6 +193,11 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
                     "No content differ of type HtmlContentDiffer found for the 'text/html' mime-type. Please check the 'mimeTypeContentDiffer' contributions.");
         }
         return (HtmlContentDiffer) htmlContentDiffer;
+    }
+
+    @Override
+    public Set<String> getHtmlConversionBlacklistedMimeTypes() {
+        return htmlConversionBlacklistedMimeTypes;
     }
 
 }
