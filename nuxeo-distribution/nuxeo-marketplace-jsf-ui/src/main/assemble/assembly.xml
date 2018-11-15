@@ -44,7 +44,7 @@
     <!-- Cleanup -->
     <delete file="${outdir}/nuxeo-nxr-jsf-ui-${maven.project.version}.zip" />
     <delete file="${outdir}/nuxeo-nxr-server-${maven.project.version}.zip" />
-
+    <delete dir="${outdir}/marketplace" failonerror="false" />
   </target>
 
 </project>
