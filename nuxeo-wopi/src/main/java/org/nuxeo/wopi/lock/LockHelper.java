@@ -40,6 +40,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -235,18 +237,10 @@ public class LockHelper {
 
     protected static Map<String, List<DocumentModel>> getExpiredLocks(Session session, String repository) {
         long expirationTime = System.currentTimeMillis() - LOCK_TTL;
-        // TODO: inefficient if there are many locks.
-        // To be refactored to filter directly in the query when NXP-19262 is done.
-        List<DocumentModel> expiredLocks = session.query(
-                Collections.singletonMap(LOCK_DIRECTORY_REPOSITORY, repository))
-                                                  .stream()
-                                                  .filter(entry -> filterExpiredLocks(entry, expirationTime))
-                                                  .collect(Collectors.toList());
+        QueryBuilder queryBuilder = new QueryBuilder().predicate(Predicates.eq(LOCK_DIRECTORY_REPOSITORY, repository))
+                                                      .and(Predicates.lt(LOCK_DIRECTORY_TIMESTAMP, expirationTime));
+        List<DocumentModel> expiredLocks = session.query(queryBuilder, false);
         return Collections.singletonMap(repository, expiredLocks);
-    }
-
-    protected static boolean filterExpiredLocks(DocumentModel entry, long expirationTime) {
-        return expirationTime > (long) entry.getProperty(LOCK_DIRECTORY_SCHEMA_NAME, LOCK_DIRECTORY_TIMESTAMP);
     }
 
     protected static Session openLockDirectorySession() {
