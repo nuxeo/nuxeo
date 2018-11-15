@@ -179,7 +179,20 @@ public final class ContentDiffHelper {
     }
 
     /**
-     * Checks if the HTML conversion content diff is relevant for the specified property.
+     * Checks if the HTML conversion content diff is relevant for the specified property, i.e. if its mime type is not
+     * blacklisted.
+     * <p>
+     * For now, the list of blacklisted mime types for HTML conversion are:
+     * <ul>
+     * <li>PDF</li>
+     * <li>Office spreadsheet mime types</li>
+     * <li>Office presentation mime types</li>
+     * </ul>
+     * This is configurable with the {@code htmlConversionBlacklistedMimeTypes} extension point, see
+     * <a href="https://jira.nuxeo.com/browse/NXP-25208">NXP-25208</a>.
+     *
+     * @see <a href="https://jira.nuxeo.com/browse/NXP-9421">NXP-9421</a>
+     * @see <a href="https://jira.nuxeo.com/browse/NXP-9431">NXP-9431</a>
      */
     public static boolean isDisplayHtmlConversion(Serializable property) {
 
@@ -187,7 +200,9 @@ public final class ContentDiffHelper {
         if (isContentProperty(property)) {
             Blob blob = (Blob) property;
             String mimeType = blob.getMimeType();
-            if (getHtmlConversionBlackListedMimeTypes().contains(mimeType)) {
+            if (Framework.getService(ContentDiffAdapterManager.class)
+                         .getHtmlConversionBlacklistedMimeTypes()
+                         .contains(mimeType)) {
                 return false;
             }
         }
@@ -237,7 +252,9 @@ public final class ContentDiffHelper {
      *
      * @see <a href="https://jira.nuxeo.com/browse/NXP-9421">NXP-9421</a>
      * @see <a href="https://jira.nuxeo.com/browse/NXP-9431">NXP-9431</a>
+     * @deprecated since 10.10
      */
+    @Deprecated
     protected static List<String> getHtmlConversionBlackListedMimeTypes() {
 
         List<String> blackListedMimeTypes = new ArrayList<>();
