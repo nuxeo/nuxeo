@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.picture.magick.utils;
 
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.JPEG_CONVERSATION_FORMAT;
 
+import java.awt.Point;
 import java.io.File;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
@@ -40,6 +41,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ImageResizer extends MagickExecutor {
 
+    /**
+     * @since 10.3
+     */
+    public static final int MAX_JEPG_DIMENSION = 65500;
+
     public static ImageInfo resize(String inputFile, String outputFile, int targetWidth, int targetHeight,
             int targetDepth) throws CommandNotAvailable, CommandException {
         if (targetDepth == -1) {
@@ -56,6 +62,11 @@ public class ImageResizer extends MagickExecutor {
         // hack to manage jpeg default background
         if (outputFile.endsWith(JPEG_CONVERSATION_FORMAT)) {
             commandName = "jpegResizer";
+            Point size = scaleToMax(targetWidth, targetHeight, MAX_JEPG_DIMENSION);
+            if (size != null) {
+                params.addNamedParameter("targetWidth", String.valueOf(size.getX()));
+                params.addNamedParameter("targetHeight", String.valueOf(size.getY()));
+            }
         }
         ExecResult res = cles.execCommand(commandName, params);
         if (!res.isSuccessful()) {
@@ -66,6 +77,20 @@ public class ImageResizer extends MagickExecutor {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Adapts width and height to a max conserving ratio.
+     *
+     * @since 10.3
+     */
+    public static Point scaleToMax(int width, int height, int max) {
+        if (max > 0 && (width > max || height > max)) {
+            float maxSide = Math.max(width, height);
+            float ratio = maxSide / max;
+            return new Point(Math.round(width / ratio), Math.round(height / ratio));
+        }
+        return null;
     }
 
 }
