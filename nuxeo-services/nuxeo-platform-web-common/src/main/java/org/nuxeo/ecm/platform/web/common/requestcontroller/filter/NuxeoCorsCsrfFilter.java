@@ -159,6 +159,13 @@ public class NuxeoCorsCsrfFilter implements Filter {
     public static final String CSRF_TOKEN_FETCH = "fetch";
 
     /**
+     * Pseudo-value to denote an invalid token.
+     *
+     * @since 10.3
+     */
+    public static final String CSRF_TOKEN_INVALID = "invalid";
+
+    /**
      * Request parameter to pass a token.
      *
      * @since 10.3
@@ -327,6 +334,7 @@ public class NuxeoCorsCsrfFilter implements Filter {
             log.debug("Error, no session or no CSRF token in session");
             String message = "CSRF check failure";
             log.warn(message + ": invalid token");
+            response.setHeader(CSRF_TOKEN_HEADER, CSRF_TOKEN_INVALID);
             response.sendError(SC_FORBIDDEN, message);
             return true;
         }
@@ -338,6 +346,7 @@ public class NuxeoCorsCsrfFilter implements Filter {
             log.debug("Error, CSRF token does not match");
             String message = "CSRF check failure";
             log.warn(message + ": invalid token");
+            response.setHeader(CSRF_TOKEN_HEADER, CSRF_TOKEN_INVALID);
             response.sendError(SC_FORBIDDEN, message);
             return true;
         }

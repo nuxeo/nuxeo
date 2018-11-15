@@ -53,6 +53,8 @@ public class TestNuxeoCorsCsrfFilterToken extends TestNuxeoCorsCsrfFilter {
 
     protected static final String CSRF_TOKEN_FETCH = "fetch";
 
+    protected static final String CSRF_TOKEN_INVALID = "invalid";
+
     protected static final String CSRF_TOKEN_PARAM = "csrf-token";
 
     @Override
@@ -143,6 +145,8 @@ public class TestNuxeoCorsCsrfFilterToken extends TestNuxeoCorsCsrfFilter {
         Object[] arguments = error.getValue().getArguments();
         assertEquals(SC_FORBIDDEN, arguments[0]); // 403
         assertEquals("CSRF check failure", arguments[1]);
+        // and a header saying this is due to invalid CSRF token
+        verify(response).setHeader(CSRF_TOKEN_HEADER, CSRF_TOKEN_INVALID);
     }
 
     /**
