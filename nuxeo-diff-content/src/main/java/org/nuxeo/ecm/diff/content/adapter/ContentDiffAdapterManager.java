@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.diff.content.adapter;
 
+import java.util.Set;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
@@ -40,5 +42,12 @@ public interface ContentDiffAdapterManager {
     MimeTypeContentDiffer getContentDifferForName(String name);
 
     HtmlContentDiffer getHtmlContentDiffer() throws ContentDiffException;
+
+    /**
+     * Gets the blacklisted mime types blacklisted for HTML conversion.
+     *
+     * @since 10.10
+     */
+    Set<String> getHtmlConversionBlacklistedMimeTypes();
 
 }
