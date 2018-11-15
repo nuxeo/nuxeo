@@ -8,6 +8,20 @@
       <producer>
         <property name="bootstrap.servers">${kafka.bootstrap.servers}</property>
         <property name="default.replication.factor">${kafka.default.replication.factor}</property>
+<#if "${kafka.sasl.enabled}" == "true">
+        <property name="security.protocol">${kafka.security.protocol}</property>
+        <property name="sasl.mechanism">${kafka.sasl.mechanism}</property>
+        <property name="sasl.jaas.config">${kafka.sasl.jaas.config}</property>
+</#if>
+<#if "${kafka.ssl}" == "true">
+        <property name="security.protocol">SSL</property>
+        <property name="ssl.truststore.type">${kafka.truststore.type}</property>
+        <property name="ssl.truststore.location">${kafka.truststore.path}</property>
+        <property name="ssl.truststore.password">${kafka.truststore.password}</property>
+        <property name="ssl.keystore.type">${kafka.keystore.type}</property>
+        <property name="ssl.keystore.location">${kafka.keystore.path}</property>
+        <property name="ssl.keystore.password">${kafka.keystore.password}</property>
+</#if>
       </producer>
       <consumer>
         <property name="bootstrap.servers">${kafka.bootstrap.servers}</property>
@@ -16,12 +30,40 @@
         <property name="session.timeout.ms">${kafka.session.timeout.ms}</property>
         <property name="heartbeat.interval.ms">${kafka.heartbeat.interval.ms}</property>
         <property name="max.poll.records">${kafka.max.poll.records}</property>
+<#if "${kafka.sasl.enabled}" == "true">
+        <property name="security.protocol">${kafka.security.protocol}</property>
+        <property name="sasl.mechanism">${kafka.sasl.mechanism}</property>
+        <property name="sasl.jaas.config">${kafka.sasl.jaas.config}</property>
+</#if>
+<#if "${kafka.ssl}" == "true">
+        <property name="security.protocol">SSL</property>
+        <property name="ssl.truststore.type">${kafka.truststore.type}</property>
+        <property name="ssl.truststore.location">${kafka.truststore.path}</property>
+        <property name="ssl.truststore.password">${kafka.truststore.password}</property>
+        <property name="ssl.keystore.type">${kafka.keystore.type}</property>
+        <property name="ssl.keystore.location">${kafka.keystore.path}</property>
+        <property name="ssl.keystore.password">${kafka.keystore.password}</property>
+</#if>
       </consumer>
     </kafkaConfig>
     <kafkaConfig name="bulk" topicPrefix="${kafka.topicPrefix}bulk-">
       <producer>
         <property name="bootstrap.servers">${kafka.bootstrap.servers}</property>
         <property name="default.replication.factor">${kafka.default.replication.factor}</property>
+<#if "${kafka.sasl.enabled}" == "true">
+        <property name="security.protocol">${kafka.security.protocol}</property>
+        <property name="sasl.mechanism">${kafka.sasl.mechanism}</property>
+        <property name="sasl.jaas.config">${kafka.sasl.jaas.config}</property>
+</#if>
+<#if "${kafka.ssl}" == "true">
+        <property name="security.protocol">SSL</property>
+        <property name="ssl.truststore.type">${kafka.truststore.type}</property>
+        <property name="ssl.truststore.location">${kafka.truststore.path}</property>
+        <property name="ssl.truststore.password">${kafka.truststore.password}</property>
+        <property name="ssl.keystore.type">${kafka.keystore.type}</property>
+        <property name="ssl.keystore.location">${kafka.keystore.path}</property>
+        <property name="ssl.keystore.password">${kafka.keystore.password}</property>
+</#if>
       </producer>
       <consumer>
         <property name="bootstrap.servers">${kafka.bootstrap.servers}</property>
@@ -30,6 +72,20 @@
         <property name="session.timeout.ms">${kafka.session.timeout.ms}</property>
         <property name="heartbeat.interval.ms">${kafka.heartbeat.interval.ms}</property>
         <property name="max.poll.records">${kafka.max.poll.records}</property>
+<#if "${kafka.sasl.enabled}" == "true">
+        <property name="security.protocol">${kafka.security.protocol}</property>
+        <property name="sasl.mechanism">${kafka.sasl.mechanism}</property>
+        <property name="sasl.jaas.config">${kafka.sasl.jaas.config}</property>
+</#if>
+<#if "${kafka.ssl}" == "true">
+        <property name="security.protocol">SSL</property>
+        <property name="ssl.truststore.type">${kafka.truststore.type}</property>
+        <property name="ssl.truststore.location">${kafka.truststore.path}</property>
+        <property name="ssl.truststore.password">${kafka.truststore.password}</property>
+        <property name="ssl.keystore.type">${kafka.keystore.type}</property>
+        <property name="ssl.keystore.location">${kafka.keystore.path}</property>
+        <property name="ssl.keystore.password">${kafka.keystore.password}</property>
+</#if>
       </consumer>
     </kafkaConfig>
   </extension>
