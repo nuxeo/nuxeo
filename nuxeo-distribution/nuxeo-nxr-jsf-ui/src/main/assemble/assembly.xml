@@ -49,6 +49,9 @@
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip" basedir="${nxr}" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip" type="zip" />
+
+    <!-- cleanups -->
+    <delete dir="${nxr}" failonerror="false" />
   </target>
 
 </project>
