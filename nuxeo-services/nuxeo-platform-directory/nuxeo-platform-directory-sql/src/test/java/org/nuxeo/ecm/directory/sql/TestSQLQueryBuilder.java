@@ -35,6 +35,9 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -48,6 +51,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestSQLQueryBuilder {
 
     protected static final String USER_DIR = "userDirectory";
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected DirectoryService directoryService;
@@ -80,19 +86,77 @@ public class TestSQLQueryBuilder {
                                       .and(Predicates.isnull("username"));
             SQLQueryBuilder builder = new SQLQueryBuilder(getDirectory());
             builder.visitMultiExpression(queryBuilder.predicate());
-            assertEquals("((NOT ((\"username\" = ?) OR (\"username\" = ?)))" //
-                    + " AND (\"intField\" > ?)" //
-                    + " AND (\"booleanField\" <> ?)" //
-                    + " AND (\"intField\" BETWEEN ? AND ?)" //
-                    + " AND (\"firstName\" LIKE ?)" //
-                    + " AND (\"firstName\" NOT LIKE ?)" //
-                    + " AND (LOWER(\"lastName\") LIKE LOWER(?))" //
-                    + " AND (\"dateField\" >= ?)" //
-                    + " AND (\"doubleField\" < ?)" //
-                    + " AND (\"company\" IN (?, ?))" //
-                    + " AND (\"company\" NOT IN (?, ?))" //
-                    + " AND (\"username\" IS NULL ))", //
-                    builder.clause.toString());
+            String expected;
+            StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
+            if (storageConfiguration.isVCSH2()) {
+                expected = "((NOT ((\"username\" = ?) OR (\"username\" = ?)))" //
+                        + " AND (\"intField\" > ?)" //
+                        + " AND (\"booleanField\" <> ?)" //
+                        + " AND (\"intField\" BETWEEN ? AND ?)" //
+                        + " AND (\"firstName\" LIKE ?)" //
+                        + " AND (\"firstName\" NOT LIKE ?)" //
+                        + " AND (LOWER(\"lastName\") LIKE LOWER(?))" //
+                        + " AND (\"dateField\" >= ?)" //
+                        + " AND (\"doubleField\" < ?)" //
+                        + " AND (\"company\" IN (?, ?))" //
+                        + " AND (\"company\" NOT IN (?, ?))" //
+                        + " AND (\"username\" IS NULL ))";
+            } else if (storageConfiguration.isVCSPostgreSQL()) {
+                expected = "((NOT ((\"username\" = ?) OR (\"username\" = ?)))" //
+                        + " AND (\"intField\" > ?)" //
+                        + " AND (\"booleanField\" <> ?)" //
+                        + " AND (\"intField\" BETWEEN ? AND ?)" //
+                        + " AND (\"firstName\" LIKE ?)" //
+                        + " AND (\"firstName\" NOT LIKE ?)" //
+                        + " AND (\"lastName\" ILIKE ?)" //
+                        + " AND (\"dateField\" >= ?)" //
+                        + " AND (\"doubleField\" < ?)" //
+                        + " AND (\"company\" IN (?, ?))" //
+                        + " AND (\"company\" NOT IN (?, ?))" //
+                        + " AND (\"username\" IS NULL ))";
+            } else if (storageConfiguration.isVCSMySQL()) {
+                expected = "((NOT ((`username` = ?) OR (`username` = ?)))" //
+                        + " AND (`intField` > ?)" //
+                        + " AND (`booleanField` <> ?)" //
+                        + " AND (`intField` BETWEEN ? AND ?)" //
+                        + " AND (`firstName` LIKE ?)" //
+                        + " AND (`firstName` NOT LIKE ?)" //
+                        + " AND (LOWER(`lastName`) LIKE LOWER(?))" //
+                        + " AND (`dateField` >= ?)" //
+                        + " AND (`doubleField` < ?)" //
+                        + " AND (`company` IN (?, ?))" //
+                        + " AND (`company` NOT IN (?, ?))" //
+                        + " AND (`username` IS NULL ))";
+            } else if (storageConfiguration.isVCSOracle()) {
+                expected = "((NOT ((\"username\" = ?) OR (\"username\" = ?)))" //
+                        + " AND (\"intField\" > ?)" //
+                        + " AND (\"booleanField\" <> ?)" //
+                        + " AND (\"intField\" BETWEEN ? AND ?)" //
+                        + " AND (\"firstName\" LIKE ? ESCAPE '\\')" //
+                        + " AND (\"firstName\" NOT LIKE ? ESCAPE '\\')" //
+                        + " AND (LOWER(\"lastName\") LIKE LOWER(?) ESCAPE '\\')" //
+                        + " AND (\"dateField\" >= ?)" //
+                        + " AND (\"doubleField\" < ?)" //
+                        + " AND (\"company\" IN (?, ?))" //
+                        + " AND (\"company\" NOT IN (?, ?))" //
+                        + " AND (\"username\" IS NULL ))";
+            } else if (storageConfiguration.isVCSSQLServer()) {
+                expected = "((NOT (([username] = ?) OR ([username] = ?)))" //
+                        + " AND ([intField] > ?)" //
+                        + " AND ([booleanField] <> ?)" //
+                        + " AND ([intField] BETWEEN ? AND ?)" //
+                        + " AND ([firstName] LIKE ? ESCAPE '\\')" //
+                        + " AND ([firstName] NOT LIKE ? ESCAPE '\\')" //
+                        + " AND (LOWER([lastName]) LIKE LOWER(?) ESCAPE '\\')" //
+                        + " AND ([dateField] >= ?)" //
+                        + " AND ([doubleField] < ?)" //
+                        + " AND ([company] IN (?, ?))" //
+                        + " AND ([company] NOT IN (?, ?))" //
+                        + " AND ([username] IS NULL ))";
+            } else {
+                expected = "Unknown VCS backend: " + DatabaseHelper.DATABASE.getClass().getSimpleName();
+            }
+            assertEquals(expected, builder.clause.toString());
             assertEqualsNormalized(Arrays.asList( //
                     "user_1", "Administrator", //
                     Long.valueOf(123), //
