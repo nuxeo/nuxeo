@@ -21,7 +21,6 @@ package org.nuxeo.ecm.automation.core.operations.services.bulk;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +38,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkAdminService;
 import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.io.BulkParameters;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -93,7 +93,7 @@ public class BulkRunAction {
     protected int batchSize;
 
     @Param(name = "parameters", required = false)
-    protected Map<String, Serializable> parameters = new HashMap<>();
+    protected String parametersAsJson;
 
     @OperationMethod
     public BulkStatus run() throws IOException {
@@ -113,7 +113,9 @@ public class BulkRunAction {
                 queryParams != null ? queryParams.toArray(new String[0]) : null);
         query = PageProviderHelper.buildQueryString(provider);
 
-        BulkCommand.Builder builder = new BulkCommand.Builder(action, query).user(userName).params(parameters);
+        Map<String, Serializable> mapParams = BulkParameters.paramsToMap(parametersAsJson);
+        BulkCommand.Builder builder = new BulkCommand.Builder(action, query).user(userName).params(mapParams);
+
         if (repositoryName != null) {
             builder.repository(repositoryName);
         } else {

@@ -61,6 +61,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RepositoryConfig(init = DocumentSetRepositoryInit.class, cleanup = Granularity.CLASS)
 public class TestAutomationBulkAction {
 
+    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     @Inject
     protected CoreSession session;
 
@@ -87,7 +89,7 @@ public class TestAutomationBulkAction {
         bulkActionParam.put("query", nxql);
         bulkActionParam.put("bucketSize", "10");
         bulkActionParam.put("batchSize", "5");
-        bulkActionParam.put("parameters", actionParams);
+        bulkActionParam.put("parameters", OBJECT_MAPPER.writeValueAsString(actionParams));
 
         OperationContext ctx = new OperationContext(session);
         BulkStatus runResult = (BulkStatus) service.run(ctx, BulkRunAction.ID, bulkActionParam);

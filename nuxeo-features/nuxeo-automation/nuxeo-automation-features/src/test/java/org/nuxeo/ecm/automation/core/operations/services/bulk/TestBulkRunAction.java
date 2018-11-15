@@ -68,6 +68,8 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @RepositoryConfig(init = DocumentSetRepositoryInit.class, cleanup = Granularity.CLASS)
 public class TestBulkRunAction {
 
+    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     @Inject
     protected CoreSession session;
 
@@ -104,7 +106,7 @@ public class TestBulkRunAction {
         actionParams.put("dc:title", title);
         actionParams.put("dc:description", description);
         actionParams.put("cpx:complex", complex);
-        params.put("parameters", actionParams);
+        params.put("parameters", OBJECT_MAPPER.writeValueAsString(actionParams));
 
         BulkStatus runResult = (BulkStatus) service.run(ctx, BulkRunAction.ID, params);
 
@@ -149,7 +151,7 @@ public class TestBulkRunAction {
         actionParams.put("dc:title", title);
         actionParams.put("dc:description", description);
         actionParams.put("cpx:complex", complex);
-        params.put("parameters", actionParams);
+        params.put("parameters", OBJECT_MAPPER.writeValueAsString(actionParams));
 
         params.put("providerName", "bulkPP");
         params.put("queryParams", model.getId());
