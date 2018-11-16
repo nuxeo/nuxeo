@@ -90,7 +90,7 @@ public class TestBulkProcessor {
             assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
 
             BulkStatus status = service.getStatus(commandId);
-            assertEquals(commandId, status.getCommandId());
+            assertEquals(commandId, status.getId());
             assertEquals(COMPLETED, status.getState());
             assertEquals(0, status.getTotal());
 
@@ -116,7 +116,7 @@ public class TestBulkProcessor {
         String commandId = service.submit(new BulkCommand.Builder("setProperties", nxql).build());
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
         BulkStatus status = service.getStatus(commandId);
-        assertEquals(commandId, status.getCommandId());
+        assertEquals(commandId, status.getId());
         assertEquals(COMPLETED, status.getState());
         assertEquals(0, status.getTotal());
 
@@ -125,7 +125,7 @@ public class TestBulkProcessor {
         commandId = service.submit(new BulkCommand.Builder("setProperties", nxql).build());
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
         status = service.getStatus(commandId);
-        assertEquals(commandId, status.getCommandId());
+        assertEquals(commandId, status.getId());
         assertEquals(COMPLETED, status.getState());
         assertEquals(0, status.getTotal());
     }
@@ -284,10 +284,10 @@ public class TestBulkProcessor {
 
     protected void logOverlap(String msg, BulkStatus previous, BulkStatus current) {
         log.warn(String.format("Overlap detected in %s:\n- %s\n- %s", msg, previous, current));
-        log.warn(String.format("%s %s %s %s %s %s", previous.getCommandId(), previous.getSubmitTime(),
+        log.warn(String.format("%s %s %s %s %s %s", previous.getId(), previous.getSubmitTime(),
                 previous.getScrollStartTime(), previous.getScrollEndTime(), previous.getProcessingStartTime(),
                 previous.getCompletedTime()));
-        log.warn(String.format("%s %s %s %s %s %s", current.getCommandId(), current.getSubmitTime(),
+        log.warn(String.format("%s %s %s %s %s %s", current.getId(), current.getSubmitTime(),
                 current.getScrollStartTime(), current.getScrollEndTime(), current.getProcessingStartTime(),
                 current.getCompletedTime()));
     }

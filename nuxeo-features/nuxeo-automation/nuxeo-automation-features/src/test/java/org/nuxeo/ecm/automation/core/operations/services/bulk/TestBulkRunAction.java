@@ -35,7 +35,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -112,7 +111,7 @@ public class TestBulkRunAction {
 
         assertNotNull(runResult);
 
-        String commandId = runResult.getCommandId();
+        String commandId = runResult.getId();
 
         boolean waitResult = (boolean) service.run(ctx, BulkWaitForAction.ID, singletonMap("commandId", commandId));
         assertTrue("Bulk action didn't finish", waitResult);
@@ -160,7 +159,7 @@ public class TestBulkRunAction {
 
         assertNotNull(runResult);
 
-        String commandId = runResult.getCommandId();
+        String commandId = runResult.getId();
 
         boolean waitResult = (boolean) service.run(ctx, BulkWaitForAction.ID, singletonMap("commandId", commandId));
         assertTrue("Bulk action didn't finish", waitResult);

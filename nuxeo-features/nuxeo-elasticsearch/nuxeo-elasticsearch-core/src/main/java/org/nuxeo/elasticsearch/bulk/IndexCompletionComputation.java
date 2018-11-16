@@ -63,7 +63,7 @@ public class IndexCompletionComputation extends AbstractComputation {
                 && BulkStatus.State.COMPLETED.equals(status.getState())) {
             logIndexing(status);
             BulkService bulkService = Framework.getService(BulkService.class);
-            BulkCommand command = bulkService.getCommand(status.getCommandId());
+            BulkCommand command = bulkService.getCommand(status.getId());
             refreshIndexIfNeeded(command);
             updateAliasIfNeeded(command);
         }
@@ -95,7 +95,7 @@ public class IndexCompletionComputation extends AbstractComputation {
         double rate = 1000.0 * status.getTotal() / (elapsed);
         log.warn(String.format(
                 "Index command: %s completed: %d docs in %.2fs (wait: %.2fs, scroll: %.2fs) rate: %.2f docs/s",
-                status.getCommandId(), status.getTotal(), elapsed / 1000.0, wait / 1000.0, scroll / 1000.0, rate));
+                status.getId(), status.getTotal(), elapsed / 1000.0, wait / 1000.0, scroll / 1000.0, rate));
     }
 
 }
