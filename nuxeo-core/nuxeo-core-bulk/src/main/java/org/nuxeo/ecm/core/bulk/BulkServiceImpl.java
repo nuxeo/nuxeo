@@ -38,6 +38,7 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.kv.KeyValueStoreProvider;
@@ -115,7 +116,8 @@ public class BulkServiceImpl implements BulkService {
 
         // send command to bulk processor
         LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
-        LogAppender<Record> logAppender = logManager.getAppender(COMMAND_STREAM);
+        LogAppender<Record> logAppender = logManager.getAppender(COMMAND_STREAM,
+                Framework.getService(CodecService.class).getCodec(RECORD_CODEC, Record.class));
         logAppender.append(command.getId(), Record.of(command.getId(), commandAsBytes));
         return command.getId();
     }
