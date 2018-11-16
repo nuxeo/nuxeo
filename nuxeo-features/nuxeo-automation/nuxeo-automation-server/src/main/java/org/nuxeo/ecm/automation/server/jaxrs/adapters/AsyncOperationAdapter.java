@@ -1,9 +1,28 @@
+/*
+ * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     Nelson Silva <nsilva@nuxeo.com>
+ */
 package org.nuxeo.ecm.automation.server.jaxrs.adapters;
 
 import java.io.Serializable;
 import java.net.URI;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -23,45 +42,56 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 import org.nuxeo.ecm.automation.core.util.BlobList;
-import org.nuxeo.ecm.automation.jaxrs.DefaultJsonAdapter;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.jaxrs.OperationResource;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
+import org.nuxeo.ecm.core.api.AsyncService;
+import org.nuxeo.ecm.core.api.AsyncStatus;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.bulk.BulkService;
-import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * @since 10.3
+ */
 @WebAdapter(name = AsyncOperationAdapter.NAME, type = "AsyncOperationAdapter", targetType = "operation")
 @Produces({ MediaType.APPLICATION_JSON })
 public class AsyncOperationAdapter extends DefaultAdapter {
 
     public static final String NAME = "async";
 
-    public static final String STATUS_STORE_NAME = "automation";
+    protected static final String STATUS_STORE_NAME = "automation";
 
-    String TRANSIENT_STORE_PARAM_ERROR = "error";
+    protected String TRANSIENT_STORE_SERVICE = "service";
 
-    String TRANSIENT_STORE_PARAM_OUTPUT = "output";
+    protected String TRANSIENT_STORE_TASK_ID = "taskId";
+
+    protected String TRANSIENT_STORE_ERROR = "error";
+
+    protected String TRANSIENT_STORE_OUTPUT = "output";
+
+    protected String TRANSIENT_STORE_OUTPUT_BLOB = "blob";
 
     @Context
     protected HttpServletRequest request;
@@ -75,9 +105,9 @@ public class AsyncOperationAdapter extends DefaultAdapter {
             if (!srv.accept(op.getId(), op.isChain(), request)) {
                 return ResponseHelper.notFound();
             }
-            String executionId = UUID.randomUUID().toString();
+            final String executionId = UUID.randomUUID().toString();
 
-            // XXX: AsyncContext asyncContext = ctx.getRequest().startAsync();
+            // TODO NXP-26303: use thread pool
             new Thread(() -> {
                 try {
                     op.execute(xreq, new OperationCallback() {
@@ -94,8 +124,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
                         @Override
                         public void onOperationEnter(OperationContext context, OperationType type, InvokableMethod method,
-                                Map<String, Object> parms) {
-                            //
+                                Map<String, Object> params) {
+                            enterMethod(executionId, method);
                         }
 
                         @Override
@@ -116,7 +146,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
             }).run();
 
             String statusURL = String.format("%s/%s/status", ctx.getURL(), executionId);
-            return Response.status(Response.Status.ACCEPTED).location(new URI(statusURL)).build();
+            return Response.status(HttpServletResponse.SC_ACCEPTED).location(new URI(statusURL)).build();
 
         } catch (URISyntaxException cause) {
             String exceptionMessage = "Failed to invoke operation: " + op.getId();
@@ -129,23 +159,24 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         }
     }
 
-
     @GET
     @Path("{executionId}/status")
     public Object status(@PathParam("executionId") String executionId)
             throws IOException, URISyntaxException, MessagingException {
-
-        Serializable output = getOutput(executionId);
-
-        if (!isCompleted(executionId)) {
-            return ResponseHelper.getResponse("RUNNING", request, Response.Status.OK.getStatusCode());
-        }
-
-        if (output instanceof BulkStatus) {
-            return getBulkActionResponse((BulkStatus) output);
-        } else {
+        if (isCompleted(executionId)) {
+            String error = getError(executionId);
+            if (error != null) {
+                throw new NuxeoException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
             String resURL = StringUtils.stripEnd(ctx.getURL(), "/status");
-            return Response.status(Response.Status.SEE_OTHER).location(new URI(resURL)).build();
+            return redirect(resURL);
+        } else {
+            Object result = "RUNNING";
+            if (isAsync(executionId)) {
+                Serializable taskId = getTaskId(executionId);
+                result = getAsyncService(executionId).getStatus(taskId);
+            }
+            return ResponseHelper.getResponse(result, request, HttpServletResponse.SC_OK);
         }
     }
 
@@ -154,14 +185,27 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     public Object result(@PathParam("executionId") String executionId)
             throws IOException, URISyntaxException, MessagingException {
 
-        Serializable output = getOutput(executionId);
-
         if (isCompleted(executionId)) {
-            if (output instanceof BulkStatus) {
-                return getBulkActionResponse((BulkStatus) output);
-            } else {
-                return ResponseHelper.getResponse(output, request, Response.Status.OK.getStatusCode());
+            Object output = getResult(executionId);
+
+            String error = getError(executionId);
+
+            // cleanup after result is accessed
+            cleanup(executionId);
+
+            if (error != null) {
+                throw new NuxeoException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
+
+            // if output has a "url" key assume it's a redirect url
+            if (output instanceof Map) {
+                Object url = ((Map) output).get("url");
+                if (url instanceof String) {
+                    String baseUrl = VirtualHostHelper.getBaseURL(ctx.getRequest());
+                    return redirect(baseUrl + url);
+                }
+            }
+            return ResponseHelper.getResponse(output, request, HttpServletResponse.SC_OK);
         }
 
         throw new WebResourceNotFoundException("Execution with id=" + executionId + " not found");
@@ -170,62 +214,80 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     @DELETE
     @Path("{executionId}")
     public Object abort(@PathParam("executionId") String executionId) throws IOException, MessagingException {
-        Serializable output = getOutput(executionId);
-
-        if (exists(executionId) && isCompleted(executionId)) {
-            if (output instanceof BulkStatus) {
-                BulkStatus status = (BulkStatus) output;
-                String commandId = status.getCommandId();
-                status = Framework.getService(BulkService.class).abort(executionId);
-                if (status.getState() == BulkStatus.State.UNKNOWN) {
-                    throw new WebResourceNotFoundException("Command with id=" + commandId + " doesn't exist");
-                }
-                return status;
+        if (exists(executionId) && !isCompleted(executionId)) {
+            // TODO NXP-26304: support aborting any execution
+            if (isAsync(executionId)) {
+                Serializable taskId = getTaskId(executionId);
+                return getAsyncService(executionId).abort(taskId);
             }
-            return ResponseHelper.getResponse("RUNNING", request, Response.Status.OK.getStatusCode());
+            return ResponseHelper.getResponse("RUNNING", request, HttpServletResponse.SC_OK);
         }
         throw new WebResourceNotFoundException("Execution with id=" + executionId + " has completed");
     }
 
-    /**
-     * @since 10.3
-     */
-    public TransientStore getTransientStore() {
+    protected TransientStore getTransientStore() {
         return Framework.getService(TransientStoreService.class).getStore(STATUS_STORE_NAME);
     }
 
-    public void setError(String executionId, String error) {
-        getTransientStore().putParameter(executionId, TRANSIENT_STORE_PARAM_ERROR, error);
+    protected void enterMethod(String executionId, InvokableMethod method) {
+        Map<String, Serializable> parameters = new HashMap<>();
+        // AsyncService.class is default => not async
+        if (!AsyncService.class.equals(method.getAsyncService())) {
+            parameters.put(TRANSIENT_STORE_SERVICE, method.getAsyncService().getName());
+        }
+        // reset parameters
+        getTransientStore().putParameters(executionId, parameters);
+    }
+
+    protected void setError(String executionId, String error) {
+        getTransientStore().putParameter(executionId, TRANSIENT_STORE_ERROR, error);
+        setCompleted(executionId);
     }
 
     public String getError(String executionId) {
-        return (String) getTransientStore().getParameter(executionId, TRANSIENT_STORE_PARAM_ERROR);
+        return (String) getTransientStore().getParameter(executionId, TRANSIENT_STORE_ERROR);
     }
 
-    public void setOutput(String executionId, Serializable output) {
-        if (output instanceof DocumentModel) {
-            output = detach((DocumentModel) output);
-        } else if (output instanceof DocumentModelList) {
-            output = new DocumentModelListImpl(
-                    ((DocumentModelList) output).stream().map(this::detach).collect(Collectors.toList()));
-        }
-        if (output instanceof Blob) {
-            getTransientStore().putBlobs(executionId, Collections.singletonList((Blob) output));
-        } else if (output instanceof BlobList) {
-            getTransientStore().putBlobs(executionId, (BlobList) output);
+    protected void setOutput(String executionId, Serializable output) {
+        // store only taskId for async tasks
+        if (isAsync(executionId)) {
+            Serializable taskId = output instanceof AsyncStatus ? ((AsyncStatus) output).getId() : output;
+            getTransientStore().putParameter(executionId, TRANSIENT_STORE_TASK_ID, taskId);
         } else {
-            getTransientStore().putParameter(executionId, TRANSIENT_STORE_PARAM_OUTPUT, output);
+            if (output instanceof DocumentModel) {
+                output = detach((DocumentModel) output);
+            } else if (output instanceof DocumentModelList) {
+                output = new DocumentModelListImpl(
+                        ((DocumentModelList) output).stream().map(this::detach).collect(Collectors.toList()));
+            }
+            if (output instanceof Blob) {
+                getTransientStore().putParameter(executionId, TRANSIENT_STORE_OUTPUT_BLOB, true);
+                getTransientStore().putBlobs(executionId, Collections.singletonList((Blob) output));
+            } else if (output instanceof BlobList) {
+                getTransientStore().putParameter(executionId, TRANSIENT_STORE_OUTPUT_BLOB, false);
+                getTransientStore().putBlobs(executionId, (BlobList) output);
+            } else {
+                getTransientStore().putParameter(executionId, TRANSIENT_STORE_OUTPUT, output);
+            }
         }
     }
 
-    public Serializable getOutput(String executionId) {
+    protected Object getResult(String executionId) {
+        if (isAsync(executionId)) {
+            AsyncService service = getAsyncService(executionId);
+            if (service != null) {
+                Serializable taskId = getTransientStore().getParameter(executionId, TRANSIENT_STORE_TASK_ID);
+                return service.getResult(taskId);
+            }
+        }
+
         Object output;
         List<Blob> blobs = getTransientStore().getBlobs(executionId);
         if (CollectionUtils.isNotEmpty(blobs)) {
-            // XXX: handle single blob result better
-            output = blobs.size() == 1 ? blobs.get(0) : new BlobList(blobs);
+            boolean isSingle = (boolean) getTransientStore().getParameter(executionId, TRANSIENT_STORE_OUTPUT_BLOB);
+            output = isSingle ? blobs.get(0) : new BlobList(blobs);
         } else {
-            output = getTransientStore().getParameter(executionId, TRANSIENT_STORE_PARAM_OUTPUT);
+            output = getTransientStore().getParameter(executionId, TRANSIENT_STORE_OUTPUT);
         }
         if (output instanceof DocumentModel) {
             return attach((DocumentModel) output);
@@ -233,7 +295,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
             return new DocumentModelListImpl(
                     ((DocumentModelList) output).stream().map(this::attach).collect(Collectors.toList()));
         }
-        return (Serializable) output;
+        return output;
     }
 
     protected DocumentModel attach(DocumentModel doc) {
@@ -252,31 +314,40 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         return doc;
     }
 
-    public void setCompleted(String executionId) {
+    protected boolean isAsync(String executionId) {
+        return getTransientStore().getParameter(executionId, TRANSIENT_STORE_SERVICE) != null;
+    }
+
+    protected Serializable getTaskId(String executionId) {
+        return getTransientStore().getParameter(executionId, TRANSIENT_STORE_TASK_ID);
+    }
+
+    protected AsyncService getAsyncService(String executionId) {
+        try {
+            String serviceClass = (String) getTransientStore().getParameter(executionId, TRANSIENT_STORE_SERVICE);
+            return (AsyncService) Framework.getService(Class.forName(serviceClass));
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
+    protected void setCompleted(String executionId) {
         getTransientStore().setCompleted(executionId, true);
     }
 
-    public boolean isCompleted(String executionId) {
+    protected boolean isCompleted(String executionId) {
+        if (isAsync(executionId)) {
+            Serializable taskId = getTransientStore().getParameter(executionId, TRANSIENT_STORE_TASK_ID);
+            return getAsyncService(executionId).getStatus(taskId).isCompleted();
+        }
         return getTransientStore().isCompleted(executionId);
     }
 
-    public boolean exists(String executionId) {
+    protected boolean exists(String executionId) {
         return getTransientStore().exists(executionId);
     }
 
-    protected Response getBulkActionResponse(BulkStatus status) throws URISyntaxException {
-        String commandId = status.getCommandId();
-        status = Framework.getService(BulkService.class).getStatus(commandId);
-        if (status.getState() == BulkStatus.State.UNKNOWN) {
-            throw new WebResourceNotFoundException("Command with id=" + commandId + " doesn't exist");
-        }
-        // if status is complete and we have a url in the result
-        if (status.getState() == BulkStatus.State.COMPLETED) {
-            if (status.getResult().containsKey("url")) {
-                URI uri = new URI((String) status.getResult().get("url"));
-                return Response.status(Response.Status.SEE_OTHER).location(uri).build();
-            }
-        }
-        return Response.status(Response.Status.OK).entity(new DefaultJsonAdapter(status)).build();
+    protected void cleanup(String executionId) {
+        getTransientStore().release(executionId);
     }
 }

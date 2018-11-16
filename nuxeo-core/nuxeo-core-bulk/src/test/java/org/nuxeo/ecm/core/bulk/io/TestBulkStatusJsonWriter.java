@@ -66,7 +66,7 @@ public class TestBulkStatusJsonWriter extends AbstractJsonWriterTest.Local<BulkS
 
         JsonAssert json = jsonAssert(status);
         json.has(ENTITY_FIELD_NAME).isEquals(STATUS_ENTITY_TYPE);
-        json.has(STATUS_COMMAND_ID).isEquals(status.getCommandId());
+        json.has(STATUS_COMMAND_ID).isEquals(status.getId());
         json.has(STATUS_STATE).isEquals(status.getState().toString());
         json.has(STATUS_SUBMIT_TIME).isEquals(status.getSubmitTime().toString());
         json.has(STATUS_SCROLL_START_TIME).isEquals(status.getScrollStartTime().toString());

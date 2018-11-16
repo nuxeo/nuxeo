@@ -24,9 +24,11 @@ import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCHEDULED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.UNKNOWN;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -151,16 +153,16 @@ public class BulkServiceImpl implements BulkService {
         byte[] statusAsBytes = BulkCodecs.getStatusCodec().encode(status);
         switch (status.getState()) {
         case ABORTED:
-            kvStore.put(status.getCommandId() + STATUS_SUFFIX, statusAsBytes, ABORTED_TTL_SECONDS);
+            kvStore.put(status.getId() + STATUS_SUFFIX, statusAsBytes, ABORTED_TTL_SECONDS);
             // we remove the command from the kv store, so computation have to handle abort
-            kvStore.put(status.getCommandId() + COMMAND_SUFFIX, (String) null);
+            kvStore.put(status.getId() + COMMAND_SUFFIX, (String) null);
             break;
         case COMPLETED:
-            kvStore.put(status.getCommandId() + STATUS_SUFFIX, statusAsBytes, COMPLETED_TTL_SECONDS);
-            kvStore.setTTL(status.getCommandId() + COMMAND_SUFFIX, COMPLETED_TTL_SECONDS);
+            kvStore.put(status.getId() + STATUS_SUFFIX, statusAsBytes, COMPLETED_TTL_SECONDS);
+            kvStore.setTTL(status.getId() + COMMAND_SUFFIX, COMPLETED_TTL_SECONDS);
             break;
         default:
-            kvStore.put(status.getCommandId() + STATUS_SUFFIX, statusAsBytes);
+            kvStore.put(status.getId() + STATUS_SUFFIX, statusAsBytes);
         }
         return statusAsBytes;
     }
@@ -194,6 +196,11 @@ public class BulkServiceImpl implements BulkService {
         LogAppender<Record> logAppender = logManager.getAppender(STATUS_STREAM);
         logAppender.append(commandId, Record.of(commandId, statusAsBytes));
         return status;
+    }
+
+    @Override
+    public Map<String, Serializable> getResult(String commandId) {
+        return getStatus(commandId).getResult();
     }
 
     /**

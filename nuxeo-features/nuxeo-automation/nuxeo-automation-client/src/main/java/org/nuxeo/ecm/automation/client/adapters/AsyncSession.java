@@ -77,12 +77,17 @@ public class AsyncSession implements Session {
             super(method, url, input);
         }
 
+        @Override
         public Object handleResult(int status, Header[] headers, InputStream stream)
                 throws RemoteException, IOException {
             this.status = status;
             this.headers = headers;
-            this.result = super.handleResult(status, headers, stream);
-            future.complete(this);
+            try {
+                this.result = super.handleResult(status, headers, stream);
+                future.complete(this);
+            } catch (RemoteException e) {
+                future.completeExceptionally(e);
+            }
             return result;
         }
 
@@ -152,6 +157,9 @@ public class AsyncSession implements Session {
                         redirect(redirectUrl).thenApply(result -> resultFuture.complete(result.getResult()));
                     }
                     resultFuture.complete(req.getResult());
+                }).exceptionally(ex -> {
+                    resultFuture.completeExceptionally(ex.getCause());
+                    return null;
                 });
             }, 0, delay, TimeUnit.MILLISECONDS);
 
@@ -227,7 +235,10 @@ public class AsyncSession implements Session {
         }
         try {
             return req.execute().get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (ExecutionException | InterruptedException e) {
+            if (e.getCause() instanceof RemoteException) {
+                throw (RemoteException) e.getCause();
+            }
             throw new IOException(e);
         }
     }

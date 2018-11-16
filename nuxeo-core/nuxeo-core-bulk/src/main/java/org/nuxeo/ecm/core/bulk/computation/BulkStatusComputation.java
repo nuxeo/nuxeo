@@ -66,11 +66,11 @@ public class BulkStatusComputation extends AbstractComputation {
         if (!recordStatus.isDelta()) {
             status = recordStatus;
         } else {
-            status = bulkService.getStatus(recordStatus.getCommandId());
+            status = bulkService.getStatus(recordStatus.getId());
             if (UNKNOWN.equals(status.getState())) {
                 // this requires a manual intervention, the kv store might have been lost
                 log.error("Stopping processing, unknown status for command: {}, offset: {}, record: {}.",
-                        recordStatus.getCommandId(), context.getLastOffset(), record);
+                        recordStatus.getId(), context.getLastOffset(), record);
                 context.askForTermination();
                 return;
             }
@@ -78,7 +78,7 @@ public class BulkStatusComputation extends AbstractComputation {
         }
         byte[] statusAsBytes = bulkService.setStatus(status);
         if (status.getState() == COMPLETED || recordStatus.getState() == ABORTED) {
-            context.produceRecord(OUTPUT_1, status.getCommandId(), statusAsBytes);
+            context.produceRecord(OUTPUT_1, status.getId(), statusAsBytes);
         }
         context.askForCheckpoint();
     }
