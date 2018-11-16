@@ -40,7 +40,9 @@ public class DocumentSetRepositoryInit extends DefaultRepositoryInit {
 
     public static final int SIZE = 3;
 
-    public static final int DOC_BY_LEVEL = SIZE * 2;
+    public static final int DOC_BY_SIZE = 5;
+
+    public static final int DOC_BY_LEVEL = SIZE * DOC_BY_SIZE;
 
     public static final int CREATED_NON_PROXY;
 
@@ -49,14 +51,14 @@ public class DocumentSetRepositoryInit extends DefaultRepositoryInit {
     public static final int CREATED_TOTAL;
 
     static {
-        // with SIZE = 3, 9 + 27 + 81 = 117 documents are created
+        // with SIZE = 3 AND DOC_BY_SIZE = 5, 195 documents are created
         int total = 0;
         for (int i = 1; i <= SIZE; i++) {
-            total += 3 * Math.pow(SIZE, i);
+            total += DOC_BY_SIZE * Math.pow(SIZE, i);
         }
         CREATED_TOTAL = total;
-        CREATED_PROXY = total / 3;
-        CREATED_NON_PROXY = total / 3 * 2;
+        CREATED_PROXY = total / DOC_BY_SIZE;
+        CREATED_NON_PROXY = total / DOC_BY_SIZE * (DOC_BY_SIZE - 1);
     }
 
     @Override
@@ -76,6 +78,8 @@ public class DocumentSetRepositoryInit extends DefaultRepositoryInit {
     private void createChildren(CoreSession s, DocumentModel p, int depth) {
         if (depth > 0) {
             for (int i = 0; i < SIZE; i++) {
+                s.createDocument(s.createDocumentModel(p.getPathAsString(), p.getName() + "file" + i, "File"));
+                s.createDocument(s.createDocumentModel(p.getPathAsString(), p.getName() + "note" + i, "Note"));
                 DocumentModel child = s.createDocumentModel(p.getPathAsString(), p.getName() + "doc" + i, "ComplexDoc");
                 child.setProperty("dublincore", "modified", new Date());
                 child = s.createDocument(child);
