@@ -22,30 +22,45 @@ limitations under the License.
 -->
 <dom-module id="nuxeo-easyshare-share-link">
   <template>
-    <style include="nuxeo-action-button-styles"></style>
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      .heading {
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        @apply --layout-justified;
+      }
+    </style>
     <nuxeo-connection id="nxcon"></nuxeo-connection>
 
     <template is="dom-if" if="[[_isAvailable(document)]]">
       <div class="action" on-tap="_toggleDialog">
-        <paper-icon-button icon="[[icon]]" noink></paper-icon-button>
+        <paper-icon-button id="shareBtn" icon="[[icon]]" noink></paper-icon-button>
         <span class="label" hidden$="[[!showLabel]]">[[i18n('shareButton.tooltip')]]</span>
       </div>
-      <paper-tooltip>[[i18n('shareButton.tooltip')]]</paper-tooltip>
+      <nuxeo-tooltip for="shareBtn">[[i18n('shareButton.tooltip')]]</nuxeo-tooltip>
     </template>
 
     <nuxeo-dialog id="dialog" with-backdrop>
-      <h2>[[i18n('shareButton.dialog.heading')]]</h2>
-      <paper-input id="permalink" label="[[i18n('easyshare.copy.label', document.properties.dc:title)]]"
+      <div class="heading">
+        <h2>[[i18n('shareButton.dialog.heading')]]</h2>
+      </div>
+      <nuxeo-input id="permalink"
+                   label="[[i18n('easyshare.copy.label', document.properties.dc:title)]]"
                    value="[[_buildPermalink(document)]]"
                    autofocus
                    readonly>
-      </paper-input>
-      <template is="dom-if" if="[[_isEasyshare(document)]]">
-        <paper-input id="easyshareLink" label="[[i18n('easysharefolder.share', document.properties.dc:title)]]"
-                 value="[[_buildEasysharelink(document)]]"
-                 autofocus readonly>
+      </nuxeo-input>
 
-        </paper-input>
+      <template is="dom-if" if="[[_isEasyshare(document)]]">
+        <nuxeo-input id="easyshareLink"
+                     label="[[i18n('easysharefolder.share', document.properties.dc:title)]]"
+                     value="[[_buildEasysharelink(document)]]"
+                     autofocus
+                     readonly>
+        </nuxeo-input>
       </template>
       <div class="buttons">
         <paper-button dialog-dismiss>[[i18n('shareButton.dialog.close')]]</paper-button>
