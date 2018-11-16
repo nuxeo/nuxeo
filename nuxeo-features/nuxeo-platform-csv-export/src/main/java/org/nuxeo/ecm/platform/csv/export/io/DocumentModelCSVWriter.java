@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVHelper.getList;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -34,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter;
 import org.nuxeo.ecm.core.io.marshallers.csv.OutputStreamWithCSVWriter;
 import org.nuxeo.ecm.core.io.registry.Writer;
@@ -96,7 +96,7 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
         printer.print(doc.isVersion());
         printer.print(isProxy);
         printer.print(isProxy ? doc.getSourceId() : null);
-        printer.print((isVersion || isProxy) ? doc.getVersionSeriesId() : null);
+        printer.print(isVersion || isProxy ? doc.getVersionSeriesId() : null);
         printer.print(doc.getChangeToken());
         printer.print(doc.getRef() != null && doc.isTrashed());
         printer.print(doc.getTitle());
@@ -134,7 +134,12 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
 
     protected void writeProperty(DocumentModel entity, String xpath, CSVPrinter printer) throws IOException {
         Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, TEXT_CSV_TYPE);
-        Property property = entity.getProperty(xpath);
+        Property property = null;
+        try {
+            property = entity.getProperty(xpath);
+        } catch (PropertyNotFoundException e) {
+            // ignore
+        }
         propertyWriter.write(property, Property.class, Property.class, TEXT_CSV_TYPE,
                 new OutputStreamWithCSVWriter(printer));
     }

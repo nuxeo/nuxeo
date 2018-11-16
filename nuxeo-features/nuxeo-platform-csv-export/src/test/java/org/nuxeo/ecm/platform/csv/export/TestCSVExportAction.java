@@ -27,8 +27,8 @@ import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.core.bulk.action.computation.SortBlob.SORT_PARAMETER;
 import static org.nuxeo.ecm.core.bulk.action.computation.ZipBlob.ZIP_PARAMETER;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
-import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVHelper.SYSTEM_PROPERTIES_HEADER_FIELDS;
 import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.DOC_BY_LEVEL;
+import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVHelper.SYSTEM_PROPERTIES_HEADER_FIELDS;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,7 +53,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.ZipUtils;
@@ -64,8 +63,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
-import org.nuxeo.ecm.platform.csv.export.action.CSVExportAction;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand.Builder;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -73,6 +72,7 @@ import org.nuxeo.ecm.core.test.DocumentSetRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
+import org.nuxeo.ecm.platform.csv.export.action.CSVExportAction;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -113,13 +113,12 @@ public class TestCSVExportAction {
 
     @Test
     public void testSimple() throws Exception {
-        BulkCommand command = createCommand();
-        testCsvExport(command);
+        testCsvExport(createBuilder().build());
     }
 
     @Test
     public void testSimpleWithMultipleBuckets() throws Exception {
-        BulkCommand command = createCommand();
+        BulkCommand command = createBuilder().build();
         command.setBucketSize(1);
         command.setBatchSize(1);
         testCsvExport(command);
@@ -127,17 +126,15 @@ public class TestCSVExportAction {
 
     @Test
     public void testSimpleWithFileUnsorted() throws Exception {
-        BulkCommand command = createCommand(false, false);
-        testCsvExport(command);
+        testCsvExport(createBuilder(false, false).build());
     }
 
     @Test
     public void testSimpleWithFileZipped() throws Exception {
-        BulkCommand command = createCommand(false, true);
-        testCsvExport(command);
+        testCsvExport(createBuilder(false, true).build());
     }
 
-    public void testCsvExport(BulkCommand command) throws Exception {
+    protected void testCsvExport(BulkCommand command) throws Exception {
         bulkService.submit(command);
         assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
 
@@ -195,7 +192,10 @@ public class TestCSVExportAction {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        BulkCommand command = createCommandWithParams();
+        BulkCommand command = createBuilder().param("schemas", ImmutableList.of("dublincore"))
+                                             .param("xpaths", ImmutableList.of("cpx:complex/foo"))
+                                             .param("lang", "fr")
+                                             .build();
         bulkService.submit(command);
         assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
 
@@ -234,8 +234,8 @@ public class TestCSVExportAction {
 
     @Test
     public void testMulti() throws Exception {
-        BulkCommand command1 = createCommand();
-        BulkCommand command2 = createCommand();
+        BulkCommand command1 = createBuilder().build();
+        BulkCommand command2 = createBuilder().build();
         bulkService.submit(command1);
         bulkService.submit(command2);
 
@@ -261,7 +261,7 @@ public class TestCSVExportAction {
     @Test
     public void testDownloadCSV() throws Exception {
 
-        BulkCommand command = createCommand();
+        BulkCommand command = createBuilder().build();
         bulkService.submit(command);
         assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
 
@@ -297,35 +297,21 @@ public class TestCSVExportAction {
 
     }
 
-    private HashCode hash(File file) throws IOException {
+    protected HashCode hash(File file) throws IOException {
         return com.google.common.io.Files.asByteSource(file).hash(Hashing.sha256());
     }
 
-    protected BulkCommand createCommand() {
-        return createCommand(true, false);
-    }
-
-    protected BulkCommand createCommand(boolean sorted, boolean zipped) {
+    protected Builder createBuilder(boolean sorted, boolean zipped) {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        String nxql = String.format("SELECT * from ComplexDoc where ecm:parentId='%s'", model.getId());
+        String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
         return new BulkCommand.Builder(CSVExportAction.ACTION_NAME, nxql).repository(session.getRepositoryName())
                                                                          .user(session.getPrincipal().getName())
                                                                          .param(SORT_PARAMETER, sorted)
-                                                                         .param(ZIP_PARAMETER, zipped)
-                                                                         .build();
+                                                                         .param(ZIP_PARAMETER, zipped);
     }
 
-    protected BulkCommand createCommandWithParams() {
-        DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        String nxql = String.format("SELECT * from ComplexDoc where ecm:parentId='%s'", model.getId());
-        return new BulkCommand.Builder(CSVExportAction.ACTION_NAME, nxql).repository(session.getRepositoryName())
-                                                                         .user(session.getPrincipal().getName())
-                                                                         .param("schemas",
-                                                                                 ImmutableList.of("dublincore"))
-                                                                         .param("xpaths",
-                                                                                 ImmutableList.of("cpx:complex/foo"))
-                                                                         .param("lang", "fr")
-                                                                         .build();
+    protected Builder createBuilder() {
+        return createBuilder(true, false);
     }
 
     protected Blob getBlob(String commandId) {
