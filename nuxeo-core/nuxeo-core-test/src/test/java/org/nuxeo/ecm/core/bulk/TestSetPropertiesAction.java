@@ -107,7 +107,7 @@ public class TestSetPropertiesAction {
 
         List<BulkStatus> statuses = service.getStatuses(username);
         assertEquals(1, statuses.size() - oldSize);
-        assertEquals(status.getCommandId(), statuses.get(statuses.size() - 1).getCommandId());
+        assertEquals(status.getId(), statuses.get(statuses.size() - 1).getId());
 
         List<BulkStatus> emptyStatuses = service.getStatuses("toto");
         assertEquals(0, emptyStatuses.size());
@@ -159,7 +159,7 @@ public class TestSetPropertiesAction {
 
         List<BulkStatus> statuses = service.getStatuses(session.getPrincipal().getName());
         assertEquals(1, statuses.size() - oldSize);
-        assertEquals(status.getCommandId(), statuses.get(statuses.size() - 1).getCommandId());
+        assertEquals(status.getId(), statuses.get(statuses.size() - 1).getId());
 
         // docs not in error are still written though
         txFeature.nextTransaction();

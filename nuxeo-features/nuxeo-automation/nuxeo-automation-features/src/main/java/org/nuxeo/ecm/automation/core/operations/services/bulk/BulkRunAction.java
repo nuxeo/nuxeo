@@ -95,7 +95,7 @@ public class BulkRunAction {
     @Param(name = "parameters", required = false)
     protected String parametersAsJson;
 
-    @OperationMethod
+    @OperationMethod(asyncService = BulkService.class)
     public BulkStatus run() throws IOException {
 
         if (!admin.getActions().contains(action)) {

@@ -30,6 +30,7 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.core.api.AsyncService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -63,6 +64,8 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
 
     protected int priority;
 
+    protected Class<? extends AsyncService> asyncService;
+
     public InvokableMethod(OperationType op, Method method, OperationMethod anno) {
         produce = method.getReturnType();
         Class<?>[] p = method.getParameterTypes();
@@ -81,6 +84,7 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
             priority += USER_PRIORITY;
         }
         consume = p.length == 0 ? Void.TYPE : p[0];
+        asyncService = anno.asyncService();
     }
 
     public InvokableMethod(OperationType op, Method method) {
@@ -238,5 +242,9 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
 
     public Class<?> getConsume() {
         return consume;
+    }
+
+    public Class<? extends AsyncService> getAsyncService() {
+        return asyncService;
     }
 }

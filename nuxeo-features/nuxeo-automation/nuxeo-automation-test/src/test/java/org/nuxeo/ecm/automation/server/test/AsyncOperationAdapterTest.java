@@ -81,7 +81,7 @@ public class AsyncOperationAdapterTest {
     protected AsyncSession async;
 
     @Inject
-    protected TransactionalFeature txFeature;
+    public TransactionalFeature txFeature;
 
     @Test
     public void testAsyncOperation() throws Exception {

@@ -24,6 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.nuxeo.ecm.automation.OutputCollector;
+import org.nuxeo.ecm.core.api.AsyncService;
+import org.nuxeo.ecm.core.bulk.BulkService;
 
 /**
  * To be used to mark methods provided by an operation. A method must have at most one argument which is the operation
@@ -76,4 +78,7 @@ public @interface OperationMethod {
 
     int priority() default 0;
 
+    boolean async() default false;
+
+    Class<? extends AsyncService> asyncService() default AsyncService.class;
 }

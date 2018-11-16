@@ -18,9 +18,12 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
+import org.nuxeo.ecm.core.api.AsyncService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 
@@ -33,7 +36,7 @@ import org.nuxeo.ecm.core.bulk.message.BulkStatus;
  *
  * @since 10.2
  */
-public interface BulkService {
+public interface BulkService extends AsyncService<String, BulkStatus, Map<String, Serializable>> {
 
     /**
      * Submits a {@link BulkCommand} that will be processed asynchronously.
@@ -44,24 +47,9 @@ public interface BulkService {
     String submit(BulkCommand command);
 
     /**
-     * Returns the status of a command.
-     * <p>
-     * If the command is not found it will return a status with an {@link BulkStatus.State#UNKNOWN} state.
-     */
-    BulkStatus getStatus(String commandId);
-
-    /**
      * Returns the command or null if the command is not found or aborted.
      */
     BulkCommand getCommand(String commandId);
-
-    /**
-     * Aborts a scheduled or running command. All computations related to this command will be skipped. Returns the
-     * updated status of the command.
-     *
-     * @since 10.3
-     */
-    BulkStatus abort(String commandId);
 
     /**
      * Waits for completion of given bulk command.

@@ -31,6 +31,7 @@ import org.apache.avro.reflect.Nullable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.nuxeo.ecm.core.api.AsyncStatus;
 import org.nuxeo.ecm.core.bulk.io.InstantAsLongEncoding;
 
 /**
@@ -38,7 +39,7 @@ import org.nuxeo.ecm.core.bulk.io.InstantAsLongEncoding;
  *
  * @since 10.2
  */
-public class BulkStatus implements Serializable {
+public class BulkStatus implements AsyncStatus<String> {
 
     private static final long serialVersionUID = 20181021L;
 
@@ -122,7 +123,7 @@ public class BulkStatus implements Serializable {
      */
     public static BulkStatus deltaOf(String commandId) {
         BulkStatus ret = new BulkStatus();
-        ret.setCommandId(commandId);
+        ret.setId(commandId);
         ret.delta = true;
         return ret;
     }
@@ -132,7 +133,7 @@ public class BulkStatus implements Serializable {
      */
     public static BulkStatus unknownOf(String commandId) {
         BulkStatus ret = new BulkStatus();
-        ret.setCommandId(commandId);
+        ret.setId(commandId);
         ret.delta = true;
         ret.setState(State.UNKNOWN);
         return ret;
@@ -148,7 +149,7 @@ public class BulkStatus implements Serializable {
             throw new IllegalArgumentException(
                     String.format("Cannot merge an a full status: %s with %s", this, update));
         }
-        if (!getCommandId().equals(update.getCommandId())) {
+        if (!getId().equals(update.getId())) {
             throw new IllegalArgumentException(
                     String.format("Cannot merge different command: %s with %s", this, update));
         }
@@ -208,14 +209,12 @@ public class BulkStatus implements Serializable {
         }
     }
 
-    /**
-     * Gets the command identifier.
-     */
-    public String getCommandId() {
+    @Override
+    public String getId() {
         return commandId;
     }
 
-    public void setCommandId(String id) {
+    public void setId(String id) {
         this.commandId = id;
     }
 
@@ -294,6 +293,11 @@ public class BulkStatus implements Serializable {
 
     public void setCompletedTime(Instant completedTime) {
         this.completedTime = completedTime;
+    }
+
+    @Override
+    public boolean isCompleted() {
+        return getState() == State.COMPLETED;
     }
 
     /**

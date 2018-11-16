@@ -62,7 +62,7 @@ public class BulkActionFrameworkObject extends DefaultObject {
     protected void checkStatus(BulkStatus status) {
         if (status.getState() == State.UNKNOWN || !getContext().getPrincipal().isAdministrator()
                 && !getContext().getPrincipal().getName().equals(status.getUsername())) {
-            throw new WebResourceNotFoundException("Bulk command with id=" + status.getCommandId() + " doesn't exist");
+            throw new WebResourceNotFoundException("Bulk command with id=" + status.getId() + " doesn't exist");
         }
     }
 }
