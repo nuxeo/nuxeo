@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
@@ -84,7 +83,7 @@ public class TestAutomationBulkAction {
 
         // param for the automation BulkRunAction operation
         Map<String, Serializable> bulkActionParam = new HashMap<>();
-        String nxql = "SELECT * FROM Document";
+        String nxql = "SELECT * FROM ComplexDoc";
         bulkActionParam.put("action", AutomationBulkAction.ACTION_NAME);
         bulkActionParam.put("query", nxql);
         bulkActionParam.put("bucketSize", "10");

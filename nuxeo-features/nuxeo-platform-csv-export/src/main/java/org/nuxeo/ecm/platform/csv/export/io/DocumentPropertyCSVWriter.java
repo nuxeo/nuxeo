@@ -59,24 +59,26 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
     }
 
     @Override
-    protected void write(Property entity, CSVPrinter printer) throws IOException {
-        if (entity.isScalar()) {
-            writeScalarProperty(entity, printer);
-        } else if (entity.isList()) {
-            writeListProperty(entity, printer);
+    protected void write(Property property, CSVPrinter printer) throws IOException {
+        if (property == null) {
+            printer.print(null);
+        } else if (property.isScalar()) {
+            writeScalarProperty(property, printer);
+        } else if (property.isList()) {
+            writeListProperty(property, printer);
         } else {
-            writeUnsupported(entity.getType(), printer);
+            writeUnsupported(property.getType(), printer);
         }
     }
 
     @Override
-    protected void writeHeader(Property entity, CSVPrinter printer) throws IOException {
-        printer.printRecord(entity.getXPath());
+    protected void writeHeader(Property property, CSVPrinter printer) throws IOException {
+        printer.printRecord(property.getXPath());
     }
 
-    protected void writeScalarProperty(Property entity, CSVPrinter printer) throws IOException {
-        Object value = entity.getValue();
-        Type type = entity.getType();
+    protected void writeScalarProperty(Property property, CSVPrinter printer) throws IOException {
+        Object value = property.getValue();
+        Type type = property.getType();
         if (type instanceof BinaryType) {
             writeUnsupported(type, printer);
         } else {
@@ -106,10 +108,10 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
         }
     }
 
-    protected void writeListProperty(Property entity, CSVPrinter printer) throws IOException {
-        ListType type = (ListType) entity.getType();
-        if (entity instanceof ArrayProperty) {
-            Object[] array = (Object[]) entity.getValue();
+    protected void writeListProperty(Property property, CSVPrinter printer) throws IOException {
+        ListType type = (ListType) property.getType();
+        if (property instanceof ArrayProperty) {
+            Object[] array = (Object[]) property.getValue();
             if (array == null) {
                 printer.print(null);
                 return;
