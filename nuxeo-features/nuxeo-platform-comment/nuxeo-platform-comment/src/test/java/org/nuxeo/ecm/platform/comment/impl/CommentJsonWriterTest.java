@@ -86,11 +86,12 @@ public class CommentJsonWriterTest extends AbstractJsonWriterTest.External<Comme
         comment.addAncestorId("parentFileId");
 
         replies = new ArrayList<>();
-        replies.add(getComment("firstReplyId", comment.getId(), "chronicler", "first reply", false,
+        Instant date = Instant.now();
+        replies.add(getComment("firstReplyId", comment.getId(), "chronicler", "first reply", date, false,
                 singletonList("parentFileId")));
-        replies.add(getComment("secondReplyId", comment.getId(), "author", "second reply", false,
+        replies.add(getComment("secondReplyId", comment.getId(), "author", "second reply", date.plusSeconds(1), false,
                 singletonList("parentFileId")));
-        replies.add(getComment("thirdReplyId", comment.getId(), "chronicler", "third reply", true,
+        replies.add(getComment("thirdReplyId", comment.getId(), "chronicler", "third reply", date.plusSeconds(2), true,
                 singletonList("parentFileId")));
 
         context = RenderingContext.CtxBuilder.session(session).fetch("comment", "repliesSummary").get();
@@ -152,7 +153,8 @@ public class CommentJsonWriterTest extends AbstractJsonWriterTest.External<Comme
         json.has("entityId").isEmptyStringOrNull();
         json.has("origin").isEmptyStringOrNull();
         json.has("numberOfReplies").isEquals(3);
-        json.has("lastReplyDate").isEquals(replies.get(replies.size() - 1).getCreationDate().toString());
+        json.has("lastReplyDate")
+            .isEquals(replies.get(replies.size() - 1).getCreationDate().plusSeconds(replies.size() - 1).toString());
     }
 
     @Test
@@ -205,13 +207,18 @@ public class CommentJsonWriterTest extends AbstractJsonWriterTest.External<Comme
 
     protected Comment getComment(String id, String parentId, String author, String text, boolean isEntity,
             List<String> ancestorIds) {
+        return getComment(id, parentId, author, text, Instant.now(), isEntity, ancestorIds);
+    }
+
+    protected Comment getComment(String id, String parentId, String author, String text, Instant creationDate,
+            boolean isEntity, List<String> ancestorIds) {
         Comment comment = new CommentImpl();
         comment.setId(id);
         comment.setParentId(parentId);
         comment.addAncestorId(parentId);
         comment.setAuthor(author);
         comment.setText(text);
-        comment.setCreationDate(Instant.now());
+        comment.setCreationDate(creationDate);
         if (isEntity) {
             ((CommentImpl) comment).setEntity("entity");
             ((CommentImpl) comment).setEntityId("entityId");
