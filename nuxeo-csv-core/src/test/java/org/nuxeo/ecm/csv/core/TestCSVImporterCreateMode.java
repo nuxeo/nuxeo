@@ -466,20 +466,29 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
     }
 
     @Test
-    public void shouldSetCreatorToTheUserImporting() throws InterruptedException {
+    public void shouldSetCreatorToTheUserImporting() throws InterruptedException, IOException {
         // give access to leela
         DocumentModel root = session.getDocument(new PathRef("/"));
         ACP acp = root.getACP();
+
+        err("ACP for '/' before giving access to user ", acp);
+
         acp.addACE(ACL.LOCAL_ACL, ACE.builder("leela", "ReadWrite").build());
         session.setACP(root.getRef(), acp, true);
         // NXP-22172 : it seems session.save() may ensure the leelaSession can see "/"
         session.save();
 
+        err("ACP for '/' after giving access to user", session.getDocument(new PathRef("/")).getACP());
+
         CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
 
         txFeature.nextTransaction();
 
+        err("ACP for '/' in new transaction", session.getDocument(new PathRef("/")).getACP());
+
         try (CloseableCoreSession leelaSession = coreFeature.openCoreSession("leela")) {
+
+            err("ACP for '/' in user session", leelaSession.getACP(new PathRef("/")));
 
             // NXP-22172 : appears when leela does not have access to "/", yet ?
             if (!leelaSession.exists(new PathRef("/"))) {
@@ -494,6 +503,8 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
                 leelaSession.save();
                 if (!leelaSession.exists(new PathRef("/"))) {
                     log.error("NXP-22172: user session does not have access to '/' even after session flush");
+                    err("ACP for '/' from session when user does not have access to '/'",
+                            session.getDocument(new PathRef("/")).getACP());
                     Assert.fail("NXP-22172: user session does not have access to '/'");
                 } else {
                     log.error("NXP-22172: user session has access to '/' after 10 session flush");
@@ -510,8 +521,6 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
             CSVImportLog importLog = importLogs.get(0);
             assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
 
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         txFeature.nextTransaction();
@@ -522,6 +531,20 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         List<String> contributors = Arrays.asList((String[]) doc.getPropertyValue("dc:contributors"));
         assertEquals(1, contributors.size());
         assertTrue(contributors.contains("leela"));
+    }
+
+    protected void err(String msg, ACP acp) {
+        log.error(msg);
+        if (acp == null) {
+            log.error("ACP is null");
+            return;
+        }
+        for (ACL acl : acp.getACLs()) {
+            log.error("ACL : " + acl.getName());
+            for (ACE ace : acl) {
+                log.error("  ACE : " + ace + " is " + ace.getStatus());
+            }
+        }
     }
 
     @Test
