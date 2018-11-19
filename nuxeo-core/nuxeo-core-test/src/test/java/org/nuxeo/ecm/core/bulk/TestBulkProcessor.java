@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.BULK_LOG_MANAGER_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.DONE_STREAM;
+import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -35,16 +36,22 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.DocumentSetRepositoryInit;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.runtime.stream.StreamService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 10.3
@@ -79,7 +86,7 @@ public class TestBulkProcessor {
 
             BulkStatus status = service.getStatus(commandId);
             assertEquals(commandId, status.getCommandId());
-            assertEquals(BulkStatus.State.COMPLETED, status.getState());
+            assertEquals(COMPLETED, status.getState());
             assertEquals(0, status.getTotal());
 
             LogRecord<Record> record = tailer.read(Duration.ofSeconds(10));
@@ -105,7 +112,7 @@ public class TestBulkProcessor {
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
         BulkStatus status = service.getStatus(commandId);
         assertEquals(commandId, status.getCommandId());
-        assertEquals(BulkStatus.State.COMPLETED, status.getState());
+        assertEquals(COMPLETED, status.getState());
         assertEquals(0, status.getTotal());
 
         // query with error
@@ -114,7 +121,7 @@ public class TestBulkProcessor {
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
         status = service.getStatus(commandId);
         assertEquals(commandId, status.getCommandId());
-        assertEquals(BulkStatus.State.COMPLETED, status.getState());
+        assertEquals(COMPLETED, status.getState());
         assertEquals(0, status.getTotal());
     }
 
@@ -181,4 +188,24 @@ public class TestBulkProcessor {
         }
     }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-failure-contrib.xml")
+    public void testPolicyOnFailure() throws Exception {
+        // add a doc
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        session.createDocument(doc);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        // run an action that fails with a continue on failure option
+        String nxql = "SELECT * FROM Document";
+        String commandId = service.submit(new BulkCommand.Builder("fail", nxql).user("Administrator").build());
+        assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(60)));
+
+        BulkStatus status = service.getStatus(commandId);
+        assertNotNull(status);
+        assertEquals(COMPLETED, status.getState());
+        assertEquals(1, status.getProcessed());
+
+    }
 }

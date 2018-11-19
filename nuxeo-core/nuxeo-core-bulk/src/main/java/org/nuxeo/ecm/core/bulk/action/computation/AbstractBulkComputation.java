@@ -74,6 +74,8 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
 
     protected BulkCommand command;
 
+    protected int currentBucketSize;
+
     public AbstractBulkComputation(String name) {
         this(name, 1);
     }
@@ -85,6 +87,7 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
     @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
         BulkBucket bucket = BulkCodecs.getBucketCodec().decode(record.getData());
+        currentBucketSize = bucket.getIds().size();
         command = getCommand(bucket.getCommandId());
         if (command != null) {
             startBucket(record.getKey());
@@ -153,6 +156,14 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
      */
     public void endBucket(ComputationContext context, int bucketSize) {
         updateStatusProcessed(context, command.getId(), bucketSize);
+    }
+
+    @Override
+    public void processFailure(ComputationContext context, Throwable failure) {
+        log.error(String.format("Action: %s fails on record: %s after retries.", metadata.name(),
+                context.getLastOffset()), failure);
+        // send the end bucket this will take effect only if continueOnFailure
+        endBucket(context, currentBucketSize);
     }
 
     /**

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.core.tests.bulk.config" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.bulk.config</require>
+
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="fail" bucketSize="10" batchSize="5" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+      <streamProcessor name="fail" class="org.nuxeo.ecm.core.bulk.FailAction" logConfig="bulk"
+      defaultConcurrency="2" defaultPartitions="2">
+      <policy name="default" maxRetries="2" delay="100ms" maxDelay="10s" continueOnFailure="true" />
+    </streamProcessor>
+  </extension>
+
+</component>
