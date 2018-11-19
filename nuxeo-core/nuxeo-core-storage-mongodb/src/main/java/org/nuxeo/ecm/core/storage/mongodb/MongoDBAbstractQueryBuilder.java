@@ -279,10 +279,11 @@ public abstract class MongoDBAbstractQueryBuilder {
         if (values.size() == 1) {
             return (Document) walkOperand(values.get(0));
         }
-        String op = expr.operator == Operator.AND ? QueryOperators.AND : QueryOperators.OR;
-        // PrefixInfo was computed by the QueryOptimizer
+        boolean and = expr.operator == Operator.AND;
+        String op = and ? QueryOperators.AND : QueryOperators.OR;
+        // PrefixInfo was computed by the QueryOptimizer for common AND predicates
         PrefixInfo info = (PrefixInfo) expr.getInfo();
-        if (info == null || info.count < 2) {
+        if (info == null || info.count < 2 || !and) {
             List<Object> list = walkOperandList(values);
             return new Document(op, list);
         }
