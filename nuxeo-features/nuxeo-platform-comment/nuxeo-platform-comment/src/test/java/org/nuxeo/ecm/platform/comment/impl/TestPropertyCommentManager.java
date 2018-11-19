@@ -37,10 +37,18 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.comment.AbstractTestCommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
@@ -472,6 +480,83 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         assertEquals(comment.getCreationDate(),
                 ((Calendar) children.get(0).getPropertyValue("comment:creationDate")).toInstant());
         assertEquals(comment.getText(), children.get(0).getPropertyValue("comment:text"));
+    }
+
+    @Test
+    public void testAdministratorCanManageComments() {
+        DocumentModel doc = createTestFileAndUser("bob");
+
+        Comment comment = createSampleComment(doc.getId(), session.getPrincipal().getName(), "test");
+        comment = commentManager.createComment(session, comment);
+        session.save();
+
+        testManageComments(session, comment.getId());
+
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            comment = createSampleComment(doc.getId(), "bob", "test bob");
+            comment = commentManager.createComment(bobSession, comment);
+            bobSession.save();
+        }
+
+        testManageComments(session, comment.getId());
+    }
+
+    @Test
+    public void testAuthorCanManageComments() {
+        DocumentModel doc = createTestFileAndUser("bob");
+
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            Comment comment = createSampleComment(doc.getId(), "bob", "test");
+            comment = commentManager.createComment(session, comment);
+            bobSession.save();
+
+            testManageComments(bobSession, comment.getId());
+        }
+    }
+
+    @Test
+    public void testRegularUserCannotManageComments() {
+        DocumentModel doc = createTestFileAndUser("bob");
+
+        Comment comment = createSampleComment(doc.getId(), session.getPrincipal().getName(), "test");
+        comment = commentManager.createComment(session, comment);
+        session.save();
+
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            testManageComments(bobSession, comment.getId());
+            fail("bob should not be able to manage comments created by Administrator");
+        } catch (DocumentSecurityException e) {
+            // ok
+        }
+    }
+
+    protected DocumentModel createTestFileAndUser(String user) {
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        domain = session.createDocument(domain);
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE(user, SecurityConstants.READ, true));
+        acl.add(new ACE(user, SecurityConstants.ADD_CHILDREN, true));
+        acl.add(new ACE(user, SecurityConstants.REMOVE_CHILDREN, true));
+        session.setACP(domain.getRef(), acp, false);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        return doc;
+    }
+
+
+    protected void testManageComments(CoreSession session, String commentId) {
+        //Read
+        Comment comment = commentManager.getComment(session, commentId);
+
+        // Update
+        comment.setText("update");
+        commentManager.updateComment(session, comment.getId(), comment);
+
+        // Delete
+        commentManager.deleteComment(session, commentId);
     }
 
     protected Comment createSampleComment(String parentId, String author, String text) {
