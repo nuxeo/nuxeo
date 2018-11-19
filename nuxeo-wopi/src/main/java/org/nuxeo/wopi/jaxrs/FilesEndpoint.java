@@ -309,10 +309,7 @@ public class FilesEndpoint extends DefaultObject {
         if (!isLocked) {
             logCondition("Document isn't locked");
             // cannot unlock and relock
-            String lockHeader = "";
-            response.addHeader(LOCK, lockHeader);
-            logResponse(OPERATION_UNLOCK_AND_RELOCK, CONFLICT.getStatusCode(), LOCK, lockHeader);
-            throw new ConflictException();
+            buildConflictResponse(OPERATION_UNLOCK_AND_RELOCK, "");
         }
 
         logCondition("Document is locked");
@@ -346,14 +343,13 @@ public class FilesEndpoint extends DefaultObject {
     }
 
     /**
-     * Builds a conflict response with the WOPI lock as a header.
+     * Builds a conflict response with the given WOPI lock as a header.
      * <p>
-     * Must be called to check that a document is locked by another WOPI client.
+     * Must be called in case of "lock mismatch", for instance when a document is locked by another WOPI client.
      */
-    protected Response buildConflictResponse(String operation, String currentLock) {
-        // locked by another WOPI client
-        response.addHeader(LOCK, currentLock);
-        logResponse(operation, CONFLICT.getStatusCode(), LOCK, currentLock);
+    protected Response buildConflictResponse(String operation, String lock) {
+        response.addHeader(LOCK, lock);
+        logResponse(operation, CONFLICT.getStatusCode(), LOCK, lock);
         return Response.status(CONFLICT).build();
     }
 
@@ -383,10 +379,7 @@ public class FilesEndpoint extends DefaultObject {
         if (!doc.isLocked()) {
             logCondition("Document isn't locked");
             // not locked
-            String lockHeader = "";
-            response.addHeader(LOCK, lockHeader);
-            logResponse(operation, CONFLICT.getStatusCode(), LOCK, lockHeader);
-            throw new ConflictException();
+            buildConflictResponse(operation, "");
         }
 
         String currentLock = getCurrentLock(operation);
@@ -592,10 +585,7 @@ public class FilesEndpoint extends DefaultObject {
                 return updateBlob();
             }
             logCondition("Blob is not empty");
-            String lockHeader = "";
-            response.addHeader(LOCK, lockHeader);
-            logResponse(OPERATION_PUT_FILE, CONFLICT.getStatusCode(), LOCK, lockHeader);
-            throw new ConflictException();
+            buildConflictResponse(OPERATION_PUT_FILE, "");
         }
 
         String currentLock = getCurrentLock(OPERATION_PUT_FILE);
