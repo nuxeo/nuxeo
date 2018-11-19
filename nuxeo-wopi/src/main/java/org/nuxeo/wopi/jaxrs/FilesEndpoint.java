@@ -268,9 +268,9 @@ public class FilesEndpoint extends DefaultObject {
     protected Object lock(String lock) {
         logRequest(OPERATION_LOCK, LOCK, lock);
         boolean isLocked = doc.isLocked();
-        // document not locked or locked with another WOPI lock
-        if (!isLocked || LockHelper.hasOtherLock(fileId)) {
-            logCondition("Document isn't locked or has another WOPI lock");
+        // document not locked or no WOPI lock for this file id
+        if (!isLocked || !LockHelper.isLocked(fileId)) {
+            logCondition("Document isn't locked or there is no WOPI lock for this file id");
             checkWritePropertiesPermission(OPERATION_LOCK);
             // lock if needed
             if (!isLocked) {
@@ -286,7 +286,7 @@ public class FilesEndpoint extends DefaultObject {
             return Response.ok().build();
         }
 
-        logCondition("Document is locked and doesn't have another WOPI lock");
+        logCondition("Document is locked and there is a WOPI lock for this file id");
         String currentLock = getCurrentLock(OPERATION_LOCK);
         if (lock.equals(currentLock)) {
             logCondition(() -> LOCK + " header is equal to current WOPI lock"); // NOSONAR
