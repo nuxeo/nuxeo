@@ -20,6 +20,7 @@ package org.nuxeo.ecm.directory.sql;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -30,9 +31,9 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
@@ -57,6 +58,11 @@ public class TestSQLQueryBuilder {
 
     @Inject
     protected DirectoryService directoryService;
+
+    @Before
+    public void before() {
+        assumeTrue("Ignored for non-VCS", coreFeature.getStorageConfiguration().isVCS());
+    }
 
     public Session getSession() throws Exception {
         return directoryService.open(USER_DIR);
