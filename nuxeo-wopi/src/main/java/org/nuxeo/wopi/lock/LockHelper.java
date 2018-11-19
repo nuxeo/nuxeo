@@ -102,12 +102,9 @@ public class LockHelper {
      * Checks if a WOPI lock is stored for the given repository and doc id, no matter the xpath.
      */
     public static boolean isLocked(String repository, String docId) {
-        return doPrivilegedOnLockDirectory(session -> {
-            Map<String, Serializable> filter = new HashMap<>();
-            filter.put(LOCK_DIRECTORY_REPOSITORY, repository);
-            filter.put(LOCK_DIRECTORY_DOC_ID, docId);
-            return !session.query(filter).isEmpty();
-        });
+        QueryBuilder queryBuilder = new QueryBuilder().predicate(Predicates.eq(LOCK_DIRECTORY_REPOSITORY, repository))
+                                                      .and(Predicates.eq(LOCK_DIRECTORY_DOC_ID, docId));
+        return doPrivilegedOnLockDirectory(session -> !session.query(queryBuilder, false).isEmpty());
     }
 
     /**
@@ -168,12 +165,10 @@ public class LockHelper {
     public static void removeLocks(String repository, String docId) {
         log.debug("Locking: repository={} docId={} Document was unlocked in Nuxeo, removing related WOPI locks",
                 repository, docId);
-        doPrivilegedOnLockDirectory(session -> {
-            Map<String, Serializable> filter = new HashMap<>();
-            filter.put(LOCK_DIRECTORY_REPOSITORY, repository);
-            filter.put(LOCK_DIRECTORY_DOC_ID, docId);
-            session.query(filter).forEach(session::deleteEntry);
-        });
+        QueryBuilder queryBuilder = new QueryBuilder().predicate(Predicates.eq(LOCK_DIRECTORY_REPOSITORY, repository))
+                                                      .and(Predicates.eq(LOCK_DIRECTORY_DOC_ID, docId));
+        doPrivilegedOnLockDirectory(
+                (Session session) -> session.query(queryBuilder, false).forEach(session::deleteEntry));
     }
 
     /**
