@@ -27,14 +27,12 @@ import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_SCHEMA_NAME;
 import static org.nuxeo.wopi.Constants.LOCK_DIRECTORY_TIMESTAMP;
 import static org.nuxeo.wopi.Constants.LOCK_TTL;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -108,22 +106,10 @@ public class LockHelper {
     }
 
     /**
-     * Checks if a WOPI lock is stored for another file id than the given one.
-     * <p>
-     * Repository name and document id are extracted from the given file id.
+     * Checks if a WOPI lock is stored for the given file id.
      */
-    public static boolean hasOtherLock(String fileId) {
-        FileInfo fileInfo = new FileInfo(fileId);
-        return doPrivilegedOnLockDirectory(session -> {
-            Map<String, Serializable> filter = new HashMap<>();
-            filter.put(LOCK_DIRECTORY_REPOSITORY, fileInfo.repositoryName);
-            filter.put(LOCK_DIRECTORY_DOC_ID, fileInfo.docId);
-            return !session.query(filter)
-                           .stream()
-                           .filter(e -> !e.getId().equals(fileId))
-                           .collect(Collectors.toList())
-                           .isEmpty();
-        });
+    public static boolean isLocked(String fileId) {
+        return doPrivilegedOnLockDirectory(session -> session.getEntry(fileId) != null);
     }
 
     /**

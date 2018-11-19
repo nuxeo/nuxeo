@@ -1004,30 +1004,42 @@ public class TestFilesEndpoint {
             assertEquals("0.0", itemVersion);
         }
 
-        // Unlock
-        headers.put(OVERRIDE, Operation.UNLOCK.name());
-        // fail - 409 - lock mismatch
+        // Relock file:content
+        // Such a call to Lock can happen when another user is asking to edit the file but it should behave the same way
+        // if the call is made by the same user so we can use johnToken here
+        headers.put(LOCK, "fooContent");
         try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocFileId)) {
-            assertEquals(409, response.getStatus());
-            transactionalFeature.nextTransaction();
-            assertTrue(session.getDocument(multipleBlobsDocRef).isLocked());
-            String lock = response.getHeaders().getFirst(LOCK);
-            assertEquals("fooContent", lock);
-        }
-
-        // Unlock files:files/0/file
-        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachementId)) {
             assertEquals(200, response.getStatus());
             transactionalFeature.nextTransaction();
-            // document is still locked, WOPI lock set on file:content
             assertTrue(session.getDocument(multipleBlobsDocRef).isLocked());
             String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
             assertEquals("0.0", itemVersion);
         }
 
+        // Unlock files:files/0/file
+        headers.put(OVERRIDE, Operation.UNLOCK.name());
+        // fail - 409 - lock mismatch
+        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachementId)) {
+            assertEquals(409, response.getStatus());
+            transactionalFeature.nextTransaction();
+            assertTrue(session.getDocument(multipleBlobsDocRef).isLocked());
+            String lock = response.getHeaders().getFirst(LOCK);
+            assertEquals("fooAttachment", lock);
+        }
+
         // Unlock file:content
-        headers.put(LOCK, "fooContent");
         try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocFileId)) {
+            assertEquals(200, response.getStatus());
+            transactionalFeature.nextTransaction();
+            // document is still locked, WOPI lock set on files:files/0/file
+            assertTrue(session.getDocument(multipleBlobsDocRef).isLocked());
+            String itemVersion = response.getHeaders().getFirst(ITEM_VERSION);
+            assertEquals("0.0", itemVersion);
+        }
+
+        // Unlock files:files/0/file
+        headers.put(LOCK, "fooAttachment");
+        try (CloseableClientResponse response = post(johnToken, headers, multipleBlobsDocAttachementId)) {
             assertEquals(200, response.getStatus());
             transactionalFeature.nextTransaction();
             // document is now unlocked, no more WOPI lock set
