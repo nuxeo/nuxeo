@@ -629,6 +629,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             throw new QueryParseException("Fulltext search disabled by configuration");
         }
         Bson filter = builder.getQuery();
+        addPrincipals((Document) filter, evaluator.principals);
         Bson keys = builder.getProjection();
         if (log.isTraceEnabled()) {
             logQuery(filter, keys, null, 0, 0);

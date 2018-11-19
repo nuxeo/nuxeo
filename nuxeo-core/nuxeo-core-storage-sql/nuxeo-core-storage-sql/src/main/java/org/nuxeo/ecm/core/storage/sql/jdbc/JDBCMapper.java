@@ -924,6 +924,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         if (!dialect.supportsScroll()) {
             return defaultScroll(query);
         }
+        if (dialect.needsPrepareUserReadAcls()) {
+            prepareUserReadAcls(queryFilter);
+        }
         checkForTimedoutScroll();
         return scrollSearch(query, queryFilter, batchSize, keepAliveSeconds);
     }

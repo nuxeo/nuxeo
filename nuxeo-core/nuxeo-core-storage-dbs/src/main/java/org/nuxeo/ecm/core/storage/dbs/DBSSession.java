@@ -1755,7 +1755,8 @@ public class DBSSession implements Session<QueryFilter> {
         for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
             sqlQuery = transformer.transform(queryFilter.getPrincipal(), sqlQuery);
         }
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, sqlQuery, null, fulltextSearchDisabled);
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, sqlQuery, queryFilter.getPrincipals(),
+                fulltextSearchDisabled);
         return repository.scroll(evaluator, batchSize, keepAliveSeconds);
     }
 

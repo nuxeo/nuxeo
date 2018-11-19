@@ -3779,6 +3779,8 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testScrollCheckUserPermission() throws Exception {
+        assumeTrue("Backend must support true scrolling", supportsScroll());
+
         createDocs();
         DocumentModel root = session.getRootDocument();
         ACP acp = new ACPImpl();
