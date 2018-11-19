@@ -147,9 +147,11 @@ public class PageProviderHelper {
             sortInfos = new ArrayList<>();
             for (int i = 0; i < sortBy.size(); i++) {
                 String sort = sortBy.get(i);
-                boolean sortAscending = (sortOrder != null && !sortOrder.isEmpty() && ASC.equalsIgnoreCase(
-                        sortOrder.get(i).toLowerCase()));
-                sortInfos.add(new SortInfo(sort, sortAscending));
+                if (StringUtils.isNotBlank(sort)) {
+                    boolean sortAscending = (sortOrder != null && !sortOrder.isEmpty() && ASC.equalsIgnoreCase(
+                            sortOrder.get(i).toLowerCase()));
+                    sortInfos.add(new SortInfo(sort, sortAscending));
+                }
             }
         }
 
