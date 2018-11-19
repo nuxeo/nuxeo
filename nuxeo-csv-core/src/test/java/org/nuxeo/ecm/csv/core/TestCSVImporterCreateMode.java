@@ -37,7 +37,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,6 +58,7 @@ import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -63,6 +67,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
+
+    private static final Logger log = LogManager.getLogger(TestCSVImporterCreateMode.class);
 
     private static final String DOCS_OK_CSV = "docs_ok.csv";
 
@@ -92,6 +98,9 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
 
     @Inject
     protected CoreFeature coreFeature;
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     @Before
     public void before() {
@@ -459,7 +468,7 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
     @Test
     public void shouldSetCreatorToTheUserImporting() throws InterruptedException {
         // give access to leela
-        DocumentModel root = session.getRootDocument();
+        DocumentModel root = session.getDocument(new PathRef("/"));
         ACP acp = root.getACP();
         acp.addACE(ACL.LOCAL_ACL, ACE.builder("leela", "ReadWrite").build());
         session.setACP(root.getRef(), acp, true);
@@ -468,10 +477,28 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
 
         CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
 
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+        txFeature.nextTransaction();
 
         try (CloseableCoreSession leelaSession = coreFeature.openCoreSession("leela")) {
+
+            // NXP-22172 : appears when leela does not have access to "/", yet ?
+            if (!leelaSession.exists(new PathRef("/"))) {
+                Thread.sleep(10 * 1000);
+                if (!leelaSession.exists(new PathRef("/"))) {
+                    log.error("NXP-22172: user session does not have access to '/' even after 10 seconds");
+                } else {
+                    log.error("NXP-22172: user session has access to '/' after 10 seconds");
+                }
+
+                // NXP-22172 : if the delay does not solve the issue, flush the leela session
+                leelaSession.save();
+                if (!leelaSession.exists(new PathRef("/"))) {
+                    log.error("NXP-22172: user session does not have access to '/' even after session flush");
+                    Assert.fail("NXP-22172: user session does not have access to '/'");
+                } else {
+                    log.error("NXP-22172: user session has access to '/' after 10 session flush");
+                }
+            }
 
             String importId = csvImporter.launchImport(leelaSession, "/", getCSVBlob(DOCS_WITHOUT_CONTRIBUTORS_CSV),
                     options);
@@ -480,12 +507,14 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
 
             List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
             assertEquals(2, importLogs.size());
+            CSVImportLog importLog = importLogs.get(0);
+            assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+        txFeature.nextTransaction();
 
         assertTrue(session.exists(new PathRef("/myfile")));
         DocumentModel doc = session.getDocument(new PathRef("/myfile"));
