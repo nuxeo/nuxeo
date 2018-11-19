@@ -26,6 +26,7 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
@@ -110,7 +111,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
                 (Serializable) computeAncestorIds(session, docModel.getId()));
         DocumentModel createdCommentModel = session.createDocument(commentModelToCreate);
         CoreInstance.doPrivileged(session, s -> {
-            setCommentPermissions(s, createdCommentModel);
+            setCommentPermissions(s, createdCommentModel, (String) commentModel.getPropertyValue(COMMENT_AUTHOR));
         });
         notifyEvent(session, CommentEvents.COMMENT_ADDED, docModel, createdCommentModel);
         return createdCommentModel;
@@ -150,7 +151,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
                 (Serializable) computeAncestorIds(session, docModel.getId()));
         DocumentModel createdCommentModel = session.createDocument(commentModel);
         CoreInstance.doPrivileged(session, s -> {
-            setCommentPermissions(s, createdCommentModel);
+            setCommentPermissions(s, createdCommentModel, (String) commentModel.getPropertyValue(COMMENT_AUTHOR));
         });
         notifyEvent(session, CommentEvents.COMMENT_ADDED, docModel, createdCommentModel);
         return createdCommentModel;
@@ -182,7 +183,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
 
         DocumentModel createdCommentModel = session.createDocument(commentModel);
         CoreInstance.doPrivileged(session, s -> {
-            setCommentPermissions(s, createdCommentModel);
+            setCommentPermissions(s, createdCommentModel, comment.getAuthor());
         });
 
         notifyEvent(session, CommentEvents.COMMENT_ADDED, session.getDocument(docRef), createdCommentModel);
