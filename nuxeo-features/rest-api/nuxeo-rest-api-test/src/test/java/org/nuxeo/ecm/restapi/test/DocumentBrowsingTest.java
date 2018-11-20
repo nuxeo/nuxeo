@@ -47,7 +47,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.io.marshallers.json.document.ACPJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.BasePermissionsJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
@@ -161,7 +163,6 @@ public class DocumentBrowsingTest extends BaseTest {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-listener-contrib.xml")
     public void iCanUpdateADocumentWithAComment() throws Exception {
         JSONDocumentNode jsonDoc;
         DocumentModel note = RestServerInit.getNote(0, session);
@@ -173,14 +174,17 @@ public class DocumentBrowsingTest extends BaseTest {
         jsonDoc.setPropertyValue("dc:title", "Another title");
         Map<String, String> headers = new HashMap<>();
         headers.put(RestConstants.UPDATE_COMMENT_HEADER, "a simple comment");
-        DummyUpdateCommentListener.comment = null;
-        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson(),
-                headers)) {
+        try (CapturingEventListener listener = new CapturingEventListener(DocumentEventTypes.BEFORE_DOC_UPDATE);
+                CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson(),
+                        headers)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             fetchInvalidations();
             note = RestServerInit.getNote(0, session);
             assertEquals("Another title", note.getTitle());
-            assertEquals("a simple comment", DummyUpdateCommentListener.comment);
+            String comment = listener.getLastCapturedEvent(DocumentEventTypes.BEFORE_DOC_UPDATE)
+                                     .map(event -> (String) event.getContext().getProperty("comment"))
+                                     .orElseThrow(() -> new AssertionError("Comment is not present"));
+            assertEquals("a simple comment", comment);
         }
     }
 

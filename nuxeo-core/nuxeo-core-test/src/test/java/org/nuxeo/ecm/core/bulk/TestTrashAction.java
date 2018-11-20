@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -27,11 +26,8 @@ import static org.nuxeo.ecm.core.bulk.action.TrashAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_NON_PROXY;
 import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_TOTAL;
-import static org.nuxeo.ecm.core.trash.PropertyTrashService.SYSPROP_IS_TRASHED;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashSet;
 
 import javax.inject.Inject;
 
@@ -42,8 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DocumentSetRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -65,24 +60,7 @@ public class TestTrashAction {
     public CoreSession session;
 
     @Inject
-    public EventService eventService;
-
-    @Inject
     public TransactionalFeature txFeature;
-
-    private static class TestListener extends EventListenerDescriptor {
-
-        private int count;
-
-        private TestListener() {
-            events = new HashSet<>(Collections.singleton(DOCUMENT_TRASHED));
-        }
-
-        @Override
-        public void initListener() {
-            inLineListener = event -> count++;
-        }
-    }
 
     @Test
     public void test() throws Exception {
@@ -90,34 +68,26 @@ public class TestTrashAction {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", model.getId());
 
-        TestListener listener = new TestListener();
+        try (CapturingEventListener listener = new CapturingEventListener(DOCUMENT_TRASHED)) {
+            String commandId = service.submit(
+                    new BulkCommand.Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
+                                                              .user(session.getPrincipal().getName())
+                                                              .param("value", Boolean.TRUE)
+                                                              .build());
 
-        eventService.addEventListener(listener);
+            assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(600)));
 
-        String commandId = service.submit(
-                new BulkCommand.Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
-                                                          .user(session.getPrincipal().getName())
-                                                          .param("value", Boolean.TRUE)
-                                                          .build());
+            BulkStatus status = service.getStatus(commandId);
+            assertNotNull(status);
+            assertEquals(COMPLETED, status.getState());
+            assertEquals(CREATED_TOTAL, status.getProcessed());
 
-        assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(600)));
-
-        BulkStatus status = service.getStatus(commandId);
-        assertNotNull(status);
-        assertEquals(COMPLETED, status.getState());
-        assertEquals(CREATED_TOTAL, status.getProcessed());
+            assertEquals(CREATED_NON_PROXY, listener.getCapturedEventCount(DOCUMENT_TRASHED));
+        }
 
         txFeature.nextTransaction();
 
-        for (DocumentModel descendant : session.query(nxql)) {
-            assertEquals(TRUE, session.getDocumentSystemProp(descendant.getRef(), SYSPROP_IS_TRASHED, Boolean.class));
-        }
-
-        eventService.waitForAsyncCompletion();
-
-        assertEquals(CREATED_NON_PROXY, listener.count);
-
-        eventService.removeEventListener(listener);
+        session.query(nxql).forEach(doc -> assertTrue("Doc '" + doc.getPath() + "' is not trashed", doc.isTrashed()));
     }
 
 }

@@ -20,12 +20,8 @@ package org.nuxeo.ecm.core.event.test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Set;
-
 import javax.inject.Inject;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -33,59 +29,19 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventListener;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.common.collect.Sets;
 
 /**
  * @since 5.9.3
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-public class TransitionTest implements EventListener {
-
-    @Inject
-    protected EventService eventService;
+public class TransitionTest {
 
     @Inject
     protected CoreSession session;
-
-    private String lastComment;
-
-    protected EventListenerDescriptor eventDesc;
-
-    @Before
-    public void doBefore() {
-        lastComment = null;
-        eventDesc = new EventListenerDescriptor() {
-            @Override
-            public Set<String> getEvents() {
-                return Sets.newHashSet(LifeCycleConstants.TRANSITION_EVENT);
-            }
-
-            @Override
-            public EventListener asEventListener() {
-                return TransitionTest.this;
-            }
-
-            @Override
-            public void initListener() {
-
-            }
-        };
-        eventService.addEventListener(eventDesc);
-    }
-
-    @After
-    public void doAfter() {
-        eventService.removeEventListener(eventDesc);
-    }
 
     @Test
     public void itCanAddACommentWhenFollowingTransition() {
@@ -94,38 +50,40 @@ public class TransitionTest implements EventListener {
 
         doc.putContextData("comment", "a comment");
 
-        session.followTransition(doc, "approve");
-
-        assertEquals("a comment", lastComment);
+        try (CapturingEventListener listener = new CapturingEventListener(LifeCycleConstants.TRANSITION_EVENT)) {
+            session.followTransition(doc, "approve");
+            assertEquals("a comment", getLastComment(listener));
+        }
     }
 
     @Test
     public void itCanModifyACommentWhenModifyingADocument() {
-        DocumentModel doc = session.createDocumentModel("/", "myDoc", "File");
-        doc = session.createDocument(doc);
+        try (CapturingEventListener listener = new CapturingEventListener(LifeCycleConstants.TRANSITION_EVENT)) {
+            DocumentModel doc = session.createDocumentModel("/", "myDoc", "File");
+            doc = session.createDocument(doc);
 
-        doc.setPropertyValue("dc:title", "title");
-        doc.putContextData("comment", "a comment");
-        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+            doc.setPropertyValue("dc:title", "title");
+            doc.putContextData("comment", "a comment");
+            doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
 
-        session.followTransition(doc, "approve");
-        assertEquals("a comment", lastComment);
+            session.followTransition(doc, "approve");
+            assertEquals("a comment", getLastComment(listener));
 
-        doc = session.saveDocument(doc);
+            doc = session.saveDocument(doc);
 
-        doc.setPropertyValue("dc:title", "new title");
-        doc.putContextData("comment", "b comment");
+            doc.setPropertyValue("dc:title", "new title");
+            doc.putContextData("comment", "b comment");
 
-        session.saveDocument(doc);
+            session.saveDocument(doc);
 
-        assertEquals("b comment", lastComment);
+            assertEquals("b comment", getLastComment(listener));
+        }
     }
 
-    @Override
-    public void handleEvent(Event event) {
-        if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())) {
-            lastComment = (String) event.getContext().getProperty("comment");
-        }
+    private String getLastComment(CapturingEventListener listener) {
+        return listener.getLastCapturedEvent(LifeCycleConstants.TRANSITION_EVENT)
+                       .map(event -> (String) event.getContext().getProperty("comment"))
+                       .orElseThrow(() -> new AssertionError("Unable to find last comment"));
     }
 
 }
