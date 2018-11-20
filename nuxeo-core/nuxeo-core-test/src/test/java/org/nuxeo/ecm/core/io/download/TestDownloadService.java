@@ -71,6 +71,7 @@ import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.io.NginxConstants;
 import org.nuxeo.ecm.core.io.download.DownloadServiceImpl.Action;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -602,19 +603,16 @@ public class TestDownloadService {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-listener.xml")
     public void testDownloadLoggedIfNoByteRange() throws IOException {
         doTestDownloadLoggedOrNot(null, "Hello World", 1); // logged
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-listener.xml")
     public void testDownloadLoggedIfByteRangeFromStart() throws IOException {
         doTestDownloadLoggedOrNot("0-4", "Hello", 1); // logged
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-listener.xml")
     public void testDownloadNotLoggedIfByteRangeOther() throws IOException {
         doTestDownloadLoggedOrNot("6-10", "World", 0); // not logged
     }
@@ -641,11 +639,12 @@ public class TestDownloadService {
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
 
-        DummyDownloadListener.clear();
-        downloadService.downloadBlob(req, resp, null, null, blob, null, "test");
+        try (CapturingEventListener listener = new CapturingEventListener(DownloadService.EVENT_NAME)) {
+            downloadService.downloadBlob(req, resp, null, null, blob, null, "test");
 
-        assertEquals(expectedResult, out.toString("UTF-8"));
-        assertEquals(expectedSize, DummyDownloadListener.getEvents().size());
+            assertEquals(expectedResult, out.toString("UTF-8"));
+            assertEquals(expectedSize, listener.getCapturedEventCount(DownloadService.EVENT_NAME));
+        }
     }
 
     @Test
