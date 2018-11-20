@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.automation.core.operations.document;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 
@@ -32,6 +33,8 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -69,13 +72,15 @@ public class PublishDocumentTest {
 
     @Test
     public void testPublishDocument() throws OperationException {
-        try (OperationContext ctx = new OperationContext(session)) {
+        try (OperationContext ctx = new OperationContext(session);
+                CapturingEventListener listener = new CapturingEventListener(DocumentEventTypes.DOCUMENT_PUBLISHED)) {
             ctx.setInput(fileToPublish);
             DocumentModel publishedDoc = (DocumentModel) service.run(ctx, PublishDocument.ID,
                     Collections.singletonMap("target", section));
 
             assertEquals(section.getId(), session.getDocument(publishedDoc.getParentRef()).getId());
             assertEquals(1, session.getChildren(section.getRef()).size());
+            assertTrue(listener.hasBeenFired(DocumentEventTypes.DOCUMENT_PUBLISHED));
         }
     }
 

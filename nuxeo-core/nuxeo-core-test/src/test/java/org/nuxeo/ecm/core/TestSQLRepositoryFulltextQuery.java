@@ -36,10 +36,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -59,12 +59,10 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -130,43 +128,17 @@ public class TestSQLRepositoryFulltextQuery {
         assertEquals(expected, actual);
     }
 
-    protected static void assertEventSet(String... expectedEventNames) {
-        List<String> list = getDummyListenerEvents();
-        Map<String, AtomicInteger> map = new HashMap<>();
-        for (String name : list) {
-            AtomicInteger i = map.get(name);
-            if (i == null) {
-                map.put(name, i = new AtomicInteger(0));
-            }
-            i.incrementAndGet();
-        }
-        Set<String> set = new HashSet<>();
-        for (Entry<String, AtomicInteger> es : map.entrySet()) {
-            set.add(es.getKey() + '=' + es.getValue());
-        }
-        assertEquals(new HashSet<>(Arrays.asList(expectedEventNames)), set);
-    }
-
-    protected static List<String> getDummyListenerEvents() {
-        List<String> actual = new ArrayList<>();
-        for (Event event : DummyTestListener.EVENTS_RECEIVED) {
-            String eventName = event.getName();
-            EventContext context = event.getContext();
-            if (context instanceof DocumentEventContext) {
-                DocumentModel doc = ((DocumentEventContext) context).getSourceDocument();
-                if (doc != null) {
-                    if (doc.isProxy()) {
-                        eventName += "/p";
-                    } else if (doc.isVersion()) {
-                        eventName += "/v";
-                    } else if (doc.isFolder()) {
-                        eventName += "/f";
-                    }
-                }
-            }
-            actual.add(eventName);
-        }
-        return actual;
+    protected static void assertEventSet(CapturingEventListener listener, String... expectedEventNames) {
+        Set<String> actualEventNames = listener.getCapturedEvents()
+                                               .stream()
+                                               .map(TestSQLRepositoryAPI::getDetailedEventName) // probably not useful
+                                               .collect(Collectors.groupingBy(Function.identity(),
+                                                       Collectors.counting()))
+                                               .entrySet()
+                                               .stream()
+                                               .map(entry -> entry.getKey() + '=' + entry.getValue())
+                                               .collect(Collectors.toSet());
+        assertEquals(new HashSet<>(Arrays.asList(expectedEventNames)), actualEventNames);
     }
 
     protected Calendar getCalendar(int year, int month, int day, int hours, int minutes, int seconds) {
@@ -957,7 +929,6 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-all-contrib.xml")
     public void testFulltextReindexOnCreateDelete() {
         waitForFulltextIndexing();
 
@@ -965,43 +936,43 @@ public class TestSQLRepositoryFulltextQuery {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
 
-        DummyTestListener.clear();
-        session.save();
-        waitForFulltextIndexing();
-        assertEventSet("sessionSaved=1");
+        try (CapturingEventListener listener = new CapturingEventListener()) {
+            session.save();
+            waitForFulltextIndexing();
+            assertEventSet(listener, "sessionSaved=1");
 
-        // modify regular
-        doc.setPropertyValue("dc:title", "The title");
-        doc = session.saveDocument(doc);
+            // modify regular
+            doc.setPropertyValue("dc:title", "The title");
+            doc = session.saveDocument(doc);
 
-        DummyTestListener.clear();
-        session.save();
-        waitForFulltextIndexing();
-        // 2 = 1 main save + 1 index
-        assertEventSet("sessionSaved=2");
+            listener.clear();
+            session.save();
+            waitForFulltextIndexing();
+            // 2 = 1 main save + 1 index
+            assertEventSet(listener, "sessionSaved=2");
 
-        // modify binary
-        Blob blob = Blobs.createBlob("hello world");
-        doc.setPropertyValue("file:content", (Serializable) blob);
-        doc = session.saveDocument(doc);
+            // modify binary
+            Blob blob = Blobs.createBlob("hello world");
+            doc.setPropertyValue("file:content", (Serializable) blob);
+            doc = session.saveDocument(doc);
 
-        DummyTestListener.clear();
-        session.save();
-        waitForFulltextIndexing();
-        // 2 = 1 main save + 1 index
-        assertEventSet("sessionSaved=2", "binaryTextUpdated=1");
+            listener.clear();
+            session.save();
+            waitForFulltextIndexing();
+            // 2 = 1 main save + 1 index
+            assertEventSet(listener, "sessionSaved=2", "binaryTextUpdated=1");
 
-        // delete
-        session.removeDocument(doc.getRef());
+            // delete
+            session.removeDocument(doc.getRef());
 
-        DummyTestListener.clear();
-        session.save();
-        waitForFulltextIndexing();
-        assertEventSet("sessionSaved=1");
+            listener.clear();
+            session.save();
+            waitForFulltextIndexing();
+            assertEventSet(listener, "sessionSaved=1");
+        }
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-all-contrib.xml")
     public void testGetBinaryFulltextUpdatedEvent() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
@@ -1012,26 +983,25 @@ public class TestSQLRepositoryFulltextQuery {
         Blob blob = Blobs.createBlob("Hello world!");
         doc.setPropertyValue("file:content", (Serializable) blob);
         doc = session.saveDocument(doc);
-        DummyTestListener.clear();
-        session.save();
-        waitForFulltextIndexing();
 
-        // 2 = 1 main save + 1 index
-        assertEventSet("sessionSaved=2", "binaryTextUpdated=1");
+        try (CapturingEventListener listener = new CapturingEventListener()) {
+            session.save();
+            waitForFulltextIndexing();
 
-        // check content of "binaryTextUpdated" event
-        boolean found = false;
-        for (Event event : DummyTestListener.EVENTS_RECEIVED) {
-            if (DocumentEventTypes.BINARYTEXT_UPDATED.equals(event.getName())) {
-                found = true;
-                Map<String, Serializable> props = event.getContext().getProperties();
-                assertEquals(Boolean.TRUE, props.get("fulltextBinary")); // deprecated, not very useful
-                assertEquals("fulltextBinary", props.get(DocumentEventTypes.SYSTEM_PROPERTY));
-                String string = (String) props.get(DocumentEventTypes.SYSTEM_PROPERTY_VALUE);
-                assertEquals(" Hello world! ", string); // original text, unparsed, with spaces at ends
-            }
+            // 2 = 1 main save + 1 index
+            assertEventSet(listener, "sessionSaved=2", "binaryTextUpdated=1");
+
+            // check content of "binaryTextUpdated" event
+            Optional<Event> optEvent = listener.getLastCapturedEvent(DocumentEventTypes.BINARYTEXT_UPDATED);
+            assertTrue("binaryTextUpdated event not found", optEvent.isPresent());
+
+            Event event = optEvent.get();
+            Map<String, Serializable> props = event.getContext().getProperties();
+            assertEquals(Boolean.TRUE, props.get("fulltextBinary")); // deprecated, not very useful
+            assertEquals("fulltextBinary", props.get(DocumentEventTypes.SYSTEM_PROPERTY));
+            String string = (String) props.get(DocumentEventTypes.SYSTEM_PROPERTY_VALUE);
+            assertEquals(" Hello world! ", string); // original text, unparsed, with spaces at ends
         }
-        assertTrue("binaryTextUpdated event not found", found);
     }
 
     @Test

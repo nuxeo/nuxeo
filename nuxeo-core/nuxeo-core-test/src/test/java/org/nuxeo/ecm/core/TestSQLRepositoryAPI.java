@@ -27,6 +27,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.INCREMENT_BEFORE_UPDATE;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -46,13 +48,13 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -103,9 +105,9 @@ import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.schema.DocumentTypeDescriptor;
@@ -114,7 +116,6 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
-import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -152,11 +153,6 @@ public class TestSQLRepositoryAPI {
 
     @Inject
     protected RepositoryService repositoryService;
-
-    @After
-    public void clearDummyTestListener() {
-        DummyTestListener.clear();
-    }
 
     protected CloseableCoreSession openSessionAs(String username) {
         return CoreInstance.openCoreSession(session.getRepositoryName(), username);
@@ -3768,7 +3764,6 @@ public class TestSQLRepositoryAPI {
      * {@code true}.
      */
     @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-contrib.xml")
     public void testDoNotFireIncrementBeforeUpdateEventsOnVersion() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "doc", "File");
@@ -3783,128 +3778,120 @@ public class TestSQLRepositoryAPI {
         doc = session.saveDocument(doc);
         session.save();
 
-        // Reset the listener
-        DummyTestListener.clear();
-        DocumentModel versionDoc = session.getLastDocumentVersion(doc.getRef());
-        versionDoc.setProperty("dublincore", "issued", new GregorianCalendar());
-        session.saveDocument(versionDoc);
-        session.save();
+        try (CapturingEventListener listener = new CapturingEventListener(BEFORE_DOC_UPDATE, INCREMENT_BEFORE_UPDATE)) {
+            DocumentModel versionDoc = session.getLastDocumentVersion(doc.getRef());
+            versionDoc.setProperty("dublincore", "issued", new GregorianCalendar());
+            session.saveDocument(versionDoc);
+            session.save();
 
-        assertEquals(1, DummyTestListener.EVENTS_RECEIVED.size());
-        assertEquals("beforeDocumentModification", DummyTestListener.EVENTS_RECEIVED.get(0).getName());
+            assertTrue(listener.hasBeenFired(BEFORE_DOC_UPDATE));
+            assertFalse(listener.hasBeenFired(INCREMENT_BEFORE_UPDATE));
+        }
 
     }
 
-    private static final List<String> IGNORED_EVENTS = Collections.singletonList(DocumentEventTypes.SESSION_SAVED);
-
-    public static void assertEvents(String... expectedEventNames) {
-        assertEvents(IGNORED_EVENTS, expectedEventNames);
+    public static void assertEvents(CapturingEventListener listener, String... expectedEventNames) {
+        List<String> actualEventNames = listener.getCapturedEvents()
+                                                .stream()
+                                                .filter(event -> !DocumentEventTypes.SESSION_SAVED.equals(
+                                                        event.getName()))
+                                                .map(TestSQLRepositoryAPI::getDetailedEventName)
+                                                .collect(Collectors.toList());
+        assertEquals(Arrays.asList(expectedEventNames), actualEventNames);
     }
 
-    public static void assertEvents(List<String> ignored, String... expectedEventNames) {
-        assertEquals(Arrays.asList(expectedEventNames), getDummyListenerEvents(ignored));
-    }
-
-    protected static List<String> getDummyListenerEvents(List<String> ignored) {
-        List<String> actual = new ArrayList<>();
-        for (Event event : DummyTestListener.EVENTS_RECEIVED) {
-            String eventName = event.getName();
-            if (ignored != null && ignored.contains(eventName)) {
-                continue;
-            }
-            EventContext context = event.getContext();
-            if (context instanceof DocumentEventContext) {
-                DocumentModel doc = ((DocumentEventContext) context).getSourceDocument();
-                if (doc != null) {
-                    if (doc.isProxy()) {
-                        eventName += "/p";
-                    } else if (doc.isVersion()) {
-                        eventName += "/v";
-                    } else if (doc.isFolder()) {
-                        eventName += "/f";
-                    }
+    public static String getDetailedEventName(Event event) {
+        String name = event.getName();
+        if (event.getContext() instanceof DocumentEventContext) {
+            DocumentModel doc = ((DocumentEventContext) event.getContext()).getSourceDocument();
+            if (doc != null) {
+                if (doc.isProxy()) {
+                    name += "/p";
+                } else if (doc.isVersion()) {
+                    name += "/v";
+                } else if (doc.isFolder()) {
+                    name += "/f";
                 }
             }
-            actual.add(eventName);
         }
-        return actual;
+        return name;
     }
 
     @Test
-    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-all-contrib.xml")
     public void testVersioningEvents() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         DocumentModel folder = session.createDocumentModel("/", "fold", "Folder");
         folder = session.createDocument(folder);
 
-        DummyTestListener.clear();
-        DocumentRef verRef = session.checkIn(doc.getRef(), null, null);
-        assertEvents( //
-                "aboutToCheckIn", //
-                "documentCheckedIn", //
-                "documentCreated/v");
+        try (CapturingEventListener listener = new CapturingEventListener()) {
+            DocumentRef verRef = session.checkIn(doc.getRef(), null, null);
+            assertEvents(listener, //
+                    "aboutToCheckIn", //
+                    "documentCheckedIn", //
+                    "documentCreated/v");
 
-        DummyTestListener.clear();
-        session.checkOut(doc.getRef());
-        assertEvents( //
-                "aboutToCheckout", //
-                "documentCheckedOut");
+            listener.clear();
+            session.checkOut(doc.getRef());
+            assertEvents(listener, //
+                    "aboutToCheckout", //
+                    "documentCheckedOut");
 
-        DummyTestListener.clear();
-        session.createProxy(doc.getRef(), folder.getRef()); // live proxy
-        assertEvents( //
-                "documentCreated/p", //
-                "documentProxyPublished/p", //
-                "sectionContentPublished/f");
+            listener.clear();
+            session.createProxy(doc.getRef(), folder.getRef()); // live proxy
+            assertEvents(listener, //
+                    "documentCreated/p", //
+                    "documentProxyPublished/p", //
+                    "sectionContentPublished/f");
 
-        DummyTestListener.clear();
-        session.publishDocument(doc, folder, false);
-        assertEvents( //
-                "aboutToCheckIn", //
-                "documentCheckedIn", //
-                "documentCreated/v", //
-                "documentCreated/p", //
-                "documentProxyPublished/p", //
-                "sectionContentPublished/f");
+            listener.clear();
+            session.publishDocument(doc, folder, false);
+            assertEvents(listener, //
+                    "aboutToCheckIn", //
+                    "documentCheckedIn", //
+                    "documentCreated/v", //
+                    "documentCreated/p", //
+                    "documentProxyPublished/p", //
+                    "sectionContentPublished/f");
 
-        // auto-checkout
-        DummyTestListener.clear();
-        doc.setPropertyValue("dc:title", "title2");
-        doc = session.saveDocument(doc);
-        assertEvents( //
-                "beforeDocumentModification", //
-                "aboutToCheckout", //
-                "documentCheckedOut", //
-                "documentModified", //
-                "documentProxyUpdated/p");
+            // auto-checkout
+            listener.clear();
+            doc.setPropertyValue("dc:title", "title2");
+            doc = session.saveDocument(doc);
+            assertEvents(listener, //
+                    "beforeDocumentModification", //
+                    "aboutToCheckout", //
+                    "documentCheckedOut", //
+                    "documentModified", //
+                    "documentProxyUpdated/p");
 
-        // save with versioning
-        DummyTestListener.clear();
-        doc.setPropertyValue("dc:title", "title2");
-        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
-        doc = session.saveDocument(doc);
-        assertEvents( //
-                "beforeDocumentModification", //
-                "aboutToCheckIn", //
-                "documentCheckedIn", //
-                "documentCreated/v", //
-                "documentModified", //
-                "documentProxyUpdated/p");
+            // save with versioning
+            listener.clear();
+            doc.setPropertyValue("dc:title", "title2");
+            doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+            doc = session.saveDocument(doc);
+            assertEvents(listener, //
+                    "beforeDocumentModification", //
+                    "aboutToCheckIn", //
+                    "documentCheckedIn", //
+                    "documentCreated/v", //
+                    "documentModified", //
+                    "documentProxyUpdated/p");
 
-        doc.checkOut();
+            doc.checkOut();
 
-        // restore to version
-        DummyTestListener.clear();
-        session.restoreToVersion(doc.getRef(), verRef, false, false);
-        assertEvents( //
-                "aboutToCheckIn", //
-                "documentCheckedIn", //
-                "documentCreated/v", //
-                "beforeRestoringDocument", //
-                "documentRestored", //
-                "aboutToCheckout", //
-                "documentCheckedOut");
+            // restore to version
+            listener.clear();
+            session.restoreToVersion(doc.getRef(), verRef, false, false);
+            assertEvents(listener, //
+                    "aboutToCheckIn", //
+                    "documentCheckedIn", //
+                    "documentCreated/v", //
+                    "beforeRestoringDocument", //
+                    "documentRestored", //
+                    "aboutToCheckout", //
+                    "documentCheckedOut");
+        }
     }
 
     @Test
