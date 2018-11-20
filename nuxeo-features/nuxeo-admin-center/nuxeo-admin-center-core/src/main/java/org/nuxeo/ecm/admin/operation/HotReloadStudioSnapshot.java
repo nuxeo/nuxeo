@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.client.ConnectClientComponent;
 import org.nuxeo.connect.client.we.StudioSnapshotHelper;
 import org.nuxeo.connect.connector.ConnectServerError;
@@ -55,7 +55,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.services.config.ConfigurationService;
@@ -65,16 +64,17 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  *
  * @since 8.2
  */
-@Operation(id = HotReloadStudioSnapshot.ID, category = Constants.CAT_SERVICES, label = "Hot Reload Studio Snapshot Package", description = "Updates Studio project with latest snapshot.")
+@Operation(id = HotReloadStudioSnapshot.ID, category = Constants.CAT_SERVICES, //
+        label = "Hot Reload Studio Snapshot Package", description = "Updates Studio project with latest snapshot.")
 public class HotReloadStudioSnapshot {
 
-    protected static final String inProgress = "updateInProgress";
+    protected static final String IN_PROGRESS = "updateInProgress";
 
-    protected static final String success = "success";
+    protected static final String SUCCESS = "success";
 
-    protected static final String error = "error";
+    protected static final String ERROR = "error";
 
-    protected static final String dependencyMismatch = "dependencyMismatch";
+    protected static final String DEPENDENCY_MISMATCH = "DEPENDENCY_MISMATCH";
 
     public static final String ID = "Service.HotReloadStudioSnapshot";
 
@@ -88,7 +88,7 @@ public class HotReloadStudioSnapshot {
         return true;
     }
 
-    private static final Log log = LogFactory.getLog(HotReloadStudioSnapshot.class);
+    private static final Logger log = LogManager.getLogger(HotReloadStudioSnapshot.class);
 
     @Context
     protected CoreSession session;
@@ -103,22 +103,22 @@ public class HotReloadStudioSnapshot {
     public Blob run() throws Exception {
         try {
             if (!setInProgress(true)) {
-                return jsonHelper(inProgress, "Update in progress.", null);
+                return jsonHelper(IN_PROGRESS, "Update in progress.", null);
             }
 
             if (!session.getPrincipal().isAdministrator()) {
-                return jsonHelper(error, "Must be Administrator to use this function.", null);
+                return jsonHelper(ERROR, "Must be Administrator to use this function.", null);
             }
 
             if (!Framework.isDevModeSet()) {
-                return jsonHelper(error, "You must enable Dev mode to Hot reload your Studio Snapshot package.", null);
+                return jsonHelper(ERROR, "You must enable Dev mode to Hot reload your Studio Snapshot package.", null);
             }
 
             List<DownloadablePackage> pkgs = pm.listRemoteAssociatedStudioPackages();
             DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
 
             if (snapshotPkg == null) {
-                return jsonHelper(error, "No Snapshot Package was found.", null);
+                return jsonHelper(ERROR, "No Snapshot Package was found.", null);
             }
 
             return hotReloadPackage(snapshotPkg);
@@ -144,17 +144,15 @@ public class HotReloadStudioSnapshot {
 
             String targetPlatform = PlatformVersionHelper.getPlatformFilter();
             if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(remotePkg, targetPlatform)) {
-                return jsonHelper(error,
+                return jsonHelper(ERROR,
                         String.format("This package is not validated for your current platform: %s", targetPlatform),
                         null);
             }
 
             PackageDependency[] pkgDeps = remotePkg.getDependencies();
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("%s target platforms: %s", remotePkg,
-                        ArrayUtils.toString(remotePkg.getTargetPlatforms())));
-                log.debug(String.format("%s dependencies: %s", remotePkg, ArrayUtils.toString(pkgDeps)));
-            }
+            log.debug("{} target platforms: {}", () -> remotePkg,
+                    () -> ArrayUtils.toString(remotePkg.getTargetPlatforms()));
+            log.debug("{} dependencies: {}", () -> remotePkg, () -> ArrayUtils.toString(pkgDeps));
 
             String packageId = remotePkg.getId();
 
@@ -166,7 +164,7 @@ public class HotReloadStudioSnapshot {
                     resolution = pm.resolveDependencies(packageId, null);
                 }
                 if (resolution.isFailed()) {
-                    return jsonHelper(dependencyMismatch,
+                    return jsonHelper(DEPENDENCY_MISMATCH,
                             String.format("Dependency check has failed for package '%s' (%s)", packageId, resolution),
                             null);
                 } else {
@@ -183,7 +181,7 @@ public class HotReloadStudioSnapshot {
                                 dependencies.add(dependency);
                             }
                         }
-                        return jsonHelper(dependencyMismatch,
+                        return jsonHelper(DEPENDENCY_MISMATCH,
                                 "A dependency mismatch has been detected. Please check your Studio project settings and your server configuration.",
                                 dependencies);
                     }
@@ -195,7 +193,7 @@ public class HotReloadStudioSnapshot {
         if (!useCompatReload) {
             log.info("Use hot reload update mechanism");
             ReloadHelper.hotReloadPackage(remotePkg.getId());
-            return jsonHelper(success, "Studio package installed.", null);
+            return jsonHelper(SUCCESS, "Studio package installed.", null);
         }
         // Install
         try {
@@ -211,11 +209,11 @@ public class HotReloadStudioSnapshot {
             // Download
             DownloadingPackage downloadingPkg = pm.download(packageId);
             while (!downloadingPkg.isCompleted()) {
-                log.debug("Downloading studio snapshot package: " + packageId);
+                log.debug("Downloading studio snapshot package: {}", packageId);
                 Thread.sleep(100);
             }
 
-            log.info("Installing " + packageId);
+            log.info("Installing {}", packageId);
             pkg = pus.getPackage(packageId);
             if (pkg == null || PackageState.DOWNLOADED != pkg.getPackageState()) {
                 throw new NuxeoException("Error while downloading studio snapshot " + pkg);
@@ -223,7 +221,7 @@ public class HotReloadStudioSnapshot {
             Task installTask = pkg.getInstallTask();
             try {
                 performTask(installTask);
-                return jsonHelper(success, "Studio package installed.", null);
+                return jsonHelper(SUCCESS, "Studio package installed.", null);
             } catch (PackageException e) {
                 installTask.rollback();
                 throw e;
@@ -238,10 +236,10 @@ public class HotReloadStudioSnapshot {
     }
 
     protected static void removePackage(PackageUpdateService pus, LocalPackage pkg) throws PackageException {
-        log.info(String.format("Removing package %s before update...", pkg.getId()));
+        log.info("Removing package {} before update...", pkg.getId());
         if (pkg.getPackageState().isInstalled()) {
             // First remove it to allow SNAPSHOT upgrade
-            log.info("Uninstalling " + pkg.getId());
+            log.info("Uninstalling {}", pkg.getId());
             Task uninstallTask = pkg.getUninstallTask();
             try {
                 performTask(uninstallTask);
@@ -260,8 +258,8 @@ public class HotReloadStudioSnapshot {
                     "Failed to validate package " + task.getPackage().getId() + " -> " + validationStatus.getErrors());
         }
         if (validationStatus.hasWarnings()) {
-            log.warn("Got warnings on package validation " + task.getPackage().getId() + " -> "
-                    + validationStatus.getWarnings());
+            log.warn("Got warnings on package validation {} -> {}", () -> task.getPackage().getId(),
+                    validationStatus::getWarnings);
         }
         task.run(null);
     }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ package org.nuxeo.ecm.admin.runtime;
 
 import java.io.File;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.connect.connector.ConnectServerError;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.packages.PackageManager;
@@ -50,10 +50,10 @@ import org.osgi.framework.BundleException;
  */
 public class ReloadHelper {
 
-    private static final Log log = LogFactory.getLog(ReloadHelper.class);
+    private static final Logger log = LogManager.getLogger(ReloadHelper.class);
 
     public static synchronized void hotReloadPackage(String packageId) {
-        log.info("Reload Studio package with id=" + packageId);
+        log.info("Reload Studio package with id={}", packageId);
         LocalPackage pkg = null;
         InstallTask installTask = null;
         try {
@@ -88,13 +88,11 @@ public class ReloadHelper {
             // Download
             DownloadingPackage downloadingPkg = pm.download(packageId);
             while (!downloadingPkg.isCompleted()) {
-                if (log.isTraceEnabled()) {
-                    log.trace("Downloading studio snapshot package: " + packageId);
-                }
+                log.trace("Downloading studio snapshot package: {}", packageId);
                 Thread.sleep(100); // NOSONAR (we want the whole hot-reload to be synchronized)
             }
 
-            log.info("Installing " + packageId);
+            log.info("Installing {}", packageId);
             pkg = pus.getPackage(packageId);
             if (pkg == null || PackageState.DOWNLOADED != pkg.getPackageState()) {
                 throw new NuxeoException("Error while downloading studio snapshot " + pkg);

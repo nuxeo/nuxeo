@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ import java.util.stream.Stream;
 import javax.transaction.Transaction;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.ZipUtils;
@@ -80,7 +80,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     public static final String RELOAD_STRATEGY_VALUE_DEFAULT = RELOAD_STRATEGY_VALUE_STANDBY;
 
-    private static final Log log = LogFactory.getLog(ReloadComponent.class);
+    private static final Logger log = LogManager.getLogger(ReloadComponent.class);
 
     protected static Bundle bundle;
 
@@ -113,9 +113,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Deprecated
     protected void refreshComponents() {
         String reloadStrategy = Framework.getProperty(RELOAD_STRATEGY_PARAMETER, RELOAD_STRATEGY_VALUE_DEFAULT);
-        if (log.isInfoEnabled()) {
-            log.info("Refresh components. Strategy: " + reloadStrategy);
-        }
+        log.info("Refresh components. Strategy={}", reloadStrategy);
         // reload components / contributions
         ComponentManager mgr = Framework.getRuntime().getComponentManager();
         switch (reloadStrategy) {
@@ -160,8 +158,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Override
     public void reloadSeamComponents() {
         log.info("Reload Seam components");
-        Framework.getService(EventService.class)
-                 .sendEvent(new Event(RELOAD_TOPIC, RELOAD_SEAM_EVENT_ID, this, null));
+        Framework.getService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, RELOAD_SEAM_EVENT_ID, this, null));
     }
 
     @Override
@@ -176,8 +173,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Override
     public void flushJaasCache() {
         log.info("Before flush the JAAS cache");
-        Framework.getService(EventService.class)
-                 .sendEvent(new Event("usermanager", "user_changed", this, "Deployer"));
+        Framework.getService(EventService.class).sendEvent(new Event("usermanager", "user_changed", this, "Deployer"));
         setFlushedNow();
         log.info("After flush the JAAS cache");
     }
@@ -185,8 +181,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Override
     public void flushSeamComponents() {
         log.info("Flush Seam components");
-        Framework.getService(EventService.class)
-                 .sendEvent(new Event(RELOAD_TOPIC, FLUSH_SEAM_EVENT_ID, this, null));
+        Framework.getService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, FLUSH_SEAM_EVENT_ID, this, null));
         setFlushedNow();
     }
 
@@ -202,17 +197,17 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                                          .map(File::getAbsolutePath)
                                          .collect(Collectors.toList());
         if (!missingNames.isEmpty()) {
-            missingNames.forEach(
-                    name -> log.error(String.format("No Bundle-SymbolicName found in MANIFEST for jar at '%s'", name)));
+            missingNames.forEach(name -> log.error("No Bundle-SymbolicName found in MANIFEST for jar at '{}'", name));
             // TODO investigate why we need to exit here, getBundleContext().installBundle(path) will throw an exception
             // unless, maybe tests ?
             return;
         }
-        if (log.isInfoEnabled()) {
+
+        log.info(() -> {
             StringBuilder builder = new StringBuilder("Before deploy bundles\n");
             Framework.getRuntime().getStatusMessage(builder);
-            log.info(builder.toString());
-        }
+            return builder.toString();
+        });
 
         // Reload resources
         if (reloadResources) {
@@ -229,12 +224,12 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             TransactionHelper.resumeTransaction(tx);
         }
 
-        if (log.isInfoEnabled()) {
+        log.info(() -> {
             StringBuilder builder = new StringBuilder("After deploy bundles.\n");
             Framework.getRuntime().getStatusMessage(builder);
-            log.info(builder.toString());
-            log.info(String.format("Hot deploy was done in %s ms.", System.currentTimeMillis() - begin));
-        }
+            return builder.toString();
+        });
+        log.info("Hot deploy was done in {} ms.", System.currentTimeMillis() - begin);
     }
 
     /**
@@ -244,11 +239,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Deprecated
     public void undeployBundles(List<String> bundleNames, boolean reloadResources) throws BundleException {
         long begin = System.currentTimeMillis();
-        if (log.isInfoEnabled()) {
+        log.info(() -> {
             StringBuilder builder = new StringBuilder("Before undeploy bundles\n");
             Framework.getRuntime().getStatusMessage(builder);
-            log.info(builder.toString());
-        }
+            return builder.toString();
+        });
 
         // Undeploy bundles
         Transaction tx = TransactionHelper.suspendTransaction();
@@ -262,18 +257,17 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
         // Reload resources
         if (reloadResources) {
-            List<URL> undeployedBundleURLs = result.undeployedBundles.stream()
-                                                                     .map(this::toURL)
-                                                                     .collect(Collectors.toList());
+            List<URL> undeployedBundleURLs = result.undeployedBundles.stream().map(this::toURL).collect(
+                    Collectors.toList());
             Framework.reloadResourceLoader(null, undeployedBundleURLs);
         }
 
-        if (log.isInfoEnabled()) {
+        log.info(() -> {
             StringBuilder builder = new StringBuilder("After undeploy bundles.\n");
             Framework.getRuntime().getStatusMessage(builder);
-            log.info(builder.toString());
-            log.info(String.format("Hot undeploy was done in %s ms.", System.currentTimeMillis() - begin));
-        }
+            return builder.toString();
+        });
+        log.info("Hot undeploy was done in {} ms.", System.currentTimeMillis() - begin);
     }
 
     @Override
@@ -282,11 +276,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         List<String> bundlesNamesToUndeploy = context.bundlesNamesToUndeploy;
 
         Watch watch = new Watch(new LinkedHashMap<>()).start();
-        if (log.isInfoEnabled()) {
+        log.info(() -> {
             StringBuilder builder = new StringBuilder("Before updating Nuxeo server\n");
             Framework.getRuntime().getStatusMessage(builder);
-            log.info(builder.toString());
-        }
+            return builder.toString();
+        });
         // get class loader
         Optional<DevMutableClassLoader> classLoader = Optional.of(getClass().getClassLoader())
                                                               .filter(DevMutableClassLoader.class::isInstance)
@@ -303,9 +297,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             // Stop or Standby the component manager
             ComponentManager componentManager = Framework.getRuntime().getComponentManager();
             String reloadStrategy = Framework.getProperty(RELOAD_STRATEGY_PARAMETER, RELOAD_STRATEGY_VALUE_DEFAULT);
-            if (log.isInfoEnabled()) {
-                log.info("Component reload strategy=" + reloadStrategy);
-            }
+            log.info("Component reload strategy={}", reloadStrategy);
 
             watch.start("stop/standby");
             log.info("Before stop/standby component manager");
@@ -405,26 +397,19 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         } finally {
             TransactionHelper.resumeTransaction(tx);
         }
-        if (log.isInfoEnabled()) {
+
+        log.info(() -> {
             StringBuilder builder = new StringBuilder("After updating Nuxeo server\n");
             Framework.getRuntime().getStatusMessage(builder);
-            log.info(builder.toString());
-        }
+            return builder.toString();
+        });
 
         watch.stop();
-        if (log.isInfoEnabled()) {
-            StringBuilder message = new StringBuilder();
-            message.append("Hot reload was done in ")
-                   .append(watch.getTotal().elapsed(TimeUnit.MILLISECONDS))
-                   .append(" ms, detailed steps:");
-            Stream.of(watch.getIntervals())
-                  .forEach(i -> message.append("\n- ")
-                                       .append(i.getName())
-                                       .append(": ")
-                                       .append(i.elapsed(TimeUnit.MILLISECONDS))
-                                       .append(" ms"));
-            log.info(message.toString());
-        }
+        log.info("Hot reload was done in {} ms, detailed steps:\n{}",
+                () -> watch.getTotal().elapsed(TimeUnit.MILLISECONDS),
+                () -> Stream.of(watch.getIntervals())
+                            .map(i -> "- " + i.getName() + ": " + i.elapsed(TimeUnit.MILLISECONDS) + " ms")
+                            .collect(Collectors.joining("\n")));
         return result;
     }
 
@@ -469,9 +454,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         BundleContext bundleContext = getBundleContext();
         for (File file : bundlesToDeploy) {
             String path = file.getAbsolutePath();
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Before deploy bundle for file at '%s'", path));
-            }
+            log.info("Before deploy bundle for file at '{}'", path);
             Bundle bundle = bundleContext.installBundle(path);
             if (bundle == null) {
                 // TODO check why this is necessary, our implementation always return sth
@@ -479,9 +462,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             }
             bundle.start();
             result.deployedBundles.add(bundle);
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Deploy done for bundle with name '%s'", bundle.getSymbolicName()));
-            }
+            log.info("Deploy done for bundle with name '{}'", bundle.getSymbolicName());
         }
         return result;
     }
@@ -498,15 +479,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             for (String bundleName : bundleNames) {
                 for (Bundle bundle : srv.getBundles(bundleName, null)) {
                     if (bundle != null && bundle.getState() == Bundle.ACTIVE) {
-                        if (log.isInfoEnabled()) {
-                            log.info(String.format("Before undeploy bundle with name '%s'.", bundleName));
-                        }
+                        log.info("Before undeploy bundle with name '{}'.", bundleName);
                         bundle.stop();
                         bundle.uninstall();
                         result.undeployedBundles.add(bundle);
-                        if (log.isInfoEnabled()) {
-                            log.info(String.format("After undeploy bundle with name '%s'.", bundleName));
-                        }
+                        log.info("After undeploy bundle with name '{}'.", bundleName);
                     }
                 }
             }
@@ -537,11 +514,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
      * Logs the {@link ComponentManager} status.
      */
     protected void logComponentManagerStatus() {
-        if (log.isDebugEnabled()) {
+        log.debug(() -> {
             StringBuilder builder = new StringBuilder("ComponentManager status:\n");
             Framework.getRuntime().getStatusMessage(builder);
-            log.debug(builder.toString());
-        }
+            return builder.toString();
+        });
     }
 
     @Override
@@ -628,7 +605,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
      * @deprecated since 9.3 should not be needed anymore
      */
     @Deprecated
-    protected void triggerReloadWithNewTransaction(String eventId) throws InterruptedException {
+    protected void triggerReloadWithNewTransaction(String eventId) {
         if (TransactionHelper.isTransactionMarkedRollback()) {
             throw new AssertionError("The calling transaction is marked rollback");
         }
@@ -654,15 +631,14 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
      */
     @Deprecated
     protected void triggerReload(String eventId) {
-        log.info("About to send reload event for id: " + eventId);
-        Framework.getService(EventService.class)
-                 .sendEvent(new Event(RELOAD_TOPIC, BEFORE_RELOAD_EVENT_ID, this, null));
+        log.info("About to send reload event for id: {}", eventId);
+        Framework.getService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, BEFORE_RELOAD_EVENT_ID, this, null));
         try {
             Framework.getService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, eventId, this, null));
         } finally {
             Framework.getService(EventService.class)
                      .sendEvent(new Event(RELOAD_TOPIC, AFTER_RELOAD_EVENT_ID, this, null));
-            log.info("Returning from reload for event id: " + eventId);
+            log.info("Returning from reload for event id: {}", eventId);
         }
     }
 }
