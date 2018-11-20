@@ -207,10 +207,8 @@ public class SuggestUserEntries {
                             }
                         }
                     }
-                    if (hidePowerUsersGroup) {
-                        if (POWERUSERS.equals(group.getId())) {
-                            break groupLoop;
-                        }
+                    if (hidePowerUsersGroup && POWERUSERS.equals(group.getId())) {
+                        break groupLoop;
                     }
                     Map<String, Object> obj = new LinkedHashMap<>();
                     for (Field field : schema.getFields()) {
@@ -235,11 +233,10 @@ public class SuggestUserEntries {
             int userSize = userList != null ? userList.size() : 0;
             int groupSize = groupList != null ? groupList.size() : 0;
             int totalSize = userSize + groupSize;
-            if (userSuggestionMaxSearchResults != null && userSuggestionMaxSearchResults > 0) {
-                if (userSize > userSuggestionMaxSearchResults || groupSize > userSuggestionMaxSearchResults
-                        || totalSize > userSuggestionMaxSearchResults) {
-                    throw new SizeLimitExceededException();
-                }
+            if (userSuggestionMaxSearchResults != null && userSuggestionMaxSearchResults > 0
+                    && (userSize > userSuggestionMaxSearchResults || groupSize > userSuggestionMaxSearchResults
+                            || totalSize > userSuggestionMaxSearchResults)) {
+                throw new SizeLimitExceededException();
             }
 
         } catch (SizeLimitExceededException e) {
