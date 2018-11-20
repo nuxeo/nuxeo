@@ -98,7 +98,7 @@ public class TaskDashBoardActions implements Serializable {
             TaskEventNames.WORKFLOW_TASK_COMPLETED, TaskEventNames.WORKFLOW_TASK_REMOVED,
             TaskEventNames.WORK_ITEMS_LIST_LOADED, TaskEventNames.WORKFLOW_TASKS_COMPUTED,
             TaskEventNames.WORKFLOW_ABANDONED, TaskEventNames.WORKFLOW_CANCELED, EventNames.DOMAIN_SELECTION_CHANGED,
-            "documentPublicationRejected", "documentPublished" }, create = false)
+            EventNames.DOCUMENT_PUBLICATION_REJECTED, EventNames.DOCUMENT_PUBLISHED }, create = false)
     @BypassInterceptors
     public void invalidateDashboardItems() {
         currentUserTasks = null;
