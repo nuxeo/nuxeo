@@ -4,12 +4,13 @@
   <parent>
     <groupId>org.nuxeo.ecm</groupId>
     <artifactId>nuxeo-diff-parent</artifactId>
-    <version>7.10-HF48-SNAPSHOT</version>
+    <version>7.10-HF47</version>
   </parent>
 
   <groupId>org.nuxeo.ecm</groupId>
   <artifactId>nuxeo-diff-content</artifactId>
   <name>Nuxeo Diff Content</name>
+  <version>7.10-HF47-NXP-25208</version>
   <description>Content diff feature</description>
 
   <dependencies>
