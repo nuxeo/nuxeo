@@ -85,6 +85,18 @@ public class TestSuggestUserEntries {
             entry.has("groups").isArray().length(0);
 
             // check various suggestion cases
+            // null search term, expecting all users
+            params.remove("searchTerm");
+            result = (Blob) automationService.run(ctx, SuggestUserEntries.ID, params);
+            json = JsonAssert.on(result.getString()).length(3);
+            json.childrenContains("id", "Administrator", "jdoe", "jack");
+
+            // empty search term, expecting all users
+            params.put("searchTerm", "");
+            result = (Blob) automationService.run(ctx, SuggestUserEntries.ID, params);
+            json = JsonAssert.on(result.getString()).length(3);
+            json.childrenContains("id", "Administrator", "jdoe", "jack");
+
             // term not matching any user
             params.put("searchTerm", "foo");
             result = (Blob) automationService.run(ctx, SuggestUserEntries.ID, params);
