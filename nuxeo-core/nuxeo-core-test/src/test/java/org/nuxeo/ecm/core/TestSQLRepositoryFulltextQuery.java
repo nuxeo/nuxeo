@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -194,7 +194,7 @@ public class TestSQLRepositoryFulltextQuery {
      *        \- testfile4 (UUID_10) (content UUID_11)
      * </pre>
      */
-    protected void createDocs() throws Exception {
+    protected void createDocs() {
         DocumentModel folder1 = session.createDocumentModel("/", "testfolder1", "Folder");
         folder1.setPropertyValue("dc:title", "testfolder1_Title");
         folder1 = session.createDocument(folder1);
@@ -253,7 +253,7 @@ public class TestSQLRepositoryFulltextQuery {
      * <p>
      * proxy (UUID_14)
      */
-    protected DocumentModel publishDoc() throws Exception {
+    protected DocumentModel publishDoc() {
         DocumentModel doc = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
         DocumentModel sec = session.getDocument(new PathRef("/testfolder1"));
         DocumentModel proxy = session.publishDocument(doc, sec);
@@ -264,7 +264,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltext() throws Exception {
+    public void testFulltext() {
         createDocs();
         waitForFulltextIndexing();
         String query;
@@ -358,7 +358,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltext2() throws Exception {
+    public void testFulltext2() {
         createDocs();
         waitForFulltextIndexing();
         String query;
@@ -401,7 +401,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltextScore() throws Exception {
+    public void testFulltextScore() {
         String query;
         IterableQueryResult res;
         Map<String, Serializable> map;
@@ -469,7 +469,7 @@ public class TestSQLRepositoryFulltextQuery {
      * This used to crash SQL Server 2008 R2 (NXP-6143). It works on SQL Server 2005.
      */
     @Test
-    public void testFulltextCrashingSQLServer2008() throws Exception {
+    public void testFulltextCrashingSQLServer2008() {
         createDocs();
         waitForFulltextIndexing();
 
@@ -478,7 +478,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltextPrefix() throws Exception {
+    public void testFulltextPrefix() {
         assumeTrue("DBS cannot do prefix fulltext search", !isDBS());
 
         createDocs();
@@ -529,7 +529,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltextSpuriousCharacters() throws Exception {
+    public void testFulltextSpuriousCharacters() {
         assumeTrue("DBS cannot remove spurious characters in fulltext search", !isDBS());
 
         createDocs();
@@ -540,7 +540,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltextMixin() throws Exception {
+    public void testFulltextMixin() {
         createDocs();
         DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         file1.addFacet("Aged");
@@ -554,7 +554,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltextProxy() throws Exception {
+    public void testFulltextProxy() {
         createDocs();
         waitForFulltextIndexing();
 
@@ -601,7 +601,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltextExpressionSyntax() throws Exception {
+    public void testFulltextExpressionSyntax() {
         assumeTrue(!coreFeature.getStorageConfiguration().isVCSDerby());
 
         createDocs();
@@ -716,7 +716,7 @@ public class TestSQLRepositoryFulltextQuery {
 
     // don't use small words, they are eliminated by some fulltext engines
     @Test
-    public void testFulltextExpressionPhrase() throws Exception {
+    public void testFulltextExpressionPhrase() {
         assumeTrue(!coreFeature.getStorageConfiguration().isVCSDerby());
 
         String query;
@@ -762,7 +762,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltextSecondary() throws Exception {
+    public void testFulltextSecondary() {
         assumeTrue("Skipping multi-fulltext test for unsupported database",
                 coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
@@ -812,7 +812,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltextBlob() throws Exception {
+    public void testFulltextBlob() {
         createDocs();
         waitForFulltextIndexing();
 
@@ -838,7 +838,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltextCopy() throws Exception {
+    public void testFulltextCopy() {
         createDocs();
         String query;
         DocumentModelList dml;
@@ -865,7 +865,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltextComplexType() throws Exception {
+    public void testFulltextComplexType() {
         DocumentModel doc = session.createDocumentModel("/", "complex-doc", "ComplexDoc");
         doc = session.createDocument(doc);
         DocumentRef docRef = doc.getRef();
@@ -933,7 +933,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltextSecurity() throws Exception {
+    public void testFulltextSecurity() {
         createDocs();
         try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
             bobSession.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:fulltext = 'world'");
@@ -944,7 +944,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltextFacet() throws Exception {
+    public void testFulltextFacet() {
         DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc.addFacet("Aged");
         doc.setPropertyValue("age:age", "barbar");
@@ -958,7 +958,7 @@ public class TestSQLRepositoryFulltextQuery {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-all-contrib.xml")
-    public void testFulltextReindexOnCreateDelete() throws Exception {
+    public void testFulltextReindexOnCreateDelete() {
         waitForFulltextIndexing();
 
         // create
@@ -1002,7 +1002,7 @@ public class TestSQLRepositoryFulltextQuery {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-all-contrib.xml")
-    public void testGetBinaryFulltextUpdatedEvent() throws Exception {
+    public void testGetBinaryFulltextUpdatedEvent() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         session.save();
@@ -1035,7 +1035,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testGetBinaryFulltext() throws Exception {
+    public void testGetBinaryFulltext() {
         createDocs();
         waitForFulltextIndexing();
         DocumentModelList list = session.query("SELECT * FROM File WHERE ecm:fulltext = 'Drink'");
@@ -1046,7 +1046,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testGetBinaryFulltextFromProxy() throws Exception {
+    public void testGetBinaryFulltextFromProxy() {
         createDocs();
         waitForFulltextIndexing();
         // Publish testfile1 into testfolder2
@@ -1062,7 +1062,7 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     @Test
-    public void testFulltextAfterAutoVersioning() throws Exception {
+    public void testFulltextAfterAutoVersioning() {
         String query;
         DocumentModelList dml;
 
