@@ -173,8 +173,8 @@ public class TestLogKafka extends TestLog {
     @Test
     public void testSubscribe() throws Exception {
         final int NB_QUEUE = 3;
-        final int NB_MSG = 1000;
-        final int NB_CONSUMER = 20;
+        final int NB_MSG = 200;
+        final int NB_CONSUMER = 6;
         final String group = "consumer";
 
         manager.createIfNotExists(logName, NB_QUEUE);
@@ -200,7 +200,7 @@ public class TestLogKafka extends TestLog {
         // assignments have been done with a single tailer
         assertFalse(tailer1.assignments().isEmpty());
         assertEquals(NB_QUEUE, tailer1.assignments().size());
-        // read all the messages and commit
+        // read NB_QUEUE msg and commit
         for (int i = 0; i < NB_QUEUE; i++) {
             record = tailer1.read(Duration.ofSeconds(1));
             assertNotNull(record);
@@ -216,20 +216,19 @@ public class TestLogKafka extends TestLog {
             LogRecord<KeyValueMessage> consumerRecord;
             while (true) {
                 try {
-                    consumerRecord = consumerTailer.read(Duration.ofMillis(200));
-                    if (consumerRecord == null) {
-                        // log.warn("returns " + count);
-                        // if we don't commit a thread can consume all messages and returns
-                        // before being rebalanced, the others will then consume the same message
+                    consumerRecord = consumerTailer.read(Duration.ofSeconds(2));
+                    if (consumerRecord != null) {
+                        count++;
                         consumerTailer.commit();
+                    } else {
+                        // log.warn("returns " + count);
                         // if we leave without closing rebalance will wait max.poll.interval before taking decision
                         consumerTailer.close();
                         return count;
                     }
-                    count++;
                 } catch (RebalanceException e) {
-                    // expected, we start from last committed value
-                    count = 0;
+                    // rebalance is expected on first read and when consumer returns
+                    // log.warn("rebalance " +  consumerTailer.assignments().size());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException(e);
