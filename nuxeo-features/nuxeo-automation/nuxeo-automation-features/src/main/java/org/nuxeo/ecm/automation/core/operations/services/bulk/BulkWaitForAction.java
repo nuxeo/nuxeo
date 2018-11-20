@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.bulk.BulkService;
  *
  * @since 10.2
  */
-@Operation(id = BulkWaitForAction.ID, category = Constants.CAT_SERVICES, label = "Wait for Bulk computation", since = "10.2", description = "Wait until Bulk computation is done. This operation is meant to be used for tests. Its usage in production is not recommended.")
+@Operation(id = BulkWaitForAction.ID, category = Constants.CAT_SERVICES, label = "Wait for Bulk computation", since = "10.2", description = "Wait until Bulk computation is done. This operation is meant to be used for tests. Its usage in production is not recommended.", addToStudio = false)
 public class BulkWaitForAction {
 
     public static final String ID = "Bulk.WaitForAction";
