@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -266,7 +265,7 @@ public class SuggestUserEntries {
     protected DocumentModelList searchUsers() {
         if (StringUtils.isBlank(prefix)) {
             // empty search term
-            return new DocumentModelListImpl();
+            return userManager.searchUsers(prefix);
         }
 
         String trimmedPrefix = prefix.trim();
