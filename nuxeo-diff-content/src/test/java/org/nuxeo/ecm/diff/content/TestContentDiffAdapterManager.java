@@ -34,6 +34,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * Tests the {@link ContentDiffAdapterManager}.
@@ -45,6 +46,9 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RepositoryConfig(init = ContentDiffRepositoryInit.class)
 @Deploy("org.nuxeo.diff.content")
 public class TestContentDiffAdapterManager {
+
+    @Inject
+    protected RuntimeHarness runtimeHarness;
 
     @Inject
     protected ContentDiffAdapterManager contentDiffAdapterManager;
@@ -59,8 +63,8 @@ public class TestContentDiffAdapterManager {
     }
 
     @Test
-    @Deploy("org.nuxeo.diff.content:OSGI-INF/test-blacklisted-mime-types-contrib.xml")
-    public void testCustomHtmlConversionBlacklistedMimeTypes() {
+    public void testCustomHtmlConversionBlacklistedMimeTypes() throws Exception {
+        runtimeHarness.deployContrib("org.nuxeo.diff.content", "OSGI-INF/test-blacklisted-mime-types-contrib.xml");
         Set<String> mimeTypes = contentDiffAdapterManager.getHtmlConversionBlacklistedMimeTypes();
         assertEquals(12, mimeTypes.size());
         assertTrue(mimeTypes.contains("application/vnd.ms-excel"));
@@ -69,11 +73,12 @@ public class TestContentDiffAdapterManager {
         assertFalse(mimeTypes.contains("application/pdf"));
         assertFalse(mimeTypes.contains("application/vnd.ms-powerpoint"));
         assertFalse(mimeTypes.contains("application/vnd.sun.xml.impress"));
+        runtimeHarness.undeployContrib("org.nuxeo.diff.content", "OSGI-INF/test-blacklisted-mime-types-contrib.xml");
     }
 
     @Test
-    @Deploy("org.nuxeo.diff.content:OSGI-INF/test-blacklisted-mime-types-override-contrib.xml")
-    public void testOverriddenHtmlConversionBlacklistedMimeTypes() {
+    public void testOverriddenHtmlConversionBlacklistedMimeTypes() throws Exception {
+        runtimeHarness.deployContrib("org.nuxeo.diff.content", "OSGI-INF/test-blacklisted-mime-types-override-contrib.xml");
         Set<String> mimeTypes = contentDiffAdapterManager.getHtmlConversionBlacklistedMimeTypes();
         assertEquals(3, mimeTypes.size());
         assertTrue(mimeTypes.contains("application/pdf"));
@@ -81,5 +86,6 @@ public class TestContentDiffAdapterManager {
         assertTrue(mimeTypes.contains("application/rtf"));
         assertFalse(mimeTypes.contains("application/vnd.ms-excel"));
         assertFalse(mimeTypes.contains("application/vnd.ms-powerpoint"));
+        runtimeHarness.undeployContrib("org.nuxeo.diff.content", "OSGI-INF/test-blacklisted-mime-types-override-contrib.xml");
     }
 }
