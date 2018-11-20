@@ -285,7 +285,7 @@ public class LayoutDemoContext implements Serializable {
         if (index <= 1) {
             doc.prefetchCurrentLifecycleState("project");
         } else {
-            doc.prefetchCurrentLifecycleState("deleted");
+            doc.prefetchCurrentLifecycleState("approved");
         }
         // fill demo docs for listings
         doc.setPropertyValue("dc:title", "Demo document " + index);
