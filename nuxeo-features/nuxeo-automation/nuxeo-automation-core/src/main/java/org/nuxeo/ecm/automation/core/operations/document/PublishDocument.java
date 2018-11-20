@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -26,6 +30,13 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -46,7 +57,26 @@ public class PublishDocument {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
-        return session.publishDocument(doc, target, override);
+        DocumentModel proxy = session.publishDocument(doc, target, override);
+        notifyPublishedEvent(proxy);
+        return proxy;
+    }
+
+    /**
+     * @since 10.3
+     */
+    protected void notifyPublishedEvent(DocumentModel proxy) {
+        Map<String, Serializable> properties = new HashMap<>();
+        properties.put(CoreEventConstants.REPOSITORY_NAME, proxy.getRepositoryName());
+        properties.put(CoreEventConstants.SESSION_ID, session.getSessionId());
+        properties.put(CoreEventConstants.DOC_LIFE_CYCLE, proxy.getCurrentLifeCycleState());
+
+        DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), proxy);
+        ctx.setProperties(properties);
+        ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
+
+        Event event = ctx.newEvent(DocumentEventTypes.DOCUMENT_PUBLISHED);
+        Framework.getService(EventProducer.class).fireEvent(event);
     }
 
 }
