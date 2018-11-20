@@ -64,6 +64,9 @@ public class ThumbnailDocumentConverter implements Converter {
             }
             // get the input and output of the command
             Blob blob = blobHolder.getBlob();
+            if (blob == null) {
+                return new SimpleCachableBlobHolder((Blob) null);
+            }
 
             Blob targetBlob = Blobs.createBlobWithExtension(".png");
             targetBlob.setMimeType("image/png");
