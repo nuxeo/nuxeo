@@ -45,7 +45,7 @@ import org.nuxeo.elasticsearch.bulk.IndexAction;
  *
  * @since 10.3
  */
-@Operation(id = ElasticsearchBulkIndexOperation.ID, category = Constants.CAT_SERVICES, label = "Elasticsearch Indexing", since = "10.3", description = "Enable to index Nuxeo documents using the Bulk Service.")
+@Operation(id = ElasticsearchBulkIndexOperation.ID, category = Constants.CAT_SERVICES, label = "Elasticsearch Indexing", since = "10.3", description = "Enable to index Nuxeo documents using the Bulk Service.", addToStudio = false)
 public class ElasticsearchBulkIndexOperation {
     private static final Log log = LogFactory.getLog(ElasticsearchBulkIndexOperation.class);
 
