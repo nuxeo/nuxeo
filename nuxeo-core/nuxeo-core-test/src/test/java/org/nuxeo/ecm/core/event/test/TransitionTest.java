@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -51,10 +51,10 @@ import com.google.common.collect.Sets;
 public class TransitionTest implements EventListener {
 
     @Inject
-    EventService eventService;
+    protected EventService eventService;
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     private String lastComment;
 
@@ -88,7 +88,7 @@ public class TransitionTest implements EventListener {
     }
 
     @Test
-    public void itCanAddACommentWhenFollowingTransition() throws Exception {
+    public void itCanAddACommentWhenFollowingTransition() {
         DocumentModel doc = session.createDocumentModel("/", "myDoc", "File");
         doc = session.createDocument(doc);
 
@@ -100,7 +100,7 @@ public class TransitionTest implements EventListener {
     }
 
     @Test
-    public void itCanModifyACommentWhenModifyingADocument() throws Exception {
+    public void itCanModifyACommentWhenModifyingADocument() {
         DocumentModel doc = session.createDocumentModel("/", "myDoc", "File");
         doc = session.createDocument(doc);
 

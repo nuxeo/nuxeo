@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -212,7 +212,7 @@ public class DocumentBrowsingTest extends BaseTest {
     }
 
     @Test
-    public void iCanUpdateAFileDocument() throws Exception {
+    public void iCanUpdateAFileDocument() {
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         Blob blob = new StringBlob("test");
         blob.setFilename("test.txt");
@@ -278,7 +278,7 @@ public class DocumentBrowsingTest extends BaseTest {
     }
 
     @Test
-    public void itCanUpdateADocumentWithoutSpecifyingIdInJSONPayload() throws Exception {
+    public void itCanUpdateADocumentWithoutSpecifyingIdInJSONPayload() {
         // Given a document
         DocumentModel note = RestServerInit.getNote(0, session);
         try (CloseableClientResponse response = getResponse(RequestType.GET, "path" + note.getPathAsString())) {
@@ -287,7 +287,7 @@ public class DocumentBrowsingTest extends BaseTest {
 
         // When i do a PUT request on the document with modified data
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(),
-                "{\"entity-type\":\"document\",\"properties\":{\"dc:title\":\"Other New title\"}}");) {
+                "{\"entity-type\":\"document\",\"properties\":{\"dc:title\":\"Other New title\"}}")) {
             // Then the document is updated
             fetchInvalidations();
             note = RestServerInit.getNote(0, session);
@@ -296,7 +296,7 @@ public class DocumentBrowsingTest extends BaseTest {
     }
 
     @Test
-    public void itCanSetPropertyToNull() throws Exception {
+    public void itCanSetPropertyToNull() {
         DocumentModel note = RestServerInit.getNote(0, session);
         note.setPropertyValue("dc:format", "a value that will be set to null");
         note.setPropertyValue("dc:language", "a value that that must not be resetted");
@@ -306,17 +306,17 @@ public class DocumentBrowsingTest extends BaseTest {
 
         // When i do a PUT request on the document with modified data
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(),
-                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":null}}");) {
+                "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":null}}")) {
             // Then the document is updated
             fetchInvalidations();
             note = RestServerInit.getNote(0, session);
-            assertEquals(null, note.getPropertyValue("dc:format"));
+            assertNull(note.getPropertyValue("dc:format"));
             assertEquals("a value that that must not be resetted", note.getPropertyValue("dc:language"));
         }
     }
 
     @Test
-    public void itCanSetPropertyToNullNewModeKeepEmpty() throws Exception {
+    public void itCanSetPropertyToNullNewModeKeepEmpty() {
         DocumentModel note = RestServerInit.getNote(0, session);
         note.setPropertyValue("dc:format", "a value that will be set to null");
         session.saveDocument(note);
@@ -338,7 +338,7 @@ public class DocumentBrowsingTest extends BaseTest {
     }
 
     @Test
-    public void itCanSetPropertyToNullLegacyModeHeader() throws Exception {
+    public void itCanSetPropertyToNullLegacyModeHeader() {
         DocumentModel note = RestServerInit.getNote(0, session);
         note.setPropertyValue("dc:format", "a value that will be set to null");
         session.saveDocument(note);
@@ -353,7 +353,7 @@ public class DocumentBrowsingTest extends BaseTest {
             // Then the document is updated
             fetchInvalidations();
             note = RestServerInit.getNote(0, session);
-            assertEquals(null, note.getPropertyValue("dc:format"));
+            assertNull(note.getPropertyValue("dc:format"));
         }
     }
 
@@ -366,7 +366,8 @@ public class DocumentBrowsingTest extends BaseTest {
 
         String data = "{\"entity-type\": \"document\",\"type\": \"File\",\"name\":\"newName\",\"properties\": {\"dc:title\":\"My title\",\"dc:description\":\" \"}}";
 
-        try (CloseableClientResponse response = getResponse(RequestType.POST, "path" + folder.getPathAsString(), data)) {
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "path" + folder.getPathAsString(),
+                data)) {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
             node = mapper.readTree(response.getEntityInputStream());
 
@@ -386,7 +387,7 @@ public class DocumentBrowsingTest extends BaseTest {
     }
 
     @Test
-    public void iCanDeleteADocument() throws Exception {
+    public void iCanDeleteADocument() {
         // Given a document
         DocumentModel doc = RestServerInit.getNote(0, session);
 
@@ -401,7 +402,7 @@ public class DocumentBrowsingTest extends BaseTest {
     }
 
     @Test
-    public void iCanDeleteADocumentWithoutHeaders() throws Exception {
+    public void iCanDeleteADocumentWithoutHeaders() {
         // Given a document
         DocumentModel doc = RestServerInit.getNote(0, session);
 
@@ -509,8 +510,7 @@ public class DocumentBrowsingTest extends BaseTest {
             // thumbnail entry from the contributor
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertNotNull(
-                    node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get("url").textValue());
+            assertNotNull(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get("url").textValue());
         }
     }
 
@@ -623,8 +623,8 @@ public class DocumentBrowsingTest extends BaseTest {
 
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
-            assertEquals(0, ((ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
-                                             .get(CollectionsJsonEnricher.NAME)).size());
+            assertEquals(0,
+                    node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(CollectionsJsonEnricher.NAME).size());
         }
 
         CollectionManager collectionManager = Framework.getService(CollectionManager.class);
@@ -686,7 +686,7 @@ public class DocumentBrowsingTest extends BaseTest {
     }
 
     @Test
-    public void itCanBrowseDocumentWithSpacesInPath() throws Exception {
+    public void itCanBrowseDocumentWithSpacesInPath() {
         DocumentModel folder = RestServerInit.getFolder(0, session);
         DocumentModel note = session.createDocumentModel(folder.getPathAsString(), "doc with space", "Note");
         note = session.createDocument(note);

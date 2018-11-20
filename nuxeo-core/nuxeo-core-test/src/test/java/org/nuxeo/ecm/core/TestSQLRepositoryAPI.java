@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -240,7 +240,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testBasics() throws Exception {
+    public void testBasics() {
         DocumentModel root = session.getRootDocument();
         DocumentModel child = session.createDocumentModel("/", "domain", "MyDocType");
         child = session.createDocument(child);
@@ -267,7 +267,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testLists() throws Exception {
+    public void testLists() {
         DocumentModel root = session.getRootDocument();
         DocumentModel child = session.createDocumentModel("/", "domain", "MyDocType");
         child = session.createDocument(child);
@@ -312,7 +312,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testPathWithExtraSlash() throws Exception {
+    public void testPathWithExtraSlash() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
         doc = session.createDocument(doc);
         session.save();
@@ -325,7 +325,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testComplexType() throws Exception {
+    public void testComplexType() {
         // boiler plate to handle the asynchronous full-text indexing of blob
         // content in a deterministic way
 
@@ -452,7 +452,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testMarkDirty() throws Exception {
+    public void testMarkDirty() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
         doc = session.createDocument(doc);
         session.save();
@@ -478,7 +478,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testMarkDirtyForList() throws Exception {
+    public void testMarkDirtyForList() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "ComplexDoc");
         Map<String, Object> attachedFile = new HashMap<>();
         List<Map<String, Object>> vignettes = new ArrayList<>();
@@ -977,34 +977,6 @@ public class TestSQLRepositoryAPI {
         }
     }
 
-    @Test
-    public void testGetChildrenDocumentRefStringFilter() {
-        DocumentModel root = session.getRootDocument();
-
-        String name = "folder#" + generateUnique();
-        DocumentModel childFolder = session.createDocumentModel(root.getPathAsString(), name, "Folder");
-        String name2 = "folder#" + generateUnique();
-        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), name2, "Folder");
-
-        List<DocumentModel> childDocs = new ArrayList<>();
-        childDocs.add(childFolder);
-        childDocs.add(childFile);
-
-        List<DocumentModel> returnedChildDocs = createChildDocuments(childDocs);
-
-        assertEquals(name, returnedChildDocs.get(0).getName());
-        assertEquals(name2, returnedChildDocs.get(1).getName());
-
-        /*
-         * Filter filter = new NameFilter(name2); // get folder children List<DocumentModel> retrievedChilds =
-         * session.getChildren(root.getRef(), null, null, filter, null); assertNotNull(retrievedChilds); assertEquals(1,
-         * retrievedChilds.size()); assertNotNull(retrievedChilds.get(0));
-         * assertNotNull(retrievedChilds.get(0).getId()); assertNotNull(retrievedChilds.get(0).getName());
-         * assertNotNull(retrievedChilds.get(0).getPathAsString()); assertNotNull(retrievedChilds.get(0).getRef());
-         * assertEquals(name2, retrievedChilds.get(0).getName());
-         */
-    }
-
     /**
      * Test for NXP-741: Search based getChildren.
      */
@@ -1436,12 +1408,12 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testRemoveLiveProxyTarget() throws Exception {
+    public void testRemoveLiveProxyTarget() {
         DocumentModel root = session.getRootDocument();
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel subfolder = session.createDocumentModel("/folder", "subfolder", "Folder");
-        subfolder= session.createDocument(subfolder);
+        subfolder = session.createDocument(subfolder);
         DocumentModel doc = session.createDocumentModel("/folder/subfolder", "doc", "File");
         doc = session.createDocument(doc);
         session.save();
@@ -1690,7 +1662,8 @@ public class TestSQLRepositoryAPI {
         assertTrue(name5.startsWith(name4));
 
         DocumentRef[] refs = { returnedChildDocs.get(0).getRef(), returnedChildDocs.get(1).getRef(),
-                returnedChildDocs.get(2).getRef(), returnedChildDocs.get(3).getRef(), returnedChildDocs.get(4).getRef() };
+                returnedChildDocs.get(2).getRef(), returnedChildDocs.get(3).getRef(),
+                returnedChildDocs.get(4).getRef() };
         session.removeDocuments(refs);
 
         assertFalse(session.exists(returnedChildDocs.get(0).getRef()));
@@ -1744,7 +1717,8 @@ public class TestSQLRepositoryAPI {
 
         // here's the different ordering
         DocumentRef[] refs = { returnedChildDocs.get(1).getRef(), returnedChildDocs.get(0).getRef(),
-                returnedChildDocs.get(4).getRef(), returnedChildDocs.get(3).getRef(), returnedChildDocs.get(2).getRef() };
+                returnedChildDocs.get(4).getRef(), returnedChildDocs.get(3).getRef(),
+                returnedChildDocs.get(2).getRef() };
         session.removeDocuments(refs);
 
         assertFalse(session.exists(returnedChildDocs.get(0).getRef()));
@@ -1755,7 +1729,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testRemoveDocumentTreeWithSecurity() throws Exception {
+    public void testRemoveDocumentTreeWithSecurity() {
         ACP acp;
         ACL acl;
         DocumentModelList dml;
@@ -1994,12 +1968,12 @@ public class TestSQLRepositoryAPI {
         assertNotNull(retrievedChild.getRef());
         assertEquals(name, retrievedChild.getName());
 
-        assertFalse(retrievedChild.getRef().equals(root.getRef()));
-        assertFalse(retrievedChild.getRef().equals(retrievedChild.getParentRef()));
+        assertNotEquals(root.getRef(), retrievedChild.getRef());
+        assertNotEquals(retrievedChild.getRef(), retrievedChild.getParentRef());
     }
 
     @Test
-    public void testFolderFacet() throws Exception {
+    public void testFolderFacet() {
         DocumentModel child1 = session.createDocumentModel("/", "file1", "File");
         DocumentModel child2 = session.createDocumentModel("/", "fold1", "Folder");
         DocumentModel child3 = session.createDocumentModel("/", "ws1", "Workspace");
@@ -2010,7 +1984,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testFacetAPI() throws Exception {
+    public void testFacetAPI() {
         DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc = session.createDocument(doc);
         session.save();
@@ -2126,7 +2100,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testFacetIncludedInPrimaryType() throws Exception {
+    public void testFacetIncludedInPrimaryType() {
         DocumentModel doc = session.createDocumentModel("/", "foo", "DocWithAge");
         doc.setPropertyValue("age:age", "123");
         doc = session.createDocument(doc);
@@ -2145,7 +2119,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testFacetAddRemove() throws Exception {
+    public void testFacetAddRemove() {
         DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc = session.createDocument(doc);
         session.save();
@@ -2178,7 +2152,7 @@ public class TestSQLRepositoryAPI {
 
     // mixin on doc with same schema in primary type does no harm
     @Test
-    public void testFacetAddRemove2() throws Exception {
+    public void testFacetAddRemove2() {
         DocumentModel doc = session.createDocumentModel("/", "foo", "DocWithAge");
         doc.setPropertyValue("age:age", "123");
         doc = session.createDocument(doc);
@@ -2266,7 +2240,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testFacetWithSamePropertyName() throws Exception {
+    public void testFacetWithSamePropertyName() {
         DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc.setPropertyValue("dc:title", "bar");
         doc = session.createDocument(doc);
@@ -2287,7 +2261,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testFacetCopy() throws Exception {
+    public void testFacetCopy() {
         DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc.addFacet("Aged");
         doc.setPropertyValue("age:age", "123");
@@ -2301,7 +2275,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testFacetQueryContent() throws Exception {
+    public void testFacetQueryContent() {
         DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc.addFacet("Aged");
         doc.setPropertyValue("age:age", "barbar");
@@ -2313,7 +2287,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testFacetRefresh() throws Exception {
+    public void testFacetRefresh() {
         DocumentModel doc = session.createDocumentModel("/", "foo", "File");
         doc = session.createDocument(doc);
         assertFalse(doc.hasFacet("Aged"));
@@ -2387,7 +2361,8 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testLifeCycleAPI() {
         DocumentModel root = session.getRootDocument();
-        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), "file#" + generateUnique(), "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), "file#" + generateUnique(),
+                "File");
         childFile = createChildDocument(childFile);
 
         assertEquals("default", session.getLifeCyclePolicy(childFile.getRef()));
@@ -2412,9 +2387,10 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testLifeCycleVersioning() throws Exception {
+    public void testLifeCycleVersioning() {
         DocumentModel root = session.getRootDocument();
-        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), "file#" + generateUnique(), "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), "file#" + generateUnique(),
+                "File");
         childFile = createChildDocument(childFile);
 
         assertEquals("default", session.getLifeCyclePolicy(childFile.getRef()));
@@ -2436,7 +2412,8 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testDataModelLifeCycleAPI() {
         DocumentModel root = session.getRootDocument();
-        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), "file#" + generateUnique(), "File");
+        DocumentModel childFile = session.createDocumentModel(root.getPathAsString(), "file#" + generateUnique(),
+                "File");
         childFile = createChildDocument(childFile);
 
         assertEquals("default", childFile.getLifeCyclePolicy());
@@ -2523,7 +2500,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testCopyProxyAsDocument() throws Exception {
+    public void testCopyProxyAsDocument() {
         // create a folder tree
         DocumentModel root = session.getRootDocument();
         DocumentModel folder1 = session.createDocumentModel(root.getPathAsString(), "folder1", "Folder");
@@ -2560,7 +2537,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testCopyVersionable() throws Exception {
+    public void testCopyVersionable() {
         DocumentModel note = session.createDocumentModel("/", "note", "Note");
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         note = session.createDocument(note);
@@ -2595,7 +2572,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testCopyFolderOfVersionable() throws Exception {
+    public void testCopyFolderOfVersionable() {
         DocumentModel root = session.getRootDocument();
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         DocumentModel note = session.createDocumentModel("/folder", "note", "Note");
@@ -2632,7 +2609,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testMove() throws Exception {
+    public void testMove() {
         DocumentModel root = session.getRootDocument();
         DocumentModel folder1 = session.createDocumentModel(root.getPathAsString(), "folder1", "Folder");
 
@@ -2664,7 +2641,7 @@ public class TestSQLRepositoryAPI {
         assertTrue(session.exists(new PathRef("/folder2/file2")));
         DocumentModel newFile2 = session.move(file.getRef(), folder2.getRef(), "file2"); // collision
         String newName = newFile2.getName();
-        assertFalse("file2".equals(newName));
+        assertNotEquals("file2", newName);
         assertTrue(session.exists(new PathRef("/folder2/file2")));
         assertTrue(session.exists(new PathRef("/folder2/" + newName)));
 
@@ -2737,7 +2714,7 @@ public class TestSQLRepositoryAPI {
     // TODO NXP-2514: fix this test
     @Test
     @Ignore
-    public void testScalarList() throws Exception {
+    public void testScalarList() {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
@@ -2821,7 +2798,7 @@ public class TestSQLRepositoryAPI {
         blob = (Blob) childFile.getPropertyValue("content");
         assertEquals("YYY", blob.getDigest());
         assertEquals("manifest.mf", blob.getFilename());
-        assertEquals(null, blob.getEncoding());
+        assertNull(blob.getEncoding());
         assertEquals("java/manifest", blob.getMimeType());
         assertEquals(IOUtils.toByteArray(url).length, blob.getLength());
     }
@@ -2878,7 +2855,7 @@ public class TestSQLRepositoryAPI {
     // TODO NXP-2514: fix and reenable.
     @Test
     @Ignore
-    public void testDocumentAdapter() throws Exception {
+    public void testDocumentAdapter() {
         DocumentModel root = session.getRootDocument();
         DocumentModel file = session.createDocumentModel(root.getPathAsString(), "file", "File");
 
@@ -3041,7 +3018,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testCopyContentWithDynamicFacetOnExistingDocument() throws Exception {
+    public void testCopyContentWithDynamicFacetOnExistingDocument() {
         DocumentModel file1 = session.createDocumentModel("/", "file1", "File");
         file1.addFacet("Aged");
         file1.setPropertyValue("age:age", "123");
@@ -3103,7 +3080,7 @@ public class TestSQLRepositoryAPI {
     // ------------------------------------
 
     @Test
-    public void testPropertyModel() throws Exception {
+    public void testPropertyModel() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "theDoc", "MyDocType");
 
@@ -3146,7 +3123,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testOrdering() throws Exception {
+    public void testOrdering() {
         DocumentModel root = session.getRootDocument();
         DocumentModel parent = session.createDocumentModel(root.getPathAsString(), "theParent", "OrderedFolder");
 
@@ -3197,7 +3174,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testOrderingAfterCopy() throws Exception {
+    public void testOrderingAfterCopy() {
         DocumentModel folder = session.createDocumentModel("/", "folder", "OrderedFolder");
         folder = session.createDocument(folder);
         DocumentModel doc1 = session.createDocumentModel("/folder", "doc1", "File");
@@ -3216,7 +3193,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testPropertyXPath() throws Exception {
+    public void testPropertyXPath() {
         DocumentModel root = session.getRootDocument();
         DocumentModel parent = session.createDocumentModel(root.getPathAsString(), "theParent", "OrderedFolder");
 
@@ -3231,7 +3208,7 @@ public class TestSQLRepositoryAPI {
 
     @SuppressWarnings("rawtypes")
     @Test
-    public void testComplexList() throws Exception {
+    public void testComplexList() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "mydoc", "MyDocType");
 
@@ -3243,7 +3220,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testDataModel() throws Exception {
+    public void testDataModel() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "mydoc", "Book");
 
@@ -3282,7 +3259,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testGetChildrenRefs() throws Exception {
+    public void testGetChildrenRefs() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "mydoc", "Book");
         doc = session.createDocument(doc);
@@ -3300,7 +3277,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testProxyChildren() throws Exception {
+    public void testProxyChildren() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc1 = session.createDocumentModel(root.getPathAsString(), "doc1", "Book");
         doc1 = session.createDocument(doc1);
@@ -3359,7 +3336,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testProxy() throws Exception {
+    public void testProxy() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "proxy_test", "File");
 
@@ -3451,7 +3428,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testProxyLive() throws Exception {
+    public void testProxyLive() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "proxy_test", "File");
 
@@ -3492,7 +3469,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testProxySchemas() throws Exception {
+    public void testProxySchemas() {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
@@ -3551,7 +3528,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testUpdatePublishedDocument() throws Exception {
+    public void testUpdatePublishedDocument() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "proxy_test", "File");
 
@@ -3584,7 +3561,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testImport() throws Exception {
+    public void testImport() {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder.setProperty("dublincore", "title", "the title");
         folder = session.createDocument(folder);
@@ -3607,8 +3584,8 @@ public class TestSQLRepositoryAPI {
         String typeName = "File";
         DocumentRef parentRef = null;
         String name = "foobar";
-        DocumentModel ver = new DocumentModelImpl((String) null, typeName, vid, new Path(name), null, null, parentRef,
-                null, null, null, null);
+        DocumentModel ver = new DocumentModelImpl(null, typeName, vid, new Path(name), null, null, parentRef, null,
+                null, null, null);
         Calendar vcr = new GregorianCalendar(2009, Calendar.JANUARY, 1, 2, 3, 4);
         ver.putContextData(CoreSession.IMPORT_VERSION_VERSIONABLE_ID, id);
         ver.putContextData(CoreSession.IMPORT_VERSION_CREATED, vcr);
@@ -3651,7 +3628,7 @@ public class TestSQLRepositoryAPI {
         typeName = CoreSession.IMPORT_PROXY_TYPE;
         parentRef = new IdRef(folderId);
         name = "myproxy";
-        DocumentModel proxy = new DocumentModelImpl((String) null, typeName, pid, new Path(name), null, null, parentRef,
+        DocumentModel proxy = new DocumentModelImpl(null, typeName, pid, new Path(name), null, null, parentRef,
                 new String[0], null, null, null);
         proxy.putContextData(CoreSession.IMPORT_PROXY_TARGET_ID, vid);
         proxy.putContextData(CoreSession.IMPORT_PROXY_VERSIONABLE_ID, id);
@@ -3672,8 +3649,8 @@ public class TestSQLRepositoryAPI {
         typeName = "File";
         parentRef = new IdRef(folderId);
         name = "mydoc";
-        DocumentModel doc = new DocumentModelImpl((String) null, typeName, id, new Path(name), null, null, parentRef,
-                null, null, null, null);
+        DocumentModel doc = new DocumentModelImpl(null, typeName, id, new Path(name), null, null, parentRef, null, null,
+                null, null);
         doc.putContextData(CoreSession.IMPORT_LIFECYCLE_POLICY, "lcp");
         doc.putContextData(CoreSession.IMPORT_LIFECYCLE_STATE, "lcst");
         Calendar lockCreated = new GregorianCalendar(2011, Calendar.JANUARY, 1, 5, 5, 5);
@@ -3708,7 +3685,7 @@ public class TestSQLRepositoryAPI {
      * SQLDocumentLive#VERSION_WRITABLE_PROPS).
      */
     @Test
-    public void testVersionUpdatableFields() throws Exception {
+    public void testVersionUpdatableFields() {
         Calendar cal1 = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34, 56);
         Calendar cal2 = new GregorianCalendar(2010, Calendar.JANUARY, 1, 0, 0, 0);
         Calendar cal3 = new GregorianCalendar(2010, Calendar.APRIL, 11, 11, 11, 11);
@@ -3781,7 +3758,7 @@ public class TestSQLRepositoryAPI {
             if (expectWritable) {
                 throw e;
             } else {
-                assertTrue(e.getMessage(), e.getMessage().equals("Cannot set property on a version: dc:title"));
+                assertEquals(e.getMessage(), "Cannot set property on a version: dc:title", e.getMessage());
             }
         }
     }
@@ -3792,7 +3769,7 @@ public class TestSQLRepositoryAPI {
      */
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-contrib.xml")
-    public void testDoNotFireIncrementBeforeUpdateEventsOnVersion() throws Exception {
+    public void testDoNotFireIncrementBeforeUpdateEventsOnVersion() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "doc", "File");
 
@@ -3818,7 +3795,7 @@ public class TestSQLRepositoryAPI {
 
     }
 
-    private static final List<String> IGNORED_EVENTS = Arrays.asList(DocumentEventTypes.SESSION_SAVED);
+    private static final List<String> IGNORED_EVENTS = Collections.singletonList(DocumentEventTypes.SESSION_SAVED);
 
     public static void assertEvents(String... expectedEventNames) {
         assertEvents(IGNORED_EVENTS, expectedEventNames);
@@ -3855,7 +3832,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listeners-all-contrib.xml")
-    public void testVersioningEvents() throws Exception {
+    public void testVersioningEvents() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         DocumentModel folder = session.createDocumentModel("/", "fold", "Folder");
@@ -3931,8 +3908,8 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testPlacelessDocument() throws Exception {
-        DocumentModel doc = session.createDocumentModel((String) null, "mydoc", "MyDocType");
+    public void testPlacelessDocument() {
+        DocumentModel doc = session.createDocumentModel(null, "mydoc", "MyDocType");
         doc.setProperty("dublincore", "title", "The title");
         doc = session.createDocument(doc);
         assertNull(doc.getParentRef()); // placeless
@@ -3961,7 +3938,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testRelation() throws Exception {
+    public void testRelation() {
         DocumentModel rel = session.createDocumentModel(null, "myrel", "Relation");
         rel.setProperty("relation", "source", "1234");
         rel.setProperty("dublincore", "title", "My Rel");
@@ -3992,7 +3969,7 @@ public class TestSQLRepositoryAPI {
      */
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listener-beforemod-contrib.xml")
-    public void testBeforeModificationListenerRename() throws Exception {
+    public void testBeforeModificationListenerRename() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc.setProperty("dublincore", "title", "t1");
         doc = session.createDocument(doc);
@@ -4009,7 +3986,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testObsoleteType() throws Throwable {
+    public void testObsoleteType() {
         DocumentRef rootRef = session.getRootDocument().getRef();
         DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
         doc = session.createDocument(doc);
@@ -4340,7 +4317,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testLocking() throws Exception {
+    public void testLocking() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         DocumentRef docRef = doc.getRef();
@@ -4407,7 +4384,7 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    public void testLockingBeforeSave() throws Exception {
+    public void testLockingBeforeSave() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         DocumentRef docRef = doc.getRef();
@@ -4619,7 +4596,7 @@ public class TestSQLRepositoryAPI {
 
         // change the doc by creating a complex property list
         doc.setPropertyValue("relatedtext:relatedtextresources",
-                (Serializable) Arrays.asList(Collections.singletonMap("relatedtextid", "123")));
+                (Serializable) Collections.singletonList(Collections.singletonMap("relatedtextid", "123")));
         maybeUpdateChangeToken(doc);
         doc = session.saveDocument(doc);
         session.save();
@@ -4630,7 +4607,7 @@ public class TestSQLRepositoryAPI {
 
         // change the doc by updating a complex property list
         doc.setPropertyValue("relatedtext:relatedtextresources",
-                (Serializable) Arrays.asList(Collections.singletonMap("relatedtextid", "456")));
+                (Serializable) Collections.singletonList(Collections.singletonMap("relatedtextid", "456")));
         maybeUpdateChangeToken(doc);
         doc = session.saveDocument(doc);
         session.save();
