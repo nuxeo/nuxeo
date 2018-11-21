@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.platform.rendition.operation;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -29,7 +33,13 @@ import org.nuxeo.ecm.automation.core.operations.document.PublishDocument;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -62,12 +72,15 @@ public class PublishRendition {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
+        DocumentModel proxy;
         if (!defaultRendition && StringUtils.isEmpty(renditionName)) {
-            return session.publishDocument(doc, target, override);
+            proxy = session.publishDocument(doc, target, override);
         } else {
             RenditionService rs = Framework.getService(RenditionService.class);
-            return rs.publishRendition(doc, target, renditionName, override);
+            proxy = rs.publishRendition(doc, target, renditionName, override);
         }
+        notifyPublishedEvent(proxy);
+        return proxy;
     }
 
     @OperationMethod
@@ -77,6 +90,23 @@ public class PublishRendition {
             result.add(run(doc));
         }
         return result;
+    }
+
+    /**
+     * @since 10.3
+     */
+    protected void notifyPublishedEvent(DocumentModel proxy) {
+        Map<String, Serializable> properties = new HashMap<>();
+        properties.put(CoreEventConstants.REPOSITORY_NAME, proxy.getRepositoryName());
+        properties.put(CoreEventConstants.SESSION_ID, session.getSessionId());
+        properties.put(CoreEventConstants.DOC_LIFE_CYCLE, proxy.getCurrentLifeCycleState());
+
+        DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), proxy);
+        ctx.setProperties(properties);
+        ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
+
+        Event event = ctx.newEvent(DocumentEventTypes.DOCUMENT_PUBLISHED);
+        Framework.getService(EventProducer.class).fireEvent(event);
     }
 
 }
