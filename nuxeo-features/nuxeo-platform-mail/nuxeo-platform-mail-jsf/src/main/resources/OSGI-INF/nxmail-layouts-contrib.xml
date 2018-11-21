@@ -406,7 +406,7 @@
         <translated>true</translated>
             <fields>
               <field>file</field>
-              <field>filename</field>
+              <field>file/name</field>
             </fields>
           </widget>
         </subWidgets>

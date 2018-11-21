@@ -433,7 +433,7 @@
           </labels>
           <fields>
             <field>file</field>
-            <field>filename</field>
+            <field>file/name</field>
           </fields>
           <properties mode="any">
             <property name="template">
