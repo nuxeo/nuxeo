@@ -35,11 +35,17 @@ public class BulkConstants {
 
     public static final String STATUS_SUBMIT_TIME = "submitted";
 
-    public static final String STATUS_SCROLL_START = "scrollStart";
+    public static final String STATUS_SCROLL_START_TIME = "scrollStart";
 
-    public static final String STATUS_SCROLL_END = "scrollEnd";
+    public static final String STATUS_SCROLL_END_TIME = "scrollEnd";
 
     public static final String STATUS_COMPLETED_TIME = "completed";
+
+    public static final String STATUS_PROCESSING_START_TIME = "processingStart";
+
+    public static final String STATUS_PROCESSING_END_TIME = "processingEnd";
+
+    public static final String STATUS_PROCESSING_MILLIS = "processingMillis";
 
     public static final String STATUS_TOTAL = "total";
 

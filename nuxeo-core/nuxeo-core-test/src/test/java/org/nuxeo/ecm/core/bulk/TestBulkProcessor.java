@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.bulk;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -28,21 +29,24 @@ import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 
 import java.io.Serializable;
 import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.DocumentSetRepositoryInit;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
@@ -59,6 +63,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 public class TestBulkProcessor {
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(TestBulkProcessor.class);
 
     @Inject
     public BulkService service;
@@ -206,6 +211,89 @@ public class TestBulkProcessor {
         assertNotNull(status);
         assertEquals(COMPLETED, status.getState());
         assertEquals(1, status.getProcessed());
+    }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-sequential-contrib.xml")
+    public void testSequentialCommand() throws Exception {
+        final int nbDocs = 10;
+        final int nbCommands = 10;
+        // create some docs
+        for (int i = 0; i < nbDocs; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "doc" + i, "File");
+            session.createDocument(doc);
+        }
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        // submits multiple commands
+        List<String> commands = new ArrayList<>(nbCommands);
+        for (int i = 0; i < nbCommands; i++) {
+            commands.add(service.submit(
+                    new BulkCommand.Builder("dummySequential", "SELECT * FROM File").user("Administrator").build()));
+            commands.add(service.submit(
+                    new BulkCommand.Builder("dummyConcurrent", "SELECT * FROM File").user("Administrator").build()));
+        }
+        // get the results
+        assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(60)));
+        List<BulkStatus> results = commands.stream().map(service::getStatus).collect(Collectors.toList());
+        // sequential commands should not overlap
+        assertFalse(overlapCommands(
+                results.stream().filter(r -> "dummySequential".equals(r.getAction())).collect(Collectors.toList()),
+                true));
+        // concurrent commands must overlap
+        assertTrue(overlapCommands(
+                results.stream().filter(r -> "dummyConcurrent".equals(r.getAction())).collect(Collectors.toList()),
+                false));
+    }
+
+    protected boolean overlapCommands(List<BulkStatus> results, boolean logOverlap) {
+        // Check for overlap on scrolling
+        results.sort(Comparator.comparing(BulkStatus::getScrollStartTime));
+        BulkStatus previous = null;
+        for (BulkStatus current : results) {
+            if (previous == null) {
+                previous = current;
+                continue;
+            }
+            if (overlapInstant(previous.getScrollStartTime(), previous.getScrollEndTime(), current.getScrollStartTime(),
+                    current.getScrollEndTime())) {
+                if (logOverlap) {
+                    logOverlap("scroll", previous, current);
+                }
+                return true;
+            }
+        }
+        // Check for overlap on processing
+        results.sort(Comparator.comparing(BulkStatus::getProcessingStartTime));
+        previous = null;
+        for (BulkStatus current : results) {
+            if (previous == null) {
+                previous = current;
+                continue;
+            }
+            if (overlapInstant(previous.getProcessingStartTime(), previous.getProcessingEndTime(),
+                    current.getProcessingStartTime(), current.getProcessingEndTime())) {
+                if (logOverlap) {
+                    logOverlap("processing", previous, current);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected void logOverlap(String msg, BulkStatus previous, BulkStatus current) {
+        log.warn(String.format("Overlap detected in %s:\n- %s\n- %s", msg, previous, current));
+        log.warn(String.format("%s %s %s %s %s %s", previous.getCommandId(), previous.getSubmitTime(),
+                previous.getScrollStartTime(), previous.getScrollEndTime(), previous.getProcessingStartTime(),
+                previous.getCompletedTime()));
+        log.warn(String.format("%s %s %s %s %s %s", current.getCommandId(), current.getSubmitTime(),
+                current.getScrollStartTime(), current.getScrollEndTime(), current.getProcessingStartTime(),
+                current.getCompletedTime()));
+    }
+
+    protected boolean overlapInstant(Instant aStart, Instant aEnd, Instant bStart, Instant bEnd) {
+        return aStart.isBefore(bEnd) && bStart.isBefore(aEnd);
     }
 }

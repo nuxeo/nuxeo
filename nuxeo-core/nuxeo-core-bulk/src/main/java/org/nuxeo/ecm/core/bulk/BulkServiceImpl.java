@@ -114,11 +114,19 @@ public class BulkServiceImpl implements BulkService {
         setStatus(status);
         byte[] commandAsBytes = setCommand(command);
 
+        String shardKey;
+        if (adminService.isSequentialCommands(command.getAction())) {
+            // no concurrency all commands for this action goes to the same partition
+            shardKey = command.getAction();
+        } else {
+            // use a random value
+            shardKey = command.getId();
+        }
         // send command to bulk processor
         LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
         LogAppender<Record> logAppender = logManager.getAppender(COMMAND_STREAM,
                 Framework.getService(CodecService.class).getCodec(RECORD_CODEC, Record.class));
-        logAppender.append(command.getId(), Record.of(command.getId(), commandAsBytes));
+        logAppender.append(shardKey, Record.of(command.getId(), commandAsBytes));
         return command.getId();
     }
 
