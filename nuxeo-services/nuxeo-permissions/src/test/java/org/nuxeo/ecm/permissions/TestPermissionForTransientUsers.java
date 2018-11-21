@@ -73,6 +73,9 @@ public class TestPermissionForTransientUsers {
     @Inject
     protected CoreSession session;
 
+    @Inject
+    protected TransactionalFeature transactionalFeature;
+
     protected DocumentModel doc;
 
     @Before
@@ -89,7 +92,7 @@ public class TestPermissionForTransientUsers {
         acp.addACE(ACL.LOCAL_ACL, leelaACE);
         doc.setACP(acp, true);
 
-        String token = tokenAuthenticationService.getToken(transientUsername, doc.getRepositoryName(), doc.getId());
+        String token = TransientUserPermissionHelper.getToken(transientUsername);
         assertNotNull(token);
     }
 
@@ -101,13 +104,13 @@ public class TestPermissionForTransientUsers {
         acp.addACE(ACL.LOCAL_ACL, leelaACE);
         doc.setACP(acp, true);
 
-        String token = tokenAuthenticationService.getToken(transientUsername, doc.getRepositoryName(), doc.getId());
+        String token = TransientUserPermissionHelper.getToken(transientUsername);
         assertNotNull(token);
 
         acp = doc.getACP();
         acp.removeACE(ACL.LOCAL_ACL, leelaACE);
         doc.setACP(acp, true);
-        token = tokenAuthenticationService.getToken(transientUsername, doc.getRepositoryName(), doc.getId());
+        token = TransientUserPermissionHelper.getToken(transientUsername);
         assertNull(token);
     }
 
@@ -125,7 +128,7 @@ public class TestPermissionForTransientUsers {
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
         TransactionHelper.startTransaction();
-        String token = tokenAuthenticationService.getToken(transientUsername, doc.getRepositoryName(), doc.getId());
+        String token = TransientUserPermissionHelper.getToken(transientUsername);
         assertNotNull(token);
 
         Thread.sleep(10000);
@@ -135,12 +138,12 @@ public class TestPermissionForTransientUsers {
         eventService.waitForAsyncCompletion();
         TransactionHelper.startTransaction();
 
-        token = tokenAuthenticationService.getToken(transientUsername, doc.getRepositoryName(), doc.getId());
+        token = TransientUserPermissionHelper.getToken(transientUsername);
         assertNull(token);
     }
 
     @Test
-    public void shouldNotRemoveTokenIfUserStillHavePendingOrEffectiveACE() {
+    public void shouldNotRemoveTokenIfUserStillHavePendingOrEffectiveACEOnSameDocument() {
         String transientUsername = NuxeoPrincipal.computeTransientUsername("leela@nuxeo.com");
         ACE ace1 = ACE.builder(transientUsername, WRITE).build();
         ACE ace2 = ACE.builder(transientUsername, READ).build();
@@ -149,7 +152,7 @@ public class TestPermissionForTransientUsers {
         acp.addACE(ACL.LOCAL_ACL, ace2);
         doc.setACP(acp, true);
 
-        String token = tokenAuthenticationService.getToken(transientUsername, doc.getRepositoryName(), doc.getId());
+        String token = TransientUserPermissionHelper.getToken(transientUsername);
         assertNotNull(token);
 
         ACE newAce1 = (ACE) ace1.clone();
@@ -161,7 +164,7 @@ public class TestPermissionForTransientUsers {
         acp.replaceACE(ACL.LOCAL_ACL, ace1, newAce1);
         doc.setACP(acp, true);
 
-        String token2 = tokenAuthenticationService.getToken(transientUsername, doc.getRepositoryName(), doc.getId());
+        String token2 = TransientUserPermissionHelper.getToken(transientUsername);
         assertNotNull(token2);
         assertEquals(token, token2);
 
@@ -169,8 +172,84 @@ public class TestPermissionForTransientUsers {
         acp.removeACE(ACL.LOCAL_ACL, ace2);
         doc.setACP(acp, true);
 
-        token = tokenAuthenticationService.getToken(transientUsername, doc.getRepositoryName(), doc.getId());
+        token = TransientUserPermissionHelper.getToken(transientUsername);
         assertNull(token);
+    }
+
+    @Test
+    public void shouldNotRemoveTokenIfUserStillHavePendingOrEffectiveACEOnAnotherDocument() {
+        DocumentModel doc2 = session.createDocumentModel("/", "file2", "File");
+        doc2 = session.createDocument(doc2);
+
+        String transientUsername = NuxeoPrincipal.computeTransientUsername("leela@nuxeo.com");
+        ACE ace1 = ACE.builder(transientUsername, WRITE).build();
+        ACP acp = doc.getACP();
+        acp.addACE(ACL.LOCAL_ACL, ace1);
+        doc.setACP(acp, true);
+        acp = doc2.getACP();
+        acp.addACE(ACL.LOCAL_ACL, ace1);
+        doc2.setACP(acp, true);
+
+        transactionalFeature.nextTransaction();
+
+        String token = TransientUserPermissionHelper.getToken(transientUsername);
+        assertNotNull(token);
+
+        // remove ACE from doc
+        acp = doc.getACP();
+        acp.removeACE(ACL.LOCAL_ACL, ace1);
+        doc.setACP(acp, true);
+
+        transactionalFeature.nextTransaction();
+
+        // token still exists
+        String token2 = TransientUserPermissionHelper.getToken(transientUsername);
+        assertNotNull(token2);
+        assertEquals(token, token2);
+
+        // remove ACE from doc2
+        acp = doc2.getACP();
+        acp.removeACE(ACL.LOCAL_ACL, ace1);
+        doc2.setACP(acp, true);
+
+        transactionalFeature.nextTransaction();
+
+        token = TransientUserPermissionHelper.getToken(transientUsername);
+        assertNull(token);
+    }
+
+    @Test
+    public void shouldRemoveOldTokenForCompatibility() {
+        String transientUsername = NuxeoPrincipal.computeTransientUsername("leela@nuxeo.com");
+        ACE ace1 = ACE.builder(transientUsername, WRITE).build();
+        ACP acp = doc.getACP();
+        acp.addACE(ACL.LOCAL_ACL, ace1);
+        doc.setACP(acp, true);
+
+        transactionalFeature.nextTransaction();
+
+        // new token has been added
+        String token = TransientUserPermissionHelper.getToken(transientUsername);
+        assertNotNull(token);
+        // add an old token
+        String oldToken = tokenAuthenticationService.acquireToken(transientUsername, doc.getRepositoryName(),
+                doc.getId(), null, READ);
+        assertNotNull(oldToken);
+        oldToken = tokenAuthenticationService.getToken(transientUsername, doc.getRepositoryName(), doc.getId());
+        assertNotNull(oldToken);
+
+        // remove ACE from doc
+        acp = doc.getACP();
+        acp.removeACE(ACL.LOCAL_ACL, ace1);
+        doc.setACP(acp, true);
+
+        transactionalFeature.nextTransaction();
+
+        // both tokens should have been removed
+        token = TransientUserPermissionHelper.getToken(transientUsername);
+        assertNull(token);
+        oldToken = tokenAuthenticationService.getToken(transientUsername, doc.getRepositoryName(), doc.getId());
+        assertNull(oldToken);
     }
 
 }
