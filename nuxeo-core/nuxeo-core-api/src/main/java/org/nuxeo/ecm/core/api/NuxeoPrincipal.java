@@ -23,6 +23,9 @@ import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
+
 /**
  * Class to represent a principal in Nuxeo. This class holds the list of roles and groups for this principal.
  */
@@ -37,8 +40,18 @@ public interface NuxeoPrincipal extends Principal, Serializable {
 
     /**
      * @since 8.1
+     * @deprecated since 10.3.
      */
+    @Deprecated
     String TRANSIENT_USER_FORMAT = TRANSIENT_USER_PREFIX + "%s/%s";
+
+    /**
+     * Property that defines if a transient username should be unique no matter what base username is provided, or if a
+     * transient username should be always the same for a given base username.
+     *
+     * @since 10.3
+     */
+    String TRANSIENT_USERNAME_UNIQUE_PROP = "nuxeo.transient.username.unique";
 
     /**
      * Gets the first name of this principal.
@@ -150,8 +163,7 @@ public interface NuxeoPrincipal extends Principal, Serializable {
     boolean isAdministrator();
 
     /**
-     * Returns the {@code tenantId} of this {@NuxeoPrincipal}, or {@code null} if there is no
-     * {@code tenantId}.
+     * Returns the {@code tenantId} of this {@NuxeoPrincipal}, or {@code null} if there is no {@code tenantId}.
      *
      * @since 5.6
      */
@@ -207,15 +219,25 @@ public interface NuxeoPrincipal extends Principal, Serializable {
     }
 
     /**
-     * Computes a unique transient username from the given {@code baseUsername}.
+     * Computes a transient username from the given {@code baseUsername}.
+     * <p>
+     * If the configuration property {@value #TRANSIENT_USERNAME_UNIQUE_PROP} is {@code true}, the transient username
+     * will be unique, otherwise it will always be the same for a given {@code baseUsername}.
      *
      * @since 8.1
      */
     static String computeTransientUsername(String baseUsername) {
         if (baseUsername != null && !baseUsername.startsWith(TRANSIENT_USER_PREFIX)) {
-            String uuid = UUID.randomUUID().toString();
-            uuid = uuid.replaceAll("-", "").substring(0, 16);
-            return String.format(TRANSIENT_USER_FORMAT, baseUsername, uuid);
+            StringBuilder sb = new StringBuilder(TRANSIENT_USER_PREFIX);
+            sb.append(baseUsername);
+            if (Framework.getService(ConfigurationService.class)
+                         .isBooleanPropertyTrue(TRANSIENT_USERNAME_UNIQUE_PROP)) {
+                String uuid = UUID.randomUUID().toString();
+                uuid = uuid.replaceAll("-", "").substring(0, 16);
+                sb.append("/");
+                sb.append(uuid);
+            }
+            return sb.toString();
         }
         return baseUsername;
     }
