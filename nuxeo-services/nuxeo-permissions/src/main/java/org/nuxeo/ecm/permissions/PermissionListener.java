@@ -35,11 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -107,7 +103,7 @@ public class PermissionListener implements EventListener {
                                 comment);
                         session.createEntry(m);
 
-                        addToken(doc, ace);
+                        addToken(ace);
 
                         if (notify && ace.isGranted() && ace.isEffective()) {
                             firePermissionNotificationEvent(docCtx, diff.aclName, ace);
@@ -199,9 +195,9 @@ public class PermissionListener implements EventListener {
         eventService.fireEvent(PERMISSION_NOTIFICATION_EVENT, docCtx);
     }
 
-    protected void addToken(DocumentModel doc, ACE ace) {
+    protected void addToken(ACE ace) {
         if (!ace.isArchived()) {
-            TransientUserPermissionHelper.acquireToken(ace.getUsername(), doc, ace.getPermission());
+            TransientUserPermissionHelper.addToken(ace.getUsername());
         }
     }
 
