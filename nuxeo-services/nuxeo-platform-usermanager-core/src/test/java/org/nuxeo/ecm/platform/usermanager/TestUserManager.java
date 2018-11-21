@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.usermanager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -42,6 +43,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -1096,11 +1098,13 @@ public class TestUserManager extends UserManagerTestCase {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.usermanager.tests:test-non-unique-transient-user-contrib.xml")
     public void testTransientUsers() {
         NuxeoPrincipal principal = userManager.getPrincipal("Administrator");
         assertFalse(principal.isTransient());
 
         String transientUsername = NuxeoPrincipal.computeTransientUsername("leela@nuxeo.com");
+        assertTrue(transientUsername.endsWith("leela@nuxeo.com"));
         assertTrue(NuxeoPrincipal.isTransientUsername(transientUsername));
         principal = userManager.getPrincipal(transientUsername);
         assertNotNull(principal);
@@ -1111,6 +1115,30 @@ public class TestUserManager extends UserManagerTestCase {
         assertEquals("leela@nuxeo.com", principal.getFirstName());
         assertEquals("leela@nuxeo.com", principal.getEmail());
         assertEquals(transientUsername, principal.getName());
+
+        String otherTransientUsername = NuxeoPrincipal.computeTransientUsername("leela@nuxeo.com");
+        assertEquals(transientUsername, otherTransientUsername);
+    }
+
+    @Test
+    public void testUniqueTransientUsers() {
+        String transientUsername1 = NuxeoPrincipal.computeTransientUsername("leela@nuxeo.com");
+        String transientUsername2 = NuxeoPrincipal.computeTransientUsername("leela@nuxeo.com");
+        assertNotEquals(transientUsername1, transientUsername2);
+
+        Stream.of(transientUsername1, transientUsername2).forEach(tu -> {
+            assertTrue(NuxeoPrincipal.isTransientUsername(tu));
+            assertFalse(tu.endsWith("leela@nuxeo.com"));
+            NuxeoPrincipal principal = userManager.getPrincipal(tu);
+            assertNotNull(principal);
+            assertTrue(principal.isTransient());
+            assertFalse(principal.isAdministrator());
+            assertFalse(principal.isAnonymous());
+            assertTrue(principal.getAllGroups().isEmpty());
+            assertEquals("leela@nuxeo.com", principal.getFirstName());
+            assertEquals("leela@nuxeo.com", principal.getEmail());
+            assertEquals(tu, principal.getName());
+        });
     }
 
     @Test

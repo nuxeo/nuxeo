@@ -8,6 +8,14 @@
       which is mainly used to build the document path.
     </documentation>
     <property name="nuxeo.path.segment.maxsize">24</property>
+
+    <documentation>
+      Property that defines if a transient username should be unique no matter what base username is provided,
+      or if a transient username should be always the same for a given base username.
+
+      @since 10.3
+    </documentation>
+    <property name="nuxeo.transient.username.unique">true</property>
   </extension>
 
 </component>
