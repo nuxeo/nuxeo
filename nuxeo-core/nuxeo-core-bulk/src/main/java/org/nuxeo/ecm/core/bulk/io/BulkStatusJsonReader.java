@@ -25,9 +25,12 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMMAND_ID;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMPLETED_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ENTITY_TYPE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSED;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSING_END_TIME;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSING_MILLIS;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSING_START_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_RESULT;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_END;
-import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_START;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_END_TIME;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SCROLL_START_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_STATE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_SUBMIT_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_TOTAL;
@@ -83,17 +86,29 @@ public class BulkStatusJsonReader extends EntityJsonReader<BulkStatus> {
         if (isNotEmpty(instantString)) {
             status.setSubmitTime(Instant.parse(instantString));
         }
-        instantString = getStringField(jn, STATUS_SCROLL_START);
+        instantString = getStringField(jn, STATUS_SCROLL_START_TIME);
         if (isNotEmpty(instantString)) {
             status.setScrollStartTime(Instant.parse(instantString));
         }
-        instantString = getStringField(jn, STATUS_SCROLL_END);
+        instantString = getStringField(jn, STATUS_SCROLL_END_TIME);
         if (isNotEmpty(instantString)) {
             status.setScrollEndTime(Instant.parse(instantString));
+        }
+        instantString = getStringField(jn, STATUS_PROCESSING_START_TIME);
+        if (isNotEmpty(instantString)) {
+            status.setProcessingStartTime(Instant.parse(instantString));
+        }
+        instantString = getStringField(jn, STATUS_PROCESSING_END_TIME);
+        if (isNotEmpty(instantString)) {
+            status.setProcessingEndTime(Instant.parse(instantString));
         }
         instantString = getStringField(jn, STATUS_COMPLETED_TIME);
         if (isNotEmpty(instantString)) {
             status.setCompletedTime(Instant.parse(instantString));
+        }
+        Long processingMillis = getLongField(jn, STATUS_PROCESSING_MILLIS);
+        if (processingMillis != null) {
+            status.setProcessingDurationMillis(processingMillis);
         }
         instantString = getStringField(jn, STATUS_USERNAME);
         if (isNotEmpty(instantString)) {
