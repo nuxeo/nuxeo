@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.usermanager.tests.properties">
+
+  <require>org.nuxeo.ecm.core.api.properties</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.transient.username.unique">true</property>
+  </extension>
+</component>
