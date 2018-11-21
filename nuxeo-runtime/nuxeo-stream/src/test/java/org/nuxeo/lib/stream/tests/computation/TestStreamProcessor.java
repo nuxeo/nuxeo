@@ -422,9 +422,13 @@ public abstract class TestStreamProcessor {
             StreamProcessor processor = getStreamProcessor(manager);
             processor.init(topology, settings).start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
-            assertTrue(processor.drainAndStop(Duration.ofSeconds(100)));
+            // source computation will start on assignment, let them work a bit
+            Thread.sleep(1000);
+            assertTrue(processor.drainAndStop(Duration.ofSeconds(60)));
             LogLag lag = manager.getLag("s1", "test");
-            assertEquals(nbRecords, lag.lag());
+            // without rebalancing we should have lag == nbRecords, but a rebalancing happens
+            // so we can have up to concurrency * nbRecords
+            assertTrue(lag.toString() + ", records: " + nbRecords, lag.lag() >= nbRecords);
         }
     }
 
