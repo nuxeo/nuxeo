@@ -183,7 +183,7 @@
       <translated>true</translated>
       <fields>
         <field>file:content</field>
-        <field>file:filename</field>
+        <field>file:content/name</field>
       </fields>
     </widget>
 
