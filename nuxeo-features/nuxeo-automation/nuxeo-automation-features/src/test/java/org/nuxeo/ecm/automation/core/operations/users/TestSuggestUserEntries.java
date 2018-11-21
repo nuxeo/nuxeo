@@ -18,8 +18,11 @@
  */
 package org.nuxeo.ecm.automation.core.operations.users;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,8 +35,10 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -57,6 +62,9 @@ public class TestSuggestUserEntries {
 
     @Inject
     protected AutomationService automationService;
+
+    @Inject
+    protected UserManager userManager;
 
     @Test
     public void testUserEntries() throws Exception {
@@ -146,6 +154,46 @@ public class TestSuggestUserEntries {
             result = (Blob) automationService.run(ctx, SuggestUserEntries.ID, params);
             json = JsonAssert.on(result.getString()).length(1);
             json.childrenContains("id", "jdoe");
+        }
+    }
+
+    /*
+     * Test that group restriction on the first entries checked doesn't prevent returning further ones.
+     */
+    @Test
+    public void testUserEntriesWithGroupRestriction() throws Exception {
+        // create group
+        DocumentModel group = userManager.getBareGroupModel();
+        group.setPropertyValue("group:groupname", "devs");
+        userManager.createGroup(group);
+
+        // create users
+        int n = 20;
+        for (int i = 0; i < n; i++) {
+            DocumentModel user = userManager.getBareUserModel();
+            user.setPropertyValue("user:username", "user" + i);
+            user.setPropertyValue("user:firstName", "User" + i);
+            user.setPropertyValue("user:lastName", "Smith");
+            user.setPropertyValue("user:email", "user" + i + "@example.com");
+            if ((i % 2) == 0) { // one in two belongs to devs
+                user.setPropertyValue("user:groups", (Serializable) Arrays.asList("devs"));
+            }
+            userManager.createUser(user);
+        }
+
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, String> params = new HashMap<>();
+            params.put("searchType", "USER_TYPE");
+            params.put("searchTerm", "Smith");
+            params.put("groupRestriction", "devs");
+            // using a max number of results makes the underlying search use a limit -- which is the original problem
+            params.put("userSuggestionMaxSearchResults", "10");
+            Blob result = (Blob) automationService.run(ctx, SuggestUserEntries.ID, params);
+            assertNotNull(result);
+            JsonAssert json = JsonAssert.on(result.getString());
+            // despite the first internal search having had entries removed due to group restrictions,
+            // we still get all we want
+            assertEquals(10, json.getNode().size());
         }
     }
 

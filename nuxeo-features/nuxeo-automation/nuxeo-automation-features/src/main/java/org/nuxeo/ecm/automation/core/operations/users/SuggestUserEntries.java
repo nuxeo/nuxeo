@@ -21,12 +21,13 @@ package org.nuxeo.ecm.automation.core.operations.users;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -46,6 +47,12 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
+import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
+import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
@@ -150,50 +157,40 @@ public class SuggestUserEntries {
                 groupOnly = true;
             }
         }
+        int limit = userSuggestionMaxSearchResults == null ? 0 : userSuggestionMaxSearchResults.intValue();
         try {
-            DocumentModelList userList = null;
-            DocumentModelList groupList = null;
+            int userSize = 0;
+            int groupSize = 0;
             if (!groupOnly) {
-                userList = searchUsers();
-                Schema schema = schemaManager.getSchema(userManager.getUserSchemaName());
-                Directory userDir = directoryService.getDirectory(userManager.getUserDirectoryName());
-                for (DocumentModel user : userList) {
-                    Map<String, Object> obj = new LinkedHashMap<>();
-                    for (Field field : schema.getFields()) {
-                        QName fieldName = field.getName();
-                        String key = fieldName.getLocalName();
-                        Serializable value = user.getPropertyValue(fieldName.getPrefixedName());
-                        if (key.equals(userDir.getPasswordField())) {
-                            continue;
+                if (limit > 0 && isGroupRestriction) {
+                    // we may have to iterate several times, while increasing the limit,
+                    // because the group restrictions may truncate our results
+                    long currentLimit = limit;
+                    int prevUserListSize = -1;
+                    for (;;) {
+                        DocumentModelList userList = searchUsers(currentLimit);
+                        result = usersToMapWithGroupRestrictions(userList);
+                        int userListSize = userList.size();
+                        if (userListSize == prevUserListSize || result.size() > limit) {
+                            // stop if the search didn't return more results
+                            // or if we are beyond the limit anyway
+                            break;
                         }
-                        obj.put(key, value);
-                    }
-                    String userId = user.getId();
-                    obj.put(SuggestConstants.ID, userId);
-                    obj.put(MarshallingConstants.ENTITY_FIELD_NAME, NuxeoPrincipalJsonWriter.ENTITY_TYPE);
-                    obj.put(SuggestConstants.TYPE_KEY_NAME, SuggestConstants.USER_TYPE);
-                    obj.put(SuggestConstants.PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + userId);
-                    SuggestConstants.computeUserLabel(obj, firstLabelField, secondLabelField, thirdLabelField,
-                            hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, userId);
-                    SuggestConstants.computeUserGroupIcon(obj, hideIcon);
-                    if (isGroupRestriction) {
-                        // We need to load all data about the user particularly
-                        // its
-                        // groups.
-                        user = userManager.getUserModel(userId);
-                        UserAdapter userAdapter = user.getAdapter(UserAdapter.class);
-                        List<String> groups = userAdapter.getGroups();
-                        if (groups != null && groups.contains(groupRestriction)) {
-                            result.add(obj);
+                        prevUserListSize = userListSize;
+                        currentLimit *= 2;
+                        if (currentLimit > Integer.MAX_VALUE) {
+                            break;
                         }
-                    } else {
-                        result.add(obj);
                     }
+                } else {
+                    DocumentModelList userList = searchUsers(limit);
+                    result = usersToMapWithGroupRestrictions(userList);
                 }
+                userSize = result.size();
             }
             if (!userOnly) {
                 Schema schema = schemaManager.getSchema(userManager.getGroupSchemaName());
-                groupList = userManager.searchGroups(prefix);
+                DocumentModelList groupList = userManager.searchGroups(prefix);
                 List<String> admins = new ArrayList<>();
                 if (hideAdminGroups) {
                     admins = userManager.getAdministratorsGroups();
@@ -226,15 +223,11 @@ public class SuggestUserEntries {
                     SuggestConstants.computeUserGroupIcon(obj, hideIcon);
                     result.add(obj);
                 }
+                groupSize = result.size() - userSize;
             }
 
             // Limit size results.
-            int userSize = userList != null ? userList.size() : 0;
-            int groupSize = groupList != null ? groupList.size() : 0;
-            int totalSize = userSize + groupSize;
-            if (userSuggestionMaxSearchResults != null && userSuggestionMaxSearchResults > 0
-                    && (userSize > userSuggestionMaxSearchResults || groupSize > userSuggestionMaxSearchResults
-                            || totalSize > userSuggestionMaxSearchResults)) {
+            if (limit > 0 && (userSize > limit || groupSize > limit || userSize + groupSize > limit)) {
                 throw new SizeLimitExceededException();
             }
 
@@ -246,29 +239,89 @@ public class SuggestUserEntries {
     }
 
     /**
+     * Applies group restrictions, and returns Map objects.
+     */
+    protected List<Map<String, Object>> usersToMapWithGroupRestrictions(DocumentModelList userList) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        Schema schema = schemaManager.getSchema(userManager.getUserSchemaName());
+        Directory userDir = directoryService.getDirectory(userManager.getUserDirectoryName());
+        for (DocumentModel user : userList) {
+            Map<String, Object> obj = new LinkedHashMap<>();
+            for (Field field : schema.getFields()) {
+                QName fieldName = field.getName();
+                String key = fieldName.getLocalName();
+                Serializable value = user.getPropertyValue(fieldName.getPrefixedName());
+                if (key.equals(userDir.getPasswordField())) {
+                    continue;
+                }
+                obj.put(key, value);
+            }
+            String userId = user.getId();
+            obj.put(SuggestConstants.ID, userId);
+            obj.put(MarshallingConstants.ENTITY_FIELD_NAME, NuxeoPrincipalJsonWriter.ENTITY_TYPE);
+            obj.put(SuggestConstants.TYPE_KEY_NAME, SuggestConstants.USER_TYPE);
+            obj.put(SuggestConstants.PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + userId);
+            SuggestConstants.computeUserLabel(obj, firstLabelField, secondLabelField, thirdLabelField,
+                    hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, userId);
+            SuggestConstants.computeUserGroupIcon(obj, hideIcon);
+            if (!StringUtils.isBlank(groupRestriction)) {
+                // We need to load all data about the user particularly its groups.
+                user = userManager.getUserModel(userId);
+                UserAdapter userAdapter = user.getAdapter(UserAdapter.class);
+                List<String> groups = userAdapter.getGroups();
+                if (groups != null && groups.contains(groupRestriction)) {
+                    result.add(obj);
+                }
+            } else {
+                result.add(obj);
+            }
+        }
+        return result;
+    }
+
+    /**
      * Performs a full name user search, e.g. typing "John Do" returns the user with first name "John" and last name
      * "Doe". Typing "John" returns the "John Doe" user and possibly other users such as "John Foo". Respectively,
      * typing "Do" returns the "John Doe" user and possibly other users such as "Jack Donald".
      */
-    protected DocumentModelList searchUsers() {
+    protected DocumentModelList searchUsers(long limit) {
         if (StringUtils.isBlank(prefix)) {
             // empty search term
             return userManager.searchUsers(prefix);
         }
-
-        String trimmedPrefix = prefix.trim();
         // split search term around whitespace, e.g. "John Do" -> ["John", "Do"]
-        String[] searchTerms = trimmedPrefix.split("\\s", 2);
-        return Stream.of(searchTerms)
-                     .map(userManager::searchUsers) // search on all terms, e.g. "John", "Do"
-                     // intersection between all search results to handle full name
-                     .reduce((a, b) -> {
-                         a.retainAll(b);
-                         return a;
-                     })
-                     .filter(result -> !result.isEmpty())
-                     // search on whole term to handle a whitespace within the first or last name
-                     .orElseGet(() -> userManager.searchUsers(trimmedPrefix));
+        String[] searchTerms = prefix.trim().split("\\s", 2);
+        List<Predicate> predicates = Arrays.stream(searchTerms)
+                                           .map(this::getUserSearchPredicate)
+                                           .collect(Collectors.toList());
+        // intersection between all search results to handle full name
+        DocumentModelList users = searchUsers(new MultiExpression(Operator.AND, predicates), limit);
+        if (users.isEmpty()) {
+            // search on whole term to handle a whitespace within the first or last name
+            users = searchUsers(getUserSearchPredicate(prefix), limit);
+        }
+        return users;
+    }
+
+    protected DocumentModelList searchUsers(MultiExpression multiExpression, long limit) {
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.filter(multiExpression);
+        if (limit > 0) {
+            // no need to search more than that because we throw SizeLimitExceededException is we reach it
+            queryBuilder.limit(limit + 1);
+        }
+        String sortField = StringUtils.defaultString(userManager.getUserSortField(), userManager.getUserIdField());
+        queryBuilder.order(OrderByExprs.asc(sortField));
+        return userManager.searchUsers(queryBuilder);
+    }
+
+    protected MultiExpression getUserSearchPredicate(String prefix) {
+        String pattern = prefix.trim() + '%';
+        List<Predicate> predicates = userManager.getUserSearchFields()
+                          .stream()
+                          .map(key -> Predicates.ilike(key, pattern))
+                          .collect(Collectors.toList());
+        return new MultiExpression(Operator.OR, predicates);
     }
 
     /**
