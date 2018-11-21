@@ -271,7 +271,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public ReloadResult reloadBundles(ReloadContext context) throws BundleException {
+    public synchronized ReloadResult reloadBundles(ReloadContext context) throws BundleException {
         ReloadResult result = new ReloadResult();
         List<String> bundlesNamesToUndeploy = context.bundlesNamesToUndeploy;
 
