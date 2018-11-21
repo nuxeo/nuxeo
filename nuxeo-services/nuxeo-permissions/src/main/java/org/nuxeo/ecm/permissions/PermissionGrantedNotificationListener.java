@@ -145,9 +145,7 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
             }
 
             if (NuxeoPrincipal.isTransientUsername(username)) {
-                TokenAuthenticationService tokenAuthenticationService = Framework
-                        .getService(TokenAuthenticationService.class);
-                String token = tokenAuthenticationService.getToken(username, doc.getRepositoryName(), doc.getId());
+                String token = TransientUserPermissionHelper.getToken(username);
                 if (token != null) {
                     ctx.put("token", token);
                 }
