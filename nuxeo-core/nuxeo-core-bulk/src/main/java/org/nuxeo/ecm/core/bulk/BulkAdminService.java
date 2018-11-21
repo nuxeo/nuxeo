@@ -45,4 +45,12 @@ public interface BulkAdminService {
      * @since 10.3
      */
     boolean isHttpEnabled(String actionId);
+
+    /**
+     * Returns true if commands about this action need to be executed sequentially instead of being run concurrently.
+     *
+     * @since 10.3
+     */
+    boolean isSequentialCommands(String actionId);
+
 }

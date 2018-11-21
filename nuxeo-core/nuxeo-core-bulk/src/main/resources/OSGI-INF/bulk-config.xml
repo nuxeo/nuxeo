@@ -41,7 +41,7 @@
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
     <!-- Internal -->
-    <action name="trash" bucketSize="100" batchSize="25" />
+    <action name="trash" bucketSize="100" batchSize="25" sequentialCommands="true" />
     <action name="removeProxy" bucketSize="100" batchSize="25" />
     <action name="setSystemProperties" bucketSize="100" batchSize="25" />
     <!-- Exposed through REST API -->
@@ -70,7 +70,7 @@
 
     <!-- Trash processor -->
     <streamProcessor name="trash" class="org.nuxeo.ecm.core.bulk.action.TrashAction" logConfig="bulk"
-      defaultConcurrency="2" defaultPartitions="2">
+      defaultConcurrency="1" defaultPartitions="1">
       <policy name="default" maxRetries="3" delay="500ms" maxDelay="10s" continueOnFailure="false" />
     </streamProcessor>
 

@@ -195,6 +195,11 @@ public class BulkAdminServiceImpl implements BulkAdminService {
         return descriptors.get(actionId).httpEnabled;
     }
 
+    @Override
+    public boolean isSequentialCommands(String actionId) {
+        return descriptors.get(actionId).sequentialCommands;
+    }
+
     public void afterStart() {
         initProcessor();
         streamProcessor.start();

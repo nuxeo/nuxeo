@@ -45,6 +45,9 @@ public class BulkActionDescriptor implements Descriptor {
     @XNode("@httpEnabled")
     public Boolean httpEnabled = Boolean.FALSE;
 
+    @XNode("@sequentialCommands")
+    public Boolean sequentialCommands = Boolean.FALSE;
+
     @Override
     public String getId() {
         return name;

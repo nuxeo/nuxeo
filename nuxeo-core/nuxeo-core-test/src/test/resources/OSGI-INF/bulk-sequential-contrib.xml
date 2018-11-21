@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.core.tests.bulk.config" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.bulk.config</require>
+
+  <!-- make sure scrolling is concurrent -->
+  <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
+    <logConfig name="bulk">
+      <log name="command" size="3" />
+    </logConfig>
+  </extension>
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <!-- Make sure scrolling is concurrent -->
+    <property name="nuxeo.core.bulk.scroller.concurrency">3</property>
+  </extension>
+
+  <!-- Add 2 test actions -->
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="dummySequential" bucketSize="1" batchSize="1" sequentialCommands="true" />
+    <action name="dummyConcurrent" bucketSize="1" batchSize="1" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="dummySequential" class="org.nuxeo.ecm.core.bulk.DummyAction" logConfig="bulk"
+      defaultConcurrency="1" defaultPartitions="1">
+      <option name="actionName">dummySequential</option>
+    </streamProcessor>
+    <streamProcessor name="dummyConcurrent" class="org.nuxeo.ecm.core.bulk.DummyAction" logConfig="bulk"
+      defaultConcurrency="2" defaultPartitions="2">
+      <option name="actionName">dummyConcurrent</option>
+    </streamProcessor>
+  </extension>
+
+</component>

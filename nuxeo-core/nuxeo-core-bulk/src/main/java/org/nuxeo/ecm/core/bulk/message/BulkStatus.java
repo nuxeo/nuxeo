@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.bulk.message;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
@@ -90,10 +91,19 @@ public class BulkStatus implements Serializable {
     protected Instant scrollEndTime;
 
     @AvroEncode(using = InstantAsLongEncoding.class)
+    protected Instant processingStartTime;
+
+    @AvroEncode(using = InstantAsLongEncoding.class)
+    protected Instant processingEndTime;
+
+    @AvroEncode(using = InstantAsLongEncoding.class)
     protected Instant completedTime;
 
     @Nullable
     protected Long total;
+
+    @Nullable
+    protected Long processingDurationMillis;
 
     @Nullable
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)
@@ -157,6 +167,20 @@ public class BulkStatus implements Serializable {
         if (update.getSubmitTime() != null) {
             setSubmitTime(update.getSubmitTime());
         }
+        if (update.getProcessingStartTime() != null && (getProcessingStartTime() == null
+                || update.getProcessingStartTime().isBefore(getProcessingStartTime()))) {
+            // we take the minimum
+            setProcessingStartTime(update.getProcessingStartTime());
+        }
+        if (update.getProcessingEndTime() != null
+                && (getProcessingEndTime() == null || update.getProcessingEndTime().isAfter(getProcessingEndTime()))) {
+            // we take the maximum
+            setProcessingEndTime(update.getProcessingEndTime());
+        }
+        if (update.getProcessingStartTime() != null && update.getProcessingEndTime() != null) {
+            setProcessingDurationMillis(getProcessingDurationMillis()
+                    + Duration.between(update.getProcessingStartTime(), update.getProcessingEndTime()).toMillis());
+        }
         if (update.getCompletedTime() != null) {
             setCompletedTime(update.getCompletedTime());
         }
@@ -184,6 +208,9 @@ public class BulkStatus implements Serializable {
         }
     }
 
+    /**
+     * Gets the command identifier.
+     */
     public String getCommandId() {
         return commandId;
     }
@@ -192,6 +219,9 @@ public class BulkStatus implements Serializable {
         this.commandId = id;
     }
 
+    /**
+     * Gets the state of the command.
+     */
     public State getState() {
         return state;
     }
@@ -200,6 +230,9 @@ public class BulkStatus implements Serializable {
         this.state = state;
     }
 
+    /**
+     * Gets the time when the command was submitted to the Bulk service.
+     */
     public Instant getSubmitTime() {
         return submitTime;
     }
@@ -208,6 +241,9 @@ public class BulkStatus implements Serializable {
         this.submitTime = submitTime;
     }
 
+    /**
+     * Gets the time when the scroll computation starts.
+     */
     public Instant getScrollStartTime() {
         return scrollStartTime;
     }
@@ -216,6 +252,9 @@ public class BulkStatus implements Serializable {
         this.scrollStartTime = scrollStartTime;
     }
 
+    /**
+     * Gets the time when the scrolling is completed.
+     */
     public Instant getScrollEndTime() {
         return scrollEndTime;
     }
@@ -224,6 +263,31 @@ public class BulkStatus implements Serializable {
         this.scrollEndTime = scrollEndTime;
     }
 
+    /**
+     * Gets the time when the action computation starts.
+     */
+    public Instant getProcessingStartTime() {
+        return processingStartTime;
+    }
+
+    public void setProcessingStartTime(Instant processingStartTime) {
+        this.processingStartTime = processingStartTime;
+    }
+
+    /**
+     * Gets the time when the last action computation has terminated.
+     */
+    public Instant getProcessingEndTime() {
+        return processingEndTime;
+    }
+
+    public void setProcessingEndTime(Instant processingEndTime) {
+        this.processingEndTime = processingEndTime;
+    }
+
+    /**
+     * Gets the time when the command has been detected as completed.
+     */
     public Instant getCompletedTime() {
         return completedTime;
     }
@@ -288,7 +352,8 @@ public class BulkStatus implements Serializable {
     }
 
     /**
-     * This is an update of a status containing only partial information.
+     * This is an update of a status containing only partial information. For a delta the processing start and end time,
+     * and the processed count are also delta.
      *
      * @since 10.3
      */
@@ -296,6 +361,9 @@ public class BulkStatus implements Serializable {
         return delta;
     }
 
+    /**
+     * Gets the action name of the command.
+     */
     public String getAction() {
         return action;
     }
@@ -304,12 +372,29 @@ public class BulkStatus implements Serializable {
         this.action = action;
     }
 
+    /**
+     * Gets the username of the user running the command.
+     */
     public String getUsername() {
         return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    /**
+     * Gets the accumulated processing time in milliseconds.
+     */
+    public long getProcessingDurationMillis() {
+        if (processingDurationMillis == null) {
+            return 0;
+        }
+        return processingDurationMillis;
+    }
+
+    public void setProcessingDurationMillis(long processingDurationMillis) {
+        this.processingDurationMillis = processingDurationMillis;
     }
 
     @Override

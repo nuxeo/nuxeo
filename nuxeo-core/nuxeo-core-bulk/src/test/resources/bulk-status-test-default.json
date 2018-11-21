@@ -9,6 +9,9 @@
   "submitted": "2018-06-21T12:37:08.172Z",
   "scrollStart": "2018-06-21T12:38:08.172Z",
   "scrollEnd": "2018-06-21T12:39:08.172Z",
+  "processingStart": "2018-06-21T12:39:08.272Z",
+  "processingEnd": "2018-06-21T12:40:08.072Z",
+  "processingMillis": 1234,
   "completed": "2018-06-21T12:40:08.172Z",
   "result": {
     "result1": "o1",
