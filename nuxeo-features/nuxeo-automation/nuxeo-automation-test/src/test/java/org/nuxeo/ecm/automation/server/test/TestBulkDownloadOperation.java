@@ -43,14 +43,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.impl.blob.AsyncBlob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.transientstore.api.TransientStore;
-import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -116,25 +111,14 @@ public class TestBulkDownloadOperation {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(docs);
 
-        Blob resultBlob = (Blob) automationService.run(ctx, BulkDownload.ID);
+        Blob blob = (Blob) automationService.run(ctx, BulkDownload.ID);
 
-        assertNotNull(resultBlob);
-        assertTrue(resultBlob instanceof AsyncBlob);
+        assertNotNull(blob);
 
-        coreFeature.waitForAsyncCompletion();
+        assertTrue(blob.getLength() > 0);
+        assertEquals("application/zip", blob.getMimeType());
 
-        TransientStoreService tss = Framework.getService(TransientStoreService.class);
-        TransientStore ts = tss.getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
-        List<Blob> blobs = ts.getBlobs(((AsyncBlob) resultBlob).getKey());
-        assertNotNull(blobs);
-        assertEquals(1, blobs.size());
-
-        Blob actualZip = resultBlob = blobs.get(0);
-        assertTrue(actualZip instanceof FileBlob);
-        assertTrue(actualZip.getLength() > 0);
-        assertEquals("application/zip", actualZip.getMimeType());
-
-        try (CloseableFile source = actualZip.getCloseableFile()) {
+        try (CloseableFile source = blob.getCloseableFile()) {
             try (ZipFile zip = new ZipFile(source.getFile())) {
                 assertEquals(nbDocs, zip.size());
             }

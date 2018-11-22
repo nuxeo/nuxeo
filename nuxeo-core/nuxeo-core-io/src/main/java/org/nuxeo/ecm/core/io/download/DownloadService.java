@@ -196,7 +196,9 @@ public interface DownloadService {
      * @param storeKey the stored blobs key
      * @param reason the download reason
      * @since 9.3
+     * @deprecated since 10.3, use the @async operation adapter instead.
      */
+    @Deprecated
     void downloadBlobStatus(HttpServletRequest request, HttpServletResponse response, String storeKey, String reason)
             throws IOException;
 
