@@ -2,6 +2,8 @@
 
 Nuxeo Core Storage MarkLogic is a backend connector.
 
+#### MarkLogic Connector is deprecated since LTS 2019 / 10.10 and will be be removed in LTS 2020 / 11.10
+
 # Contributing / Reporting issues
 
 https://jira.nuxeo.com/browse/NXP/component/15405/
