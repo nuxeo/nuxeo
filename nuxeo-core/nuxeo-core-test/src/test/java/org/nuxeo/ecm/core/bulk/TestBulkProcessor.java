@@ -225,7 +225,6 @@ public class TestBulkProcessor {
         }
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-
         // submits multiple commands
         List<String> commands = new ArrayList<>(nbCommands);
         for (int i = 0; i < nbCommands; i++) {

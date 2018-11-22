@@ -143,13 +143,13 @@ public class TestLogChronicle extends TestLog {
         ExecutorService executor = Executors.newFixedThreadPool(NB_APPENDERS);
         Runnable writer = () -> {
             for (int i = 0; i < NB_MSG; i++) {
-                appender.append(0, KeyValueMessage.of("msg" + i));
                 try {
                     Thread.sleep(1100);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException(e);
                 }
+                appender.append(0, KeyValueMessage.of("msg" + i));
             }
         };
         for (int i = 0; i < NB_APPENDERS; i++) {
