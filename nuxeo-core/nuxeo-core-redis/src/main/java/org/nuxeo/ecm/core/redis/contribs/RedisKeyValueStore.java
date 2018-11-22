@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.redis.contribs;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.io.IOException;
 import java.nio.charset.CharacterCodingException;
@@ -48,7 +49,7 @@ import redis.clients.jedis.exceptions.JedisDataException;
  * The following configuration properties are available:
  * <ul>
  * <li>namespace: the Redis namespace to use for keys (in addition to the global Redis namespace configured in the Redis
- * service).
+ * service). DEPRECATED since 10.10, use the descriptor's {@code <namespace>} element instead.
  * </ul>
  *
  * @since 9.1
@@ -57,11 +58,13 @@ public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
 
     private static final Log log = LogFactory.getLog(RedisKeyValueStore.class);
 
+    /**
+     * @deprecated since 10.10
+     */
+    @Deprecated
     public static final String NAMESPACE_PROP = "namespace";
 
     protected static final Long ONE = Long.valueOf(1);
-
-    protected String name;
 
     protected String namespace;
 
@@ -77,12 +80,10 @@ public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
 
     @Override
     public void initialize(KeyValueStoreDescriptor descriptor) {
+        super.initialize(descriptor);
         log.debug("Initializing");
-        this.name = descriptor.name;
-        Map<String, String> properties = descriptor.properties;
-        String name = properties.get(NAMESPACE_PROP);
         RedisAdmin redisAdmin = Framework.getService(RedisAdmin.class);
-        namespace = redisAdmin.namespace(name == null ? new String[0] : new String[] { name });
+        namespace = redisAdmin.namespace(getNamespace(descriptor));
         try {
             compareAndSetSHA = getBytes(redisAdmin.load("org.nuxeo.ecm.core.redis", "compare-and-set"));
             compareAndDelSHA = getBytes(redisAdmin.load("org.nuxeo.ecm.core.redis", "compare-and-del"));
@@ -90,6 +91,17 @@ public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
         } catch (IOException e) {
             throw new NuxeoException("Cannot load Redis script", e);
         }
+    }
+
+    protected String[] getNamespace(KeyValueStoreDescriptor descriptor) {
+        String ns = descriptor.namespace;
+        if (isBlank(ns)) {
+            ns = descriptor.properties.get(NAMESPACE_PROP);
+            if (isBlank(ns)) {
+                return new String[0];
+            }
+        }
+        return new String[] { ns.trim() };
     }
 
     @Override
@@ -265,11 +277,6 @@ public class RedisKeyValueStore extends AbstractKeyValueStoreProvider {
             }
         });
         return result.longValue();
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + name + ")";
     }
 
 }

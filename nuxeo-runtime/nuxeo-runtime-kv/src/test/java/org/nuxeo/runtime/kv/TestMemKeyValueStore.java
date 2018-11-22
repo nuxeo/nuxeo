@@ -18,18 +18,18 @@
  */
 package org.nuxeo.runtime.kv;
 
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 /**
  * @since 9.1
  */
 public class TestMemKeyValueStore extends AbstractKeyValueStoreTest {
 
-    @Override
-    protected KeyValueStoreProvider newKeyValueStore() {
-        store = new MemKeyValueStore();
-        KeyValueStoreDescriptor descriptor = new KeyValueStoreDescriptor();
-        descriptor.name = "mem";
-        store.initialize(descriptor);
-        return store;
+    @Test
+    public void testClass() {
+        assertTrue(store instanceof MemKeyValueStore);
     }
 
 }

@@ -51,7 +51,7 @@
 <#if "${nuxeo.keyvalue.provider}" == "redis">
   <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
     <store name="default" class="org.nuxeo.ecm.core.redis.contribs.RedisKeyValueStore">
-      <property name="namespace">kv</property>
+      <namespace>kv</namespace>
     </store>
   </extension>
 </#if>

@@ -39,8 +39,6 @@ public class KeyValueServiceImpl extends DefaultComponent implements KeyValueSer
 
     protected Map<String, KeyValueStoreProvider> providers = new ConcurrentHashMap<>();
 
-    protected KeyValueStore defaultStore = new MemKeyValueStore();
-
     @Override
     public int getApplicationStartedOrder() {
         return APPLICATION_STARTED_ORDER;
@@ -60,10 +58,14 @@ public class KeyValueServiceImpl extends DefaultComponent implements KeyValueSer
         if (provider == null) {
             KeyValueStoreDescriptor descriptor = getDescriptor(XP_CONFIG, name);
             if (descriptor == null) {
+                // instantiate a copy of the default descriptor
                 descriptor = getDescriptor(XP_CONFIG, DEFAULT_STORE_ID);
                 if (descriptor == null) {
-                    return defaultStore;
+                    throw new RuntimeException("Missing configuration for default key/value store");
                 }
+                descriptor = new KeyValueStoreDescriptor(descriptor); // copy
+                descriptor.name = name;
+                descriptor.namespace = name; // set new namespace in copy
             }
             try {
                 provider = descriptor.klass.getDeclaredConstructor().newInstance();

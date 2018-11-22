@@ -19,30 +19,19 @@
 package org.nuxeo.ecm.core.redis;
 
 import static org.junit.Assert.assertEquals;
-
-import javax.inject.Inject;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.redis.contribs.RedisKeyValueStore;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreTest;
-import org.nuxeo.runtime.kv.KeyValueService;
-import org.nuxeo.runtime.kv.KeyValueStoreProvider;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-@RunWith(FeaturesRunner.class)
 @Features(RedisFeature.class)
 public class TestRedisKeyValueStore extends AbstractKeyValueStoreTest {
 
-    @Inject
-    protected KeyValueService keyValueService;
-
-    @Override
-    protected KeyValueStoreProvider newKeyValueStore() {
-        KeyValueStoreProvider store = (KeyValueStoreProvider) keyValueService.getKeyValueStore("redis");
-        store.clear();
-        return store;
+    @Test
+    public void testClass() {
+        assertTrue(store instanceof RedisKeyValueStore);
     }
 
     @Test

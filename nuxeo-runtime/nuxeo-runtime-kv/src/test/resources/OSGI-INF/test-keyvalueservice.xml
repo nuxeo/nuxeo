@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.kv.KeyValueService.test" version="1.0">
+
+  <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
+    <store name="default" class="org.nuxeo.runtime.kv.MemKeyValueStore">
+    </store>
+  </extension>
+
+</component>

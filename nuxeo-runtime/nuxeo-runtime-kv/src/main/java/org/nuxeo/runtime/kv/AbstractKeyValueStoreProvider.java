@@ -35,6 +35,18 @@ import java.util.Map;
  */
 public abstract class AbstractKeyValueStoreProvider implements KeyValueStoreProvider {
 
+    protected String name;
+
+    @Override
+    public void initialize(KeyValueStoreDescriptor descriptor) {
+        name = descriptor.name;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + name + ")";
+    }
+
     protected static final ThreadLocal<CharsetDecoder> UTF_8_DECODERS = ThreadLocal.withInitial(
             () -> UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(
                     CodingErrorAction.REPORT));

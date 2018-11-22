@@ -90,13 +90,11 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
 
     public static final Double ONE = Double.valueOf(1);
 
-    protected String name;
-
     protected MongoCollection<Document> coll;
 
     @Override
     public void initialize(KeyValueStoreDescriptor descriptor) {
-        name = descriptor.name;
+        super.initialize(descriptor);
         Map<String, String> properties = descriptor.properties;
         // find which collection prefix to use
         String collectionName = properties.get(COLLECTION_PROP);
@@ -496,11 +494,6 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
             }
             // else loop to try again
         }
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + name + ")";
     }
 
 }
