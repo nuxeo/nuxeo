@@ -43,7 +43,9 @@ import org.nuxeo.runtime.api.Framework;
  * Work to zip a list of document default blob and store the produced zip into the TransientStore.
  *
  * @since 9.3
+ * @deprecated since 10.3, not used anymore since bulk download operation is synchronous.
  */
+@Deprecated
 public class BlobListZipWork extends TransientStoreWork {
 
     private static final Log log = LogFactory.getLog(BlobListZipWork.class);
