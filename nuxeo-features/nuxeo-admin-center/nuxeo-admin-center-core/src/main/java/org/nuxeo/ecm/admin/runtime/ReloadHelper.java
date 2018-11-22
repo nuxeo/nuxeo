@@ -68,18 +68,23 @@ public class ReloadHelper {
             // Remove package from PackageUpdateService and get its bundleName to hot reload it
             if (pkg != null) {
                 if (pkg.getPackageState().isInstalled()) {
-                    // get the bundle symbolic names to hot reload
-                    UninstallTask uninstallTask = (UninstallTask) pkg.getUninstallTask();
-                    // in our hot reload case, we just care about the bundle
-                    // so get the rollback commands and then the target
-                    uninstallTask.getCommands()
-                                 .stream()
-                                 .filter(Rollback.class::isInstance)
-                                 .map(Rollback.class::cast)
-                                 .map(Rollback::getRollbackOptions)
-                                 .map(uninstallTask.getUpdateManager()::getRollbackTarget)
-                                 .map(reloadService::getOSGIBundleName)
-                                 .forEachOrdered(reloadContext::undeploy);
+                    if (pkg.getUninstallFile().exists()) {
+                        // get the bundle symbolic names to hot reload
+                        UninstallTask uninstallTask = (UninstallTask) pkg.getUninstallTask();
+                        // in our hot reload case, we just care about the bundle
+                        // so get the rollback commands and then the target
+                        uninstallTask.getCommands()
+                                     .stream()
+                                     .filter(Rollback.class::isInstance)
+                                     .map(Rollback.class::cast)
+                                     .map(Rollback::getRollbackOptions)
+                                     .map(uninstallTask.getUpdateManager()::getRollbackTarget)
+                                     .map(reloadService::getOSGIBundleName)
+                                     .forEachOrdered(reloadContext::undeploy);
+                    } else {
+                        log.warn("Unable to uninstall previous bundle because {} doesn't exist",
+                                 pkg.getUninstallFile());
+                    }
                 }
                 // remove the package from package update service, unless download will fail
                 pus.removePackage(pkg.getId());
@@ -103,7 +108,7 @@ public class ReloadHelper {
             pus.setPackageState(pkg, PackageState.INSTALLING);
 
             // in our hot reload case, we just care about the bundle
-            // so get the rollback commands and then the target
+            // so get the update commands and then the file
             installTask.getCommands()
                        .stream()
                        .filter(Update.class::isInstance)
