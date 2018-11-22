@@ -18,40 +18,39 @@
  */
 package org.nuxeo.ecm.automation.core.operations.blob;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.work.BlobListZipWork;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.impl.blob.AsyncBlob;
 import org.nuxeo.ecm.core.io.download.DownloadService;
-import org.nuxeo.ecm.core.transientstore.api.TransientStore;
-import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
-import org.nuxeo.ecm.core.work.api.Work;
-import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
+import org.nuxeo.ecm.core.utils.BlobUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Asynchronous Bulk Download Operation.
+ * Bulk Download Operation.
  *
  * @since 9.3
  */
-@Operation(id = BulkDownload.ID, category = Constants.CAT_BLOB, label = "Bulk Download", description = "Prepare a Zip of a list of documents which is build asynchrously. Produced Zip will be available in the TransientStore with the key returned by the JSON.")
+@Operation(id = BulkDownload.ID, category = Constants.CAT_BLOB, label = "Bulk Download", description = "Prepare a Zip of a list of documents.")
 public class BulkDownload {
 
     public static final String ID = "Blob.BulkDownload";
+
+    private static final Logger log = LogManager.getLogger(BulkDownload.class);
 
     @Context
     protected CoreSession session;
@@ -60,21 +59,30 @@ public class BulkDownload {
     protected String fileName;
 
     @OperationMethod
-    public Blob run(DocumentModelList docs) {
-        TransientStoreService tss = Framework.getService(TransientStoreService.class);
-        TransientStore ts = tss.getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
-        if (ts == null) {
-            throw new NuxeoException("Unable to find download Transient Store");
+    public Blob run(DocumentModelList docs) throws IOException {
+        
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        List<Blob> blobs = docs.stream().map(doc -> {
+            Blob blob = downloadService.resolveBlob(doc);
+            if (blob == null) {
+                log.trace("Not able to resolve blob");
+                return null;
+            }
+            if (!downloadService.checkPermission(doc, null, blob, "download", Collections.emptyMap())) {
+                log.debug("Not allowed to bulk download blob for document {}", doc::getPathAsString);
+                return null;
+            }
+            return blob;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+
+        if (blobs.isEmpty()) {
+            log.debug("No blob to be zipped");
+            return null;
         }
-        String key = UUID.randomUUID().toString();
-        List<String> docIds = docs.stream().map(DocumentModel::getId).collect(Collectors.toList());
-        Work work = new BlobListZipWork(key, session.getPrincipal().getName(), fileName, docIds,
-                DownloadService.TRANSIENT_STORE_STORE_NAME);
-        ts.setCompleted(key, false);
-        Blob blob = new AsyncBlob(key);
-        ts.putBlobs(key, Collections.singletonList(blob));
-        Framework.getService(WorkManager.class).schedule(work, Scheduling.IF_NOT_SCHEDULED);
-        return blob;
+
+        String filename = StringUtils.isNotBlank(this.fileName) ? this.fileName
+                : String.format("BlobListZip-%s-%s", UUID.randomUUID(), session.getPrincipal().getName());
+        return BlobUtils.zip(blobs, filename);
     }
 
 }

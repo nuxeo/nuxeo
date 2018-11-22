@@ -24,7 +24,9 @@ import org.apache.commons.text.StringEscapeUtils;
  * An asynchronously build blob.
  *
  * @since 9.3
+ * @deprecated since 10.3, use the @async operation adapter instead.
  */
+@Deprecated
 public class AsyncBlob extends JSONBlob {
 
     private static final long serialVersionUID = 1L;
