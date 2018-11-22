@@ -111,7 +111,7 @@ public class MongoDBSession extends BaseSession {
 
     @Override
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences) {
-        String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
+        String idFieldName = getPrefixedIdField();
         DocumentModelList result = doQuery(Collections.singletonMap(idFieldName, id), Collections.emptySet(),
                 Collections.emptyMap(), true, 1, 0, false);
 
@@ -143,7 +143,7 @@ public class MongoDBSession extends BaseSession {
                                                 .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()),
                                                         HashMap::putAll);
         Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
-        String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
+        String idFieldName = getPrefixedIdField();
         String id = String.valueOf(fieldMap.get(idFieldName));
         if (autoincrementId) {
             Document filter = MongoDBSerializationHelper.fieldMapToBson(MONGODB_ID, directoryName);
@@ -206,10 +206,10 @@ public class MongoDBSession extends BaseSession {
                 }
             }
             Document bson = MongoDBSerializationHelper.fieldMapToBson(newDocMap);
-            String password = (String) newDocMap.get(getPasswordField());
+            String password = (String) newDocMap.get(getPrefixedPasswordField());
             if (password != null && !PasswordHelper.isHashed(password)) {
                 password = PasswordHelper.hashPassword(password, passwordHashAlgorithm);
-                bson.append(getPasswordField(), password);
+                bson.append(getPrefixedPasswordField(), password);
             }
             getCollection().insertOne(bson);
         } catch (MongoWriteException e) {
@@ -235,21 +235,28 @@ public class MongoDBSession extends BaseSession {
             }
         }
 
-        Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
-        for (String fieldName : schemaFieldMap.keySet()) {
-            if (fieldName.equals(getIdField())) {
+        List<String> fields = directory.getSchemaFieldMap()
+                                       .values()
+                                       .stream()
+                                       .map(field -> field.getName().getPrefixedName())
+                                       .collect(Collectors.toList());
+        String idFieldName = getPrefixedIdField();
+        String passwordFieldName = getPrefixedPasswordField();
+
+        for (String fieldName : fields) {
+            if (fieldName.equals(idFieldName)) {
                 continue;
             }
             Property prop = docModel.getPropertyObject(schemaName, fieldName);
             if (prop == null || !prop.isDirty()
-                    || (fieldName.equals(getPasswordField()) && StringUtils.isEmpty((String) prop.getValue()))) {
+                    || (fieldName.equals(passwordFieldName) && StringUtils.isEmpty((String) prop.getValue()))) {
                 continue;
             }
             if (getDirectory().isReference(fieldName)) {
                 referenceFieldList.add(fieldName);
             } else {
                 Serializable value = prop.getValue();
-                if (fieldName.equals(getPasswordField())) {
+                if (fieldName.equals(passwordFieldName)) {
                     value = PasswordHelper.hashPassword((String) value, passwordHashAlgorithm);
                 }
                 if (value instanceof Calendar) {
@@ -259,7 +266,6 @@ public class MongoDBSession extends BaseSession {
             }
         }
 
-        String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
         String id = docModel.getId();
         Document bson = MongoDBSerializationHelper.fieldMapToBson(idFieldName, autoincrementId ? Long.valueOf(id) : id);
 
@@ -288,7 +294,7 @@ public class MongoDBSession extends BaseSession {
     @Override
     public void deleteEntryWithoutReferences(String id) {
         try {
-            String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
+            String idFieldName = getPrefixedIdField();
             DeleteResult result = getCollection().deleteOne(
                     MongoDBSerializationHelper.fieldMapToBson(idFieldName, autoincrementId ? Long.valueOf(id) : id));
             if (!result.wasAcknowledged()) {
@@ -324,7 +330,8 @@ public class MongoDBSession extends BaseSession {
         }
 
         // Remove password as it is not possible to do queries with it
-        filterMap.remove(getPasswordField());
+        String passwordFieldName = getPrefixedPasswordField();
+        filterMap.remove(passwordFieldName);
         Document bson = buildQuery(filterMap, fulltext);
 
         DocumentModelList entries = new DocumentModelListImpl();
@@ -339,7 +346,7 @@ public class MongoDBSession extends BaseSession {
             Map<String, Object> fieldMap = MongoDBSerializationHelper.bsonToFieldMap(resultDoc);
             // Remove password from results
             if (!readAllColumns) {
-                fieldMap.remove(getPasswordField());
+                fieldMap.remove(passwordFieldName);
             }
             DocumentModel doc = fieldMapToDocumentModel(fieldMap);
 
@@ -430,7 +437,9 @@ public class MongoDBSession extends BaseSession {
         if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
         }
-        if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
+        String passwordFieldName = getPrefixedPasswordField();
+        if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())
+                || FieldDetector.hasField(queryBuilder.predicate(), passwordFieldName)) {
             throw new DirectoryException("Cannot filter on password");
         }
         queryBuilder = addTenantId(queryBuilder);
@@ -456,7 +465,7 @@ public class MongoDBSession extends BaseSession {
             for (Document doc : (Iterable<Document>) () -> cursor) {
                 if (!readAllColumns) {
                     // remove password from results
-                    doc.remove(getPasswordField());
+                    doc.remove(passwordFieldName);
                 }
                 State state = converter.bsonToState(doc);
                 Map<String, Object> fieldMap = new HashMap<>();
@@ -507,7 +516,8 @@ public class MongoDBSession extends BaseSession {
         if (!hasPermission(SecurityConstants.READ)) {
             return Collections.emptyList();
         }
-        if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())) {
+        if (FieldDetector.hasField(queryBuilder.predicate(), getPasswordField())
+                || FieldDetector.hasField(queryBuilder.predicate(), getPrefixedPasswordField())) {
             throw new DirectoryException("Cannot filter on password");
         }
         queryBuilder = addTenantId(queryBuilder);
@@ -516,7 +526,7 @@ public class MongoDBSession extends BaseSession {
         MongoDBDirectoryQueryBuilder builder = new MongoDBDirectoryQueryBuilder(converter, queryBuilder.predicate());
         builder.walk();
         Document filter = builder.getQuery();
-        String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
+        String idFieldName = getPrefixedIdField();
         Document projection = new Document(idFieldName, 1L);
         int limit = Math.max(0, (int) queryBuilder.limit());
         int offset = Math.max(0, (int) queryBuilder.offset());
@@ -585,12 +595,13 @@ public class MongoDBSession extends BaseSession {
 
     @Override
     public boolean authenticate(String username, String password) {
-        Document user = getCollection().find(MongoDBSerializationHelper.fieldMapToBson(getIdField(), username)).first();
+        Document user = getCollection().find(MongoDBSerializationHelper.fieldMapToBson(getPrefixedIdField(), username))
+                                       .first();
         if (user == null) {
             return false;
         }
 
-        String storedPassword = user.getString(getPasswordField());
+        String storedPassword = user.getString(getPrefixedPasswordField());
         if (isMultiTenant()) {
             // check that the entry is from the current tenant, or no tenant at all
             if(!checkEntryTenantId(user.getString(TENANT_ID_FIELD))) {
@@ -608,7 +619,7 @@ public class MongoDBSession extends BaseSession {
 
     @Override
     public boolean hasEntry(String id) {
-        String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
+        String idFieldName = getPrefixedIdField();
         return getCollection().count(MongoDBSerializationHelper.fieldMapToBson(idFieldName, id)) > 0;
     }
 
@@ -642,7 +653,7 @@ public class MongoDBSession extends BaseSession {
     }
 
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
-        String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
+        String idFieldName = getPrefixedIdField();
         if (!fieldMap.containsKey(idFieldName)) {
             idFieldName = getIdField();
         }
@@ -651,7 +662,7 @@ public class MongoDBSession extends BaseSession {
     }
 
     protected String getIdFromState(State state) {
-        String idFieldName = directory.getSchemaFieldMap().get(getIdField()).getName().getPrefixedName();
+        String idFieldName = getPrefixedIdField();
         if (!state.containsKey(idFieldName)) {
             idFieldName = getIdField();
         }
@@ -667,6 +678,22 @@ public class MongoDBSession extends BaseSession {
             }
         }
         return true;
+    }
+
+    protected String getPrefixedIdField() {
+        Field idField = directory.getSchemaFieldMap().get(getIdField());
+        if (idField == null) {
+            return null;
+        }
+        return idField.getName().getPrefixedName();
+    }
+
+    protected String getPrefixedPasswordField() {
+        Field passwordField = directory.getSchemaFieldMap().get(getPasswordField());
+        if (passwordField == null) {
+            return null;
+        }
+        return passwordField.getName().getPrefixedName();
     }
 
 }
