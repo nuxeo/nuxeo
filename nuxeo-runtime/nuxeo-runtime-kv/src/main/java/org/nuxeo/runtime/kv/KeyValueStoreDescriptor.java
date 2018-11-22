@@ -43,12 +43,39 @@ public class KeyValueStoreDescriptor implements Descriptor {
     @XNode("@class")
     public Class<? extends KeyValueStoreProvider> klass;
 
+    /**
+     * An optional namespace that may be used to disambiguate otherwise similar descriptors (in particular, copies).
+     *
+     * @since 10.10
+     */
+    @XNode("namespace")
+    public String namespace;
+
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties = new HashMap<>();
 
     @Override
     public String getId() {
         return name;
+    }
+
+    /**
+     * Empty constructor.
+     */
+    public KeyValueStoreDescriptor() {
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @since 10.10
+     */
+    public KeyValueStoreDescriptor(KeyValueStoreDescriptor other) {
+        name = other.name;
+        remove = other.remove;
+        klass = other.klass;
+        namespace = other.namespace;
+        properties.putAll(other.properties);
     }
 
 }

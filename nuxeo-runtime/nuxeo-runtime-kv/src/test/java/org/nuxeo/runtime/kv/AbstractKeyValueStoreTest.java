@@ -22,6 +22,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -40,12 +41,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @since 9.1
  */
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.kv")
 public abstract class AbstractKeyValueStoreTest {
 
     protected static final String BAR = "bar";
@@ -64,14 +75,16 @@ public abstract class AbstractKeyValueStoreTest {
 
     protected static final byte[] NOT_UTF_8 = new byte[] { (byte) 128, (byte) 0 };
 
+    @Inject
+    protected KeyValueService keyValueService;
+
     protected KeyValueStoreProvider store;
 
     @Before
     public void setUp() {
-        store = newKeyValueStore();
+        store = (KeyValueStoreProvider) keyValueService.getKeyValueStore("default");
+        store.clear();
     }
-
-    protected abstract KeyValueStoreProvider newKeyValueStore();
 
     protected boolean hasSlowTTLExpiration() {
         return false;
@@ -82,6 +95,15 @@ public abstract class AbstractKeyValueStoreTest {
 
     protected Set<String> storeKeys() {
         return store.keyStream().collect(Collectors.toSet());
+    }
+
+    @Test
+    public void testCopyDoesNotShareData() {
+        KeyValueStore otherStore = keyValueService.getKeyValueStore("notregistered");
+        String key = "mykey";
+        store.put(key, "foo");
+        assertNotNull(store.getString(key));
+        assertNull(otherStore.getString(key)); // other key/value store does not see the same data
     }
 
     @Test

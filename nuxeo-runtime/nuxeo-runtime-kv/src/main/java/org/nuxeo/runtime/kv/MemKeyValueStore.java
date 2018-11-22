@@ -38,8 +38,6 @@ public class MemKeyValueStore extends AbstractKeyValueStoreProvider {
 
     protected final Lock writeLock;
 
-    protected String name;
-
     public MemKeyValueStore() {
         map = ExpiringMap.builder().expiration(Integer.MAX_VALUE, TimeUnit.DAYS).variableExpiration().build();
         try {
@@ -49,11 +47,6 @@ public class MemKeyValueStore extends AbstractKeyValueStoreProvider {
         } catch (ReflectiveOperationException | SecurityException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public void initialize(KeyValueStoreDescriptor descriptor) {
-        this.name = descriptor.name;
     }
 
     @Override
@@ -141,11 +134,6 @@ public class MemKeyValueStore extends AbstractKeyValueStoreProvider {
         } finally {
             writeLock.unlock();
         }
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + name + ")";
     }
 
 }

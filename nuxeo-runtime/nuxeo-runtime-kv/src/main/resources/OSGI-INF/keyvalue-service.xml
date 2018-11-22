@@ -24,4 +24,9 @@
     <object class="org.nuxeo.runtime.kv.KeyValueStoreDescriptor" />
   </extension-point>
 
+  <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
+    <store name="default" class="org.nuxeo.runtime.kv.MemKeyValueStore">
+    </store>
+  </extension>
+
 </component>

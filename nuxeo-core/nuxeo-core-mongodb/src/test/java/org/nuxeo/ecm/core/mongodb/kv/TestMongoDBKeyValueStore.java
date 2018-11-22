@@ -18,31 +18,21 @@
  */
 package org.nuxeo.ecm.core.mongodb.kv;
 
-import javax.inject.Inject;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.runner.RunWith;
+import org.junit.Test;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreTest;
-import org.nuxeo.runtime.kv.KeyValueService;
-import org.nuxeo.runtime.kv.KeyValueStoreProvider;
 import org.nuxeo.runtime.mongodb.MongoDBFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-@RunWith(FeaturesRunner.class)
 @Features(MongoDBFeature.class)
-@Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.ecm.core.mongodb.test:OSGI-INF/mongodb-keyvalue-test-contrib.xml")
 public class TestMongoDBKeyValueStore extends AbstractKeyValueStoreTest {
 
-    @Inject
-    protected KeyValueService keyValueService;
-
-    @Override
-    protected KeyValueStoreProvider newKeyValueStore() {
-        KeyValueStoreProvider store = (KeyValueStoreProvider) keyValueService.getKeyValueStore("mongodb");
-        store.clear();
-        return store;
+    @Test
+    public void testClass() {
+        assertTrue(store instanceof MongoDBKeyValueStore);
     }
 
     @Override
