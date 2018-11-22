@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -48,7 +50,7 @@ public class UntrashDocument {
             trashService.untrashDocument(doc);
             return session.getDocument(doc.getRef());
         } else {
-            throw new NuxeoException("Cannot untrash these documents");
+            throw new NuxeoException("Cannot untrash these documents", SC_FORBIDDEN);
         }
     }
 
