@@ -168,6 +168,7 @@ public class TestAnnotationService {
         Annotation annotation = new AnnotationImpl();
         annotation.setParentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
+        annotation.setAuthor(session.getPrincipal().getName());
         annotation = annotationService.createAnnotation(session, annotation);
         session.save();
 
@@ -192,6 +193,7 @@ public class TestAnnotationService {
         Annotation annotation = new AnnotationImpl();
         annotation.setParentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
+        annotation.setAuthor(session.getPrincipal().getName());
         annotation = annotationService.createAnnotation(session, annotation);
         session.save();
 
@@ -285,6 +287,7 @@ public class TestAnnotationService {
         ((ExternalEntity) annotation).setEntityId(entityId);
         annotation.setParentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
+        annotation.setAuthor(session.getPrincipal().getName());
         annotationService.createAnnotation(session, annotation);
         session.save();
 
@@ -319,6 +322,7 @@ public class TestAnnotationService {
         ((ExternalEntity) annotation).setEntityId(entityId);
         annotation.setParentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
+        annotation.setAuthor(session.getPrincipal().getName());
         annotation = annotationService.createAnnotation(session, annotation);
         session.save();
 

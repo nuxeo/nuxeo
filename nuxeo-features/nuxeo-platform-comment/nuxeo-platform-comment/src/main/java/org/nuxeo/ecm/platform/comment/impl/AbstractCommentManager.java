@@ -149,18 +149,6 @@ public abstract class AbstractCommentManager implements CommentManager {
         session.setACP(documentModel.getRef(), acp, true);
     }
 
-    protected void setCommentPermissions(CoreSession session, DocumentModel documentModel, String author) {
-        ACP acp = new ACPImpl();
-        List<ACE> aces = new ArrayList<>();
-        aces.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ, true));
-        aces.add(new ACE(author, SecurityConstants.WRITE, true));
-        aces.add(new ACE(author, SecurityConstants.REMOVE, true));
-        ACL acl = new ACLImpl();
-        acl.setACEs(aces.toArray(new ACE[0]));
-        acp.addACL(acl);
-        session.setACP(documentModel.getRef(), acp, true);
-    }
-
     protected Collection<String> computeAncestorIds(CoreSession session, String parentId) {
         Collection<String> ancestorIds = new HashSet<>();
         ancestorIds.add(parentId);
