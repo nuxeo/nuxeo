@@ -176,12 +176,12 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
         service.schedule(longWork);
         // only the last, short work, will actually be computed and waiting for it's execution time is enough
         service.schedule(shortWork);
-        assertTrue(service.awaitCompletion(getDurationMillis(), TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 4, 0);
 
         // if we wait a bit for the first one to be started, first and last works will be computed
         service.schedule(shortWork);
-        Thread.sleep(100);
+        Thread.sleep(500);
         service.schedule(longWork);
         service.schedule(shortWork);
         assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
