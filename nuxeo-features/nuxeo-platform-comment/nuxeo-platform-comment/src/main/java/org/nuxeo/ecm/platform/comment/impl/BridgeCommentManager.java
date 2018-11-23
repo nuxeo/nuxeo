@@ -30,11 +30,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 
 /**
  * @since 10.3
@@ -58,7 +58,8 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public List<DocumentModel> getComments(CoreSession session, DocumentModel docModel) {
+    public List<DocumentModel> getComments(CoreSession session, DocumentModel docModel)
+            throws CommentSecurityException {
         return Stream.concat(first.getComments(session, docModel).stream(),
                 second.getComments(session, docModel).stream()).distinct().collect(Collectors.toList());
     }
@@ -74,7 +75,7 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) {
+    public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) throws CommentSecurityException {
         return second.createComment(docModel, comment);
     }
 
@@ -99,7 +100,7 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentModel getThreadForComment(DocumentModel comment) {
+    public DocumentModel getThreadForComment(DocumentModel comment) throws CommentSecurityException {
         if (comment.getPropertyValue(COMMENT_PARENT_ID) != null) {
             return second.getThreadForComment(comment);
         }
@@ -107,17 +108,20 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path) {
+    public DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path)
+            throws CommentSecurityException {
         return second.createLocatedComment(docModel, comment, path);
     }
 
     @Override
-    public Comment createComment(CoreSession session, Comment comment) throws CommentNotFoundException {
+    public Comment createComment(CoreSession session, Comment comment)
+            throws CommentNotFoundException, CommentSecurityException {
         return second.createComment(session, comment);
     }
 
     @Override
-    public Comment getComment(CoreSession session, String commentId) throws CommentNotFoundException {
+    public Comment getComment(CoreSession session, String commentId)
+            throws CommentNotFoundException, CommentSecurityException {
         return second.getComment(session, commentId);
     }
 
@@ -129,7 +133,7 @@ public class BridgeCommentManager extends AbstractCommentManager {
 
     @Override
     public PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize,
-            Long currentPageIndex, boolean sortAscending) {
+            Long currentPageIndex, boolean sortAscending) throws CommentSecurityException {
         List<Comment> firstComments = first.getComments(session, documentId, pageSize, currentPageIndex, sortAscending);
         List<Comment> secondComments = second.getComments(session, documentId, pageSize, currentPageIndex,
                 sortAscending);
@@ -140,7 +144,8 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public Comment updateComment(CoreSession session, String commentId, Comment comment) throws CommentNotFoundException {
+    public Comment updateComment(CoreSession session, String commentId, Comment comment)
+            throws CommentNotFoundException, CommentSecurityException {
         DocumentRef commentRef = new IdRef(commentId);
         if (!session.exists(commentRef)) {
             throw new CommentNotFoundException("The comment " + commentId + " does not exist");
@@ -153,7 +158,8 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public void deleteComment(CoreSession session, String commentId) throws CommentNotFoundException {
+    public void deleteComment(CoreSession session, String commentId)
+            throws CommentNotFoundException, CommentSecurityException {
         DocumentRef commentRef = new IdRef(commentId);
         if (!session.exists(commentRef)) {
             throw new CommentNotFoundException("The comment " + commentId + " does not exist");
@@ -166,17 +172,20 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public Comment getExternalComment(CoreSession session, String entityId) throws NuxeoException {
+    public Comment getExternalComment(CoreSession session, String entityId)
+            throws CommentNotFoundException, CommentSecurityException {
         return second.getExternalComment(session, entityId);
     }
 
     @Override
-    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment) throws NuxeoException {
+    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment)
+            throws CommentNotFoundException, CommentSecurityException {
         return second.updateExternalComment(session, entityId, comment);
     }
 
     @Override
-    public void deleteExternalComment(CoreSession session, String entityId) throws NuxeoException {
+    public void deleteExternalComment(CoreSession session, String entityId)
+            throws CommentNotFoundException, CommentSecurityException {
         second.deleteExternalComment(session, entityId);
     }
 

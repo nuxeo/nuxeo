@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
@@ -59,9 +60,11 @@ public interface CommentManager {
      * @param session the core session
      * @param docModel the document model
      * @return the list of comments
+     * @throws CommentSecurityException if the current user does not have the right permissions on the commented
+     *             document
      * @since 10.3
      */
-    List<DocumentModel> getComments(CoreSession session, DocumentModel docModel);
+    List<DocumentModel> getComments(CoreSession session, DocumentModel docModel) throws CommentSecurityException;
 
     /**
      * Get comments of a document.
@@ -103,8 +106,10 @@ public interface CommentManager {
      * @param docModel the document to comment
      * @param comment the comment document model
      * @return the created comment document model.
+     * @throws CommentSecurityException if the current user does not have the right permissions on the document to
+     *             comment.
      */
-    DocumentModel createComment(DocumentModel docModel, DocumentModel comment);
+    DocumentModel createComment(DocumentModel docModel, DocumentModel comment) throws CommentSecurityException;
 
     /**
      * Creates a comment document model, filling its properties with given info and linking it to given document.
@@ -143,9 +148,11 @@ public interface CommentManager {
      *
      * @param comment the comment
      * @return the thread
+     * @throws CommentSecurityException if the current user does not have the right permissions on the commented
+     *             document.
      * @since 5.5
      */
-    DocumentModel getThreadForComment(DocumentModel comment);
+    DocumentModel getThreadForComment(DocumentModel comment) throws CommentSecurityException;
 
     /**
      * Creates a comment document model. It gives opportunity to save the comments in a specified location.
@@ -154,8 +161,11 @@ public interface CommentManager {
      * @param comment the comment content
      * @param path the location path
      * @return the comment document model.
+     * @throws CommentSecurityException if the current user does not have the right permissions on the document to
+     *             comment.
      */
-    DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path);
+    DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path)
+            throws CommentSecurityException;
 
     /**
      * Creates a comment.
@@ -163,9 +173,12 @@ public interface CommentManager {
      * @param session the core session
      * @return the created comment
      * @throws CommentNotFoundException if the document to comment, i.e. comment's parent, does not exist.
+     * @throws CommentSecurityException if the current user does not have the right permissions on the document to
+     *             comment.
      * @since 10.3
      */
-    Comment createComment(CoreSession session, Comment comment) throws CommentNotFoundException;
+    Comment createComment(CoreSession session, Comment comment)
+            throws CommentNotFoundException, CommentSecurityException;
 
     /**
      * Gets a comment.
@@ -174,9 +187,11 @@ public interface CommentManager {
      * @param commentId the comment id
      * @return the comment
      * @throws CommentNotFoundException if the comment does not exist
+     * @throws CommentSecurityException if the current user does not have the right permissions on the commented
+     *             document.
      * @since 10.3
      */
-    Comment getComment(CoreSession session, String commentId) throws CommentNotFoundException;
+    Comment getComment(CoreSession session, String commentId) throws CommentNotFoundException, CommentSecurityException;
 
     /**
      * Gets all comments for a document.
@@ -224,10 +239,12 @@ public interface CommentManager {
      * @param sortAscending whether to sort ascending or descending
      * @return the list of comments, ordered by comment's creation date and according to sortAscending parameter, or an
      *         empty list if no comment is found.
+     * @throws CommentSecurityException if the current user does not have the right permissions on the commented
+     *             document.
      * @since 10.3
      */
     PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize, Long currentPageIndex,
-            boolean sortAscending);
+            boolean sortAscending) throws CommentSecurityException;
 
     /**
      * Updates a comment.
@@ -237,9 +254,12 @@ public interface CommentManager {
      * @param comment the updated comment
      * @return the updated comment
      * @throws CommentNotFoundException if no comment was found with the given id.
+     * @throws CommentSecurityException if the current user does not have the right permissions on the commented
+     *             document.
      * @since 10.3
      */
-    Comment updateComment(CoreSession session, String commentId, Comment comment) throws CommentNotFoundException;
+    Comment updateComment(CoreSession session, String commentId, Comment comment)
+            throws CommentNotFoundException, CommentSecurityException;
 
     /**
      * Deletes a comment.
@@ -247,9 +267,11 @@ public interface CommentManager {
      * @param session the core session
      * @param commentId the comment id
      * @throws CommentNotFoundException if no comment was found with the given id.
+     * @throws CommentSecurityException if the current user does not have the right permissions on the commented
+     *             document.
      * @since 10.3
      */
-    void deleteComment(CoreSession session, String commentId) throws CommentNotFoundException;
+    void deleteComment(CoreSession session, String commentId) throws CommentNotFoundException, CommentSecurityException;
 
     /**
      * Gets a comment generated by an external service.
@@ -258,9 +280,12 @@ public interface CommentManager {
      * @param entityId the external entity id
      * @return the comment
      * @throws CommentNotFoundException if no comment was found with the given external entity id.
+     * @throws CommentSecurityException if the current user does not have the right permissions on the commented
+     *             document.
      * @since 10.3
      */
-    Comment getExternalComment(CoreSession session, String entityId) throws CommentNotFoundException;
+    Comment getExternalComment(CoreSession session, String entityId)
+            throws CommentNotFoundException, CommentSecurityException;
 
     /**
      * Updates an external comment.
@@ -270,9 +295,12 @@ public interface CommentManager {
      * @param comment the comment containing the modifications
      * @return the updated comment
      * @throws CommentNotFoundException if no comment was found with the given external entity id.
+     * @throws CommentSecurityException if the current user does not have the right permissions on the commented
+     *             document.
      * @since 10.3
      */
-    Comment updateExternalComment(CoreSession session, String entityId, Comment comment) throws CommentNotFoundException;
+    Comment updateExternalComment(CoreSession session, String entityId, Comment comment)
+            throws CommentNotFoundException, CommentSecurityException;
 
     /**
      * Deletes an external comment.
@@ -280,9 +308,12 @@ public interface CommentManager {
      * @param session the core session
      * @param entityId the external entity id
      * @throws CommentNotFoundException if no comment was found with the given external entity id.
+     * @throws CommentSecurityException if the current user does not have the right permissions on the commented
+     *             document.
      * @since 10.3
      */
-    void deleteExternalComment(CoreSession session, String entityId) throws CommentNotFoundException;
+    void deleteExternalComment(CoreSession session, String entityId)
+            throws CommentNotFoundException, CommentSecurityException;
 
     /**
      * Checks if a feature is available.
