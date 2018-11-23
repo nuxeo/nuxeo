@@ -411,8 +411,10 @@ public class TestConnectBroker {
 
     @Test
     public void testIsRemotePackageId() throws Exception {
-        Set<String> remotePackageIds = collectIdsFrom("addon_remote.json", "hotfix_remote.json", "studio_remote.json");
-        remotePackageIds.forEach(id -> assertThat(connectBroker.isRemotePackageId(id)).isTrue());
+        assertThat(connectBroker.isRemotePackageId("A-1.0.0")).isTrue();
+        assertThat(connectBroker.isRemotePackageId("B-1.0.1-SNAPSHOT")).isTrue();
+        assertThat(connectBroker.isRemotePackageId("studioA-1.0.0")).isTrue();
+        assertThat(connectBroker.isRemotePackageId("hfA-1.0.8")).isTrue();
 
         // Packages in path "$TEST_STORE_PATH/local-only" are not available in remote (local-only)
         assertThat(connectBroker.isRemotePackageId("E-1.0.1")).isFalse();
