@@ -36,6 +36,9 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -50,9 +53,13 @@ import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
 import org.nuxeo.ecm.core.api.AsyncService;
 import org.nuxeo.ecm.core.api.AsyncStatus;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
@@ -62,6 +69,7 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -81,6 +89,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
     public static final String NAME = "async";
 
+    private static final Logger log = LogManager.getLogger(AsyncOperationAdapter.class);
+
     protected static final String STATUS_STORE_NAME = "automation";
 
     protected String TRANSIENT_STORE_SERVICE = "service";
@@ -94,56 +104,77 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     protected String TRANSIENT_STORE_OUTPUT_BLOB = "blob";
 
     @Context
+    protected AutomationService service;
+
+    @Context
     protected HttpServletRequest request;
+
+    @Context
+    protected HttpServletResponse response;
+
+    @Context
+    protected CoreSession session;
 
     @POST
     public Object doPost(ExecutionRequest xreq) {
         OperationResource op = (OperationResource) getTarget();
+        String opId = op.getId();
 
         try {
             AutomationServer srv = Framework.getService(AutomationServer.class);
-            if (!srv.accept(op.getId(), op.isChain(), request)) {
+            if (!srv.accept(opId, op.isChain(), request)) {
                 return ResponseHelper.notFound();
             }
             final String executionId = UUID.randomUUID().toString();
 
+            // session will be set in the task thread
+            OperationContext opCtx = xreq.createContext(request, response, null);
+
+            opCtx.setCallback(new OperationCallback() {
+
+                @Override
+                public void onChainEnter(OperationType chain) {
+                    //
+                }
+
+                @Override
+                public void onChainExit() {
+                    setCompleted(executionId);
+                }
+
+                @Override
+                public void onOperationEnter(OperationContext context, OperationType type, InvokableMethod method,
+                        Map<String, Object> params) {
+                    enterMethod(executionId, method);
+                }
+
+                @Override
+                public void onOperationExit(Object output) {
+                    setOutput(executionId, (Serializable) output);
+                }
+
+                @Override
+                public OperationException onError(OperationException error) {
+                    setError(executionId, error.getMessage());
+                    return error;
+                }
+
+            });
+
+            String repoName = session.getRepositoryName();
+            NuxeoPrincipal principal = session.getPrincipal();
+
             // TODO NXP-26303: use thread pool
             new Thread(() -> {
-                try {
-                    op.execute(xreq, new OperationCallback() {
-
-                        @Override
-                        public void onChainEnter(OperationType chain) {
-                            //
-                        }
-
-                        @Override
-                        public void onChainExit() {
-                            setCompleted(executionId);
-                        }
-
-                        @Override
-                        public void onOperationEnter(OperationContext context, OperationType type, InvokableMethod method,
-                                Map<String, Object> params) {
-                            enterMethod(executionId, method);
-                        }
-
-                        @Override
-                        public void onOperationExit(Object output) {
-                            setOutput(executionId, (Serializable) output);
-                        }
-
-                        @Override
-                        public OperationException onError(OperationException error) {
-                            setError(executionId, error.getMessage());
-                            return error;
-                        }
-
-                    });
-                } catch (OperationException e) {
-                    setError(executionId, e.getMessage());
-                }
-            }).run();
+                TransactionHelper.runInTransaction(() -> {
+                    try (CloseableCoreSession session = CoreInstance.openCoreSession(repoName, principal)){
+                        opCtx.setCoreSession(session);
+                        service.run(opCtx, opId, xreq.getParams());
+                    } catch (OperationException e) {
+                        setError(executionId, e.getMessage());
+                    }
+                });
+            }).start();
 
             String statusURL = String.format("%s/%s/status", ctx.getURL(), executionId);
             return Response.status(HttpServletResponse.SC_ACCEPTED).location(new URI(statusURL)).build();
@@ -168,7 +199,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
             if (error != null) {
                 throw new NuxeoException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-            String resURL = StringUtils.stripEnd(ctx.getURL(), "/status");
+            String resURL = StringUtils.removeEnd(ctx.getURL(), "/status");
             return redirect(resURL);
         } else {
             Object result = "RUNNING";
@@ -182,8 +213,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
     @GET
     @Path("{executionId}")
-    public Object result(@PathParam("executionId") String executionId)
-            throws IOException, URISyntaxException, MessagingException {
+    public Object result(@PathParam("executionId") String executionId) throws IOException, MessagingException {
 
         if (isCompleted(executionId)) {
             Object output = getResult(executionId);
