@@ -19,8 +19,13 @@
 
 package org.nuxeo.ecm.automation.client.adapters;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.client.AutomationClient;
 import org.nuxeo.ecm.automation.client.LoginInfo;
 import org.nuxeo.ecm.automation.client.OperationRequest;
@@ -39,14 +44,15 @@ import org.nuxeo.ecm.automation.client.model.OperationInput;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Future;
 
 import static org.nuxeo.ecm.automation.client.Constants.CTYPE_REQUEST_NOCHARSET;
 import static org.nuxeo.ecm.automation.client.Constants.HEADER_NX_SCHEMAS;
@@ -64,6 +70,7 @@ public class AsyncSession implements Session {
         int status;
         private Header[] headers;
         private Object result;
+        private boolean redirected;
 
         public CompletableRequest(int method, String url) {
             super(method, url, (String) null);
@@ -78,12 +85,14 @@ public class AsyncSession implements Session {
         }
 
         @Override
-        public Object handleResult(int status, Header[] headers, InputStream stream)
+        public Object handleResult(int status, Header[] headers, InputStream stream, HttpContext ctx)
                 throws RemoteException, IOException {
             this.status = status;
             this.headers = headers;
+            List redirects = (List) ctx.getAttribute(HttpClientContext.REDIRECT_LOCATIONS);
+            this.redirected = CollectionUtils.isNotEmpty(redirects);
             try {
-                this.result = super.handleResult(status, headers, stream);
+                this.result = super.handleResult(status, headers, stream, ctx);
                 future.complete(this);
             } catch (RemoteException e) {
                 future.completeExceptionally(e);
@@ -116,6 +125,10 @@ public class AsyncSession implements Session {
         public Object getResult() {
             return result;
         }
+
+        public boolean isRedirected() {
+            return redirected;
+        }
     }
 
     /**
@@ -123,7 +136,7 @@ public class AsyncSession implements Session {
      */
     class AsyncRequest extends CompletableRequest {
 
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
 
         public AsyncRequest(int method, String url, String entity) {
             super(method, url + "/@async", entity);
@@ -141,32 +154,37 @@ public class AsyncSession implements Session {
             return this.call().thenCompose((req) -> {
                 if (req.getStatus() == HttpStatus.SC_ACCEPTED) {
                     String location = req.getHeader("location");
-                    return poll(location, 1000);
+                    return poll(location, Duration.ofSeconds(1), Duration.ofSeconds(30));
                 }
                 return CompletableFuture.completedFuture(req.getResult());
             });
         }
 
-        CompletableFuture<Object> poll(String location, long delay) {
+        CompletableFuture<Object> poll(String location, Duration delay, Duration duration) {
             CompletableFuture<Object> resultFuture = new CompletableFuture<>();
+            long deadline = System.currentTimeMillis() + duration.toMillis();
             CompletableRequest req = new CompletableRequest(Request.GET, location);
-            final ScheduledFuture<?> pollFuture = executor.scheduleWithFixedDelay(() -> {
-                req.call().thenAccept(res -> {
-                    if (req.getStatus() == HttpStatus.SC_SEE_OTHER) {
-                        String redirectUrl = req.getHeader("location");
-                        redirect(redirectUrl).thenApply(result -> resultFuture.complete(result.getResult()));
+            Future pollFuture = executor.submit(() -> {
+                do {
+                    req.call().thenAccept(res -> {
+                        if (req.isRedirected()) {
+                            resultFuture.complete(res.getResult());
+                        }
+                    }).exceptionally(ex -> {
+                        resultFuture.completeExceptionally(ex.getCause());
+                        return null;
+                    });
+                    try {
+                        Thread.sleep(delay.toMillis());
+                    } catch (InterruptedException e) {
+                        return;
                     }
-                    resultFuture.complete(req.getResult());
-                }).exceptionally(ex -> {
-                    resultFuture.completeExceptionally(ex.getCause());
-                    return null;
-                });
-            }, 0, delay, TimeUnit.MILLISECONDS);
+                } while (deadline > System.currentTimeMillis());
 
+            });
             resultFuture.whenComplete((result, thrown) -> {
                 pollFuture.cancel(true);
             });
-
             return resultFuture;
         }
 
