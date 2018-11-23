@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
@@ -384,8 +385,7 @@ public abstract class BaseSession implements Session, EntrySource {
                 continue;
             }
 
-            @SuppressWarnings("unchecked")
-            List<String> targetIds = (List<String>) fieldMap.get(referenceFieldName);
+            List<String> targetIds = toStringList(fieldMap.get(referenceFieldName));
             if (reference.getClass() == referenceClass) {
                 reference.addLinks(sourceId, targetIds, this);
             } else {
@@ -421,8 +421,7 @@ public abstract class BaseSession implements Session, EntrySource {
                 }
             } else {
                 Reference reference = references.get(0);
-                @SuppressWarnings("unchecked")
-                List<String> targetIds = (List<String>) docModel.getProperty(schemaName, referenceFieldName);
+                List<String> targetIds = toStringList(docModel.getProperty(schemaName, referenceFieldName));
                 if (reference.getClass() == referenceClass) {
                     reference.setTargetIdsForSource(docModel.getId(), targetIds, this);
                 } else {
@@ -431,6 +430,19 @@ public abstract class BaseSession implements Session, EntrySource {
             }
         }
         getDirectory().invalidateCaches();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<String> toStringList(Object value) {
+        if (value == null) {
+            return null;
+        } else if (value instanceof List) {
+            return (List<String>) value;
+        } else if (value instanceof Object[]) {
+            return (List<String>) (List<?>) Arrays.asList((Object[]) value);
+        } else {
+            throw new NuxeoException("Cannot convert to List<String>: " + value);
+        }
     }
 
     @Override

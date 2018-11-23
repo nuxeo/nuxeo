@@ -636,12 +636,11 @@ public class LDAPReference extends AbstractReference implements Cloneable {
      */
     @Override
     // XXX: broken, use getLdapTargetIds for a proper implementation
-    @SuppressWarnings("unchecked")
     public List<String> getTargetIdsForSource(String sourceId) {
         String schemaName = getSourceDirectory().getSchema();
         try (Session session = getSourceDirectory().getSession()) {
             try {
-                return (List<String>) session.getEntry(sourceId).getProperty(schemaName, fieldName);
+                return BaseSession.toStringList(session.getEntry(sourceId).getProperty(schemaName, fieldName));
             } catch (PropertyException e) {
                 throw new DirectoryException(e);
             }

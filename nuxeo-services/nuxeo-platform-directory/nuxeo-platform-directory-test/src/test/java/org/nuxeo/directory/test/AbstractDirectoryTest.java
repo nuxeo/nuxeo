@@ -466,6 +466,24 @@ public abstract class AbstractDirectoryTest {
         }
     }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.directory.tests:test-directories-bundle-custom-user-schema.xml")
+    public void testCreateOrUpdateEntryWithReferenceAsArray() throws Exception {
+        try (Session session = getSession()) {
+            // create an entry
+            Map<String, Object> map = new HashMap<>();
+            map.put("username", "user_0");
+            // test with an array of Strings instead of the usual List<String>
+            map.put("whateverProperty", new Object[] { "members", "administrators" });
+            DocumentModel entry = session.createEntry(map);
+            assertNotNull(entry);
+
+            // update an entry
+            entry.setPropertyValue("user:whateverProperty", (Serializable) Arrays.asList("members"));
+            session.updateEntry(entry);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testQuery1() throws Exception {
