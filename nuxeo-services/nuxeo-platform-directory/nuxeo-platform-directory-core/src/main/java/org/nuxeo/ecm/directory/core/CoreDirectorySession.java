@@ -186,7 +186,7 @@ public class CoreDirectorySession extends BaseSession {
 
         for (String referenceFieldName : createdRefs) {
             Reference reference = directory.getReference(referenceFieldName);
-            List<String> targetIds = (List<String>) createdDoc.getProperty(schemaName, referenceFieldName);
+            List<String> targetIds = toStringList(createdDoc.getProperty(schemaName, referenceFieldName));
             reference.setTargetIdsForSource(docModel.getId(), targetIds);
         }
         return docModel;
@@ -232,8 +232,7 @@ public class CoreDirectorySession extends BaseSession {
                         // update reference fields
                         for (String referenceFieldName : updatedRefs) {
                             Reference reference = directory.getReference(referenceFieldName);
-                            List<String> targetIds = (List<String>) docModel.getProperty(schemaName,
-                                    referenceFieldName);
+                            List<String> targetIds = toStringList(docModel.getProperty(schemaName, referenceFieldName));
                             reference.setTargetIdsForSource(docModel.getId(), targetIds);
                         }
 

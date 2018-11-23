@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.storage.customuser">
+
+  <!-- this file uses a userDirectory with a field reference "whateverProperty"
+       whose XSD definition uses xs:simpleType/xs:list and therefore is backed
+       by an array (instead of a List, which is what we have when using xs:complexType/xs:sequence).
+   -->
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory"
+    point="directories">
+
+    <directory name="testIdDirectory" extends="template-directory">
+      <schema>intIdSchema</schema>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>always</createTablePolicy>
+      <references>
+        <!-- the reference property specific to this test file -->
+        <reference field="whateverPropertyMembers"
+                   directory="userDirectory"
+                   name="user2whateverProperty"
+                   source="whateverPropertyId"
+                   target="userId"/>
+      </references>
+    </directory>
+
+    <directory name="userDirectory" extends="template-user">
+      <schema>user</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
+      <substringMatchType>subany</substringMatchType>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>always</createTablePolicy>
+      <dataFile>test-users.csv</dataFile>
+      <references>
+        <reference field="groups" directory="groupDirectory"
+                   name="user2group" source="userId"
+                   target="groupId" dataFile="test-user2group.csv"/>
+        <!-- whatever property inverse association -->
+        <inverseReference field="whateverProperty"
+                          directory="testIdDirectory"
+                          dualReferenceField="whateverPropertyMembers"/>
+      </references>
+    </directory>
+
+    <directory name="groupDirectory" extends="template-group">
+      <schema>group</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>groupname</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>always</createTablePolicy>
+      <dataFile>test-groups.csv</dataFile>
+      <references>
+        <inverseReference field="members" directory="userDirectory"
+                          dualReferenceField="groups"/>
+        <reference field="subGroups" directory="groupDirectory"
+                        name="group2group" source="childGroupId"
+                        target="parentGroupId"/>
+        <inverseReference field="parentGroups"
+                          directory="groupDirectory" dualReferenceField="subGroups"/>
+      </references>
+    </directory>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="intIdSchema" src="directoryschema/intIdSchema.xsd"/>
+    <!-- the schema defining a reference as xs:simpleType/xs:list -->
+    <schema name="user" src="directoryschema/user-custom.xsd" override="true" />
+  </extension>
+
+</component>
