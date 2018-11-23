@@ -133,13 +133,15 @@ public class HttpConnector implements Connector {
         for (Map.Entry<String, String> entry : request.entrySet()) {
             httpReq.setHeader(entry.getKey(), entry.getValue());
         }
+        // clear redirect locations before execution
+        ctx.removeAttribute(HttpClientContext.REDIRECT_LOCATIONS);
         HttpResponse resp = executeRequestWithTimeout(httpReq);
         HttpEntity entity = resp.getEntity();
         try {
             int status = resp.getStatusLine().getStatusCode();
             Header[] headers = resp.getAllHeaders();
             InputStream content = entity == null ? null : entity.getContent();
-            return request.handleResult(status, headers, content);
+            return request.handleResult(status, headers, content, ctx);
         } finally {
             // needed to properly release resources and return the connection to the pool
             EntityUtils.consume(entity);

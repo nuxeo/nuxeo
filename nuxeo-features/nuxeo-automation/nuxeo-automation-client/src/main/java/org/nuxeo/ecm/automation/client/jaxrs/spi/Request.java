@@ -39,6 +39,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.Response;
 
 import org.apache.http.Header;
+import org.apache.http.protocol.HttpContext;
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.ExceptionMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.util.IOUtils;
@@ -122,7 +123,7 @@ public class Request extends HashMap<String, String> {
      * Must read the object from the server response and return it or throw a {@link RemoteException} if server sent an
      * error.
      */
-    public Object handleResult(int status, Header[] headers, InputStream stream)
+    public Object handleResult(int status, Header[] headers, InputStream stream, HttpContext ctx)
             throws RemoteException, IOException {
         // TODO kevin: check if it's enough regarding to entity content type
         String ctype = getHeaderValue(headers, "Content-Type");
