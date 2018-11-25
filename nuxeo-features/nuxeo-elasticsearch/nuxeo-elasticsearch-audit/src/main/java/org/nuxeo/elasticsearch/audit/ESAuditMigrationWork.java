@@ -48,6 +48,8 @@ public class ESAuditMigrationWork extends AbstractWork {
 
     protected int batchSize;
 
+    protected int pageIdx;
+
     public ESAuditMigrationWork(String id, int batchSize) {
         super(id);
         this.batchSize = batchSize;
@@ -77,12 +79,12 @@ public class ESAuditMigrationWork extends AbstractWork {
         TransactionHelper.commitOrRollbackTransaction();
             long t0 = System.currentTimeMillis();
             long nbEntriesMigrated = 0;
-            int pageIdx = 1;
+            pageIdx = 1;
 
             while (nbEntriesMigrated < nbEntriesToMigrate) {
                 @SuppressWarnings("unchecked")
-                List<LogEntry> entries = (List<LogEntry>) sourceBackend.nativeQuery(
-                        "from LogEntry log order by log.id asc", pageIdx, batchSize);
+                List<LogEntry> entries = TransactionHelper.runInTransaction(() -> (List<LogEntry>) sourceBackend.nativeQuery(
+                        "from LogEntry log order by log.id asc", pageIdx, batchSize));
 
                 if (entries.size() == 0) {
                     log.warn("Migration ending after " + nbEntriesMigrated + " entries");
