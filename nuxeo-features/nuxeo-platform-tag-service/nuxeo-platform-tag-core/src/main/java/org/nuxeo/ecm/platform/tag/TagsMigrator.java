@@ -47,9 +47,6 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.migrator.AbstractRepositoryMigrator;
-import org.nuxeo.ecm.core.repository.RepositoryService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
 
 /**
@@ -223,6 +220,11 @@ public class TagsMigrator extends AbstractRepositoryMigrator {
     protected void addTags(CoreSession session, String docId, Set<Tag> tags) {
         DocumentModel doc;
         try {
+            if (docId == null) {
+                log.debug("docId found null in addTags");
+                // ignore null docId
+                return;
+            }
             doc = session.getDocument(new IdRef(docId));
         } catch (DocumentNotFoundException e) {
             // ignore document that was already removed, or whose type is unknown
