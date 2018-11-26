@@ -56,7 +56,7 @@
     "neon-animation": "git://github.com/polymerelements/neon-animation.git#1.2.4",
     "nuxeo": "https://github.com/nuxeo/nuxeo-js-client.git#0.9.0",
     "nuxeo-elements": "git://github.com/nuxeo/nuxeo-elements.git#0.2.7",
-    "nuxeo-ui-elements": "git://github.com/nuxeo/nuxeo-ui-elements.git#0.1.2",
+    "nuxeo-ui-elements": "git://github.com/nuxeo/nuxeo-ui-elements.git#0.1.3",
     "paper-badge": "git://github.com/PolymerElements/paper-badge.git#1.1.4",
     "paper-behaviors": "git://github.com/PolymerElements/paper-behaviors.git#1.0.12",
     "paper-button": "git://github.com/PolymerElements/paper-button.git#1.0.14",
