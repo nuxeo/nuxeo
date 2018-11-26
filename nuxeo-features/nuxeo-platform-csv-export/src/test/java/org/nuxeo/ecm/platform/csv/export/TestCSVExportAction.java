@@ -53,6 +53,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.ZipUtils;
@@ -184,8 +185,15 @@ public class TestCSVExportAction {
     @Test
     public void testExportWithParams() throws Exception {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        for (DocumentModel child : session.getChildren(model.getRef())) {
+        List<DocumentModel> children = session.getChildren(model.getRef());
+        List<String> testIds = new ArrayList<>();
+        for (int i = 0; i < children.size(); i++) {
+            DocumentModel child = children.get(i);
             child.setPropertyValue("dc:nature", "article");
+            if (i % 2 == 0) {
+                child.setPropertyValue("dc:subjects", new String[] { "art/architecture" });
+                testIds.add(child.getId());
+            }
             session.saveDocument(child);
         }
         session.save();
@@ -211,17 +219,25 @@ public class TestCSVExportAction {
         // Check header
         List<String> header = Arrays.asList(lines.get(0).split(","));
         // Check that the given schemas and properties are present after the system properties
-        assertArrayEquals(
-                new String[] { "dc:contributors", "dc:coverage", "dc:coverage[label]", "dc:created", "dc:creator",
-                        "dc:description", "dc:expired", "dc:format", "dc:issued", "dc:language", "dc:lastContributor",
-                        "dc:modified", "dc:nature", "dc:nature[label]", "dc:publisher", "dc:rights", "dc:source",
-                        "dc:subjects", "dc:subjects[label]", "dc:title", "dc:valid", "cpx:complex/foo" },
-                header.subList(18, 40).toArray());
+
+        int systemHeaderSize = SYSTEM_PROPERTIES_HEADER_FIELDS.length;
+        String[] dcFields = new String[] { "dc:contributors", "dc:coverage", "dc:coverage[label]", "dc:created",
+                "dc:creator", "dc:description", "dc:expired", "dc:format", "dc:issued", "dc:language",
+                "dc:lastContributor", "dc:modified", "dc:nature", "dc:nature[label]", "dc:publisher", "dc:rights",
+                "dc:source", "dc:subjects", "dc:subjects[label]", "dc:title", "dc:valid", "cpx:complex/foo" };
+
+        int headerSize = systemHeaderSize + dcFields.length;
+        assertArrayEquals(dcFields, header.subList(systemHeaderSize, headerSize).toArray());
 
         List<String> content = lines.subList(1, lines.size());
         for (String doc : content) {
+            // There should be headerSize - 1 number of commas for headerSize number of properties
+            assertEquals(headerSize - 1, StringUtils.countMatches(doc, ","));
             List<String> properties = Arrays.asList(doc.split(","));
             assertTrue(properties.contains("Article FR"));
+            if (testIds.contains(properties.get(1))) {
+                assertTrue(properties.contains("art/architecture"));
+            }
         }
 
     }
