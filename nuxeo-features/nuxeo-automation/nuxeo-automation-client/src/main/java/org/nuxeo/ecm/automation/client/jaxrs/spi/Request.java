@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.automation.client.Constants.CTYPE_AUTOMATION;
 import static org.nuxeo.ecm.automation.client.Constants.CTYPE_ENTITY;
 import static org.nuxeo.ecm.automation.client.Constants.CTYPE_MULTIPART_EMPTY;
 import static org.nuxeo.ecm.automation.client.Constants.CTYPE_MULTIPART_MIXED;
+import static org.nuxeo.ecm.automation.client.Constants.HEADER_CONTENT_DISPOSITION;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,6 +40,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.Response;
 
 import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
 import org.apache.http.protocol.HttpContext;
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.ExceptionMarshaller;
@@ -126,7 +128,7 @@ public class Request extends HashMap<String, String> {
     public Object handleResult(int status, Header[] headers, InputStream stream, HttpContext ctx)
             throws RemoteException, IOException {
         // TODO kevin: check if it's enough regarding to entity content type
-        String ctype = getHeaderValue(headers, "Content-Type");
+        String ctype = getHeaderValue(headers, HttpHeaders.CONTENT_TYPE);
 
         // Specific http status handling
         if (status >= Response.Status.BAD_REQUEST.getStatusCode()) {
@@ -149,7 +151,7 @@ public class Request extends HashMap<String, String> {
             return null;
         }
         // Handle result
-        String disp = getHeaderValue(headers, "Content-Disposition");
+        String disp = getHeaderValue(headers, HEADER_CONTENT_DISPOSITION);
         String lctype = ctype.toLowerCase();
         if (lctype.startsWith(CTYPE_AUTOMATION)) {
             return JsonMarshalling.readRegistry(IOUtils.read(stream));
@@ -171,8 +173,7 @@ public class Request extends HashMap<String, String> {
         MultipartInput mpinput = new MultipartInput();
         mpinput.setRequest(content);
         if (input instanceof Blob) {
-            Blob blob = (Blob) input;
-            mpinput.setBlob(blob);
+            mpinput.setBlob((Blob) input);
         } else if (input instanceof Blobs) {
             mpinput.setBlobs((Blobs) input);
         } else {
@@ -261,7 +262,7 @@ public class Request extends HashMap<String, String> {
     }
 
     public static String getHeaderValue(Header[] headers, String name) {
-        for(Header header : headers) {
+        for (Header header : headers) {
             if (header.getName().equalsIgnoreCase(name)) {
                 return header.getValue();
             }

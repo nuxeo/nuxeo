@@ -49,7 +49,6 @@ import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.jaxrs.OperationResource;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
-import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
 import org.nuxeo.ecm.core.api.AsyncService;
 import org.nuxeo.ecm.core.api.AsyncStatus;
 import org.nuxeo.ecm.core.api.Blob;
@@ -60,10 +59,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
-import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -78,9 +75,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
+ * Adapter that allows asynchronous execution of operations.
+ *
  * @since 10.3
  */
 @WebAdapter(name = AsyncOperationAdapter.NAME, type = "AsyncOperationAdapter", targetType = "operation")
@@ -93,15 +91,21 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
     protected static final String STATUS_STORE_NAME = "automation";
 
-    protected String TRANSIENT_STORE_SERVICE = "service";
+    protected static final String TRANSIENT_STORE_SERVICE = "service";
 
-    protected String TRANSIENT_STORE_TASK_ID = "taskId";
+    protected static final String TRANSIENT_STORE_TASK_ID = "taskId";
 
-    protected String TRANSIENT_STORE_ERROR = "error";
+    protected static final String TRANSIENT_STORE_ERROR = "error";
 
-    protected String TRANSIENT_STORE_OUTPUT = "output";
+    protected static final String TRANSIENT_STORE_OUTPUT = "output";
 
-    protected String TRANSIENT_STORE_OUTPUT_BLOB = "blob";
+    protected static final String TRANSIENT_STORE_OUTPUT_BLOB = "blob";
+
+    protected static final String STATUS_PATH= "status";
+
+    protected static final String RUNNING_STATUS= "RUNNING";
+
+    protected static final String RESULT_URL_KEY= "url";
 
     @Context
     protected AutomationService service;
@@ -115,78 +119,73 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     @Context
     protected CoreSession session;
 
+    @Context
+    protected AutomationServer srv;
+
     @POST
     public Object doPost(ExecutionRequest xreq) {
         OperationResource op = (OperationResource) getTarget();
         String opId = op.getId();
 
-        try {
-            AutomationServer srv = Framework.getService(AutomationServer.class);
-            if (!srv.accept(opId, op.isChain(), request)) {
-                return ResponseHelper.notFound();
+        if (!srv.accept(opId, op.isChain(), request)) {
+            return ResponseHelper.notFound();
+        }
+        String executionId = UUID.randomUUID().toString();
+
+        // session will be set in the task thread
+        OperationContext opCtx = xreq.createContext(request, response, null);
+
+        opCtx.setCallback(new OperationCallback() {
+
+            @Override
+            public void onChainEnter(OperationType chain) {
+                //
             }
-            final String executionId = UUID.randomUUID().toString();
 
-            // session will be set in the task thread
-            OperationContext opCtx = xreq.createContext(request, response, null);
+            @Override
+            public void onChainExit() {
+                setCompleted(executionId);
+            }
 
-            opCtx.setCallback(new OperationCallback() {
+            @Override
+            public void onOperationEnter(OperationContext context, OperationType type, InvokableMethod method,
+                    Map<String, Object> params) {
+                enterMethod(executionId, method);
+            }
 
-                @Override
-                public void onChainEnter(OperationType chain) {
-                    //
+            @Override
+            public void onOperationExit(Object output) {
+                setOutput(executionId, (Serializable) output);
+            }
+
+            @Override
+            public OperationException onError(OperationException error) {
+                setError(executionId, error.getMessage());
+                return error;
+            }
+
+        });
+
+        String repoName = session.getRepositoryName();
+        NuxeoPrincipal principal = session.getPrincipal();
+
+        // TODO NXP-26303: use thread pool
+        new Thread(() -> {
+            TransactionHelper.runInTransaction(() -> {
+                try (CloseableCoreSession session = CoreInstance.openCoreSession(repoName, principal)){
+                    opCtx.setCoreSession(session);
+                    service.run(opCtx, opId, xreq.getParams());
+                } catch (OperationException e) {
+                    setError(executionId, e.getMessage());
                 }
-
-                @Override
-                public void onChainExit() {
-                    setCompleted(executionId);
-                }
-
-                @Override
-                public void onOperationEnter(OperationContext context, OperationType type, InvokableMethod method,
-                        Map<String, Object> params) {
-                    enterMethod(executionId, method);
-                }
-
-                @Override
-                public void onOperationExit(Object output) {
-                    setOutput(executionId, (Serializable) output);
-                }
-
-                @Override
-                public OperationException onError(OperationException error) {
-                    setError(executionId, error.getMessage());
-                    return error;
-                }
-
             });
+        }, String.format("Nuxeo-AsyncOperation-%s", executionId)).start();
 
-            String repoName = session.getRepositoryName();
-            NuxeoPrincipal principal = session.getPrincipal();
-
-            // TODO NXP-26303: use thread pool
-            new Thread(() -> {
-                TransactionHelper.runInTransaction(() -> {
-                    try (CloseableCoreSession session = CoreInstance.openCoreSession(repoName, principal)){
-                        opCtx.setCoreSession(session);
-                        service.run(opCtx, opId, xreq.getParams());
-                    } catch (OperationException e) {
-                        setError(executionId, e.getMessage());
-                    }
-                });
-            }).start();
-
-            String statusURL = String.format("%s/%s/status", ctx.getURL(), executionId);
+        try {
+            String statusURL = String.format("%s/%s/%s", ctx.getURL(), executionId, STATUS_PATH);
             return Response.status(HttpServletResponse.SC_ACCEPTED).location(new URI(statusURL)).build();
-
-        } catch (URISyntaxException cause) {
-            String exceptionMessage = "Failed to invoke operation: " + op.getId();
-            Throwable unWrapException = ExceptionHelper.unwrapException(cause);
-            if (unWrapException instanceof RestOperationException) {
-                int customHttpStatus = ((RestOperationException) unWrapException).getStatus();
-                throw new NuxeoException(exceptionMessage, cause, customHttpStatus);
-            }
-            throw new NuxeoException(exceptionMessage, cause);
+        } catch (URISyntaxException e) {
+            throw new NuxeoException(e);
         }
     }
 
@@ -199,10 +198,10 @@ public class AsyncOperationAdapter extends DefaultAdapter {
             if (error != null) {
                 throw new NuxeoException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-            String resURL = StringUtils.removeEnd(ctx.getURL(), "/status");
+            String resURL = StringUtils.removeEnd(ctx.getURL(), STATUS_PATH);
             return redirect(resURL);
         } else {
-            Object result = "RUNNING";
+            Object result = RUNNING_STATUS;
             if (isAsync(executionId)) {
                 Serializable taskId = getTaskId(executionId);
                 result = getAsyncService(executionId).getStatus(taskId);
@@ -229,7 +228,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
             // if output has a "url" key assume it's a redirect url
             if (output instanceof Map) {
-                Object url = ((Map) output).get("url");
+                Object url = ((Map<?, ?>) output).get(RESULT_URL_KEY);
                 if (url instanceof String) {
                     String baseUrl = VirtualHostHelper.getBaseURL(ctx.getRequest());
                     return redirect(baseUrl + url);
@@ -250,7 +249,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
                 Serializable taskId = getTaskId(executionId);
                 return getAsyncService(executionId).abort(taskId);
             }
-            return ResponseHelper.getResponse("RUNNING", request, HttpServletResponse.SC_OK);
+            return ResponseHelper.getResponse(RUNNING_STATUS, request, HttpServletResponse.SC_OK);
         }
         throw new WebResourceNotFoundException("Execution with id=" + executionId + " has completed");
     }
@@ -279,69 +278,63 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     }
 
     protected void setOutput(String executionId, Serializable output) {
+        TransientStore ts = getTransientStore();
         // store only taskId for async tasks
         if (isAsync(executionId)) {
             Serializable taskId = output instanceof AsyncStatus ? ((AsyncStatus) output).getId() : output;
-            getTransientStore().putParameter(executionId, TRANSIENT_STORE_TASK_ID, taskId);
+            ts.putParameter(executionId, TRANSIENT_STORE_TASK_ID, taskId);
         } else {
             if (output instanceof DocumentModel) {
-                output = detach((DocumentModel) output);
+                detach((DocumentModel) output);
             } else if (output instanceof DocumentModelList) {
-                output = new DocumentModelListImpl(
-                        ((DocumentModelList) output).stream().map(this::detach).collect(Collectors.toList()));
+                ((DocumentModelList) output).forEach(this::detach);
             }
             if (output instanceof Blob) {
-                getTransientStore().putParameter(executionId, TRANSIENT_STORE_OUTPUT_BLOB, true);
-                getTransientStore().putBlobs(executionId, Collections.singletonList((Blob) output));
+                ts.putParameter(executionId, TRANSIENT_STORE_OUTPUT_BLOB, true);
+                ts.putBlobs(executionId, Collections.singletonList((Blob) output));
             } else if (output instanceof BlobList) {
-                getTransientStore().putParameter(executionId, TRANSIENT_STORE_OUTPUT_BLOB, false);
-                getTransientStore().putBlobs(executionId, (BlobList) output);
+                ts.putParameter(executionId, TRANSIENT_STORE_OUTPUT_BLOB, false);
+                ts.putBlobs(executionId, (BlobList) output);
             } else {
-                getTransientStore().putParameter(executionId, TRANSIENT_STORE_OUTPUT, output);
+                ts.putParameter(executionId, TRANSIENT_STORE_OUTPUT, output);
             }
         }
     }
 
     protected Object getResult(String executionId) {
+        TransientStore ts = getTransientStore();
+
         if (isAsync(executionId)) {
             AsyncService service = getAsyncService(executionId);
             if (service != null) {
-                Serializable taskId = getTransientStore().getParameter(executionId, TRANSIENT_STORE_TASK_ID);
+                Serializable taskId = ts.getParameter(executionId, TRANSIENT_STORE_TASK_ID);
                 return service.getResult(taskId);
             }
         }
 
         Object output;
-        List<Blob> blobs = getTransientStore().getBlobs(executionId);
+        List<Blob> blobs = ts.getBlobs(executionId);
         if (CollectionUtils.isNotEmpty(blobs)) {
-            boolean isSingle = (boolean) getTransientStore().getParameter(executionId, TRANSIENT_STORE_OUTPUT_BLOB);
+            boolean isSingle = (boolean) ts.getParameter(executionId, TRANSIENT_STORE_OUTPUT_BLOB);
             output = isSingle ? blobs.get(0) : new BlobList(blobs);
         } else {
-            output = getTransientStore().getParameter(executionId, TRANSIENT_STORE_OUTPUT);
+            output = ts.getParameter(executionId, TRANSIENT_STORE_OUTPUT);
         }
         if (output instanceof DocumentModel) {
-            return attach((DocumentModel) output);
+            attach((DocumentModel) output);
         } else if (output instanceof DocumentModelList) {
-            return new DocumentModelListImpl(
-                    ((DocumentModelList) output).stream().map(this::attach).collect(Collectors.toList()));
+            ((DocumentModelList) output).forEach(this::attach);
         }
         return output;
     }
 
-    protected DocumentModel attach(DocumentModel doc) {
+    protected void attach(DocumentModel doc) {
         String sid = ctx.getCoreSession().getSessionId();
-        try {
-            doc = doc.clone();
-        } catch (CloneNotSupportedException e) {
-            // doc models not supporting clone do not rely on session id anyway
-        }
         doc.attach(sid);
-        return doc;
     }
 
-    protected DocumentModel detach(DocumentModel doc) {
+    protected void detach(DocumentModel doc) {
         doc.detach(false);
-        return doc;
     }
 
     protected boolean isAsync(String executionId) {
@@ -353,10 +346,11 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     }
 
     protected AsyncService getAsyncService(String executionId) {
+        String serviceClass = (String) getTransientStore().getParameter(executionId, TRANSIENT_STORE_SERVICE);
         try {
-            String serviceClass = (String) getTransientStore().getParameter(executionId, TRANSIENT_STORE_SERVICE);
             return (AsyncService) Framework.getService(Class.forName(serviceClass));
         } catch (ClassNotFoundException e) {
+            log.error("AsyncService class {} not found", serviceClass);
             return null;
         }
     }
