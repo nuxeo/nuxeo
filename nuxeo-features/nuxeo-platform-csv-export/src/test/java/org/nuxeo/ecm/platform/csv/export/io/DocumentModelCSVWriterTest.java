@@ -66,6 +66,7 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         document.setPropertyValue("dc:description", "There is a , in the description");
         document.setPropertyValue("dc:contributors", new String[] { "John", "Jane" });
         document.setPropertyValue("dc:nature", "article");
+        document.setPropertyValue("dc:coverage", "europe/France");
         // Test that a non-existing property is exported as null
         document.putContextData(DocumentValidationService.CTX_MAP_KEY, DocumentValidationService.Forcing.TURN_OFF);
         document.setPropertyValue("dc:subjects", new String[] { "art", "toto" });
@@ -94,6 +95,7 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         csv.has("dc:nature").isEquals("article");
         csv.has("dc:nature[label]").isEquals("Article EN");
         csv.has("dc:subjects[label]").isEquals("Art\nnull property");
+        csv.has("dc:coverage[label]").isEquals("France");
     }
 
     @Test

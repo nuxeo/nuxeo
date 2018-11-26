@@ -146,6 +146,9 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
     }
 
     protected String getTranslatedValue(Session session, String schema, String lang, String value) {
+        if (value.contains("/")) {
+            value = value.substring(value.lastIndexOf("/") + 1);
+        }
         DocumentModel entry = session.getEntry(value);
         if (entry == null) {
             return NULL_PROPERTY_LABEL;
