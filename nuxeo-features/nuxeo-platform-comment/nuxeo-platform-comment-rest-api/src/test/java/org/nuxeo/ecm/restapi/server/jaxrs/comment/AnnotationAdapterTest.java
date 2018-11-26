@@ -30,8 +30,11 @@ import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNA
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -47,6 +50,9 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
+import org.nuxeo.ecm.platform.comment.api.Comment;
+import org.nuxeo.ecm.platform.comment.api.CommentImpl;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.impl.AnnotationJsonWriter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
@@ -78,6 +84,9 @@ public class AnnotationAdapterTest extends BaseTest {
 
     @Inject
     protected AnnotationService annotationService;
+
+    @Inject
+    protected CommentManager commentManager;
 
     @Before
     public void setup() {
@@ -332,6 +341,43 @@ public class AnnotationAdapterTest extends BaseTest {
             fetchInvalidations();
             assertFalse(session.exists(new IdRef(annotation.getId())));
         }
+    }
+
+    @Test
+    public void testGetCommentsOfAnnotations() throws IOException {
+        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+
+        Annotation annotation1 = new AnnotationImpl();
+        Annotation annotation2 = new AnnotationImpl();
+
+        annotation1.setAuthor(session.getPrincipal().getName());
+        annotation1.setParentId(file.getId());
+        annotation1 = annotationService.createAnnotation(session, annotation1);
+
+        annotation2.setAuthor(session.getPrincipal().getName());
+        annotation2.setParentId(file.getId());
+        annotation2 = annotationService.createAnnotation(session, annotation2);
+
+        fetchInvalidations();
+
+        List<String> commentIds = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            Comment comment = new CommentImpl();
+            comment.setAuthor(session.getPrincipal().getName());
+            comment.setParentId(i % 2 == 0 ? annotation1.getId() : annotation2.getId());
+            comment = commentManager.createComment(session, comment);
+            commentIds.add(comment.getId());
+        }
+        fetchInvalidations();
+
+        MultivaluedMap<String, String> annotationIds = new MultivaluedMapImpl();
+        annotationIds.put("annotationIds", Arrays.asList(annotation1.getId(), annotation2.getId()));
+        JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@annotation/comments",
+                annotationIds);
+        Set<String> expectedIds = new HashSet<>(commentIds);
+        Set<String> actualIds = new HashSet<>(node.findValuesAsText("id"));
+        assertEquals(expectedIds, actualIds);
     }
 
 }

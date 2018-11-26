@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.comment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.DELETE;
@@ -35,6 +36,8 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
+import org.nuxeo.ecm.platform.comment.api.Comment;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
@@ -60,6 +63,17 @@ public class AnnotationAdapter extends DefaultAdapter {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         AnnotationService annotationService = Framework.getService(AnnotationService.class);
         return annotationService.getAnnotations(getContext().getCoreSession(), doc.getId(), xpath);
+    }
+
+    @GET
+    @Path("comments")
+    public List<Comment> getComments(@QueryParam("annotationIds") List<String> annotationIds) {
+        CommentManager commentManager = Framework.getService(CommentManager.class);
+        List<Comment> comments = new ArrayList<>();
+        for (String annotationId : annotationIds) {
+            comments.addAll(commentManager.getComments(getContext().getCoreSession(), annotationId));
+        }
+        return comments;
     }
 
     @GET
