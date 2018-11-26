@@ -1,0 +1,22 @@
+version: '2'
+services:
+  graphite:
+    build: graphite
+    ports:
+    - "8000:80"
+    - "2003:2003"
+#    volumes:
+#    - "/data/graphite:/opt/graphite/storage/whisper"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+    - "3000:3000"
+    links:
+    - graphite
+
+    environment:
+    - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+    - ./grafana/provisioning/:/etc/grafana/provisioning/
+#   - "/data/grafana:/var/lib/grafana"
