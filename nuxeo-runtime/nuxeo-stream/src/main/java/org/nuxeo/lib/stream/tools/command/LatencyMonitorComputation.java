@@ -48,9 +48,9 @@ public class LatencyMonitorComputation extends LatencyTrackerComputation {
 
     protected final boolean udp;
 
-    protected GraphiteSender graphite;
+    protected final String basePrefix;
 
-    protected String basePrefix;
+    protected GraphiteSender graphite;
 
     public LatencyMonitorComputation(LogManager manager, List<String> logNames, String host, int port, boolean udp,
             String basePrefix, String computationName, int intervalSecond, int count, boolean verbose,
