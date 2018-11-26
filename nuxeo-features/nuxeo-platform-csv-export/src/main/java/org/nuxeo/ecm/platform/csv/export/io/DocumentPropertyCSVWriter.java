@@ -52,7 +52,7 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
 
     public static final String LANG_CTX_DATA = "lang";
 
-    public static final String NULL_PROPERTY_LABEL = "null property";
+    public static final String UNKNOWN_TRANSLATED_VALUE_LABEL = "unknown translated value";
 
     public DocumentPropertyCSVWriter() {
         super();
@@ -112,17 +112,20 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
         ListType type = (ListType) property.getType();
         if (property instanceof ArrayProperty) {
             Object[] array = (Object[]) property.getValue();
+            Type itemType = type.getFieldType();
+            Directory vocabulary = DocumentModelCSVHelper.getVocabulary(itemType);
             if (array == null) {
                 printer.print(null);
+                if (vocabulary != null) {
+                    printer.print(null);
+                }
                 return;
             }
-            Type itemType = type.getFieldType();
             if (itemType instanceof BinaryType) {
                 writeUnsupported(type, printer);
             } else {
                 String value = Arrays.stream(array).map(itemType::encode).collect(Collectors.joining(LIST_DELIMITER));
                 printer.print(value);
-                Directory vocabulary = DocumentModelCSVHelper.getVocabulary(itemType);
                 if (vocabulary != null) {
                     String[] values = Arrays.stream(array).map(itemType::encode).toArray(String[]::new);
                     writeListVocabularyProperty(values, vocabulary, printer);
@@ -151,7 +154,7 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
         }
         DocumentModel entry = session.getEntry(value);
         if (entry == null) {
-            return NULL_PROPERTY_LABEL;
+            return UNKNOWN_TRANSLATED_VALUE_LABEL;
         }
 
         String label;
