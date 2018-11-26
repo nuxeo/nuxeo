@@ -21,11 +21,10 @@ package org.nuxeo.ecm.automation.client.adapters;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.protocol.HttpContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.client.AutomationClient;
 import org.nuxeo.ecm.automation.client.LoginInfo;
 import org.nuxeo.ecm.automation.client.OperationRequest;
@@ -58,19 +57,28 @@ import static org.nuxeo.ecm.automation.client.Constants.CTYPE_REQUEST_NOCHARSET;
 import static org.nuxeo.ecm.automation.client.Constants.HEADER_NX_SCHEMAS;
 import static org.nuxeo.ecm.automation.client.Constants.REQUEST_ACCEPT_HEADER;
 
+/**
+ * Asynchronous session adapter.
+ * @since 10.3
+ */
 public class AsyncSession implements Session {
+
+    protected static ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /**
      * Request providing a completable call method for convenience.
      */
-    class CompletableRequest extends Request {
+    public class CompletableRequest extends Request {
 
-        private CompletableFuture<CompletableRequest> future;
+        protected CompletableFuture<CompletableRequest> future;
 
-        int status;
-        private Header[] headers;
-        private Object result;
-        private boolean redirected;
+        protected int status;
+
+        protected Header[] headers;
+
+        protected Object result;
+
+        protected boolean redirected;
 
         public CompletableRequest(int method, String url) {
             super(method, url, (String) null);
@@ -134,16 +142,16 @@ public class AsyncSession implements Session {
     /**
      * Asynchronous pooling based request
      */
-    class AsyncRequest extends CompletableRequest {
+    public class AsyncRequest extends CompletableRequest {
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
+        protected static final String ASYNC_ADAPTER = "/@async";
 
         public AsyncRequest(int method, String url, String entity) {
-            super(method, url + "/@async", entity);
+            super(method, url + ASYNC_ADAPTER, entity);
         }
 
         public AsyncRequest(int method, String url, MultipartInput input) {
-            super(method, url + "/@async", input);
+            super(method, url + ASYNC_ADAPTER, input);
         }
 
         protected AsyncSession getSession() {
@@ -151,18 +159,18 @@ public class AsyncSession implements Session {
         }
 
         public CompletableFuture<Object> execute() {
-            return this.call().thenCompose((req) -> {
+            return call().thenCompose((req) -> {
                 if (req.getStatus() == HttpStatus.SC_ACCEPTED) {
-                    String location = req.getHeader("location");
+                    String location = req.getHeader(HttpHeaders.LOCATION);
                     return poll(location, Duration.ofSeconds(1), Duration.ofSeconds(30));
                 }
                 return CompletableFuture.completedFuture(req.getResult());
             });
         }
 
-        CompletableFuture<Object> poll(String location, Duration delay, Duration duration) {
+        protected CompletableFuture<Object> poll(String location, Duration delay, Duration duration) {
             CompletableFuture<Object> resultFuture = new CompletableFuture<>();
-            long deadline = System.currentTimeMillis() + duration.toMillis();
+            long deadline = System.nanoTime() + duration.toNanos();
             CompletableRequest req = new CompletableRequest(Request.GET, location);
             Future pollFuture = executor.submit(() -> {
                 do {
@@ -177,22 +185,17 @@ public class AsyncSession implements Session {
                     try {
                         Thread.sleep(delay.toMillis());
                     } catch (InterruptedException e) {
+                        // interrupted when result is complete
                         return;
                     }
-                } while (deadline > System.currentTimeMillis());
-
+                } while (deadline > System.nanoTime());
             });
             resultFuture.whenComplete((result, thrown) -> {
                 pollFuture.cancel(true);
             });
             return resultFuture;
         }
-
-        CompletableFuture<? extends CompletableRequest> redirect(String location) {
-            return new CompletableRequest(Request.GET, location).call();
-        }
     }
-
 
     protected final DefaultSession session;
 
@@ -246,18 +249,21 @@ public class AsyncSession implements Session {
         for (Map.Entry<String, String> entry : request.getHeaders().entrySet()) {
             req.put(entry.getKey(), entry.getValue());
         }
-        req.put("Accept", REQUEST_ACCEPT_HEADER);
-        req.put("Content-Type", ctype);
+        req.put(HttpHeaders.ACCEPT, REQUEST_ACCEPT_HEADER);
+        req.put(HttpHeaders.CONTENT_TYPE, ctype);
         if (req.get(HEADER_NX_SCHEMAS) == null && session.getDefaultSchemas() != null) {
             req.put(HEADER_NX_SCHEMAS, session.getDefaultSchemas());
         }
         try {
             return req.execute().get();
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (ExecutionException e) {
             if (e.getCause() instanceof RemoteException) {
                 throw (RemoteException) e.getCause();
             }
             throw new IOException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
     }
 
