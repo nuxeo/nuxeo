@@ -44,7 +44,7 @@ public interface AsyncService<K extends Serializable, S extends AsyncStatus<K>, 
     S abort(K taskId);
 
     /**
-     * Retrieve the command execution result.
+     * Retrieves the command execution result.
      */
     V getResult(K taskId);
 }

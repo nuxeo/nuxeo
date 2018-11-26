@@ -74,6 +74,10 @@ public class Constants {
      */
     public static final String HEADER_NX_VOIDOP = "X-NXVoidOperation";
 
+    /**
+     * @since 10.3
+     */
+    public static final String HEADER_CONTENT_DISPOSITION = "Content-Disposition";
 
     private Constants() {
     }

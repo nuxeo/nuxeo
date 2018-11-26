@@ -23,6 +23,9 @@ import org.nuxeo.ecm.automation.client.AdapterFactory;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.DefaultSession;
 
+/**
+ * @since 10.3
+ */
 public class AsyncSessionFactory implements AdapterFactory<AsyncSession> {
 
     @Override
