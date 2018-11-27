@@ -223,6 +223,11 @@ public class TagsMigrator extends AbstractRepositoryMigrator {
     protected void addTags(CoreSession session, String docId, Set<Tag> tags) {
         DocumentModel doc;
         try {
+            if (docId == null) {
+                log.debug("docId found null in addTags");
+                // ignore null docId
+                return;
+            }
             doc = session.getDocument(new IdRef(docId));
         } catch (DocumentNotFoundException e) {
             // ignore document that was already removed, or whose type is unknown
