@@ -1,0 +1,131 @@
+/*
+ * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     bdelbosc
+ */
+package org.nuxeo.lib.stream.tools.command;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.lib.stream.computation.ComputationContext;
+import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.log.Latency;
+import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
+
+import com.codahale.metrics.graphite.Graphite;
+import com.codahale.metrics.graphite.GraphiteSender;
+import com.codahale.metrics.graphite.GraphiteUDP;
+
+/**
+ * A computation that sends periodically latencies to graphite.
+ *
+ * @since 10.3
+ */
+public class LatencyMonitorComputation extends LatencyTrackerComputation {
+    private static final Log log = LogFactory.getLog(LatencyMonitorComputation.class);
+
+    protected final String host;
+
+    protected final int port;
+
+    protected final boolean udp;
+
+    protected GraphiteSender graphite;
+
+    protected String basePrefix;
+
+    public LatencyMonitorComputation(LogManager manager, List<String> logNames, String host, int port, boolean udp,
+            String basePrefix, String computationName, int intervalSecond, int count, boolean verbose,
+            Codec<Record> codec) {
+        super(manager, logNames, computationName, intervalSecond, count, verbose, codec);
+        this.host = host;
+        this.port = port;
+        this.udp = udp;
+        this.basePrefix = basePrefix;
+    }
+
+    @Override
+    public void init(ComputationContext context) {
+        super.init(context);
+        if (udp) {
+            graphite = new GraphiteUDP(host, port);
+        } else {
+            graphite = new Graphite(host, port);
+        }
+        try {
+            graphite.connect();
+        } catch (IOException e) {
+            throw new IllegalStateException("Fail to connect to " + host + ":" + port, e);
+        }
+    }
+
+    @Override
+    public void processTimer(ComputationContext context, String key, long timestamp) {
+        if (remaining == 0) {
+            debug("Exiting after " + count + " captures");
+            context.askForTermination();
+            return;
+        }
+        debug(String.format("Monitor latency %d/%d", count - remaining, count));
+        for (LogPartitionGroup logGroup : logGroups) {
+            List<Latency> latencies = getLatenciesForPartition(logGroup, codec);
+            if (latencies.isEmpty()) {
+                continue;
+            }
+            Latency groupLatency = Latency.of(latencies);
+            publishMetrics(groupLatency, String.format("%s%s.%s.all.", basePrefix, logGroup.group, logGroup.name));
+            for (int partition = 0; partition < latencies.size(); partition++) {
+                publishMetrics(latencies.get(partition),
+                        String.format("%s%s.%s.p%02d.", basePrefix, logGroup.group, logGroup.name, partition));
+            }
+        }
+        context.askForCheckpoint();
+        context.setTimer("monitor", System.currentTimeMillis() + intervalMs);
+        remaining--;
+    }
+
+    private void publishMetrics(Latency latency, String prefix) {
+        debug(latency.toString());
+        // upper is the time when the latency has been measured
+        long metricTime = latency.upper() / 1000;
+        try {
+            graphite.send(prefix + "lag", Long.toString(latency.lag().lag()), metricTime);
+            graphite.send(prefix + "end", Long.toString(latency.lag().upper()), metricTime);
+            graphite.send(prefix + "pos", Long.toString(latency.lag().lower()), metricTime);
+            graphite.send(prefix + "latency", Long.toString(latency.latency()), metricTime);
+        } catch (IOException e) {
+            log.error("Fail to send metric to graphite " + prefix + " " + latency, e);
+        }
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        if (graphite != null) {
+            try {
+                graphite.close();
+            } catch (IOException e) {
+                log.debug("Error when closing graphite socket: ", e);
+            }
+        }
+        graphite = null;
+    }
+}
