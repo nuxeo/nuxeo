@@ -66,8 +66,12 @@
       <groupId>io.confluent</groupId>
       <artifactId>kafka-schema-registry-client</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-graphite</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
