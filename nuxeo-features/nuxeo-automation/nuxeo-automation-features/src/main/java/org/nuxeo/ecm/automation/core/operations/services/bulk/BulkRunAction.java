@@ -20,7 +20,6 @@ package org.nuxeo.ecm.automation.core.operations.services.bulk;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,9 +30,8 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.PageProviderHelper;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkAdminService;
@@ -75,7 +73,7 @@ public class BulkRunAction {
 
     @Param(name = PageProviderService.NAMED_PARAMETERS, required = false, description = "Named parameters to pass to the page provider to "
             + "fill in query variables.")
-    protected Map<String, String> namedParameters;
+    protected Properties namedParameters;
 
     @Param(name = "quickFilters", required = false, description = "Quick filter " + "properties (separated by comma)")
     protected StringList quickFilters;
