@@ -51,7 +51,7 @@ public class TomcatConfigurator extends ServerConfigurator {
 
     public TomcatConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
-        log.info("Detected Tomcat server.");
+        log.debug("Detected Tomcat server.");
     }
 
     /**
