@@ -536,8 +536,16 @@ table.smtp,
     border-bottom: 3px solid #73D2CF;
 }
 
-.package:after {
+.package.checked {
+    border-bottom: 3px solid #73D2CF;
+}
+
+.package.checked:after {
     content: '\002714';
+}
+
+.package:after {
+    content: '';
     position: absolute;
     background-color: #fff;
     border: 2px solid #ddd;
@@ -567,11 +575,6 @@ table.smtp,
 
 .package input {
     display: none;
-}
-
-body .package.disabled {
-    background-color: #f3f5f6;
-    border-bottom: 3px solid #73D2CF;
 }
 
 /* Footer style */

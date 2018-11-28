@@ -99,6 +99,7 @@ public class TestParser {
 
         DownloadablePackageOption root = pkgs.get(0);
         assertEquals("nuxeo-cap", root.getPackage().getId());
+        assertEquals("multiple", root.getSelectionType());
 
         assertEquals(4, root.getChildrenPackages().size()); // DAM / DM / CMF /
                                                             // nuxeo-drive

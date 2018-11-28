@@ -727,8 +727,9 @@ public class RouterServlet extends HttpServlet {
         Enumeration<String> params = req.getParameterNames();
         while (params.hasMoreElements()) {
             String p = params.nextElement();
-            if ("on".equals(req.getParameter(p))) {
-                options.add(p);
+            String value = req.getParameter(p);
+            if (value != null) {
+                options.add(value);
             }
         }
 
