@@ -92,7 +92,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
                 try {
                     doPublish((LogEntry) logEntry);
                 } catch (RuntimeException e) {
-                    log.warn("unable to read log entry", e);
+                    log.warn("unable to read log entry: "+((LogEntry) logEntry), e);
                 }
             }
         }
