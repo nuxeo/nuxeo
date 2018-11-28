@@ -200,6 +200,9 @@ public class DownloadablePackageOptions {
         sb.append("\"label\":\"" + option.getLabel() + "\",");
         sb.append("\"shortlabel\":\"" + option.getShortLabel() + "\",");
         sb.append("\"selected\":\"" + option.selected + "\",");
+        if (option.selectionType != null) {
+            sb.append("\"selectionType\":\"" + option.getSelectionType() + "\",");
+        }
         sb.append("\"exclusive\":\"" + option.exclusive + "\",");
         sb.append("\"description\":\"" + option.getDescription() + "\",");
         sb.append("\"virtual\":\"" + option.isVirtual() + "\",");

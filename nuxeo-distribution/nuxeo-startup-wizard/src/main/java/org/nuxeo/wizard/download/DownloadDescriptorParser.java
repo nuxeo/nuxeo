@@ -187,6 +187,7 @@ public class DownloadDescriptorParser {
             pkgOption.setLabel(label);
         }
         pkgOption.setExclusive(el.attributeValue("exclusive"));
+        pkgOption.setSelectionType(el.attributeValue("selectionType"));
 
         for (Object child : el.elements()) {
             DownloadablePackageOption childPkg = readPackageOptions((Element) child, pkgs);

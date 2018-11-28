@@ -13,7 +13,7 @@
       shortlabel="NOUI" virtual="true"
       desc="Install Nuxeo as a headless hyperscale content repository and start building your own UIs or integrations using the REST API and our Clients SDKs (Java, JavaScript, C#, Python, PHP, DART, Objective-C)." />
     <!-- Addon list -->
-    <package id="nuxeo-dam" label="Digital Asset Management" color="#ffeb6d" textcolor="#333" shortlabel="DAM" implies="nuxeo-web-ui"
+    <package id="nuxeo-dam" label="Digital Asset Management" color="#ffeb6d" textcolor="#333" shortlabel="DAM"
       desc="The Nuxeo DAM addon adds robust, extensible, Digital Asset Management capabilities for building solutions that help marketing and brand managers catalog, process, store, retrieve, and distribute rich media content, including images, audio and video." />
     <package id="nuxeo-drive" label="Drive" color="#5AC456" textcolor="#FFF" shortlabel="DRIVE" implies="nuxeo-web-ui"
       desc="Nuxeo Drive enables bidirectional synchronization of content between the local desktop and the Nuxeo content repository. It handles offline modification of files and deals with concurrent updates." />
@@ -21,8 +21,8 @@
       shortlabel="DOCS" implies="nuxeo-dam"
       desc="The Nuxeo Showcase Content addon imports a set of showcase content so that the repository is not empty for your first steps: office documents, images, videos." />
     <package id="nuxeo-template-rendering" label="Template Rendering" color="#c3c7c9" textcolor="#FFF"
-       shortlabel="TMPL" implies="nuxeo-web-ui"
-       desc="The Nuxeo Template Rendering addon provides a way to associate a Nuxeo Document with a template that can be a Word document, an Excel sheet, a Powerpoint presentation or an HTLM website and merge document properties with the template so as to produce the final document as a rendition of the initial one." />
+      shortlabel="TMPL" implies="nuxeo-web-ui"
+      desc="The Nuxeo Template Rendering addon provides a way to associate a Nuxeo Document with a template that can be a Word document, an Excel sheet, a Powerpoint presentation or an HTLM website and merge document properties with the template so as to produce the final document as a rendition of the initial one." />
     <package id="nuxeo-template-rendering-samples" label="Template Rendering (with samples)" color="#c3c7c9" textcolor="#FFF"
       shortlabel="TMPLS" implies="nuxeo-template-rendering"
       desc="Discover through an inspiring demo how the Template Rendering addon can improve your everyday business processes. This demo showcases the BigCorp company, generating financial reports for internal use, and case studies demonstrating their expertise for potential new customers. All being achieved by extracting their relevant content into office templates on the fly." />
@@ -40,11 +40,11 @@
   <install>
     <packageOptions>
       <package ref="nuxeo-server" exclusive="false">
-        <package ref="nuxeo-ui-virtual" exclusive="false">
+        <package ref="nuxeo-ui-virtual" exclusive="false" selectionType="single">
           <package ref="nuxeo-no-ui" exclusive="true"/>
           <package ref="nuxeo-web-ui" exclusive="false" />
         </package>
-        <package ref="nuxeo-addon-virtual" exclusive="false">
+        <package ref="nuxeo-addon-virtual" exclusive="false" selectionType="multiple">
           <package ref="nuxeo-dam" exclusive="false" />
           <package ref="nuxeo-drive" exclusive="false" />
           <package ref="nuxeo-liveconnect" exclusive="false" />
