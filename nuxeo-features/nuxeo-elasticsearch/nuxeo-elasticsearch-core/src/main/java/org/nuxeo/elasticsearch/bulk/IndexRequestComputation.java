@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.elasticsearch.Timestamp;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -113,7 +114,8 @@ public class IndexRequestComputation extends AbstractBulkComputation {
     }
 
     @Override
-    public void endBucket(ComputationContext context, int bucketSize) {
+    public void endBucket(ComputationContext context, BulkStatus delta) {
+        long bucketSize = delta.getProcessed();
         bulkRequests.add(bulkRequest);
         String commandId = getCurrentCommand().getId();
         int i = 0;

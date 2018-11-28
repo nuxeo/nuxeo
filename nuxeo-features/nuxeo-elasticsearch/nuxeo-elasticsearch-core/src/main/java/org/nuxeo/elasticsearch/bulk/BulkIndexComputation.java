@@ -40,6 +40,7 @@ import org.elasticsearch.rest.RestStatus;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -128,7 +129,9 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
             for (DocWriteRequest request : bulkRequest.requests()) {
                 bulkProcessor.add(request);
             }
-            AbstractBulkComputation.updateStatusProcessed(context, in.getCommandId(), in.getCount());
+            BulkStatus delta = BulkStatus.deltaOf(in.getCommandId());
+            delta.setProcessed(in.getCount());
+            AbstractBulkComputation.updateStatus(context, delta);
         }
         updates = true;
     }

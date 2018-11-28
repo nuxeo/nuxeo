@@ -22,6 +22,9 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ACTION;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMMAND_ID;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMPLETED_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ENTITY_TYPE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ERROR_COUNT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ERROR_MESSAGE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_HAS_ERROR;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSED;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSING_END_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSING_MILLIS;
@@ -61,6 +64,11 @@ public class BulkStatusJsonWriter extends ExtensibleEntityJsonWriter<BulkStatus>
         jg.writeStringField(STATUS_COMMAND_ID, entity.getId());
         jg.writeStringField(STATUS_STATE, entity.getState() != null ? entity.getState().toString() : null);
         jg.writeNumberField(STATUS_PROCESSED, entity.getProcessed());
+        jg.writeBooleanField(STATUS_HAS_ERROR, entity.hasError());
+        jg.writeNumberField(STATUS_ERROR_COUNT, entity.getErrorCount());
+        if (entity.getErrorMessage() != null) {
+            jg.writeStringField(STATUS_ERROR_MESSAGE, entity.getErrorMessage());
+        }
         jg.writeNumberField(STATUS_TOTAL, entity.getTotal());
         jg.writeStringField(STATUS_ACTION, entity.getAction());
         jg.writeStringField(STATUS_USERNAME, entity.getUsername());

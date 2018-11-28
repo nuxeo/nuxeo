@@ -19,12 +19,14 @@
 package org.nuxeo.ecm.core.bulk.action.computation;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
@@ -49,7 +51,6 @@ public class ExposeBlob extends AbstractTransientBlobComputation {
     public void processRecord(ComputationContext context, String documentIdsStreamName, Record record) {
         Codec<DataBucket> codec = BulkCodecs.getDataBucketCodec();
         DataBucket in = codec.decode(record.getData());
-
         String commandId = in.getCommandId();
         long documents = in.getCount();
 
@@ -62,9 +63,12 @@ public class ExposeBlob extends AbstractTransientBlobComputation {
         store.setCompleted(commandId, true);
 
         // update the command status
+        BulkStatus delta = BulkStatus.deltaOf(commandId);
+        delta.setProcessed(documents);
         String url = Framework.getService(DownloadService.class).getDownloadUrl(commandId);
         Map<String, Serializable> result = Collections.singletonMap("url", url);
-        AbstractBulkComputation.updateStatusProcessed(context, commandId, documents, result);
+        delta.setResult(result);
+        AbstractBulkComputation.updateStatus(context, delta);
         context.askForCheckpoint();
     }
 

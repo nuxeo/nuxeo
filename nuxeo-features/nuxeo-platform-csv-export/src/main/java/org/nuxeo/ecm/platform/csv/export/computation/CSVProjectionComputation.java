@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.bulk.message.DataBucket;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
@@ -100,16 +101,16 @@ public class CSVProjectionComputation extends AbstractBulkComputation {
     }
 
     @Override
-    public void endBucket(ComputationContext context, int bucketSize) {
-        BulkCommand command = getCurrentCommand();
-        String commandId = command.getId();
+    public void endBucket(ComputationContext context, BulkStatus delta) {
+        String commandId = delta.getId();
         try {
             // Extract header from data
             String csv = out.toString(UTF_8.name());
             String recordSeparator = CSVFormat.DEFAULT.getRecordSeparator();
             String header = getHeader(csv, recordSeparator);
             String data = getData(csv, recordSeparator);
-            DataBucket dataBucket = new DataBucket(commandId, bucketSize, data.getBytes(UTF_8), header.getBytes(UTF_8),
+            DataBucket dataBucket = new DataBucket(commandId, delta.getProcessed(), data.getBytes(UTF_8),
+                    header.getBytes(UTF_8),
                     new byte[0]);
             Record record = Record.of(commandId, BulkCodecs.getDataBucketCodec().encode(dataBucket));
             context.produceRecord(OUTPUT_1, record);
