@@ -20,11 +20,12 @@
 package org.nuxeo.ecm.core.bulk.message;
 
 import java.io.Serializable;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.validation.constraints.NotNull;
 
 import org.apache.avro.reflect.AvroEncode;
 import org.apache.avro.reflect.Nullable;
@@ -32,7 +33,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.AsyncStatus;
-import org.nuxeo.ecm.core.bulk.io.InstantAsLongEncoding;
 
 /**
  * A message representing a command status or a change of status (delta).
@@ -82,23 +82,23 @@ public class BulkStatus implements AsyncStatus<String> {
     @Nullable
     protected State state;
 
-    @AvroEncode(using = InstantAsLongEncoding.class)
-    protected Instant submitTime;
+    @Nullable
+    protected Long submitTime;
 
-    @AvroEncode(using = InstantAsLongEncoding.class)
-    protected Instant scrollStartTime;
+    @Nullable
+    protected Long scrollStartTime;
 
-    @AvroEncode(using = InstantAsLongEncoding.class)
-    protected Instant scrollEndTime;
+    @Nullable
+    protected Long scrollEndTime;
 
-    @AvroEncode(using = InstantAsLongEncoding.class)
-    protected Instant processingStartTime;
+    @Nullable
+    protected Long processingStartTime;
 
-    @AvroEncode(using = InstantAsLongEncoding.class)
-    protected Instant processingEndTime;
+    @Nullable
+    protected Long processingEndTime;
 
-    @AvroEncode(using = InstantAsLongEncoding.class)
-    protected Instant completedTime;
+    @Nullable
+    protected Long completedTime;
 
     @Nullable
     protected Long total;
@@ -114,14 +114,14 @@ public class BulkStatus implements AsyncStatus<String> {
         // Empty constructor for Avro decoder
     }
 
-    public BulkStatus(String commandId) {
+    public BulkStatus(@NotNull String commandId) {
         this.commandId = commandId;
     }
 
     /**
      * Creates a delta status for a command.
      */
-    public static BulkStatus deltaOf(String commandId) {
+    public static BulkStatus deltaOf(@NotNull String commandId) {
         BulkStatus ret = new BulkStatus();
         ret.setId(commandId);
         ret.delta = true;
@@ -131,7 +131,7 @@ public class BulkStatus implements AsyncStatus<String> {
     /**
      * Creates a delta status for a command.
      */
-    public static BulkStatus unknownOf(String commandId) {
+    public static BulkStatus unknownOf(@NotNull String commandId) {
         BulkStatus ret = new BulkStatus();
         ret.setId(commandId);
         ret.delta = true;
@@ -144,7 +144,7 @@ public class BulkStatus implements AsyncStatus<String> {
      *
      * @since 10.3
      */
-    public void merge(BulkStatus update) {
+    public void merge(@NotNull BulkStatus update) {
         if (!update.isDelta()) {
             throw new IllegalArgumentException(
                     String.format("Cannot merge an a full status: %s with %s", this, update));
@@ -159,31 +159,31 @@ public class BulkStatus implements AsyncStatus<String> {
         if (update.processed != null) {
             setProcessed(getProcessed() + update.getProcessed());
         }
-        if (update.getScrollStartTime() != null) {
-            setScrollStartTime(update.getScrollStartTime());
+        if (update.scrollStartTime != null) {
+            scrollStartTime = update.scrollStartTime;
         }
-        if (update.getScrollEndTime() != null) {
-            setScrollEndTime(update.getScrollEndTime());
+        if (update.scrollEndTime != null) {
+            scrollEndTime = update.scrollEndTime;
         }
-        if (update.getSubmitTime() != null) {
-            setSubmitTime(update.getSubmitTime());
+        if (update.submitTime != null) {
+            submitTime = update.submitTime;
         }
-        if (update.getProcessingStartTime() != null && (getProcessingStartTime() == null
-                || update.getProcessingStartTime().isBefore(getProcessingStartTime()))) {
+        if (update.processingStartTime != null
+                && (processingStartTime == null || update.processingStartTime < processingStartTime)) {
             // we take the minimum
-            setProcessingStartTime(update.getProcessingStartTime());
+            processingStartTime = update.processingStartTime;
         }
-        if (update.getProcessingEndTime() != null
-                && (getProcessingEndTime() == null || update.getProcessingEndTime().isAfter(getProcessingEndTime()))) {
+        if (update.processingEndTime != null
+                && (processingEndTime == null || update.processingEndTime > processingEndTime)) {
             // we take the maximum
-            setProcessingEndTime(update.getProcessingEndTime());
+            processingEndTime = update.processingEndTime;
         }
-        if (update.getProcessingStartTime() != null && update.getProcessingEndTime() != null) {
-            setProcessingDurationMillis(getProcessingDurationMillis()
-                    + Duration.between(update.getProcessingStartTime(), update.getProcessingEndTime()).toMillis());
+        if (update.processingStartTime != null && update.processingEndTime != null) {
+            long deltaDuration = update.processingEndTime - update.processingStartTime;
+            setProcessingDurationMillis(getProcessingDurationMillis() + deltaDuration);
         }
-        if (update.getCompletedTime() != null) {
-            setCompletedTime(update.getCompletedTime());
+        if (update.completedTime != null) {
+            completedTime = update.completedTime;
         }
         if (update.total != null) {
             setTotal(update.getTotal());
@@ -233,66 +233,66 @@ public class BulkStatus implements AsyncStatus<String> {
      * Gets the time when the command was submitted to the Bulk service.
      */
     public Instant getSubmitTime() {
-        return submitTime;
+        return submitTime == null ? null : Instant.ofEpochMilli(submitTime);
     }
 
-    public void setSubmitTime(Instant submitTime) {
-        this.submitTime = submitTime;
+    public void setSubmitTime(@NotNull Instant submitTime) {
+        this.submitTime = submitTime.toEpochMilli();
     }
 
     /**
      * Gets the time when the scroll computation starts.
      */
     public Instant getScrollStartTime() {
-        return scrollStartTime;
+        return scrollStartTime == null ? null : Instant.ofEpochMilli(scrollStartTime);
     }
 
-    public void setScrollStartTime(Instant scrollStartTime) {
-        this.scrollStartTime = scrollStartTime;
+    public void setScrollStartTime(@NotNull Instant scrollStartTime) {
+        this.scrollStartTime = scrollStartTime.toEpochMilli();
     }
 
     /**
      * Gets the time when the scrolling is completed.
      */
     public Instant getScrollEndTime() {
-        return scrollEndTime;
+        return scrollEndTime == null ? null : Instant.ofEpochMilli(scrollEndTime);
     }
 
-    public void setScrollEndTime(Instant scrollEndTime) {
-        this.scrollEndTime = scrollEndTime;
+    public void setScrollEndTime(@NotNull Instant scrollEndTime) {
+        this.scrollEndTime = scrollEndTime.toEpochMilli();
     }
 
     /**
      * Gets the time when the action computation starts.
      */
     public Instant getProcessingStartTime() {
-        return processingStartTime;
+        return processingStartTime == null ? null : Instant.ofEpochMilli(processingStartTime);
     }
 
-    public void setProcessingStartTime(Instant processingStartTime) {
-        this.processingStartTime = processingStartTime;
+    public void setProcessingStartTime(@NotNull Instant processingStartTime) {
+        this.processingStartTime = processingStartTime.toEpochMilli();
     }
 
     /**
      * Gets the time when the last action computation has terminated.
      */
     public Instant getProcessingEndTime() {
-        return processingEndTime;
+        return processingEndTime == null ? null : Instant.ofEpochMilli(processingEndTime);
     }
 
-    public void setProcessingEndTime(Instant processingEndTime) {
-        this.processingEndTime = processingEndTime;
+    public void setProcessingEndTime(@NotNull Instant processingEndTime) {
+        this.processingEndTime = processingEndTime.toEpochMilli();
     }
 
     /**
      * Gets the time when the command has been detected as completed.
      */
     public Instant getCompletedTime() {
-        return completedTime;
+        return completedTime == null ? null : Instant.ofEpochMilli(completedTime);
     }
 
-    public void setCompletedTime(Instant completedTime) {
-        this.completedTime = completedTime;
+    public void setCompletedTime(@NotNull Instant completedTime) {
+        this.completedTime = completedTime.toEpochMilli();
     }
 
     @Override
