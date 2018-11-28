@@ -9,7 +9,7 @@
   </packageDefinitions>
   <install>
     <packageOptions>
-      <package ref="nuxeo-cap" exclusive="false">
+      <package ref="nuxeo-cap" exclusive="false" selectionType="multiple">
         <package ref="nuxeo-dam" exclusive="false" />
         <package ref="nuxeo-dm" exclusive="false">
           <package ref="nuxeo-social-collaboration" exclusive="false" />
