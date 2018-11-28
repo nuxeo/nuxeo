@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.rendition.service;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
 
@@ -38,13 +39,15 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -86,7 +89,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
      */
     public static final String STORED_RENDITION_MANAGERS_EP = "storedRenditionManagers";
 
-    private static final Log log = LogFactory.getLog(RenditionServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(RenditionServiceImpl.class);
 
     /**
      * @deprecated since 7.2. Not used.
@@ -587,6 +590,13 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     @Override
     public DocumentModel publishRendition(DocumentModel doc, DocumentModel target, String renditionName,
             boolean override) {
+        CoreSession session = doc.getCoreSession();
+        if (!session.hasPermission(target.getRef(), ADD_CHILDREN)) {
+            log.error("Permission '{}' is not granted to '{}' on document '{}'", ADD_CHILDREN,
+                    session.getPrincipal().getName(), target.getPath());
+            throw new DocumentSecurityException(
+                    "Privilege '" + ADD_CHILDREN + "' is not granted to '" + session.getPrincipal().getName() + "'");
+        }
         Rendition rendition = StringUtils.isEmpty(renditionName)
                 ? getDefaultRendition(doc, Constants.DEFAULT_RENDTION_PUBLISH_REASON, true, null)
                 : getRendition(doc, renditionName, true);
@@ -594,7 +604,14 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             throw new NuxeoException("Unable to render the document");
         }
         DocumentModel renditionDocument = rendition.getHostDocument();
-        DocumentModel publishedDocument = doc.getCoreSession().publishDocument(renditionDocument, target, override);
+        /*
+         * We've checked above that the current user is allowed to add new documents
+         * in the target. We need the privileged session to publish the rendition
+         * which is a placeless document
+         */
+        DocumentRef publishedDocumentRef = CoreInstance.doPrivileged(session,
+                (CoreSession s) -> s.publishDocument(renditionDocument, target, override).getRef());
+        DocumentModel publishedDocument = session.getDocument(publishedDocumentRef);
         if (override) {
             RenditionsRemover remover = new RenditionsRemover(publishedDocument);
             remover.runUnrestricted();
