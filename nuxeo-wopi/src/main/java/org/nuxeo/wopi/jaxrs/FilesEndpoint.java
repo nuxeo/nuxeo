@@ -77,6 +77,7 @@ import static org.nuxeo.wopi.Constants.USER_ID;
 import static org.nuxeo.wopi.Constants.VERSION;
 import static org.nuxeo.wopi.Constants.WOPI_BASE_URL_PROPERTY;
 import static org.nuxeo.wopi.Constants.WOPI_SOURCE;
+import static org.nuxeo.wopi.Headers.FILE_CONVERSION;
 import static org.nuxeo.wopi.Headers.ITEM_VERSION;
 import static org.nuxeo.wopi.Headers.LOCK;
 import static org.nuxeo.wopi.Headers.MAX_EXPECTED_SIZE;
@@ -431,20 +432,14 @@ public class FilesEndpoint extends DefaultObject {
         if (relativeTarget != null) {
             relativeTarget = Helpers.readUTF7String(relativeTarget);
         }
-        logRequest(OPERATION_PUT_RELATIVE_FILE, SUGGESTED_TARGET, suggestedTarget, RELATIVE_TARGET, relativeTarget);
+        String fileConversion = getHeader(OPERATION_PUT_RELATIVE_FILE, FILE_CONVERSION, true);
+        logRequest(OPERATION_PUT_RELATIVE_FILE, SUGGESTED_TARGET, suggestedTarget, RELATIVE_TARGET, relativeTarget,
+                FILE_CONVERSION, fileConversion);
 
         // exactly one should be empty
         if (StringUtils.isEmpty(suggestedTarget) == StringUtils.isEmpty(relativeTarget)) {
             logCondition(() -> SUGGESTED_TARGET + " and " + RELATIVE_TARGET
                     + " headers are both present or not present, yet they are mutually exclusive");
-            logResponse(OPERATION_PUT_RELATIVE_FILE, SC_NOT_IMPLEMENTED);
-            throw new NotImplementedException();
-        }
-
-        DocumentRef parentRef = doc.getParentRef();
-        if (!session.exists(parentRef) || !session.hasPermission(parentRef, SecurityConstants.ADD_CHILDREN)) {
-            logCondition(() -> "Either the parent document doesn't exist or the current user isn't granted "
-                    + SecurityConstants.ADD_CHILDREN + " access");
             logResponse(OPERATION_PUT_RELATIVE_FILE, SC_NOT_IMPLEMENTED);
             throw new NotImplementedException();
         }
@@ -459,17 +454,15 @@ public class FilesEndpoint extends DefaultObject {
             newFileName = relativeTarget;
         }
 
-        DocumentModel parent = session.getDocument(parentRef);
-        DocumentModel newDoc = session.createDocumentModel(parent.getPathAsString(), newFileName, doc.getType());
-        newDoc.copyContent(doc);
-        newDoc.setPropertyValue("dc:title", newFileName);
-
-        Blob newBlob = createBlobFromRequestBody(newFileName, null);
-        newDoc.setPropertyValue(xpath, (Serializable) newBlob);
-        newDoc = session.createDocument(newDoc);
-        String newDocId = newDoc.getId();
-        logNuxeoAction(() -> "Created new document " + newDocId + " as a child of " + parent.getId() + " with filename "
-                + newFileName);
+        // handle either new file creation or binary file conversion
+        DocumentModel newDoc = null;
+        if (StringUtils.isEmpty(fileConversion)) {
+            logCondition(() -> FILE_CONVERSION + " header is not present, handling new file creation");
+            newDoc = createSiblingCopyFromRequestBody(newFileName);
+        } else {
+            logCondition(() -> FILE_CONVERSION + " header is present, handling file conversion");
+            newDoc = createVersionFromRequestBody(newFileName);
+        }
 
         String token = Helpers.getJWTToken(request);
         String newFileId = FileInfo.computeFileId(newDoc, xpath);
@@ -485,6 +478,38 @@ public class FilesEndpoint extends DefaultObject {
         map.put(HOST_EDIT_URL, hostEditUrl);
         logResponse(OPERATION_PUT_RELATIVE_FILE, OK.getStatusCode(), map);
         return Response.ok(map).type(MediaType.APPLICATION_JSON).build();
+    }
+
+    protected DocumentModel createSiblingCopyFromRequestBody(String filename) {
+        DocumentRef parentRef = doc.getParentRef();
+        if (!session.exists(parentRef) || !session.hasPermission(parentRef, SecurityConstants.ADD_CHILDREN)) {
+            logCondition(() -> "Either the parent document doesn't exist or the current user isn't granted "
+                    + SecurityConstants.ADD_CHILDREN + " access");
+            logResponse(OPERATION_PUT_RELATIVE_FILE, SC_NOT_IMPLEMENTED);
+            throw new NotImplementedException();
+        }
+
+        DocumentModel parent = session.getDocument(parentRef);
+        DocumentModel newDoc = session.createDocumentModel(parent.getPathAsString(), filename, doc.getType());
+        newDoc.copyContent(doc);
+        newDoc.setPropertyValue("dc:title", filename);
+
+        Blob newBlob = createBlobFromRequestBody(filename, null);
+        newDoc.setPropertyValue(xpath, (Serializable) newBlob);
+        newDoc = session.createDocument(newDoc);
+        String newDocId = newDoc.getId();
+        logNuxeoAction(() -> "Created new document " + newDocId + " as a child of " + parent.getId() + " with filename "
+                + filename);
+        return newDoc;
+    }
+
+    protected DocumentModel createVersionFromRequestBody(String filename) {
+        Blob newBlob = createBlobFromRequestBody(filename, null);
+        doc.setPropertyValue(xpath, (Serializable) newBlob);
+        doc.putContextData(SOURCE, WOPI_SOURCE);
+        doc = session.saveDocument(doc);
+        logNuxeoAction(() -> "Created a version of document " + doc.getId() + " with filename " + filename);
+        return doc;
     }
 
     /**

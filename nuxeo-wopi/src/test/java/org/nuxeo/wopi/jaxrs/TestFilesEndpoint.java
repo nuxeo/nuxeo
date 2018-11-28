@@ -36,6 +36,7 @@ import static org.nuxeo.wopi.Constants.SHARE_URL_READ_ONLY;
 import static org.nuxeo.wopi.Constants.SHARE_URL_READ_WRITE;
 import static org.nuxeo.wopi.Constants.URL;
 import static org.nuxeo.wopi.Constants.WOPI_BASE_URL_PROPERTY;
+import static org.nuxeo.wopi.Headers.FILE_CONVERSION;
 import static org.nuxeo.wopi.Headers.ITEM_VERSION;
 import static org.nuxeo.wopi.Headers.LOCK;
 import static org.nuxeo.wopi.Headers.MAX_EXPECTED_SIZE;
@@ -839,20 +840,23 @@ public class TestFilesEndpoint {
 
         // success - 200 - new file from relative target
         try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
-            assertPutRelativeFileResponse(response, "new file.docx", BASE_URL);
+            assertPutRelativeFileCreateFileResponse(response, blobDoc.getRef(), FILE_CONTENT_PROPERTY, "new file.docx",
+                    BASE_URL, data);
         }
 
         // success - 200 - new file from suggested extension
         headers.remove(RELATIVE_TARGET);
         headers.put(SUGGESTED_TARGET, ".docx");
         try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
-            assertPutRelativeFileResponse(response, "test-file.docx", BASE_URL);
+            assertPutRelativeFileCreateFileResponse(response, blobDoc.getRef(), FILE_CONTENT_PROPERTY, "test-file.docx",
+                    BASE_URL, data);
         }
 
         // success - 200 - new file from suggested filename
         headers.put(SUGGESTED_TARGET, "foo.docx");
         try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
-            assertPutRelativeFileResponse(response, "foo.docx", BASE_URL);
+            assertPutRelativeFileCreateFileResponse(response, blobDoc.getRef(), FILE_CONTENT_PROPERTY, "foo.docx",
+                    BASE_URL, data);
         }
 
         try {
@@ -860,14 +864,57 @@ public class TestFilesEndpoint {
             // success - 200 - new file from suggested filename with a custom WOPI base URL
             Framework.getProperties().setProperty(WOPI_BASE_URL_PROPERTY, customWOPIBaseURL);
             try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
-                assertPutRelativeFileResponse(response, "foo.docx", customWOPIBaseURL);
+                assertPutRelativeFileCreateFileResponse(response, blobDoc.getRef(), FILE_CONTENT_PROPERTY, "foo.docx",
+                        customWOPIBaseURL, data);
             }
         } finally {
             Framework.getProperties().remove(WOPI_BASE_URL_PROPERTY);
         }
     }
 
-    protected void assertPutRelativeFileResponse(CloseableClientResponse response, String newName, String wopiBaseURL)
+    @Test
+    public void testFileConversion() throws IOException {
+        String data = "Converted content.";
+        Map<String, String> headers = new HashMap<>();
+        headers.put(OVERRIDE, Operation.PUT_RELATIVE.name());
+        headers.put(FILE_CONVERSION, "True");
+
+        // success - 200 - conversion from relative target
+        headers.put(RELATIVE_TARGET, "new file.docx");
+        try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
+            assertPutRelativeFileCreateVersionResponse(response, blobDoc.getRef(), FILE_CONTENT_PROPERTY,
+                    "new file.docx", BASE_URL, data, "0.1");
+
+        }
+
+        // success - 200 - conversion from suggested extension
+        headers.remove(RELATIVE_TARGET);
+        headers.put(SUGGESTED_TARGET, ".docx");
+        try (CloseableClientResponse response = post(johnToken, data, headers, zeroLengthBlobDocFileId)) {
+            assertPutRelativeFileCreateVersionResponse(response, zeroLengthBlobDoc.getRef(), FILE_CONTENT_PROPERTY,
+                    "zero-length-blob.docx", BASE_URL, data, "0.1");
+        }
+
+        // success - 200 - conversion from suggested filename
+        headers.put(SUGGESTED_TARGET, "foo.docx");
+        try (CloseableClientResponse response = post(johnToken, data, headers, hugeBlobDocFileId)) {
+            assertPutRelativeFileCreateVersionResponse(response, hugeBlobDoc.getRef(), FILE_CONTENT_PROPERTY,
+                    "foo.docx", BASE_URL, data, "0.1");
+        }
+    }
+
+    protected void assertPutRelativeFileCreateFileResponse(CloseableClientResponse response, DocumentRef docRef,
+            String xpath, String newName, String wopiBaseURL, String newContent) throws IOException {
+        assertPutRelativeFileResponse(response, docRef, xpath, newName, wopiBaseURL, newContent, null, false);
+    }
+
+    protected void assertPutRelativeFileCreateVersionResponse(CloseableClientResponse response, DocumentRef docRef,
+            String xpath, String newName, String wopiBaseURL, String newContent, String newVersion) throws IOException {
+        assertPutRelativeFileResponse(response, docRef, xpath, newName, wopiBaseURL, newContent, newVersion, true);
+    }
+
+    protected void assertPutRelativeFileResponse(CloseableClientResponse response, DocumentRef docRef, String xpath,
+            String newName, String wopiBaseURL, String newContent, String newVersion, boolean isConversion)
             throws IOException {
         assertEquals(200, response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -883,16 +930,34 @@ public class TestFilesEndpoint {
         String hostViewUrl = jsonNode.asText();
         assertTrue(hostViewUrl.startsWith(BASE_URL));
 
-        String[] split = hostViewUrl.split("/");
-        String docId = split[split.length - 2];
-
         transactionalFeature.nextTransaction();
-        DocumentModel newDoc = session.getDocument(new IdRef(docId));
-        assertEquals(blobDoc.getParentRef(), newDoc.getParentRef());
-        assertEquals(newName, newDoc.getTitle());
-        Blob blob = (Blob) newDoc.getPropertyValue(FILE_CONTENT_PROPERTY);
-        assertNotNull(blob);
-        assertEquals(newName, blob.getFilename());
+        DocumentModel doc = session.getDocument(docRef);
+
+        if (isConversion) {
+            // request made in the context of a conversion
+            Blob blob = (Blob) doc.getPropertyValue(xpath);
+            assertNotNull(blob);
+            assertEquals(newName, blob.getFilename());
+            assertEquals(newContent, blob.getString());
+            assertEquals(newVersion, doc.getVersionLabel());
+            List<DocumentModel> versions = session.getVersions(docRef);
+            int versionCount = versions.size();
+            assertTrue(versionCount >= 1);
+            Blob versionBlob = (Blob) versions.get(versionCount - 1).getPropertyValue(xpath);
+            assertEquals(newContent, versionBlob.getString());
+        } else {
+            // request made in the context of a file creation
+            String[] split = hostViewUrl.split("/");
+            String docId = split[split.length - 2];
+            DocumentRef newDocRef = new IdRef(docId);
+            DocumentModel newDoc = session.getDocument(newDocRef);
+            assertEquals(doc.getParentRef(), newDoc.getParentRef());
+            assertEquals(newName, newDoc.getTitle());
+            Blob blob = (Blob) newDoc.getPropertyValue(xpath);
+            assertNotNull(blob);
+            assertEquals(newName, blob.getFilename());
+            assertEquals(newContent, blob.getString());
+        }
     }
 
     @Test
@@ -975,6 +1040,16 @@ public class TestFilesEndpoint {
             assertNotNull(updatedBlob);
             assertEquals("new attachment", updatedBlob.getString());
             assertEquals("test-attachment.txt", updatedBlob.getFilename());
+        }
+
+        // PutRelativeFile - file conversion
+        data = "converted attachment";
+        headers.put(OVERRIDE, Operation.PUT_RELATIVE.name());
+        headers.put(FILE_CONVERSION, "True");
+        headers.put(SUGGESTED_TARGET, ".docx");
+        try (CloseableClientResponse response = post(johnToken, data, headers, multipleBlobsDocAttachementId)) {
+            assertPutRelativeFileCreateVersionResponse(response, multipleBlobsDoc.getRef(), FILES_FIRST_FILE_PROPERTY,
+                    "test-attachment.docx", BASE_URL, data, "0.2");
         }
     }
 
