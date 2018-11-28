@@ -28,6 +28,8 @@ public class Headers {
         // constants class
     }
 
+    public static final String FILE_CONVERSION = "X-WOPI-FileConversion";
+
     public static final String ITEM_VERSION = "X-WOPI-ItemVersion";
 
     public static final String LOCK = "X-WOPI-Lock";
