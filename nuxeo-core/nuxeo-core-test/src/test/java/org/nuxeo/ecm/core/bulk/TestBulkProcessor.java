@@ -93,6 +93,7 @@ public class TestBulkProcessor {
             assertEquals(commandId, status.getId());
             assertEquals(COMPLETED, status.getState());
             assertEquals(0, status.getTotal());
+            assertFalse(status.hasError());
 
             LogRecord<Record> record = tailer.read(Duration.ofSeconds(10));
             assertNotNull("No done status found", record);
@@ -119,6 +120,7 @@ public class TestBulkProcessor {
         assertEquals(commandId, status.getId());
         assertEquals(COMPLETED, status.getState());
         assertEquals(0, status.getTotal());
+        assertTrue(status.hasError());
 
         // query with error
         nxql = "SELECT * FROM Document WHERE ecm:path = 'non/existing/path'";
@@ -128,6 +130,7 @@ public class TestBulkProcessor {
         assertEquals(commandId, status.getId());
         assertEquals(COMPLETED, status.getState());
         assertEquals(0, status.getTotal());
+        assertTrue(status.hasError());
     }
 
     @Test
@@ -211,6 +214,7 @@ public class TestBulkProcessor {
         assertNotNull(status);
         assertEquals(COMPLETED, status.getState());
         assertEquals(1, status.getProcessed());
+        assertTrue(status.hasError());
     }
 
     @Test

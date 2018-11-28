@@ -75,11 +75,7 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
 
     protected BulkCommand command;
 
-    protected int currentBucketSize;
-
-    protected long startTime;
-
-    protected long endTime;
+    protected BulkStatus delta;
 
     public AbstractBulkComputation(String name) {
         this(name, 1);
@@ -91,17 +87,18 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
 
     @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-        startTime = System.currentTimeMillis();
         BulkBucket bucket = BulkCodecs.getBucketCodec().decode(record.getData());
-        currentBucketSize = bucket.getIds().size();
         command = getCommand(bucket.getCommandId());
         if (command != null) {
+            delta = BulkStatus.deltaOf(command.getId());
+            delta.setProcessingStartTime(Instant.now());
+            delta.setProcessed(bucket.getIds().size());
             startBucket(record.getKey());
             for (List<String> batch : Lists.partition(bucket.getIds(), command.getBatchSize())) {
                 processBatchOfDocuments(batch);
             }
-            endTime = System.currentTimeMillis();
-            endBucket(context, bucket.getIds().size());
+            delta.setProcessingEndTime(Instant.now());
+            endBucket(context, delta);
             context.askForCheckpoint();
         } else {
             if (isAbortedCommand(bucket.getCommandId())) {
@@ -159,52 +156,23 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
     }
 
     /**
-     * Can be overridden to write to downstream computation.
+     * Can be overridden to write to downstream computation or add results to status
      */
-    public void endBucket(ComputationContext context, int bucketSize) {
-        updateStatusProcessed(context, command.getId(), bucketSize, startTime, endTime, null);
+    public void endBucket(ComputationContext context, BulkStatus delta) {
+        updateStatus(context, delta);
     }
 
     @Override
     public void processFailure(ComputationContext context, Throwable failure) {
         log.error(String.format("Action: %s fails on record: %s after retries.", metadata.name(),
                 context.getLastOffset()), failure);
-        // send the end bucket this will take effect only if continueOnFailure
-        endBucket(context, currentBucketSize);
+        // The delta will be send only if the policy is set with continueOnFailure = true
+        delta.inError(metadata.name() + " fails on " + context.getLastOffset() + ": " + failure.getMessage());
+        endBucket(context, delta);
     }
 
-    /**
-     * This should be called by the last computation of the action's topology to inform on the progress of the command.
-     */
-    public static void updateStatusProcessed(ComputationContext context, String commandId, long processed) {
-        updateStatusProcessed(context, commandId, processed, 0, 0, null);
-    }
-
-    /**
-     * This should be called by the last computation of the action's topology to inform on the progress of the command.
-     */
-    public static void updateStatusProcessed(ComputationContext context, String commandId, long processed,
-            Map<String, Serializable> result) {
-        updateStatusProcessed(context, commandId, processed, 0, 0, result);
-    }
-
-    /**
-     * This should be called by the last computation of the action's topology to inform on the progress of the command.
-     */
-    public static void updateStatusProcessed(ComputationContext context, String commandId, long processed,
-            long startTime, long endTime, Map<String, Serializable> result) {
-        BulkStatus delta = BulkStatus.deltaOf(commandId);
-        delta.setProcessed(processed);
-        if (startTime > 0) {
-            delta.setProcessingStartTime(Instant.ofEpochMilli(startTime));
-        }
-        if (endTime > 0) {
-            delta.setProcessingEndTime(Instant.ofEpochMilli(endTime));
-        }
-        if (result != null) {
-            delta.setResult(result);
-        }
-        context.produceRecord(OUTPUT_1, commandId, BulkCodecs.getStatusCodec().encode(delta));
+    public static void updateStatus(ComputationContext context, BulkStatus delta) {
+        context.produceRecord(OUTPUT_1, delta.getId(), BulkCodecs.getStatusCodec().encode(delta));
     }
 
     protected abstract void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties);
