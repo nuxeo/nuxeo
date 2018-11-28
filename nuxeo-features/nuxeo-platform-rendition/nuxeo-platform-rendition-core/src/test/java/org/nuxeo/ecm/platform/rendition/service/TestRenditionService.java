@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -1131,6 +1132,46 @@ public class TestRenditionService {
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
         assertRenditionDefinitions(availableRenditionDefinitions, "containerDefaultRendition", "dummyRendition1",
                 "dummyRendition2", "zipTreeExport", "zipTreeExportLazily");
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void shouldNonAdminPublishRendition() {
+        DocumentModel file = createBlobFile();
+        DocumentModel section = session.createDocumentModel("/", "section", "Section");
+        section = session.createDocument(section);
+
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(ACE.builder("toto", "Write").creator("Administrator").build());
+        acl.add(ACE.builder("toto", "Read").creator("Administrator").build());
+        acl.add(ACE.builder("pouet", "Read").creator("Administrator").build());
+        acp.addACL(acl);
+        file.setACP(acp, true);
+        section.setACP(acp, true);
+        session.save();
+
+        try (CloseableCoreSession totoSession = coreFeature.openCoreSession("toto")) {
+            file = totoSession.getDocument(file.getRef());
+            section = totoSession.getDocument(section.getRef());
+            DocumentModel publishedRendition = renditionService.publishRendition(file, section,
+                    PDF_RENDITION_DEFINITION, false);
+            assertNotNull(publishedRendition);
+            assertTrue(publishedRendition.isProxy());
+            assertEquals(section.getRef(), publishedRendition.getParentRef());
+        }
+        try (CloseableCoreSession pouetSession = coreFeature.openCoreSession("pouet")) {
+            file = pouetSession.getDocument(file.getRef());
+            section = pouetSession.getDocument(section.getRef());
+            try {
+                renditionService.publishRendition(file, section, PDF_RENDITION_DEFINITION, false);
+                fail("User should not have permission to publish");
+            } catch (DocumentSecurityException e) {
+                // Expected
+            }
+        }
     }
 
     protected static void assertRenditionDefinitions(List<RenditionDefinition> actual, String... otherExpected) {
