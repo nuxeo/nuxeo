@@ -57,6 +57,12 @@ public class BulkConstants {
 
     public static final String STATUS_USERNAME = "username";
 
+    public static final String STATUS_HAS_ERROR = "error";
+
+    public static final String STATUS_ERROR_COUNT = "errorCount";
+
+    public static final String STATUS_ERROR_MESSAGE = "errorMessage";
+
     // BulkCommand
 
     public static final String COMMAND_ENTITY_TYPE = "bulkCommand";

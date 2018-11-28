@@ -24,6 +24,8 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ACTION;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMMAND_ID;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_COMPLETED_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ENTITY_TYPE;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ERROR_COUNT;
+import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_ERROR_MESSAGE;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSED;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSING_END_TIME;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.STATUS_PROCESSING_MILLIS;
@@ -72,7 +74,10 @@ public class BulkStatusJsonReader extends EntityJsonReader<BulkStatus> {
         if (isNotEmpty(action)) {
             status.setAction(action);
         }
-
+        String errorMessage = getStringField(jn, STATUS_ERROR_MESSAGE);
+        if (isNotEmpty(errorMessage)) {
+            status.inError(errorMessage);
+        }
         Long processed = getLongField(jn, STATUS_PROCESSED);
         if (processed != null) {
             status.setProcessed(processed);
@@ -81,7 +86,10 @@ public class BulkStatusJsonReader extends EntityJsonReader<BulkStatus> {
         if (count != null) {
             status.setTotal(count);
         }
-
+        count = getLongField(jn, STATUS_ERROR_COUNT);
+        if (count != null) {
+            status.setErrorCount(count);
+        }
         String instantString = getStringField(jn, STATUS_SUBMIT_TIME);
         if (isNotEmpty(instantString)) {
             status.setSubmitTime(Instant.parse(instantString));

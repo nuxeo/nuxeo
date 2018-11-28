@@ -76,6 +76,11 @@ public class BulkStatus implements AsyncStatus<String> {
 
     protected boolean delta;
 
+    protected long errorCount;
+
+    @Nullable
+    protected String errorMessage;
+
     @Nullable
     protected Long processed;
 
@@ -196,6 +201,12 @@ public class BulkStatus implements AsyncStatus<String> {
         }
         if (update.getUsername() != null && getUsername() == null) {
             setUsername(getUsername());
+        }
+        if (update.errorCount > 0) {
+            errorCount++;
+        }
+        if (update.errorMessage != null && errorMessage == null) {
+            errorMessage = update.errorMessage;
         }
         checkForCompletedState();
     }
@@ -399,6 +410,40 @@ public class BulkStatus implements AsyncStatus<String> {
 
     public void setProcessingDurationMillis(long processingDurationMillis) {
         this.processingDurationMillis = processingDurationMillis;
+    }
+
+    public boolean hasError() {
+        return errorCount > 0;
+    }
+
+    /**
+     * Returns the first error message if any or null.
+     */
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    /**
+     * Returns the number of errors encountered
+     */
+    public long getErrorCount() {
+        return errorCount;
+    }
+
+    public void setErrorCount(long errorCount) {
+        this.errorCount = errorCount;
+    }
+
+    /**
+     * An error occurred during the processing
+     */
+    public void inError(String message) {
+        if (isDelta()) {
+            errorCount = 1;
+        } else {
+            errorCount++;
+        }
+        this.errorMessage = message;
     }
 
     @Override

@@ -154,7 +154,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                     updateStatusAfterScroll(context, commandId, documentCount);
                 } catch (IllegalArgumentException | QueryParseException | DocumentNotFoundException e) {
                     log.error("Invalid query results in an empty document set: " + command.toString(), e);
-                    updateStatusAfterScroll(context, commandId, 0);
+                    updateStatusAfterScroll(context, commandId, "Invalid query");
                 } finally {
                     loginContext.logout();
                 }
@@ -164,7 +164,7 @@ public class BulkScrollerComputation extends AbstractComputation {
         } catch (NuxeoException e) {
             if (command != null) {
                 log.error("Invalid command produces an empty document set: " + command, e);
-                updateStatusAfterScroll(context, command.getId(), 0);
+                updateStatusAfterScroll(context, command.getId(), "Invalid command");
             } else {
                 log.error("Discard invalid record: " + record, e);
             }
@@ -181,8 +181,19 @@ public class BulkScrollerComputation extends AbstractComputation {
                 BulkCodecs.getStatusCodec().encode(delta));
     }
 
+    protected void updateStatusAfterScroll(ComputationContext context, String commandId, String errorMessage) {
+        updateStatusAfterScroll(context, commandId, 0, errorMessage);
+    }
     protected void updateStatusAfterScroll(ComputationContext context, String commandId, long documentCount) {
+        updateStatusAfterScroll(context, commandId, documentCount, null);
+    }
+
+    protected void updateStatusAfterScroll(ComputationContext context, String commandId, long documentCount,
+            String errorMessage) {
         BulkStatus delta = BulkStatus.deltaOf(commandId);
+        if (errorMessage != null) {
+            delta.inError(errorMessage);
+        }
         if (documentCount == 0) {
             delta.setState(COMPLETED);
             delta.setCompletedTime(Instant.now());
