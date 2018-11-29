@@ -40,7 +40,7 @@ import org.apache.catalina.core.StandardContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.keycloak.adapters.AuthOutcome;
+import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.representations.AccessToken;
 import org.mockito.Matchers;
@@ -139,7 +139,7 @@ public class TestKeycloakAuthenticationPlugin {
 
         assertNull(identity);
 
-        Mockito.verify(responseMock).setStatus(401);
+        Mockito.verify(responseMock).sendError(401);
     }
 
     @Test

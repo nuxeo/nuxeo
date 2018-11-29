@@ -58,22 +58,23 @@ public class KeycloakUserMapper implements UserMapper {
     @Override
     public NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(Object userObject, boolean createIfNeeded, boolean update,
             Map<String, Serializable> params) {
+        return  Framework.doPrivileged(() -> {
+            KeycloakUserInfo userInfo = (KeycloakUserInfo) userObject;
+            for (String role : userInfo.getRoles()) {
+                findOrCreateGroup(role, userInfo.getUserName());
+            }
 
-        KeycloakUserInfo userInfo = (KeycloakUserInfo) userObject;
-        for (String role : userInfo.getRoles()) {
-            findOrCreateGroup(role, userInfo.getUserName());
-        }
+            // Remember that username is email by default
+            DocumentModel userDoc = findUser(userInfo);
+            if (userDoc == null) {
+                userDoc = createUser(userInfo);
+            }
 
-        // Remember that username is email by default
-        DocumentModel userDoc = findUser(userInfo);
-        if (userDoc == null) {
-            userDoc = createUser(userInfo);
-        }
+            updateUser(userDoc, userInfo);
 
-        updateUser(userDoc, userInfo);
-
-        String userId = (String) userDoc.getPropertyValue(userManager.getUserIdField());
-        return userManager.getPrincipal(userId);
+            String userId = (String) userDoc.getPropertyValue(userManager.getUserIdField());
+            return userManager.getPrincipal(userId);
+        });
     }
 
     @Override
