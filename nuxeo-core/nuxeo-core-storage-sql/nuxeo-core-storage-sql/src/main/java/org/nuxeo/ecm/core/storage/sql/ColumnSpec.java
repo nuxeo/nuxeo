@@ -30,6 +30,7 @@ public enum ColumnSpec {
     DOUBLE(), //
     TIMESTAMP(), //
     BLOBID(), // attached files
+    BLOB, // byte array, for key/value store column
     ARRAY_STRING(), // may be VARCHAR or CLOB array depending on length
     ARRAY_BOOLEAN(), //
     ARRAY_LONG(), //

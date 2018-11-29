@@ -98,6 +98,8 @@ public class DialectH2 extends Dialect {
             return jdbcInfo("TIMESTAMP", Types.TIMESTAMP);
         case BLOBID:
             return jdbcInfo("VARCHAR(250)", Types.VARCHAR);
+        case BLOB:
+            return jdbcInfo("BLOB", Types.BLOB);
         // -----
         case NODEID:
         case NODEIDFK:
@@ -169,6 +171,9 @@ public class DialectH2 extends Dialect {
         case Types.TIMESTAMP:
             setToPreparedStatementTimestamp(ps, index, value, column);
             return;
+        case Types.BLOB:
+            ps.setBytes(index, (byte[]) value);
+            return;
         default:
             throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
         }
@@ -191,6 +196,8 @@ public class DialectH2 extends Dialect {
             return rs.getDouble(index);
         case Types.TIMESTAMP:
             return getFromResultSetTimestamp(rs, index, column);
+        case Types.BLOB:
+            return rs.getBytes(index);
         }
         throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
     }
@@ -285,6 +292,29 @@ public class DialectH2 extends Dialect {
     @Override
     public boolean supportsArrays() {
         return false;
+    }
+
+    @Override
+    public String getUpsertSql(List<Column> columns, List<Serializable> values, List<Column> outColumns,
+            List<Serializable> outValues) {
+        Column keyColumn = columns.get(0);
+        Table table = keyColumn.getTable();
+        StringBuilder sql = new StringBuilder();
+        sql.append("MERGE INTO ");
+        sql.append(table.getQuotedName());
+        sql.append(" KEY (");
+        sql.append(keyColumn.getQuotedName());
+        sql.append(") VALUES (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append("?");
+            outColumns.add(columns.get(i));
+            outValues.add(values.get(i));
+        }
+        sql.append(")");
+        return sql.toString();
     }
 
     @Override

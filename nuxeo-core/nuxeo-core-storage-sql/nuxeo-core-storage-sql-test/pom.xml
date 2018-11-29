@@ -27,6 +27,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-kv</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
       <scope>compile</scope>
     </dependency>
@@ -143,6 +147,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-kv</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert</artifactId>
       <scope>test</scope>
@@ -184,6 +194,6 @@
       <groupId>com.microsoft.sqlserver</groupId>
       <artifactId>sqljdbc</artifactId>
       <scope>runtime</scope>
-    </dependency> 
+    </dependency>
   </dependencies>
 </project>

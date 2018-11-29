@@ -232,6 +232,8 @@ public class DialectSQLServer extends Dialect {
             return jdbcInfo("DATETIME2(3)", Types.TIMESTAMP);
         case BLOBID:
             return jdbcInfo("NVARCHAR(250)", Types.VARCHAR);
+        case BLOB:
+            return jdbcInfo("VARBINARY(MAX)", Types.VARBINARY);
         // -----
         case NODEID:
         case NODEIDFK:
@@ -335,6 +337,9 @@ public class DialectSQLServer extends Dialect {
         case Types.TIMESTAMP:
             setToPreparedStatementTimestamp(ps, index, value, column);
             return;
+        case Types.VARBINARY:
+            ps.setBytes(index, (byte[]) value);
+            return;
         default:
             throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
         }
@@ -357,6 +362,8 @@ public class DialectSQLServer extends Dialect {
             return rs.getDouble(index);
         case Types.TIMESTAMP:
             return getFromResultSetTimestamp(rs, index, column);
+        case Types.VARBINARY:
+            return rs.getBytes(index);
         }
         throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
     }
@@ -528,6 +535,67 @@ public class DialectSQLServer extends Dialect {
                     idColumnName, idParam);
         }
         return String.format("%s IN (SELECT * FROM dbo.nx_children(%s))", idColumnName, idParam);
+    }
+
+    @Override
+    public String getUpsertSql(List<Column> columns, List<Serializable> values, List<Column> outColumns,
+            List<Serializable> outValues) {
+        Column keyColumn = columns.get(0);
+        Table table = keyColumn.getTable();
+        StringBuilder sql = new StringBuilder();
+        sql.append("MERGE ");
+        sql.append(table.getQuotedName());
+        sql.append(" USING (VALUES(");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append("?");
+            outColumns.add(columns.get(i));
+            outValues.add(values.get(i));
+        }
+        sql.append(")) AS source (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append(columns.get(i).getQuotedName());
+        }
+        sql.append(") ON ");
+        sql.append(table.getQuotedName());
+        sql.append(".");
+        sql.append(keyColumn.getQuotedName());
+        sql.append(" = source.");
+        sql.append(keyColumn.getQuotedName());
+        sql.append(" WHEN MATCHED THEN UPDATE SET ");
+        for (int i = 1; i < columns.size(); i++) {
+            if (i != 1) {
+                sql.append(", ");
+            }
+            sql.append(columns.get(i).getQuotedName());
+            sql.append(" = ?");
+            outColumns.add(columns.get(i));
+            outValues.add(values.get(i));
+        }
+        sql.append(" WHEN NOT MATCHED THEN INSERT (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append(columns.get(i).getQuotedName());
+        }
+        sql.append(") VALUES (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append("?");
+            outColumns.add(columns.get(i));
+            outValues.add(values.get(i));
+        }
+        sql.append(")");
+        sql.append(";"); // needs terminating semicolon
+        return sql.toString();
     }
 
     @Override
