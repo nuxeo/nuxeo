@@ -34,4 +34,7 @@ public class AnnotationConstants {
 
     public static final String ANNOTATION_XPATH = "xpath";
 
+    /** @since 10.3 */
+    public static final String ANNOTATION_PERMISSIONS = "permissions";
+
 }

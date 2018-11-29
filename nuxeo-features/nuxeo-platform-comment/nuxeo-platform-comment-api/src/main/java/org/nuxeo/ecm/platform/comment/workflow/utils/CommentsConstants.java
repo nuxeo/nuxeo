@@ -127,6 +127,9 @@ public final class CommentsConstants {
      */
     public static final String COMMENT_LAST_REPLY_DATE = "lastReplyDate";
 
+    /** @since 10.3 */
+    public static final String COMMENT_PERMISSIONS = "permissions";
+
     private CommentsConstants() {
     }
 
