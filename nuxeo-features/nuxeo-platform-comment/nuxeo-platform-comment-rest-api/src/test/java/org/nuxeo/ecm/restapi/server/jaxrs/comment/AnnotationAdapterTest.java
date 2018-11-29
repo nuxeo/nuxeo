@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_PERMISSIONS;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
@@ -35,6 +36,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -45,6 +48,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
@@ -58,6 +62,7 @@ import org.nuxeo.ecm.platform.comment.impl.AnnotationJsonWriter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -106,7 +111,7 @@ public class AnnotationAdapterTest extends BaseTest {
         annotation.setParentId(file.getId());
         annotation.setXpath(xpath);
 
-        String jsonAnnotation = MarshallerHelper.objectToJson(annotation, CtxBuilder.get());
+        String jsonAnnotation = MarshallerHelper.objectToJson(annotation, CtxBuilder.session(session).get());
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + file.getId() + "/@annotation",
                 jsonAnnotation)) {
@@ -134,6 +139,16 @@ public class AnnotationAdapterTest extends BaseTest {
         assertEquals(AnnotationJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
         assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
         assertEquals(xpath, node.get(ANNOTATION_XPATH).textValue());
+
+        // Get permissions
+        Set<String> grantedPermissions = new HashSet<>(session.filterGrantedPermissions(session.getPrincipal(),
+                file.getRef(), Arrays.asList(Framework.getService(PermissionProvider.class)
+                                                      .getPermissions())));
+        Set<String> permissions = StreamSupport.stream(node.get(ANNOTATION_PERMISSIONS).spliterator(), false)
+                                               .map(JsonNode::textValue)
+                                               .collect(Collectors.toSet());
+
+        assertEquals(grantedPermissions, permissions);
     }
 
     @Test
@@ -154,7 +169,7 @@ public class AnnotationAdapterTest extends BaseTest {
 
         assertNull(annotation.getText());
         annotation.setText("test");
-        String jsonAnnotation = MarshallerHelper.objectToJson(annotation, CtxBuilder.get());
+        String jsonAnnotation = MarshallerHelper.objectToJson(annotation, CtxBuilder.session(session).get());
 
         try (CloseableClientResponse response = getResponse(RequestType.PUT,
                 "id/" + file.getId() + "/@annotation/" + annotation.getId(), jsonAnnotation)) {
@@ -305,7 +320,7 @@ public class AnnotationAdapterTest extends BaseTest {
         fetchInvalidations();
 
         annotation.setAuthor("titi");
-        String jsonAnnotation = MarshallerHelper.objectToJson(annotation, CtxBuilder.get());
+        String jsonAnnotation = MarshallerHelper.objectToJson(annotation, CtxBuilder.session(session).get());
 
         try (CloseableClientResponse response = getResponse(RequestType.PUT,
                 "id/" + file.getId() + "/@annotation/external/" + entityId, jsonAnnotation)) {

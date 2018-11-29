@@ -37,12 +37,16 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_NUMBER_OF_REPLIES;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PERMISSIONS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT_FIELD;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -52,6 +56,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.platform.comment.api.Comment;
@@ -62,6 +67,7 @@ import org.nuxeo.ecm.platform.comment.impl.CommentJsonWriter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -103,7 +109,7 @@ public class CommentAdapterTest extends BaseTest {
 
         Comment comment = instantiateComment(file.getId());
 
-        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.get());
+        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + file.getId() + "/@comment",
                 jsonComment)) {
@@ -124,7 +130,7 @@ public class CommentAdapterTest extends BaseTest {
         Comment comment = instantiateComment(file.getId());
         comment.setCreationDate(null);
 
-        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.get());
+        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
 
         try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + file.getId() + "/@comment",
                 jsonComment)) {
@@ -233,6 +239,16 @@ public class CommentAdapterTest extends BaseTest {
         assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
         assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
         assertEquals(comment.getCreationDate().toString(), node.get(COMMENT_CREATION_DATE_FIELD).textValue());
+
+        // Get permissions
+        Set<String> grantedPermissions = new HashSet<>(session.filterGrantedPermissions(session.getPrincipal(),
+                file.getRef(), Arrays.asList(Framework.getService(PermissionProvider.class)
+                                                      .getPermissions())));
+        Set<String> permissions = StreamSupport.stream(node.get(COMMENT_PERMISSIONS).spliterator(), false)
+                                               .map(JsonNode::textValue)
+                                               .collect(Collectors.toSet());
+
+        assertEquals(grantedPermissions, permissions);
     }
 
     @Test
@@ -302,7 +318,7 @@ public class CommentAdapterTest extends BaseTest {
         fetchInvalidations();
 
         comment.setText("And now I update it");
-        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.get());
+        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
 
         try (CloseableClientResponse response = getResponse(RequestType.PUT,
                 "id/" + file.getId() + "/@comment/" + commentId, jsonComment)) {
@@ -327,7 +343,7 @@ public class CommentAdapterTest extends BaseTest {
 
         comment.setText("And now I update it");
         comment.setModificationDate(null);
-        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.get());
+        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
 
         try (CloseableClientResponse response = getResponse(RequestType.PUT,
                 "id/" + file.getId() + "/@comment/" + commentId, jsonComment)) {
@@ -415,7 +431,7 @@ public class CommentAdapterTest extends BaseTest {
         fetchInvalidations();
 
         comment.setAuthor("titi");
-        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.get());
+        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
 
         try (CloseableClientResponse response = getResponse(RequestType.PUT,
                 "id/" + file.getId() + "/@comment/external/" + entityId, jsonComment)) {

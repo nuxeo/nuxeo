@@ -21,14 +21,23 @@ package org.nuxeo.ecm.platform.comment.impl;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_PERMISSIONS;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH;
 import static org.nuxeo.ecm.platform.comment.impl.CommentJsonWriter.writeCommentEntity;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
+import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -48,5 +57,19 @@ public class AnnotationJsonWriter extends ExtensibleEntityJsonWriter<Annotation>
     protected void writeEntityBody(Annotation entity, JsonGenerator jg) throws IOException {
         writeCommentEntity(entity, jg);
         jg.writeStringField(ANNOTATION_XPATH, entity.getXpath());
+        // Write permissions of current user on the annotation,
+        // which are the ones granted on the annotated document
+        CoreSession session = ctx.getSession(null).getSession();
+        NuxeoPrincipal principal = session.getPrincipal();
+        PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
+        Collection<String> permissions = CoreInstance.doPrivileged(session, s -> {
+            return s.filterGrantedPermissions(principal, new IdRef(entity.getParentId()),
+                    Arrays.asList(permissionProvider.getPermissions()));
+        });
+        jg.writeArrayFieldStart(ANNOTATION_PERMISSIONS);
+        for (String permission : permissions) {
+            jg.writeString(permission);
+        }
+        jg.writeEndArray();
     }
 }

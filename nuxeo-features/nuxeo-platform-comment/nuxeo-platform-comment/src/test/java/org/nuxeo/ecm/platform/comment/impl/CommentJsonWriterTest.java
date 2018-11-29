@@ -19,21 +19,12 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -41,9 +32,8 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
@@ -51,8 +41,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.runtime.mockito.MockitoFeature;
-import org.nuxeo.runtime.mockito.RuntimeService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -60,17 +49,18 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, MockitoFeature.class })
+@Features(CoreFeature.class)
+@Deploy("org.nuxeo.ecm.platform.comment")
+@Deploy("org.nuxeo.ecm.platform.query.api")
 public class CommentJsonWriterTest extends AbstractJsonWriterTest.External<CommentJsonWriter, Comment> {
 
-    @Mock
-    @RuntimeService
+    @Inject
     protected CommentManager commentManager;
 
     @Inject
     protected CoreSession session;
 
-    protected RenderingContext context;
+    protected DocumentModel docModel;
 
     protected Comment comment;
 
@@ -82,36 +72,59 @@ public class CommentJsonWriterTest extends AbstractJsonWriterTest.External<Comme
 
     @Before
     public void setUp() {
-        comment = getComment("commentId", "parentFileId", "author", "main comment", false, emptyList());
-        comment.addAncestorId("parentFileId");
+
+        DocumentModel doc = session.createDocumentModel("/", "myDoc", "File");
+        docModel = session.createDocument(doc);
+        session.save();
+
+        Comment commentToCreate = new CommentImpl();
+        commentToCreate.setParentId(docModel.getId());
+        commentToCreate.setAuthor(session.getPrincipal().getName());
+        commentToCreate.setText("main comment");
+        comment = commentManager.createComment(session, commentToCreate);
 
         replies = new ArrayList<>();
         Instant date = Instant.now();
-        replies.add(getComment("firstReplyId", comment.getId(), "chronicler", "first reply", date, false,
-                singletonList("parentFileId")));
-        replies.add(getComment("secondReplyId", comment.getId(), "author", "second reply", date.plusSeconds(1), false,
-                singletonList("parentFileId")));
-        replies.add(getComment("thirdReplyId", comment.getId(), "chronicler", "third reply", date.plusSeconds(2), true,
-                singletonList("parentFileId")));
+        Comment firstReply = new CommentImpl();
+        firstReply.setParentId(comment.getId());
+        firstReply.setAuthor(session.getPrincipal().getName());
+        firstReply.setText("first reply");
+        firstReply.setCreationDate(date);
 
-        context = RenderingContext.CtxBuilder.session(session).fetch("comment", "repliesSummary").get();
+        Comment secondReply = new CommentImpl();
+        secondReply.setParentId(comment.getId());
+        secondReply.setAuthor(session.getPrincipal().getName());
+        secondReply.setText("second reply");
+        secondReply.setCreationDate(date.plusSeconds(1));
+
+        Comment thirdReply = new CommentImpl();
+        thirdReply.setParentId(comment.getId());
+        thirdReply.setAuthor(session.getPrincipal().getName());
+        thirdReply.setText("third reply");
+        thirdReply.setCreationDate(date.plusSeconds(2));
+        ((CommentImpl) thirdReply).setOrigin("origin");
+        ((CommentImpl) thirdReply).setEntity("entity");
+        ((CommentImpl) thirdReply).setEntityId("entityId");
+
+        replies.add(commentManager.createComment(session, firstReply));
+        replies.add(commentManager.createComment(session, secondReply));
+        replies.add(commentManager.createComment(session, thirdReply));
+
+        session.save();
+
     }
 
     @Test
     public void shouldWriteDefaultPropertiesWhenNoFetchersAreProvided() throws IOException {
-        JsonAssert json = jsonAssert(comment);
-        verify(commentManager, never()).getComments(any(CoreSession.class), anyString(), eq(1L), eq(0L), eq(false));
+        RenderingContext ctx = RenderingContext.CtxBuilder.session(session).get();
+        JsonAssert json = jsonAssert(comment, ctx);
         assertCommentProperties(json);
     }
 
     @Test
     public void shouldWriteCompleteRepliesSummaryWhenRepliesFetcherIsProvided() throws IOException {
-        Collections.reverse(replies);
-        when(commentManager.getComments(any(CoreSession.class), eq(comment.getId()), eq(1L), eq(0L),
-                eq(false))).thenReturn(new PartialList<>(replies, replies.size()));
-
-        JsonAssert json = jsonAssert(comment, context);
-        verify(commentManager).getComments(any(CoreSession.class), eq(comment.getId()), eq(1L), eq(0L), eq(false));
+        RenderingContext ctx = RenderingContext.CtxBuilder.session(session).fetch("comment", "repliesSummary").get();
+        JsonAssert json = jsonAssert(comment, ctx);
         assertCommentProperties(json);
         assertRepliesSummary(json, true);
     }
@@ -119,26 +132,16 @@ public class CommentJsonWriterTest extends AbstractJsonWriterTest.External<Comme
     @Test
     public void shouldWriteRepliesSummaryWithoutLastReplyWhenRepliesFetcherIsProvidedButThereAreNoReplies()
             throws IOException {
-        PartialList<Comment> returnedComments = new PartialList<>(emptyList(), 0);
-
-        when(commentManager.getComments(any(), eq(replies.get(0).getId()), eq(1L), eq(0L), eq(false))).thenReturn(
-                returnedComments);
-
-        JsonAssert json = jsonAssert(replies.get(0), context);
-        verify(commentManager).getComments(any(CoreSession.class), eq(replies.get(0).getId()), eq(1L), eq(0L),
-                eq(false));
+        RenderingContext ctx = RenderingContext.CtxBuilder.session(session).fetch("comment", "repliesSummary").get();
+        JsonAssert json = jsonAssert(replies.get(0), ctx);
         assertCommentProperties(json);
         assertRepliesSummary(json, false);
     }
 
     @Test
     public void shouldWriteCorrectInfoWhenCommentHasRepliesAndFetcherIsProvided() throws IOException {
-        Collections.reverse(replies);
-        when(commentManager.getComments(any(CoreSession.class), eq(comment.getId()), eq(1L), eq(0L),
-                eq(false))).thenReturn(new PartialList<>(replies, replies.size()));
-
-        JsonAssert json = jsonAssert(comment, context);
-        verify(commentManager).getComments(any(CoreSession.class), eq(comment.getId()), eq(1L), eq(0L), eq(false));
+        RenderingContext ctx = RenderingContext.CtxBuilder.session(session).fetch("comment", "repliesSummary").get();
+        JsonAssert json = jsonAssert(comment, ctx);
         assertCommentProperties(json);
         assertRepliesSummary(json, true);
 
@@ -153,8 +156,7 @@ public class CommentJsonWriterTest extends AbstractJsonWriterTest.External<Comme
         json.has("entityId").isEmptyStringOrNull();
         json.has("origin").isEmptyStringOrNull();
         json.has("numberOfReplies").isEquals(3);
-        json.has("lastReplyDate")
-            .isEquals(replies.get(replies.size() - 1).getCreationDate().plusSeconds(replies.size() - 1).toString());
+        json.has("lastReplyDate").isEquals(replies.get(replies.size() - 1).getCreationDate().toString());
     }
 
     @Test
@@ -162,8 +164,8 @@ public class CommentJsonWriterTest extends AbstractJsonWriterTest.External<Comme
         Comment lastReply = replies.get(replies.size() - 1);
         lastReply.setModificationDate(Instant.now());
 
-        JsonAssert json = jsonAssert(lastReply);
-        verify(commentManager, never()).getComments(any(CoreSession.class), anyString(), eq(1L), eq(0L), eq(false));
+        RenderingContext ctx = RenderingContext.CtxBuilder.session(session).get();
+        JsonAssert json = jsonAssert(lastReply, ctx);
         assertCommentProperties(json);
 
         json.has("id").isEquals(lastReply.getId());
@@ -194,6 +196,7 @@ public class CommentJsonWriterTest extends AbstractJsonWriterTest.External<Comme
         json.has("entity");
         json.has("entityId");
         json.has("origin");
+        json.has("permissions").isArray();
     }
 
     protected void assertRepliesSummary(JsonAssert json, boolean isLastReplyAvailable) throws IOException {
@@ -203,29 +206,6 @@ public class CommentJsonWriterTest extends AbstractJsonWriterTest.External<Comme
         } else {
             json.hasNot("lasReplyDate");
         }
-    }
-
-    protected Comment getComment(String id, String parentId, String author, String text, boolean isEntity,
-            List<String> ancestorIds) {
-        return getComment(id, parentId, author, text, Instant.now(), isEntity, ancestorIds);
-    }
-
-    protected Comment getComment(String id, String parentId, String author, String text, Instant creationDate,
-            boolean isEntity, List<String> ancestorIds) {
-        Comment comment = new CommentImpl();
-        comment.setId(id);
-        comment.setParentId(parentId);
-        comment.addAncestorId(parentId);
-        comment.setAuthor(author);
-        comment.setText(text);
-        comment.setCreationDate(creationDate);
-        if (isEntity) {
-            ((CommentImpl) comment).setEntity("entity");
-            ((CommentImpl) comment).setEntityId("entityId");
-            ((CommentImpl) comment).setOrigin("entityOrigin");
-        }
-        ancestorIds.forEach(comment::addAncestorId);
-        return comment;
     }
 
 }

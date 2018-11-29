@@ -32,20 +32,31 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_LAST_REPLY_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_NUMBER_OF_REPLIES;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PERMISSIONS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT_FIELD;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.inject.Inject;
 
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
+import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -67,9 +78,30 @@ public class CommentJsonWriter extends ExtensibleEntityJsonWriter<Comment> {
     @Override
     protected void writeEntityBody(Comment entity, JsonGenerator jg) throws IOException {
         writeCommentEntity(entity, jg);
+        CoreSession session = ctx.getSession(null).getSession();
+        NuxeoPrincipal principal = session.getPrincipal();
+        PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
+
+        // Write permissions of current user on the annotation,
+        // which are the ones granted on the commented document
+        Collection<String> permissions = CoreInstance.doPrivileged(session, s -> {
+            if (entity.getId() == null) {
+                return Collections.emptyList();
+            }
+            DocumentRef ancestorRef = new IdRef(
+                    (String) commentManager.getThreadForComment(s.getDocument(new IdRef(entity.getId())))
+                                           .getPropertyValue(COMMENT_PARENT_ID));
+            return s.filterGrantedPermissions(principal, ancestorRef,
+                    Arrays.asList(permissionProvider.getPermissions()));
+        });
+        jg.writeArrayFieldStart(COMMENT_PERMISSIONS);
+        for (String permission : permissions) {
+            jg.writeString(permission);
+        }
+        jg.writeEndArray();
         boolean includeRepliesSummary = ctx.getFetched(COMMENT_ENTITY_TYPE).contains(FETCH_REPLIES_SUMMARY);
         if (includeRepliesSummary) {
-            writeRepliesSummary(entity, jg);
+            writeRepliesSummary(session, entity, jg);
         }
     }
 
@@ -96,8 +128,7 @@ public class CommentJsonWriter extends ExtensibleEntityJsonWriter<Comment> {
         }
     }
 
-    protected void writeRepliesSummary(Comment entity, JsonGenerator jg) throws IOException {
-        CoreSession session = ctx.getSession(null).getSession();
+    protected void writeRepliesSummary(CoreSession session, Comment entity, JsonGenerator jg) throws IOException {
         PartialList<Comment> comments = commentManager.getComments(session, entity.getId(), 1L, 0L, false);
         jg.writeNumberField(COMMENT_NUMBER_OF_REPLIES, comments.totalSize());
         if (comments.size() > 0) {
