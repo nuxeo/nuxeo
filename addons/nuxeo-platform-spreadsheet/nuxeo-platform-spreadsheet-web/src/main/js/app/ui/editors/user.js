@@ -21,8 +21,15 @@ class UserEditor extends Select2Editor {
 
   prepare(row, col, prop, td, originalValue, cellProperties) {
     // flatten our values to a list of ids
-    var value = (Array.isArray(originalValue)) ? originalValue.map((u) => u.id) : originalValue.id;
+    var value = (Array.isArray(originalValue)) ? originalValue.map((u) => this.getEntryId(u)) : this.getEntryId(originalValue);
     super.prepare(row, col, prop, td, value, cellProperties);
+  }
+
+  getSelectionText(val) {
+    if (val.startsWith('user:') || val.startsWith('group:')) {
+      return val.split(':')[1];
+    }
+    return val;
   }
 
   saveValue(val, ctrlDown) {
@@ -31,8 +38,13 @@ class UserEditor extends Select2Editor {
 
     if (value) {
       value = value.split(',').map(function (id) {
+        let type = 'user'; // XXX: can't guess type if not prefixed
+        if (id.startsWith('user:') || id.startsWith('group:')) {
+          let parts = id.split(':');
+          type = parts[0]; id = parts[1];
+        }
         return {
-          'entity-type': 'user',
+          'entity-type': type,
           id: id
         };
       }.bind(this));
@@ -47,18 +59,33 @@ class UserEditor extends Select2Editor {
     super.saveValue([[value]], ctrlDown);
   }
 
+  getEntryId(item) {
+    if (item['entity-type']) {
+      return `${item['entity-type']}:${item.id}`;
+    }
+    // use prefixed value so we can know entity type when saving
+    // not relying on this.widgetProperties.prefixed as we're POSTing back entities
+    return item.prefixed_id || item.id;
+  }
+
   query(connection, properties, term) {
     var op = new Operation(connection, 'UserGroup.Suggestion');
     // Set the properties
     Object.assign(op.params, properties);
     op.params.searchTerm = term;
-    op.params.searchType = 'USER_TYPE';
+    if (this.widgetProperties.userSuggestionSearchType) {
+      op.params.searchType = this.widgetProperties.userSuggestionSearchType;
+    }
     // Perform the search
     return op.execute();
   }
 
   formatter(entry) {
     return entry.text || entry.displayLabel;
+  }
+
+  get widgetProperties() {
+    return this.cellProperties.widget.properties.any || {};
   }
 }
 
