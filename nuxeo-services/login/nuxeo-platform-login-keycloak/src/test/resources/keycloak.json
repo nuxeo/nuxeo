@@ -24,7 +24,6 @@
   "client-keystore": "classpath:/keystore.jks",
   "client-keystore-password": "changeit",
   "client-key-password": "password",
-  "auth-server-url-for-backend-requests": "https://127.0.0.1:8443/auth",
   "always-refresh-token": true,
   "register-node-at-startup": true,
   "register-node-period": 1000,

@@ -70,7 +70,7 @@ public class DeploymentResult {
 
         // In Tomcat, a HttpServletRequest and a HttpServletResponse are wrapped in a Facades
         request = unwrapRequest((RequestFacade) httpServletRequest);
-        facade = new CatalinaHttpFacade(request, httpServletResponse);
+        facade = new CatalinaHttpFacade(httpServletResponse, request);
 
         if (keycloakDeployment == null) {
             keycloakDeployment = deploymentContext.resolveDeployment(facade);
