@@ -242,6 +242,12 @@ public class DialectHSQLDB extends Dialect {
     }
 
     @Override
+    public String getUpsertSql(List<Column> columns, List<Serializable> values, List<Column> outColumns,
+            List<Serializable> outValues) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean supportsArrays() {
         return false;
     }

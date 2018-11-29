@@ -110,6 +110,8 @@ public class DialectMySQL extends Dialect {
             return jdbcInfo("DATETIME(3)", Types.TIMESTAMP);
         case BLOBID:
             return jdbcInfo("VARCHAR(250) BINARY", Types.VARCHAR);
+        case BLOB:
+            return jdbcInfo("LONGBLOB", Types.BLOB);
         // -----
         case NODEID:
         case NODEIDFK:
@@ -157,6 +159,10 @@ public class DialectMySQL extends Dialect {
         if (expected == Types.INTEGER && actual == Types.BIGINT) {
             return true;
         }
+        // BLOB vs LONGBLOB compatibility
+        if (expected == Types.BLOB && actual == Types.LONGVARBINARY) {
+            return true;
+        }
         return false;
     }
 
@@ -182,6 +188,9 @@ public class DialectMySQL extends Dialect {
         case Types.TIMESTAMP:
             setToPreparedStatementTimestamp(ps, index, value, column);
             return;
+        case Types.BLOB:
+            ps.setBytes(index, (byte[]) value);
+            return;
         default:
             throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
         }
@@ -204,6 +213,8 @@ public class DialectMySQL extends Dialect {
             return rs.getDouble(index);
         case Types.TIMESTAMP:
             return getFromResultSetTimestamp(rs, index, column);
+        case Types.BLOB:
+            return rs.getBytes(index);
         }
         throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
     }
@@ -349,6 +360,44 @@ public class DialectMySQL extends Dialect {
     @Override
     public String getInTreeSql(String idColumnName, String id) {
         return String.format("NX_IN_TREE(%s, ?)", idColumnName);
+    }
+
+    @Override
+    public String getUpsertSql(List<Column> columns, List<Serializable> values, List<Column> outColumns,
+            List<Serializable> outValues) {
+        Column keyColumn = columns.get(0);
+        Table table = keyColumn.getTable();
+        StringBuilder sql = new StringBuilder();
+        sql.append("INSERT INTO ");
+        sql.append(table.getQuotedName());
+        sql.append(" (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append(columns.get(i).getQuotedName());
+        }
+        sql.append(") VALUES (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append("?");
+            outColumns.add(columns.get(i));
+            outValues.add(values.get(i));
+        }
+        sql.append(") ON DUPLICATE KEY UPDATE ");
+        for (int i = 1; i < columns.size(); i++) {
+            if (i != 1) {
+                sql.append(", ");
+            }
+            sql.append(columns.get(i).getQuotedName());
+            // VALUES(col) is useful to avoid repeating values from the INSERT part
+            sql.append(" = VALUES(");
+            sql.append(columns.get(i).getQuotedName());
+            sql.append(")");
+        }
+        return sql.toString();
     }
 
     @Override

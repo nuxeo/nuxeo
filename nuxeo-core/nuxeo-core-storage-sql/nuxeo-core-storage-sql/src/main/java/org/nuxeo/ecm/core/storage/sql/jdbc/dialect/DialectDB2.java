@@ -287,6 +287,12 @@ public class DialectDB2 extends Dialect {
     }
 
     @Override
+    public String getUpsertSql(List<Column> columns, List<Serializable> values, List<Column> outColumns,
+            List<Serializable> outValues) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode, Connection connection,
             JDBCLogger logger, Map<String, Serializable> properties) throws SQLException {
         throw new UnsupportedOperationException();

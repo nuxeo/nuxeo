@@ -55,6 +55,8 @@ public class ColumnType implements Serializable {
 
     public static final ColumnType BLOBID = new ColumnType(ColumnSpec.BLOBID);
 
+    public static final ColumnType BLOB = new ColumnType(ColumnSpec.BLOB);
+
     public static final ColumnType ARRAY_STRING = new ColumnType(ColumnSpec.ARRAY_STRING, -1, true);
 
     public static final ColumnType ARRAY_CLOB = new ColumnType(ColumnSpec.ARRAY_STRING, CLOB_LENGTH, true);
