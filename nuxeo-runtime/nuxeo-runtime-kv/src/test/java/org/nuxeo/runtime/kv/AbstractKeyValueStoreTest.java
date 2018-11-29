@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,13 +47,14 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 9.1
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy("org.nuxeo.runtime.kv")
+@Deploy({ "org.nuxeo.runtime.kv", "org.nuxeo.runtime.jtajca" })
 public abstract class AbstractKeyValueStoreTest {
 
     protected static final String BAR = "bar";
@@ -74,6 +76,24 @@ public abstract class AbstractKeyValueStoreTest {
     @Before
     public void setUp() {
         store = newKeyValueStore();
+    }
+
+    protected boolean txStarted;
+
+    @Before
+    public void startTransaction() {
+        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.startTransaction();
+            txStarted = true;
+        }
+    }
+
+    @After
+    public void commitTransaction() {
+        if (txStarted) {
+            TransactionHelper.commitOrRollbackTransaction();
+            txStarted = false;
+        }
     }
 
     protected abstract KeyValueStoreProvider newKeyValueStore();
@@ -125,6 +145,27 @@ public abstract class AbstractKeyValueStoreTest {
         store.put(key, (String) null);
         assertNull(store.get(key));
         assertEquals(Collections.emptySet(), storeKeys());
+    }
+
+    /**
+     * Checks that things are done outside the main transaction.
+     */
+    @Test
+    public void testNotTransactional() {
+        String key = "foo";
+        String value = "bar";
+        // in a transaction
+        TransactionHelper.runInTransaction(() -> {
+            // set a value
+            store.put(key, value);
+            assertEquals(value, store.getString(key));
+            // then rollback
+            TransactionHelper.setTransactionRollbackOnly();
+        });
+        // check that after rollback value is still set
+        assertEquals(value, store.getString(key));
+        // including if we start a new transaction
+        TransactionHelper.runInTransaction(() -> assertEquals(value, store.getString(key)));
     }
 
     @Test

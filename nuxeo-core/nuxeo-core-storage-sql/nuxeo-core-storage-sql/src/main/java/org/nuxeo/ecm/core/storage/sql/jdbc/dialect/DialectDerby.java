@@ -253,6 +253,12 @@ public class DialectDerby extends Dialect {
         return String.format("NX_IN_TREE(%s, ?) = 1", idColumnName);
     }
 
+    @Override
+    public String getUpsertSql(List<Column> columns, List<Serializable> values, List<Column> outColumns,
+            List<Serializable> outValues) {
+        throw new UnsupportedOperationException();
+    }
+
     private final String derbyFunctions = "org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions";
 
     @Override
