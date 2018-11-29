@@ -75,12 +75,16 @@ class Select2Editor extends Handsontable.editors.Select2Editor {
   initSelection(isMultiple) {
     if (!isMultiple) {
       return (element, callback) => callback(
-        {id: element.val(), text: element.val()}
+        {id: element.val(), text: this.getSelectionText(element.val())}
       );
     }
     return (element, callback) => callback(
-      element.val().split(',').map((v) => ({id: v, text: v}))
+      element.val().split(',').map((v) => ({id: v, text: this.getSelectionText(v)}))
     );
+  }
+
+  getSelectionText(val) {
+    return val;
   }
 
   getEntryId(item) {

@@ -115,6 +115,19 @@ class Spreadsheet {
                     break;
                   case 'userManagerResolver':
                     column.widget.type = (field.type === 'string[]') ? 'multipleUsersSuggestion' : 'singleUserSuggestion';
+                    let searchType;
+                    if (constraint.parameters.includeGroups === 'true' && constraint.parameters.includeUsers === 'true') {
+                      searchType = 'USER_GROUP_TYPE';
+                    } else if (constraint.parameters.includeUsers === 'true') {
+                      searchType = 'USER_TYPE';
+                    } else if (constraint.parameters.includeGroups === 'true') {
+                      searchType = 'GROUP_TYPE';
+                    }
+                    column.widget.properties = {
+                      any: {
+                        userSuggestionSearchType: searchType
+                      }
+                    }
                     break;
                 }
               }
