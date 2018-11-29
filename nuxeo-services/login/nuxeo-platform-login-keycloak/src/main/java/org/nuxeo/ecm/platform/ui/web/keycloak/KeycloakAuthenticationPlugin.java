@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.keycloak.adapters.AdapterDeploymentContext;
-import org.keycloak.adapters.AuthOutcome;
+import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.representations.AccessToken;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
@@ -173,7 +173,10 @@ public class KeycloakAuthenticationPlugin implements NuxeoAuthenticationPlugin,
      */
     private Set<String> getRoles(AccessToken token, String keycloakNuxeoApp) {
         Set<String> allRoles = new HashSet<>();
-        allRoles.addAll(token.getRealmAccess().getRoles());
+        Set<String> roles = token.getRealmAccess().getRoles();
+        if (roles != null) {
+            allRoles.addAll(roles);
+        }
         AccessToken.Access nuxeoResource = token.getResourceAccess(keycloakNuxeoApp);
         if (nuxeoResource != null) {
             Set<String> nuxeoRoles = nuxeoResource.getRoles();

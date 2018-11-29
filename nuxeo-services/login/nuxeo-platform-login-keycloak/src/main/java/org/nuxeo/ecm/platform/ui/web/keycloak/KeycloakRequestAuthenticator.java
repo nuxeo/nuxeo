@@ -31,8 +31,8 @@ import org.apache.catalina.realm.GenericPrincipal;
 import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.AdapterTokenStore;
-import org.keycloak.adapters.AuthChallenge;
-import org.keycloak.adapters.AuthOutcome;
+import org.keycloak.adapters.spi.AuthChallenge;
+import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.OAuthRequestAuthenticator;
 import org.keycloak.adapters.RefreshableKeycloakSecurityContext;
@@ -86,7 +86,7 @@ public class KeycloakRequestAuthenticator extends RequestAuthenticator {
             if (loginConfig == null) {
                 loginConfig = request.getContext().getLoginConfig();
             }
-            if (challenge.errorPage()) {
+            if (challenge.getResponseCode() >= 400) {
                 if (forwardToErrorPageInternal(request, response, loginConfig)) {
                     return AuthOutcome.FAILED;
                 }
@@ -162,7 +162,7 @@ public class KeycloakRequestAuthenticator extends RequestAuthenticator {
     }
 
     @Override
-    protected String getHttpSessionId(boolean create) {
+    protected String changeHttpSessionId(boolean create) {
         HttpSession session = request.getSession(create);
         return session != null ? session.getId() : null;
     }
