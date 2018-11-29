@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -411,10 +412,17 @@ public class SchemaManagerImpl implements SchemaManager {
             log.error("XSD Schema not found: " + sd.src);
             return;
         }
-        try (InputStream in = url.openStream()) {
+        try (InputStream in = openStream(url)) {
             sd.file = new File(schemaDir, sd.name + ".xsd");
             FileUtils.copyInputStreamToFile(in, sd.file); // may overwrite
         }
+    }
+
+    protected InputStream openStream(URL url) throws IOException {
+        URLConnection c = url.openConnection();
+        // make sure there is no cache when reading the stream
+        c.setUseCaches(false);
+        return c.getInputStream();
     }
 
     protected void loadSchema(SchemaBindingDescriptor sd) throws IOException, SAXException, TypeException {
