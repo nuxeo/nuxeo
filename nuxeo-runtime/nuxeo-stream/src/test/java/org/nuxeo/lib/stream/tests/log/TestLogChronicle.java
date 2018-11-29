@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -132,6 +133,7 @@ public class TestLogChronicle extends TestLog {
     }
 
     @SuppressWarnings("FutureReturnValueIgnored")
+    @Ignore("NXP-23956")
     @Test
     public void testConcurrentFileRetentions() throws Exception {
         final int NB_APPENDERS = 5;
