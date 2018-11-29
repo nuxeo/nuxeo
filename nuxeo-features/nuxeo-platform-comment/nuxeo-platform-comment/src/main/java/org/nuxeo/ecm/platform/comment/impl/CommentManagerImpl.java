@@ -57,7 +57,6 @@ import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
-import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.relations.api.Graph;
@@ -94,8 +93,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public List<DocumentModel> getComments(CoreSession session, DocumentModel docModel)
-            throws CommentSecurityException {
+    public List<DocumentModel> getComments(CoreSession session, DocumentModel docModel) {
         Map<String, Object> ctxMap = Collections.<String, Object> singletonMap(ResourceAdapter.CORE_SESSION_CONTEXT_KEY,
                 session);
         RelationManager relationManager = Framework.getService(RelationManager.class);
@@ -174,7 +172,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) throws CommentSecurityException {
+    public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) {
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             comment.setPropertyValue(COMMENT_ANCESTOR_IDS,
                     (Serializable) computeAncestorIds(session, docModel.getId()));
@@ -376,8 +374,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path)
-            throws CommentSecurityException {
+    public DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path) {
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel createdComment = internalCreateComment(session, docModel, comment, path);
             session.save();
@@ -386,7 +383,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentModel getThreadForComment(DocumentModel comment) throws CommentSecurityException {
+    public DocumentModel getThreadForComment(DocumentModel comment) {
         List<DocumentModel> threads = getDocumentsForComment(comment);
         if (threads.size() > 0) {
             DocumentModel thread = threads.get(0);
@@ -399,8 +396,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public Comment createComment(CoreSession session, Comment comment)
-            throws CommentNotFoundException, CommentSecurityException {
+    public Comment createComment(CoreSession session, Comment comment) throws CommentNotFoundException {
         DocumentRef commentRef = new IdRef(comment.getParentId());
         if (!session.exists(commentRef)) {
             throw new CommentNotFoundException("The document " + comment.getParentId() + " does not exist.");
@@ -420,8 +416,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public Comment getComment(CoreSession session, String commentId)
-            throws CommentNotFoundException, CommentSecurityException {
+    public Comment getComment(CoreSession session, String commentId) throws CommentNotFoundException {
         DocumentRef commentRef = new IdRef(commentId);
         if (!session.exists(commentRef)) {
             throw new CommentNotFoundException("The document " + commentId + " does not exist.");
@@ -433,7 +428,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     @Override
     @SuppressWarnings("unchecked")
     public PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize,
-            Long currentPageIndex, boolean sortAscending) throws CommentSecurityException {
+            Long currentPageIndex, boolean sortAscending) {
         DocumentRef docRef = new IdRef(documentId);
         if (!session.exists(docRef)) {
             return new PartialList<>(Collections.emptyList(), 0);
@@ -457,8 +452,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public void deleteComment(CoreSession session, String commentId)
-            throws CommentNotFoundException, CommentSecurityException {
+    public void deleteComment(CoreSession session, String commentId) throws CommentNotFoundException {
         DocumentRef commentRef = new IdRef(commentId);
         if (!session.exists(commentRef)) {
             throw new CommentNotFoundException("The comment " + commentId + " does not exist.");
