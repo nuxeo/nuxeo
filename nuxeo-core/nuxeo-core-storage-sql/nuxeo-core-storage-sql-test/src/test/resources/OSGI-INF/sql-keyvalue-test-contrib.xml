@@ -1,0 +1,18 @@
+<component name="org.nuxeo.ecm.core.storage.sql.tests.kv">
+
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+    <datasource name="jdbc/keyvaluestore" driverClassName="${nuxeo.test.vcs.driver}">
+      <property name="url">${nuxeo.test.vcs.url}</property>
+      <property name="username">${nuxeo.test.vcs.user}</property>
+      <property name="password">${nuxeo.test.vcs.password}</property>
+    </datasource>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
+    <store name="default" class="org.nuxeo.ecm.core.storage.sql.kv.SQLKeyValueStore">
+      <property name="datasource">jdbc/keyvaluestore</property>
+      <property name="table">kv</property>
+    </store>
+  </extension>
+
+</component>

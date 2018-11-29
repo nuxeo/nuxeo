@@ -808,6 +808,20 @@ public abstract class Dialect {
     }
 
     /**
+     * Gets the SQL to use to refer to a column in an expression.
+     * <p>
+     * Needed for Oracle CLOB.
+     *
+     * @param column the column used in an expression
+     * @return the SQL to use to refer to it
+     *
+     * @since 10.10
+     */
+    public String getQuotedNameForExpression(Column column) {
+        return column.getQuotedName();
+    }
+
+    /**
      * Get the expression to use to cast a column to a DATE type.
      *
      * @return a pattern for String.format with one parameter for the column name
@@ -988,6 +1002,18 @@ public abstract class Dialect {
     public Array createArrayOf(int type, Object[] elements, Connection connection) throws SQLException {
         throw new SQLException("Not supported");
     }
+
+    /**
+     * Gets the SQL string for an UPSERT expression.
+     *
+     * @param columns the columns to upsert (first one being the key column)
+     * @param values the values to upsert (first one being the key value)
+     * @param outcolumns the columns to use in the prepared statement
+     * @param outValues the values to use in the prepared statement
+     * @since 10.10
+     */
+    public abstract String getUpsertSql(List<Column> columns, List<Serializable> values, List<Column> outColumns,
+            List<Serializable> outValues);
 
     /**
      * Gets the name of the file containing the SQL statements.
@@ -1327,6 +1353,28 @@ public abstract class Dialect {
      */
     public boolean supportsBatchUpdateCount() {
         return true;
+    }
+
+    /**
+     * Registers return parameters.
+     * <p>
+     * Used for Oracle "DML Returning".
+     *
+     * @since 10.10
+     */
+    public void registerReturnParameter(PreparedStatement ps, int parameterIndex, int sqlType) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Gets return {@link ResultSet}.
+     * <p>
+     * Used for Oracle "DML Returning".
+     *
+     * @since 10.10
+     */
+    public ResultSet getReturnResultSet(PreparedStatement ps) throws SQLException {
+        throw new UnsupportedOperationException();
     }
 
 }

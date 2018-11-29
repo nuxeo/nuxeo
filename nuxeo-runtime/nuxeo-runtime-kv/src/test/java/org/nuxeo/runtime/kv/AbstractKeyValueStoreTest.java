@@ -50,12 +50,14 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 9.1
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, TransactionalFeature.class })
 @Deploy("org.nuxeo.runtime.kv")
 public abstract class AbstractKeyValueStoreTest {
 
@@ -153,6 +155,27 @@ public abstract class AbstractKeyValueStoreTest {
 
         store.put(key, Long.valueOf(-123));
         assertEquals(Long.valueOf(-123), store.getLong(key));
+    }
+
+    /**
+     * Checks that things are done outside the main transaction.
+     */
+    @Test
+    public void testNotTransactional() {
+        String key = "foo";
+        String value = "bar";
+        // in a transaction
+        TransactionHelper.runInTransaction(() -> {
+            // set a value
+            store.put(key, value);
+            assertEquals(value, store.getString(key));
+            // then rollback
+            TransactionHelper.setTransactionRollbackOnly();
+        });
+        // check that after rollback value is still set
+        assertEquals(value, store.getString(key));
+        // including if we start a new transaction
+        TransactionHelper.runInTransaction(() -> assertEquals(value, store.getString(key)));
     }
 
     @Test
@@ -517,9 +540,9 @@ public abstract class AbstractKeyValueStoreTest {
 
         store.put("foo", "test");
         store.put("foox", "test");
-        store.put("foo?", "test");
+        store.put("foo?", "test"); // ? should not be matched by Redis or MongoDB as a wildcard
         store.put("foo?a", "test");
-        store.put("foo*", "test");
+        store.put("foo*", "test"); // * should not be matched by Redis or MongoDB as a wildcard
         store.put("foo*b", "test");
 
         store.put("bar", "test");
@@ -531,6 +554,11 @@ public abstract class AbstractKeyValueStoreTest {
         store.put("bar.4", "test");
         store.put("bar.5", "test".getBytes(UTF_8));
         store.put("bar.6", Long.valueOf(123));
+
+        store.put("baz", "test");
+        store.put("bazx", "test");
+        store.put("baz%", "test"); // % should not be matched by SQL as a wildcard
+        store.put("baz%7", "test");
 
         // ? should not be matched by Redis or MongoDB as a wildcard
         String prefix = "foo?";
@@ -545,6 +573,11 @@ public abstract class AbstractKeyValueStoreTest {
         // . should not be matched by MongoDB as a wildcard
         prefix = "bar.";
         expected = Arrays.asList("bar.", "bar.4", "bar.5", "bar.6");
+        assertEquals(new HashSet<>(expected), store.keyStream(prefix).collect(Collectors.toSet()));
+
+        // % should not be matched by SQL as a wildcard
+        prefix = "baz%";
+        expected = Arrays.asList("baz%", "baz%7");
         assertEquals(new HashSet<>(expected), store.keyStream(prefix).collect(Collectors.toSet()));
     }
 

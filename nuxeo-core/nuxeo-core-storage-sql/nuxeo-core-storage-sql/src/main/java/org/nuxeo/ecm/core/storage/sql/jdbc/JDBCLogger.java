@@ -189,7 +189,7 @@ public class JDBCLogger {
     // callable statement with one return value
     private static final String CALLABLE_START = "{?=";
 
-    public void logSQL(String sql, Collection<Serializable> values) {
+    public void logSQL(String sql, Collection<? extends Serializable> values) {
         StringBuilder buf = new StringBuilder();
         int start = 0;
         if (sql.startsWith(CALLABLE_START)) {
@@ -246,6 +246,9 @@ public class JDBCLogger {
         }
         if (value instanceof java.sql.Date) {
             return "DATE '" + value.toString() + "'";
+        }
+        if (value instanceof byte[]) {
+            return "(" + ((byte[]) value).length + " bytes)";
         }
         if (value instanceof Object[]) {
             Object[] v = (Object[]) value;

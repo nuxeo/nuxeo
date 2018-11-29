@@ -81,6 +81,12 @@ public class DialectOracle extends Dialect {
 
     private Method arrayGetLongArrayMethod;
 
+    protected Class<PreparedStatement> oraclePreparedStatementClass;
+
+    protected Method oraclePreparedStatementRegisterReturnParameter;
+
+    protected Method oraclePreparedStatementGetReturnResultSet;
+
     protected final String fulltextParameters;
 
     protected boolean pathOptimizationsEnabled;
@@ -166,7 +172,7 @@ public class DialectOracle extends Dialect {
             throw new NuxeoException("Unknown id type: '" + idt + "'");
         }
         xaErrorLogger = newXAErrorLogger();
-        initArrayReflection();
+        initReflection();
     }
 
     protected XAErrorLogger newXAErrorLogger() {
@@ -179,16 +185,44 @@ public class DialectOracle extends Dialect {
     }
 
     // use reflection to avoid linking dependencies
-    private void initArrayReflection() {
+    private void initReflection() {
         try {
             Class<?> arrayDescriptorClass = Class.forName("oracle.sql.ArrayDescriptor");
             arrayDescriptorConstructor = arrayDescriptorClass.getConstructor(String.class, Connection.class);
             Class<?> arrayClass = Class.forName("oracle.sql.ARRAY");
             arrayConstructor = arrayClass.getConstructor(arrayDescriptorClass, Connection.class, Object.class);
             arrayGetLongArrayMethod = arrayClass.getDeclaredMethod("getLongArray");
+
+            Class<PreparedStatement> opsClass = (Class<PreparedStatement>) Class.forName(
+                    "oracle.jdbc.OraclePreparedStatement");
+            oraclePreparedStatementClass = opsClass;
+            oraclePreparedStatementRegisterReturnParameter = opsClass.getMethod("registerReturnParameter", int.class, int.class);
+            oraclePreparedStatementGetReturnResultSet = opsClass.getMethod("getReturnResultSet");
         } catch (ClassNotFoundException e) {
             // query syntax unit test run without Oracle JDBC driver
             return;
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException(e);
+        }
+    }
+
+    @SuppressWarnings({ "boxing", "resource" })
+    @Override
+    public void registerReturnParameter(PreparedStatement ps, int parameterIndex, int sqlType) throws SQLException {
+        PreparedStatement ops = ps.unwrap(oraclePreparedStatementClass);
+        try {
+            oraclePreparedStatementRegisterReturnParameter.invoke(ops, parameterIndex, sqlType);
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException(e);
+        }
+    }
+
+    @SuppressWarnings("resource")
+    @Override
+    public ResultSet getReturnResultSet(PreparedStatement ps) throws SQLException {
+        PreparedStatement ops = ps.unwrap(oraclePreparedStatementClass);
+        try {
+            return (ResultSet) oraclePreparedStatementGetReturnResultSet.invoke(ops);
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
         }
@@ -246,6 +280,8 @@ public class DialectOracle extends Dialect {
             return jdbcInfo("TIMESTAMP", Types.TIMESTAMP);
         case BLOBID:
             return jdbcInfo("VARCHAR2(250)", Types.VARCHAR);
+        case BLOB:
+            return jdbcInfo("BLOB", Types.BLOB);
         // -----
         case NODEID:
         case NODEIDFK:
@@ -388,6 +424,9 @@ public class DialectOracle extends Dialect {
         case Types.TIMESTAMP:
             setToPreparedStatementTimestamp(ps, index, value, column);
             return;
+        case Types.BLOB:
+            ps.setBytes(index, (byte[]) value);
+            return;
         case Types.OTHER:
             ColumnType type = column.getType();
             if (type.isId()) {
@@ -439,6 +478,8 @@ public class DialectOracle extends Dialect {
             return rs.getDouble(index);
         case Types.TIMESTAMP:
             return getFromResultSetTimestamp(rs, index, column);
+        case Types.BLOB:
+            return rs.getBytes(index);
         }
         throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
     }
@@ -549,6 +590,15 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
+    public String getQuotedNameForExpression(Column column) {
+        String sql = super.getQuotedNameForExpression(column);
+        if (column.getJdbcType() == Types.CLOB) {
+            sql = "TO_CHAR(" + sql + ")";
+        }
+        return sql;
+    }
+
+    @Override
     public boolean supportsReadAcl() {
         return aclOptimizationsEnabled;
     }
@@ -614,6 +664,50 @@ public class DialectOracle extends Dialect {
                     "%s in (SELECT id FROM hierarchy WHERE LEVEL>1 AND isproperty = 0 START WITH id = %s CONNECT BY PRIOR id = parentid)",
                     idColumnName, idParam);
         }
+    }
+
+    @Override
+    public String getUpsertSql(List<Column> columns, List<Serializable> values, List<Column> outColumns,
+            List<Serializable> outValues) {
+        Column keyColumn = columns.get(0);
+        Serializable keyValue = values.get(0);
+        Table table = keyColumn.getTable();
+        StringBuilder sql = new StringBuilder();
+        sql.append("MERGE INTO ");
+        sql.append(table.getQuotedName());
+        sql.append(" USING DUAL ON (");
+        sql.append(keyColumn.getQuotedName());
+        sql.append(" = ?)");
+        outColumns.add(keyColumn);
+        outValues.add(keyValue);
+        sql.append(" WHEN MATCHED THEN UPDATE SET ");
+        for (int i = 1; i < columns.size(); i++) {
+            if (i != 1) {
+                sql.append(", ");
+            }
+            sql.append(columns.get(i).getQuotedName());
+            sql.append(" = ?");
+            outColumns.add(columns.get(i));
+            outValues.add(values.get(i));
+        }
+        sql.append(" WHEN NOT MATCHED THEN INSERT (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append(columns.get(i).getQuotedName());
+        }
+        sql.append(") VALUES (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append("?");
+            outColumns.add(columns.get(i));
+            outValues.add(values.get(i));
+        }
+        sql.append(")");
+        return sql.toString();
     }
 
     @Override
@@ -841,6 +935,7 @@ public class DialectOracle extends Dialect {
         switch (getOracleErrorCode(t)) {
         case 1: // ORA-00001: unique constraint violated
         case 60: // ORA-00060: deadlock detected while waiting for resource
+        case 1403: // ORA-01403: no data found (for MERGE statements)
         case 2291: // ORA-02291: integrity constraint ... violated - parent key not found
             return true;
         }

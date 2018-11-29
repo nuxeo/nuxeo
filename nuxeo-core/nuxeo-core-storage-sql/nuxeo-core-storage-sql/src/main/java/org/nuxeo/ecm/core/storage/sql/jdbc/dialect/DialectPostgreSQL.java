@@ -234,6 +234,8 @@ public class DialectPostgreSQL extends Dialect {
             return jdbcInfo("varchar(250)", Types.VARCHAR);
         case ARRAY_BLOBID:
             return jdbcInfo("varchar(250)[]", Types.ARRAY, "varchar", Types.VARCHAR);
+        case BLOB:
+            return jdbcInfo("bytea", Types.BINARY);
         // -----
         case NODEID:
         case NODEIDFK:
@@ -394,6 +396,9 @@ public class DialectPostgreSQL extends Dialect {
             Array array = ps.getConnection().createArrayOf(jdbcBaseTypeName, (Object[]) value);
             ps.setArray(index, array);
             return;
+        case Types.BINARY:
+            ps.setBytes(index, (byte[]) value);
+            return;
         case Types.OTHER:
             ColumnType type = column.getType();
             if (type.isId()) {
@@ -442,6 +447,8 @@ public class DialectPostgreSQL extends Dialect {
             } else {
                 return (Serializable) array.getArray();
             }
+        case Types.BINARY:
+            return rs.getBytes(index);
         case Types.OTHER:
             ColumnType type = column.getType();
             if (type.isId()) {
@@ -882,6 +889,45 @@ public class DialectPostgreSQL extends Dialect {
             throw new AssertionError("Unknown id type: " + idType);
         }
         return ret;
+    }
+
+    @Override
+    public String getUpsertSql(List<Column> columns, List<Serializable> values, List<Column> outColumns,
+            List<Serializable> outValues) {
+        Column keyColumn = columns.get(0);
+        Table table = keyColumn.getTable();
+        StringBuilder sql = new StringBuilder();
+        sql.append("INSERT INTO ");
+        sql.append(table.getQuotedName());
+        sql.append(" (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append(columns.get(i).getQuotedName());
+        }
+        sql.append(") VALUES (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append("?");
+            outColumns.add(columns.get(i));
+            outValues.add(values.get(i));
+        }
+        sql.append(") ON CONFLICT (");
+        sql.append(keyColumn.getQuotedName());
+        sql.append(") DO UPDATE SET ");
+        for (int i = 1; i < columns.size(); i++) {
+            if (i != 1) {
+                sql.append(", ");
+            }
+            sql.append(columns.get(i).getQuotedName());
+            sql.append(" = ?");
+            outColumns.add(columns.get(i));
+            outValues.add(values.get(i));
+        }
+        return sql.toString();
     }
 
     @Override
