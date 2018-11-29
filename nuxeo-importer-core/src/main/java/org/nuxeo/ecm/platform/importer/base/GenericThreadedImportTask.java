@@ -370,12 +370,18 @@ public class GenericThreadedImportTask implements Runnable {
         try {
             session = CoreInstance.openCoreSessionSystem(repositoryName);
             log.info("Starting new import task");
-            if (rootDoc != null) {
-                // reopen the root to be sure the session is valid
-                rootDoc = session.getDocument(rootDoc.getRef());
-            }
-            recursiveCreateDocumentFromNode(rootDoc, rootSource);
-            session.save();
+            Framework.doPrivileged(() -> {
+                if (rootDoc != null) {
+                    // reopen the root to be sure the session is valid
+                    rootDoc = session.getDocument(rootDoc.getRef());
+                }
+                try {
+                    recursiveCreateDocumentFromNode(rootDoc, rootSource);
+                } catch (IOException e) {
+                    throw new NuxeoException(e);
+                }
+                session.save();
+            });
             GenericMultiThreadedImporter.addCreatedDoc(taskId, uploadedFiles);
             completedAbruptly = false;
         } catch (Exception e) { // deals with interrupt below
