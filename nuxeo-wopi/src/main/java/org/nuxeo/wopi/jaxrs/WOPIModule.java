@@ -33,6 +33,14 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 public class WOPIModule extends WebEngineModule {
 
     @Override
+    public Set<Class<?>> getClasses() {
+        Set<Class<?>> result = new HashSet<>();
+        result.add(WOPIRoot.class);
+        result.add(FilesEndpoint.class);
+        return result;
+    }
+
+    @Override
     public Set<Object> getSingletons() {
         Set<Object> result = new HashSet<>();
         result.add(new BlobWriter());
