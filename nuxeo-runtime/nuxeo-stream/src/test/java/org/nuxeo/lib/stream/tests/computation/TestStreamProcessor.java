@@ -280,6 +280,7 @@ public abstract class TestStreamProcessor {
     }
 
     @Test
+    @Ignore("NXP-26337 during release")
     public void testComplexTopoManyRecords() throws Exception {
         testComplexTopo(1003, 4, 8);
     }
