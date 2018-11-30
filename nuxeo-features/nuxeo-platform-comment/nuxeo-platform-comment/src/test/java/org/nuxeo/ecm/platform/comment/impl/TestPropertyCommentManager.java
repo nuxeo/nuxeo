@@ -34,7 +34,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -42,7 +41,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -53,6 +51,7 @@ import org.nuxeo.ecm.platform.comment.AbstractTestCommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
@@ -437,6 +436,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         session.save();
 
         DocumentModel replyModel = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "Comment", COMMENT_DOC_TYPE);
+        replyModel = session.createDocument(replyModel);
         commentToDocumentModel(fourthLevelReply, replyModel);
         DocumentModel threadDocumentModel = commentManager.getThreadForComment(replyModel);
         assertNotNull(threadDocumentModel);
@@ -525,9 +525,278 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
             testManageComments(bobSession, comment.getId());
             fail("bob should not be able to manage comments created by Administrator");
-        } catch (DocumentSecurityException e) {
+        } catch (CommentSecurityException e) {
             // ok
         }
+    }
+
+    @Test
+    public void testCreateCommentAsRegularUser() {
+
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        domain = session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("john", SecurityConstants.READ, true));
+        acl.add(new ACE("jane", SecurityConstants.BROWSE, true));
+        session.setACP(doc.getRef(), acp, false);
+        session.save();
+
+        String author = "john";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setParentId(doc.getId());
+
+        try (CloseableCoreSession johnSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "john")) {
+            Comment createdComment = commentManager.createComment(johnSession, comment);
+            assertEquals(doc.getId(), createdComment.getParentId());
+
+            Comment subComment = new CommentImpl();
+            subComment.setAuthor(author);
+            subComment.setText(text);
+            subComment.setParentId(createdComment.getId());
+
+            Comment createdSubcomment = commentManager.createComment(johnSession, subComment);
+            assertEquals(createdComment.getId(), createdSubcomment.getParentId());
+        }
+
+        try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
+            Comment createdComment = commentManager.createComment(janeSession, comment);
+            fail("jane should not be able to create comment");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user jane can not create comments on document " + doc.getId(), e.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetCommentAsRegularUser() {
+
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        domain = session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("john", SecurityConstants.READ, true));
+        // Fake the existence of document for janeSession
+        acl.add(new ACE("jane", SecurityConstants.BROWSE, true));
+        session.setACP(doc.getRef(), acp, false);
+        session.save();
+
+        String author = "john";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setParentId(doc.getId());
+
+        comment = commentManager.createComment(session, comment);
+
+        Comment subComment = new CommentImpl();
+        subComment.setAuthor(author);
+        subComment.setText(text);
+        subComment.setParentId(comment.getId());
+
+        subComment = commentManager.createComment(session, subComment);
+
+        try (CloseableCoreSession johnSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "john")) {
+            Comment createdComment = commentManager.getComment(johnSession, comment.getId());
+            assertEquals(doc.getId(), createdComment.getParentId());
+            Comment createdSubcomment = commentManager.getComment(johnSession, subComment.getId());
+            assertEquals(comment.getId(), createdSubcomment.getParentId());
+        }
+
+        try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
+            Comment createdComment = commentManager.getComment(janeSession, comment.getId());
+            fail("jane should not be able to get comment");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user jane does not have access to the comments of document " + doc.getId(),
+                    e.getMessage());
+        }
+        try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
+            Comment createdComment = commentManager.getComment(janeSession, subComment.getId());
+            fail("jane should not be able to get comment");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user jane does not have access to the comments of document " + doc.getId(),
+                    e.getMessage());
+        }
+    }
+
+    @Test
+    public void testUpdateCommentAsRegularUser() {
+
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        domain = session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("john", SecurityConstants.READ, true));
+        acl.add(new ACE("jane", SecurityConstants.READ, true));
+        session.setACP(doc.getRef(), acp, false);
+        session.save();
+
+        String author = "john";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setParentId(doc.getId());
+
+        comment = commentManager.createComment(session, comment);
+
+        Comment subComment = new CommentImpl();
+        subComment.setAuthor(author);
+        subComment.setText(text);
+        subComment.setParentId(comment.getId());
+
+        subComment = commentManager.createComment(session, subComment);
+
+        try (CloseableCoreSession johnSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "john")) {
+            comment.setText("Updated comment by john");
+            commentManager.updateComment(johnSession, comment.getId(), comment);
+            subComment.setText("Updated subComment by john");
+            commentManager.updateComment(johnSession, subComment.getId(), subComment);
+        }
+
+        try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
+            comment.setText("Updated comment by jane");
+            commentManager.updateComment(janeSession, comment.getId(), comment);
+            fail("jane should not be able to edit comment");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user jane can not edit comments of document " + doc.getId(), e.getMessage());
+        }
+        try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
+            subComment.setText("Updated subComment by jane");
+            commentManager.updateComment(janeSession, subComment.getId(), subComment);
+            fail("jane should not be able to edit comment");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user jane can not edit comments of document " + comment.getId(), e.getMessage());
+        }
+
+    }
+
+    @Test
+    public void testDeleteCommentAsRegularUser() {
+
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        domain = session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("john", SecurityConstants.EVERYTHING, true));
+        acl.add(new ACE("jane", SecurityConstants.READ, true));
+        acl.add(new ACE("luke", SecurityConstants.READ, true));
+        session.setACP(doc.getRef(), acp, false);
+        session.save();
+
+        String author = "luke";
+        Comment comment1 = new CommentImpl();
+        comment1.setAuthor(author);
+        comment1.setParentId(doc.getId());
+
+        comment1 = commentManager.createComment(session, comment1);
+
+        Comment comment2 = new CommentImpl();
+        comment2.setAuthor(author);
+        comment2.setParentId(doc.getId());
+
+        Comment comment3 = new CommentImpl();
+        comment3.setAuthor(author);
+        comment3.setParentId(doc.getId());
+
+        comment1 = commentManager.createComment(session, comment1);
+        comment2 = commentManager.createComment(session, comment2);
+        comment3 = commentManager.createComment(session, comment3);
+
+        Comment comment4= new CommentImpl();
+        comment4.setAuthor(author);
+        comment4.setParentId(comment3.getId());
+        comment4 = commentManager.createComment(session, comment4);
+
+        try (CloseableCoreSession johnSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "john")) {
+            commentManager.deleteComment(johnSession, comment1.getId());
+        }
+
+        try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
+            commentManager.deleteComment(janeSession, comment2.getId());
+            fail("jane should not be able to delete comment");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user jane can not delete comments of document " + doc.getId(), e.getMessage());
+        }
+
+        try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
+            commentManager.deleteComment(janeSession, comment4.getId());
+            fail("jane should not be able to delete comment");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user jane can not delete comments of document " + comment3.getId(), e.getMessage());
+        }
+
+        try (CloseableCoreSession lukeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "luke")) {
+            commentManager.deleteComment(lukeSession, comment4.getId());
+            commentManager.deleteComment(lukeSession, comment3.getId());
+        }
+    }
+
+    @Test
+    public void testGetComments() {
+
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        domain = session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("john", SecurityConstants.READ, true));
+        // Fake the existence of document for jane
+        acl.add(new ACE("jane", SecurityConstants.BROWSE, true));
+        session.setACP(doc.getRef(), acp, false);
+        session.save();
+
+        String author = "john";
+        Comment comment1 = new CommentImpl();
+        comment1.setAuthor(author);
+        comment1.setParentId(doc.getId());
+
+        comment1 = commentManager.createComment(session, comment1);
+
+        Comment comment2 = new CommentImpl();
+        comment2.setAuthor(author);
+        comment2.setParentId(doc.getId());
+
+        comment2 = commentManager.createComment(session, comment2);
+
+        Comment comment3= new CommentImpl();
+        comment3.setAuthor(author);
+        comment3.setParentId(comment2.getId());
+        comment3 = commentManager.createComment(session, comment3);
+        session.save();
+
+        try (CloseableCoreSession johnSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "john")) {
+            assertEquals(2, commentManager.getComments(johnSession, doc.getId()).size());
+            assertEquals(1, commentManager.getComments(johnSession, comment2.getId()).size());
+        }
+
+        try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
+            assertEquals(2, commentManager.getComments(janeSession, doc.getId()).size());
+            fail("jane should not be able to get comment");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user jane does not have access to the comments of document " + doc.getId(),
+                    e.getMessage());
+        }
+        try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
+            assertEquals(1, commentManager.getComments(janeSession, comment2.getId()).size());
+            fail("jane should not be able to get comment");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user jane does not have access to the comments of document " + comment2.getId(),
+                    e.getMessage());
+        }
+
     }
 
     protected DocumentModel createTestFileAndUser(String user) {

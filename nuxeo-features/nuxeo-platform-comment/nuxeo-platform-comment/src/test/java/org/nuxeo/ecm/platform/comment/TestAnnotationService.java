@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -86,6 +88,7 @@ public class TestAnnotationService {
         ACLImpl acl = new ACLImpl();
         acl.add(new ACE("jdoe", SecurityConstants.READ));
         acl.add(new ACE("jdoe", SecurityConstants.WRITE));
+        acl.add(new ACE("jdoe", SecurityConstants.WRITE_SECURITY));
         ACPImpl acp = new ACPImpl();
         acp.addACL(acl);
         coreFeature.getCoreSession().setACP(new PathRef("/"), acp, true);
@@ -132,6 +135,14 @@ public class TestAnnotationService {
         assertEquals(entityId, ((ExternalEntity) annotation).getEntityId());
         assertEquals(origin, ((ExternalEntity) annotation).getOrigin());
 
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(docToAnnotate.getRepositoryName(), "bob")) {
+            annotation = annotationService.createAnnotation(bobSession, annotation);
+            fail("bob should not be able to create annotation");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user bob can not create annotations on document " + docToAnnotate.getId(),
+                    e.getMessage());
+        }
+
     }
 
     @Test
@@ -151,10 +162,25 @@ public class TestAnnotationService {
             annotation.setXpath(xpathToAnnotate);
             ((ExternalEntity) annotation).setEntityId(entityId);
             annotationId = annotationService.createAnnotation(adminSession, annotation).getId();
+
+            // Fake the existence of annotation for bobSession
+            ACPImpl acp = new ACPImpl();
+            ACL acl = acp.getOrCreateACL();
+            acl.add(new ACE("bob", SecurityConstants.READ, true));
+            adminSession.setACP(new IdRef(annotationId), acp, false);
+            adminSession.save();
         }
 
         Annotation annotation = annotationService.getAnnotation(session, annotationId);
         assertEquals(entityId, ((ExternalEntity) annotation).getEntityId());
+
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(docToAnnotate.getRepositoryName(), "bob")) {
+            annotation = annotationService.getAnnotation(bobSession, annotationId);
+            fail("bob should not be able to get annotation");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user bob does not have access to the annotations of document " + docToAnnotate.getId(),
+                    e.getMessage());
+        }
     }
 
     @Test
@@ -168,7 +194,15 @@ public class TestAnnotationService {
         Annotation annotation = new AnnotationImpl();
         annotation.setParentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
+        annotation.setAuthor(session.getPrincipal().getName());
         annotation = annotationService.createAnnotation(session, annotation);
+        session.save();
+
+        // Fake the existence of annotation for bobSession
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("bob", SecurityConstants.READ, true));
+        session.setACP(new IdRef(annotation.getId()), acp, false);
         session.save();
 
         assertNull(((ExternalEntity) annotation).getEntity());
@@ -179,6 +213,13 @@ public class TestAnnotationService {
 
         assertEquals("Entity",
                 ((ExternalEntity) annotationService.getAnnotation(session, annotation.getId())).getEntity());
+
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(docToAnnotate.getRepositoryName(), "bob")) {
+            annotationService.updateAnnotation(bobSession, annotation.getId(), annotation);
+            fail("bob should not be able to edit annotation");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user bob can not edit annotations of document " + docToAnnotate.getId(), e.getMessage());
+        }
     }
 
     @Test
@@ -192,6 +233,7 @@ public class TestAnnotationService {
         Annotation annotation = new AnnotationImpl();
         annotation.setParentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
+        annotation.setAuthor(session.getPrincipal().getName());
         annotation = annotationService.createAnnotation(session, annotation);
         session.save();
 
@@ -205,6 +247,22 @@ public class TestAnnotationService {
             assertEquals(404, e.getStatusCode());
             assertNotNull(e.getMessage());
         }
+
+        // Fake the existence of annotation for bobSession
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("bob", SecurityConstants.READ, true));
+        session.setACP(new IdRef(annotation.getId()), acp, false);
+        session.save();
+
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(docToAnnotate.getRepositoryName(), "bob")) {
+            annotationService.deleteAnnotation(bobSession, annotation.getId());
+            fail("bob should not be able to delete annotation");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user bob can not delete annotations of document " + docToAnnotate.getId(),
+                    e.getMessage());
+        }
+
         annotationService.deleteAnnotation(session, annotation.getId());
         assertFalse(session.exists(new IdRef(annotation.getId())));
 
@@ -224,6 +282,13 @@ public class TestAnnotationService {
 
         DocumentModel docToAnnotate1 = session.createDocumentModel("/testDomain", "testDoc1", "File");
         docToAnnotate1 = session.createDocument(docToAnnotate1);
+        // Fake the existence of document for bobSession
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("bob", SecurityConstants.BROWSE, true));
+        session.setACP(docToAnnotate1.getRef(), acp, false);
+        session.save();
+
         int nbAnnotations1 = 99;
         Annotation annotation1 = new AnnotationImpl();
         annotation1.setParentId(docToAnnotate1.getId());
@@ -248,6 +313,14 @@ public class TestAnnotationService {
         assertEquals(nbAnnotations2,
                 annotationService.getAnnotations(session, docToAnnotate2.getId(), xpathToAnnotate).size());
 
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(docToAnnotate.getRepositoryName(), "bob")) {
+            annotationService.getAnnotations(bobSession, docToAnnotate1.getId(), xpathToAnnotate);
+            fail("bob should not be able to get annotations");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user bob does not have access to the annotations of document " + docToAnnotate1.getId(),
+                    e.getMessage());
+        }
+
     }
 
     @Test
@@ -269,6 +342,21 @@ public class TestAnnotationService {
 
         annotation = annotationService.getExternalAnnotation(session, entityId);
         assertEquals(entityId, ((ExternalEntity) annotation).getEntityId());
+
+        // Fake the existence of annotation for bobSession
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("bob", SecurityConstants.READ, true));
+        session.setACP(new IdRef(annotation.getId()), acp, false);
+        session.save();
+
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(docToAnnotate.getRepositoryName(), "bob")) {
+            annotation = annotationService.getExternalAnnotation(bobSession, entityId);
+            fail("bob should not be able to get annotation");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user bob does not have access to the annotations of document " + docToAnnotate.getId(),
+                    e.getMessage());
+        }
     }
 
     @Test
@@ -285,6 +373,7 @@ public class TestAnnotationService {
         ((ExternalEntity) annotation).setEntityId(entityId);
         annotation.setParentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
+        annotation.setAuthor(session.getPrincipal().getName());
         annotationService.createAnnotation(session, annotation);
         session.save();
 
@@ -304,6 +393,19 @@ public class TestAnnotationService {
         annotation = annotationService.getExternalAnnotation(session, entityId);
         assertEquals(entityId, ((ExternalEntity) annotation).getEntityId());
 
+        // Fake the existence of annotation for bobSession
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("bob", SecurityConstants.READ, true));
+        session.setACP(new IdRef(annotation.getId()), acp, false);
+        session.save();
+
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(docToAnnotate.getRepositoryName(), "bob")) {
+            annotationService.updateAnnotation(bobSession, annotation.getId(), annotation);
+            fail("bob should not be able to edit annotation");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user bob can not edit annotations of document " + docToAnnotate.getId(), e.getMessage());
+        }
     }
 
     @Test
@@ -319,6 +421,7 @@ public class TestAnnotationService {
         ((ExternalEntity) annotation).setEntityId(entityId);
         annotation.setParentId(docToAnnotate.getId());
         annotation.setXpath(xpathToAnnotate);
+        annotation.setAuthor(session.getPrincipal().getName());
         annotation = annotationService.createAnnotation(session, annotation);
         session.save();
 
@@ -332,6 +435,22 @@ public class TestAnnotationService {
             assertEquals(404, e.getStatusCode());
             assertNotNull(e.getMessage());
         }
+
+        // Fake the existence of annotation for bobSession
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("bob", SecurityConstants.READ, true));
+        session.setACP(new IdRef(annotation.getId()), acp, false);
+        session.save();
+
+        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(docToAnnotate.getRepositoryName(), "bob")) {
+            annotationService.deleteAnnotation(bobSession, annotation.getId());
+            fail("bob should not be able to delete annotation");
+        } catch (CommentSecurityException e) {
+            assertEquals("The user bob can not delete annotations of document " + docToAnnotate.getId(),
+                    e.getMessage());
+        }
+
         annotationService.deleteExternalAnnotation(session, entityId);
         assertFalse(session.exists(new IdRef(annotation.getId())));
 
