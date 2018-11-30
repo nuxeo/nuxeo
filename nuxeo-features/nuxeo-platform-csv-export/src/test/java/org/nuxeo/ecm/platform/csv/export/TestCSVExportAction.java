@@ -277,7 +277,19 @@ public class TestCSVExportAction {
     @Test
     public void testDownloadCSV() throws Exception {
 
-        BulkCommand command = createBuilder().build();
+        DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
+        List<DocumentModel> children = session.getChildren(model.getRef());
+        for (int i = 0; i < children.size(); i++) {
+            DocumentModel child = children.get(i);
+            child.setPropertyValue("dc:nature", "article");
+            child.setPropertyValue("dc:contributors", new String[] { "bob", "Administrator" });
+            session.saveDocument(child);
+        }
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        BulkCommand command = createBuilder().param("schemas", ImmutableList.of("dublincore")).build();
         bulkService.submit(command);
         assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
 

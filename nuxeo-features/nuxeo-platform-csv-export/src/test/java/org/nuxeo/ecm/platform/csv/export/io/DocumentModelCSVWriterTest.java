@@ -91,10 +91,10 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         csv.has("changeToken").isNull();
         csv.has("title").isEquals("myDoc");
         csv.has("dc:description").isEquals("There is a , in the description");
-        csv.has("dc:contributors").isEquals("John\nJane");
+        csv.has("dc:contributors").isEquals("John | Jane");
         csv.has("dc:nature").isEquals("article");
         csv.has("dc:nature[label]").isEquals("Article EN");
-        csv.has("dc:subjects[label]").isEquals("Art\nunknown translated value");
+        csv.has("dc:subjects[label]").isEquals("Art | unknown translated value");
         csv.has("dc:coverage[label]").isEquals("France");
     }
 
