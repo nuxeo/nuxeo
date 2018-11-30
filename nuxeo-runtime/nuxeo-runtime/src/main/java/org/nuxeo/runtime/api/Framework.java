@@ -472,10 +472,7 @@ public final class Framework {
      * Activating this mode, some of the code may not behave as it would in production, to ease up testing.
      */
     public static boolean isTestModeSet() {
-        if (testModeSet == null) {
-            testModeSet = isBooleanPropertyTrue(NUXEO_TESTING_SYSTEM_PROP);
-        }
-        return testModeSet;
+        return isBooleanPropertyTrue(NUXEO_TESTING_SYSTEM_PROP);
     }
 
     /**
