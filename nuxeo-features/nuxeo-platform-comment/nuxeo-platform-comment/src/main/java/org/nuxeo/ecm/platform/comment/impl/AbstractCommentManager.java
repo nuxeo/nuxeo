@@ -25,7 +25,6 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -145,18 +144,6 @@ public abstract class AbstractCommentManager implements CommentManager {
         ACE grantRemove = new ACE("members", SecurityConstants.REMOVE, true);
         ACL acl = new ACLImpl();
         acl.setACEs(new ACE[] { grantRead, grantRemove });
-        acp.addACL(acl);
-        session.setACP(documentModel.getRef(), acp, true);
-    }
-
-    protected void setCommentPermissions(CoreSession session, DocumentModel documentModel, String author) {
-        ACP acp = new ACPImpl();
-        List<ACE> aces = new ArrayList<>();
-        aces.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ, true));
-        aces.add(new ACE(author, SecurityConstants.WRITE, true));
-        aces.add(new ACE(author, SecurityConstants.REMOVE, true));
-        ACL acl = new ACLImpl();
-        acl.setACEs(aces.toArray(new ACE[0]));
         acp.addACL(acl);
         session.setACP(documentModel.getRef(), acp, true);
     }

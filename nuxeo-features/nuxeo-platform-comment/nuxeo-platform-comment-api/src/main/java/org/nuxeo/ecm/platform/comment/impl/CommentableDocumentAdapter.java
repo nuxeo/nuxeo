@@ -24,8 +24,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.runtime.api.Framework;
@@ -67,11 +72,19 @@ public class CommentableDocumentAdapter implements CommentableDocument {
     }
 
     public List<DocumentModel> getComments() {
-        return commentManager.getComments(docModel.getCoreSession(), docModel);
+        return getComments(docModel);
     }
 
     public List<DocumentModel> getComments(DocumentModel parent) {
-        return commentManager.getComments(parent);
+        CoreSession session = docModel.getCoreSession();
+        List<Comment> comments = commentManager.getComments(session, parent.getId());
+        return CoreInstance.doPrivileged(session, s -> {
+            return comments.stream().map(comment -> {
+                DocumentModel commentModel = s.getDocument(new IdRef(comment.getId()));
+                commentModel.detach(true);
+                return commentModel;
+            }).collect(Collectors.toList());
+        });
     }
 
 }
