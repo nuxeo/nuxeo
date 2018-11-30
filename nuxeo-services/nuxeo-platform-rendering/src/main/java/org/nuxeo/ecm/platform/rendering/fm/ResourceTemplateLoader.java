@@ -1,4 +1,4 @@
-/* 
+/*
  * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,7 +62,7 @@ public class ResourceTemplateLoader implements TemplateLoader {
     public void closeTemplateSource(Object templateSource) throws IOException {
         if (templateSource instanceof File) {
             fileLoader.closeTemplateSource(templateSource);
-        } else if (templateSource instanceof URL) {
+        } else { // templateSource instanceof URLTemplateSource (not a public class)
             urlLoader.closeTemplateSource(templateSource);
         }
     }
