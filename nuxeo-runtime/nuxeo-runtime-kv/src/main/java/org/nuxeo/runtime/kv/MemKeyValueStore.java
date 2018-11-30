@@ -19,7 +19,9 @@
 package org.nuxeo.runtime.kv;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -51,12 +53,19 @@ public class MemKeyValueStore extends AbstractKeyValueStoreProvider {
 
     @Override
     public Stream<String> keyStream() {
-        return map.keySet().stream();
+        // don't return a keySet stream directly as it may
+        // throw ConcurrentModificationException if there are concurrent writes
+        List<String> keys = new ArrayList<>(map.keySet());
+        return keys.stream();
     }
 
     @Override
     public Stream<String> keyStream(String prefix) {
-        return map.keySet().stream().filter(key -> key.startsWith(prefix));
+        // don't return a keySet stream directly as it may
+        // throw ConcurrentModificationException if there are concurrent writes
+        List<String> keys = new ArrayList<>();
+        map.keySet().stream().filter(key -> key.startsWith(prefix)).forEach(keys::add);
+        return keys.stream();
     }
 
     @Override
