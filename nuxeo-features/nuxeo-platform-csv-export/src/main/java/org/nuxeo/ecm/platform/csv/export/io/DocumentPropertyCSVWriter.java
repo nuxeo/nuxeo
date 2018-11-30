@@ -49,7 +49,7 @@ import org.nuxeo.ecm.directory.Session;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
 
-    public static final String LIST_DELIMITER = "\n";
+    public static final String LIST_DELIMITER = " | ";
 
     public static final String LANG_CTX_DATA = "lang";
 
