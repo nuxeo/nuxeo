@@ -34,6 +34,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -168,6 +169,7 @@ public class TestSetPropertiesAction {
     }
 
     @Test
+    @Ignore("NXP-26357")
     public void testAbort() throws Exception {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
