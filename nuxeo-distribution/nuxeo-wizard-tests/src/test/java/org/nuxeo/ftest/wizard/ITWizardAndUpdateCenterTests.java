@@ -190,9 +190,8 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         AbstractPage.findElementWithTimeout(By.id("pkg_nuxeo-no-ui"));
         AbstractPage.findElementWithTimeout(By.id("pkg_nuxeo-web-ui"));
 
-        AbstractPage.findElementWaitUntilEnabledAndClick(By.id("pkg_nuxeo-showcase-content"));
-        AbstractPage.findElementWaitUntilEnabledAndClick(By.id("pkg_nuxeo-template-rendering-samples"));
-        AbstractPage.findElementWaitUntilEnabledAndClick(By.id("pkg_nuxeo-template-rendering"));
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.xpath("//div[@package-id=\"nuxeo-showcase-content\"]"));
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.xpath("//div[@package-id=\"nuxeo-template-rendering\"]"));
 
         // **************************
         // Package Download Screen
