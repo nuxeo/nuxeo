@@ -30,8 +30,6 @@ public class Headers {
 
     public static final String FILE_CONVERSION = "X-WOPI-FileConversion";
 
-    public static final String ITEM_VERSION = "X-WOPI-ItemVersion";
-
     public static final String LOCK = "X-WOPI-Lock";
 
     public static final String MAX_EXPECTED_SIZE = "X-WOPI-MaxExpectedSize";

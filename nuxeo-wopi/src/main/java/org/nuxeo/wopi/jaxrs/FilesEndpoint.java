@@ -79,7 +79,6 @@ import static org.nuxeo.wopi.Constants.VERSION;
 import static org.nuxeo.wopi.Constants.WOPI_BASE_URL_PROPERTY;
 import static org.nuxeo.wopi.Constants.WOPI_SOURCE;
 import static org.nuxeo.wopi.Headers.FILE_CONVERSION;
-import static org.nuxeo.wopi.Headers.ITEM_VERSION;
 import static org.nuxeo.wopi.Headers.LOCK;
 import static org.nuxeo.wopi.Headers.MAX_EXPECTED_SIZE;
 import static org.nuxeo.wopi.Headers.OLD_LOCK;
@@ -185,7 +184,7 @@ public class FilesEndpoint extends DefaultObject {
     @Override
     public void initialize(Object... args) {
         if (args == null || args.length != 4) {
-            throw new IllegalArgumentException("Invalid args: " + args);
+            throw new IllegalArgumentException("Invalid args: " + Arrays.toString(args));
         }
         session = (CoreSession) args[0];
         doc = (DocumentModel) args[1];
@@ -228,9 +227,7 @@ public class FilesEndpoint extends DefaultObject {
             throw new PreConditionFailedException();
         }
 
-        String versionLabel = doc.getVersionLabel();
-        response.addHeader(ITEM_VERSION, versionLabel);
-        logResponse(OPERATION_GET_FILE, OK.getStatusCode(), ITEM_VERSION, versionLabel);
+        logResponse(OPERATION_GET_FILE, OK.getStatusCode());
         return blob;
     }
 
@@ -282,10 +279,7 @@ public class FilesEndpoint extends DefaultObject {
                 doc.setLock();
             }
             LockHelper.addLock(fileId, lock);
-
-            String versionLabel = doc.getVersionLabel();
-            response.addHeader(ITEM_VERSION, versionLabel);
-            logResponse(OPERATION_LOCK, OK.getStatusCode(), ITEM_VERSION, versionLabel);
+            logResponse(OPERATION_LOCK, OK.getStatusCode());
             return Response.ok().build();
         }
 
@@ -295,9 +289,7 @@ public class FilesEndpoint extends DefaultObject {
             logCondition(() -> LOCK + " header is equal to current WOPI lock"); // NOSONAR
             // refresh lock
             LockHelper.refreshLock(fileId);
-            String versionLabel = doc.getVersionLabel();
-            response.addHeader(ITEM_VERSION, versionLabel);
-            logResponse(OPERATION_LOCK, OK.getStatusCode(), ITEM_VERSION, versionLabel);
+            logResponse(OPERATION_LOCK, OK.getStatusCode());
             return Response.ok().build();
         } else {
             logCondition(() -> LOCK + " header is not equal to current WOPI lock"); // NOSONAR
@@ -401,9 +393,7 @@ public class FilesEndpoint extends DefaultObject {
                         return privilegedSession.removeLock(doc.getRef());
                     });
                 }
-                String versionLabel = doc.getVersionLabel();
-                response.addHeader(ITEM_VERSION, versionLabel);
-                logResponse(operation, OK.getStatusCode(), ITEM_VERSION, versionLabel);
+                logResponse(operation, OK.getStatusCode());
             } else {
                 // refresh lock
                 LockHelper.refreshLock(fileId);
@@ -529,7 +519,6 @@ public class FilesEndpoint extends DefaultObject {
         logNuxeoAction(() -> "Renaming blob to " + fullFilename);
         blob.setFilename(fullFilename);
         doc.setPropertyValue(xpath, (Serializable) blob);
-        doc.putContextData(SOURCE, WOPI_SOURCE);
         session.saveDocument(doc);
 
         Map<String, Serializable> map = new HashMap<>();
@@ -613,12 +602,8 @@ public class FilesEndpoint extends DefaultObject {
         logNuxeoAction("Updating blob");
         Blob newBlob = createBlobFromRequestBody(blob.getFilename(), blob.getMimeType());
         doc.setPropertyValue(xpath, (Serializable) newBlob);
-        doc.putContextData(SOURCE, WOPI_SOURCE);
         doc = session.saveDocument(doc);
-
-        String versionLabel = doc.getVersionLabel();
-        response.addHeader(ITEM_VERSION, versionLabel);
-        logResponse(OPERATION_PUT_FILE, OK.getStatusCode(), ITEM_VERSION, versionLabel);
+        logResponse(OPERATION_PUT_FILE, OK.getStatusCode());
         return Response.ok().build();
     }
 
@@ -711,7 +696,7 @@ public class FilesEndpoint extends DefaultObject {
         map.put(OWNER_ID, doc.getPropertyValue("dc:creator"));
         map.put(SIZE, blob.getLength());
         map.put(USER_ID, principal.getName());
-        map.put(VERSION, doc.getVersionLabel());
+        map.put(VERSION, StringUtils.defaultString(doc.getChangeToken()));
     }
 
     protected void addHostCapabilitiesProperties(Map<String, Serializable> map) {

@@ -38,6 +38,8 @@ public class TestConstants {
 
     public static final String FILENAME_VAR = "FILENAME";
 
+    public static final String ITEM_VERSION_VAR = "ITEM_VERSION";
+
     public static final String REPOSITORY_VAR = "REPOSITORY";
 
     public static final String XPATH_VAR = "XPATH";

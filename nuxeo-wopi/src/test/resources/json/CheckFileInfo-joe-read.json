@@ -3,7 +3,7 @@
   "OwnerId": "john",
   "Size": 25,
   "UserId": "joe",
-  "Version": "0.0",
+  "Version": "${ITEM_VERSION}",
   "SupportedShareUrlTypes": ["ReadOnly", "ReadWrite"],
   "SupportsGetLock": true,
   "SupportsLocks": true,
