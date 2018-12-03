@@ -111,6 +111,10 @@ public abstract class LDAPDirectoryTestCase {
         server = new MockLdapServer(new File(Framework.getRuntime().getHome(), "ldap"));
         userDir.setTestServer(server);
         groupDir.setTestServer(server);
+        // inits usually done by fireFrameworkStarted
+        userDir.initialize();
+        groupDir.initialize();
+        dirService.getDirectory("profileDirectory").initialize();
         try (LDAPSession session = userDir.getSession()) {
             DirContext ctx = session.getContext();
             for (String ldifFile : getLdifFiles()) {

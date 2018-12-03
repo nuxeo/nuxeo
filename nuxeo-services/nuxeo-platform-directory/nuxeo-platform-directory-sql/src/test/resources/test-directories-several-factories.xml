@@ -15,6 +15,11 @@
       </types>
       <idField>username</idField>
     </directory>
+    <references>
+      <tableReference field="groups" directory="groupDirectory"
+        table="user2group" sourceColumn="userId"
+        targetColumn="groupId" dataFile="test-user2group.csv" />
+    </references>
   </extension>
 
   <!-- then register a different directory with SQL factory => bug shows that the

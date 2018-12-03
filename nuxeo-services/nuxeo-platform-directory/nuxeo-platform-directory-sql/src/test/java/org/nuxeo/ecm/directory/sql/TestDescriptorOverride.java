@@ -49,7 +49,7 @@ public class TestDescriptorOverride {
     protected DirectoryService directoryService;
 
     @Test
-    public void testOverride() throws Exception {
+    public void testWithoutOverride() throws Exception {
         SQLDirectory sqlDir = (SQLDirectory) directoryService.getDirectory("userDirectory");
         SQLDirectoryDescriptor config = sqlDir.getDescriptor();
 
@@ -61,27 +61,24 @@ public class TestDescriptorOverride {
         Assert.assertNull(config.cacheEntryWithoutReferencesName);
         Assert.assertNull(config.negativeCaching);
         assertEquals("test-users.csv", config.getDataFileName());
+    }
 
-        deployer.deploy("org.nuxeo.ecm.directory.sql.tests:test-sql-directories-override-bundle.xml");
-        sqlDir = (SQLDirectory) directoryService.getDirectory("userDirectory");
-        config = sqlDir.getDescriptor();
+    @Test
+    @Deploy("org.nuxeo.ecm.directory.sql.tests:test-sql-directories-override-bundle.xml")
+    public void testOverride() throws Exception {
+        SQLDirectory sqlDir = (SQLDirectory) directoryService.getDirectory("userDirectory");
+        SQLDirectoryDescriptor config = sqlDir.getDescriptor();
 
         // override
         assertEquals("never", config.getCreateTablePolicy());
         assertEquals(123, config.getQuerySizeLimit());
         assertTrue(config.isAutoincrementIdField());
         assertFalse(config.isComputeMultiTenantId());
-        Assert.assertEquals("override-entry-cache", config.cacheEntryName);
-        Assert.assertEquals("override-entry-cache-wo-ref", config.cacheEntryWithoutReferencesName);
         Assert.assertEquals(Boolean.TRUE, config.negativeCaching);
 
         // inherit
         assertEquals("test-users.csv", config.getDataFileName());
         assertEquals(1, config.getTableReferences().length);
-
-        // TODO if we don't remove the inline contribs the SQLDirectoryFeature will throw an exception
-        // The feature should instead add a deployer handler to cleanup directories when restarting ...
-        deployer.reset();
     }
 
 }

@@ -35,7 +35,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class DirectoryServiceImpl extends DefaultComponent implements DirectoryService {
 
@@ -72,28 +71,18 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
     }
 
     @Override
+    public int getApplicationStartedOrder() {
+        // earlier than the repository init, which has order 100,
+        // but later than the cache service, which has order 95 (100-5)
+        return 97;
+    }
+
+    @Override
     public void start(ComponentContext context) {
-        if (Framework.isTestModeSet()) {
-            // when testing, DatabaseHelper init hasn't occurred yet,
-            // so keep to lazy initialization
-            return;
-        }
-        // open all directories at application startup, so that
-        // their tables are created (outside a transaction) if needed
-        for (Directory dir : getDirectories()) {
-            // open directory to init its resources (tables for SQLDirectory)
-            try {
-                dir.getSession().close();
-            } catch (DirectoryException e) {
-                // NXP-24245 : catch potential hotreload DirectionException without breaking the whole directories start
-                log.error(e, e);
-            }
-        }
-        // commit the transaction so that tables are committed
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
+        List<Directory> directories = getDirectories();
+        directories.forEach(Directory::initialize);
+        directories.forEach(Directory::initializeReferences);
+        directories.forEach(Directory::initializeInverseReferences);
     }
 
     protected DirectoryConfiguration getDirectoryConfiguration(DocumentModel documentContext) {

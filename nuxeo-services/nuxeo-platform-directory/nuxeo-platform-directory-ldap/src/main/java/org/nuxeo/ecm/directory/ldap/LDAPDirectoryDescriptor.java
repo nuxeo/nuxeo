@@ -268,7 +268,7 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
         if (ldapTreeReferences != null) {
             refs.addAll(Arrays.asList(ldapTreeReferences));
         }
-        return refs.toArray(new Reference[] {});
+        return refs.toArray(new Reference[0]);
     }
 
     public String getEmptyRefMarker() {

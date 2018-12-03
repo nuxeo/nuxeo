@@ -81,6 +81,9 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
      */
     public static final String NODE_ID_PROP = "repository.clustering.id";
 
+    // allows us to start caches registered programmatically through registerCache(name)
+    protected boolean started;
+
     /** Currently registered caches. */
     protected final Map<String, CacheManagement> caches = new ConcurrentHashMap<>();
 
@@ -222,6 +225,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
         // create and starts caches
         Collection<CacheDescriptor> descriptors = getDescriptors(XP_CACHES);
         descriptors.forEach(this::startCacheDescriptor);
+        started = true;
     }
 
     /** Creates and starts the cache. */
@@ -257,10 +261,12 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
             cache.stop();
         }
         caches.clear();
+        started = false;
     }
 
     protected void maybeStart(String name) {
-        if (!Framework.getRuntime().getComponentManager().isStarted()) {
+        if (!started) {
+            // cache will be started by start()
             return;
         }
         // stop previous

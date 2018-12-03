@@ -39,6 +39,27 @@ import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 public interface Directory {
 
     /**
+     * INTERNAL, DO NOT CALL. Initializes the directory when Nuxeo starts. Called without a transaction.
+     *
+     * @since 10.10
+     */
+    void initialize();
+
+    /**
+     * INTERNAL, DO NOT CALL. Initializes the directory when Nuxeo starts. Called without a transaction.
+     *
+     * @since 10.10
+     */
+    void initializeReferences();
+
+    /**
+     * INTERNAL, DO NOT CALL. Initializes the directory when Nuxeo starts. Called without a transaction.
+     *
+     * @since 10.10
+     */
+    void initializeInverseReferences();
+
+    /**
      * Gets the unique name of the directory, used for registering.
      *
      * @return the unique directory name

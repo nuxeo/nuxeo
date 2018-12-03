@@ -35,9 +35,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MultiDirectory extends AbstractDirectory {
 
-    // used in double-checked locking for lazy init
-    protected volatile boolean initialized;
-
     public MultiDirectory(MultiDirectoryDescriptor descriptor) {
         super(descriptor, MultiReference.class);
     }
@@ -50,20 +47,8 @@ public class MultiDirectory extends AbstractDirectory {
     @Override
     public MultiDirectorySession getSession() {
         MultiDirectorySession session = new MultiDirectorySession(this);
-        initializeIfNeeded();
         addSession(session);
         return session;
-    }
-
-    protected void initializeIfNeeded() {
-        if (!initialized) {
-            synchronized (this) {
-                if (!initialized) {
-                    initSchemaFieldMap();
-                    initialized = true;
-                }
-            }
-        }
     }
 
     @Override
