@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.trash.TrashService;
-import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -102,9 +101,6 @@ public class TestNuxeoDriveManager {
 
     @Inject
     UserWorkspaceService userWorkspaceService;
-
-    @Inject
-    EventServiceAdmin eventServiceAdmin;
 
     @Inject
     TransactionalFeature txFeature;
@@ -273,10 +269,6 @@ public class TestNuxeoDriveManager {
 
     @Test
     public void testSynchronizationRootDeletion() throws Exception {
-        // Disable bulk life cycle change listener to avoid exception when
-        // trying to apply recursive changes on a removed document
-        eventServiceAdmin.setListenerEnabledFlag("bulkLifeCycleChangeListener", false);
-
         NuxeoPrincipal user1 = user1Session.getPrincipal();
         NuxeoPrincipal user2 = user2Session.getPrincipal();
         checkRootsCount(user1, 0);
@@ -290,7 +282,7 @@ public class TestNuxeoDriveManager {
         checkRootsCount(user2, 1);
 
         // check deletion by lifecycle
-        session.followTransition(folder_2_1.getRef(), "delete");
+        trashService.trashDocument(folder_2_1);
         txFeature.nextTransaction();
         checkRootsCount(user1, 1);
         checkRootsCount(user2, 0);
