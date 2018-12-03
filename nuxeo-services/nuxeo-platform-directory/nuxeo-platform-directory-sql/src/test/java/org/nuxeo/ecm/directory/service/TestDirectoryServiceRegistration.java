@@ -34,7 +34,6 @@ import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.HotDeployer;
 
 /**
  * Test hot reload of registrations using mock directory factories
@@ -49,26 +48,20 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
 public class TestDirectoryServiceRegistration {
 
     @Inject
-    protected HotDeployer deployer;
-
-    @Inject
     protected DirectoryService directoryService;
 
     @Test
-    public void testOverride() throws Exception {
+    public void testWithoutOverride() throws Exception {
         Directory dir = directoryService.getDirectory("userDirectory");
         assertTrue(dir instanceof SQLDirectory);
+    }
 
-        deployer.deploy("org.nuxeo.ecm.directory.sql.tests:test-directories-memory-factory.xml",
-                "org.nuxeo.ecm.directory.sql.tests:test-directories-several-factories.xml");
-
-        dir = directoryService.getDirectory("userDirectory");
+    @Test
+    @Deploy("org.nuxeo.ecm.directory.sql.tests:test-directories-memory-factory.xml")
+    @Deploy("org.nuxeo.ecm.directory.sql.tests:test-directories-several-factories.xml")
+    public void testOverride() throws Exception {
+        Directory dir = directoryService.getDirectory("userDirectory");
         assertTrue(dir instanceof MemoryDirectory);
-
-        // TODO if we don't remove the inline contribs the SQLDirectoryFeature will throw an exception
-        // The feature should instead add a deployer handler to cleanup directories when restarting ...
-        deployer.reset(); // this will restart and remove the inline contributions
-
     }
 
 }

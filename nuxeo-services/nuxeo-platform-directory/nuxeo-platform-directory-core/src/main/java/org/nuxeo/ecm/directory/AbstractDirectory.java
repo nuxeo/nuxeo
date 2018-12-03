@@ -23,7 +23,6 @@ package org.nuxeo.ecm.directory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,6 +40,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
@@ -92,8 +92,8 @@ public abstract class AbstractDirectory implements Directory {
         sessionMaxCount = registry.counter(MetricRegistry.name("nuxeo", "directories", getName(), "sessions", "max"));
 
         // add references
-        addInverseReferences(descriptor.getInverseReferences());
-        addReferences(descriptor.getReferences());
+        addReferences();
+        addInverseReferences();
 
         // cache parameterization
         cache = new DirectoryCache(getName());
@@ -105,6 +105,38 @@ public abstract class AbstractDirectory implements Directory {
 
     protected boolean doSanityChecks() {
         return true;
+    }
+
+    @Override
+    public void initialize() {
+        initSchemaFieldMap();
+    }
+
+    protected void loadData() {
+        if (descriptor.getDataFileName() != null) {
+            try (Session session = getSession()) {
+                TransactionHelper.runInTransaction(() -> Framework.doPrivileged(() -> {
+                    Schema schema = Framework.getService(SchemaManager.class).getSchema(getSchema());
+                    DirectoryCSVLoader.loadData(descriptor.getDataFileName(),
+                            descriptor.getDataFileCharacterSeparator(), schema,
+                            ((BaseSession) session)::createEntryWithoutReferences);
+                }));
+            }
+        }
+    }
+
+    @Override
+    public void initializeReferences() {
+        // nothing, but may be subclassed
+    }
+
+    @Override
+    public void initializeInverseReferences() {
+        for (Reference reference : getReferences()) {
+            if (reference instanceof InverseReference) {
+                ((InverseReference) reference).initialize();
+            }
+        }
     }
 
     @Override
@@ -194,28 +226,26 @@ public abstract class AbstractDirectory implements Directory {
         fieldRefs.add(reference);
     }
 
-    public void addReferences(Reference[] refs) {
-        for (Reference reference : refs) {
-            addReference(reference);
+    protected void addReferences() {
+        ReferenceDescriptor[] descs = descriptor.getReferences();
+        if (descs != null) {
+            Arrays.stream(descs).map(this::newReference).forEach(this::addReference);
         }
     }
 
-    protected void addInverseReferences(InverseReferenceDescriptor[] references) {
-        if (references != null) {
-            Arrays.stream(references).map(InverseReference::new).forEach(this::addReference);
+    protected Reference newReference(ReferenceDescriptor desc) {
+        try {
+            return referenceClass.getDeclaredConstructor(ReferenceDescriptor.class).newInstance(desc);
+        } catch (ReflectiveOperationException e) {
+            throw new DirectoryException(
+                    "An error occurred while instantiating reference class " + referenceClass.getName(), e);
         }
     }
 
-    protected void addReferences(ReferenceDescriptor[] references) {
-        if (references != null) {
-            for (ReferenceDescriptor desc : references) {
-                try {
-                    addReference(referenceClass.getDeclaredConstructor(ReferenceDescriptor.class).newInstance(desc));
-                } catch (ReflectiveOperationException e) {
-                    throw new DirectoryException(
-                            "An error occurred while instantiating reference class " + referenceClass.getName(), e);
-                }
-            }
+    protected void addInverseReferences() {
+        InverseReferenceDescriptor[] descs = descriptor.getInverseReferences();
+        if (descs != null) {
+            Arrays.stream(descs).map(InverseReference::new).forEach(this::addReference);
         }
     }
 

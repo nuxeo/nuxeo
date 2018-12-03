@@ -155,12 +155,15 @@ public class DirectoryRegistry {
 
     /**
      * Gets the effective directory descriptor with the given id.
+     * <p>
+     * Templates are not returned.
      *
      * @param id the directory id
      * @return the effective directory descriptor, or {@code null} if not found
      */
     public synchronized BaseDirectoryDescriptor getDirectoryDescriptor(String id) {
-        return descriptors.get(id);
+        BaseDirectoryDescriptor descriptor = descriptors.get(id);
+        return descriptor.template ? null : descriptor;
     }
 
     /**
@@ -173,7 +176,7 @@ public class DirectoryRegistry {
         Directory dir = directories.get(id);
         if (dir == null) {
             BaseDirectoryDescriptor descriptor = descriptors.get(id);
-            if (descriptor != null) {
+            if (descriptor != null && !descriptor.template) {
                 dir = descriptor.newDirectory();
                 directories.put(id, dir);
             }

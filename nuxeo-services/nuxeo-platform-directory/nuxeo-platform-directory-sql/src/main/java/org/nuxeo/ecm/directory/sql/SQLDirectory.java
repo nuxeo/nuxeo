@@ -39,8 +39,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.AbstractDirectory;
-import org.nuxeo.ecm.directory.DirectoryCSVLoader;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -123,9 +123,6 @@ public class SQLDirectory extends AbstractDirectory {
     public SQLDirectory(SQLDirectoryDescriptor descriptor) {
         super(descriptor, TableReference.class);
 
-        // Add specific references
-        addTableReferences(descriptor.getTableReferences());
-
         nativeCase = Boolean.TRUE.equals(descriptor.nativeCase);
 
         // Cache fallback
@@ -137,32 +134,19 @@ public class SQLDirectory extends AbstractDirectory {
         return (SQLDirectoryDescriptor) descriptor;
     }
 
-    /**
-     * Lazily initializes the connection.
-     *
-     * @return {@code true} if CSV data should be loaded
-     * @since 8.4
-     */
-    protected boolean initConnectionIfNeeded() {
-        // double checked locking with volatile pattern to ensure concurrent lazy init
-        if (dialect == null) {
-            synchronized (this) {
-                if (dialect == null) {
-                    return initConnection();
-                }
-            }
+    @Override
+    protected void addReferences() {
+        super.addReferences();
+        // add backward compat tableReferences
+        TableReferenceDescriptor[] descs = getDescriptor().getTableReferences();
+        if (descs != null) {
+            Arrays.stream(descs).map(TableReference::new).forEach(this::addReference);
         }
-        return false;
     }
 
-    /**
-     * Initializes the table.
-     *
-     * @return {@code true} if CSV data should be loaded
-     * @since 6.0
-     */
-    protected boolean initConnection() {
-        initSchemaFieldMap();
+    @Override
+    public void initialize() {
+        super.initialize();
         SQLDirectoryDescriptor descriptor = getDescriptor();
         try (Connection sqlConnection = getConnection()) {
             dialect = Dialect.createDialect(sqlConnection, null);
@@ -210,9 +194,30 @@ public class SQLDirectory extends AbstractDirectory {
             }
 
             SQLHelper helper = new SQLHelper(sqlConnection, table, descriptor.getCreateTablePolicy());
-            return helper.setupTable();
+            boolean loadData = helper.setupTable();
+            // commit the transaction so that tables are committed
+            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                TransactionHelper.commitOrRollbackTransaction();
+                TransactionHelper.startTransaction();
+            }
+            if (loadData) {
+                loadData();
+            }
         } catch (SQLException e) {
             // exception on close
+            throw new DirectoryException(e);
+        }
+    }
+
+    @Override
+    public void initializeReferences() {
+        try (Connection connection = getConnection()) {
+            for (Reference reference : getReferences()) {
+                if (reference instanceof TableReference) {
+                    ((TableReference) reference).initialize(connection);
+                }
+            }
+        } catch (SQLException e) {
             throw new DirectoryException(e);
         }
     }
@@ -231,14 +236,8 @@ public class SQLDirectory extends AbstractDirectory {
 
     @Override
     public SQLSession getSession() {
-        boolean loadData = initConnectionIfNeeded();
         SQLSession session = new SQLSession(this, getDescriptor());
         addSession(session);
-        if (loadData && descriptor.getDataFileName() != null) {
-            Schema schema = Framework.getService(SchemaManager.class).getSchema(getSchema());
-            Framework.doPrivileged(() -> DirectoryCSVLoader.loadData(descriptor.getDataFileName(),
-                    descriptor.getDataFileCharacterSeparator(), schema, session::createEntry));
-        }
         return session;
     }
 
@@ -274,12 +273,6 @@ public class SQLDirectory extends AbstractDirectory {
     @Override
     public String toString() {
         return "SQLDirectory [name=" + descriptor.name + "]";
-    }
-
-    protected void addTableReferences(TableReferenceDescriptor[] tableReferences) {
-        if (tableReferences != null) {
-            Arrays.stream(tableReferences).map(TableReference::new).forEach(this::addReference);
-        }
     }
 
 }

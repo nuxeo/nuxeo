@@ -63,10 +63,6 @@ public class TableReference extends AbstractReference {
 
     private Table table;
 
-    private Dialect dialect;
-
-    private boolean initialized = false;
-
     /**
      * @since 9.2
      */
@@ -95,15 +91,15 @@ public class TableReference extends AbstractReference {
                 descriptor.getSource(), descriptor.getTarget(), descriptor.getDataFileName());
     }
 
-    private SQLDirectory getSQLSourceDirectory() {
-        Directory dir = getSourceDirectory();
-        return (SQLDirectory) dir;
-    }
-
-    private void initialize(SQLSession sqlSession) {
-        Connection connection = sqlSession.sqlConnection;
-        SQLDirectory directory = getSQLSourceDirectory();
-        Table table = getTable();
+    protected void initialize(Connection connection) {
+        SQLDirectory directory = (SQLDirectory) getSourceDirectory();
+        Dialect dialect = directory.getDialect();
+        boolean nativeCase = directory.useNativeCase();
+        table = SQLHelper.addTable(tableName, dialect, nativeCase);
+        SQLHelper.addColumn(table, sourceColumn, ColumnType.STRING, nativeCase);
+        SQLHelper.addColumn(table, targetColumn, ColumnType.STRING, nativeCase);
+        // index added for Azure
+        table.addIndex(null, IndexType.MAIN_NON_PRIMARY, sourceColumn);
         SQLHelper helper = new SQLHelper(connection, table, directory.getDescriptor().getCreateTablePolicy());
         boolean loadData = helper.setupTable();
         if (loadData && dataFileName != null) {
@@ -162,7 +158,6 @@ public class TableReference extends AbstractReference {
             return;
         }
         SQLSession sqlSession = (SQLSession) session;
-        maybeInitialize(sqlSession);
         for (String targetId : targetIds) {
             addLink(sourceId, targetId, sqlSession, true);
         }
@@ -174,7 +169,6 @@ public class TableReference extends AbstractReference {
             return;
         }
         SQLSession sqlSession = (SQLSession) session;
-        maybeInitialize(sqlSession);
         for (String sourceId : sourceIds) {
             addLink(sourceId, targetId, sqlSession, true);
         }
@@ -183,7 +177,6 @@ public class TableReference extends AbstractReference {
     public boolean exists(String sourceId, String targetId, SQLSession session) {
         // "SELECT COUNT(*) FROM %s WHERE %s = ? AND %s = ?", tableName, sourceColumn, targetColumn
 
-        Table table = getTable();
         Select select = new Select(table);
         select.setFrom(table.getQuotedName());
         select.setWhat("count(*)");
@@ -225,7 +218,6 @@ public class TableReference extends AbstractReference {
         // second step: add the link
 
         // "INSERT INTO %s (%s, %s) VALUES (?, ?)", tableName, sourceColumn, targetColumn
-        Table table = getTable();
         Insert insert = new Insert(table);
         insert.addColumn(table.getColumn(sourceColumn));
         insert.addColumn(table.getColumn(targetColumn));
@@ -246,7 +238,6 @@ public class TableReference extends AbstractReference {
     protected List<String> getIdsFor(String valueColumn, String filterColumn, String filterValue) {
         try (SQLSession session = getSQLSession()) {
             // "SELECT %s FROM %s WHERE %s = ?", table.getColumn(valueColumn), tableName, filterColumn
-            Table table = getTable();
             Select select = new Select(table);
             select.setWhat(table.getColumn(valueColumn).getQuotedName());
             select.setFrom(table.getQuotedName());
@@ -283,7 +274,6 @@ public class TableReference extends AbstractReference {
     }
 
     public void removeLinksFor(String column, String entryId, SQLSession session) {
-        Table table = getTable();
         String sql = String.format("DELETE FROM %s WHERE %s = ?", table.getQuotedName(), table.getColumn(column)
                                                                                               .getQuotedName());
         if (session.logger.isLogEnabled()) {
@@ -300,14 +290,12 @@ public class TableReference extends AbstractReference {
     @Override
     public void removeLinksForSource(String sourceId, Session session) {
         SQLSession sqlSession = (SQLSession) session;
-        maybeInitialize(sqlSession);
         removeLinksFor(sourceColumn, sourceId, sqlSession);
     }
 
     @Override
     public void removeLinksForTarget(String targetId, Session session) {
         SQLSession sqlSession = (SQLSession) session;
-        maybeInitialize(sqlSession);
         removeLinksFor(targetColumn, targetId, sqlSession);
     }
 
@@ -333,7 +321,6 @@ public class TableReference extends AbstractReference {
         if (ids != null) { // ids may be null
             idsToAdd.addAll(ids);
         }
-        Table table = getTable();
 
         // iterate over existing links to find what to add and what to remove
         String selectSql = String.format("SELECT %s FROM %s WHERE %s = ?", table.getColumn(idsColumn).getQuotedName(),
@@ -412,7 +399,6 @@ public class TableReference extends AbstractReference {
     @Override
     public void setSourceIdsForTarget(String targetId, List<String> sourceIds, Session session) {
         SQLSession sqlSession = (SQLSession) session;
-        maybeInitialize(sqlSession);
         setSourceIdsForTarget(targetId, sourceIds, sqlSession);
     }
 
@@ -426,51 +412,13 @@ public class TableReference extends AbstractReference {
     @Override
     public void setTargetIdsForSource(String sourceId, List<String> targetIds, Session session) {
         SQLSession sqlSession = (SQLSession) session;
-        maybeInitialize(sqlSession);
         setTargetIdsForSource(sourceId, targetIds, sqlSession);
     }
 
     // TODO add support for the ListDiff type
 
     protected SQLSession getSQLSession() {
-        if (!initialized) {
-            try (SQLSession sqlSession = (SQLSession) getSourceDirectory().getSession()) {
-                initialize(sqlSession);
-                initialized = true;
-            }
-        }
         return (SQLSession) getSourceDirectory().getSession();
-    }
-
-    /**
-     * Initialize if needed, using an existing session.
-     *
-     * @param sqlSession
-     */
-    protected void maybeInitialize(SQLSession sqlSession) {
-        if (!initialized) {
-            initialize(sqlSession);
-            initialized = true;
-        }
-    }
-
-    public Table getTable() {
-        if (table == null) {
-            boolean nativeCase = getSQLSourceDirectory().useNativeCase();
-            table = SQLHelper.addTable(tableName, getDialect(), nativeCase);
-            SQLHelper.addColumn(table, sourceColumn, ColumnType.STRING, nativeCase);
-            SQLHelper.addColumn(table, targetColumn, ColumnType.STRING, nativeCase);
-            // index added for Azure
-            table.addIndex(null, IndexType.MAIN_NON_PRIMARY, sourceColumn);
-        }
-        return table;
-    }
-
-    private Dialect getDialect() {
-        if (dialect == null) {
-            dialect = getSQLSourceDirectory().getDialect();
-        }
-        return dialect;
     }
 
     public String getSourceColumn() {

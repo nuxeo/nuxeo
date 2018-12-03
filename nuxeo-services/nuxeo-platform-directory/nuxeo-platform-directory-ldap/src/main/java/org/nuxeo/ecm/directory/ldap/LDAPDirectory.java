@@ -28,9 +28,9 @@ import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -97,33 +97,27 @@ public class LDAPDirectory extends AbstractDirectory {
     }
 
     @Override
+    protected void addReferences() {
+        super.addReferences();
+        // add backward compat LDAP references
+        Reference[] refs = getDescriptor().getLdapReferences();
+        Arrays.stream(refs).forEach(this::addReference);
+    }
+
+    @Override
     public List<Reference> getReferences(String referenceFieldName) {
-        initLDAPConfigIfNeeded();
         return references.get(referenceFieldName);
     }
 
-    protected void initLDAPConfigIfNeeded() {
-        // double checked locking with volatile pattern to ensure concurrent lazy init
-        if (searchControls == null) {
-            synchronized (this) {
-                if (searchControls == null) {
-                    initLDAPConfig();
-                }
-            }
-        }
-    }
-
-    protected void initLDAPConfig() {
-        LDAPDirectoryDescriptor ldapDirectoryDesc = getDescriptor();
-        initSchemaFieldMap();
+    @Override
+    public void initialize() {
+        super.initialize();
 
         // init field mapper before search fields
+        LDAPDirectoryDescriptor ldapDirectoryDesc = getDescriptor();
         fieldMapper = new DirectoryFieldMapper(ldapDirectoryDesc.fieldMapping);
         contextProperties = computeContextProperties();
         baseFilter = ldapDirectoryDesc.getAggregatedSearchFilter();
-
-        // register the references
-        addReferences(ldapDirectoryDesc.getLdapReferences());
 
         // register the search controls after having registered the references
         // since the list of attributes to fetch my depend on registered
@@ -335,7 +329,6 @@ public class LDAPDirectory extends AbstractDirectory {
 
     @Override
     public LDAPSession getSession() {
-        initLDAPConfigIfNeeded();
         LDAPSession session = new LDAPSession(this);
         addSession(session);
         return session;

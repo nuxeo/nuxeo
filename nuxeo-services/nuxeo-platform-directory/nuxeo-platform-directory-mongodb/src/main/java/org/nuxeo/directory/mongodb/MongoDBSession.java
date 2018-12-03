@@ -64,15 +64,11 @@ import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
-import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.Updates;
@@ -86,22 +82,8 @@ import com.mongodb.client.result.UpdateResult;
  */
 public class MongoDBSession extends BaseSession {
 
-    /**
-     * Prefix used to retrieve a MongoDB connection from {@link MongoDBConnectionService}.
-     * <p />
-     * The connection id will be {@code directory/[DIRECTORY_NAME]}.
-     */
-    public static final String DIRECTORY_CONNECTION_PREFIX = "directory/";
-
-    protected final MongoDatabase database;
-
-    protected String countersCollectionName;
-
     public MongoDBSession(MongoDBDirectory directory) {
         super(directory, MongoDBReference.class);
-        MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
-        database = mongoService.getDatabase(DIRECTORY_CONNECTION_PREFIX + directory.getDescriptor().name);
-        countersCollectionName = directory.getCountersCollectionName();
     }
 
     @Override
@@ -149,8 +131,7 @@ public class MongoDBSession extends BaseSession {
             Document filter = MongoDBSerializationHelper.fieldMapToBson(MONGODB_ID, directoryName);
             Bson update = Updates.inc(MONGODB_SEQ, 1L);
             FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER);
-            Long longId = getCollection(countersCollectionName).findOneAndUpdate(filter, update, options)
-                                                               .getLong(MONGODB_SEQ);
+            Long longId = getCountersCollection().findOneAndUpdate(filter, update, options).getLong(MONGODB_SEQ);
             fieldMap.put(idFieldName, longId);
             newDocMap.put(idFieldName, longId);
             id = String.valueOf(longId);
@@ -624,32 +605,21 @@ public class MongoDBSession extends BaseSession {
     }
 
     /**
-     * Retrieve a collection
-     *
-     * @param collection the collection name
-     * @return the MongoDB collection
-     */
-    public MongoCollection<Document> getCollection(String collection) {
-        return database.getCollection(collection);
-    }
-
-    /**
      * Retrieve the collection associated to this directory
      *
      * @return the MongoDB collection
      */
-    public MongoCollection<Document> getCollection() {
-        return getCollection(directoryName);
+    protected MongoCollection<Document> getCollection() {
+        return getDirectory().getCollection();
     }
 
     /**
-     * Check if the MongoDB server has the collection
+     * Retrieve the counters collection associated to this directory
      *
-     * @param collection the collection name
-     * @return true if the server has the collection, false otherwise
+     * @return the MongoDB counters collection
      */
-    public boolean hasCollection(String collection) {
-        return MongoDBConnectionHelper.hasCollection(database, collection);
+    protected MongoCollection<Document> getCountersCollection() {
+        return getDirectory().getCountersCollection();
     }
 
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {

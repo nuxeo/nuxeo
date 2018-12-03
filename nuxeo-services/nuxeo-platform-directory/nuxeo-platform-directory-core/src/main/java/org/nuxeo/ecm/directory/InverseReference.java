@@ -55,26 +55,22 @@ public class InverseReference extends AbstractReference {
         return readOnly;
     }
 
-    protected void checkDualReference() {
-        if (dualReference == null) {
-            List<Reference> references = getTargetDirectory().getReferences(dualReferenceName);
-            if (references.size() == 0) {
-                dualReference = null;
-            } else if (references.size() == 1) {
-                dualReference = references.get(0);
-            } else {
-                for (Reference ref : references) {
-                    if (ref instanceof InverseReference) {
-                        continue;
-                    } else if (sourceDirectoryName.equals(ref.getTargetDirectory().getName())
-                            && targetDirectoryName.equals(ref.getSourceDirectory().getName())) {
-                        if (dualReference == null) {
-                            dualReference = ref;
-                        } else {
-                            throw new DirectoryException(
-                                    "More than one reference: could not find reference " + dualReferenceName);
-                        }
+    public void initialize() {
+        List<Reference> references = getTargetDirectory().getReferences(dualReferenceName);
+        if (references == null || references.isEmpty()) {
+            dualReference = null;
+        } else if (references.size() == 1) {
+            dualReference = references.get(0);
+        } else {
+            for (Reference ref : references) {
+                if (!(ref instanceof InverseReference) //
+                        && sourceDirectoryName.equals(ref.getTargetDirectory().getName())
+                        && targetDirectoryName.equals(ref.getSourceDirectory().getName())) {
+                    if (dualReference != null) {
+                        throw new DirectoryException(
+                                "More than one reference: could not find reference " + dualReferenceName);
                     }
+                    dualReference = ref;
                 }
             }
         }
@@ -92,7 +88,6 @@ public class InverseReference extends AbstractReference {
         if (readOnly) {
             return;
         }
-        checkDualReference();
         dualReference.addLinks(targetIds, sourceId);
     }
 
@@ -101,7 +96,6 @@ public class InverseReference extends AbstractReference {
         if (readOnly) {
             return;
         }
-        checkDualReference();
         dualReference.addLinks(targetId, sourceIds);
     }
 
@@ -110,7 +104,6 @@ public class InverseReference extends AbstractReference {
         if (readOnly) {
             return;
         }
-        checkDualReference();
         dualReference.removeLinksForSource(targetId);
     }
 
@@ -119,7 +112,6 @@ public class InverseReference extends AbstractReference {
         if (readOnly) {
             return;
         }
-        checkDualReference();
         dualReference.removeLinksForSource(targetId, session);
     }
 
@@ -128,7 +120,6 @@ public class InverseReference extends AbstractReference {
         if (readOnly) {
             return;
         }
-        checkDualReference();
         dualReference.removeLinksForTarget(sourceId);
     }
 
@@ -137,19 +128,16 @@ public class InverseReference extends AbstractReference {
         if (readOnly) {
             return;
         }
-        checkDualReference();
         dualReference.removeLinksForTarget(sourceId, session);
     }
 
     @Override
     public List<String> getSourceIdsForTarget(String targetId) {
-        checkDualReference();
         return dualReference.getTargetIdsForSource(targetId);
     }
 
     @Override
     public List<String> getTargetIdsForSource(String sourceId) {
-        checkDualReference();
         return dualReference.getSourceIdsForTarget(sourceId);
     }
 
@@ -158,7 +146,6 @@ public class InverseReference extends AbstractReference {
         if (readOnly) {
             return;
         }
-        checkDualReference();
         dualReference.setSourceIdsForTarget(sourceId, targetIds);
     }
 
@@ -167,7 +154,6 @@ public class InverseReference extends AbstractReference {
         if (readOnly) {
             return;
         }
-        checkDualReference();
         dualReference.setSourceIdsForTarget(sourceId, targetIds, session);
     }
 
@@ -176,7 +162,6 @@ public class InverseReference extends AbstractReference {
         if (readOnly) {
             return;
         }
-        checkDualReference();
         dualReference.setTargetIdsForSource(targetId, sourceIds);
     }
 
@@ -185,7 +170,6 @@ public class InverseReference extends AbstractReference {
         if (readOnly) {
             return;
         }
-        checkDualReference();
         dualReference.setTargetIdsForSource(targetId, sourceIds, session);
     }
 
@@ -194,7 +178,6 @@ public class InverseReference extends AbstractReference {
         if (readOnly) {
             return;
         }
-        checkDualReference();
         dualReference.addLinks(targetIds, sourceId, session);
     }
 
@@ -203,7 +186,6 @@ public class InverseReference extends AbstractReference {
         if (readOnly) {
             return;
         }
-        checkDualReference();
         dualReference.addLinks(targetId, sourceIds, session);
     }
 }
