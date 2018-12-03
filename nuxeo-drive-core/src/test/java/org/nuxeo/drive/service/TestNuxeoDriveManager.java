@@ -177,7 +177,7 @@ public class TestNuxeoDriveManager {
             usersDir.deleteEntry("user2");
         }
         // Simulate root deletion to cleanup the cache between the tests
-        nuxeoDriveManager.handleFolderDeletion((IdRef) doc("/").getRef());
+        nuxeoDriveManager.handleFolderDeletion((IdRef) session.getRootDocument().getRef());
     }
 
     @Test
@@ -252,8 +252,7 @@ public class TestNuxeoDriveManager {
         checkRootsCount(user2, 2);
 
         // unsyncing unsynced folder does nothing
-        nuxeoDriveManager.unregisterSynchronizationRoot(user2Session.getPrincipal(),
-                doc("/default-domain/workspaces/workspace-2"), user2Session);
+        nuxeoDriveManager.unregisterSynchronizationRoot(user2Session.getPrincipal(), workspace_2, user2Session);
         checkRootsCount(user1, 2);
         checkRootsCount(user2, 2);
 
@@ -262,14 +261,12 @@ public class TestNuxeoDriveManager {
         checkRootsCount(user1, 1);
         checkRootsCount(user2, 2);
 
-        nuxeoDriveManager.unregisterSynchronizationRoot(user1Session.getPrincipal(),
-                doc("/default-domain/workspaces/workspace-2/folder-2-1"), user1Session);
+        nuxeoDriveManager.unregisterSynchronizationRoot(user1Session.getPrincipal(), folder_2_1, user1Session);
         checkRootsCount(user1, 0);
         checkRootsCount(user2, 2);
 
         // check re-registration
-        nuxeoDriveManager.registerSynchronizationRoot(user1Session.getPrincipal(),
-                doc("/default-domain/workspaces/workspace-2/folder-2-1"), user1Session);
+        nuxeoDriveManager.registerSynchronizationRoot(user1Session.getPrincipal(), folder_2_1, user1Session);
         checkRootsCount(user1, 1);
         checkRootsCount(user2, 2);
     }
@@ -293,13 +290,13 @@ public class TestNuxeoDriveManager {
         checkRootsCount(user2, 1);
 
         // check deletion by lifecycle
-        session.followTransition(doc("/default-domain/workspaces/workspace-2/folder-2-1").getRef(), "delete");
+        session.followTransition(folder_2_1.getRef(), "delete");
         txFeature.nextTransaction();
         checkRootsCount(user1, 1);
         checkRootsCount(user2, 0);
 
         // check physical deletion of a parent folder
-        session.removeDocument(doc("/default-domain").getRef());
+        session.removeDocument(session.getDocument(new PathRef("/default-domain")).getRef());
         session.save();
         checkRootsCount(user1, 0);
         checkRootsCount(user2, 0);
@@ -622,10 +619,6 @@ public class TestNuxeoDriveManager {
 
         // Check the version is filtered among the synchronization roots
         assertFalse(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), version));
-    }
-
-    protected DocumentModel doc(String path) {
-        return doc(session, path);
     }
 
     protected DocumentModel doc(CoreSession session, String path) {
