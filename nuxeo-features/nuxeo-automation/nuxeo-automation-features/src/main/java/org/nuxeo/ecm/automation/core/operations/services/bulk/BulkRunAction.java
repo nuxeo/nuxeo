@@ -19,11 +19,10 @@
 package org.nuxeo.ecm.automation.core.operations.services.bulk;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -94,7 +93,7 @@ public class BulkRunAction {
     protected String parametersAsJson;
 
     @OperationMethod(asyncService = BulkService.class)
-    public BulkStatus run() throws IOException {
+    public BulkStatus run() throws IOException, OperationException {
 
         if (!admin.getActions().contains(action)) {
             throw new NuxeoException("Action '" + action + "' not found", HttpServletResponse.SC_NOT_FOUND);
@@ -103,16 +102,33 @@ public class BulkRunAction {
             throw new NuxeoException("Action '" + action + "' denied", HttpServletResponse.SC_FORBIDDEN);
         }
 
+        if (query == null && providerName == null) {
+            throw new OperationException("Query and ProviderName cannot be both null");
+        }
+
         String userName = session.getPrincipal().getName();
 
         PageProviderDefinition def = query != null ? PageProviderHelper.getQueryPageProviderDefinition(query)
                 : PageProviderHelper.getPageProviderDefinition(providerName);
-        PageProvider provider = PageProviderHelper.getPageProvider(session, def, namedParameters,
+
+        if (def == null) {
+            throw new OperationException("Could not get Provider Definition from either query or provider name");
+        }
+
+        PageProvider<?> provider = PageProviderHelper.getPageProvider(session, def, namedParameters,
                 queryParams != null ? queryParams.toArray(new String[0]) : null);
         query = PageProviderHelper.buildQueryString(provider);
 
-        Map<String, Serializable> mapParams = BulkParameters.paramsToMap(parametersAsJson);
-        BulkCommand.Builder builder = new BulkCommand.Builder(action, query).user(userName).params(mapParams);
+        if (query.contains("?")) {
+            throw new OperationException("Query parameters could not be parsed");
+        }
+
+        BulkCommand.Builder builder = new BulkCommand.Builder(action, query).user(userName);
+        try {
+            builder.params(BulkParameters.paramsToMap(parametersAsJson));
+        } catch (IOException e) {
+            throw new OperationException("Could not parse parameters, expecting valid json value", e);
+        }
 
         if (repositoryName != null) {
             builder.repository(repositoryName);

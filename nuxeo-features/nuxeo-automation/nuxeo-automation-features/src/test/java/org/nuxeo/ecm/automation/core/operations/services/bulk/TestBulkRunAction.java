@@ -22,6 +22,7 @@ import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -29,20 +30,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
-import org.nuxeo.ecm.core.bulk.message.BulkStatus;
-import org.nuxeo.ecm.core.test.DocumentSetRepositoryInit;
 import org.nuxeo.ecm.core.bulk.action.SetPropertiesAction;
+import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.DocumentSetRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -52,6 +55,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 10.2
@@ -171,12 +176,83 @@ public class TestBulkRunAction {
                 null, null, null,
                 Collections.singletonMap(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session),
                 model.getId());
-        
+
         for (DocumentModel child : pageProvider.getCurrentPage()) {
             assertEquals(title, child.getTitle());
             assertEquals(description, child.getPropertyValue("dc:description"));
             assertEquals(foo, child.getPropertyValue("cpx:complex/foo"));
             assertEquals(bar, child.getPropertyValue("cpx:complex/bar"));
+        }
+    }
+
+    @Test
+    public void testParametersHandling() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        // username and repository are retrieved from CoreSession
+        Map<String, Serializable> params = new HashMap<>();
+
+        // should not work without action
+        try {
+            service.run(ctx, BulkRunAction.ID, params);
+            fail("Expected exception");
+        } catch (OperationException e) {
+            assertTrue(e.getMessage().contains("Failed to inject parameter 'action'"));
+        }
+
+        // should not work with unknown action
+        params.put("action", "foobar");
+        try {
+            service.run(ctx, BulkRunAction.ID, params);
+            fail("Expected exception");
+        } catch (NuxeoException e) {
+            assertEquals(HttpServletResponse.SC_NOT_FOUND, e.getStatusCode());
+        }
+
+        params.put("action", SetPropertiesAction.ACTION_NAME);
+
+        // should not work without query and providerName
+        try {
+            service.run(ctx, BulkRunAction.ID, params);
+            fail("Expected exception");
+        } catch (OperationException e) {
+            assertEquals("Query and ProviderName cannot be both null", e.getMessage());
+        }
+
+        // should work with a query
+        params.put("query", "SELECT * FROM Document");
+        service.run(ctx, BulkRunAction.ID, params);
+
+        // should not work with a parameterized query
+        params.put("query", "SELECT * FROM Document where ecm:parentId=?");
+        try {
+            service.run(ctx, BulkRunAction.ID, params);
+            fail("Expected exception");
+        } catch (OperationException e) {
+            assertEquals("Query parameters could not be parsed", e.getMessage());
+        }
+
+        // should not work with unknown provider name
+        params.remove("query");
+        params.put("providerName", "unknow provider name");
+        try {
+            service.run(ctx, BulkRunAction.ID, params);
+            fail("Expected exception");
+        } catch (OperationException e) {
+            assertEquals("Could not get Provider Definition from either query or provider name", e.getMessage());
+        }
+
+        // should work with unparameterized simpleProviderTest1
+        params.put("providerName", "simpleProviderTest1");
+        service.run(ctx, BulkRunAction.ID, params);
+
+        // should not work with invalid parameters
+        params.put("query", "SELECT * FROM Document");
+        params.put("parameters", "foobar");
+        try {
+            service.run(ctx, BulkRunAction.ID, params);
+            fail("Expected exception");
+        } catch (OperationException e) {
+            assertEquals("Could not parse parameters, expecting valid json value", e.getMessage());
         }
     }
 }
