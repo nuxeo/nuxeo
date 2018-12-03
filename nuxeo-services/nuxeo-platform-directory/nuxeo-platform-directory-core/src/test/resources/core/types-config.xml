@@ -9,19 +9,7 @@
     <doctype name="CoreDirDoc" extends="Document">
       <schema name="common" />
       <schema name="dublincore" />
-      <schema name="uid" />
       <schema name="schema1" />
-      <facet name="Versionable" />
-      <prefetch>dc:title, dc:modified, uid.uid</prefetch>
-    </doctype>
-
-    <doctype name="OtherDirDoc" extends="Document">
-      <schema name="common" />
-      <schema name="dublincore" />
-      <schema name="uid" />
-      <schema name="group" />
-      <facet name="Versionable" />
-      <prefetch>dc:title, dc:modified, uid.uid</prefetch>
     </doctype>
   </extension>
 

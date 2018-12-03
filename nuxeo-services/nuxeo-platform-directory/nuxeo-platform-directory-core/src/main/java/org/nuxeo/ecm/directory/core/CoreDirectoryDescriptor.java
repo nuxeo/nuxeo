@@ -19,19 +19,11 @@
  */
 package org.nuxeo.ecm.directory.core;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeList;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Descriptor for a {@link CoreDirectory}.
@@ -43,35 +35,17 @@ public class CoreDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     protected static final Log log = LogFactory.getLog(CoreDirectoryDescriptor.class);
 
-    public static final String DEFAULT_CREATE_PATH = "/";
+    @XNode("repositoryName")
+    protected String repositoryName;
 
-    public static final boolean DEFAULT_CAN_CREATE_ROOT_FOLDER = true;
+    @XNode("directoriesPath")
+    protected String directoriesPath;
 
-    @XObject(value = "acl")
-    public static class ACLDescriptor implements Cloneable {
+    @XNode("directoriesType")
+    protected String directoriesType;
 
-        @XNode("@userOrGroupName")
-        public String userOrGroupName;
-
-        @XNode("@privilege")
-        public String privilege;
-
-        @XNode("@granted")
-        public boolean granted = false;
-
-
-        @Override
-        public ACLDescriptor clone() {
-            ACLDescriptor clone;
-            try {
-                clone = (ACLDescriptor) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new AssertionError(e);
-            }
-            // basic fields are already copied by super.clone()
-            return clone;
-        }
-    }
+    @XNode("directoryType")
+    protected String directoryType;
 
     @XNode("docType")
     protected String docType;
@@ -79,45 +53,9 @@ public class CoreDirectoryDescriptor extends BaseDirectoryDescriptor {
     @XNode("querySizeLimit")
     public Integer querySizeLimit;
 
-    @XNode("repositoryName")
-    protected String repositoryName;
-
-    @XNode("createPath")
-    protected String createPath;
-
-    public String getCreatePath() {
-        return createPath == null ? DEFAULT_CREATE_PATH : createPath;
-    }
-
-    @XNode("canCreateRootFolder")
-    protected Boolean canCreateRootFolder;
-
-    public boolean canCreateRootFolder() {
-        return canCreateRootFolder == null ? DEFAULT_CAN_CREATE_ROOT_FOLDER : canCreateRootFolder.booleanValue();
-    }
-
-    @XNodeMap(value = "fieldMapping", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> fieldMapping = new HashMap<String, String>();
-
-    @XNodeList(value = "acl", type = ACLDescriptor[].class, componentType = ACLDescriptor.class)
-    protected ACLDescriptor[] acls;
-
     @Override
     public CoreDirectoryDescriptor clone() {
-        CoreDirectoryDescriptor clone = (CoreDirectoryDescriptor) super.clone();
-        // basic fields are already copied by super.clone()
-        clone.fieldMapping = fieldMapping;
-        if (acls != null) {
-            clone.acls = acls.clone();
-        }
-        return clone;
-    }
-
-    public String getRepositoryName() {
-        if (StringUtils.isBlank(repositoryName)) {
-            repositoryName = Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
-        }
-        return repositoryName;
+        return (CoreDirectoryDescriptor) super.clone();
     }
 
     @Override
@@ -129,32 +67,23 @@ public class CoreDirectoryDescriptor extends BaseDirectoryDescriptor {
     }
 
     protected void merge(CoreDirectoryDescriptor other) {
+        if (other.repositoryName != null) {
+            repositoryName = other.repositoryName;
+        }
+        if (other.directoriesPath != null) {
+            directoriesPath = other.directoriesPath;
+        }
+        if (other.directoriesType != null) {
+            directoriesType = other.directoriesType;
+        }
+        if (other.directoryType != null) {
+            directoryType = other.directoryType;
+        }
         if (other.docType != null) {
             docType = other.docType;
         }
         if (other.querySizeLimit != null) {
             querySizeLimit = other.querySizeLimit;
-        }
-        if (other.repositoryName != null) {
-            repositoryName = other.repositoryName;
-        }
-        if (other.createPath != null) {
-            createPath = other.createPath;
-        }
-        if (other.docType != null) {
-            docType = other.docType;
-        }
-        if (other.fieldMapping != null) {
-            fieldMapping = other.fieldMapping;
-        }
-        if (other.canCreateRootFolder != null) {
-            canCreateRootFolder = other.canCreateRootFolder;
-        }
-        if (other.acls != null) {
-            ACLDescriptor[] otherAcls = new ACLDescriptor[acls.length + other.acls.length];
-            System.arraycopy(acls, 0, otherAcls, 0, acls.length);
-            System.arraycopy(other.acls, 0, otherAcls, acls.length, other.acls.length);
-            acls = otherAcls;
         }
     }
 

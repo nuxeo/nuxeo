@@ -86,13 +86,7 @@ public class MemoryDirectorySession extends BaseSession {
 
     @Override
     public void close() {
-    }
-
-    public void commit() {
-    }
-
-    public void rollback() {
-        throw new RuntimeException("Not implemented");
+        getDirectory().removeSession(this);
     }
 
     @Override

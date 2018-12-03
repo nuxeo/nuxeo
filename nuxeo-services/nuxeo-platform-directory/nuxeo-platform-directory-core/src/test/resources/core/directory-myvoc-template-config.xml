@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.repository.config.myvoc.template">
+
+  <!-- define the template first -->
+
+  <extension target="org.nuxeo.ecm.directory.core.CoreDirectoryFactory" point="directories">
+
+    <directory name="template-vocabulary" template="true">
+      <schema>vocabulary</schema>
+      <docType>VocabularyEntry</docType>
+      <idField>id</idField>
+      <directoriesPath>/directories</directoriesPath>
+      <directoriesType>HiddenFolder</directoriesType>
+      <directoryType>Folder</directoryType>
+    </directory>
+
+  </extension>
+
+  <!-- then define the actual directory -->
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="myvoc" extends="template-vocabulary" />
+
+  </extension>
+
+</component>

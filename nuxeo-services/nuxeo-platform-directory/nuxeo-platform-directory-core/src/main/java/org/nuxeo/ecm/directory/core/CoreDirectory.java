@@ -19,47 +19,46 @@
  */
 package org.nuxeo.ecm.directory.core;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.directory.AbstractDirectory;
-import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.DirectoryFieldMapper;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Implementation of a {@link Directory} on top of a core repository.
+ * Implementation of a {@link org.nuxeo.ecm.directory.Directory Directory} on top of a core repository.
  *
  * @since 8.2
  */
 public class CoreDirectory extends AbstractDirectory {
 
-    private static final Log log = LogFactory.getLog(CoreDirectory.class);
+    public static final String DEFAULT_DIRECTORIES_PATH = "/directories"; // NOSONAR
 
-    protected final Schema schema;
+    public static final String DEFAULT_DIRECTORIES_TYPE = "HiddenFolder";
+
+    public static final String DEFAULT_DIRECTORY_TYPE = "Folder";
+
+    protected String repositoryName;
+
+    /** The path of the folder for this directory. */
+    protected String directoryPath;
+
+    /** The id of the folder for this directory. */
+    protected String directoryFolderId;
 
     public CoreDirectory(CoreDirectoryDescriptor descriptor) {
         super(descriptor, null);
-        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        schema = schemaManager.getSchema(descriptor.schemaName);
-        fieldMapper = new DirectoryFieldMapper(descriptor.fieldMapping);
-        if (schema == null) {
-            throw new DirectoryException(
-                    String.format("Unknown schema '%s' for directory '%s' ", descriptor.schemaName, getName()));
-        }
-        start();
     }
 
     @Override
@@ -67,87 +66,91 @@ public class CoreDirectory extends AbstractDirectory {
         return (CoreDirectoryDescriptor) descriptor;
     }
 
-    public void start() {
+    /** Gets the core path where entries for this directory live. */
+    public String getDirectoryPath() {
+        return directoryPath;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Initialize only basic stuff. The rest of the initialization is called by the CoreDirectoryService
+     * RepositoryInitializationHandler when the session is ready.
+     */
+    @Override
+    public void initialize() {
+        super.initialize();
+        repositoryName = getDescriptor().repositoryName;
+        if (StringUtils.isBlank(repositoryName)) {
+            repositoryName = Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
+        }
+    }
+
+    /** Called by CoreDirectoryInitializationHandler to finish initializing the directory given a CoreSession. */
+    public void initializeCoreSession(CoreSession coreSession) {
+        boolean loadData = false;
+        boolean save = false;
         CoreDirectoryDescriptor descriptor = getDescriptor();
-        UnrestrictedSessionRunner directoryInitializer = new UnrestrictedSessionRunner(descriptor.getRepositoryName()) {
 
-            @Override
-            public void run() {
-                String createPath = descriptor.getCreatePath();
-
-                DocumentModel rootFolder = null;
-                DocumentRef rootRef = new PathRef(createPath);
-                if (session.exists(rootRef)) {
-                    rootFolder = session.getDocument(rootRef);
-                }
-
-                if (rootFolder == null) {
-
-                    String parentFolder = createPath.substring(0, createPath.lastIndexOf("/"));
-                    if (createPath.lastIndexOf("/") == 0) {
-                        parentFolder = "/";
-                    }
-                    String createFolder = createPath.substring(createPath.lastIndexOf("/") + 1, createPath.length());
-
-                    log.info(String.format(
-                            "Root folder '%s' has not been found for the directory '%s' on the repository '%s', will create it with given ACL",
-                            createPath, getName(), descriptor.getRepositoryName()));
-                    if (descriptor.canCreateRootFolder()) {
-                        try {
-                            DocumentModel doc = session.createDocumentModel(parentFolder, createFolder, "Folder");
-                            doc.setProperty("dublincore", "title", createFolder);
-                            session.createDocument(doc);
-                            // Set ACL from descriptor
-                            for (int i = 0; i < descriptor.acls.length; i++) {
-                                String userOrGroupName = descriptor.acls[i].userOrGroupName;
-                                String privilege = descriptor.acls[i].privilege;
-                                boolean granted = descriptor.acls[i].granted;
-                                setACL(doc, userOrGroupName, privilege, granted);
-                            }
-                            session.save();
-
-                        } catch (DocumentNotFoundException e) {
-                            throw new DirectoryException(String.format(
-                                    "The root folder '%s' can not be created under '%s' for the directory '%s' on the repository '%s',"
-                                            + " please make sure you have set the right path or that the path exist",
-                                    createFolder, parentFolder, getName(), descriptor.getRepositoryName()), e);
-                        }
-                    }
-
-                } else {
-                    log.info(String.format(
-                            "Root folder '%s' has been found for the directory '%s' on the repository '%s', ACL will not be set",
-                            createPath, getName(), descriptor.getRepositoryName()));
-                }
-
+        String directoriesPath = getDirectoriesPath();
+        DocumentModel directories;
+        if (!coreSession.exists(new PathRef(directoriesPath))) {
+            // create the root of all directories
+            // TODO this is not cluster-safe
+            int pos = directoriesPath.lastIndexOf('/');
+            String directoriesParentPath;
+            if (pos == 0) {
+                directoriesParentPath = "/";
+            } else {
+                directoriesParentPath = directoriesPath.substring(0, pos);
             }
-        };
-        directoryInitializer.runUnrestricted();
-    }
-
-    protected DocumentModel setACL(DocumentModel rootFolder, String userOrGroupName, String privilege,
-            boolean granted) {
-        ACP acp = rootFolder.getACP();
-        ACL localACL = acp.getOrCreateACL();
-        localACL.add(new ACE(userOrGroupName, privilege, granted));
-        rootFolder.setACP(acp, true);
-
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Set ACL on root folder '%s' : userOrGroupName = '%s', privilege = '%s' , granted = '%s' ",
-                    rootFolder.getPathAsString(), userOrGroupName, privilege, granted));
+            String directoriesName = directoriesPath.substring(pos + 1);
+            directories = coreSession.createDocumentModel(directoriesParentPath, directoriesName,
+                    descriptor.directoriesType);
+            directories.setPropertyValue("dc:title", directoriesName);
+            directories = coreSession.createDocument(directories);
+            // hide this
+            restrictToAdministrators(directories);
+            coreSession.saveDocument(directories);
+            save = true;
         }
 
-        return rootFolder.getCoreSession().saveDocument(rootFolder);
+        String tableName = descriptor.tableName == null ? descriptor.name : descriptor.tableName;
+        directoryPath = directoriesPath + '/' + tableName;
+        DocumentModel directory;
+        if (!coreSession.exists(new PathRef(directoryPath))) {
+            // create the directory
+            // TODO this is not cluster-safe
+            directory = coreSession.createDocumentModel(directoriesPath, tableName, descriptor.directoryType);
+            directory.setPropertyValue("dc:title", descriptor.name);
+            directory = coreSession.createDocument(directory);
+            save = true;
+            loadData = true;
+        } else {
+            directory = coreSession.getDocument(new PathRef(directoryPath));
+        }
+        directoryFolderId = directory.getId();
+        if (loadData) {
+            loadData();
+            // save is already true
+        }
+        if (save) {
+            coreSession.save();
+        }
     }
 
-    public Field getField(String name) {
-        Field field = schema.getField(name);
-        if (field == null) {
-            throw new DirectoryException(
-                    String.format("Field '%s' does not exist in the schema '%s'", name, schema.getName()));
+    protected String getDirectoriesPath() {
+        String directoriesPath = getDescriptor().directoriesPath;
+        if (StringUtils.isBlank(directoriesPath)) {
+            directoriesPath = DEFAULT_DIRECTORIES_PATH;
         }
-        return field;
+        if (!directoriesPath.startsWith("/")) {
+            directoriesPath = "/" + directoriesPath; // NOSONAR
+        }
+        while (directoriesPath.length() > 1 && directoriesPath.endsWith("/")) {
+            directoriesPath = directoriesPath.substring(0, directoriesPath.length() - 1);
+        }
+        return directoriesPath;
     }
 
     @Override
@@ -155,6 +158,25 @@ public class CoreDirectory extends AbstractDirectory {
         CoreDirectorySession session = new CoreDirectorySession(this);
         addSession(session);
         return session;
+    }
+
+    /** Sets an ACL on the document blocking everyone except administrators. */
+    @SuppressWarnings("deprecation")
+    protected void restrictToAdministrators(DocumentModel doc) {
+        List<String> adminGroups;
+        AdministratorGroupsProvider adminGroupsProvider = Framework.getService(AdministratorGroupsProvider.class);
+        if (adminGroupsProvider == null) {
+            adminGroups = Collections.singletonList(SecurityConstants.ADMINISTRATORS);
+        } else {
+            adminGroups = adminGroupsProvider.getAdministratorsGroups();
+        }
+        ACP acp = doc.getACP();
+        ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        for (String group : adminGroups) {
+            acl.add(new ACE(group, SecurityConstants.EVERYTHING, true));
+        }
+        acl.add(ACE.BLOCK);
+        doc.setACP(acp, true);
     }
 
 }

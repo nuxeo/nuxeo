@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.repository.config.data">
+
+  <extension target="org.nuxeo.ecm.directory.core.CoreDirectoryFactory"
+    point="directories">
+
+    <directory name="coreDirWithData">
+      <schema>schema1</schema>
+      <docType>CoreDirDoc</docType>
+      <repositoryName>test</repositoryName>
+      <idField>uid</idField>
+      <directoriesPath>/directories</directoriesPath>
+      <directoriesType>HiddenFolder</directoriesType>
+      <directoryType>Folder</directoryType>
+      <dataFile>core/datafile.csv</dataFile>
+    </directory>
+
+  </extension>
+
+</component>

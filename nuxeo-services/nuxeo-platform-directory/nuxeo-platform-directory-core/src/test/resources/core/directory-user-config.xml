@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.repository.config.user">
+
+  <extension target="org.nuxeo.ecm.directory.core.CoreDirectoryFactory"
+    point="directories">
+
+    <directory name="userCoreDirectory">
+      <schema>schema1</schema>
+      <docType>CoreDirDoc</docType>
+      <idField>uid</idField>
+      <passwordField>password</passwordField>
+      <directoriesPath>/directories</directoriesPath>
+      <directoriesType>HiddenFolder</directoriesType>
+      <directoryType>Folder</directoryType>
+      <references>
+        <coreDirectoryReference field="groups" directory="groupCoreDirectory"
+          targetField="groupId" />
+      </references>
+    </directory>
+
+  </extension>
+
+</component>

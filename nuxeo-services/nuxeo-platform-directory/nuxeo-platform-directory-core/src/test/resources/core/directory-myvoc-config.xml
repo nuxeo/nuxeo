@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.repository.config.myvoc">
+
+  <extension target="org.nuxeo.ecm.directory.core.CoreDirectoryFactory"
+    point="directories">
+
+    <directory name="myvoc">
+      <schema>vocabulary</schema>
+      <docType>VocabularyEntry</docType>
+      <idField>id</idField>
+      <directoriesPath>/directories</directoriesPath>
+      <directoriesType>HiddenFolder</directoriesType>
+      <directoryType>Folder</directoryType>
+    </directory>
+
+  </extension>
+
+</component>
