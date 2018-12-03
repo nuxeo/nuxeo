@@ -22,11 +22,13 @@
         <filter><![CDATA[]]></filter>
         <name><![CDATA[reject]]></name>
         <label><![CDATA[wf.parallelDocumentReview.reject]]></label>
+        <validate><![CDATA[true]]></validate>
       </button>
       <button>
         <filter><![CDATA[]]></filter>
         <name><![CDATA[validate]]></name>
         <label><![CDATA[wf.parallelDocumentReview.approve]]></label>
+        <validate><![CDATA[true]]></validate>
       </button>
     </rnode:taskButtons>
     <rnode:transitions>
