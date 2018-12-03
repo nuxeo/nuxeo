@@ -22,6 +22,9 @@ package org.nuxeo.wopi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.wopi.Constants.ACTION_CONVERT;
+import static org.nuxeo.wopi.Constants.ACTION_EDIT;
+import static org.nuxeo.wopi.Constants.ACTION_VIEW;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,13 +47,14 @@ public class TestWOPIDiscovery {
     protected static Map<String, String> EXPECTED_WORDPDF_ACTIONS = new HashMap<>();
 
     static {
-        EXPECTED_EXCEL_ACTIONS.put("view", "xlsx");
-        EXPECTED_EXCEL_ACTIONS.put("edit", "xlsx");
+        EXPECTED_EXCEL_ACTIONS.put(ACTION_VIEW, "xlsx");
+        EXPECTED_EXCEL_ACTIONS.put(ACTION_EDIT, "xlsx");
+        EXPECTED_EXCEL_ACTIONS.put(ACTION_CONVERT, "xls");
 
-        EXPECTED_WORD_ACTIONS.put("view", "docx");
-        EXPECTED_WORD_ACTIONS.put("edit", "rtf");
+        EXPECTED_WORD_ACTIONS.put(ACTION_VIEW, "docx");
+        EXPECTED_WORD_ACTIONS.put(ACTION_EDIT, "rtf");
 
-        EXPECTED_WORDPDF_ACTIONS.put("view", "pdf");
+        EXPECTED_WORDPDF_ACTIONS.put(ACTION_VIEW, "pdf");
     }
 
     @Test

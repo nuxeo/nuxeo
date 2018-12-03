@@ -81,7 +81,6 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -99,6 +98,7 @@ import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.wopi.FileInfo;
 import org.nuxeo.wopi.Operation;
+import org.nuxeo.wopi.WOPIDiscoveryFeature;
 import org.nuxeo.wopi.WOPIFeature;
 import org.nuxeo.wopi.lock.LockHelper;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -115,7 +115,7 @@ import com.sun.jersey.api.client.WebResource;
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ WOPIFeature.class, WebEngineFeature.class })
+@Features({ WOPIFeature.class, WOPIDiscoveryFeature.class, WebEngineFeature.class })
 @Deploy("org.nuxeo.ecm.jwt")
 @Deploy("org.nuxeo.wopi:OSGI-INF/test-jwt-contrib.xml")
 @Deploy("org.nuxeo.wopi:OSGI-INF/test-webengine-servletcontainer-contrib.xml")
@@ -295,6 +295,21 @@ public class TestFilesEndpoint {
         // success - joe has read access
         try (CloseableClientResponse response = get(joeToken, blobDocFileId)) {
             checkJSONResponse(response, "json/CheckFileInfo-joe-read.json", toReplace);
+        }
+
+        // success - john has write access on a file that supports conversion
+        DocumentModel convertibleBlobDoc = session.createDocumentModel("/wopi", "convertibleBlobDoc", "File");
+        Blob convertibleBlob = Blobs.createBlob("binary content".getBytes());
+        String convertibleFilename = "convertibleFile.xls";
+        convertibleBlob.setFilename(convertibleFilename);
+        convertibleBlobDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) convertibleBlob);
+        convertibleBlobDoc = session.createDocument(convertibleBlobDoc);
+        String convertibleBlobDocFileId = FileInfo.computeFileId(convertibleBlobDoc, FILE_CONTENT_PROPERTY);
+        transactionalFeature.nextTransaction();
+        toReplace.put(DOC_ID_VAR, convertibleBlobDoc.getId());
+        toReplace.put(FILENAME_VAR, convertibleFilename);
+        try (CloseableClientResponse response = get(johnToken, convertibleBlobDocFileId)) {
+            checkJSONResponse(response, "json/CheckFileInfo-john-convert.json", toReplace);
         }
     }
 
@@ -832,43 +847,10 @@ public class TestFilesEndpoint {
             assertEquals(501, response.getStatus());
         }
 
-        // fail - 501 - no ADD_CHILDREN permission
+        // fail - 501 - file creation not supported
         headers.remove(SUGGESTED_TARGET);
         try (CloseableClientResponse response = post(joeToken, data, headers, blobDocFileId)) {
             assertEquals(501, response.getStatus());
-        }
-
-        // success - 200 - new file from relative target
-        try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
-            assertPutRelativeFileCreateFileResponse(response, blobDoc.getRef(), FILE_CONTENT_PROPERTY, "new file.docx",
-                    BASE_URL, data);
-        }
-
-        // success - 200 - new file from suggested extension
-        headers.remove(RELATIVE_TARGET);
-        headers.put(SUGGESTED_TARGET, ".docx");
-        try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
-            assertPutRelativeFileCreateFileResponse(response, blobDoc.getRef(), FILE_CONTENT_PROPERTY, "test-file.docx",
-                    BASE_URL, data);
-        }
-
-        // success - 200 - new file from suggested filename
-        headers.put(SUGGESTED_TARGET, "foo.docx");
-        try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
-            assertPutRelativeFileCreateFileResponse(response, blobDoc.getRef(), FILE_CONTENT_PROPERTY, "foo.docx",
-                    BASE_URL, data);
-        }
-
-        try {
-            String customWOPIBaseURL = "http://foo";
-            // success - 200 - new file from suggested filename with a custom WOPI base URL
-            Framework.getProperties().setProperty(WOPI_BASE_URL_PROPERTY, customWOPIBaseURL);
-            try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
-                assertPutRelativeFileCreateFileResponse(response, blobDoc.getRef(), FILE_CONTENT_PROPERTY, "foo.docx",
-                        customWOPIBaseURL, data);
-            }
-        } finally {
-            Framework.getProperties().remove(WOPI_BASE_URL_PROPERTY);
         }
     }
 
@@ -901,21 +883,23 @@ public class TestFilesEndpoint {
             assertPutRelativeFileCreateVersionResponse(response, hugeBlobDoc.getRef(), FILE_CONTENT_PROPERTY,
                     "foo.docx", BASE_URL, data, "0.1");
         }
-    }
 
-    protected void assertPutRelativeFileCreateFileResponse(CloseableClientResponse response, DocumentRef docRef,
-            String xpath, String newName, String wopiBaseURL, String newContent) throws IOException {
-        assertPutRelativeFileResponse(response, docRef, xpath, newName, wopiBaseURL, newContent, null, false);
+        // success - 200 - conversion from suggested filename with a custom WOPI base URL
+        headers.put(SUGGESTED_TARGET, "bar.docx");
+        String customWOPIBaseURL = "http://foo";
+        try {
+            Framework.getProperties().setProperty(WOPI_BASE_URL_PROPERTY, customWOPIBaseURL);
+            try (CloseableClientResponse response = post(johnToken, data, headers, hugeBlobDocFileId)) {
+                assertPutRelativeFileCreateVersionResponse(response, hugeBlobDoc.getRef(), FILE_CONTENT_PROPERTY,
+                        "bar.docx", customWOPIBaseURL, data, "0.2");
+            }
+        } finally {
+            Framework.getProperties().remove(WOPI_BASE_URL_PROPERTY);
+        }
     }
 
     protected void assertPutRelativeFileCreateVersionResponse(CloseableClientResponse response, DocumentRef docRef,
             String xpath, String newName, String wopiBaseURL, String newContent, String newVersion) throws IOException {
-        assertPutRelativeFileResponse(response, docRef, xpath, newName, wopiBaseURL, newContent, newVersion, true);
-    }
-
-    protected void assertPutRelativeFileResponse(CloseableClientResponse response, DocumentRef docRef, String xpath,
-            String newName, String wopiBaseURL, String newContent, String newVersion, boolean isConversion)
-            throws IOException {
         assertEquals(200, response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(newName, node.get(NAME).asText());
@@ -933,31 +917,18 @@ public class TestFilesEndpoint {
         transactionalFeature.nextTransaction();
         DocumentModel doc = session.getDocument(docRef);
 
-        if (isConversion) {
-            // request made in the context of a conversion
-            Blob blob = (Blob) doc.getPropertyValue(xpath);
-            assertNotNull(blob);
-            assertEquals(newName, blob.getFilename());
-            assertEquals(newContent, blob.getString());
-            assertEquals(newVersion, doc.getVersionLabel());
-            List<DocumentModel> versions = session.getVersions(docRef);
-            int versionCount = versions.size();
-            assertTrue(versionCount >= 1);
-            Blob versionBlob = (Blob) versions.get(versionCount - 1).getPropertyValue(xpath);
-            assertEquals(newContent, versionBlob.getString());
-        } else {
-            // request made in the context of a file creation
-            String[] split = hostViewUrl.split("/");
-            String docId = split[split.length - 2];
-            DocumentRef newDocRef = new IdRef(docId);
-            DocumentModel newDoc = session.getDocument(newDocRef);
-            assertEquals(doc.getParentRef(), newDoc.getParentRef());
-            assertEquals(newName, newDoc.getTitle());
-            Blob blob = (Blob) newDoc.getPropertyValue(xpath);
-            assertNotNull(blob);
-            assertEquals(newName, blob.getFilename());
-            assertEquals(newContent, blob.getString());
-        }
+        // request made in the context of a conversion
+        Blob blob = (Blob) doc.getPropertyValue(xpath);
+        assertNotNull(blob);
+        assertEquals(newName, blob.getFilename());
+        assertEquals(newContent, blob.getString());
+        assertEquals(newVersion, doc.getVersionLabel());
+        List<DocumentModel> versions = session.getVersions(docRef);
+        int versionCount = versions.size();
+        assertTrue(versionCount >= 1);
+        Blob versionBlob = (Blob) versions.get(versionCount - 1).getPropertyValue(xpath);
+        assertEquals(newName, versionBlob.getFilename());
+        assertEquals(newContent, versionBlob.getString());
     }
 
     @Test

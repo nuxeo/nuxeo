@@ -34,6 +34,8 @@ public class Constants {
 
     public static final String ACCESS_TOKEN_TTL_ATTRIBUTE = "accessTokenTTL";
 
+    public static final String ACTION_CONVERT = "convert";
+
     public static final String ACTION_EDIT = "edit";
 
     public static final String ACTION_VIEW = "view";

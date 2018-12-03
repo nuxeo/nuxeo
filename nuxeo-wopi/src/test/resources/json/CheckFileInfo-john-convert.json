@@ -1,7 +1,7 @@
 {
   "BaseFileName": "${FILENAME}",
-  "OwnerId": "john",
-  "Size": 25,
+  "OwnerId": "Administrator",
+  "Size": 14,
   "UserId": "john",
   "Version": "0.0",
   "SupportedShareUrlTypes": ["ReadOnly", "ReadWrite"],
@@ -16,7 +16,7 @@
   "SupportsExtendedLockLength": true,
   "UserCanRename": true,
   "UserCanWrite": true,
-  "UserCanNotWriteRelative": true,
+  "UserCanNotWriteRelative": false,
   "BreadcrumbBrandName": "WOPI Test",
   "BreadcrumbBrandUrl": "http://localhost:18090/",
   "BreadcrumbFolderName": "wopi",

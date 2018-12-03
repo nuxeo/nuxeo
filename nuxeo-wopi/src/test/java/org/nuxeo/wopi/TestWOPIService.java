@@ -24,6 +24,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.Blobs.createBlob;
+import static org.nuxeo.wopi.Constants.ACTION_CONVERT;
+import static org.nuxeo.wopi.Constants.ACTION_EDIT;
+import static org.nuxeo.wopi.Constants.ACTION_VIEW;
 
 import javax.inject.Inject;
 
@@ -48,8 +51,9 @@ public class TestWOPIService {
     public void testDiscoveryLoaded() {
         assertTrue(wopiService.isEnabled());
         WOPIServiceImpl wopiServiceImpl = (WOPIServiceImpl) wopiService;
-        assertEquals(3, wopiServiceImpl.extensionAppNames.size());
+        assertEquals(4, wopiServiceImpl.extensionAppNames.size());
         assertEquals("Excel", wopiServiceImpl.extensionAppNames.get("xlsx"));
+        assertEquals("Excel", wopiServiceImpl.extensionAppNames.get("xls"));
         assertEquals("Word", wopiServiceImpl.extensionAppNames.get("docx"));
         assertEquals("Word", wopiServiceImpl.extensionAppNames.get("rtf"));
         // extensions not supported by WOPI
@@ -66,34 +70,37 @@ public class TestWOPIService {
     public void testGetActionURL() {
         Blob blob = Blobs.createBlob("content");
         // no filename
-        assertNull(wopiService.getActionURL(blob, "view"));
-        assertNull(wopiService.getActionURL(blob, "edit"));
+        assertNull(wopiService.getActionURL(blob, ACTION_VIEW));
+        assertNull(wopiService.getActionURL(blob, ACTION_EDIT));
 
         // extension not supported by WOPI
         blob.setFilename("file.txt");
-        assertNull(wopiService.getActionURL(blob, "view"));
-        assertNull(wopiService.getActionURL(blob, "edit"));
+        assertNull(wopiService.getActionURL(blob, ACTION_VIEW));
+        assertNull(wopiService.getActionURL(blob, ACTION_EDIT));
 
         // extension not supported by Nuxeo
         blob.setFilename("file.pdf");
-        assertNull(wopiService.getActionURL(blob, "view"));
-        assertNull(wopiService.getActionURL(blob, "edit"));
+        assertNull(wopiService.getActionURL(blob, ACTION_VIEW));
+        assertNull(wopiService.getActionURL(blob, ACTION_EDIT));
 
         // Excel
         blob.setFilename("file.xlsx");
         assertEquals("https://excel.officeapps-df.live.com/x/_layouts/xlviewerinternal.aspx?IsLicensedUser=1&",
-                wopiService.getActionURL(blob, "view"));
+                wopiService.getActionURL(blob, ACTION_VIEW));
         assertEquals("https://excel.officeapps-df.live.com/x/_layouts/xlviewerinternal.aspx?edit=1&IsLicensedUser=1&",
-                wopiService.getActionURL(blob, "edit"));
+                wopiService.getActionURL(blob, ACTION_EDIT));
+        blob.setFilename("file.xls");
+        assertEquals("https://excel.officeapps-df.live.com/x/_layouts/ExcelConvertAndEdit.aspx?IsLicensedUser=1&",
+                wopiService.getActionURL(blob, ACTION_CONVERT));
 
         // Word
         blob.setFilename("file.rtf");
-        assertNull(wopiService.getActionURL(blob, "view"));
+        assertNull(wopiService.getActionURL(blob, ACTION_VIEW));
         assertEquals("https://word-edit.officeapps-df.live.com/we/wordeditorframe.aspx?IsLicensedUser=1&",
-                wopiService.getActionURL(blob, "edit"));
+                wopiService.getActionURL(blob, ACTION_EDIT));
         blob.setFilename("file.docx");
         assertEquals("https://word-view.officeapps-df.live.com/wv/wordviewerframe.aspx?IsLicensedUser=1&",
-                wopiService.getActionURL(blob, "view"));
+                wopiService.getActionURL(blob, ACTION_VIEW));
     }
 
     @Test
@@ -108,8 +115,8 @@ public class TestWOPIService {
         WOPIBlobInfo info = wopiService.getWOPIBlobInfo(blob);
         assertEquals("Excel", info.appName);
         assertEquals(2, info.actions.size());
-        assertTrue(info.actions.contains("view"));
-        assertTrue(info.actions.contains("edit"));
+        assertTrue(info.actions.contains(ACTION_VIEW));
+        assertTrue(info.actions.contains(ACTION_EDIT));
 
         assertNull(wopiService.getWOPIBlobInfo(blobOne));
         assertNull(wopiService.getWOPIBlobInfo(blobTwo));
@@ -117,7 +124,7 @@ public class TestWOPIService {
         info = wopiService.getWOPIBlobInfo(blobThree);
         assertEquals("Word", info.appName);
         assertEquals(1, info.actions.size());
-        assertTrue(info.actions.contains("edit"));
+        assertTrue(info.actions.contains(ACTION_EDIT));
     }
 
 }

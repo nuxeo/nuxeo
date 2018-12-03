@@ -27,6 +27,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static org.nuxeo.ecm.core.api.CoreSession.SOURCE;
 import static org.nuxeo.wopi.Constants.ACCESS_TOKEN_PARAMETER;
+import static org.nuxeo.wopi.Constants.ACTION_CONVERT;
 import static org.nuxeo.wopi.Constants.ACTION_EDIT;
 import static org.nuxeo.wopi.Constants.ACTION_VIEW;
 import static org.nuxeo.wopi.Constants.BASE_FILE_NAME;
@@ -139,6 +140,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.wopi.FileInfo;
 import org.nuxeo.wopi.Helpers;
 import org.nuxeo.wopi.Operation;
+import org.nuxeo.wopi.WOPIService;
 import org.nuxeo.wopi.exception.BadRequestException;
 import org.nuxeo.wopi.exception.ConflictException;
 import org.nuxeo.wopi.exception.NotImplementedException;
@@ -417,8 +419,7 @@ public class FilesEndpoint extends DefaultObject {
     /**
      * Implements the PutRelativeFile operation.
      * <p>
-     * We do not handle any conflict or overwrite here. Nuxeo can have more than one document with the same title and
-     * blob file name.
+     * New file creation is not supported, only the binary document conversion is supported.
      * <p>
      * See
      * <a href="https://wopi.readthedocs.io/projects/wopirest/en/latest/files/PutRelativeFile.html">PutRelativeFile</a>.
@@ -454,15 +455,16 @@ public class FilesEndpoint extends DefaultObject {
             newFileName = relativeTarget;
         }
 
-        // handle either new file creation or binary file conversion
-        DocumentModel newDoc = null;
+        // throw NotImplementedException for a new file creation request as it is not supported
         if (StringUtils.isEmpty(fileConversion)) {
-            logCondition(() -> FILE_CONVERSION + " header is not present, handling new file creation");
-            newDoc = createSiblingCopyFromRequestBody(newFileName);
-        } else {
-            logCondition(() -> FILE_CONVERSION + " header is present, handling file conversion");
-            newDoc = createVersionFromRequestBody(newFileName);
+            logCondition(() -> FILE_CONVERSION + " header is not present, yet new file creation is not supported");
+            logResponse(OPERATION_PUT_RELATIVE_FILE, SC_NOT_IMPLEMENTED);
+            throw new NotImplementedException();
         }
+
+        // handle binary file conversion
+        logCondition(() -> FILE_CONVERSION + " header is present, handling file conversion");
+        DocumentModel newDoc = createVersionFromRequestBody(newFileName);
 
         String token = Helpers.getJWTToken(request);
         String newFileId = FileInfo.computeFileId(newDoc, xpath);
@@ -478,29 +480,6 @@ public class FilesEndpoint extends DefaultObject {
         map.put(HOST_EDIT_URL, hostEditUrl);
         logResponse(OPERATION_PUT_RELATIVE_FILE, OK.getStatusCode(), map);
         return Response.ok(map).type(MediaType.APPLICATION_JSON).build();
-    }
-
-    protected DocumentModel createSiblingCopyFromRequestBody(String filename) {
-        DocumentRef parentRef = doc.getParentRef();
-        if (!session.exists(parentRef) || !session.hasPermission(parentRef, SecurityConstants.ADD_CHILDREN)) {
-            logCondition(() -> "Either the parent document doesn't exist or the current user isn't granted "
-                    + SecurityConstants.ADD_CHILDREN + " access");
-            logResponse(OPERATION_PUT_RELATIVE_FILE, SC_NOT_IMPLEMENTED);
-            throw new NotImplementedException();
-        }
-
-        DocumentModel parent = session.getDocument(parentRef);
-        DocumentModel newDoc = session.createDocumentModel(parent.getPathAsString(), filename, doc.getType());
-        newDoc.copyContent(doc);
-        newDoc.setPropertyValue("dc:title", filename);
-
-        Blob newBlob = createBlobFromRequestBody(filename, null);
-        newDoc.setPropertyValue(xpath, (Serializable) newBlob);
-        newDoc = session.createDocument(newDoc);
-        String newDocId = newDoc.getId();
-        logNuxeoAction(() -> "Created new document " + newDocId + " as a child of " + parent.getId() + " with filename "
-                + filename);
-        return newDoc;
     }
 
     protected DocumentModel createVersionFromRequestBody(String filename) {
@@ -752,13 +731,12 @@ public class FilesEndpoint extends DefaultObject {
     }
 
     protected void addUserPermissionsProperties(Map<String, Serializable> map) {
-        boolean hasAddChildren = session.exists(doc.getParentRef())
-                && session.hasPermission(doc.getParentRef(), SecurityConstants.ADD_CHILDREN);
         boolean hasWriteProperties = session.hasPermission(doc.getRef(), SecurityConstants.WRITE_PROPERTIES);
+        boolean canConvert = Framework.getService(WOPIService.class).getActionURL(blob, ACTION_CONVERT) != null;
         map.put(READ_ONLY, !hasWriteProperties);
         map.put(USER_CAN_RENAME, hasWriteProperties);
         map.put(USER_CAN_WRITE, hasWriteProperties);
-        map.put(USER_CAN_NOT_WRITE_RELATIVE, !hasAddChildren);
+        map.put(USER_CAN_NOT_WRITE_RELATIVE, !canConvert);
     }
 
     protected void addFileURLProperties(Map<String, Serializable> map) {
