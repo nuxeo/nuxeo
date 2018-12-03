@@ -79,6 +79,7 @@ import static org.nuxeo.wopi.Constants.VERSION;
 import static org.nuxeo.wopi.Constants.WOPI_BASE_URL_PROPERTY;
 import static org.nuxeo.wopi.Constants.WOPI_SOURCE;
 import static org.nuxeo.wopi.Headers.FILE_CONVERSION;
+import static org.nuxeo.wopi.Headers.ITEM_VERSION;
 import static org.nuxeo.wopi.Headers.LOCK;
 import static org.nuxeo.wopi.Headers.MAX_EXPECTED_SIZE;
 import static org.nuxeo.wopi.Headers.OLD_LOCK;
@@ -227,7 +228,8 @@ public class FilesEndpoint extends DefaultObject {
             throw new PreConditionFailedException();
         }
 
-        logResponse(OPERATION_GET_FILE, OK.getStatusCode());
+        // ignore the return value as we need to return the blob anyway
+        buildItemVersionResponse(OPERATION_GET_FILE, blob);
         return blob;
     }
 
@@ -279,8 +281,7 @@ public class FilesEndpoint extends DefaultObject {
                 doc.setLock();
             }
             LockHelper.addLock(fileId, lock);
-            logResponse(OPERATION_LOCK, OK.getStatusCode());
-            return Response.ok().build();
+            return buildItemVersionResponse(OPERATION_LOCK, blob);
         }
 
         logCondition("Document is locked and there is a WOPI lock for this file id");
@@ -289,12 +290,18 @@ public class FilesEndpoint extends DefaultObject {
             logCondition(() -> LOCK + " header is equal to current WOPI lock"); // NOSONAR
             // refresh lock
             LockHelper.refreshLock(fileId);
-            logResponse(OPERATION_LOCK, OK.getStatusCode());
-            return Response.ok().build();
+            return buildItemVersionResponse(OPERATION_LOCK, blob);
         } else {
             logCondition(() -> LOCK + " header is not equal to current WOPI lock"); // NOSONAR
             return buildConflictResponse(OPERATION_LOCK, currentLock);
         }
+    }
+
+    protected Response buildItemVersionResponse(String operation, Blob blob) {
+        String itemVersion = blob.getDigest();
+        response.addHeader(ITEM_VERSION, itemVersion);
+        logResponse(operation, OK.getStatusCode(), ITEM_VERSION, itemVersion);
+        return Response.ok().build();
     }
 
     protected Object unlockAndRelock(String lock, String oldLock) {
@@ -393,7 +400,7 @@ public class FilesEndpoint extends DefaultObject {
                         return privilegedSession.removeLock(doc.getRef());
                     });
                 }
-                logResponse(operation, OK.getStatusCode());
+                return buildItemVersionResponse(operation, blob);
             } else {
                 // refresh lock
                 LockHelper.refreshLock(fileId);
@@ -603,8 +610,8 @@ public class FilesEndpoint extends DefaultObject {
         Blob newBlob = createBlobFromRequestBody(blob.getFilename(), blob.getMimeType());
         doc.setPropertyValue(xpath, (Serializable) newBlob);
         doc = session.saveDocument(doc);
-        logResponse(OPERATION_PUT_FILE, OK.getStatusCode());
-        return Response.ok().build();
+        newBlob = (Blob) doc.getPropertyValue(xpath);
+        return buildItemVersionResponse(OPERATION_PUT_FILE, newBlob);
     }
 
     /**
@@ -696,7 +703,7 @@ public class FilesEndpoint extends DefaultObject {
         map.put(OWNER_ID, doc.getPropertyValue("dc:creator"));
         map.put(SIZE, blob.getLength());
         map.put(USER_ID, principal.getName());
-        map.put(VERSION, StringUtils.defaultString(doc.getChangeToken()));
+        map.put(VERSION, blob.getDigest());
     }
 
     protected void addHostCapabilitiesProperties(Map<String, Serializable> map) {
