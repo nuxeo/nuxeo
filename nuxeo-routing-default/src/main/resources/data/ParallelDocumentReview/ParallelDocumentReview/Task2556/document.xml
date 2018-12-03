@@ -27,6 +27,7 @@
         <filter><![CDATA[]]></filter>
         <name><![CDATA[start_review]]></name>
         <label><![CDATA[wf.parallelDocumentReview.startReview]]></label>
+        <validate><![CDATA[true]]></validate>
       </button>
     </rnode:taskButtons>
     <rnode:transitions>
