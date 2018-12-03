@@ -22,11 +22,13 @@ package org.nuxeo.ecm.core.bulk.io;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -44,6 +46,9 @@ public class BulkParameters {
     }
 
     public static Map<String, Serializable> paramsToMap(String jsonParams) throws IOException {
+        if (StringUtils.isBlank(jsonParams)) {
+            return Collections.emptyMap();
+        }
         return paramsToMap(OBJECT_MAPPER.readTree(jsonParams));
     }
 
