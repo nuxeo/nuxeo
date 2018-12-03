@@ -219,7 +219,10 @@ public class DefaultRuntimeContext implements RuntimeContext {
     }
 
     public RegistrationInfoImpl createRegistrationInfo(StreamRef ref) throws IOException {
-        String source = IOUtils.toString(ref.getStream(), UTF_8);
+        String source;
+        try (InputStream stream = ref.getStream()) {
+            source = IOUtils.toString(stream, UTF_8);
+        }
         String expanded = Framework.expandVars(source);
         try (InputStream in = new ByteArrayInputStream(expanded.getBytes())) {
             return createRegistrationInfo(in);
