@@ -181,6 +181,17 @@ public final class Framework {
                 loader.addURL(newURL);
             }
         }
+        if (resourceLoader != null) {
+            // properly close the previous resource ClassLoader, otherwise any leak of an InputStream from it
+            // will keep the JAR available in the internal sun.net.www.protocol.jar JarFileFactory cache
+            // used by sun.net.www.protocol.jar.JarURLConnection, which will cause subsequent references
+            // to use the old JAR.
+            try {
+                resourceLoader.close();
+            } catch (IOException e) {
+                log.error("Failed to close previous resource loader", e);
+            }
+        }
         resourceLoader = loader;
     }
 
