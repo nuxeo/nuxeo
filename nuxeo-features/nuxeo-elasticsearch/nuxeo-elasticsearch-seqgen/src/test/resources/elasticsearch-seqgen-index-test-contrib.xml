@@ -15,7 +15,6 @@
       <mapping>
         {
         "_source" : {"enabled": false},
-        "_all" : {"enabled": false},
         "enabled" : false
         }
       </mapping>
