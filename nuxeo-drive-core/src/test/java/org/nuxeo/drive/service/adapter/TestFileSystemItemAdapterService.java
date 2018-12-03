@@ -33,6 +33,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
@@ -65,7 +66,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.HotDeployer;
 
 /**
  * Tests the {@link FileSystemItemAdapterService}.
@@ -87,9 +87,6 @@ public class TestFileSystemItemAdapterService {
     @Inject
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
-    @Inject
-    protected HotDeployer deployer;
-
     protected String syncRootItemId;
 
     protected FolderItem syncRootItem;
@@ -102,7 +99,8 @@ public class TestFileSystemItemAdapterService {
 
     protected DocumentModel syncRootFolder;
 
-    protected void registerRootAndCreateSomeDocs() throws Exception {
+    @Before
+    public void registerRootAndCreateSomeDocs() throws Exception {
 
         syncRootFolder = session.createDocumentModel("/", "syncRoot", "Folder");
         syncRootFolder = session.createDocument(syncRootFolder);
@@ -148,8 +146,6 @@ public class TestFileSystemItemAdapterService {
 
     @Test
     public void testService() throws Exception {
-        registerRootAndCreateSomeDocs();
-
         // ------------------------------------------------------
         // Check file system item factory descriptors
         // ------------------------------------------------------
@@ -422,12 +418,9 @@ public class TestFileSystemItemAdapterService {
     }
 
     @Test
+    @Deploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml")
     public void testContribOverride() throws Exception {
         assumeFalse("Cannot test reload for in-memory repository", coreFeature.getStorageConfiguration().isDBSMem());
-
-        deployer.deploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
-
-        registerRootAndCreateSomeDocs();
 
         // Re-adapt the sync root to take the override into account
         syncRootItem = (FolderItem) fileSystemItemAdapterService.getFileSystemItem(syncRootFolder);
