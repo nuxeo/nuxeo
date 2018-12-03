@@ -75,7 +75,7 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
 @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-adapter-service-contrib.xml")
-@RepositoryConfig(cleanup=Granularity.METHOD)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestFileSystemItemAdapterService {
 
     @Inject
@@ -153,8 +153,7 @@ public class TestFileSystemItemAdapterService {
         // ------------------------------------------------------
         // Check file system item factory descriptors
         // ------------------------------------------------------
-        Map<String, FileSystemItemFactoryDescriptor> fileSystemItemFactoryDescs =
-                ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactoryDescriptors();
+        Map<String, FileSystemItemFactoryDescriptor> fileSystemItemFactoryDescs = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactoryDescriptors();
         assertNotNull(fileSystemItemFactoryDescs);
         assertEquals(12, fileSystemItemFactoryDescs.size());
 
@@ -216,8 +215,7 @@ public class TestFileSystemItemAdapterService {
         // ------------------------------------------------------
         // Check ordered file system item factories
         // ------------------------------------------------------
-        List<FileSystemItemFactoryWrapper> fileSystemItemFactories =
-                ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactories();
+        List<FileSystemItemFactoryWrapper> fileSystemItemFactories = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactories();
         assertNotNull(fileSystemItemFactories);
         assertEquals(7, fileSystemItemFactories.size());
 
@@ -297,10 +295,8 @@ public class TestFileSystemItemAdapterService {
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
         assertEquals("defaultFileSystemItemFactory#test#" + custom.getId(), fsItem.getId());
-        assertEquals(
-                "/org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#/" + syncRootItemId + "/"
-                        + fsItem.getId(),
-                fsItem.getPath());
+        assertEquals("/org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#/" + syncRootItemId + "/"
+                + fsItem.getId(), fsItem.getPath());
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Bonnie's file.txt", fsItem.getName());
         assertFalse(fsItem.isFolder());
@@ -406,7 +402,8 @@ public class TestFileSystemItemAdapterService {
                     "Factory class org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory for factory defaultFileSystemItemFactory is not a VirtualFolderItemFactory.",
                     e.getMessage());
         }
-        VirtualFolderItemFactory virtualFolderItemFactory = fileSystemItemAdapterService.getVirtualFolderItemFactory("dummyVirtualFolderItemFactory");
+        VirtualFolderItemFactory virtualFolderItemFactory = fileSystemItemAdapterService.getVirtualFolderItemFactory(
+                "dummyVirtualFolderItemFactory");
         assertNotNull(virtualFolderItemFactory);
         assertTrue(virtualFolderItemFactory.getClass().getName().endsWith("DummyVirtualFolderItemFactory"));
 
@@ -439,8 +436,7 @@ public class TestFileSystemItemAdapterService {
         // ------------------------------------------------------
         // Check file system item factory descriptors
         // ------------------------------------------------------
-        Map<String, FileSystemItemFactoryDescriptor> fileSystemItemFactoryDescs =
-                ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactoryDescriptors();
+        Map<String, FileSystemItemFactoryDescriptor> fileSystemItemFactoryDescs = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactoryDescriptors();
         assertNotNull(fileSystemItemFactoryDescs);
         assertEquals(12, fileSystemItemFactoryDescs.size());
 
@@ -495,8 +491,7 @@ public class TestFileSystemItemAdapterService {
         // ------------------------------------------------------
         // Check ordered file system item factories
         // ------------------------------------------------------
-        List<FileSystemItemFactoryWrapper> fileSystemItemFactories =
-                ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactories();
+        List<FileSystemItemFactoryWrapper> fileSystemItemFactories = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactories();
         assertNotNull(fileSystemItemFactories);
         assertEquals(6, fileSystemItemFactories.size());
 
