@@ -47,6 +47,13 @@ public class ReloadResult {
         return undeployedBundles;
     }
 
+    /**
+     * @since 10.3
+     */
+    public Stream<Bundle> undeployedBundlesAsStream() {
+        return undeployedBundles().stream();
+    }
+
     public List<Bundle> deployedBundles() {
         return deployedBundles;
     }
