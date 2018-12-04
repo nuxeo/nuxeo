@@ -21,7 +21,6 @@ package org.nuxeo.runtime.model;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -48,10 +47,7 @@ public class URLStreamRef implements StreamRef {
 
     @Override
     public InputStream getStream() throws IOException {
-        URLConnection c = url.openConnection();
-        // make sure there is no cache when reading the stream to handle hot-reload of Studio jars
-        c.setUseCaches(false);
-        return c.getInputStream();
+        return url.openStream();
     }
 
     @Override
