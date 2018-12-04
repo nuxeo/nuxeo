@@ -20,9 +20,9 @@ package org.nuxeo.ecm.platform.rendition.operation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -36,6 +36,8 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.platform.rendition.service.RenditionFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -85,7 +87,10 @@ public class PublishRenditionTest {
             assertEquals(section.getId(), session.getDocument(publishedDoc.getParentRef()).getId());
             assertEquals(1, session.getChildren(section.getRef()).size());
             assertFalse(publishedDoc.hasSchema("rend"));
-            assertTrue(listener.hasBeenFired(DocumentEventTypes.DOCUMENT_PUBLISHED));
+            List<Event> events = listener.getCapturedEvents();
+            assertEquals(2, events.size());
+            assertEquals(fileToPublish, ((DocumentEventContext) events.get(0).getContext()).getSourceDocument());
+            assertEquals(publishedDoc, ((DocumentEventContext) events.get(1).getContext()).getSourceDocument());
         }
     }
 
@@ -102,7 +107,10 @@ public class PublishRenditionTest {
             assertEquals(section.getId(), session.getDocument(publishedDoc.getParentRef()).getId());
             assertEquals(1, session.getChildren(section.getRef()).size());
             assertEquals("xmlExport", publishedDoc.getPropertyValue("rend:renditionName"));
-            assertTrue(listener.hasBeenFired(DocumentEventTypes.DOCUMENT_PUBLISHED));
+            List<Event> events = listener.getCapturedEvents();
+            assertEquals(2, events.size());
+            assertEquals(fileToPublish, ((DocumentEventContext) events.get(0).getContext()).getSourceDocument());
+            assertEquals(publishedDoc, ((DocumentEventContext) events.get(1).getContext()).getSourceDocument());
         }
     }
 

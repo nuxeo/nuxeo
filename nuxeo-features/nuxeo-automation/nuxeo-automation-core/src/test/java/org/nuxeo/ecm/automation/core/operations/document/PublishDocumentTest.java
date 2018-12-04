@@ -19,9 +19,9 @@
 package org.nuxeo.ecm.automation.core.operations.document;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -34,6 +34,8 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -80,7 +82,10 @@ public class PublishDocumentTest {
 
             assertEquals(section.getId(), session.getDocument(publishedDoc.getParentRef()).getId());
             assertEquals(1, session.getChildren(section.getRef()).size());
-            assertTrue(listener.hasBeenFired(DocumentEventTypes.DOCUMENT_PUBLISHED));
+            List<Event> events = listener.getCapturedEvents();
+            assertEquals(2, events.size());
+            assertEquals(fileToPublish, ((DocumentEventContext) events.get(0).getContext()).getSourceDocument());
+            assertEquals(publishedDoc, ((DocumentEventContext) events.get(1).getContext()).getSourceDocument());
         }
     }
 

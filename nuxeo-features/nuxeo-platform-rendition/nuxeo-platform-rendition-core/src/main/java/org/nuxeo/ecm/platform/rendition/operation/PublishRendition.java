@@ -79,6 +79,7 @@ public class PublishRendition {
             RenditionService rs = Framework.getService(RenditionService.class);
             proxy = rs.publishRendition(doc, target, renditionName, override);
         }
+        notifyPublishedEvent(doc);
         notifyPublishedEvent(proxy);
         return proxy;
     }
