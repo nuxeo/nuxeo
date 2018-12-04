@@ -21,6 +21,8 @@ package org.nuxeo.runtime.reload;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -29,8 +31,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -317,6 +322,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                 logComponentManagerStatus();
 
                 result.merge(_undeployBundles(bundlesNamesToUndeploy));
+                clearJarFileFactoryCache(result);
                 componentManager.unstash();
 
                 // Clear the class loader
@@ -491,6 +497,73 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             ctx.ungetService(ref);
         }
         return result;
+    }
+
+    /**
+     * Gets the un-deployed bundle from given {@link ReloadResult result} and try to remove them from
+     * {@link sun.net.www.protocol.jar.JarFileFactory} otherwise we'll have resource conflict when opening
+     * {@link InputStream stream} from {@link URL url}.
+     */
+    @SuppressWarnings({ "unchecked", "SynchronizationOnLocalVariableOrMethodParameter" })
+    protected void clearJarFileFactoryCache(ReloadResult result) {
+        try {
+            List<String> jarLocations = result.undeployedBundlesAsStream().map(Bundle::getLocation).collect(
+                    Collectors.toList());
+            log.debug("Clear JarFileFactory caches for jars={}", jarLocations);
+            Class jarFileFactory = Class.forName("sun.net.www.protocol.jar.JarFileFactory");
+
+            Field factoryInstanceField = jarFileFactory.getDeclaredField("instance");
+            factoryInstanceField.setAccessible(true);
+            Object factoryInstance = factoryInstanceField.get(null);
+
+            Field fileCacheField = jarFileFactory.getDeclaredField("fileCache");
+            fileCacheField.setAccessible(true);
+            Map<String, JarFile> fileCache = (Map<String, JarFile>) fileCacheField.get(null);
+
+            Field urlCacheField = jarFileFactory.getDeclaredField("urlCache");
+            urlCacheField.setAccessible(true);
+            Map<JarFile, URL> urlCache = (Map<JarFile, URL>) urlCacheField.get(null);
+
+            synchronized (factoryInstance) {
+                // collect keys of cache
+                List<JarFile> urlCacheRemoveKeys = new ArrayList<>();
+                for (Entry<JarFile, URL> entry : urlCache.entrySet()) {
+                    JarFile jarFile = entry.getKey();
+                    if (jarLocations.stream().anyMatch(jar -> jar.startsWith(jarFile.getName()))) {
+                        urlCacheRemoveKeys.add(jarFile);
+                    }
+                }
+
+                List<String> fileCacheRemoveKeys = new ArrayList<>();
+                for (Entry<String, JarFile> entry : fileCache.entrySet()) {
+                    if (urlCacheRemoveKeys.contains(entry.getValue())) {
+                        fileCacheRemoveKeys.add(entry.getKey());
+                    }
+                }
+
+                // now remove from factory
+                for (String fileCacheRemoveKey : fileCacheRemoveKeys) {
+                    JarFile remove = fileCache.remove(fileCacheRemoveKey);
+                    if (remove != null) {
+                        log.trace("Removed item from fileCache={}", remove);
+                    }
+                }
+
+                for (JarFile urlCacheRemoveKey : urlCacheRemoveKeys) {
+                    URL remove = urlCache.remove(urlCacheRemoveKey);
+                    try {
+                        urlCacheRemoveKey.close();
+                    } catch (IOException e) {
+                        log.info("Unable to close JarFile={}", urlCacheRemoveKey, e);
+                    }
+                    if (remove != null) {
+                        log.trace("Removed item from urlCache={}",  remove);
+                    }
+                }
+            }
+        } catch (ReflectiveOperationException | ClassCastException e) {
+            log.error("Unable to clear JarFileFactory, you might need to restart Nuxeo", e);
+        }
     }
 
     /**
