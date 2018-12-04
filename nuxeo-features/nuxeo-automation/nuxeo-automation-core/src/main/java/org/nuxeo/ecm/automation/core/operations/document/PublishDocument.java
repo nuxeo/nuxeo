@@ -58,6 +58,7 @@ public class PublishDocument {
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
         DocumentModel proxy = session.publishDocument(doc, target, override);
+        notifyPublishedEvent(doc);
         notifyPublishedEvent(proxy);
         return proxy;
     }
@@ -65,13 +66,13 @@ public class PublishDocument {
     /**
      * @since 10.3
      */
-    protected void notifyPublishedEvent(DocumentModel proxy) {
+    protected void notifyPublishedEvent(DocumentModel doc) {
         Map<String, Serializable> properties = new HashMap<>();
-        properties.put(CoreEventConstants.REPOSITORY_NAME, proxy.getRepositoryName());
+        properties.put(CoreEventConstants.REPOSITORY_NAME, doc.getRepositoryName());
         properties.put(CoreEventConstants.SESSION_ID, session.getSessionId());
-        properties.put(CoreEventConstants.DOC_LIFE_CYCLE, proxy.getCurrentLifeCycleState());
+        properties.put(CoreEventConstants.DOC_LIFE_CYCLE, doc.getCurrentLifeCycleState());
 
-        DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), proxy);
+        DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         ctx.setProperties(properties);
         ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
 
