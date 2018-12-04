@@ -37,6 +37,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.runtime.jtajca")
 @Deploy("org.nuxeo.ecm.automation.server")
 @Deploy("org.nuxeo.ecm.automation.io")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.export")
 @Deploy("org.nuxeo.ecm.webengine.core")
 @Deploy("org.nuxeo.ecm.webengine.jaxrs")
 @Deploy("org.nuxeo.ecm.platform.web.common")
