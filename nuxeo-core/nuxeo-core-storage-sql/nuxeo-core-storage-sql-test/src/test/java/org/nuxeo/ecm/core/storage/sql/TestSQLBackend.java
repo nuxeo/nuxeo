@@ -154,9 +154,25 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-schema-reservedfieldname.xml")
-    public void testSchemaWithReservedFieldName() {
+    public void testSchemaWithReservedFieldName() throws Exception {
         Session session = repository.getConnection();
-        session.getRootNode();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "DocReservedFieldName", false);
+        node.setSimpleProperty("xmin", "test-xmin");
+        node.setSimpleProperty("oid", "test-oid");
+        node.setSimpleProperty("oid_", "test-oid2");
+        node.setSimpleProperty("id", "test-id");
+        node.setSimpleProperty("id_", "test-id2");
+        session.save();
+        // reopen
+        session.close();
+        session = repository.getConnection();
+        node = session.getChildNode(session.getRootNode(), "foo", false);
+        assertEquals("test-xmin", node.getSimpleProperty("xmin").getString());
+        assertEquals("test-oid", node.getSimpleProperty("oid").getString());
+        assertEquals("test-oid2", node.getSimpleProperty("oid_").getString());
+        assertEquals("test-id", node.getSimpleProperty("id").getString());
+        assertEquals("test-id2", node.getSimpleProperty("id_").getString());
     }
 
     protected int getChildrenHardSize(Session session) {

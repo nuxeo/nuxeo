@@ -1575,11 +1575,7 @@ public class Model {
                             fragmentKey = fieldDescriptor.column;
                         }
                     }
-                    if (MAIN_KEY.equalsIgnoreCase(fragmentKey)) {
-                        String msg = "A property cannot be named '" + fragmentKey
-                                + "' because this is a reserved name, in type: " + typeName;
-                        throw new NuxeoException(msg);
-                    }
+                    fragmentKey = checkReservedName(fragmentKey);
                     if (fragmentName.equals(UID_SCHEMA_NAME) && (fragmentKey.equals(UID_MAJOR_VERSION_KEY)
                             || fragmentKey.equals(UID_MINOR_VERSION_KEY))) {
                         // workaround: special-case the "uid" schema, put
@@ -1605,6 +1601,15 @@ public class Model {
             addTypeFragments(typeName, fragmentNames);
             typeComplexChildren.put(typeName, complexChildren);
         }
+    }
+
+    protected String checkReservedName(String key) {
+        String k = key.replaceAll("_+$", "");
+        if (k.equalsIgnoreCase(MAIN_KEY)) {
+            // reserved, add one more suffix "_"
+            key += "_";
+        }
+        return key;
     }
 
     private static String typeFragmentName(ComplexType type) {
