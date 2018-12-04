@@ -25,7 +25,6 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Features({ PlatformFeature.class, CollectionFeature.class, SQLAuditFeature.class })
 @Deploy("org.nuxeo.drive.core")
 @Deploy("org.nuxeo.ecm.core.io")
-@Deploy("org.nuxeo.runtime.reload")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.platform.types.core")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")

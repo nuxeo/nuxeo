@@ -25,7 +25,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +32,6 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
 import javax.inject.Inject;
 
@@ -76,8 +74,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -973,8 +969,6 @@ public class DefaultFileSystemItemFactoryFixture {
 
     @Test
     public void testFolderItemChildrenPageProviderOverride() throws Exception {
-        assumeFalse("Cannot test reload for in-memory repository", coreFeature.getStorageConfiguration().isDBSMem());
-
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), syncRootFolder, session);
         FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
         assertEquals(5, syncRootFolderItem.getChildren().size());
@@ -1274,15 +1268,6 @@ public class DefaultFileSystemItemFactoryFixture {
             } else {
                 fail(String.format("FileSystemItem %s doesn't match any expected.", fsItem.getId()));
             }
-        }
-    }
-
-    void reload() throws InterruptedException {
-        Properties lastProps = Framework.getProperties();
-        try {
-            Framework.getService(ReloadService.class).reload();
-        } finally {
-            Framework.getProperties().putAll(lastProps);
         }
     }
 
