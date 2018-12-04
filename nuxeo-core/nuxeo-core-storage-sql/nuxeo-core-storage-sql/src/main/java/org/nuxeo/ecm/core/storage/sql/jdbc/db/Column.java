@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.io.Serializable;
+import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -180,15 +181,24 @@ public class Column implements Serializable {
         return type == ColumnType.FTINDEXED || type == ColumnType.FTSTORED;
     }
 
-    public boolean setJdbcType(int actual, String actualName, int actualSize) {
+    public String checkJdbcType(int actual, String actualName, int actualSize) {
         int expected = jdbcType;
         if (actual == expected) {
-            return true;
+            return null;
         }
         if (dialect.isAllowedConversion(expected, actual, actualName, actualSize)) {
-            return true;
+            return null;
         }
-        return false;
+        return String.format("SQL type mismatch for %s: expected %s, database has %s / %s(%s)", getFullQuotedName(),
+                getJDBCTypeName(expected), getJDBCTypeName(actual), actualName, actualSize);
+    }
+
+    protected static String getJDBCTypeName(int expected) {
+        try {
+            return JDBCType.valueOf(expected).getName();
+        } catch (IllegalArgumentException e) {
+            return String.valueOf(expected);
+        }
     }
 
     public String getKey() {

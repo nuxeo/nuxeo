@@ -272,14 +272,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                         ddlCollector.addAll(table.getPostAddSqls(column, model));
                         addedColumns.add(column);
                     } else {
-                        int expected = column.getJdbcType();
-                        int actual = type.intValue();
                         String actualName = columnTypeNames.get(upperName);
                         Integer actualSize = columnTypeSizes.get(upperName);
-                        if (!column.setJdbcType(actual, actualName, actualSize.intValue())) {
-                            log.error(String.format("SQL type mismatch for %s: expected %s, database has %s / %s (%s)",
-                                    column.getFullQuotedName(), Integer.valueOf(expected), type, actualName,
-                                    actualSize));
+                        String message = column.checkJdbcType(type, actualName, actualSize);
+                        if (message != null) {
+                            log.error(message);
+                            Framework.getRuntime().getMessageHandler().addError(message);
                         }
                     }
                 }
