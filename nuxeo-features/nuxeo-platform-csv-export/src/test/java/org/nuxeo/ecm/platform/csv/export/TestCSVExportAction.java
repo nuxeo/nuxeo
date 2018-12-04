@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -59,6 +60,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -187,6 +189,7 @@ public class TestCSVExportAction {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         List<DocumentModel> children = session.getChildren(model.getRef());
         List<String> testIds = new ArrayList<>();
+        boolean addBlob = true;
         for (int i = 0; i < children.size(); i++) {
             DocumentModel child = children.get(i);
             child.setPropertyValue("dc:nature", "article");
@@ -194,14 +197,23 @@ public class TestCSVExportAction {
                 child.setPropertyValue("dc:subjects", new String[] { "art/architecture" });
                 testIds.add(child.getId());
             }
+            if (child.getType().equals("File") && addBlob) {
+                child.setPropertyValue("dc:title", "FileWithContent" + i);
+                Blob blob = Blobs.createBlob("the blob content");
+                blob.setFilename("initial_name.txt");
+                child.setPropertyValue("file:content", (Serializable) blob);
+                addBlob = false;
+            }
+
             session.saveDocument(child);
         }
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
+        ImmutableList<String> xpaths = ImmutableList.of("cpx:complex/foo", "file:content/name", "file:content/length");
         BulkCommand command = createBuilder().param("schemas", ImmutableList.of("dublincore"))
-                                             .param("xpaths", ImmutableList.of("cpx:complex/foo"))
+                                             .param("xpaths", xpaths)
                                              .param("lang", "fr")
                                              .build();
         bulkService.submit(command);
@@ -224,7 +236,8 @@ public class TestCSVExportAction {
         String[] dcFields = new String[] { "dc:contributors", "dc:coverage", "dc:coverage[label]", "dc:created",
                 "dc:creator", "dc:description", "dc:expired", "dc:format", "dc:issued", "dc:language",
                 "dc:lastContributor", "dc:modified", "dc:nature", "dc:nature[label]", "dc:publisher", "dc:rights",
-                "dc:source", "dc:subjects", "dc:subjects[label]", "dc:title", "dc:valid", "cpx:complex/foo" };
+                "dc:source", "dc:subjects", "dc:subjects[label]", "dc:title", "dc:valid", "cpx:complex/foo",
+                "file:content/length", "file:content/name" };
 
         int headerSize = systemHeaderSize + dcFields.length;
         assertArrayEquals(dcFields, header.subList(systemHeaderSize, headerSize).toArray());
@@ -237,6 +250,11 @@ public class TestCSVExportAction {
             assertTrue(properties.contains("Article FR"));
             if (testIds.contains(properties.get(1))) {
                 assertTrue(properties.contains("art/architecture"));
+            }
+            // if the document is a File with content it must contain its content filename and length
+            if (properties.contains("FileWithContent")) {
+                assertTrue(properties.contains("initial_name.txt"));
+                assertTrue(properties.contains("16"));
             }
         }
 

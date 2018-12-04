@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty.ScalarMemberProperty;
 import org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -63,6 +64,10 @@ public class DocumentPropertyCSVWriter extends AbstractCSVWriter<Property> {
         if (property == null) {
             printer.print(null);
         } else if (property.isScalar()) {
+            if (property instanceof ScalarMemberProperty && property.getParent().getValue() == null) {
+                printer.print(null);
+                return;
+            }
             writeScalarProperty(property, printer);
         } else if (property.isList()) {
             writeListProperty(property, printer);
