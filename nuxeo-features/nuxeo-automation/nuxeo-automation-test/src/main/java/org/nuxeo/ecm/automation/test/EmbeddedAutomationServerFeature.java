@@ -39,7 +39,6 @@ import com.google.inject.Scopes;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Features({ DetectThreadDeadlocksFeature.class, WebEngineFeature.class, AutomationServerFeature.class })
-@DetectThreadDeadlocksFeature.Config(dumpAtTearDown = true)
 public class EmbeddedAutomationServerFeature implements RunnerFeature {
 
     protected static final int HTTP_CONNECTION_TIMEOUT = 60000; // 60 seconds
