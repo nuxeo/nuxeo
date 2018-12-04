@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectOracle;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectPostgreSQL;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectSQLServer;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreProvider;
 import org.nuxeo.runtime.kv.KeyValueStoreDescriptor;
@@ -507,10 +508,10 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
                     log.error("Column not found: {} in table: {}", columnName, tableName);
                     continue;
                 }
-                int expected = column.getJdbcType();
-                if (!column.setJdbcType(actual, actualName, actualSize)) {
-                    log.error("SQL type mismatch for {}: expected {}, database has {} / {} ({})",
-                            column.getFullQuotedName(), expected, actual, actualName, actualSize);
+                String message = column.checkJdbcType(actual, actualName, actualSize);
+                if (message != null) {
+                    log.error(message);
+                    Framework.getRuntime().getMessageHandler().addError(message);
                 }
             }
         }
