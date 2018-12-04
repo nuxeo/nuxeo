@@ -61,7 +61,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
@@ -182,7 +181,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         }, String.format("Nuxeo-AsyncOperation-%s", executionId)).start();
 
         try {
-            String statusURL = String.format("%s/%s/%s", ctx.getURL(), executionId, STATUS_PATH);
+            String statusURL = String.format("%s%s/%s/%s", ctx.getServerURL(), getPath(), executionId, STATUS_PATH);
             return Response.status(HttpServletResponse.SC_ACCEPTED).location(new URI(statusURL)).build();
         } catch (URISyntaxException e) {
             throw new NuxeoException(e);
@@ -191,14 +190,13 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
     @GET
     @Path("{executionId}/status")
-    public Object status(@PathParam("executionId") String executionId)
-            throws IOException, URISyntaxException, MessagingException {
+    public Object status(@PathParam("executionId") String executionId) throws IOException, MessagingException {
         if (isCompleted(executionId)) {
             String error = getError(executionId);
             if (error != null) {
                 throw new NuxeoException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-            String resURL = StringUtils.removeEnd(ctx.getURL(), STATUS_PATH);
+            String resURL = String.format("%s/%s", getPath(), executionId);
             return redirect(resURL);
         } else {
             Object result = RUNNING_STATUS;
@@ -230,8 +228,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
             if (output instanceof Map) {
                 Object url = ((Map<?, ?>) output).get(RESULT_URL_KEY);
                 if (url instanceof String) {
-                    String baseUrl = VirtualHostHelper.getBaseURL(ctx.getRequest());
-                    return redirect(baseUrl + url);
+                    return redirect(ctx.getServerURL().append(url).toString());
                 }
             }
             return ResponseHelper.getResponse(output, request, HttpServletResponse.SC_OK);
