@@ -9,4 +9,9 @@
   <!-- this is what the above column is turned into, must not clash -->
   <xs:element name="oid_" type="xs:string" />
 
+  <!-- must not clash with the id column used for the primary column -->
+  <xs:element name="id" type="xs:string" />
+  <!-- this is what the above column is turned into, must not clash -->
+  <xs:element name="id_" type="xs:string" />
+
 </xs:schema>
