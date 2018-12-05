@@ -376,6 +376,14 @@ public class RestHelper {
     }
 
     /**
+     * @since 10.10
+     */
+    public static String getWorkflowInstanceTitle(String workflowId) {
+        Workflow workflow = CLIENT.repository().fetchWorkflowModel(workflowId);
+        return workflow.getTitle();
+    }
+
+    /**
      * Fetches a {@link Document} instance according the input parameter which can be a document id or path.
      * <p />
      * CAUTION: Keep this method protected, we want to keep nuxeo-java-client objects here.

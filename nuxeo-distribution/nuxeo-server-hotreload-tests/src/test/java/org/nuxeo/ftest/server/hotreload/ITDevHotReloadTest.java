@@ -207,4 +207,25 @@ public class ITDevHotReloadTest {
         testHotReloadAutomationScripting();
     }
 
+    /**
+     * Goal of this is test is to check that resources present in jar are correctly get after a hot reload.
+     * <p/>
+     * There are several caches around JarFile which leads to issues when hot reloading Nuxeo, for instance: when
+     * replacing a jar and doing a hot reload, it's possible to get previous resource instead of new one present in jar.
+     *
+     * @since 10.10
+     */
+    @Test
+    public void testHotReloadJarFileFactoryCleanup() {
+        // deploy first bundle
+        hotReloadRule.deployJarDevBundle(ITDevHotReloadTest.class,
+                "_testHotReloadJarFileFactoryFlush/first/jar-to-hot-reload.jar");
+        // assert workflow name
+        assertEquals("New Workflow", RestHelper.getWorkflowInstanceTitle("newWorkflow"));
+        // deploy second bundle with same jar name and resource change
+        hotReloadRule.deployJarDevBundle(ITDevHotReloadTest.class,
+                                         "_testHotReloadJarFileFactoryFlush/second/jar-to-hot-reload.jar");
+        assertEquals("New Workflow (2)", RestHelper.getWorkflowInstanceTitle("newWorkflow"));
+    }
+
 }

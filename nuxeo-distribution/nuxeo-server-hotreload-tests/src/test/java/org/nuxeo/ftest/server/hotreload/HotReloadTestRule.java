@@ -142,6 +142,29 @@ public class HotReloadTestRule implements TestRule {
     }
 
     /**
+     * Deploys the jar dev bundle located under src/test/resources/${TEST_CLASS_NAME}/{@code subPath} (if exists).
+     * <p />
+     * This method use {@link #updateDevBundles(String)}.
+     *
+     * @since 10.10
+     */
+    public void deployJarDevBundle(Class<?> testClass, String subPath) {
+        String className = testClass.getSimpleName();
+        String relativeBundlePath = "/" + className + "/" + subPath;
+        // #getResource could return null if resource doesn't exist
+        Optional<Path> bundlePathOpt = Optional.ofNullable(testClass.getResource(relativeBundlePath))
+                                               .map(URI_MAPPER)
+                                               .map(Paths::get)
+                                               .map(Path::toAbsolutePath)
+                                               .filter(p -> p.toFile().exists());
+        if (bundlePathOpt.isPresent()) {
+            updateDevBundles("Bundle:" + bundlePathOpt.get().toString());
+        } else {
+            throw new NuxeoException("Unable to locate JAR=" + subPath);
+        }
+    }
+
+    /**
      * Updates the dev.bundles file by POSTing a body to {@link org.nuxeo.runtime.tomcat.dev.DevValve}, this will
      * trigger a hot reload on server.
      * <p />
