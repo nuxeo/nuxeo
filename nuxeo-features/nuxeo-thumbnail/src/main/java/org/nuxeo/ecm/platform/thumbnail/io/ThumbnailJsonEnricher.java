@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.thumbnail.io;
 
+import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
@@ -80,7 +81,7 @@ public class ThumbnailJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
         jg.writeStringField(THUMBNAIL_URL_LABEL,
                 String.format(THUMBNAIL_URL_PATTERN, ctx.getBaseUrl().replaceAll("/$", ""),
                         document.getRepositoryName(), document.getId(),
-                        URLEncoder.encode(document.getChangeToken(), "UTF-8")));
+                        URLEncoder.encode(defaultString(document.getChangeToken()), "UTF-8")));
         jg.writeEndObject();
 
     }
