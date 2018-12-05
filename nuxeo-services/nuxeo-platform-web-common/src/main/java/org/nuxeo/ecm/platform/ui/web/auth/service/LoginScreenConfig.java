@@ -363,8 +363,8 @@ public class LoginScreenConfig implements Serializable {
         if (supportedLocales != null) {
             res.addAll(supportedLocales);
         }
-        if (!res.contains(getDefaultLocale())) {
-            res.add(getDefaultLocale());
+        if (defaultLocale != null && !res.contains(defaultLocale)) {
+            res.add(defaultLocale);
         }
         return res;
     }
