@@ -78,6 +78,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -103,6 +104,9 @@ public class DefaultFileSystemItemFactoryFixture {
 
     @Inject
     protected CoreFeature coreFeature;
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     @Inject
     protected CoreSession session;
@@ -973,12 +977,9 @@ public class DefaultFileSystemItemFactoryFixture {
         FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
         assertEquals(5, syncRootFolderItem.getChildren().size());
 
-        TransactionHelper.commitOrRollbackTransaction(); // should save documents before runtime reset
-        try {
-            deployer.deploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
-        } finally {
-            TransactionHelper.startTransaction();
-        }
+        txFeature.nextTransaction(); // should save documents before runtime reset
+
+        deployer.deploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
         assertEquals(2, syncRootFolderItem.getChildren().size());
     }
 
