@@ -117,10 +117,10 @@ public class HotReloadTestRule implements TestRule {
         String relativeBundlePath = "/" + className + "/" + methodName;
         // #getResource could return null if resource doesn't exist
         Optional<Path> bundlePathOpt = Optional.ofNullable(testClass.getResource(relativeBundlePath))
-                                              .map(URI_MAPPER)
-                                              .map(Paths::get)
-                                              .map(Path::toAbsolutePath)
-                                              .filter(p -> p.toFile().exists());
+                                               .map(URI_MAPPER)
+                                               .map(Paths::get)
+                                               .map(Path::toAbsolutePath)
+                                               .filter(p -> p.toFile().exists());
         if (bundlePathOpt.isPresent()) {
             Path bundlePath = bundlePathOpt.get();
             Function<String, String> devBundleFormat = "Bundle:"::concat;

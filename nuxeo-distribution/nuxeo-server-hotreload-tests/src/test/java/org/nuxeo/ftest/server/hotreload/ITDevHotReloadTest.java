@@ -68,11 +68,12 @@ public class ITDevHotReloadTest {
 
     @Test
     public void testHotReloadSequence() {
-       String storageConf = StorageConfiguration.defaultSystemProperty(StorageConfiguration.CORE_PROPERTY, StorageConfiguration.DEFAULT_CORE);
-       assumeTrue("This test only works with VCS", StorageConfiguration.CORE_VCS.equals(storageConf));
-       Map<String, Object> parameters = new HashMap<>();
-       parameters.put("sequenceName", "hibernateSequencer");
-       RestHelper.operation("javascript.getSequence", parameters);
+        String storageConf = StorageConfiguration.defaultSystemProperty(StorageConfiguration.CORE_PROPERTY,
+                StorageConfiguration.DEFAULT_CORE);
+        assumeTrue("This test only works with VCS", StorageConfiguration.CORE_VCS.equals(storageConf));
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("sequenceName", "hibernateSequencer");
+        RestHelper.operation("javascript.getSequence", parameters);
     }
 
     @Test
@@ -188,10 +189,8 @@ public class ITDevHotReloadTest {
             fail("User shouldn't be able to delete the document");
         } catch (NuxeoClientRemoteException nce) {
             assertEquals(403, nce.getStatus());
-            assertEquals(
-                    String.format("Failed to delete document /file, Permission denied: cannot remove document %s, "
-                            + "Missing permission 'Remove' on document %s", docId, docId),
-                    nce.getMessage());
+            assertEquals(String.format("Failed to delete document /file, Permission denied: cannot remove document %s, "
+                    + "Missing permission 'Remove' on document %s", docId, docId), nce.getMessage());
         }
         // there's no check on adding a permission try to delete the file
         RestHelper.addPermission("/file", "john", "HotReloadRemove");
