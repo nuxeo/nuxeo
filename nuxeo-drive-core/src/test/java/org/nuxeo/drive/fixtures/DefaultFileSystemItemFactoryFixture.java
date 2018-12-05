@@ -78,6 +78,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -87,7 +89,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 8.4
  */
 @RunWith(FeaturesRunner.class)
-@Features(NuxeoDriveFeature.class)
+@Features({ NuxeoDriveFeature.class, LogFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-filter-contrib.xml")
 public class DefaultFileSystemItemFactoryFixture {
 
@@ -107,6 +109,12 @@ public class DefaultFileSystemItemFactoryFixture {
 
     @Inject
     protected TransactionalFeature txFeature;
+
+    @Inject
+    protected LogFeature logFeature;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     @Inject
     protected CoreSession session;
@@ -1116,8 +1124,20 @@ public class DefaultFileSystemItemFactoryFixture {
 
     @Test
     @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-blobholder-factory-contrib.xml")
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR")
     public void testBlobException() throws Exception {
-        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(file));
+        logFeature.hideErrorFromConsoleLog();
+        try {
+            assertFalse(defaultFileSystemItemFactory.isFileSystemItem(file));
+        } finally {
+            logFeature.restoreConsoleLog();
+        }
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
+        assertEquals(1, caughtEvents.size());
+        assertEquals(
+                String.format("Error while fetching blob for document %s, it cannot be adapted as a FileSystemItem.",
+                        file.getId()),
+                caughtEvents.get(0));
     }
 
     @Test
