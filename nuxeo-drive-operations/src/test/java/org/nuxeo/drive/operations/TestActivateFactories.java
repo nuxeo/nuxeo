@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -33,6 +34,8 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.test.runner.ServletContainer;
 
 /**
@@ -41,7 +44,7 @@ import org.nuxeo.runtime.test.runner.ServletContainer;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(NuxeoDriveAutomationFeature.class)
+@Features({ NuxeoDriveAutomationFeature.class, LogFeature.class, LogCaptureFeature.class })
 @ServletContainer(port = 18080)
 public class TestActivateFactories {
 
@@ -51,18 +54,37 @@ public class TestActivateFactories {
     @Inject
     protected Session clientSession;
 
+    @Inject
+    protected LogFeature logFeature;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
+
     @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
     public void testSetActiveFactories() throws Exception {
 
         // Check default factories
         checkDefaultProfile();
 
         // Check unknown profile
-        Object result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set("profile", "unknown").execute();
-        assertFalse((Boolean) result);
+        logFeature.hideWarningFromConsoleLog();
+        try {
+            Object result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID)
+                                         .set("profile", "unknown")
+                                         .execute();
+            assertFalse((Boolean) result);
+        } finally {
+            logFeature.restoreConsoleLog();
+        }
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
+        assertEquals(1, caughtEvents.size());
+        assertEquals("No active file system item factory contribution for profile 'unknown'.", caughtEvents.get(0));
 
         // Activate userworkspace factories
-        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set("profile", "userworkspace").execute();
+        Object result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID)
+                                     .set("profile", "userworkspace")
+                                     .execute();
         assertTrue((Boolean) result);
         checkUserworkspaceProfile();
 
