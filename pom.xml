@@ -123,7 +123,7 @@
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.1.1</ant.assembly.version>
-    <nuxeo.ftest.version>1.8.6</nuxeo.ftest.version>
+    <nuxeo.ftest.version>1.8.7-SNAPSHOT</nuxeo.ftest.version>
     <nuxeo.java.client.version>3.2.0</nuxeo.java.client.version>
 
     <jsf.version>2.2.6</jsf.version>
@@ -6293,6 +6293,7 @@
                     <!-- Exclusions are tolerated for nightly "date-based" releases only -->
                     <excludes>
                       <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
+                      <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
                       <!-- <exclude>org.jboss.seam:*</exclude> -->
                     </excludes>
                   </requireReleaseDeps>
