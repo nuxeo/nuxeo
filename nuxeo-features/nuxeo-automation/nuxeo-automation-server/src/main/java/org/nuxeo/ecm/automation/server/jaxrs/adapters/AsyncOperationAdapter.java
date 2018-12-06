@@ -61,6 +61,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
@@ -228,7 +229,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
             if (output instanceof Map) {
                 Object url = ((Map<?, ?>) output).get(RESULT_URL_KEY);
                 if (url instanceof String) {
-                    return redirect(ctx.getServerURL().append(url).toString());
+                    String baseUrl = VirtualHostHelper.getBaseURL(ctx.getRequest());
+                    return redirect(baseUrl + url);
                 }
             }
             return ResponseHelper.getResponse(output, request, HttpServletResponse.SC_OK);
