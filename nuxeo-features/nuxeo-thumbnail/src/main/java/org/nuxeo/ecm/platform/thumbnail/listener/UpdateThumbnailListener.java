@@ -117,7 +117,7 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
         if (!events.containsEventName(ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name())) {
             return;
         }
-        Set<String> processedDocs = new HashSet<String>();
+        Set<String> processedDocs = new HashSet<>();
         for (Event event : events) {
             if (!ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name().equals(event.getName())) {
                 continue;
