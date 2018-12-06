@@ -76,8 +76,8 @@ public class TestExternalLDAPSessionSecurity {
 
     @Before
     public void setUp() {
-        Directory userDir = dirService.getDirectory("userDirectory");
-        try (LDAPSession session = (LDAPSession) userDir.getSession()) {
+        LDAPDirectory userDir = (LDAPDirectory) dirService.getDirectory("userDirectory");
+        try (LDAPSession session = userDir.getSession()) {
             DirContext ctx = session.getContext();
             for (String ldifFile : ldapFeature.getLdifFiles()) {
                 ldapFeature.loadDataFromLdif(ldifFile, ctx);

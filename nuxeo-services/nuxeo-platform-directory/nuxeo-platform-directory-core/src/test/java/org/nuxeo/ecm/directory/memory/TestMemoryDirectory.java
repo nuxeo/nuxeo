@@ -96,7 +96,7 @@ public class TestMemoryDirectory {
         descr.passwordField = "pw";
         descr.schemaSet = new HashSet<>(Arrays.asList("i", "pw", "a", "int", "b"));
         memDir = new MemoryDirectory(descr);
-        dir = (MemoryDirectorySession) memDir.getSession();
+        dir = memDir.getSession();
         Map<String, Object> e1 = new HashMap<>();
         e1.put("i", "1");
         e1.put("pw", "secr");
@@ -337,7 +337,7 @@ public class TestMemoryDirectory {
         map.put("i", "3");
         dir.createEntry(map);
 
-        try (Session session = (MemoryDirectorySession) memDir.getSession()) {
+        try (Session session = memDir.getSession()) {
             // everything (empty predicates)
             QueryBuilder queryBuilder = new QueryBuilder();
             checkQueryResult(session, queryBuilder, "1", "2", "3");

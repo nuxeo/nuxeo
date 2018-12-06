@@ -27,7 +27,6 @@ import java.util.List;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Reference;
-import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -49,7 +48,7 @@ public class MultiDirectory extends AbstractDirectory {
     }
 
     @Override
-    public Session getSession() {
+    public MultiDirectorySession getSession() {
         MultiDirectorySession session = new MultiDirectorySession(this);
         initializeIfNeeded();
         addSession(session);

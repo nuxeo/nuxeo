@@ -158,7 +158,7 @@ public class TestMultiDirectoryOptional {
 
         // the multi directory
         multiDir = (MultiDirectory) directoryService.getDirectory("multiOptional");
-        dir = (MultiDirectorySession) multiDir.getSession();
+        dir = multiDir.getSession();
     }
 
     @After
@@ -175,7 +175,7 @@ public class TestMultiDirectoryOptional {
     @Test
     public void testDirectoryOptionalInvalid() throws Exception {
         MultiDirectory multiDir = (MultiDirectory) directoryService.getDirectory("multiOptionalInvalid");
-        try (MultiDirectorySession dir = (MultiDirectorySession) multiDir.getSession()) {
+        try (MultiDirectorySession dir = multiDir.getSession()) {
             // invalid config => will throw an exception
             dir.query(null);
             fail("Should have raised an DirectoryException");

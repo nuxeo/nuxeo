@@ -247,8 +247,8 @@ public class LDAPReference extends AbstractReference implements Cloneable {
             }
             return;
         }
-        try (LDAPSession targetSession = (LDAPSession) ldapTargetDirectory.getSession();
-                LDAPSession sourceSession = (LDAPSession) ldapSourceDirectory.getSession()) {
+        try (LDAPSession targetSession = ldapTargetDirectory.getSession();
+                LDAPSession sourceSession = ldapSourceDirectory.getSession()) {
             // fetch the entry to be able to run the security policy
             // implemented in an entry adaptor
             DocumentModel sourceEntry = sourceSession.getEntry(sourceId, false);
@@ -346,8 +346,8 @@ public class LDAPReference extends AbstractReference implements Cloneable {
         LDAPDirectory ldapSourceDirectory = (LDAPDirectory) getSourceDirectory();
 
         String emptyRefMarker = ldapSourceDirectory.getDescriptor().getEmptyRefMarker();
-        try (LDAPSession targetSession = (LDAPSession) ldapTargetDirectory.getSession();
-                LDAPSession sourceSession = (LDAPSession) ldapSourceDirectory.getSession()) {
+        try (LDAPSession targetSession = ldapTargetDirectory.getSession();
+                LDAPSession sourceSession = ldapSourceDirectory.getSession()) {
             if (!sourceSession.isReadOnly()) {
                 // compute the target dn to add to all the matching source
                 // entries
@@ -456,7 +456,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
             LDAPDirectory targetDir = getTargetLDAPDirectory();
 
             if (staticAttributeIdIsDn) {
-                try (LDAPSession targetSession = (LDAPSession) targetDir.getSession()) {
+                try (LDAPSession targetSession = targetDir.getSession()) {
                     targetLdapEntry = targetSession.getLdapEntry(targetId, fetchAllAttributes);
                     if (targetLdapEntry == null) {
                         String msg = String.format(
@@ -491,7 +491,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
 
             String searchBaseDn = ldapSourceDirectory.getDescriptor().getSearchBaseDn();
             SearchControls sctls = ldapSourceDirectory.getSearchControls();
-            try (LDAPSession sourceSession = (LDAPSession) ldapSourceDirectory.getSession()) {
+            try (LDAPSession sourceSession = ldapSourceDirectory.getSession()) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
                             "LDAPReference.getSourceIdsForTarget(%s): LDAP search search base='%s'"
@@ -529,8 +529,8 @@ public class LDAPReference extends AbstractReference implements Cloneable {
             LDAPDirectory ldapTargetDirectory = getTargetLDAPDirectory();
             String searchBaseDn = ldapSourceDirectory.getDescriptor().getSearchBaseDn();
 
-            try (LDAPSession sourceSession = (LDAPSession) ldapSourceDirectory.getSession();
-                    LDAPSession targetSession = (LDAPSession) ldapTargetDirectory.getSession()) {
+            try (LDAPSession sourceSession = ldapSourceDirectory.getSession();
+                    LDAPSession targetSession = ldapTargetDirectory.getSession()) {
                 // step #2.1: fetch the target entry to apply the ldap url
                 // filters of the candidate sources on it
                 if (targetLdapEntry == null) {
@@ -681,7 +681,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
         LDAPDirectory ldapTargetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPDirectoryDescriptor targetDirconfig = getTargetDirectoryDescriptor();
         String emptyRefMarker = ldapTargetDirectory.getDescriptor().getEmptyRefMarker();
-        try (LDAPSession targetSession = (LDAPSession) ldapTargetDirectory.getSession()) {
+        try (LDAPSession targetSession = ldapTargetDirectory.getSession()) {
             String baseDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
 
             // step #1: fetch ids referenced by static attributes
@@ -919,7 +919,7 @@ public class LDAPReference extends AbstractReference implements Cloneable {
 
         LDAPDirectoryDescriptor targetDirconfig = getTargetDirectoryDescriptor();
         LDAPDirectory ldapTargetDirectory = (LDAPDirectory) getTargetDirectory();
-        LDAPSession targetSession = (LDAPSession) ldapTargetDirectory.getSession();
+        LDAPSession targetSession = ldapTargetDirectory.getSession();
 
         // use the most specific scope between the one specified in the
         // Directory and the specified in the Parent
@@ -982,8 +982,8 @@ public class LDAPReference extends AbstractReference implements Cloneable {
         LDAPDirectory ldapTargetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPDirectory ldapSourceDirectory = (LDAPDirectory) getSourceDirectory();
         String attributeId = getStaticAttributeId();
-        try (LDAPSession sourceSession = (LDAPSession) ldapSourceDirectory.getSession();
-                LDAPSession targetSession = (LDAPSession) ldapTargetDirectory.getSession()) {
+        try (LDAPSession sourceSession = ldapSourceDirectory.getSession();
+                LDAPSession targetSession = ldapTargetDirectory.getSession()) {
             if (sourceSession.isReadOnly() || attributeId == null) {
                 // do not try to do anything on a read only server or to a
                 // purely dynamic reference
@@ -1087,8 +1087,8 @@ public class LDAPReference extends AbstractReference implements Cloneable {
         LDAPDirectory ldapTargetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPDirectory ldapSourceDirectory = (LDAPDirectory) getSourceDirectory();
         String attributeId = getStaticAttributeId();
-        try (LDAPSession targetSession = (LDAPSession) ldapTargetDirectory.getSession();
-                LDAPSession sourceSession = (LDAPSession) ldapSourceDirectory.getSession()) {
+        try (LDAPSession targetSession = ldapTargetDirectory.getSession();
+                LDAPSession sourceSession = ldapSourceDirectory.getSession()) {
             if (!sourceSession.isReadOnly()) {
                 // get the dn of the target that matches targetId
                 String targetAttributeValue;

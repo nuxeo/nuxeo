@@ -58,7 +58,7 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
     public void testGetEntry() throws Exception {
         // external LDAP not supported
         assumeTrue(isLocalServer());
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             DocumentModel entry = session.getEntry("Administrator");
             assertNotNull(entry);
             assertEquals("ADMINISTRATOR", entry.getId());
@@ -95,7 +95,7 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
 
     @Test
     public void testQuery1() {
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             DocumentModelList entries;
 

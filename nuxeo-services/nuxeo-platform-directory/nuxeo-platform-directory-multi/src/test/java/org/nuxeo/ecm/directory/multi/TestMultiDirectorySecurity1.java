@@ -173,7 +173,7 @@ public class TestMultiDirectorySecurity1 {
 
         // the multi directory
         multiDir = (MultiDirectory) directoryService.getDirectory("multi");
-        dir = (MultiDirectorySession) multiDir.getSession();
+        dir = multiDir.getSession();
     }
 
     @After
@@ -190,7 +190,7 @@ public class TestMultiDirectorySecurity1 {
     @Test
     public void superUserHasWritePermissionOnSubDirectory() throws Exception {
         dummyLogin.login(SUPER_USER);
-        assertTrue(((MultiDirectorySession) multiDir.getSession()).hasPermission("Write"));
+        assertTrue(multiDir.getSession().hasPermission("Write"));
         dummyLogin.logout();
     }
 

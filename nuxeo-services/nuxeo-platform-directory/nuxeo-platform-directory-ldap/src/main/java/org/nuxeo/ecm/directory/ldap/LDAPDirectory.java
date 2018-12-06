@@ -54,7 +54,6 @@ import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
 import org.nuxeo.ecm.directory.Reference;
-import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -335,9 +334,9 @@ public class LDAPDirectory extends AbstractDirectory {
     }
 
     @Override
-    public Session getSession() {
+    public LDAPSession getSession() {
         initLDAPConfigIfNeeded();
-        Session session = new LDAPSession(this);
+        LDAPSession session = new LDAPSession(this);
         addSession(session);
         return session;
     }

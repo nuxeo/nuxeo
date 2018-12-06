@@ -60,7 +60,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetEntry() throws Exception {
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             DocumentModel entry = session.getEntry("Administrator");
             assertNull(entry);
 
@@ -137,7 +137,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetEntry2() {
-        try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
+        try (Session session = groupDir.getSession()) {
             DocumentModel entry = session.getEntry("administrators");
             assertNotNull(entry);
             assertEquals("administrators", entry.getId());
@@ -202,7 +202,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
 
     @Test
     public void testQuery1() {
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("username", "user");
             Set<String> fulltext = new HashSet<>();

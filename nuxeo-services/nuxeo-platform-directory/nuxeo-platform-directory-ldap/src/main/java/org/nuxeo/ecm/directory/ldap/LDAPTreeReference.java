@@ -192,7 +192,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
         // step #1: fetch the dn of the targetId entry in the target
         // directory by the static dn valued strategy
         LDAPDirectory targetDir = getTargetLDAPDirectory();
-        try (LDAPSession targetSession = (LDAPSession) targetDir.getSession()) {
+        try (LDAPSession targetSession = targetDir.getSession()) {
             SearchResult targetLdapEntry = targetSession.getLdapEntry(targetId, true);
             if (targetLdapEntry == null) {
                 // no parent accessible => return empty list
@@ -213,7 +213,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
         // get a copy of original search controls
         SearchControls sctls = ldapSourceDirectory.getSearchControls(true);
         sctls.setSearchScope(SearchControls.OBJECT_SCOPE);
-        try (LDAPSession sourceSession = (LDAPSession) ldapSourceDirectory.getSession()) {
+        try (LDAPSession sourceSession = ldapSourceDirectory.getSession()) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "LDAPReference.getSourceIdsForTarget(%s): LDAP search search base='%s'"
@@ -265,7 +265,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
         // step #1: fetch the dn of the sourceId entry in the source
         // directory by the static dn valued strategy
         LDAPDirectory sourceDir = getSourceLDAPDirectory();
-        try (LDAPSession sourceSession = (LDAPSession) sourceDir.getSession()) {
+        try (LDAPSession sourceSession = sourceDir.getSession()) {
             SearchResult sourceLdapEntry = sourceSession.getLdapEntry(sourceId, true);
             if (sourceLdapEntry == null) {
                 throw new DirectoryException(sourceId + " does not exist in " + sourceDirectoryName);
@@ -285,7 +285,7 @@ public class LDAPTreeReference extends AbstractReference implements Cloneable {
         // get a copy of original search controls
         SearchControls sctls = ldapTargetDirectory.getSearchControls(true);
         sctls.setSearchScope(getScope());
-        try (LDAPSession targetSession = (LDAPSession) ldapTargetDirectory.getSession()) {
+        try (LDAPSession targetSession = ldapTargetDirectory.getSession()) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "LDAPReference.getTargetIdsForSource(%s): LDAP search search base='%s'"
