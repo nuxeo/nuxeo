@@ -18,11 +18,12 @@
  */
 package org.nuxeo.ecm.platform.thumbnail.test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -72,14 +73,14 @@ public class TestThumbnailFactories {
         session.createDocument(folder);
         session.save();
         ThumbnailAdapter folderThumbnail = folder.getAdapter(ThumbnailAdapter.class);
-        Assert.assertEquals(folderThumbnail.getThumbnail(session).getString(), "folderish");
+        assertEquals("folderish", folderThumbnail.getThumbnail(session).getString());
 
         // Test document thumbnail factory
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "File", "File");
         session.createDocument(doc);
         session.save();
         ThumbnailAdapter docThumbnail = doc.getAdapter(ThumbnailAdapter.class);
-        Assert.assertEquals(docThumbnail.getThumbnail(session).getString(), "default");
+        assertEquals("default", docThumbnail.getThumbnail(session).getString());
     }
 
     public static class DocumentTypeThumbnailFolderishFactory implements ThumbnailFactory {

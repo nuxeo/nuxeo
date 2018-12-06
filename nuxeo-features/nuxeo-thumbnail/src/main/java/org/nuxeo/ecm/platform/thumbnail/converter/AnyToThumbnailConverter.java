@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
@@ -52,7 +51,7 @@ public class AnyToThumbnailConverter implements Converter {
     }
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) {
         Blob sourceBlob;
         sourceBlob = blobHolder.getBlob();
         if (sourceBlob == null) {
@@ -68,7 +67,8 @@ public class AnyToThumbnailConverter implements Converter {
 
         String converterName = null;
         if ((mimeType.startsWith("image/") || PDF_MIME_TYPE_PATTERN.matcher(mimeType).matches())
-                && conversionService.isConverterAvailable(PDF_AND_IMAGE_TO_THUMBNAIL_CONVERTER_NAME, true).isAvailable()) {
+                && conversionService.isConverterAvailable(PDF_AND_IMAGE_TO_THUMBNAIL_CONVERTER_NAME, true)
+                                    .isAvailable()) {
             converterName = PDF_AND_IMAGE_TO_THUMBNAIL_CONVERTER_NAME;
         } else if (conversionService.isSourceMimeTypeSupported(ANY_TO_PDF_CONVERTER_NAME, mimeType)
                 && conversionService.isConverterAvailable(ANY_TO_PDF_CONVERTER_NAME, true).isAvailable()) {

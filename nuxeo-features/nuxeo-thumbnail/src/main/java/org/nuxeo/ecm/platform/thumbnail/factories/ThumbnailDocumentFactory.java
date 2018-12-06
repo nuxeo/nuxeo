@@ -86,7 +86,7 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
             conversionService = Framework.getService(ConversionService.class);
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             if (bh != null) {
-                Map<String, Serializable> params = new HashMap<String, Serializable>();
+                Map<String, Serializable> params = new HashMap<>();
                 // Thumbnail converter
                 params.put(ThumbnailConstants.THUMBNAIL_SIZE_PARAMETER_NAME, ThumbnailConstants.THUMBNAIL_DEFAULT_SIZE);
                 bh = conversionService.convert(ANY_TO_THUMBNAIL_CONVERTER_NAME, bh, params);
