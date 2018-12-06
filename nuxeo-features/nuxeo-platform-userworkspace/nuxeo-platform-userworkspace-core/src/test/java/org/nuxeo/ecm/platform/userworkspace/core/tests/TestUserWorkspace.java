@@ -47,9 +47,11 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.platform.userworkspace.core.service.AbstractUserWorkspaceImpl;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -339,6 +341,33 @@ public class TestUserWorkspace {
         try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
             assertNull(uw);
+        }
+    }
+
+    /**
+     * @since 10.3
+     */
+    @Test
+    public void testCanRetrieveUserWorkspaceWithTrashedDomain() {
+        try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
+            assertNotNull(uw);
+        }
+        List<DocumentModel> docs = session.getChildren(session.getRootDocument().getRef())
+                                        .stream()
+                                        .collect(Collectors.toList());
+        TrashService trashService = Framework.getService(TrashService.class);
+        trashService.trashDocuments(docs);
+        session.save();
+        try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
+            assertNotNull(uw);
+        }
+        trashService.undeleteDocuments(docs);
+        session.save();
+        try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
+            assertNotNull(uw);
         }
     }
 

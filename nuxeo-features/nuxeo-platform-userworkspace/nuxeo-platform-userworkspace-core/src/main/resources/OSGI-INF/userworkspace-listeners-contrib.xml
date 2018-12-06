@@ -9,6 +9,7 @@
       class="org.nuxeo.ecm.platform.userworkspace.core.listener.InvalidateUserWorkspacesListener"
       priority="20">
       <event>documentRemoved</event>
+      <event>lifecycle_transition_event</event>
     </listener>
 
   </extension>
