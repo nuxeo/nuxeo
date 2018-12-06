@@ -1,0 +1,45 @@
+#
+# (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Contributors:
+#     Kevin Leturc <kleturc@nuxeo.com>
+#
+
+version: "2"
+services:
+  db:
+    build:
+       context: mssql-fts-2017
+       dockerfile: Dockerfile
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=z3mH9Rh3
+
+  tests:
+    image: dockerpriv.nuxeo.com:443/nuxeo/jenkins-slave
+    volumes:
+      - $WORKSPACE:$WORKSPACE
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+    links:
+      - db
+    environment:
+      - JAVA_OPTS=-Xms512m -Xmx3g
+      - NX_DB_HOST=db
+      - NX_DB_ADMINNAME=master
+      - NX_DB_ADMINUSER=sa
+      - NX_DB_ADMINPASS=z3mH9Rh3
+      - NX_DB_USER=nuxeoUser
+      - NX_DB_PASS=9Zp9fzX7
+    command: /sbin/my_init -- su - jenkins -c "$TESTS_COMMAND"
