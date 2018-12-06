@@ -964,6 +964,10 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                                              .and(Predicates.eq("firstName", "NotMe"));
             checkQueryResult(session, queryBuilder); // empty
 
+            // username LIKE 'user%'
+            queryBuilder = new QueryBuilder().predicate(Predicates.like("username", "user%"));
+            checkQueryResult(session, queryBuilder, "user1", "user2", "user3");
+
             // order/paging/totalSize
 
             // no count total

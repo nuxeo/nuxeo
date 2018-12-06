@@ -67,7 +67,8 @@ public class TestLDAPFilterBuilder extends LDAPDirectoryTestCase {
                                       .and(Predicates.lt("doubleField", Double.valueOf(3.14)))
                                       .and(Predicates.in("company", "c1", "c2"))
                                       .and(Predicates.notin("company", "c3", "c4"))
-                                      .and(Predicates.isnull("username"));
+                                      .and(Predicates.isnull("username"))
+                                      .and(Predicates.ilike("firstName", "abc%")); // make ILIKE work as LIKE
             LDAPFilterBuilder builder = new LDAPFilterBuilder(getDirectory());
             builder.walk(queryBuilder.predicate());
             assertEquals("(&" //
@@ -82,6 +83,7 @@ public class TestLDAPFilterBuilder extends LDAPDirectoryTestCase {
                     + "(|(o={11})(o={12}))" //
                     + "(!(|(o={13})(o={14})))" //
                     + "(!(uid=*))" //
+                    + "(givenName={15}*)" //
                     + ")", //
                     builder.filter.toString());
             assertEqualsNormalized(Arrays.asList( //
@@ -94,7 +96,8 @@ public class TestLDAPFilterBuilder extends LDAPDirectoryTestCase {
                     cal, //
                     Double.valueOf(3.14), //
                     "c1", "c2", //
-                    "c3", "c4" //
+                    "c3", "c4", //
+                    "abc" //
             ), builder.params.stream().collect(toList()));
         }
     }
