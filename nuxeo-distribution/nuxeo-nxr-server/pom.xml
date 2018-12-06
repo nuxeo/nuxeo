@@ -616,7 +616,7 @@
     <!-- Database Drivers used in assembly -->
     <dependency>
       <groupId>com.microsoft.sqlserver</groupId>
-      <artifactId>sqljdbc</artifactId>
+      <artifactId>mssql-jdbc</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

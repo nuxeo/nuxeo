@@ -40,7 +40,7 @@
           <artifact artifactId="mariadb-java-client" />
           <artifact artifactId="postgresql" />
           <artifact artifactId="quartz-mongodb" />
-          <artifact groupId="com.microsoft.sqlserver" artifactId="sqljdbc" />
+          <artifact groupId="com.microsoft.sqlserver" artifactId="mssql-jdbc" />
         </excludes>
       </artifact:set>
     </copy>

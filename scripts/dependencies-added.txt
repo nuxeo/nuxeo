@@ -3,5 +3,5 @@ org.postgresql:postgresql
 mysql:mysql-connector-java
 org.mongodb:mongo-java-driver
 org.mariadb.jdbc:mariadb-java-client
-com.microsoft.sqlserver:sqljdbc
+com.microsoft.sqlserver:mssql-jdbc
 com.novemberain:quartz-mongodb

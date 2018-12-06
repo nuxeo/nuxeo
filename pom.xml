@@ -3161,8 +3161,8 @@
       </dependency>
       <dependency>
         <groupId>com.microsoft.sqlserver</groupId>
-        <artifactId>sqljdbc</artifactId>
-        <version>4.2.6420</version>
+        <artifactId>mssql-jdbc</artifactId>
+        <version>7.0.0.jre8</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
