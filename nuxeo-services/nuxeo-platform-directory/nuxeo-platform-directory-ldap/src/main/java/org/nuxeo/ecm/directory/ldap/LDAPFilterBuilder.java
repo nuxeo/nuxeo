@@ -283,13 +283,13 @@ public class LDAPFilterBuilder {
     }
 
     public void walkLike(Operand lvalue, Operand rvalue, boolean positive, boolean caseInsensitive) {
-        if (caseInsensitive) {
-            throw new QueryParseException("Invalid ILIKE for LDAP directory");
-        }
         if (!(rvalue instanceof StringLiteral)) {
             throw new QueryParseException("Invalid LIKE, right hand side must be a string: " + rvalue);
         }
         String like = ((StringLiteral) rvalue).value;
+        if (caseInsensitive) {
+            like = like.toLowerCase();
+        }
 
         if (!positive) {
             filter.append("(!");
