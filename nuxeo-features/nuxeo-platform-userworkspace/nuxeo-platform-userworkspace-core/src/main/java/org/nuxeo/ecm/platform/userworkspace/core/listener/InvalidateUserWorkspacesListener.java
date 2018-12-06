@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.userworkspace.core.listener;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -41,7 +42,14 @@ public class InvalidateUserWorkspacesListener implements EventListener {
         if (!(ec instanceof DocumentEventContext)) {
             return;
         }
-        if (!DocumentEventTypes.DOCUMENT_REMOVED.equals(event.getName())) {
+        String evtName = event.getName();
+        if (!DocumentEventTypes.DOCUMENT_REMOVED.equals(evtName)
+                && !LifeCycleConstants.TRANSITION_EVENT.equals(evtName)) {
+            // In 9.10, trashing a document results in changing its life cycle to deleted
+            // If the life cycle changes on a domain, then maybe it is (un)trashed.
+            // Since user workspaces location is based on the default domain's path
+            // and (un)trashing a document alters its path,
+            // we need to invalidate the user workspaces location
             return;
         }
         DocumentEventContext context = (DocumentEventContext) ec;
