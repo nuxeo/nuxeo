@@ -151,6 +151,7 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
     }
 
     @Test
+	@Ignore
     public void testCoalescingWorks() throws InterruptedException {
         // long work, to serve as a filler
         SleepWork longWork = new SleepWork(getDurationMillis() * 10);
