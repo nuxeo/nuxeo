@@ -39,7 +39,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
@@ -79,12 +78,12 @@ public class TestInternalLDAPSessionSecurity {
     @Before
     public void setUp() {
 
-        Directory userDir = dirService.getDirectory("userDirectory");
-        Directory groupDir = dirService.getDirectory("groupDirectory");
+        LDAPDirectory userDir = (LDAPDirectory) dirService.getDirectory("userDirectory");
+        LDAPDirectory groupDir = (LDAPDirectory) dirService.getDirectory("groupDirectory");
 
-        ((LDAPDirectory) userDir).setTestServer(embeddedLDAPserver);
-        ((LDAPDirectory) groupDir).setTestServer(embeddedLDAPserver);
-        try (LDAPSession session = (LDAPSession) userDir.getSession()) {
+        userDir.setTestServer(embeddedLDAPserver);
+        groupDir.setTestServer(embeddedLDAPserver);
+        try (LDAPSession session = userDir.getSession()) {
             DirContext ctx = session.getContext();
             for (String ldifFile : ldapFeature.getLdifFiles()) {
                 ldapFeature.loadDataFromLdif(ldifFile, ctx);

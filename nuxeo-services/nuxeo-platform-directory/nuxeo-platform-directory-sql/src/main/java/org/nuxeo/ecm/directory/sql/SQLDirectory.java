@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.DirectoryCSVLoader;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -231,7 +230,7 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     @Override
-    public Session getSession() {
+    public SQLSession getSession() {
         boolean loadData = initConnectionIfNeeded();
         SQLSession session = new SQLSession(this, getDescriptor());
         addSession(session);

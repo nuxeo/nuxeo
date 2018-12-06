@@ -70,7 +70,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetEntry() throws Exception {
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             DocumentModel entry = session.getEntry("Administrator");
             assertNotNull(entry);
             assertEquals("Administrator", entry.getId());
@@ -152,7 +152,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetEntry2() {
-        try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
+        try (Session session = groupDir.getSession()) {
             DocumentModel entry = session.getEntry("administrators");
             assertNotNull(entry);
             assertEquals("administrators", entry.getId());
@@ -218,7 +218,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @Test
     public void testGetEntry3() {
         assumeTrue(hasDynGroupSchema());
-        try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
+        try (Session session = groupDir.getSession()) {
             DocumentModel entry = session.getEntry("dyngroup1");
             assertNotNull(entry);
             assertEquals("dyngroup1", entry.getId());
@@ -275,7 +275,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void testGetEntryWithIdInDifferentCase() {
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             DocumentModel entry = session.getEntry("Administrator");
             assertNotNull(entry);
             assertEquals("Administrator", entry.getId());
@@ -299,8 +299,9 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @Test
     public void testGetEntryWithLdapTreeRef() {
         assumeTrue(isExternalServer());
-        try (Session session = getLDAPDirectory("groupDirectory").getSession();
-                Session unitSession = getLDAPDirectory("unitDirectory").getSession()) {
+        LDAPDirectory unitDir = (LDAPDirectory) dirService.getDirectory("unitDirectory");
+        try (Session session = groupDir.getSession();
+                Session unitSession = unitDir.getSession()) {
             DocumentModel entry = session.getEntry("subgroup");
             assertNotNull(entry);
             assertEquals("subgroup", entry.getId());
@@ -375,7 +376,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testGetEntries() {
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             DocumentModelList entries = session.getEntries();
             assertNotNull(entries);
             assertEquals(4, entries.size());
@@ -394,7 +395,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @Test
     public void testCreateEntry() throws Exception {
         assumeTrue(isExternalServer());
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
 
             assertNotNull(session);
             Map<String, Object> map = new HashMap<>();
@@ -433,7 +434,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertEquals(Arrays.asList("administrators", "members"), dm.getProperty(USER_SCHEMANAME, "groups"));
             assertTrue(session.authenticate("user0", "pass0"));
         }
-        try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
+        try (Session session = groupDir.getSession()) {
             DocumentModel entry = session.getEntry("administrators");
             assertNotNull(entry);
             assertEquals(Arrays.asList("Administrator", "user0"), entry.getProperty(GROUP_SCHEMANAME, "members"));
@@ -447,7 +448,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @Test
     public void testCreateEntry2() throws Exception {
         assumeTrue(isExternalServer());
-        try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
+        try (Session session = groupDir.getSession()) {
             assertNotNull(session);
             Map<String, Object> map = new HashMap<>();
             map.put("groupname", "group2");
@@ -491,7 +492,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @Test
     public void testCreateEntry3() throws Exception {
         assumeTrue(isExternalServer());
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             assertNotNull(session);
 
             Map<String, Object> map = new HashMap<>();
@@ -538,8 +539,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @Test
     public void testUpdateEntry() throws Exception {
         assumeTrue(isExternalServer());
-        try (Session session = getLDAPDirectory("userDirectory").getSession();
-                Session groupSession = getLDAPDirectory("groupDirectory").getSession()) {
+        try (Session session = userDir.getSession();
+                Session groupSession = groupDir.getSession()) {
             DocumentModel entry = session.getEntry("user1");
             assertNotNull(entry);
 
@@ -586,7 +587,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertEquals(Arrays.asList("submembers"), entry.getProperty(GROUP_SCHEMANAME, "subGroups"));
 
         }
-        try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
+        try (Session session = groupDir.getSession()) {
             DocumentModel entry = session.getEntry("administrators");
             assertNotNull(entry);
             assertEquals(Arrays.asList("Administrator", "user1"), entry.getProperty(GROUP_SCHEMANAME, "members"));
@@ -596,7 +597,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @Test
     public void testUpdateEntry2() throws Exception {
         assumeTrue(isExternalServer());
-        try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
+        try (Session session = groupDir.getSession()) {
             DocumentModel entry = session.getEntry("members");
             assertNotNull(entry);
 
@@ -635,7 +636,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @Test
     public void testUpdateEntry3() throws Exception {
         assumeTrue(isExternalServer());
-        try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
+        try (Session session = groupDir.getSession()) {
             DocumentModel entry = session.getEntry("dyngroup1");
 
             // check that this entry is editable:
@@ -684,8 +685,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @Test
     public void testUpdateEntry4() throws Exception {
         assumeTrue(isExternalServer());
-        try (Session userSession = getLDAPDirectory("userDirectory").getSession();
-                Session groupSession = getLDAPDirectory("groupDirectory").getSession()) {
+        try (Session userSession = userDir.getSession();
+                Session groupSession = groupDir.getSession()) {
             DocumentModel entry = groupSession.getEntry("readonlygroup1");
             assertNotNull(entry);
 
@@ -737,7 +738,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     public void testDeleteEntry() {
         // The internal server has a suffixed context that prevents it from looking up the entry to delete
         assumeTrue(isExternalServer());
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             session.deleteEntry("user1");
             DocumentModel entry = session.getEntry("user1");
             assertNull(entry);
@@ -772,7 +773,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     public void testDeleteEntry2() {
         // The internal server has a suffixed context that prevents it from looking up the entry to delete
         assumeTrue(isExternalServer());
-        try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
+        try (Session session = groupDir.getSession()) {
             session.deleteEntry("submembers");
             DocumentModel entry = session.getEntry("submembers");
             assertNull(entry);
@@ -791,14 +792,14 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     public void testRollback() {
         // As a LDAP is not transactional, rollbacking is useless
         // this is just a smoke test
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             session.getEntries();
         }
     }
 
     @Test
     public void testQuery1() {
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             DocumentModelList entries;
 
@@ -851,7 +852,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     public void testQuery2() {
         // query does not work at all with internal apache
         assumeTrue(isExternalServer());
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             Set<String> fulltext = new HashSet<>();
 
@@ -903,7 +904,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testQueryWithNullFilter() {
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             DocumentModelList entries;
 
@@ -924,7 +925,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testQueryOrderBy() {
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             Map<String, String> orderBy = new HashMap<>();
             DocumentModelList entries;
@@ -945,7 +946,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testQueryWithBuilder() throws Exception {
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             // everything (empty predicates)
             QueryBuilder queryBuilder = new QueryBuilder();
             checkQueryResult(session, queryBuilder, "Administrator", "user1", "user2", "user3");
@@ -1043,7 +1044,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     public void testAuthenticate() {
         // authenticate does not work at all with internal apache
         assumeTrue(isExternalServer());
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             assertTrue(session.authenticate("Administrator", "Administrator"));
             assertTrue(session.authenticate("user1", "user1"));
 
@@ -1063,11 +1064,11 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @Test
     public void testGetMandatoryAttributes() {
         assumeTrue(isExternalServer());
-        try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
+        try (LDAPSession session = userDir.getSession()) {
             List<String> mandatoryAttributes = session.getMandatoryAttributes();
             assertEquals(Arrays.asList("sn", "cn"), mandatoryAttributes);
         }
-        try (LDAPSession session = (LDAPSession) getLDAPDirectory("groupDirectory").getSession()) {
+        try (LDAPSession session = groupDir.getSession()) {
             List<String> mandatoryAttributes = session.getMandatoryAttributes();
             if (mandatoryAttributes.size() == 2) {
                 Collections.sort(mandatoryAttributes);
@@ -1089,7 +1090,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         // <creationClass>testDatePerson</creationClass>
         // and <fieldMapping name="dateField">mydate</fieldMapping>
         assumeTrue(isExternalServer());
-        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session session = userDir.getSession()) {
             assertNotNull(session);
             Map<String, Object> map = new HashMap<>();
             map.put("username", "user3");
@@ -1117,7 +1118,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @Test
     public void testCreateFromModel() throws Exception {
         assumeTrue(isExternalServer());
-        try (Session dir = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session dir = userDir.getSession()) {
             String schema = "user";
             DocumentModel entry = BaseSession.createEntryModel(null, schema, null, null);
             entry.setProperty(schema, "username", "omar");
@@ -1141,7 +1142,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testHasEntry() throws Exception {
-        try (Session dir = getLDAPDirectory("userDirectory").getSession()) {
+        try (Session dir = userDir.getSession()) {
             assertTrue(dir.hasEntry("Administrator"));
             assertFalse(dir.hasEntry("foo"));
         }
@@ -1149,7 +1150,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testQueryEmptyString() throws Exception {
-        Session session = getLDAPDirectory("userDirectory").getSession();
+        Session session = userDir.getSession();
         Map<String, Serializable> filter = new HashMap<>();
         filter.put("cn", "");
         List<DocumentModel> docs = session.query(filter);
@@ -1172,7 +1173,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testDirectoryContextLazyLoading() {
-        try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
+        try (LDAPSession session = userDir.getSession()) {
             assertNull(session.dirContext);
             assertNotNull(session.getContext());
             assertNotNull(session.dirContext);

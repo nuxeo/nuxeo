@@ -46,9 +46,7 @@ public class TestCachedLDAPSession extends TestLDAPSession {
     @Before
     public void setUpCache() throws Exception {
         Framework.getService(WorkManager.class).init();
-        List<String> directories = Arrays.asList("userDirectory", "groupDirectory");
-        for (String directoryName : directories) {
-            LDAPDirectory dir = getLDAPDirectory(directoryName);
+        for (LDAPDirectory dir : Arrays.asList(userDir, groupDir)) {
             DirectoryCache cache = dir.getCache();
             cache.setEntryCacheName(ENTRY_CACHE_NAME);
             cache.setEntryCacheWithoutReferencesName(ENTRY_CACHE_WITHOUT_REFERENCES_NAME);
@@ -57,7 +55,7 @@ public class TestCachedLDAPSession extends TestLDAPSession {
 
     @Test
     public void testGetFromCache() {
-        Session ldapSession = getLDAPDirectory("userDirectory").getSession();
+        Session ldapSession = userDir.getSession();
 
         // First call will update cache
         DocumentModel entry = ldapSession.getEntry("user1");

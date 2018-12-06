@@ -71,6 +71,13 @@ public abstract class LDAPDirectoryTestCase {
     @Inject
     protected LDAPDirectoryFeature feature;
 
+    @Inject
+    protected DirectoryService dirService;
+
+    protected LDAPDirectory userDir;
+
+    protected LDAPDirectory groupDir;
+
     public boolean isExternalServer() {
         return feature.isExternal();
     }
@@ -99,10 +106,12 @@ public abstract class LDAPDirectoryTestCase {
 
     @Before
     public void setUp() throws Exception {
+        userDir = (LDAPDirectory) dirService.getDirectory("userDirectory");
+        groupDir = (LDAPDirectory) dirService.getDirectory("groupDirectory");
         server = new MockLdapServer(new File(Framework.getRuntime().getHome(), "ldap"));
-        getLDAPDirectory("userDirectory").setTestServer(server);
-        getLDAPDirectory("groupDirectory").setTestServer(server);
-        try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
+        userDir.setTestServer(server);
+        groupDir.setTestServer(server);
+        try (LDAPSession session = userDir.getSession()) {
             DirContext ctx = session.getContext();
             for (String ldifFile : getLdifFiles()) {
                 loadDataFromLdif(ldifFile, ctx);
@@ -113,7 +122,7 @@ public abstract class LDAPDirectoryTestCase {
     @After
     public void tearDown() throws Exception {
         if (isExternalServer()) {
-            try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
+            try (LDAPSession session = userDir.getSession()) {
                 DirContext ctx = session.getContext();
                 destroyRecursively("ou=people,dc=example,dc=com", ctx, -1);
                 destroyRecursively("ou=groups,dc=example,dc=com", ctx, -1);
@@ -164,11 +173,6 @@ public abstract class LDAPDirectoryTestCase {
             destroyRecursively(dn, ctx, limit - 1);
         }
         ctx.destroySubcontext(dn);
-    }
-
-    public static LDAPDirectory getLDAPDirectory(String name) {
-        DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        return (LDAPDirectory) directoryService.getDirectory(name);
     }
 
     /**

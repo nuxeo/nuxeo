@@ -70,7 +70,7 @@ public class MongoDBDirectory extends AbstractDirectory {
     }
 
     @Override
-    public Session getSession() {
+    public MongoDBSession getSession() {
         MongoDBSession session = new MongoDBSession(this);
         addSession(session);
         initializeIfNeeded(session);

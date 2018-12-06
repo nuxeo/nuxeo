@@ -165,7 +165,7 @@ public class TestMultiDirectory {
 
         // the multi directory
         multiDir = (MultiDirectory) directoryService.getDirectory("multi");
-        dir = (MultiDirectorySession) multiDir.getSession();
+        dir = multiDir.getSession();
     }
 
     @After
@@ -323,7 +323,7 @@ public class TestMultiDirectory {
     @Test
     public void testUpdateReadonlyMultidir() throws Exception {
         MultiDirectory readonlyMultidir = (MultiDirectory) directoryService.getDirectory("readonlymulti");
-        try (MultiDirectorySession readonlyDir = (MultiDirectorySession) readonlyMultidir.getSession();
+        try (MultiDirectorySession readonlyDir = readonlyMultidir.getSession();
                 Session dir1 = memdir1.getSession();
                 Session dir2 = memdir2.getSession();
                 Session dir3 = memdir3.getSession()) {
@@ -762,7 +762,7 @@ public class TestMultiDirectory {
     @Test
     public void testReadOnlyEntryFromMultidirectory() throws Exception {
         MultiDirectory readonlyMultidir = (MultiDirectory) directoryService.getDirectory("readonlymulti");
-        try (MultiDirectorySession readonlyDir = (MultiDirectorySession) readonlyMultidir.getSession()) {
+        try (MultiDirectorySession readonlyDir = readonlyMultidir.getSession()) {
             // all should be readonly
             assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("1")));
             assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("2")));
