@@ -192,7 +192,7 @@
     </dependency>
     <dependency>
       <groupId>com.microsoft.sqlserver</groupId>
-      <artifactId>sqljdbc</artifactId>
+      <artifactId>mssql-jdbc</artifactId>
       <scope>runtime</scope>
     </dependency>
   </dependencies>

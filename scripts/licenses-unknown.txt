@@ -50,7 +50,7 @@
      (CDDL 1.0 + GPL 2 CPE) saaj-api (javax.xml.soap:saaj-api:1.3.4 - http://java.net/saaj-api/)
      (BSD 3) saxpath (saxpath:saxpath:1.0-FCS - no url defined)
      (AL 2.0) sitebricks (com.google.sitebricks:sitebricks:0.8.3 - http://code.google.com/p/google-sitebricks/)
-     (MIT) sqljdbc (com.microsoft.sqlserver:sqljdbc:4.2.6420 - https://github.com/Microsoft/mssql-jdbc)
+     (MIT) sqljdbc (com.microsoft.sqlserver:mssql-jdbc:7.0.0.jre8 - https://github.com/Microsoft/mssql-jdbc)
      (AL 2.0) standard (taglibs:standard:1.1.2 - no url defined)
      (AL 2.0) chronicle-queue (net.openhft:chronicle-queue:4.6.44 - no url defined)
      (AL 2.0) zookeeper (org.apache.zookeeper:zookeeper:3.4.8 - no url defined)
