@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.thumbnail.operation">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
+    <operation class="org.nuxeo.ecm.platform.thumbnail.operation.RecomputeThumbnails" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer" point="bindings">
+    <binding name="RecomputeThumbnails">
+      <administrator>true</administrator>
+    </binding>
+  </extension>
+
+</component>
