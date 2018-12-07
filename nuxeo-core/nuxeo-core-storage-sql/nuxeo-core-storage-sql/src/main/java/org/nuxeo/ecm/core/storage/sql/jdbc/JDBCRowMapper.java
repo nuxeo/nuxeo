@@ -47,7 +47,8 @@ import java.util.stream.Collectors;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.nuxeo.common.utils.BatchUtils;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Delta;
@@ -474,19 +475,22 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     protected void writeUpdates(Set<RowUpdate> updates) {
+        // we want to write in a consistent order to avoid simple deadlocks between two transactions
+        // so we write by sorted tables, then in each table by sorted ids
         // reorganize by table
         Map<String, List<RowUpdate>> tableRows = new HashMap<String, List<RowUpdate>>();
         for (RowUpdate rowu : updates) {
-            List<RowUpdate> rows = tableRows.get(rowu.row.tableName);
-            if (rows == null) {
-                tableRows.put(rowu.row.tableName, rows = new LinkedList<RowUpdate>());
-            }
-            rows.add(rowu);
+            tableRows.computeIfAbsent(rowu.row.tableName, k -> new ArrayList<>()).add(rowu);
         }
+        List<String> tables = new ArrayList<>();
+        tables.addAll(tableRows.keySet());
+        // sort tables by name
+        Collections.sort(tables);
         // updates on each table
-        for (Entry<String, List<RowUpdate>> en : tableRows.entrySet()) {
-            String tableName = en.getKey();
-            List<RowUpdate> rows = en.getValue();
+        for (String tableName : tables) {
+            List<RowUpdate> rows = tableRows.get(tableName);
+            // sort rows by id
+            Collections.sort(rows);
             if (model.isCollectionFragment(tableName)) {
                 updateCollectionRows(tableName, rows);
             } else {
@@ -589,20 +593,15 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             return;
         }
 
-        // reorganize by identical queries to allow batching
-        Map<String, SQLInfoSelect> sqlToInfo = new HashMap<>();
-        Map<String, List<RowUpdate>> sqlRowUpdates = new HashMap<>();
-        for (RowUpdate rowu : rows) {
-            SQLInfoSelect update = sqlInfo.getUpdateById(tableName, rowu);
-            String sql = update.sql;
-            sqlToInfo.put(sql, update);
-            sqlRowUpdates.computeIfAbsent(sql, k -> new ArrayList<RowUpdate>()).add(rowu);
-        }
+        // we want to allow batching, BUT we also want to keep the order of rows to avoid some deadlocks
+        // so we batch together successive row updates that use the same SQL
+        List<Pair<SQLInfoSelect, List<RowUpdate>>> batchedPairs = BatchUtils.groupByDerived(rows,
+                rowu -> sqlInfo.getUpdateById(tableName, rowu), (a, b) -> a.sql.equals(b.sql));
 
-        for (Entry<String, List<RowUpdate>> en : sqlRowUpdates.entrySet()) {
-            String sql = en.getKey();
-            List<RowUpdate> rowUpdates = en.getValue();
-            SQLInfoSelect update = sqlToInfo.get(sql);
+        // write by batch
+        for (Pair<SQLInfoSelect, List<RowUpdate>> pair : batchedPairs) {
+            SQLInfoSelect update = pair.getLeft();
+            List<RowUpdate> rowUpdates = pair.getRight();
             boolean changeTokenEnabled = model.getRepositoryDescriptor().isChangeTokenEnabled();
             boolean batched = supportsBatchUpdates && rowUpdates.size() > 1
                     && (dialect.supportsBatchUpdateCount() || !changeTokenEnabled);
