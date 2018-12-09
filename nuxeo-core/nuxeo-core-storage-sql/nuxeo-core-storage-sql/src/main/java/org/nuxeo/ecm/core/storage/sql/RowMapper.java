@@ -69,7 +69,7 @@ public interface RowMapper {
     /**
      * A {@link Row} and a list of its keys that have to be updated.
      */
-    public static final class RowUpdate implements Serializable {
+    public static final class RowUpdate implements Serializable, Comparable<RowUpdate> {
         private static final long serialVersionUID = 1L;
 
         public final Row row;
@@ -122,6 +122,11 @@ public interface RowMapper {
 
         private boolean equal(RowUpdate other) {
             return other.row.equals(row);
+        }
+
+        @Override
+        public int compareTo(RowUpdate other) {
+            return row.compareTo(other.row);
         }
 
         @Override

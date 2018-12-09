@@ -25,7 +25,7 @@ import java.io.Serializable;
  * <p>
  * This class is sometimes used as a marker for an "absent" row in the database, when mixed with actual {@link Row}s.
  */
-public class RowId implements Serializable {
+public class RowId implements Serializable, Comparable<RowId> {
 
     private static final long serialVersionUID = 1L;
 
@@ -69,6 +69,21 @@ public class RowId implements Serializable {
             return false;
         }
         return tableName.equals(other.tableName);
+    }
+
+    @Override
+    public int compareTo(RowId other) {
+        int cmp = tableName.compareTo(other.tableName);
+        if (cmp != 0) {
+            return cmp;
+        }
+        if (id instanceof String && other.id instanceof String) {
+            return ((String) id).compareTo((String) other.id);
+        } else if (id instanceof Long && other.id instanceof Long) {
+            return ((Long) id).compareTo((Long) other.id);
+        } else {
+            throw new UnsupportedOperationException("id=" + id + " other.id=" + other.id);
+        }
     }
 
     @Override
