@@ -46,8 +46,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -4917,6 +4919,98 @@ public class TestSQLRepositoryAPI {
             }
             // ok
             TransactionHelper.setTransactionRollbackOnly();
+        }
+    }
+
+    protected static class SavingJob implements Runnable {
+
+        protected final List<DocumentRef> docRefs;
+
+        protected final CyclicBarrier barrier;
+
+        protected Exception exc;
+
+        public SavingJob(List<DocumentModel> docs, CyclicBarrier barrier) {
+            docRefs = docs.stream().map(DocumentModel::getRef).collect(Collectors.toList());
+            this.barrier = barrier;
+        }
+
+        @Override
+        public void run() {
+            try {
+                barrier.await(5, TimeUnit.SECONDS);
+                TransactionHelper.runInTransaction(() -> {
+                    try (CloseableCoreSession session = CoreInstance.openCoreSession(null)) {
+                        for (DocumentRef docRef : docRefs) {
+                            DocumentModel doc = session.getDocument(docRef);
+                            doc.setPropertyValue("dc:title", "foo" + System.nanoTime());
+                            session.saveDocument(doc);
+                        }
+                        barrier.await(5, TimeUnit.SECONDS);
+                        session.save();
+                    } catch (InterruptedException | BrokenBarrierException | TimeoutException e) {
+                        exc = e;
+                        throw new RuntimeException(e);
+                    }
+                });
+            } catch (Exception e) {
+                if (exc == null) {
+                    exc = new Exception(docRefs.toString(), e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Test that two concurrent save of sets of documents that have commonalities don't produce a deadlock because of
+     * the order of the writes.
+     * <p>
+     * The test saves in parallel random subsets of the same document list, in a random order.
+     */
+    @Test
+    public void testConcurrentSavesNoDeadlock() throws Exception {
+        final int DOCS = 10;
+        final int CONCUR = 2;
+        final int TRIES = 100;
+        List<DocumentModel> docs = new ArrayList<>(DOCS);
+        for (int i = 0; i < DOCS; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "doc" + i, "File");
+            doc.setPropertyValue("dc:title", "doc" + i);
+            doc = session.createDocument(doc);
+            docs.add(doc);
+        }
+        for (int tries = 0; tries < TRIES; tries++) {
+            waitForAsyncCompletion();
+
+            CyclicBarrier barrier = new CyclicBarrier(CONCUR);
+            List<SavingJob> jobs = new ArrayList<>(CONCUR);
+            List<Thread> threads = new ArrayList<>(CONCUR);
+            for (int i = 0; i < CONCUR; i++) {
+                List<DocumentModel> list = new ArrayList<>(docs);
+                // randomize list
+                Collections.shuffle(list);
+                // truncate to a random number of elements (at least 2)
+                int s = random.nextInt(DOCS - 1) + 2;
+                list = list.subList(0, s);
+                SavingJob job  = new SavingJob(list, barrier);
+                jobs.add(job);
+                Thread thread = new Thread(job);
+                threads.add(thread);
+                thread.start();
+            }
+            for (int i = 0; i < CONCUR; i++) {
+                threads.get(i).join();
+            }
+            Exception err = new Exception("");
+            for (int i = 0; i < CONCUR; i++) {
+                Exception e = jobs.get(i).exc;
+                if (e != null) {
+                    err.addSuppressed(e);
+                }
+            }
+            if (err.getSuppressed().length != 0) {
+                throw err;
+            }
         }
     }
 
