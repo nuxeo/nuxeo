@@ -121,9 +121,10 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
                 log.warn("Provider " + provider.getName()
                         + " is already in the Database, XML contribution  won't overwrite it");
             }
-            providers.put(provider.getName(), new OpenIDConnectProvider(oauth2Provider, provider.getAccessTokenKey(),
-                    provider.getUserInfoURL(), provider.getUserInfoClass(), provider.getIcon(), provider.isEnabled(),
-                    redirectUriResolver, provider.getUserResolverClass(), provider.getUserMapper()));
+            providers.put(provider.getName(),
+                    new OpenIDConnectProvider(oauth2Provider, provider.getAccessTokenKey(), provider.getUserInfoURL(),
+                            provider.getUserInfoClass(), provider.getIcon(), provider.isEnabled(), redirectUriResolver,
+                            provider.getUserResolverClass(), provider.getUserMapper()));
 
             // contribute icon and link to the Login Screen
             LoginScreenHelper.registerLoginProvider(provider.getName(), provider.getIcon(), provider.getUserInfoURL(),
@@ -134,7 +135,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
                 providers.put(provider.getName(),
                         new OpenIDConnectProvider(null, provider.getAccessTokenKey(), provider.getUserInfoURL(),
                                 provider.getUserInfoClass(), provider.getIcon(), provider.isEnabled(),
-                                redirectUriResolver, provider.getUserResolverClass(),provider.getUserMapper()));
+                                redirectUriResolver, provider.getUserResolverClass(), provider.getUserMapper()));
             } else {
                 log.error("Can not register OAuth Provider since OAuth Registry is not available");
             }

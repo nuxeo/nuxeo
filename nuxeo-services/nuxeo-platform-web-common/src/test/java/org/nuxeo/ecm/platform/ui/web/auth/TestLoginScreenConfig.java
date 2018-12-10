@@ -274,7 +274,6 @@ public class TestLoginScreenConfig {
 
     @Test
     public void testHelper() throws Exception {
-
         LoginScreenConfig config = LoginScreenHelper.getConfig();
         assertNotNull(config);
 
@@ -286,6 +285,10 @@ public class TestLoginScreenConfig {
         assertNotNull(config.getProvider("linkedin"));
         assertEquals("XXXX", config.getProvider("google").getLink(null, null));
 
+        LoginStartupPage defaultStartupPage = LoginScreenHelper.getDefaultStartupPage(config);
+        assertNotNull(defaultStartupPage);
+        assertEquals(10, defaultStartupPage.getPriority());
+        assertEquals("nxstartup.faces", defaultStartupPage.getPath());
         LoginScreenHelper.registerLoginProvider("google", "XXX", "new", null, null, null);
         LoginScreenHelper.registerLoginProvider("OuvertId", "AAA", "BBB", null, null, null);
 
@@ -297,10 +300,6 @@ public class TestLoginScreenConfig {
         assertEquals("new", config.getProvider("google").getLink(null, null));
         assertEquals("BBB", config.getProvider("OuvertId").getLink(null, null));
 
-        LoginStartupPage defaultStartupPage = LoginScreenHelper.getDefaultStartupPage(config);
-        assertNotNull(defaultStartupPage);
-        assertEquals(10, defaultStartupPage.getPriority());
-        assertEquals("nxstartup.faces", defaultStartupPage.getPath());
     }
 
     @Test

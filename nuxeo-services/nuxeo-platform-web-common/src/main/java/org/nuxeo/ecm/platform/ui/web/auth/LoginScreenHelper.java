@@ -50,6 +50,10 @@ public class LoginScreenHelper {
      */
     public static final String DEFAULT_STARTUP_PAGE_PATH = "home.html";
 
+    private LoginScreenHelper() {
+        // helper class
+    }
+
     public static LoginScreenConfig getConfig() {
         PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime()
                                                                                                .getComponent(
@@ -130,7 +134,7 @@ public class LoginScreenHelper {
                      .values()
                      .stream()
                      .sorted((p1, p2) -> p2.compareTo(p1))
-                     .map(startupPage -> startupPage.getPath())
+                     .map(LoginStartupPage::getPath)
                      .collect(Collectors.toList());
     }
 
