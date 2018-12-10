@@ -258,13 +258,13 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     }
 
     protected void enterMethod(String executionId, InvokableMethod method) {
-        Map<String, Serializable> parameters = new HashMap<>();
+        // reset parameters
+        getTransientStore().remove(executionId);
+
         // AsyncService.class is default => not async
         if (!AsyncService.class.equals(method.getAsyncService())) {
-            parameters.put(TRANSIENT_STORE_SERVICE, method.getAsyncService().getName());
+            getTransientStore().putParameter(executionId, TRANSIENT_STORE_SERVICE, method.getAsyncService().getName());
         }
-        // reset parameters
-        getTransientStore().putParameters(executionId, parameters);
     }
 
     protected void setError(String executionId, String error) {
