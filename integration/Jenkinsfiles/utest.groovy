@@ -24,8 +24,9 @@ node('SLAVE') {
     tool name: 'java-8-openjdk', type: 'hudson.model.JDK'
     tool name: 'maven-3', type: 'hudson.tasks.Maven$MavenInstallation'
 
+    def timeoutHours = params.NX_TIMEOUT_HOURS == null ? '3' : params.NX_TIMEOUT_HOURS
     
-    timeout(time: 3, unit: 'HOURS') {
+    timeout(time: Integer.parseInt(timeoutHours), unit: 'HOURS') {
         timestamps {
             def sha
             stage('clone') {
