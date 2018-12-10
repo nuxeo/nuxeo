@@ -175,8 +175,6 @@ public class CSVImporterWork extends TransientStoreWork {
 
     protected CSVImporterOptions options;
 
-    protected transient DateFormat dateformat;
-
     protected boolean hasTypeColumn;
 
     protected Date startDate;
@@ -227,8 +225,9 @@ public class CSVImporterWork extends TransientStoreWork {
         TransientStore store = getStore();
         setStatus("Importing");
         openUserSession();
-        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withEscape(options.getEscapeCharacter()).withCommentMarker(
-                options.getCommentMarker());
+        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader()
+                                               .withEscape(options.getEscapeCharacter())
+                                               .withCommentMarker(options.getCommentMarker());
         try (Reader in = newReader(getBlob()); CSVParser parser = csvFormat.parse(in)) {
             doImport(parser);
         } catch (IOException e) {
@@ -392,8 +391,7 @@ public class CSVImporterWork extends TransientStoreWork {
 
         DocumentType docType = Framework.getService(SchemaManager.class).getDocumentType(type);
         if (docType == null) {
-            logError(getLineNumber(record), "The type '%s' does not exist", LABEL_CSV_IMPORTER_NOT_EXISTING_TYPE,
-                    type);
+            logError(getLineNumber(record), "The type '%s' does not exist", LABEL_CSV_IMPORTER_NOT_EXISTING_TYPE, type);
             return false;
         }
         Map<String, Serializable> properties = computePropertiesMap(record, docType, header);
@@ -510,7 +508,10 @@ public class CSVImporterWork extends TransientStoreWork {
                                 } else if (type instanceof BooleanType) {
                                     fieldValue = Boolean.valueOf(stringValue);
                                 } else if (type instanceof DateType) {
-                                    fieldValue = getDateFormat().parse(stringValue);
+                                    String dateFormat = options.getDateFormat();
+                                    fieldValue = dateFormat != null
+                                            ? new SimpleDateFormat(dateFormat).parse(stringValue)
+                                            : stringValue;
                                 }
                             }
                         }
@@ -610,14 +611,6 @@ public class CSVImporterWork extends TransientStoreWork {
         }
     }
 
-    protected DateFormat getDateFormat() {
-        // transient field so may become null
-        if (dateformat == null) {
-            dateformat = new SimpleDateFormat(options.getDateFormat());
-        }
-        return dateformat;
-    }
-
     protected boolean createDocument(long lineNumber, String newParentPath, String name, String type,
             Map<String, Serializable> properties) {
         try {
@@ -630,8 +623,8 @@ public class CSVImporterWork extends TransientStoreWork {
                     logError(lineNumber, "'%s' type is not allowed in '%s'", LABEL_CSV_IMPORTER_NOT_ALLOWED_SUB_TYPE,
                             type, parent.getType());
                 } else {
-                    options.getCSVImporterDocumentFactory().createDocument(session, newParentPath, name, type,
-                            properties);
+                    options.getCSVImporterDocumentFactory()
+                           .createDocument(session, newParentPath, name, type, properties);
                     importLogs.add(new CSVImportLog(lineNumber, Status.SUCCESS, "Document created",
                             LABEL_CSV_IMPORTER_DOCUMENT_CREATED));
                     return true;

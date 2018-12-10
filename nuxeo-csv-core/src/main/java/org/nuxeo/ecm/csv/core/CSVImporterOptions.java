@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.csv.core;
 
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
+
 import java.io.Serializable;
 
 /**
@@ -29,13 +32,24 @@ public class CSVImporterOptions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * @since 10.3
+     */
+    public static final String LEGACY_DATE_FORMAT_PROP = "nuxeo.csv.import.legacyDateFormat";
+
+    /**
+     * @since 10.3
+     */
+    public static final String LEGACY_DATE_FORMAT = "MM/dd/yyyy";
+
+
     public static final CSVImporterOptions DEFAULT_OPTIONS = new Builder().build();
 
     public static class Builder {
 
         private CSVImporterDocumentFactory CSVImporterDocumentFactory = new DefaultCSVImporterDocumentFactory();
 
-        private String dateFormat = "MM/dd/yyyy";
+        private String dateFormat;
 
         private String listSeparatorRegex = "\\|";
 
@@ -158,7 +172,7 @@ public class CSVImporterOptions implements Serializable {
             boolean checkAllowedSubTypes, boolean sendEmail, int batchSize, ImportMode importMode) {
         this.CSVImporterDocumentFactory = CSVImporterDocumentFactory;
         CSVImporterDocumentFactory.setImporterOptions(this);
-        this.dateFormat = dateFormat;
+        this.dateFormat = computeDateFormat(dateFormat);
         this.listSeparatorRegex = listSeparatorRegex;
         this.commentMarker = commentMarker;
         this.escapeCharacter = escapeCharacter;
@@ -167,6 +181,15 @@ public class CSVImporterOptions implements Serializable {
         this.sendEmail = sendEmail;
         this.batchSize = batchSize;
         this.importMode = importMode;
+    }
+
+    protected String computeDateFormat(String dateFormat) {
+        if (dateFormat != null) {
+            return dateFormat;
+        }
+        return Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(LEGACY_DATE_FORMAT_PROP)
+                ? LEGACY_DATE_FORMAT
+                : null;
     }
 
     public CSVImporterDocumentFactory getCSVImporterDocumentFactory() {
