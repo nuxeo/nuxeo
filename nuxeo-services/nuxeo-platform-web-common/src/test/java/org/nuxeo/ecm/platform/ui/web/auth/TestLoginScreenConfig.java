@@ -205,6 +205,8 @@ public class TestLoginScreenConfig {
         assertTrue(config.getSupportedLocales().contains("es_ES"));
         assertTrue(config.getSupportedLocales().contains("fr"));
         assertTrue(config.getSupportedLocales().contains("de"));
+
+        hotDeployer.undeploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig-merge.xml");
     }
 
     /**
@@ -237,6 +239,8 @@ public class TestLoginScreenConfig {
         assertEquals(2, config.getSupportedLocales().size());
         assertTrue(config.getSupportedLocales().contains("es_ES"));
         assertTrue(config.getSupportedLocales().contains("fr"));
+
+        hotDeployer.undeploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig-merge2.xml");
     }
 
     /**
@@ -270,6 +274,8 @@ public class TestLoginScreenConfig {
         assertTrue(config.getSupportedLocales().contains("es_ES"));
         // de replaced fr
         assertTrue(config.getSupportedLocales().contains("de"));
+
+        hotDeployer.undeploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-loginscreenconfig-merge3.xml");
     }
 
     @Test
