@@ -93,7 +93,7 @@ public class LoginProviderLink implements Serializable {
     public String getLink(HttpServletRequest req, String requestedUrl) {
         if (urlComputerClass != null && urlComputer == null) {
             try {
-                urlComputer = (LoginProviderLinkComputer) urlComputerClass.newInstance();
+                urlComputer = urlComputerClass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 log.error("Unable to instantiate LoginProviderLinkComputer", e);
             }
