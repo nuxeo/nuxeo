@@ -229,21 +229,72 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNotNull(config.getProvider("linkedin"));
         assertEquals("XXXX", config.getProvider("google").getLink(null, null));
 
-        LoginScreenHelper.registerLoginProvider("google", "XXX", "new", null, null, null);
-        LoginScreenHelper.registerLoginProvider("OuvertId", "AAA", "BBB", null, null, null);
-
-        assertEquals(4, config.getProviders().size());
-        assertNotNull(config.getProvider("google"));
-        assertNotNull(config.getProvider("linkedin"));
-        assertNotNull(config.getProvider("facebook"));
-        assertNotNull(config.getProvider("OuvertId"));
-        assertEquals("new", config.getProvider("google").getLink(null, null));
-        assertEquals("BBB", config.getProvider("OuvertId").getLink(null, null));
-
         LoginStartupPage defaultStartupPage = LoginScreenHelper.getDefaultStartupPage(config);
         assertNotNull(defaultStartupPage);
         assertEquals(10, defaultStartupPage.getPriority());
         assertEquals("nxstartup.faces", defaultStartupPage.getPath());
+
+        // dynamically register some login providers
+        LoginScreenConfig googleConfig = LoginScreenHelper.registerSingleProviderLoginScreenConfig("google", "XXX",
+                "new", null, null, null);
+        LoginScreenConfig otherConfig = LoginScreenHelper.registerSingleProviderLoginScreenConfig("OuvertId", "AAA",
+                "BBB", null, null, null);
+        // reload config from registry
+        config = LoginScreenHelper.getConfig();
+
+        assertEquals(4, config.getProviders().size());
+        assertNotNull(config.getProvider("google"));
+        assertNotNull(config.getProvider("facebook"));
+        assertNotNull(config.getProvider("linkedin"));
+        assertNotNull(config.getProvider("OuvertId"));
+        assertEquals("new", config.getProvider("google").getLink(null, null));
+        assertEquals("BBB", config.getProvider("OuvertId").getLink(null, null));
+
+        // dynamically unregister the login providers
+        LoginScreenHelper.unregisterLoginScreenConfig(googleConfig);
+        LoginScreenHelper.unregisterLoginScreenConfig(otherConfig);
+        // reload config from registry
+        config = LoginScreenHelper.getConfig();
+
+        assertEquals(3, config.getProviders().size());
+        assertNotNull(config.getProvider("google"));
+        assertNotNull(config.getProvider("facebook"));
+        assertNotNull(config.getProvider("linkedin"));
+        assertEquals("XXXX", config.getProvider("google").getLink(null, null));
+    }
+
+    /**
+     * Non-regression test for NXP-25837.
+     */
+    @Test
+    public void testLoginProviderRegistrationNotOverriddenByContribution() throws Exception {
+        LoginScreenConfig config = LoginScreenHelper.getConfig();
+        assertEquals(3, config.getProviders().size());
+
+        // dynamically register a login provider
+        LoginScreenConfig loginProviderConfig = LoginScreenHelper.registerSingleProviderLoginScreenConfig("OuvertId",
+                "AAA", "BBB", null, null, null);
+        // reload config from registry
+        config = LoginScreenHelper.getConfig();
+        assertEquals(4, config.getProviders().size());
+        assertNotNull(config.getProvider("OuvertId"));
+        assertEquals("BBB", config.getProvider("OuvertId").getLink(null, null));
+
+        // deploy a login screen contribution
+        // Note that we aren't using pushInlineDeployments because what we want to test is the deployment of a login
+	// screen configuration contribution after having manually registered a login provider.
+        deployContrib("org.nuxeo.ecm.platform.web.common.test",
+                "OSGI-INF/test-loginscreenconfig-merge2.xml");
+
+        // check that the dynamically registered login provider is still taken into account
+        config = LoginScreenHelper.getConfig();
+        assertEquals(4, config.getProviders().size());
+        assertNotNull(config.getProvider("OuvertId"));
+        assertEquals("BBB", config.getProvider("OuvertId").getLink(null, null));
+
+        undeployContrib("org.nuxeo.ecm.platform.web.common.test",
+                "OSGI-INF/test-loginscreenconfig-merge2.xml");
+        LoginScreenHelper.unregisterLoginScreenConfig(loginProviderConfig);
     }
 
     @Test
