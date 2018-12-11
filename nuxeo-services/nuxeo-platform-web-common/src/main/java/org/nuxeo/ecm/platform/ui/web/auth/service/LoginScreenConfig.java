@@ -156,6 +156,16 @@ public class LoginScreenConfig implements Serializable {
     public LoginScreenConfig() {
     }
 
+    /**
+     * Instantiates a login screen configuration with the given login provider.
+     *
+     * @since 10.10
+     */
+    public LoginScreenConfig(LoginProviderLink provider) {
+        providers = new ArrayList<>();
+        providers.add(provider);
+    }
+
     public List<LoginProviderLink> getProviders() {
         return providers;
     }
@@ -176,6 +186,10 @@ public class LoginScreenConfig implements Serializable {
         return null;
     }
 
+    /**
+     * @deprecated since 10.10, use {@link #LoginScreenConfig(LoginProviderLink)} instead
+     */
+    @Deprecated
     public void registerLoginProvider(String name, String iconUrl, String link, String label, String description,
             LoginProviderLinkComputer computer) {
         LoginProviderLink newProvider = new LoginProviderLink();
