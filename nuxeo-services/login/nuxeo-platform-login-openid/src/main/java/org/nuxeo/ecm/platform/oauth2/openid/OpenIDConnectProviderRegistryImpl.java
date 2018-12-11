@@ -127,8 +127,9 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
                             provider.getUserResolverClass(), provider.getUserMapper()));
 
             // contribute icon and link to the Login Screen
-            LoginScreenHelper.registerLoginProvider(provider.getName(), provider.getIcon(), provider.getUserInfoURL(),
-                    provider.getLabel(), provider.getDescription(), providers.get(provider.getName()));
+            LoginScreenHelper.registerSingleProviderLoginScreenConfig(provider.getName(), provider.getIcon(),
+                    provider.getUserInfoURL(), provider.getLabel(), provider.getDescription(),
+                    providers.get(provider.getName()));
 
         } else {
             if (Framework.isTestModeSet()) {

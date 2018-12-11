@@ -195,7 +195,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
             specificAuthChains.put(desc.name, desc);
         } else if (extensionPoint.equals(EP_LOGINSCREEN)) {
             LoginScreenConfig newConfig = (LoginScreenConfig) contribution;
-            loginScreenConfigRegistry.addContribution(newConfig);
+            registerLoginScreenConfig(newConfig);
         }
     }
 
@@ -208,7 +208,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
             log.debug("unregistered AuthenticationPlugin: " + descriptor.getName());
         } else if (extensionPoint.equals(EP_LOGINSCREEN)) {
             LoginScreenConfig newConfig = (LoginScreenConfig) contribution;
-            loginScreenConfigRegistry.removeContribution(newConfig);
+            unregisterLoginScreenConfig(newConfig);
         }
     }
 
@@ -439,6 +439,20 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public LoginScreenConfig getLoginScreenConfig() {
         return loginScreenConfigRegistry.getConfig();
+    }
+
+    /**
+     * @since 10.10
+     */
+    public void registerLoginScreenConfig(LoginScreenConfig config) {
+        loginScreenConfigRegistry.addContribution(config);
+    }
+
+    /**
+     * @since 10.10
+     */
+    public void unregisterLoginScreenConfig(LoginScreenConfig config) {
+        loginScreenConfigRegistry.removeContribution(config);
     }
 
 }

@@ -242,8 +242,8 @@ public class SAMLAuthenticationProvider
 
         // contribute icon and link to the Login Screen
         if (StringUtils.isNotBlank(parameters.get("name"))) {
-            LoginScreenHelper.registerLoginProvider(parameters.get("name"), parameters.get("icon"), null,
-                    parameters.get("label"), parameters.get("description"), this);
+            LoginScreenHelper.registerSingleProviderLoginScreenConfig(parameters.get("name"), parameters.get("icon"),
+                    null, parameters.get("label"), parameters.get("description"), this);
         }
     }
 
