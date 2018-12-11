@@ -26,7 +26,8 @@
       <sort ascending="false" column="dc:title" />
     </genericPageProvider>
 
-    <genericPageProvider name="NXQL_PP_UNLIMITED" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+    <genericPageProvider name="NXQL_PP_UNLIMITED"
+      class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <pattern>SELECT * FROM Document</pattern>
       <sort ascending="false" column="dc:title" />
       <pageSize>0</pageSize>
@@ -299,7 +300,8 @@
       </aggregates>
     </genericPageProvider>
 
-    <genericPageProvider name="invalid_system_prop_aggregate" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+    <genericPageProvider name="invalid_system_prop_aggregate"
+      class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
       <property name="maxResults">10000</property>
       <pageSize>20</pageSize>

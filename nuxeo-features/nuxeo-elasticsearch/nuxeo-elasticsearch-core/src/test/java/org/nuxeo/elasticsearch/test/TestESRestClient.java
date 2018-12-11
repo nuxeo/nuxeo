@@ -53,16 +53,17 @@ public class TestESRestClient extends TestESClient {
     public void testNoClientConfig() throws Exception {
         ElasticSearchClientConfig config = new ElasticSearchClientConfig();
         ESClient esClient = factory.create(null, config);
-        //No config so should throw IllegalArgumentException
+        // No config so should throw IllegalArgumentException
     }
 
     @Test
     public void testValidClientConfigURls() throws Exception {
         ElasticSearchClientConfig config = new ElasticSearchClientConfig();
-        config.options.put("addressList", "myhost,localhost:9200,local:80,http://localhosted,https://mysecure,https://moresecure:445");
+        config.options.put("addressList",
+                "myhost,localhost:9200,local:80,http://localhosted,https://mysecure,https://moresecure:445");
         ESClient esClient = factory.create(null, config);
         assertNotNull(esClient);
-        //Its not possible to get a reference to the list of hosts to check they are configured
+        // Its not possible to get a reference to the list of hosts to check they are configured
     }
 
     @Test
@@ -73,7 +74,7 @@ public class TestESRestClient extends TestESClient {
         config.options.put(ESRestClientFactory.AUTH_PASSWORD_OPT, "bob");
         ESRestClient esClient = (ESRestClient) factory.create(null, config);
         assertNotNull(esClient);
-        //Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+        // Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
     }
 
     @Test
@@ -90,9 +91,8 @@ public class TestESRestClient extends TestESClient {
         config.options.put(ESRestClientFactory.KEY_STORE_TYPE_OPT, null);
         ESRestClient esClient = (ESRestClient) factory.create(null, config);
         assertNotNull(esClient);
-        //Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+        // Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
     }
-
 
     @Test
     public void testDefaultTrustStore() throws Exception {
@@ -109,7 +109,7 @@ public class TestESRestClient extends TestESClient {
         config.options.put(ESRestClientFactory.KEY_STORE_TYPE_OPT, null);
         ESRestClient esClient = (ESRestClient) factory.create(null, config);
         assertNotNull(esClient);
-        //This would error if it couldn't open the keystore.
+        // This would error if it couldn't open the keystore.
 
         keystoreFile.delete();
     }
@@ -131,7 +131,7 @@ public class TestESRestClient extends TestESClient {
         config.options.put(ESRestClientFactory.KEY_STORE_TYPE_OPT, keystoreType);
         ESRestClient esClient = (ESRestClient) factory.create(null, config);
         assertNotNull(esClient);
-        //Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+        // Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
 
         keystoreFile.delete();
     }
@@ -144,7 +144,7 @@ public class TestESRestClient extends TestESClient {
         KeyStore ks = KeyStore.getInstance(keystoreType);
         ks.load(null, password.toCharArray());
         try (OutputStream os = new FileOutputStream(keystoreFile)) {
-           ks.store(os, password.toCharArray());
+            ks.store(os, password.toCharArray());
         }
         return keystoreFile;
     }

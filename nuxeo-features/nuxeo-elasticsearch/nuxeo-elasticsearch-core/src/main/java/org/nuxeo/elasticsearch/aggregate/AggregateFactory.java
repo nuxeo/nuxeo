@@ -45,7 +45,8 @@ public final class AggregateFactory {
     private AggregateFactory() {
     }
 
-    public static AggregateEsBase<? extends Aggregation, ? extends Bucket> create(AggregateDefinition def, DocumentModel searchDocumentModel) {
+    public static AggregateEsBase<? extends Aggregation, ? extends Bucket> create(AggregateDefinition def,
+            DocumentModel searchDocumentModel) {
         switch (def.getType()) {
         case AGG_TYPE_TERMS:
             return new TermAggregate(def, searchDocumentModel);

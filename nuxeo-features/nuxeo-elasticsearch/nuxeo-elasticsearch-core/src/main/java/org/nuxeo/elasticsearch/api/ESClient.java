@@ -70,8 +70,7 @@ public interface ESClient extends AutoCloseable {
     boolean aliasExists(String aliasName);
 
     /**
-     * Returns the name of the index referenced by the alias.
-     * Returns null if the alias does not exists.
+     * Returns the name of the index referenced by the alias. Returns null if the alias does not exists.
      */
     String getFirstIndexForAlias(String aliasName);
 

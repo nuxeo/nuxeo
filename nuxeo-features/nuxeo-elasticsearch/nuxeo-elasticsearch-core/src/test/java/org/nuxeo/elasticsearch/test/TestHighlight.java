@@ -116,16 +116,18 @@ public class TestHighlight {
 
         assertEquals(2, ret.totalSize());
 
-        Map<String, List<String>> highlights = (Map<String, List<String>>) ret.get(0).getContextData(
-                PageProvider.HIGHLIGHT_CTX_DATA);
+        Map<String, List<String>> highlights = (Map<String, List<String>>) ret.get(0)
+                                                                              .getContextData(
+                                                                                      PageProvider.HIGHLIGHT_CTX_DATA);
         assertEquals(2, highlights.size());
         assertTrue(highlights.containsKey("dc:title.fulltext"));
         assertTrue(highlights.containsKey("ecm:binarytext"));
         assertEquals("<em>Search</em> me", highlights.get("dc:title.fulltext").get(0));
         assertEquals("you know for <em>search</em>", highlights.get("ecm:binarytext").get(0));
 
-        Map<String, List<String>> highlights2 = (Map<String, List<String>>) ret.get(1).getContextData(
-                PageProvider.HIGHLIGHT_CTX_DATA);
+        Map<String, List<String>> highlights2 = (Map<String, List<String>>) ret.get(1)
+                                                                               .getContextData(
+                                                                                       PageProvider.HIGHLIGHT_CTX_DATA);
         assertEquals("test my <em>search</em> with highlight", highlights2.get("ecm:binarytext").get(0));
     }
 
@@ -185,15 +187,14 @@ public class TestHighlight {
 
         assertEquals(1, ret.totalSize());
 
-        Map<String, List<String>> highlights = (Map<String, List<String>>) ret.get(0).getContextData(
-                PageProvider.HIGHLIGHT_CTX_DATA);
+        Map<String, List<String>> highlights = (Map<String, List<String>>) ret.get(0)
+                                                                              .getContextData(
+                                                                                      PageProvider.HIGHLIGHT_CTX_DATA);
         assertEquals(1, highlights.size());
         assertEquals(4, highlights.get("ecm:binarytext").size());
-        assertEquals(
-                "Nulla neque dui, egestas sit amet nibh eget, maximus <em>vehicula</em> nisi.",
+        assertEquals("Nulla neque dui, egestas sit amet nibh eget, maximus <em>vehicula</em> nisi.",
                 highlights.get("ecm:binarytext").get(0));
-        assertEquals(
-                "Proin ac libero <em>vehicula</em>, mollis turpis quis, tempus sem.",
+        assertEquals("Proin ac libero <em>vehicula</em>, mollis turpis quis, tempus sem.",
                 highlights.get("ecm:binarytext").get(1));
         assertEquals(
                 "Donec <em>vehicula</em>, ante eget porttitor hendrerit, orci nibh rhoncus turpis, vel tempor turpis dui eget turpis",

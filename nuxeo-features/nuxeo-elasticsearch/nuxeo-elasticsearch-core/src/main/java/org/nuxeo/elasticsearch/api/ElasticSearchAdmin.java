@@ -69,8 +69,7 @@ public interface ElasticSearchAdmin {
 
     /**
      * Reinitialize the index of a repository. This will drop the existing index, recreate it with its settings and
-     * mapping, the index will be empty.
-     * When syncAlias is false then search alias is not updated with the new index,
+     * mapping, the index will be empty. When syncAlias is false then search alias is not updated with the new index,
      * you need to explicitly call {@link #syncSearchAndWriteAlias(String)}
      *
      * @since 9.3

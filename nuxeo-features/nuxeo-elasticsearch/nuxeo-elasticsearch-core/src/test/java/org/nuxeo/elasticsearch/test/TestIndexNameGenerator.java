@@ -18,11 +18,11 @@
  */
 package org.nuxeo.elasticsearch.test;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.nuxeo.elasticsearch.api.IndexNameGenerator;
 import org.nuxeo.elasticsearch.core.IncrementalIndexNameGenerator;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * @since 9.3

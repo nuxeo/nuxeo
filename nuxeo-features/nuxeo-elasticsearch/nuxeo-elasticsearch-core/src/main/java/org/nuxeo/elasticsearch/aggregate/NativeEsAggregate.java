@@ -29,10 +29,9 @@ import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.core.AggregateDescriptor;
 
 /**
- * This class is intended for internal/advanced use.
- * It supports any ElasticSearch aggregate builder as a constructor parameter.
- * However, it doesn't support Nuxeo page providers or the aggregation factory.
- * The other aggregate classes are the preferred approach.
+ * This class is intended for internal/advanced use. It supports any ElasticSearch aggregate builder as a constructor
+ * parameter. However, it doesn't support Nuxeo page providers or the aggregation factory. The other aggregate classes
+ * are the preferred approach.
  *
  * @since 10.3
  */
@@ -50,8 +49,7 @@ public class NativeEsAggregate extends AggregateEsBase<Aggregation, Bucket> {
     }
 
     /**
-     * Construct the aggregate using an ElasticSearch aggregate builder and a parser that will
-     * consume the response.
+     * Construct the aggregate using an ElasticSearch aggregate builder and a parser that will consume the response.
      */
     public NativeEsAggregate(AggregationBuilder nativeAggregation, Consumer<Aggregation> parser) {
         this(makeDefinition(nativeAggregation), nativeAggregation, parser);

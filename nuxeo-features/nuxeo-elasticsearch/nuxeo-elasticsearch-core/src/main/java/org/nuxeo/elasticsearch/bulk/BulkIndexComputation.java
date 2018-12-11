@@ -97,9 +97,8 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
                                      .setConcurrentRequests(0)
                                      .setBulkSize(new ByteSizeValue(esBulkSize, ByteSizeUnit.BYTES))
                                      .setBulkActions(esBulkActions)
-                                     .setBackoffPolicy(
-                                             BackoffPolicy.exponentialBackoff(TimeValue.timeValueMillis(backoffDelayMs),
-                                                     retries))
+                                     .setBackoffPolicy(BackoffPolicy.exponentialBackoff(
+                                             TimeValue.timeValueMillis(backoffDelayMs), retries))
                                      .build();
         codec = BulkCodecs.getDataBucketCodec();
         context.setTimer("flush", System.currentTimeMillis() + flushIntervalMs);

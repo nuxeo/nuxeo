@@ -20,11 +20,8 @@ package org.nuxeo.elasticsearch.test;
 
 import java.io.IOException;
 
-import javax.ws.rs.Produces;
-import javax.ws.rs.ext.Provider;
-
-import org.nuxeo.elasticsearch.io.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.elasticsearch.io.JsonESDocumentWriter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 

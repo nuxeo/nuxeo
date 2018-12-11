@@ -200,8 +200,10 @@ public final class NxqlQueryConverter {
         });
         QueryBuilder queryBuilder = ret.get();
         if (!fromList.isEmpty()) {
-            return QueryBuilders.boolQuery().must(queryBuilder).filter(makeQueryFromSimpleExpression("IN",
-                    NXQL.ECM_PRIMARYTYPE, null, fromList.toArray(), null, null).filter);
+            return QueryBuilders.boolQuery()
+                                .must(queryBuilder)
+                                .filter(makeQueryFromSimpleExpression("IN", NXQL.ECM_PRIMARYTYPE, null,
+                                        fromList.toArray(), null, null).filter);
         }
         return queryBuilder;
     }
@@ -221,8 +223,9 @@ public final class NxqlQueryConverter {
     }
 
     protected static SQLQuery addSecurityPolicy(CoreSession session, SQLQuery query) {
-        Collection<SQLQuery.Transformer> transformers = NXCore.getSecurityService().getPoliciesQueryTransformers(
-                session.getRepositoryName());
+        Collection<SQLQuery.Transformer> transformers = NXCore.getSecurityService()
+                                                              .getPoliciesQueryTransformers(
+                                                                      session.getRepositoryName());
         for (SQLQuery.Transformer trans : transformers) {
             query = trans.transform(session.getPrincipal(), query);
         }
@@ -272,7 +275,8 @@ public final class NxqlQueryConverter {
                 break;
             case "<>":
             case "!=":
-                filter = QueryBuilders.boolQuery().mustNot(QueryBuilders.termQuery(name, checkBoolValue(nxqlName, value)));
+                filter = QueryBuilders.boolQuery()
+                                      .mustNot(QueryBuilders.termQuery(name, checkBoolValue(nxqlName, value)));
                 break;
             case ">":
                 filter = QueryBuilders.rangeQuery(name).gt(value);
@@ -326,40 +330,40 @@ public final class NxqlQueryConverter {
     }
 
     protected static Object checkBoolValue(String nxqlName, Object value) {
-        if (! "0".equals(value) && !"1".equals(value)) {
+        if (!"0".equals(value) && !"1".equals(value)) {
             return value;
         }
         switch (nxqlName) {
-            case NXQL.ECM_ISPROXY:
-            case NXQL.ECM_ISCHECKEDIN:
-            case NXQL.ECM_ISTRASHED:
-            case NXQL.ECM_ISVERSION:
-            case NXQL.ECM_ISVERSION_OLD:
-            case NXQL.ECM_ISLATESTMAJORVERSION:
-            case NXQL.ECM_ISLATESTVERSION:
-                break;
-            default:
-                SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-                Field field = schemaManager.getField(nxqlName);
-                if (field == null || !BooleanType.ID.equals(field.getType().getName())) {
-                    return value;
-                }
+        case NXQL.ECM_ISPROXY:
+        case NXQL.ECM_ISCHECKEDIN:
+        case NXQL.ECM_ISTRASHED:
+        case NXQL.ECM_ISVERSION:
+        case NXQL.ECM_ISVERSION_OLD:
+        case NXQL.ECM_ISLATESTMAJORVERSION:
+        case NXQL.ECM_ISLATESTVERSION:
+            break;
+        default:
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            Field field = schemaManager.getField(nxqlName);
+            if (field == null || !BooleanType.ID.equals(field.getType().getName())) {
+                return value;
+            }
         }
-        return "0".equals(value) ? "false": "true";
+        return "0".equals(value) ? "false" : "true";
     }
 
     protected static QueryBuilder makeTrashedFilter(String op, String name, String value) {
         boolean equalsDeleted;
         switch (op) {
-            case "=":
-                equalsDeleted = true;
-                break;
-            case "<>":
-            case "!=":
-                equalsDeleted = false;
-                break;
-            default:
-                throw new IllegalArgumentException(NXQL.ECM_ISTRASHED + " requires = or <> operator");
+        case "=":
+            equalsDeleted = true;
+            break;
+        case "<>":
+        case "!=":
+            equalsDeleted = false;
+            break;
+        default:
+            throw new IllegalArgumentException(NXQL.ECM_ISTRASHED + " requires = or <> operator");
         }
         if ("0".equals(value)) {
             equalsDeleted = !equalsDeleted;
@@ -374,9 +378,9 @@ public final class NxqlQueryConverter {
             filter = QueryBuilders.termQuery(NXQL.ECM_LIFECYCLESTATE, LifeCycleConstants.DELETED_STATE);
         } else if (trashService.hasFeature(Feature.TRASHED_STATE_IN_MIGRATION)) {
             filter = QueryBuilders.boolQuery()
-                    .should(QueryBuilders.termQuery(NXQL.ECM_LIFECYCLESTATE,
-                            LifeCycleConstants.DELETED_STATE))
-                    .should(QueryBuilders.termQuery(name, true));
+                                  .should(QueryBuilders.termQuery(NXQL.ECM_LIFECYCLESTATE,
+                                          LifeCycleConstants.DELETED_STATE))
+                                  .should(QueryBuilders.termQuery(name, true));
         } else if (trashService.hasFeature(Feature.TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
             filter = QueryBuilders.termQuery(name, true);
         }
@@ -408,9 +412,11 @@ public final class NxqlQueryConverter {
             ret = QueryBuilders.geoDistanceQuery(name).point(center.lat(), center.lon()).distance(distance);
             break;
         case "geo_distance_range":
-            throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is deprecated since Elasticsearch 6.1");
+            throw new UnsupportedOperationException(
+                    "Operator: '" + hint.operator + "' is deprecated since Elasticsearch 6.1");
         case "geo_hash_cell":
-            throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is deprecated since Elasticsearch 6.2");
+            throw new UnsupportedOperationException(
+                    "Operator: '" + hint.operator + "' is deprecated since Elasticsearch 6.2");
         case "geo_shape":
             if (values.length != 4) {
                 throw new IllegalArgumentException(String.format(
@@ -586,8 +592,9 @@ public final class NxqlQueryConverter {
             }
             if (NXQL.ECM_PATH.equals(name)) {
                 // we don't want to return the parent when searching on ecm:path, see NXP-18955
-                filter = QueryBuilders.boolQuery().must(QueryBuilders.termQuery(indexName, v)).mustNot(
-                        QueryBuilders.termQuery(name, value));
+                filter = QueryBuilders.boolQuery()
+                                      .must(QueryBuilders.termQuery(indexName, v))
+                                      .mustNot(QueryBuilders.termQuery(name, value));
             } else {
                 filter = QueryBuilders.termQuery(indexName, v);
             }

@@ -411,8 +411,8 @@ public class TestTreeIndexing {
         }
 
         startTransaction();
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(
-                "select * from Document where ecm:isTrashed = 0"));
+        DocumentModelList docs = ess.query(
+                new NxQueryBuilder(session).nxql("select * from Document where ecm:isTrashed = 0"));
         Assert.assertEquals(2, docs.totalSize());
     }
 

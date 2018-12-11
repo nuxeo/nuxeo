@@ -61,7 +61,7 @@ public class TestProxiesIndexing {
         DocumentModel note = init();
 
         NxQueryBuilder queryBuilder = new NxQueryBuilder(coreSession).nxql("SELECT * FROM Note WHERE ecm:isProxy = 1")
-                .fetchFromElasticsearch();
+                                                                     .fetchFromElasticsearch();
         DocumentModelList results = ess.query(queryBuilder);
         assertThat(results).hasSize(1);
         assertThat(results.get(0).getPropertyValue("dc:title")).isEqualTo("Titre 1");

@@ -397,7 +397,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 searchIndex = writeIndex;
             }
         }
-        log.info(String.format("Managed index aliases: Alias: %s ->  index: %s, alias: %s ->  index: %s", searchAlias, searchIndex, writeAlias, writeIndex));
+        log.info(String.format("Managed index aliases: Alias: %s ->  index: %s, alias: %s ->  index: %s", searchAlias,
+                searchIndex, writeAlias, writeIndex));
     }
 
     /**
@@ -412,7 +413,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         String writeAlias = conf.writeIndexOrAlias();
         String writeIndex = getClient().getFirstIndexForAlias(writeAlias);
         if (!writeIndex.equals(searchIndex)) {
-            log.warn(String.format("Updating search alias %s->%s (previously %s)", searchAlias, writeIndex, searchIndex));
+            log.warn(String.format("Updating search alias %s->%s (previously %s)", searchAlias, writeIndex,
+                    searchIndex));
             getClient().updateAlias(searchAlias, writeIndex);
             searchIndex = writeIndex;
         }
@@ -434,7 +436,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 log.debug("Index " + indexName + " already exists");
                 mappingExists = getClient().mappingExists(indexName, conf.getType());
                 if (conf.isDocumentIndex()) {
-                    //Check if the index is actually an alias.
+                    // Check if the index is actually an alias.
                     String realIndexForAlias = getClient().getFirstIndexForAlias(conf.getName());
                     if (realIndexForAlias != null) {
                         repoNames.put(realIndexForAlias, conf.getRepositoryName());

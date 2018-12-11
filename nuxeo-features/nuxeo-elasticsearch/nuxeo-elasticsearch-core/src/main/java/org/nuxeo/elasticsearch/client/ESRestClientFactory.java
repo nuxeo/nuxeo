@@ -133,11 +133,13 @@ public class ESRestClientFactory implements ESClientFactory {
         RestClientBuilder builder = RestClient.builder(httpHosts)
                                               .setRequestConfigCallback(
                                                       requestConfigBuilder -> requestConfigBuilder.setConnectTimeout(
-                                                              getConnectTimeoutMs(config)).setSocketTimeout(
-                                                                      getSocketTimeoutMs(config)))
+                                                              getConnectTimeoutMs(config))
+                                                                                                  .setSocketTimeout(
+                                                                                                          getSocketTimeoutMs(
+                                                                                                                  config)))
                                               .setMaxRetryTimeoutMillis(getConnectTimeoutMs(config));
         addClientCallback(config, builder);
-        RestHighLevelClient client = new RestHighLevelClient(builder);  // NOSONAR (factory)
+        RestHighLevelClient client = new RestHighLevelClient(builder); // NOSONAR (factory)
         // checkConnection(client);
         return new ESRestClient(client.getLowLevelClient(), client);
     }

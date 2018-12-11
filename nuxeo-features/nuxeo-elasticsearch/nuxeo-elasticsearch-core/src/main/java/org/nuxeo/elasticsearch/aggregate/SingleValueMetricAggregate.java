@@ -96,7 +96,7 @@ public class SingleValueMetricAggregate extends AggregateEsBase<NumericMetricsAg
         this.value = aggregation.value();
         this.buckets = Collections.singletonList(new BucketTerm(definition.getType(), value.longValue()));
     }
-    
+
     public Double getValue() {
         return value;
     }

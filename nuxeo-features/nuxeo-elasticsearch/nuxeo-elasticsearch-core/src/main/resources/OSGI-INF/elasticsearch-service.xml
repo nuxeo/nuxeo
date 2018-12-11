@@ -19,8 +19,8 @@
       it is limited to one shard and no replica.
 
       <code>
-        <elasticSearchLocal clusterName="MyCluster" httpEnabled="true" indexStoreType="mmapfs"
-          nodeName="MyNuxeo" pathData="/var/lib/nuxeo/elasticsearch/" />
+        <elasticSearchLocal clusterName="MyCluster" httpEnabled="true" indexStoreType="mmapfs" nodeName="MyNuxeo"
+          pathData="/var/lib/nuxeo/elasticsearch/" />
       </code>
 
       Please refer to the Elasticsearch node configuration
