@@ -28,7 +28,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+
 import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.common.lucene.search.function.FunctionScoreQuery;
 import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;

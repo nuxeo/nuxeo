@@ -62,8 +62,7 @@ public class ElasticSearchEmbeddedNode implements Closeable {
                     + " purpose. You need to create a dedicated Elasticsearch" + " cluster for production.");
         }
         Settings.Builder buidler = Settings.builder();
-        buidler.put("http.enabled", config.httpEnabled())
-               .put("network.host", config.getNetworkHost())
+        buidler.put("network.host", config.getNetworkHost())
                .put("path.home", config.getHomePath())
                .put("path.data", config.getDataPath())
                .put("cluster.name", config.getClusterName())
@@ -122,9 +121,11 @@ public class ElasticSearchEmbeddedNode implements Closeable {
 
     @Override
     public void close() throws IOException {
-        log.info("Closing embedded (in JVM) Elasticsearch");
-        node.close();
-        log.info("Node closed: " + node.isClosed());
+        if (node != null) {
+            log.info("Closing embedded (in JVM) Elasticsearch");
+            node.close();
+            log.info("Node closed: " + node.isClosed());
+        }
         node = null;
     }
 
