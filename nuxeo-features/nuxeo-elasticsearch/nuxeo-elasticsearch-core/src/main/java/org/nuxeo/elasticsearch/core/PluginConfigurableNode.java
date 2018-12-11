@@ -31,6 +31,11 @@ import org.elasticsearch.plugins.Plugin;
  */
 public class PluginConfigurableNode extends Node {
     public PluginConfigurableNode(Settings settings, Collection<Class<? extends Plugin>> classpathPlugins) {
-        super(InternalSettingsPreparer.prepareEnvironment(settings, null), classpathPlugins);
+        super(InternalSettingsPreparer.prepareEnvironment(settings, null), classpathPlugins, true);
+    }
+
+    @Override
+    protected void registerDerivedNodeNameWithLogger(String nodeName) {
+
     }
 }
