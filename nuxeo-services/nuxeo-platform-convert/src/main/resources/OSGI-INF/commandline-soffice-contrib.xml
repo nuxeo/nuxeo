@@ -8,8 +8,7 @@
     <command name="soffice" enabled="true">
       <commandLine>soffice</commandLine>
       <winCommand>soffice.exe</winCommand>
-      <parameterString>--headless --norestore --writer --convert-to #{format} #{sourceFilePath} --outdir #{outDirPath}
-      </parameterString>
+      <parameterString>--headless --norestore --writer --convert-to #{format} #{sourceFilePath} --outdir #{outDirPath} -env:UserInstallation=#{userInstallation}</parameterString>
       <testParameterString>--version</testParameterString>
       <winTestParameterString>--headless --cat test</winTestParameterString>
       <installationDirective>You need to install LibreOffice and add soffice to the PATH environment variable.
