@@ -44,6 +44,19 @@ public class LoginProviderLink implements Serializable {
 
     }
 
+    /**
+     * @since 10.10
+     */
+    public LoginProviderLink(String name, String iconPath, String link, String label, String description,
+            LoginProviderLinkComputer urlComputer) {
+        this.name = name;
+        this.iconPath = iconPath;
+        this.link = link;
+        this.label = label;
+        this.description = description;
+        this.urlComputer = urlComputer;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof LoginProviderLink && name != null) {

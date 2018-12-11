@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLink;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginStartupPage;
@@ -51,24 +51,42 @@ public class LoginScreenHelper {
     public static final String DEFAULT_STARTUP_PAGE_PATH = "home.html";
 
     public static LoginScreenConfig getConfig() {
-        PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime()
-                                                                                               .getComponent(
-                                                                                                       PluggableAuthenticationService.NAME);
-        if (authService != null) {
-            return authService.getLoginScreenConfig();
-        }
-        return null;
+        PluggableAuthenticationService authenticationService = getPluggableAuthenticationService();
+        return authenticationService == null ? null : authenticationService.getLoginScreenConfig();
     }
 
+    /**
+     * Registers and returns a login screen configuration including a single login provider described by the given
+     * parameters.
+     *
+     * @since 10.10
+     */
+    public static LoginScreenConfig registerSingleProviderLoginScreenConfig(String name, String iconUrl, String link,
+            String label, String description, LoginProviderLinkComputer computer) {
+        LoginProviderLink provider = new LoginProviderLink(name, iconUrl, link, label, description, computer);
+        LoginScreenConfig config = new LoginScreenConfig(provider);
+        getPluggableAuthenticationService().registerLoginScreenConfig(config);
+        return config;
+    }
+
+    /**
+     * Unregisters the given login screen configuration.
+     *
+     * @since 10.10
+     */
+    public static void unregisterLoginScreenConfig(LoginScreenConfig config) {
+        getPluggableAuthenticationService().unregisterLoginScreenConfig(config);
+    }
+
+    /**
+     * @deprecated since 10.10, use
+     *             {@link #registerSingleProviderLoginScreenConfig(String, String, String, String, String, LoginProviderLinkComputer)}
+     *             instead
+     */
+    @Deprecated
     public static void registerLoginProvider(String name, String iconUrl, String link, String label, String description,
             LoginProviderLinkComputer computer) {
-
-        LoginScreenConfig config = getConfig();
-        if (config != null) {
-            config.registerLoginProvider(name, iconUrl, link, label, description, computer);
-        } else {
-            throw new NuxeoException("There is no available LoginScreen config");
-        }
+        registerSingleProviderLoginScreenConfig(name, iconUrl, link, label, description, computer);
     }
 
     public static String getValueWithDefault(String value, String defaultValue) {
@@ -145,6 +163,11 @@ public class LoginScreenHelper {
             return null;
         }
         return Collections.max(config.getStartupPages().values());
+    }
+
+    protected static PluggableAuthenticationService getPluggableAuthenticationService() {
+        return (PluggableAuthenticationService) Framework.getRuntime()
+                                                         .getComponent(PluggableAuthenticationService.NAME);
     }
 
 }
