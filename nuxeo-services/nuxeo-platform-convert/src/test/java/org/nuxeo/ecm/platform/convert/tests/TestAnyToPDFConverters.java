@@ -86,7 +86,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
             try {
                 testAnyToPDFConverter();
             } catch (Exception e) {
-                exception = false;
+                exception = true;
             } finally {
                 terminated = true;
             }

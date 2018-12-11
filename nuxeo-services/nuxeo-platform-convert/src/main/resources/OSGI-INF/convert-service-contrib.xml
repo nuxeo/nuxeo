@@ -71,7 +71,7 @@
       </parameters>
     </converter>
 
-    <converter name="any2ods" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
+    <converter name="any2ods" class="org.nuxeo.ecm.platform.convert.plugins.LibreOfficeConverter">
       <destinationMimeType>application/vnd.oasis.opendocument.spreadsheet</destinationMimeType>
 
       <!-- Microsoft office documents -->
@@ -98,7 +98,7 @@
 
     </converter>
 
-    <converter name="any2odp" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
+    <converter name="any2odp" class="org.nuxeo.ecm.platform.convert.plugins.LibreOfficeConverter">
       <destinationMimeType>application/vnd.oasis.opendocument.presentation</destinationMimeType>
 
       <!-- Microsoft office documents -->
@@ -126,7 +126,7 @@
     </converter>
 
     <converter name="any2pdf"
-               class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
+               class="org.nuxeo.ecm.platform.convert.plugins.LibreOfficeConverter">
       <destinationMimeType>application/pdf</destinationMimeType>
 
       <sourceMimeType>text/xml</sourceMimeType>
@@ -196,7 +196,7 @@
       </parameters>
     </converter>
 
-    <converter name="office2html" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
+    <converter name="office2html" class="org.nuxeo.ecm.platform.convert.plugins.LibreOfficeConverter">
       <destinationMimeType>text/html</destinationMimeType>
 
       <sourceMimeType>text/xml</sourceMimeType>
