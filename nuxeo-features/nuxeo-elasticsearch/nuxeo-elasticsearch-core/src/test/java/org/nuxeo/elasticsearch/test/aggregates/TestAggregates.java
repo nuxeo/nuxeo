@@ -311,10 +311,14 @@ public class TestAggregates {
         SearchSourceBuilder request = new SearchSourceBuilder();
         qb.updateRequest(request);
         // The request will use the JVM time_zone
-        assertTrue(request.toString(), request.toString().startsWith(
-                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_histogram\":{\"field\":\"dc:created\",\"time_zone\":"));
-        assertTrue(request.toString(), request.toString().endsWith(
-                "\"interval\":\"month\",\"offset\":0,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}],\"keyed\":false,\"min_doc_count\":0}}}}}}"));
+        assertTrue(request.toString(),
+                request.toString()
+                       .startsWith(
+                               "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"created_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"created\":{\"date_histogram\":{\"field\":\"dc:created\",\"time_zone\":"));
+        assertTrue(request.toString(),
+                request.toString()
+                       .endsWith(
+                               "\"interval\":\"month\",\"offset\":0,\"order\":[{\"_count\":\"desc\"},{\"_key\":\"asc\"}],\"keyed\":false,\"min_doc_count\":0}}}}}}"));
     }
 
     @Test

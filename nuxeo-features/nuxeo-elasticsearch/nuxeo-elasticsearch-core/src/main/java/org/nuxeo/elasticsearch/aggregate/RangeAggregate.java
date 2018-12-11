@@ -104,8 +104,9 @@ public class RangeAggregate extends MultiBucketAggregate<BucketRange> {
     protected class BucketRangeComparator implements Comparator<BucketRange> {
         @Override
         public int compare(BucketRange arg0, BucketRange arg1) {
-            return definition.getAggregateRangeDefinitionOrderMap().get(arg0.getKey()).compareTo(
-                    definition.getAggregateRangeDefinitionOrderMap().get(arg1.getKey()));
+            return definition.getAggregateRangeDefinitionOrderMap()
+                             .get(arg0.getKey())
+                             .compareTo(definition.getAggregateRangeDefinitionOrderMap().get(arg1.getKey()));
         }
     }
 

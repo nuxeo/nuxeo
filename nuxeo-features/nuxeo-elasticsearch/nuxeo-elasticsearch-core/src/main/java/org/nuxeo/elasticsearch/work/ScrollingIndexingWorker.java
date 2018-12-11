@@ -93,7 +93,7 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
                 scheduleBucketWorker(Collections.emptyList(), true);
             }
         } finally {
-            if (syncAlias|| documentCount > WARN_DOC_COUNT) {
+            if (syncAlias || documentCount > WARN_DOC_COUNT) {
                 String message = String.format("Re-indexing job: %s has submited %d documents in %d bucket workers",
                         jobName, documentCount, bucketCount);
                 if (syncAlias) {

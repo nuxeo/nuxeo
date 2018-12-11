@@ -43,7 +43,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.nuxeo.elasticsearch.io.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -66,6 +65,7 @@ import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchAdminImpl;
 import org.nuxeo.elasticsearch.core.ElasticSearchIndexingImpl;
 import org.nuxeo.elasticsearch.core.ElasticSearchServiceImpl;
+import org.nuxeo.elasticsearch.io.JsonESDocumentWriter;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.elasticsearch.work.ScrollingIndexingWorker;
@@ -222,8 +222,9 @@ public class ElasticSearchComponent extends DefaultComponent
 
     @Override
     public int getApplicationStartedOrder() {
-        RepositoryService component = (RepositoryService) Framework.getRuntime().getComponent(
-                "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
+        RepositoryService component = (RepositoryService) Framework.getRuntime()
+                                                                   .getComponent(
+                                                                           "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
         return component.getApplicationStartedOrder() / 2;
     }
 
@@ -545,8 +546,10 @@ public class ElasticSearchComponent extends DefaultComponent
     @Override
     public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) {
-        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder).limit(limit).offset(offset).addSort(
-                sortInfos);
+        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder)
+                                                          .limit(limit)
+                                                          .offset(offset)
+                                                          .addSort(sortInfos);
         return query(query);
     }
 

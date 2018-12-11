@@ -538,8 +538,8 @@ public class TestAutomaticIndexing {
         assertNumberOfCommandProcessed(1); // 1 update
 
         startTransaction();
-        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document WHERE ecm:isTrashed = 0"));
+        DocumentModelList ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isTrashed = 0"));
         Assert.assertEquals(1, ret.totalSize());
         doc = session.getDocument(doc.getRef());
         trashService.untrashDocument(doc);
@@ -816,7 +816,8 @@ public class TestAutomaticIndexing {
         Assert.assertEquals("v3", ret.get(0).getTitle());
         String versionSeriesId = ret.get(0).getVersionSeriesId();
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:versionVersionableId = '" + versionSeriesId + "'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:versionVersionableId = '" + versionSeriesId + "'"));
         Assert.assertEquals(3, ret.totalSize());
     }
 
@@ -1050,7 +1051,6 @@ public class TestAutomaticIndexing {
 
     }
 
-
     @Test
     public void pathLevelFieldMustBeSeenAsKeyword() throws Exception {
         // Creates folders with names that can be taken as timestamp
@@ -1062,7 +1062,8 @@ public class TestAutomaticIndexing {
         waitForCompletion();
 
         startTransaction();
-        // Now creates folders with normal names to check that ecm:path@level# fields are typed as keyword and not as date
+        // Now creates folders with normal names to check that ecm:path@level# fields are typed as keyword and not as
+        // date
         folder = session.createDocumentModel("/", "a-folder-name", "Folder");
         session.createDocument(folder);
         folder = session.createDocumentModel("/a-folder-name", "foo", "Folder");

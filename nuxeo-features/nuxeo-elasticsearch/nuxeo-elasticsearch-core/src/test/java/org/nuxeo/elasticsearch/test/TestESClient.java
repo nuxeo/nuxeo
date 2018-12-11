@@ -96,12 +96,7 @@ public abstract class TestESClient {
 
     @Test
     public void testIndexOptimisticConcurrency() {
-        client.createIndex("foo-index", "{\n" +
-                "        \"index\" : {\n" +
-                "            \"number_of_shards\" : 1, \n" +
-                "            \"number_of_replicas\" : 0 \n" +
-                "        }\n" +
-                "    }");
+        client.createIndex("foo-index", "{\"index\" : {\"number_of_shards\" : 1, \"number_of_replicas\" : 0}}");
         // when using external version, indexing command in disorder should be rejected
         IndexRequest request1 = new IndexRequest("foo-index", "_doc", "123");
         request1.versionType(VersionType.EXTERNAL).version(100);

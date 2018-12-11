@@ -55,21 +55,17 @@ public class IndexAction implements StreamProcessorTopology {
 
     public static final String REFRESH_INDEX_PARAM = "refresh";
 
-
     @Override
     public Topology getTopology(Map<String, String> options) {
         int esBulkSize = getOptionAsInteger(options, ES_BULK_SIZE_OPTION, ES_BULK_SIZE_DEFAULT);
         int esBulkActions = getOptionAsInteger(options, ES_BULK_ACTION_OPTION, ES_BULK_ACTION_DEFAULT);
         int esBulkFlushInterval = getOptionAsInteger(options, BULK_FLUSH_INTERVAL_OPTION, BULK_FLUSH_INTERVAL_DEFAULT);
         return Topology.builder()
-                       .addComputation(IndexRequestComputation::new,
-                               Arrays.asList(INPUT_1 + ":" + ACTION_NAME, //
+                       .addComputation(IndexRequestComputation::new, Arrays.asList(INPUT_1 + ":" + ACTION_NAME, //
                                OUTPUT_1 + ":" + BulkIndexComputation.NAME))
-                       .addComputation(
-                               () -> new BulkIndexComputation(
-                                       esBulkSize, esBulkActions, esBulkFlushInterval),
+                       .addComputation(() -> new BulkIndexComputation(esBulkSize, esBulkActions, esBulkFlushInterval),
                                Arrays.asList(INPUT_1 + ":" + BulkIndexComputation.NAME, //
-                               OUTPUT_1 + ":" + STATUS_STREAM))
+                                       OUTPUT_1 + ":" + STATUS_STREAM))
                        .addComputation(() -> new IndexCompletionComputation(),
                                Collections.singletonList(INPUT_1 + ":" + DONE_STREAM))
                        .build();

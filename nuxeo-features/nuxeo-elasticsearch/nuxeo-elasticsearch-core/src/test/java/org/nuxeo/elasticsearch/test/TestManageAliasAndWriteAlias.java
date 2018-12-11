@@ -60,12 +60,7 @@ public class TestManageAliasAndWriteAlias {
 
         String index = "a-test-index";
         assertFalse(client.indexExists(index));
-        client.createIndex(index, " {\n" +
-                "        \"index\" : {\n" +
-                "            \"number_of_shards\" : 1, \n" +
-                "            \"number_of_replicas\" : 0 \n" +
-                "        }\n" +
-                "    }");
+        client.createIndex(index, "{\"index\" : {\"number_of_shards\" : 1, \"number_of_replicas\" : 0}}");
         assertTrue(client.indexExists(index));
         assertFalse(client.aliasExists(index));
 

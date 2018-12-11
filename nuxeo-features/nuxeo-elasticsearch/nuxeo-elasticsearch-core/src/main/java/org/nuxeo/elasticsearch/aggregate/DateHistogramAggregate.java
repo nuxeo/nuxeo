@@ -69,8 +69,9 @@ public class DateHistogramAggregate extends MultiBucketAggregate<BucketRangeDate
     @JsonIgnore
     @Override
     public DateHistogramAggregationBuilder getEsAggregate() {
-        DateHistogramAggregationBuilder ret = AggregationBuilders.dateHistogram(getId()).field(getField()).timeZone(
-                DateTimeZone.getDefault());
+        DateHistogramAggregationBuilder ret = AggregationBuilders.dateHistogram(getId())
+                                                                 .field(getField())
+                                                                 .timeZone(DateTimeZone.getDefault());
         Map<String, String> props = getProperties();
         if (props.containsKey(AGG_INTERVAL_PROP)) {
             ret.dateHistogramInterval(new DateHistogramInterval(props.get(AGG_INTERVAL_PROP)));

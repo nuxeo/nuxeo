@@ -116,9 +116,11 @@ public class TestMapping {
                 "SELECT * FROM Document WHERE dc:description ILIKE 'mixED case desc'"));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE 'case%'"));
+        ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE 'case%'"));
         Assert.assertEquals(3, ret.totalSize());
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE 'Case%'"));
+        ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE 'Case%'"));
         Assert.assertEquals(3, ret.totalSize());
 
         // case sensitive for other operation
@@ -129,11 +131,14 @@ public class TestMapping {
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description LIKE 'UPPER%'"));
         Assert.assertEquals(0, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:description LIKE '%Case%'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:fulltext.dc:description LIKE '%Case%'"));
         Assert.assertEquals(3, ret.totalSize());
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:description LIKE 'Upper%'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:fulltext.dc:description LIKE 'Upper%'"));
         Assert.assertEquals(1, ret.totalSize());
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:fulltext.dc:description LIKE 'UPPER%'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:fulltext.dc:description LIKE 'UPPER%'"));
         Assert.assertEquals(1, ret.totalSize());
 
         Assert.assertEquals(1, ret.totalSize());

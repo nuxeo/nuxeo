@@ -111,8 +111,9 @@ public class DateRangeAggregate extends MultiBucketAggregate<BucketRangeDate> {
     protected class BucketRangeDateComparator implements Comparator<BucketRangeDate> {
         @Override
         public int compare(BucketRangeDate arg0, BucketRangeDate arg1) {
-            return definition.getAggregateDateRangeDefinitionOrderMap().get(arg0.getKey()).compareTo(
-                    definition.getAggregateDateRangeDefinitionOrderMap().get(arg1.getKey()));
+            return definition.getAggregateDateRangeDefinitionOrderMap()
+                             .get(arg0.getKey())
+                             .compareTo(definition.getAggregateDateRangeDefinitionOrderMap().get(arg1.getKey()));
         }
     }
 

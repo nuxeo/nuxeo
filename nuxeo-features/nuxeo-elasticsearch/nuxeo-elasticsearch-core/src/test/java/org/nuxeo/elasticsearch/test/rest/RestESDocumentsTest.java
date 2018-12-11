@@ -239,8 +239,8 @@ public class RestESDocumentsTest extends BaseTest {
         }
 
         // Test invalid system property as page provider aggregate
-        try (CloseableClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/invalid_system_prop_aggregate", null,
-                null, null, headers)) {
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                QueryObject.PATH + "/invalid_system_prop_aggregate", null, null, null, headers)) {
 
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -273,7 +273,7 @@ public class RestESDocumentsTest extends BaseTest {
             doc.setPropertyValue("dc:coverage", "europe/Spain");
             doc.setPropertyValue("dc:title", "tight_" + i % 2);
             if (i % 3 == 0) {
-                doc.setPropertyValue("dc:description", "subs"+ i % 4);
+                doc.setPropertyValue("dc:description", "subs" + i % 4);
             }
             if (i % 5 == 0) {
                 Blob blob = Blobs.createBlob("My text isn't very long." + i, TEST_MIME_TYPE);

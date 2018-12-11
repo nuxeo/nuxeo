@@ -51,7 +51,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class, CoreBulkFeature.class})
+@Features({ RepositoryElasticSearchFeature.class, CoreBulkFeature.class })
 @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestBulkIndex {
@@ -91,12 +91,8 @@ public class TestBulkIndex {
     public void testIndexAction() throws InterruptedException {
         esa.initIndexes(true);
         String commandId = bulkService.submit(
-                new BulkCommand.Builder(IndexAction.ACTION_NAME,
-                        "SELECT * FROM Document").param(REFRESH_INDEX_PARAM, true)
-                                                 .param(INDEX_UPDATE_ALIAS_PARAM, true)
-                                                 .batch(2)
-                                                 .bucket(2)
-                                                 .build());
+                new BulkCommand.Builder(IndexAction.ACTION_NAME, "SELECT * FROM Document").param(REFRESH_INDEX_PARAM,
+                        true).param(INDEX_UPDATE_ALIAS_PARAM, true).batch(2).bucket(2).build());
         assertTrue("command timeout", bulkService.await(commandId, Duration.ofSeconds(60)));
         BulkStatus status = bulkService.getStatus(commandId);
         assertEquals(BulkStatus.State.COMPLETED, status.getState());

@@ -28,9 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-
 import org.apache.lucene.search.join.ScoreMode;
-import org.elasticsearch.common.lucene.search.function.FunctionScoreQuery;
 import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -153,15 +151,17 @@ public class TestElasticSearchQuery {
 
         // But it is possible using ES nested query along with a proper mapping
         QueryBuilder qb = QueryBuilders.nestedQuery("files:files.file",
-                QueryBuilders.boolQuery().must(QueryBuilders.termQuery("files:files.file.name", "testfile1.txt")).must(
-                        QueryBuilders.termQuery("files:files.file.length", 3)),
+                QueryBuilders.boolQuery()
+                             .must(QueryBuilders.termQuery("files:files.file.name", "testfile1.txt"))
+                             .must(QueryBuilders.termQuery("files:files.file.length", 3)),
                 ScoreMode.Avg);
         ret = ess.query(new NxQueryBuilder(session).esQuery(qb));
         Assert.assertEquals(0, ret.totalSize());
 
         qb = QueryBuilders.nestedQuery("files:files.file",
-                QueryBuilders.boolQuery().must(QueryBuilders.termQuery("files:files.file.name", "testfile3.txt")).must(
-                        QueryBuilders.termQuery("files:files.file.length", 3)),
+                QueryBuilders.boolQuery()
+                             .must(QueryBuilders.termQuery("files:files.file.name", "testfile3.txt"))
+                             .must(QueryBuilders.termQuery("files:files.file.length", 3)),
                 ScoreMode.Avg);
         ret = ess.query(new NxQueryBuilder(session).esQuery(qb));
         Assert.assertEquals(1, ret.totalSize());
@@ -171,7 +171,7 @@ public class TestElasticSearchQuery {
     @Test
     public void testMoreLikeThisQuery() throws Exception {
 
-        //Create test data
+        // Create test data
         startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         doc.setPropertyValue("dc:title", "very nice title");
@@ -187,7 +187,7 @@ public class TestElasticSearchQuery {
         waitForCompletion();
         startTransaction();
 
-        //Query More Like This
+        // Query More Like This
         MoreLikeThisQueryBuilder.Item item = new MoreLikeThisQueryBuilder.Item(null, null, doc.getId());
         QueryBuilder elasticBuilder = QueryBuilders.moreLikeThisQuery(new String[] { "dc:title.fulltext" }, null,
                 new MoreLikeThisQueryBuilder.Item[] { item })

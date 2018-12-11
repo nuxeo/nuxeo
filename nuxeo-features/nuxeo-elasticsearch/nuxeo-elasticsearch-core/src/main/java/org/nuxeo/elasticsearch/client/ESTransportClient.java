@@ -121,11 +121,7 @@ public class ESTransportClient implements ESClient {
 
     @Override
     public boolean mappingExists(String indexName, String type) {
-        GetMappingsResponse mappings = client.admin()
-                                             .indices()
-                                             .prepareGetMappings(indexName)
-                                             .execute()
-                                             .actionGet();
+        GetMappingsResponse mappings = client.admin().indices().prepareGetMappings(indexName).execute().actionGet();
         if (mappings == null || mappings.getMappings().isEmpty()) {
             return false;
         }

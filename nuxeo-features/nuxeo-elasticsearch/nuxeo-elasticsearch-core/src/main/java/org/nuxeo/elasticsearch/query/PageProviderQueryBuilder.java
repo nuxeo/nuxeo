@@ -79,7 +79,8 @@ public class PageProviderQueryBuilder {
         String fixedPart = whereClause.getFixedPart();
         if (!StringUtils.isBlank(additionalFixedPart)) {
             fixedPart = (!StringUtils.isBlank(fixedPart))
-                    ? NXQLQueryBuilder.appendClause(fixedPart, additionalFixedPart) : additionalFixedPart;
+                    ? NXQLQueryBuilder.appendClause(fixedPart, additionalFixedPart)
+                    : additionalFixedPart;
         }
         if (params != null) {
             for (Object param : params) {

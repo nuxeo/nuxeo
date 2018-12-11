@@ -79,9 +79,8 @@ public class ESRestClient implements ESClient {
         Response response;
         try {
             response = performRequest(
-                    new Request("GET",
-                    String.format("/_cluster/health/%s?wait_for_status=yellow&timeout=%ds",
-                                    getIndexesAsString(indexNames), timeoutSecond)));
+                    new Request("GET", String.format("/_cluster/health/%s?wait_for_status=yellow&timeout=%ds",
+                            getIndexesAsString(indexNames), timeoutSecond)));
             try (InputStream is = response.getEntity().getContent()) {
                 Map<String, Object> map = XContentHelper.convertToMap(XContentType.JSON.xContent(), is, true);
                 healthStatus = ClusterHealthStatus.fromString((String) map.get("status"));
@@ -248,11 +247,11 @@ public class ESRestClient implements ESClient {
         Response response = performRequest(new Request("GET", String.format("/_alias/%s", aliasName)));
         try (InputStream is = response.getEntity().getContent()) {
             Map<String, Object> map = XContentHelper.convertToMap(XContentType.JSON.xContent(), is, true);
-                if (map.size() != 1) {
-                    throw new NuxeoException(String.format(
-                            "Expecting alias that point to a single index, alias: %s, got: %s", aliasName, response));
-                }
-                return map.keySet().iterator().next();
+            if (map.size() != 1) {
+                throw new NuxeoException(String.format(
+                        "Expecting alias that point to a single index, alias: %s, got: %s", aliasName, response));
+            }
+            return map.keySet().iterator().next();
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
@@ -348,8 +347,7 @@ public class ESRestClient implements ESClient {
     public ClearScrollResponse clearScroll(ClearScrollRequest request) {
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Clearing scroll ids: %s",
-                        Arrays.toString(request.getScrollIds().toArray())));
+                log.debug(String.format("Clearing scroll ids: %s", Arrays.toString(request.getScrollIds().toArray())));
             }
             return client.clearScroll(request, RequestOptions.DEFAULT);
         } catch (ElasticsearchStatusException e) {
