@@ -204,7 +204,7 @@
 
     <!-- Tests properties -->
     <!-- for use integration/vcstests.xml and org.nuxeo:nuxeo-ftest -->
-    <!-- (related profiles: customdb, default, pgsql, oracle10g, oracle11g, oracle12c, mysql, mongodb) -->
+    <!-- (related profiles: customdb, default, pgsql, oracle10g, oracle11g, oracle12c, oracle18c, mysql, mongodb) -->
     <nuxeo.test.core>vcs</nuxeo.test.core>
     <nuxeo.db.host.default>localhost</nuxeo.db.host.default>
 
@@ -3178,6 +3178,12 @@
         <groupId>com.oracle</groupId>
         <artifactId>ojdbc7</artifactId>
         <version>12.1.0.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.oracle.jdbc</groupId>
+        <artifactId>ojdbc8</artifactId>
+        <version>18.3.0.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -6799,6 +6805,19 @@
         <dependency>
           <groupId>com.oracle</groupId>
           <artifactId>ojdbc7</artifactId>
+        </dependency>
+      </dependencies>
+      <properties>
+        <nuxeo.test.vcs.db>Oracle</nuxeo.test.vcs.db>
+        <nuxeo.db.port.default>1521</nuxeo.db.port.default>
+      </properties>
+    </profile>
+    <profile>
+      <id>oracle18c</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.oracle.jdbc</groupId>
+          <artifactId>ojdbc8</artifactId>
         </dependency>
       </dependencies>
       <properties>

@@ -31,7 +31,7 @@ During the Maven **`test`** phase, regardless where it is executed from:
 - [maven-surefire-plugin](https://maven.apache.org/surefire/maven-surefire-plugin/) reads the Java System properties
 - [`org.nuxeo.ecm.core.test.StorageConfiguration#init()`](https://github.com/nuxeo/nuxeo/blob/master/nuxeo-core/nuxeo-core-test/src/main/java/org/nuxeo/ecm/core/test/StorageConfiguration.java#L120) interprets those properties and makes them available to the Nuxeo Testing Framework.
 - with **`<someDB>`** Maven profile activated  
-  values: `default`, `pgsql`, `mssql`, `oracle11g`, `oracle12c`, `mysql`, `mongodb`, `mariadb`...
+  values: `default`, `pgsql`, `mssql`, `oracle11g`, `oracle12c`, `oracle18c`, `mysql`, `mongodb`, `mariadb`...
     - some database specific properties are optionally set (database kind, default port...)
     - the Nuxeo Testing Framework instantiates the right `org.nuxeo.ecm.core.storage.sql.DatabaseHelper`
 
