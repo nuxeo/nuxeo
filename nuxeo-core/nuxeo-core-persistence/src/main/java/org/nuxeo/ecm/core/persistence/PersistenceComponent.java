@@ -62,6 +62,7 @@ public class PersistenceComponent extends DefaultComponent
             Field f = DialectFactory.class.getDeclaredField("DIALECT_RESOLVERS");
             f.setAccessible(true);
             DialectResolverSet resolvers = (DialectResolverSet) f.get(null);
+            resolvers.addResolverAtFirst(new BasicDialectResolver("Oracle", 18, Oracle10gDialect.class));
             resolvers.addResolverAtFirst(new BasicDialectResolver("Oracle", 12, Oracle10gDialect.class));
         } catch (ReflectiveOperationException | SecurityException e) {
             log.error("Cannot patch Hibernate to support Oracle 12", e);

@@ -38,7 +38,7 @@
         <entry key="nuxeo.test.vcs.password" value="${nuxeo.db.pass}" />
       </propertyfile>
     </nx:profile>
-    <!-- virtual profile covering oracle10g, oracle11g and oracle12c profiles -->
+    <!-- virtual profile covering oracle10g, oracle11g, oracle12c and oracle18c profiles -->
     <nx:profile name="oracle">
       <propertyfile file="${vcsprops}">
         <entry key="nuxeo.test.vcs.db" value="Oracle" />
