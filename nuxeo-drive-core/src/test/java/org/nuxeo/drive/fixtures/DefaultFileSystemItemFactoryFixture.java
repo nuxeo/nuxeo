@@ -992,6 +992,8 @@ public class DefaultFileSystemItemFactoryFixture {
 
         deployer.deploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
         assertEquals(2, syncRootFolderItem.getChildren().size());
+
+        deployer.undeploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
     }
 
     @Test
