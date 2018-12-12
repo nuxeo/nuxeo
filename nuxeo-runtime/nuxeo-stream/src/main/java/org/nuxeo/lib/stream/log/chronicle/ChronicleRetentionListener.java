@@ -88,6 +88,7 @@ public class ChronicleRetentionListener implements StoreFileListener {
                 retention));
         try {
             Files.delete(file.toPath());
+            queue.refreshDirectlyListing();
             log.debug(file + " deleted");
         } catch (IOException | SecurityException e) {
             log.warn(String.format("Unable to delete Chronicle file: %s, %s", file.getAbsolutePath(), e.getMessage()));
