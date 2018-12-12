@@ -6,7 +6,7 @@
   <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
     point="converter">
 
-   <converter name="any2odt" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
+   <converter name="any2odt" class="org.nuxeo.ecm.platform.convert.plugins.LibreOfficeConverter">
       <destinationMimeType>application/vnd.oasis.opendocument.text</destinationMimeType>
 
       <sourceMimeType>text/x-web-markdown</sourceMimeType>
@@ -42,7 +42,7 @@
       </parameters>
    </converter>
 
-   <converter name="any2docx" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
+   <converter name="any2docx" class="org.nuxeo.ecm.platform.convert.plugins.LibreOfficeConverter">
 
       <destinationMimeType>application/vnd.openxmlformats-officedocument.wordprocessingml.document</destinationMimeType>
 
@@ -78,7 +78,7 @@
       </parameters>
    </converter>
 
-   <converter name="any2doc" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
+   <converter name="any2doc" class="org.nuxeo.ecm.platform.convert.plugins.LibreOfficeConverter">
 
       <destinationMimeType>application/msword</destinationMimeType>
 
