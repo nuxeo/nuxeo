@@ -229,6 +229,11 @@
     <Logger name="org.jgroups" level="warn" /> <!-- Limit the org.jgroups category to WARN as its INFO is verbose -->
     <Logger name="org.quartz" level="warn" /> <!-- Limit the org.quartz category to WARN as its DEBUG is verbose -->
     <Logger name="com.sun.jersey.spi.container.servlet.WebComponent" level="error" /> <!-- make Jersey less noisy -->
+    <Logger name="com.sun.jersey.spi.inject.Errors" level="warn">
+      <!-- hide warn on GET with payload used for elasticsearch passthrough -->
+      <RegexFilter regex="The following warnings have been detected.*(\n.*org.nuxeo.elasticsearch.http.*){1,3}.*" onMatch="DENY" onMismatch="NEUTRAL" />
+    </Logger>
+
     <Logger name="org.apache.shindig.common.xml.XmlUtil" level="warn" />
     <Logger name="org.apache.myfaces.shared_tomahawk" level="warn" />
     <Logger name="org.artofsolving.jodconverter" level="warn" />
