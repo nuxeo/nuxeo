@@ -173,7 +173,24 @@ public class TestRenditionPublication {
 
         assertEquals(renditionDoc.getId(), proxy.getSourceId());
         assertNotEquals(renditionDoc.getId(),renditionUUID);
+    }
 
+    /**
+     * @since 10.10
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.rendition.publisher:test-rendition-definition-providers-contrib.xml")
+    public void shouldTakeIntoAccountRenditionDefinitionProviders() {
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        PublicationTree tree = publisherService.getPublicationTree(defaultTreeName, session, null);
+        PublicationNode targetNode = tree.getChildrenNodes().get(0);
+
+        DocumentModel file = session.createDocumentModel("/", "dummy", "File");
+        file = session.createDocument(file);
+
+        SimpleCorePublishedDocument publishedRendition = (SimpleCorePublishedDocument) tree.publish(file, targetNode,
+                Collections.singletonMap(RENDITION_NAME_PARAMETER_KEY, "publicationRendition"));
+        assertNotNull(publishedRendition);
     }
 
     protected Blob createTextBlob(String content, String filename) {

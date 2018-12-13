@@ -51,6 +51,13 @@ public interface RenditionService {
     List<RenditionDefinition> getAvailableRenditionDefinitions(DocumentModel doc);
 
     /**
+     * Returns the {@code RenditionDefinition} available on the given document for the given rendition definition name.
+     *
+     * @since 10.10
+     */
+    RenditionDefinition getAvailableRenditionDefinition(DocumentModel doc, String renditionName);
+
+    /**
      * Render a document based on the given rendition definition name and returns the stored Rendition
      * {@link DocumentRef}.
      * <p>
