@@ -35,7 +35,6 @@ import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
-import org.nuxeo.ecm.platform.rendition.service.RenditionServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -119,7 +118,7 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
         DocumentModel doc = session.getDocument(docRef);
 
         RenditionService rs = Framework.getService(RenditionService.class);
-        RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
+        RenditionDefinition def = rs.getAvailableRenditionDefinition(doc, renditionName);
 
         log.debug("Starting rendition computation.");
         List<Blob> blobs = doComputeRendition(session, doc, def);
@@ -166,7 +165,7 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
     protected String getSourceDocumentModificationDate(DocumentModel doc) {
         RenditionService rs = Framework.getService(RenditionService.class);
-        RenditionDefinition definition = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
+        RenditionDefinition definition = rs.getAvailableRenditionDefinition(doc, renditionName);
         RenditionProvider provider = definition.getProvider();
         if (provider instanceof AbstractLazyCachableRenditionProvider) {
             return ((AbstractLazyCachableRenditionProvider) provider).getSourceDocumentModificationDate(doc,
