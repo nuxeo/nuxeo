@@ -712,7 +712,7 @@ public class TestRenditionService {
             renditionService.storeRendition(file, "undefinedRenditionDefinition");
             fail();
         } catch (NuxeoException e) {
-            assertEquals(e.getMessage(), "The rendition definition 'undefinedRenditionDefinition' is not registered");
+            assertEquals("The rendition definition 'undefinedRenditionDefinition' is not registered", e.getMessage());
         }
     }
 
@@ -736,7 +736,7 @@ public class TestRenditionService {
         Rendition rendition = renditionService.getRendition(folder, "renditionDefinitionWithCustomOperationChain");
         assertNotNull(rendition);
         assertNotNull(rendition.getBlob());
-        assertEquals(rendition.getBlob().getString(), "dummy");
+        assertEquals("dummy", rendition.getBlob().getString());
     }
 
     @Test

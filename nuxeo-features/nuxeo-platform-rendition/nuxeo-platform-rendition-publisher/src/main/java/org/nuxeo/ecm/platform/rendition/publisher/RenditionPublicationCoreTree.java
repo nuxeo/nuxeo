@@ -73,7 +73,7 @@ public class RenditionPublicationCoreTree extends RootSectionsPublicationTree {
 
     protected List<PublishedDocument> getPublishedDocumentsFromProxyDocument(DocumentRef docRef,
             DocumentModel sourceDocument) {
-        List<PublishedDocument> publishedDocuments = new ArrayList<PublishedDocument>();
+        List<PublishedDocument> publishedDocuments = new ArrayList<>();
         List<DocumentModel> docs = coreSession.query(String.format(RENDITION_PUBLISHED_DOCUMENTS_FROM_PROXY_DOCUMENT,
                 docRef, NXQL.escapeStringInner(rootPath)));
         for (DocumentModel doc : docs) {
@@ -85,7 +85,7 @@ public class RenditionPublicationCoreTree extends RootSectionsPublicationTree {
     }
 
     protected List<PublishedDocument> getPublishedDocumentsFromLiveDocument(DocumentRef docRef) {
-        List<PublishedDocument> publishedDocuments = new ArrayList<PublishedDocument>();
+        List<PublishedDocument> publishedDocuments = new ArrayList<>();
         List<DocumentModel> docs = coreSession.query(String.format(RENDITION_PUBLISHED_DOCUMENTS_FROM_LIVE_DOCUMENT,
                 docRef, NXQL.escapeStringInner(rootPath)));
         for (DocumentModel doc : docs) {

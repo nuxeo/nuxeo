@@ -41,7 +41,6 @@ import javax.script.ScriptException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -64,7 +63,6 @@ import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.impl.LiveRendition;
 import org.nuxeo.ecm.platform.rendition.impl.StoredRendition;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -90,12 +88,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     public static final String STORED_RENDITION_MANAGERS_EP = "storedRenditionManagers";
 
     private static final Logger log = LogManager.getLogger(RenditionServiceImpl.class);
-
-    /**
-     * @deprecated since 7.2. Not used.
-     */
-    @Deprecated
-    protected AutomationService automationService;
 
     /**
      * @deprecated since 7.3. RenditionDefinitions are store in {@link #renditionDefinitionRegistry}.
@@ -247,14 +239,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             }
         }
         return null;
-    }
-
-    /**
-     * @deprecated since 7.2. Not used.
-     */
-    @Deprecated
-    protected AutomationService getAutomationService() {
-        return Framework.getService(AutomationService.class);
     }
 
     @Override
@@ -605,9 +589,8 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         }
         DocumentModel renditionDocument = rendition.getHostDocument();
         /*
-         * We've checked above that the current user is allowed to add new documents
-         * in the target. We need the privileged session to publish the rendition
-         * which is a placeless document
+         * We've checked above that the current user is allowed to add new documents in the target. We need the
+         * privileged session to publish the rendition which is a placeless document.
          */
         DocumentRef publishedDocumentRef = CoreInstance.doPrivileged(session,
                 (CoreSession s) -> s.publishDocument(renditionDocument, target, override).getRef());

@@ -12,8 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  * Contributors:
- * Nuxeo - initial API and implementation
+ *     Antoine Taillefer
+ *     Thomas Roger
  */
 
 package org.nuxeo.ecm.platform.rendition.publisher;
@@ -53,9 +55,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-/**
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = RenditionPublicationRepositoryInit.class, cleanup = Granularity.METHOD)
@@ -128,8 +127,6 @@ public class TestRenditionPublication {
         file = session.createDocument(file);
         session.save();
 
-        String liveUUID = file.getId();
-
         SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) tree.publish(file, targetNode,
                 Collections.singletonMap(RENDITION_NAME_PARAMETER_KEY, "pdf"));
 
@@ -139,7 +136,6 @@ public class TestRenditionPublication {
 
         List<DocumentModel> versions = session.getVersions(file.getRef());
         assertEquals(1, versions.size());
-        String versionUUID = versions.get(0).getId();
 
         assertTrue(proxy.hasFacet(RENDITION_FACET));
         assertTrue(proxy.hasSchema(RENDITION_SCHEMA));

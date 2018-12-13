@@ -50,8 +50,6 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
     protected final DocumentRef docRef;
 
-    protected final String repositoryName;
-
     protected final String renditionName;
 
     protected static Log log = LogFactory.getLog(AbstractRenditionBuilderWork.class);
@@ -69,7 +67,7 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
     }
 
     protected String buildId(DocumentModel doc, RenditionDefinition def) {
-        StringBuffer sb = new StringBuffer("rendition:");
+        StringBuilder sb = new StringBuilder("rendition:");
         sb.append(doc.getId());
         String variant = def.getProvider().getVariant(doc, def);
         if (variant != null) {
@@ -139,7 +137,7 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
         super.cleanUp(ok, e);
 
-        List<Blob> blobs = new ArrayList<Blob>();
+        List<Blob> blobs = new ArrayList<>();
         StringBlob emptyBlob = new StringBlob("");
         emptyBlob.setFilename("error");
         emptyBlob.setMimeType("text/plain;" + LazyRendition.ERROR_MARKER);
