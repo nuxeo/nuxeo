@@ -149,9 +149,9 @@
 </suppress>
 <suppress>
    <notes><![CDATA[
-   file name: sqljdbc-4.2.6420.jar (SQL Server not included in Nuxeo)
+   file name: mssql-jdbc-7.0.0.jre8.jar (SQL Server not included in Nuxeo)
    ]]></notes>
-   <gav regex="true">^com\.microsoft\.sqlserver:sqljdbc:.*$</gav>
+   <gav regex="true">^com\.microsoft\.sqlserver:mssql-jdbc:.*$</gav>
    <cpe>cpe:/a:microsoft:sql_server</cpe>
 </suppress>
 <suppress>

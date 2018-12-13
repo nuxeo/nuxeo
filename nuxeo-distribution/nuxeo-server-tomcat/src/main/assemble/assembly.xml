@@ -185,7 +185,7 @@ install nuxeo-jsf-ui
         <include name="mariadb-java-client-*" />
         <include name="postgresql-*" />
         <include name="quartz-mongodb-*" />
-        <include name="sqljdbc-*" />
+        <include name="mssql-jdbc-*" />
       </fileset>
     </delete>
     <!-- Move some libraries from nxserver to Tomcat default lib directory -->

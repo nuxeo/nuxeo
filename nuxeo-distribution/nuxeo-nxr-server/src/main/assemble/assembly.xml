@@ -51,7 +51,7 @@
       <artifact:file artifactId="h2" />
     </copy>
     <copy todir="${nxr}/templates/mssql/lib">
-      <artifact:file artifactId="sqljdbc" />
+      <artifact:file artifactId="mssql-jdbc" />
     </copy>
     <copy todir="${nxr}/templates/mongodb/nxserver/lib">
       <artifact:file artifactId="mongo-java-driver" />
