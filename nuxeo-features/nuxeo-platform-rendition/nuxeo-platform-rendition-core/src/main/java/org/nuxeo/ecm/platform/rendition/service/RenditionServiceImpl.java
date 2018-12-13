@@ -141,6 +141,13 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         super.deactivate(context);
     }
 
+    /**
+     * Shoudn't be used since it doesn't take into account the rendition definitions made available for a given document
+     * by the contributed {@link RenditionDefinitionProvider}s.
+     *
+     * @deprecated since 10.10, use {@link #getAvailableRenditionDefinition(DocumentModel, String)} instead
+     */
+    @Deprecated
     public RenditionDefinition getRenditionDefinition(String name) {
         return renditionDefinitionRegistry.getRenditionDefinition(name);
     }
@@ -197,8 +204,19 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     /**
      * @since 8.1
+     * @deprecated since 10.10, use {@link #storeRendition(DocumentModel, Rendition, RenditionDefinition)} instead
      */
+    @Deprecated
     protected StoredRendition storeRendition(DocumentModel sourceDocument, Rendition rendition) {
+        RenditionDefinition renditionDefinition = getAvailableRenditionDefinition(sourceDocument, rendition.getName());
+        return storeRendition(sourceDocument, rendition, renditionDefinition);
+    }
+
+    /**
+     * @since 10.10
+     */
+    protected StoredRendition storeRendition(DocumentModel sourceDocument, Rendition rendition,
+            RenditionDefinition renditionDefinition) {
         if (!rendition.isCompleted()) {
             return null;
         }
@@ -221,7 +239,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             version = session.getDocument(versionRef);
         }
 
-        RenditionDefinition renditionDefinition = getRenditionDefinition(rendition.getName());
         return getStoredRenditionManager().createStoredRendition(sourceDocument, version, renderedBlob,
                 renditionDefinition);
     }
@@ -369,7 +386,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         rendition = new LiveRendition(doc, renditionDefinition);
 
         if (store) {
-            StoredRendition storedRendition = storeRendition(doc, rendition);
+            StoredRendition storedRendition = storeRendition(doc, rendition, renditionDefinition);
             if (storedRendition != null) {
                 return storedRendition;
             }
@@ -377,7 +394,8 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         return rendition;
     }
 
-    protected RenditionDefinition getAvailableRenditionDefinition(DocumentModel doc, String renditionName) {
+    @Override
+    public RenditionDefinition getAvailableRenditionDefinition(DocumentModel doc, String renditionName) {
         RenditionDefinition renditionDefinition = renditionDefinitionRegistry.getRenditionDefinition(renditionName);
         if (renditionDefinition == null) {
             renditionDefinition = renditionDefinitionProviderRegistry.getRenditionDefinition(renditionName, doc);
@@ -390,6 +408,10 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             if (!renditionDefinitionRegistry.canUseRenditionDefinition(renditionDefinition, doc)) {
                 throw new NuxeoException("Rendition " + renditionName + " cannot be used for this doc " + doc.getId());
             }
+        }
+        if (renditionDefinition.getProvider() == null) {
+            throw new NuxeoException(
+                    String.format("Rendition definition %s isn't bound to any rendition provider", renditionName));
         }
         if (!renditionDefinition.getProvider().isAvailable(doc, renditionDefinition)) {
             throw new NuxeoException(

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.rendition.publisher.RenditionDefinitionProvider.test">
+
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService" point="renditionDefinitionProviders">
+
+    <renditionDefinitionProvider name="publicationRenditionDefinitionProvider"
+      class="org.nuxeo.ecm.platform.rendition.publisher.PublicationRenditionDefinitionProvider">
+      <filters>
+        <filter-id>onlyForFile</filter-id>
+      </filters>
+    </renditionDefinitionProvider>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+
+    <filter id="onlyForFile">
+      <rule grant="true">
+        <type>File</type>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

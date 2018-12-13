@@ -82,6 +82,7 @@ import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.rendition.Rendition;
+import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.lazy.AbstractRenditionBuilderWork;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -1132,6 +1133,50 @@ public class TestRenditionService {
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
         assertRenditionDefinitions(availableRenditionDefinitions, "containerDefaultRendition", "dummyRendition1",
                 "dummyRendition2", "zipTreeExport", "zipTreeExportLazily");
+    }
+
+    /**
+     * @since 10.10
+     */
+    @Test
+    public void testGetAvailableRenditionDefinitionByName() throws Exception {
+        deployer.deploy(RENDITION_CORE + ":" + RENDITION_DEFINITION_PROVIDERS_COMPONENT_LOCATION);
+
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+
+        // rendition definition not registered
+        try {
+            renditionService.getAvailableRenditionDefinition(doc, "unknown");
+            fail("Getting an unknown rendition definition should fail");
+        } catch (NuxeoException e) {
+            assertEquals("The rendition definition 'unknown' is not registered", e.getMessage());
+        }
+
+        // rendition definition registered directly
+        RenditionDefinition renditionDefinition = renditionService.getAvailableRenditionDefinition(doc, "mainBlob");
+        assertNotNull(renditionDefinition);
+        assertEquals("mainBlob", renditionDefinition.getName());
+        RenditionProvider renditionProvider = renditionDefinition.getProvider();
+        assertNotNull(renditionProvider);
+        assertEquals("DefaultAutomationRenditionProvider", renditionProvider.getClass().getSimpleName());
+
+        // rendition definition registered through a rendition definition provider but not bound to any rendition
+        // provider
+        try {
+            renditionService.getAvailableRenditionDefinition(doc, "dummyRendition1");
+            fail("Getting a rendition definition not bound to any rendition provider should fail");
+        } catch (NuxeoException e) {
+            assertEquals("Rendition definition dummyRendition1 isn't bound to any rendition provider", e.getMessage());
+        }
+
+        // rendition definition registered through a rendition definition provider and bound to a rendition provider
+        renditionDefinition = renditionService.getAvailableRenditionDefinition(doc, "dummyRendition2");
+        assertNotNull(renditionDefinition);
+        assertEquals("dummyRendition2", renditionDefinition.getName());
+        renditionProvider = renditionDefinition.getProvider();
+        assertNotNull(renditionProvider);
+        assertEquals("DummyRenditionProvider", renditionProvider.getClass().getSimpleName());
     }
 
     /**
