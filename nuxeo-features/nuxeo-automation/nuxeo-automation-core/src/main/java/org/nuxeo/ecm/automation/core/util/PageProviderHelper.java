@@ -18,22 +18,35 @@
  */
 package org.nuxeo.ecm.automation.core.util;
 
+import static org.nuxeo.ecm.platform.query.api.PageProviderService.NAMED_PARAMETERS;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
+import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.el.ELService;
+import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
+import org.nuxeo.ecm.platform.query.core.BucketRange;
+import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
+import org.nuxeo.ecm.platform.query.core.BucketTerm;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
@@ -49,6 +62,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 10.3
@@ -75,6 +93,10 @@ public class PageProviderHelper {
     public static final String CURRENT_USERID_PATTERN = "$currentUser";
 
     public static final String CURRENT_REPO_PATTERN = "$currentRepository";
+
+    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    protected static final DateTimeFormatter DATE_TIME_FORMATTER = ISODateTimeFormat.dateTime();
 
     public static PageProviderDefinition getQueryAndFetchProviderDefinition(String query) {
         return getQueryAndFetchProviderDefinition(query, null);
@@ -213,12 +235,21 @@ public class PageProviderHelper {
                     continue;
                 }
             }
-            searchDocumentModel.putContextData(PageProviderService.NAMED_PARAMETERS, (Serializable) namedParameters);
+            searchDocumentModel.putContextData(NAMED_PARAMETERS, (Serializable) namedParameters);
         }
         return searchDocumentModel;
     }
 
     public static String buildQueryString(PageProvider provider) {
+        return buildQueryStringWithPageProvider(provider, false);
+    }
+
+    public static String buildQueryStringWithAggregates(PageProvider provider) {
+        return buildQueryStringWithPageProvider(provider, provider.hasAggregateSupport());
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected static String buildQueryStringWithPageProvider(PageProvider provider, boolean useAggregates) {
         String quickFiltersClause = "";
         List<QuickFilter> quickFilters = provider.getQuickFilters();
         if (quickFilters != null) {
@@ -232,6 +263,8 @@ public class PageProviderHelper {
             }
         }
 
+        String aggregatesClause = useAggregates ? buildAggregatesClause(provider) : null;
+
         PageProviderDefinition def = provider.getDefinition();
         WhereClauseDefinition whereClause = def.getWhereClause();
         DocumentModel searchDocumentModel = provider.getSearchDocumentModel();
@@ -240,9 +273,10 @@ public class PageProviderHelper {
         if (whereClause == null) {
             String pattern = def.getPattern();
             if (!quickFiltersClause.isEmpty()) {
-                pattern = StringUtils.containsIgnoreCase(pattern, " WHERE ") ?
-                        NXQLQueryBuilder.appendClause(pattern, quickFiltersClause)
-                        : pattern + " WHERE " + quickFiltersClause;
+                pattern = appendToPattern(pattern, quickFiltersClause);
+            }
+            if (StringUtils.isNotEmpty(aggregatesClause)) {
+                pattern = appendToPattern(pattern, aggregatesClause);
             }
 
             query = NXQLQueryBuilder.getQuery(pattern, parameters, def.getQuotePatternParameters(),
@@ -252,9 +286,93 @@ public class PageProviderHelper {
                 throw new NuxeoException(String.format(
                         "Cannot build query of provider '%s': " + "no search document model is set", provider.getName()));
             }
-            query = NXQLQueryBuilder.getQuery(searchDocumentModel, whereClause, quickFiltersClause, parameters, null);
+            String additionalClause = StringUtils.isEmpty(quickFiltersClause) ? aggregatesClause
+                    : NXQLQueryBuilder.appendClause(aggregatesClause, quickFiltersClause);
+            query = NXQLQueryBuilder.getQuery(searchDocumentModel, whereClause, additionalClause, parameters, null);
         }
         return query;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected static String buildAggregatesClause(PageProvider provider) {
+        try {
+            String aggregatesClause = "";
+            // Aggregates that are being used as filters are stored in the namedParameters context data
+            Properties namedParameters = (Properties) provider.getSearchDocumentModel()
+                                                              .getContextData(NAMED_PARAMETERS);
+            Map<String, Aggregate<? extends Bucket>> aggregates = provider.getAggregates();
+            for (Aggregate<? extends Bucket> aggregate : aggregates.values()) {
+                if (namedParameters.containsKey(aggregate.getId())) {
+                    JsonNode node = OBJECT_MAPPER.readTree(namedParameters.get(aggregate.getId()));
+                    // Remove leading trailing and trailing quotes caused by
+                    // the JSON serialization of the named parameters
+                    List<String> keys = StreamSupport.stream(node.spliterator(), false)
+                                                     .map(value -> value.asText().replaceAll("^\"|\"$", ""))
+                                                     .collect(Collectors.toList());
+                    // Build aggregate clause from given keys in the named parameters
+                    String aggClause = aggregate.getBuckets()
+                                                .stream()
+                                                .filter(bucket -> keys.contains(bucket.getKey()))
+                                                .map(bucket -> getClauseFromBucket(bucket, aggregate.getField()))
+                                                .collect(Collectors.joining(" OR "));
+                    if (StringUtils.isNotEmpty(aggClause)) {
+                        aggClause = "(" + aggClause + ")";
+                        aggregatesClause = StringUtils.isEmpty(aggregatesClause) ? aggClause
+                                : NXQLQueryBuilder.appendClause(aggregatesClause, aggClause);
+                    }
+                }
+            }
+            return aggregatesClause;
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
+    }
+
+    protected static String getClauseFromBucket(Bucket bucket, String field) {
+        String clause;
+        // Replace potential '.' path separator with '/' character
+        field = field.replaceAll("\\.", "/");
+        if (bucket instanceof BucketTerm) {
+            clause = field + "='" + bucket.getKey() + "'";
+        } else if (bucket instanceof BucketRange) {
+            BucketRange bucketRange = (BucketRange) bucket;
+            clause = getRangeClause(field, bucketRange);
+        } else if (bucket instanceof BucketRangeDate) {
+            BucketRangeDate bucketRangeDate = (BucketRangeDate) bucket;
+            clause = getRangeDateClause(field, bucketRangeDate);
+        } else {
+            throw new NuxeoException("Unknown bucket instance for NXQL translation : " + bucket.getClass());
+        }
+        return clause;
+    }
+
+    protected static String getRangeClause(String field, BucketRange bucketRange) {
+        Type type = Framework.getService(SchemaManager.class).getField(field).getType();
+        Double from = bucketRange.getFrom() != null ? bucketRange.getFrom() : Double.NEGATIVE_INFINITY;
+        Double to = bucketRange.getTo() != null ? bucketRange.getTo() : Double.POSITIVE_INFINITY;
+        if (type instanceof IntegerType) {
+            return field + " BETWEEN " + from.intValue() + " AND " + to.intValue();
+        } else if (type instanceof LongType) {
+            return field + " BETWEEN " + from.longValue() + " AND " + to.longValue();
+        }
+        return field + " BETWEEN " + from + " AND " + to;
+    }
+
+    protected static String getRangeDateClause(String field, BucketRangeDate bucketRangeDate) {
+        Double from = bucketRangeDate.getFrom();
+        Double to = bucketRangeDate.getTo();
+        if (from == null && to != null) {
+            return field + " < TIMESTAMP '" + DATE_TIME_FORMATTER.print(bucketRangeDate.getToAsDate()) + "'";
+        } else if (from != null && to == null) {
+            return field + " >= TIMESTAMP '" + DATE_TIME_FORMATTER.print(bucketRangeDate.getFromAsDate()) + "'";
+        }
+        return field + " BETWEEN TIMESTAMP '" + DATE_TIME_FORMATTER.print(bucketRangeDate.getFromAsDate())
+                + "' AND TIMESTAMP '" + DATE_TIME_FORMATTER.print(bucketRangeDate.getToAsDate()) + "'";
+    }
+
+    protected static String appendToPattern(String pattern, String clause) {
+        return StringUtils.containsIgnoreCase(pattern, " WHERE ") ? NXQLQueryBuilder.appendClause(pattern, clause)
+                : pattern + " WHERE " + clause;
     }
 
     /**

@@ -117,7 +117,7 @@ public class BulkRunAction {
 
         PageProvider<?> provider = PageProviderHelper.getPageProvider(session, def, namedParameters,
                 queryParams != null ? queryParams.toArray(new String[0]) : null);
-        query = PageProviderHelper.buildQueryString(provider);
+        query = PageProviderHelper.buildQueryStringWithAggregates(provider);
 
         if (query.contains("?")) {
             throw new OperationException("Query parameters could not be parsed");

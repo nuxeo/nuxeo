@@ -370,6 +370,48 @@
       <pageSize>50</pageSize>
     </genericPageProvider>
 
+    <genericPageProvider name="BULK_ACTION_WITH_AGGREGATES"
+      class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <pattern>
+        SELECT * FROM Document where ecm:isVersion = 0
+      </pattern>
+      <aggregates>
+        <aggregate id="nature_agg" parameter="dc:nature" type="terms">
+          <field name="nature_agg" schema="advanced_search"/>
+          <properties>
+            <property name="size">20</property>
+          </properties>
+        </aggregate>
+        <aggregate id="size_agg" parameter="file:content/length" type="range">
+          <field name="size_agg" schema="advanced_search"/>
+          <ranges>
+            <range key="small" from="0" to="1"/>
+            <range key="big" from="1" to="100"/>
+          </ranges>
+        </aggregate>
+        <aggregate id="modified_agg" parameter="dc:modified" type="date_range">
+          <field name="modified_agg" schema="advanced_search"/>
+          <properties>
+            <property name="format">"dd-MM-yyyy"</property>
+          </properties>
+          <dateRanges>
+            <dateRange fromDate="now-24H" key="last24h" toDate="now"/>
+            <dateRange fromDate="now-7d" key="lastWeek" toDate="now-24H"/>
+          </dateRanges>
+        </aggregate>
+        <aggregate id="created_agg" parameter="dc:created" type="date_histogram">
+          <field name="created_agg" schema="advanced_search"/>
+          <properties>
+            <property name="interval">day</property>
+            <property name="format">dd-MM-yyyy</property>
+            <property name="extendedBoundsMin">now-7d</property>
+            <property name="extendedBoundsMax">now</property>
+          </properties>
+        </aggregate>
+      </aggregates>
+      <pageSize>20</pageSize>
+    </genericPageProvider>
+
   </extension>
 
 
