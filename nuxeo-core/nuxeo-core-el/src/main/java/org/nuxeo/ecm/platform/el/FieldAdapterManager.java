@@ -138,11 +138,10 @@ public final class FieldAdapterManager {
      * Returns component type that will be used to display objects of given component type.
      */
     public static Class<?> getComponentTypeForDisplay(Class<?> componentType) {
-        Class<?> newType = componentType;
-        if (componentType.equals(Calendar.class)) {
-            newType = Date.class;
+        if (Calendar.class.isAssignableFrom(componentType)) {
+            return Date.class;
         }
-        return newType;
+        return componentType;
     }
 
     // Fake converters for now
