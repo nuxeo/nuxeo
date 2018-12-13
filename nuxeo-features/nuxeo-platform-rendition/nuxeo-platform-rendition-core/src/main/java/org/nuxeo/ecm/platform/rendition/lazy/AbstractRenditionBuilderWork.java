@@ -36,7 +36,6 @@ import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
-import org.nuxeo.ecm.platform.rendition.service.RenditionServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -102,7 +101,7 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
         DocumentModel doc = session.getDocument(docRef);
 
         RenditionService rs = Framework.getService(RenditionService.class);
-        RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
+        RenditionDefinition def = rs.getAvailableRenditionDefinition(doc, renditionName);
 
         RenditionProvider renditionProvider = def.getProvider();
         if (renditionProvider instanceof AbstractLazyCachableRenditionProvider) {

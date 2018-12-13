@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,30 @@
  * limitations under the License.
  *
  * Contributors:
- *     Thomas Roger
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
+package org.nuxeo.ecm.platform.rendition.publisher;
 
-package org.nuxeo.ecm.platform.rendition.service;
-
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
+import org.nuxeo.ecm.platform.rendition.service.RenditionDefinitionProvider;
 
 /**
- * @since 7.2
+ * Simple {@link RenditionDefinitionProvider} to test rendition publication.
+ *
+ * @since 10.10
  */
-public class DummyRenditionDefinitionProvider implements RenditionDefinitionProvider {
+public class PublicationRenditionDefinitionProvider implements RenditionDefinitionProvider {
 
     @Override
     public List<RenditionDefinition> getRenditionDefinitions(DocumentModel doc) {
-        List<RenditionDefinition> renditionDefinitions = new ArrayList<>();
         RenditionDefinition renditionDefinition = new RenditionDefinition();
-        renditionDefinition.setName("dummyRendition1");
-        renditionDefinitions.add(renditionDefinition);
-
-        renditionDefinition = new RenditionDefinition();
-        renditionDefinition.setName("dummyRendition2");
-        renditionDefinition.setProvider(new DummyRenditionProvider());
-        renditionDefinitions.add(renditionDefinition);
-
-        return renditionDefinitions;
+        renditionDefinition.setName("publicationRendition");
+        renditionDefinition.setProvider(new PublicationRenditionProvider());
+        return Collections.singletonList(renditionDefinition);
     }
 
 }
