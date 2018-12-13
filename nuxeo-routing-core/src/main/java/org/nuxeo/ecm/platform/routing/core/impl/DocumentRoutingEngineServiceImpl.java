@@ -37,6 +37,8 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent implement
 
     public static final String WORKFLOW_NAME_EVENT_PROPERTY_KEY = "wfName";
 
+    public static final String WORKFLOW_ID_EVENT_PROPERTY_KEY = "wfId";
+
     @Override
     public void start(DocumentRoute routeInstance, Map<String, Serializable> map, CoreSession session) {
         routeInstance.run(session, map);
@@ -64,6 +66,7 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent implement
         }.runUnrestricted();
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(WORKFLOW_NAME_EVENT_PROPERTY_KEY, routeInstance.getTitle());
+        properties.put(WORKFLOW_ID_EVENT_PROPERTY_KEY, routeDocId);
         EventFirer.fireEvent(session, routeInstance.getAttachedDocuments(session), properties,
                 DocumentRoutingConstants.Events.workflowCanceled.name());
     }
