@@ -115,6 +115,27 @@
    <cve>CVE-2016-6325</cve>
    <cve>CVE-2017-6056</cve>
 </suppress>
+<suppress>
+   <notes><![CDATA[
+   Elasticsearch Alerting and Monitoring is not used nor included by Nuxeo
+   ]]></notes>
+   <cve>CVE-2018-3831</cve>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: slf4j-api-1.7.25.jar (vulnerable slf4j-ext is not included in Nuxeo)
+   ]]></notes>
+   <gav regex="true">^org\.slf4j:slf4j-api:.*$</gav>
+   <cve>CVE-2018-8088</cve>
+</suppress>
+<suppress>
+   <notes><![CDATA[
+   file name: avro-1.8.2.jar (shaded: com.google.guava:guava:11.0.2)
+   Shaded Guava in AVRO does not included the vulnerable AtomicDoubleArray class
+   ]]></notes>
+   <gav regex="true">^com\.google\.guava:guava:11.0.2$</gav>
+   <cve>CVE-2018-10237</cve>
+</suppress>
 
 <suppress>
    <notes><![CDATA[
