@@ -178,6 +178,10 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         if (blobProvider == null) {
             throw new NuxeoException("No blob provider with id: " + blobProviderId);
         }
+        if (!blobProvider.isTransient()) {
+            throw new NuxeoException("Blob provider: " + blobProviderId + " used for Key/Value store: "
+                    + keyValueStoreName + " must be configured as transient");
+        }
         return blobProvider;
     }
 
