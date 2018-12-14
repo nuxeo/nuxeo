@@ -400,14 +400,14 @@ public class XMLImporterServiceImpl {
     }
 
     protected Object resolveXP(Element el, String xpr) {
-        List<Object> nodes = el.selectNodes(xpr);
+        List<Node> nodes = el.selectNodes(xpr);
         if (nodes.size() == 1) {
             return nodes.get(0);
         } else if (nodes.size() > 1) {
             // Workaround for NXP-11834
             if (xpr.endsWith("text()")) {
                 String value = "";
-                for (Object node : nodes) {
+                for (Node node : nodes) {
                     if (!(node instanceof DefaultText)) {
                         String msg = "Text selector must return a string (expr:\"%s\") element %s";
                         log.error(String.format(msg, xpr, el.getStringValue()));
