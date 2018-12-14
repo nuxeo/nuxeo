@@ -100,7 +100,7 @@ public class PropertyDeprecationRemover implements DocumentTransformer {
             }
         } else {
             // removed property is in a list
-            List<Element> elementsToRemove = schema.selectNodes(schemaPrefix + propertyToRemove);
+            List<Element> elementsToRemove = (List<Element>) (List<?>) schema.selectNodes(schemaPrefix + propertyToRemove);
             // compute number of times we need to get parent - here we only handle one list level (the last one)
             // we assume that fallback of a list of complex is inside the same complex property
             int count = StringUtils.countMatches(propertyToRemove.substring(starIndex), "/");

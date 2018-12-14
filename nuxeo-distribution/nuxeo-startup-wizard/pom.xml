@@ -48,7 +48,7 @@
       <artifactId>httpcore</artifactId>
     </dependency>
     <dependency>
-      <groupId>dom4j</groupId>
+      <groupId>org.dom4j</groupId>
       <artifactId>dom4j</artifactId>
     </dependency>
     <!-- scope log4j-api as provided, otherwise log4j-core under lib/ will try to access log4j-api present in nuxeo-wizard.war -->
