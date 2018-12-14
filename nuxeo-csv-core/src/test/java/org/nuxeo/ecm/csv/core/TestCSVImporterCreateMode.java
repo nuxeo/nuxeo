@@ -40,7 +40,6 @@ import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -459,7 +458,6 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
     }
 
     @Test
-    @Ignore("NXP-22172")
     public void shouldSetCreatorToTheUserImporting() throws InterruptedException {
         // give access to leela
         DocumentModel root = session.getRootDocument();
