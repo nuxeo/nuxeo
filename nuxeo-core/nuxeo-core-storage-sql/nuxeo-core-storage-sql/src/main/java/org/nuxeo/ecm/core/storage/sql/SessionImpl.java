@@ -117,7 +117,7 @@ public class SessionImpl implements Session, XAResource {
 
     private boolean inTransaction;
 
-    private Node rootNode;
+    private Serializable rootNodeId;
 
     private long threadId;
 
@@ -310,7 +310,7 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public Node getRootNode() {
         checkLive();
-        return rootNode;
+        return getNodeById(rootNodeId);
     }
 
     @Override
@@ -1411,23 +1411,24 @@ public class SessionImpl implements Session, XAResource {
         }
         if (rootId == null) {
             log.debug("Creating root");
-            rootNode = addRootNode();
-            addRootACP();
+            addRootNode();
             save();
             // record information about the root id
-            mapper.setRootId(repositoryId, rootNode.getId());
+            mapper.setRootId(repositoryId, rootNodeId);
         } else {
-            rootNode = getNodeById(rootId, false);
+            rootNodeId = rootId;
         }
     }
 
     // TODO factor with addChildNode
     private Node addRootNode() {
-        Serializable id = generateNewId(null);
-        return addNode(id, null, "", null, Model.ROOT_TYPE, false);
+        rootNodeId = generateNewId(null);
+        Node rootNode = addNode(rootNodeId, null, "", null, Model.ROOT_TYPE, false);
+        addRootACP(rootNode);
+        return rootNode;
     }
 
-    private void addRootACP() {
+    private void addRootACP(Node rootNode) {
         ACLRow[] aclrows = new ACLRow[3];
         // TODO put groups in their proper place. like that now for consistency.
         aclrows[0] = new ACLRow(0, ACL.LOCAL_ACL, true, SecurityConstants.EVERYTHING, SecurityConstants.ADMINISTRATORS,

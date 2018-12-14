@@ -145,6 +145,41 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.close();
     }
 
+    /*
+     * The root node fragments must correctly be refetched when they are invalidated.
+     */
+    @Test
+    public void testRootNodeInvalidation() throws Exception {
+        Session session = repository.getConnection();
+        Serializable rootNodeId = session.getRootNode().getId();
+        Session session2 = repository.getConnection();
+        // load in session2 the fragment that we'll want to see invalidated later
+        session2.getRootNode().getCollectionProperty(Model.ACL_PROP);
+
+        // set new acl on root
+        Node root = session.getRootNode();
+        CollectionProperty prop = root.getCollectionProperty(Model.ACL_PROP);
+        Serializable[] origValue = prop.getValue();
+        assertEquals(3, origValue.length); // root acls preexist
+        ACLRow acl1 = new ACLRow(1, "test", true, "Write", "steve", null);
+        ACLRow acl2 = new ACLRow(1, "test", true, "Write", "jobs", null);
+        prop.setValue(new ACLRow[] { acl1, acl2 });
+        session.save(); // send invalidations, fragment in session2 is INVALIDATED_MODIFIED
+
+        // in session2 re-change acl
+        session2.save(); // fetch invalidations
+        Node root2 = session2.getNodeById(rootNodeId); // fetch root by id
+        CollectionProperty prop2 = root2.getCollectionProperty(Model.ACL_PROP);
+        prop2.setValue(new ACLRow[] { acl1 });
+        // DO NOT session2.save()
+
+        // re-fetch root node directly
+        Node root22 = session2.getRootNode();
+        CollectionProperty prop22 = root22.getCollectionProperty(Model.ACL_PROP);
+        // we should see the shorter ACL without needing a save()
+        assertEquals(1, prop22.getValue().length);
+    }
+
     @Test
     public void testSchemaWithLongName() throws Exception {
         pushInlineDeployments("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-schema-longname.xml");
