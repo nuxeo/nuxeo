@@ -44,11 +44,10 @@ public class SchemaRenamer implements DocumentTransformer {
     public boolean transform(ExportedDocument xdoc) throws IOException {
         Element root = xdoc.getDocument().getRootElement();
 
-        List<Object> schemas = root.elements("schema");
+        List<Element> schemas = root.elements("schema");
         Element src = null;
         if (schemas != null) {
-            for (Object s : schemas) {
-                Element schema = (Element) s;
+            for (Element schema : schemas) {
                 String name = schema.attribute("name").getText();
                 if (srcSchema.equalsIgnoreCase(name)) {
                     Namespace ns = new Namespace(dstPrefix, "http://www.nuxeo.org/ecm/schemas/" + dstSchema);

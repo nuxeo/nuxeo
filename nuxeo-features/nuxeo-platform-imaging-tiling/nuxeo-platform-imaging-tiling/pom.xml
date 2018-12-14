@@ -39,7 +39,7 @@
       <classifier>jdk15</classifier>
     </dependency>
     <dependency>
-      <groupId>dom4j</groupId>
+      <groupId>org.dom4j</groupId>
       <artifactId>dom4j</artifactId>
     </dependency>
     <dependency>

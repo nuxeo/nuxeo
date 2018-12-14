@@ -3088,16 +3088,9 @@
         <version>2.0.8</version>
       </dependency>
       <dependency>
-        <groupId>dom4j</groupId>
+        <groupId>org.dom4j</groupId>
         <artifactId>dom4j</artifactId>
-        <version>1.6.1</version>
-        <exclusions>
-          <!-- exclude bad versions 1.O.b2 -->
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-        </exclusions>
+        <version>2.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.yaml</groupId>
