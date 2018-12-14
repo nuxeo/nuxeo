@@ -89,15 +89,13 @@ public class DefaultComponent implements Component, Adaptable {
 
     public void registerContribution(Object contribution, String xp, ComponentInstance component) {
         if (contribution instanceof Descriptor) {
-            Descriptor descriptor = (Descriptor) contribution;
-            getRegistry().register(name, xp, descriptor);
+            register(xp, (Descriptor) contribution);
         }
     }
 
     public void unregisterContribution(Object contribution, String xp, ComponentInstance component) {
         if (contribution instanceof Descriptor) {
-            Descriptor descriptor = (Descriptor) contribution;
-            getRegistry().unregister(name, xp, descriptor);
+            unregister(xp, (Descriptor) contribution);
         }
     }
 
