@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.storage.StateHelper;
 
 /**
  * Tests the {@link StateDiff} serialization for update purposes.
- * 
+ *
  * @since 10.2
  */
 public class TestMarkLogicStateSerializerDiff extends AbstractSerializerTest {
@@ -55,7 +55,7 @@ public class TestMarkLogicStateSerializerDiff extends AbstractSerializerTest {
     @Test
     public void testDiffWithDeltaValue() throws Exception {
         StateDiff diff = new StateDiff();
-        diff.put("key ", DeltaLong.valueOf(1L, 2));
+        diff.put("key", DeltaLong.valueOf(1L, 2));
         String xml = MarkLogicStateSerializer.serialize(diff);
         assertNotNull(xml);
         assertXMLFileAgainstString("serializer-diff/diff-with-delta-value.xml", xml);
