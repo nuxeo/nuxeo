@@ -54,9 +54,14 @@ public abstract class SQLBackendTestCase {
 
     protected RepositoryImpl repository;
 
+    protected Serializable[] rootAcl;
+
     @Before
     public void setUp() throws Exception {
         repository = newRepository(-1);
+        SessionImpl session = repository.getConnection();
+        rootAcl = session.getRootNode().getCollectionProperty(Model.ACL_PROP).getValue();
+        session.close();
     }
 
     protected RepositoryImpl newRepository(long clusteringDelay) {
@@ -130,6 +135,7 @@ public abstract class SQLBackendTestCase {
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.SECOND, 60);
             session.cleanupDeletedDocuments(0, calendar);
+            session.getRootNode().getCollectionProperty(Model.ACL_PROP).setValue(rootAcl);
             session.save();
             repo.close();
         }
