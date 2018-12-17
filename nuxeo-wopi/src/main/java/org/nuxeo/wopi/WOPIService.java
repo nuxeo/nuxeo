@@ -51,4 +51,12 @@ public interface WOPIService {
     boolean verifyProofKey(String proofKeyHeader, String oldProofKeyHeader, String url, String accessToken,
             String timestampHeader);
 
+    /**
+     * Refreshes the WOPI discovery: fetches the data from the discovery URL, stores it and loads it in memory.
+     *
+     * @return {@code true} if refreshing the discovery has succeeded, {@code false} otherwise
+     * @since 10.10
+     */
+    boolean refreshDiscovery();
+
 }

@@ -5,6 +5,10 @@
     <listener name="wopiUnlockListener" class="org.nuxeo.wopi.lock.UnlockListener">
       <event>documentUnlocked</event>
     </listener>
+    <listener name="wopiDiscoveryRefreshListener" async="true" postCommit="true"
+      class="org.nuxeo.wopi.WOPIDiscoveryRefreshListener">
+      <event>refreshWOPIDiscovery</event>
+    </listener>
   </extension>
 
 </component>

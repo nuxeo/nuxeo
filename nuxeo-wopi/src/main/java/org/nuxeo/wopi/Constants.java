@@ -76,6 +76,8 @@ public class Constants {
 
     public static final String WOPI_DISCOVERY_KEY = "wopiDiscovery";
 
+    public static final String WOPI_DISCOVERY_REFRESH_EVENT = "refreshWOPIDiscovery";
+
     public static final String WOPI_DISCOVERY_URL_PROPERTY = "nuxeo.wopi.discoveryURL";
 
     public static final String WOPI_JSP = "/wopi.jsp";
