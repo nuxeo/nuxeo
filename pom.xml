@@ -2715,6 +2715,13 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>3.3.2.GA</version>
+        <exclusions>
+          <!-- use org.dom4j:dom4j instead -->
+          <exclusion>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -2724,6 +2731,11 @@
           <exclusion>
             <groupId>org.hibernate</groupId>
             <artifactId>ejb3-persistence</artifactId>
+          </exclusion>
+          <!-- use org.dom4j:dom4j instead -->
+          <exclusion>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -2740,6 +2752,11 @@
           <exclusion>
             <groupId>javassist</groupId>
             <artifactId>javassist</artifactId>
+          </exclusion>
+          <!-- use org.dom4j:dom4j instead -->
+          <exclusion>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -3932,6 +3949,11 @@
           <exclusion>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId> <!-- without javax. -->
+          </exclusion>
+          <!-- use org.dom4j:dom4j instead -->
+          <exclusion>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -5676,6 +5698,12 @@
                   <exclude>org.elasticsearch:jna</exclude> <!-- use official net.java.dev.jna:jna instead -->
                 </excludes>
                 <message>org.elasticsearch:jna must not be used, use net.java.dev.jna:jna instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>dom4j:dom4j</exclude>
+                </excludes>
+                <message>dom4j:dom4j must not be used, use org.dom4j:dom4j instead</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>
