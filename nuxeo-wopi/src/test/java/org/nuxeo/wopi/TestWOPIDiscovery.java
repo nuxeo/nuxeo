@@ -34,6 +34,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @since 10.3
@@ -55,6 +56,11 @@ public class TestWOPIDiscovery {
         EXPECTED_WORD_ACTIONS.put(ACTION_EDIT, "rtf");
 
         EXPECTED_WORDPDF_ACTIONS.put(ACTION_VIEW, "pdf");
+    }
+
+    @Test(expected = NuxeoException.class)
+    public void testReadInvalidDiscovery() throws IOException {
+        WOPIDiscovery.read("plain text".getBytes());
     }
 
     @Test

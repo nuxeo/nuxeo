@@ -47,6 +47,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -59,6 +60,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.pubsub.AbstractPubSubBroker;
 import org.nuxeo.runtime.pubsub.SerializableMessage;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+import org.nuxeo.wopi.WOPIDiscovery.NetZone;
 
 /**
  * @since 10.3
@@ -140,14 +142,27 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         }
     }
 
-    protected void loadDiscovery(byte[] discoveryBytes) {
-        WOPIDiscovery discovery = WOPIDiscovery.read(discoveryBytes);
+    protected boolean loadDiscovery(byte[] discoveryBytes) {
+        WOPIDiscovery discovery;
+        try {
+            discovery = WOPIDiscovery.read(discoveryBytes);
+        } catch (NuxeoException e) {
+            log.error("Error while reading WOPI discovery {}", e::getMessage);
+            log.debug(e, e);
+            return false;
+        }
+
+        NetZone netZone = discovery.getNetZone();
+        if (netZone == null) {
+            log.error("Invalid WOPI discovery, no net-zone element");
+            return false;
+        }
+
         List<String> supportedAppNames = getSupportedAppNames();
-        discovery.getNetZone()
-                 .getApps()
-                 .stream()
-                 .filter(app -> supportedAppNames.contains(app.getName()))
-                 .forEach(this::registerApp);
+        netZone.getApps()
+               .stream()
+               .filter(app -> supportedAppNames.contains(app.getName()))
+               .forEach(this::registerApp);
         log.debug("Successfully loaded WOPI discovery: WOPI enabled");
 
         WOPIDiscovery.ProofKey pk = discovery.getProofKey();
@@ -155,6 +170,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         oldProofKey = ProofKeyHelper.getPublicKey(pk.getOldModulus(), pk.getOldExponent());
         log.debug("Registered proof key: {}", proofKey);
         log.debug("Registered old proof key: {}", oldProofKey);
+        return true;
     }
 
     protected void fireRefreshDiscovery() {
@@ -246,14 +262,16 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         if (ArrayUtils.isEmpty(discoveryBytes)) {
             return false;
         }
-
         log.debug("Successfully fetched WOPI dicovery");
-        storeDiscovery(discoveryBytes);
-        loadDiscovery(discoveryBytes);
-        if (invalidator != null) {
-            invalidator.sendMessage(new WOPIDiscoveryInvalidation());
+
+        if (loadDiscovery(discoveryBytes)) {
+            storeDiscovery(discoveryBytes);
+            if (invalidator != null) {
+                invalidator.sendMessage(new WOPIDiscoveryInvalidation());
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     protected byte[] fetchDiscovery() {

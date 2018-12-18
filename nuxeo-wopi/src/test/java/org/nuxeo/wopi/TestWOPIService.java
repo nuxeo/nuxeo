@@ -20,6 +20,7 @@
 package org.nuxeo.wopi;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -28,24 +29,67 @@ import static org.nuxeo.wopi.Constants.ACTION_CONVERT;
 import static org.nuxeo.wopi.Constants.ACTION_EDIT;
 import static org.nuxeo.wopi.Constants.ACTION_VIEW;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.LogFeature;
 
 /**
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ WOPIFeature.class, WOPIDiscoveryFeature.class })
+@Features({ WOPIFeature.class, WOPIDiscoveryFeature.class, LogFeature.class, LogCaptureFeature.class })
 public class TestWOPIService {
 
     @Inject
+    protected LogFeature logFeature;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
+
+    @Inject
     protected WOPIService wopiService;
+
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR")
+    public void testInvalidDiscovery() throws IOException {
+        WOPIServiceImpl wopiServiceImpl = (WOPIServiceImpl) wopiService;
+
+        // clear extension mappings loaded by the WOPIDiscoveryFeature
+        wopiServiceImpl.extensionAppNames.clear();
+        wopiServiceImpl.extensionActionURLs.clear();
+
+        logFeature.hideErrorFromConsoleLog();
+        try {
+            // try to load some invalid XML bytes
+            assertFalse(wopiServiceImpl.loadDiscovery("plain text".getBytes()));
+            assertFalse(wopiService.isEnabled());
+
+            // try to load an invalid WOPI discovery
+            File invalidDiscoveryFile = FileUtils.getResourceFileFromContext("test-invalid-discovery.xml");
+            assertFalse(wopiServiceImpl.loadDiscovery(
+                    org.apache.commons.io.FileUtils.readFileToByteArray(invalidDiscoveryFile)));
+            assertFalse(wopiService.isEnabled());
+        } finally {
+            logFeature.restoreConsoleLog();
+        }
+
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
+        assertEquals(2, caughtEvents.size());
+        assertTrue(caughtEvents.get(0).startsWith("Error while reading WOPI discovery"));
+        assertEquals("Invalid WOPI discovery, no net-zone element", caughtEvents.get(1));
+    }
 
     @Test
     public void testDiscoveryLoaded() {
