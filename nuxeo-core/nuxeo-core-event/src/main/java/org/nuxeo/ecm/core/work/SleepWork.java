@@ -21,10 +21,15 @@ package org.nuxeo.ecm.core.work;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Simple work that just sleeps, mostly used for tests.
  */
 public class SleepWork extends AbstractWork {
+    
+    private static final Logger log = LogManager.getLogger(SleepWork.class);
 
     public static final String CATEGORY = "SleepWork";
 
@@ -119,6 +124,7 @@ public class SleepWork extends AbstractWork {
 
     @Override
     public void work() {
+        log.debug("Running " + this);
         try {
             doWork();
         } catch (InterruptedException e) {

@@ -32,8 +32,8 @@ import java.io.ObjectOutputStream;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
@@ -53,7 +53,7 @@ import com.codahale.metrics.Timer;
  * @since 9.3
  */
 public class WorkComputation extends AbstractComputation {
-    private static final Log log = LogFactory.getLog(WorkComputation.class);
+    private static final Logger log = LogManager.getLogger(WorkComputation.class);
 
     protected static final int IDS_SIZE = 50;
 
@@ -85,7 +85,7 @@ public class WorkComputation extends AbstractComputation {
         work = deserialize(record.getData());
         try {
             if (work.isCoalescing() && WorkStateHelper.getLastOffset(work.getId()) > context.getLastOffset().offset()) {
-                log.debug("Skipping duplicate of coalescing work id: " + work.getId());
+                log.debug("Skipping duplicate of coalescing work id: " + work.getId() + " " + work);
             } else if (work.isIdempotent() && workIds.contains(work.getId())) {
                 log.debug("Skipping duplicate of idempotent work id: " + work.getId());
             } else {

@@ -24,6 +24,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -38,6 +40,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 @Deploy("org.nuxeo.runtime.stream")
 @Deploy("org.nuxeo.ecm.core.event:test-stream-workmanager-service.xml")
 public class StreamWorkManagerTest extends AbstractWorkManagerTest {
+
+    private static final Logger log = LogManager.getLogger(StreamWorkManagerTest.class);
 
     @Override
     public boolean persistent() {
@@ -151,41 +155,59 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
     }
 
     @Test
-    public void testCoalescingWorks() throws InterruptedException {
+    public void onlyLastCoalescingWorkShouldBeExecuted() throws InterruptedException {
+        log.debug("StreamWorkManagerTest.onlyLastCoalescingWorkShouldBeExecuted() beginning");
         // long work, to serve as a filler
-        SleepWork longWork = new SleepWork(getDurationMillis() * 10);
-        longWork.setIdempotent(false);
-        longWork.setCoalescing(true);
-        assertFalse(longWork.isIdempotent());
-        assertTrue(longWork.isCoalescing());
-
+        SleepWork longWork = createCoalescing(getDurationMillis() * 100);
         // short work the only to be actually computed
-        SleepWork shortWork = new SleepWork(getDurationMillis(), longWork.getId());
-        shortWork.setIdempotent(false);
-        shortWork.setCoalescing(true);
-        assertFalse(shortWork.isIdempotent());
-        assertTrue(shortWork.isCoalescing());
+        SleepWork shortWork = createCoalescing(getDurationMillis());
 
         // we have to let the service warm up as the first offset is falsely set to 0
         service.schedule(shortWork);
         assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);
+
         // a work will actually be executed only if handled before the next one is scheduled
         // it's not the case here and the long works will be skipped
         service.schedule(longWork);
         service.schedule(longWork);
         // only the last, short work, will actually be computed and waiting for it's execution time is enough
         service.schedule(shortWork);
-        assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis(), TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 4, 0);
+        log.debug("StreamWorkManagerTest.onlyLastCoalescingWorkShouldBeExecuted() ending");
+    }
 
-        // if we wait a bit for the first one to be started, first and last works will be computed
+    @Test
+    public void onlyFirstAndLastCoalescingWorksShouldBeExecuted() throws InterruptedException {
+        log.debug("StreamWorkManagerTest.onlyFirstAndLastCoalescingWorksShouldBeExecuted() beginning");
+        // long work, to serve as a filler
+        SleepWork longWork = createCoalescing(getDurationMillis() * 100);
+        // short work the only to be actually computed
+        SleepWork shortWork = createCoalescing(getDurationMillis());
+
+        // we have to let the service warm up as the first offset is falsely set to 0
         service.schedule(shortWork);
-        Thread.sleep(500);
+        assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 1, 0);
+
+        // if we wait a bit for the first one to be started, only the first and last works will be computed
+        service.schedule(shortWork);
+        Thread.sleep(getDurationMillis() / 2);
         service.schedule(longWork);
         service.schedule(shortWork);
         assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
-        tracker.assertDiff(0, 0, 7, 0);
+        tracker.assertDiff(0, 0, 4, 0);
+        log.debug("StreamWorkManagerTest.onlyFirstAndLastCoalescingWorksShouldBeExecuted() ending");
+    }
+
+    private SleepWork createCoalescing(long duration) {
+        SleepWork work = new SleepWork(duration, "coalescing");
+        work.setIdempotent(false);
+        work.setCoalescing(true);
+        assertFalse(work.isIdempotent());
+        assertTrue(work.isCoalescing());
+        return work;
     }
 
 }
