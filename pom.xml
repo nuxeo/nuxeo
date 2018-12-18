@@ -2716,6 +2716,13 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>3.3.2.GA</version>
+        <exclusions>
+          <!-- use org.dom4j:dom4j instead -->
+          <exclusion>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -2725,6 +2732,11 @@
           <exclusion>
             <groupId>org.hibernate</groupId>
             <artifactId>ejb3-persistence</artifactId>
+          </exclusion>
+          <!-- use org.dom4j:dom4j instead -->
+          <exclusion>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -2741,6 +2753,11 @@
           <exclusion>
             <groupId>javassist</groupId>
             <artifactId>javassist</artifactId>
+          </exclusion>
+          <!-- use org.dom4j:dom4j instead -->
+          <exclusion>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -3917,6 +3934,11 @@
           <exclusion>
             <groupId>bouncycastle</groupId> <!-- without org. -->
             <artifactId>bcprov-jdk15</artifactId>
+          </exclusion>
+          <!-- use org.dom4j:dom4j instead -->
+          <exclusion>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -5588,6 +5610,12 @@
                   <exclude>org.bouncycastle:bcmail-jdk15</exclude> <!-- use more recent org.bouncycastle:bcmail-jdk15on instead -->
                 </excludes>
                 <message>org.bouncycastle:bcmail-jdk15 must not be used, use org.bouncycastle:bcmail-jdk15on instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>dom4j:dom4j</exclude>
+                </excludes>
+                <message>dom4j:dom4j must not be used, use org.dom4j:dom4j instead</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>
