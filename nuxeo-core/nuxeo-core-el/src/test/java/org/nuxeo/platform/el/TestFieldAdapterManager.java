@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.platform.el.FieldAdapterManager;
 
 /**
- * @since 10.3
+ * @since 10.10
  */
 public class TestFieldAdapterManager {
 
