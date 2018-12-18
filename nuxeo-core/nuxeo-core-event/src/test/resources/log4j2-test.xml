@@ -14,6 +14,7 @@
     <Logger name="org.nuxeo" level="info" />
     <Logger name="org.nuxeo.ecm.core.work.WorkQueuing" level="trace" />
     <Logger name="org.nuxeo.ecm.core.work.api.WorkSchedulePath" level="trace" />
+    <Logger name="org.nuxeo.ecm.core.work" level="debug" />
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />
