@@ -53,7 +53,6 @@
 
       <ui:include src="/incl/select2_js.xhtml" />
 
-      <a4j:region>
         <nxu:valueHolder id="#{widget.id}_select2" value="#{field}"
           required="#{widgetProperty_required}" var="currentValue">
           <f:converter converterId="select2Converter" />
@@ -62,13 +61,15 @@
           <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
             value="#{select2Actions.resolveMultipleDirectoryEntries(currentValue, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
           <ui:insert name="inside_input_widget" />
+          <a4j:ajax
+            render="#{widgetProperty_ajaxReRender}"
+            rendered="#{not empty widgetProperty_ajaxReRender}" />
         </nxu:valueHolder>
 
         <c:if test="#{not empty widgetProperty_ajaxReRender}">
           <a4j:jsFunction name="#{widget.id}_reRender"
             render="#{widgetProperty_ajaxReRender}" />
         </c:if>
-      </a4j:region>
 
       <c:if
         test="#{widget.mode == 'edit' and !widgetProperty_hideHelpLabel}">
