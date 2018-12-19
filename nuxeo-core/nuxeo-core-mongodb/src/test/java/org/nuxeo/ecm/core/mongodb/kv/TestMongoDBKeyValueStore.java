@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.mongodb.kv;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreTest;
 import org.nuxeo.runtime.mongodb.MongoDBFeature;
@@ -28,6 +29,7 @@ import org.nuxeo.runtime.test.runner.Features;
 
 @Features(MongoDBFeature.class)
 @Deploy("org.nuxeo.ecm.core.mongodb.test:OSGI-INF/mongodb-keyvalue-test-contrib.xml")
+@Ignore
 public class TestMongoDBKeyValueStore extends AbstractKeyValueStoreTest {
 
     @Test

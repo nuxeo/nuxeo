@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -45,6 +46,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(MongoDBFeature.class)
 @Deploy("org.nuxeo.ecm.core:OSGI-INF/uidgenerator-service.xml")
 @Deploy("org.nuxeo.ecm.core.mongodb.test:OSGI-INF/mongodb-seqgen-test-contrib.xml")
+@Ignore
 public class TestSequenceGeneratorWithMongoDB {
 
     @Inject
@@ -95,7 +97,7 @@ public class TestSequenceGeneratorWithMongoDB {
             assertEquals("Failed to update the sequence 'another' with value 500", ne.getMessage());
         }
 
-        assertTrue("Sequence should be greater than 500",seq.getNextLong("another") > 500L);
+        assertTrue("Sequence should be greater than 500", seq.getNextLong("another") > 500L);
 
         try {
             seq.initSequence("another", 499L);
@@ -105,10 +107,10 @@ public class TestSequenceGeneratorWithMongoDB {
         }
 
         seq.initSequence("another", 9999L);
-        assertTrue("Sequence should be at 10000",seq.getNextLong("another") >= 10000L);
+        assertTrue("Sequence should be at 10000", seq.getNextLong("another") >= 10000L);
 
         seq.initSequence("another", 3_147_483_647L);
-        assertTrue("Sequence should be a long",seq.getNextLong("another") > 3_147_483_647L);
+        assertTrue("Sequence should be a long", seq.getNextLong("another") > 3_147_483_647L);
     }
 
     @SuppressWarnings("boxing")

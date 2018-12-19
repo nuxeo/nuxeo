@@ -1,0 +1,9 @@
+mongodb:
+  usePassword: false
+postgresql:
+  image:
+    tag: 9.6.11
+  initdbScripts:
+    db-init.sql: |
+      CREATE ROLE nuxeo WITH PASSWORD 'nuxeo' LOGIN;
+      CREATE DATABASE vctests ENCODING 'UTF8' OWNER nuxeo;  

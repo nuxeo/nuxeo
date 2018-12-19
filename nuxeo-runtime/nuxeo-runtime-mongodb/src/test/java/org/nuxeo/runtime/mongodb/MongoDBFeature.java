@@ -62,6 +62,9 @@ public class MongoDBFeature implements RunnerFeature {
 
     @Override
     public void start(FeaturesRunner runner) {
+        if (!IgnoreNoMongoDB.CORE_MONGODB.equals(System.getProperty("nuxeo.test.core"))) {
+            return;
+        }
         // first configure the default MongoDB connection
         String server = defaultProperty(MONGODB_SERVER_PROPERTY, DEFAULT_MONGODB_SERVER);
         String dbname = defaultProperty(MONGODB_DBNAME_PROPERTY, DEFAULT_MONGODB_DBNAME);
