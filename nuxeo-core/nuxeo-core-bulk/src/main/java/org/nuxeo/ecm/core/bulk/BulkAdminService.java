@@ -53,4 +53,11 @@ public interface BulkAdminService {
      */
     boolean isSequentialCommands(String actionId);
 
+    /**
+     * Gets the validation class of an action.
+     *
+     * @since 10.10
+     */
+    BulkActionValidation getActionValidation(String action);
+
 }

@@ -45,7 +45,8 @@
     <action name="removeProxy" bucketSize="100" batchSize="25" />
     <action name="setSystemProperties" bucketSize="100" batchSize="25" />
     <!-- Exposed through REST API -->
-    <action name="setProperties" bucketSize="100" batchSize="25" httpEnabled="true" />
+    <action name="setProperties" bucketSize="100" batchSize="25" httpEnabled="true"
+      validationClass="org.nuxeo.ecm.core.bulk.validation.SetPropertiesValidation"/>
   </extension>
 
   <!-- Action's processor -->

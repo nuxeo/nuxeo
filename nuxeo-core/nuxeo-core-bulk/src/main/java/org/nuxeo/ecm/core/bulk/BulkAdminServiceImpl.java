@@ -106,10 +106,15 @@ public class BulkAdminServiceImpl implements BulkAdminService {
 
     protected StreamProcessor streamProcessor;
 
+    protected Map<String, BulkActionValidation> actionValidations;
+
     public BulkAdminServiceImpl(List<BulkActionDescriptor> descriptorsList) {
         this.actions = descriptorsList.stream().map(Descriptor::getId).collect(Collectors.toList());
         this.descriptors = new HashMap<>(descriptorsList.size());
         descriptorsList.forEach(descriptor -> descriptors.put(descriptor.name, descriptor));
+        actionValidations = descriptorsList.stream().collect(HashMap::new,
+                (map, desc) -> map.put(desc.name, desc.validationClass != null ? desc.newValidationInstance() : null),
+                 HashMap::putAll);
     }
 
     protected void initProcessor() {
@@ -198,6 +203,11 @@ public class BulkAdminServiceImpl implements BulkAdminService {
     @Override
     public boolean isSequentialCommands(String actionId) {
         return descriptors.get(actionId).sequentialCommands;
+    }
+
+    @Override
+    public BulkActionValidation getActionValidation(String action) {
+        return actionValidations.get(action);
     }
 
     public void afterStart() {

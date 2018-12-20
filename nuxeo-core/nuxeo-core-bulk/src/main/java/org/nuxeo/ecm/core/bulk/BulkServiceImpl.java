@@ -89,6 +89,13 @@ public class BulkServiceImpl implements BulkService {
         if (!adminService.getActions().contains(command.getAction())) {
             throw new IllegalArgumentException("Unknown action for command: " + command);
         }
+        BulkActionValidation actionValidation = adminService.getActionValidation(command.getAction());
+
+        // Try to validate the action if a validation class is provided
+        if (actionValidation != null) {
+            actionValidation.validate(command);
+        }
+
         RepositoryManager repoManager = Framework.getService(RepositoryManager.class);
         if (isEmpty(command.getRepository())) {
             command.setRepository(repoManager.getDefaultRepositoryName());

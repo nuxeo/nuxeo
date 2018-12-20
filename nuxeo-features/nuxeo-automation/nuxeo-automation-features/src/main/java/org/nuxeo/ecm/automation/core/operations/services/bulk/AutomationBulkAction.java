@@ -69,9 +69,9 @@ public class AutomationBulkAction implements StreamProcessorTopology {
     }
 
     public static class AutomationComputation extends AbstractBulkComputation {
-        protected static final String DOC_INPUT_TYPE = "document";
+        public static final String DOC_INPUT_TYPE = "document";
 
-        protected static final String DOCS_INPUT_TYPE = "documents";
+        public static final String DOCS_INPUT_TYPE = "documents";
 
         protected AutomationService service;
 
