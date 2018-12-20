@@ -4,7 +4,8 @@
   <require>org.nuxeo.ecm.core.bulk.config</require>
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="automation" bucketSize="100" batchSize="10" httpEnabled="true" />
+    <action name="automation" bucketSize="100" batchSize="10" httpEnabled="true"
+      validationClass="org.nuxeo.ecm.automation.core.operations.services.bulk.validation.AutomationBulkValidation"/>
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">

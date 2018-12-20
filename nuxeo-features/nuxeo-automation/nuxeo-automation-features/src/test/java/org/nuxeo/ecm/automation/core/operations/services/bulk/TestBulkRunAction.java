@@ -255,4 +255,26 @@ public class TestBulkRunAction {
             assertEquals("Could not parse parameters, expecting valid json value", e.getMessage());
         }
     }
+
+    @Test
+    public void testInvalidActionParameters() throws Exception {
+
+        DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
+        String nxql = String.format("SELECT * from ComplexDoc where ecm:parentId='%s'", model.getId());
+
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Serializable> params = new HashMap<>();
+        params.put("action", SetPropertiesAction.ACTION_NAME);
+        params.put("query", nxql);
+        HashMap<String, Serializable> actionParams = new HashMap<>();
+        actionParams.put("unknown:path", "unknown");
+        params.put("parameters", OBJECT_MAPPER.writeValueAsString(actionParams));
+
+        try {
+            service.run(ctx, BulkRunAction.ID, params);
+            fail("Command should have failed");
+        } catch (OperationException e) {
+            // ok
+        }
+    }
 }

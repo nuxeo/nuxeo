@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.bulk;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.Descriptor;
 
 /**
@@ -48,6 +49,9 @@ public class BulkActionDescriptor implements Descriptor {
     @XNode("@sequentialCommands")
     public Boolean sequentialCommands = Boolean.FALSE;
 
+    @XNode("@validationClass")
+    public Class<? extends BulkActionValidation> validationClass;
+
     @Override
     public String getId() {
         return name;
@@ -59,5 +63,16 @@ public class BulkActionDescriptor implements Descriptor {
 
     public Integer getBatchSize() {
         return batchSize;
+    }
+
+    /**
+     * @since 10.10
+     */
+    public BulkActionValidation newValidationInstance() {
+        try {
+            return validationClass.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException("Cannot create validation class of type " + validationClass.getName(), e);
+        }
     }
 }
