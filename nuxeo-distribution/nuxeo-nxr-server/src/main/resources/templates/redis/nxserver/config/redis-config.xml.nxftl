@@ -49,6 +49,7 @@
 </#if>
 
 <#if "${nuxeo.keyvalue.provider}" == "redis">
+  <require>default-repository-config</require>
   <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
     <store name="default" class="org.nuxeo.ecm.core.redis.contribs.RedisKeyValueStore">
       <namespace>kv</namespace>
