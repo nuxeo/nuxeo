@@ -9,11 +9,11 @@ files at server startup when it is not already configured.
 
 1.1) General instructions
 
-Edit nuxeo.conf and set the name of the template(s) to use (default template is "default").
+Edit nuxeo.conf and set the name of the template(s) to use (default template is "default,redis").
 
 Set the properties you want to customize, see nuxeo.defaults files for available parameters.
 For example, recommended changes are:
-  nuxeo.templates=default
+  nuxeo.templates=default,redis
   nuxeo.bind.address=0.0.0.0
 And, for example, if you use a database template:
   nuxeo.db.host=localhost
