@@ -35,6 +35,7 @@
       <filter>image/x-olympus-orf</filter>
       <filter>image/x-raw-epson</filter>
       <filter>image/x-portable-pixmap</filter>
+      <filter>image/x-dpx</filter>
 
       <filter>image/raw</filter>
       <filter>image/x-raw</filter>

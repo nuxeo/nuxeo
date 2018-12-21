@@ -750,6 +750,15 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="image/x-dpx" binary="true" iconPath="image.gif">
+      <mimetypes>
+        <mimetype>image/x-dpx</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>dpx</extension>
+      </extensions>
+    </mimetype>
+
     <!-- Adobe Illustrator -->
    <mimetype normalized="application/illustrator" binary="false" iconPath="image.gif">
      <mimetypes>
