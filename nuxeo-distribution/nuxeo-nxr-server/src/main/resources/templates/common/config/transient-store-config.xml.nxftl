@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.transient.store.config">
 
-  <#if "${nuxeo.redis.enabled}" == "true">
+  <#if (nuxeo.redis.enabled)?has_content && "${nuxeo.redis.enabled}" == "true">
     <#assign className = "org.nuxeo.ecm.core.redis.contribs.RedisTransientStore" />
   <#else>
     <#assign className = "org.nuxeo.ecm.core.transientstore.SimpleTransientStore" />

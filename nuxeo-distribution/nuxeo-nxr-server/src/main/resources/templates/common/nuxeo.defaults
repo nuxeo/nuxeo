@@ -50,7 +50,6 @@ nuxeo.user.emergency.password=secret
 nuxeo.user.emergency.firstname=
 nuxeo.user.emergency.lastname=
 
-nuxeo.cache.type=redis
 nuxeo.cache.ttl=20
 nuxeo.cache.maxsize=100
 nuxeo.cache.concurrencylevel=500
