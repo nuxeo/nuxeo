@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_N
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -166,6 +167,10 @@ public abstract class DefaultListJsonWriter<EntityType> extends AbstractJsonWrit
 
             }
             List<QuickFilter> qfs = paginable.getActiveQuickFilters();
+            if (qfs == null) {
+                qfs = Collections.emptyList();
+            }
+
             List<QuickFilter> aqfs = paginable.getAvailableQuickFilters();
             if (aqfs != null && !aqfs.isEmpty()) {
                 jg.writeArrayFieldStart("quickFilters");
