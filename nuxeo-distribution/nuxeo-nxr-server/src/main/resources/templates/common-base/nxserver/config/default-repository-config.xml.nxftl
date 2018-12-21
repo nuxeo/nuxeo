@@ -8,7 +8,9 @@
       <property name="key">${nuxeo.core.binarymanager_key}</property>
     </blobprovider>
   </extension>
+
 <#if "${nuxeo.mongodb.server}" == "">
+
   <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
     point="repository">
     <repository name="default" label="label.default.repository">
@@ -105,7 +107,16 @@
 </#if>
     </repository>
   </extension>
+
+  <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
+    <store name="default" class="org.nuxeo.ecm.core.storage.sql.kv.SQLKeyValueStore">
+      <property name="datasource">jdbc/keyvaluestore</property>
+      <property name="table">kv</property>
+    </store>
+  </extension>
+
 <#else>
+
   <require>org.nuxeo.runtime.mongodb.MongoDBComponent</require>
 
   <extension target="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService"
@@ -121,6 +132,8 @@
       <changeTokenEnabled>${nuxeo.changetoken.enabled}</changeTokenEnabled>
     </repository>
   </extension>
+
 </#if>
+
 </component>
 </#escape>
