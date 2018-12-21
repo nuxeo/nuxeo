@@ -117,9 +117,6 @@ limitations under the License.
           var file = files[i];
           file.index = this.files.length;
           this.files.push(file);
-          if (typeof callback === 'function') {
-            callback({ type: 'uploadStarted', file: file })
-          }
           promises.push(this._upload(file, callback));
         }
         return Promise.all(promises).then(function() {
