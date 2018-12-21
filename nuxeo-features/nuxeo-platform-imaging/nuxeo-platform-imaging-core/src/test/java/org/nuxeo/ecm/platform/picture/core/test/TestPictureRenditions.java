@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +46,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 import com.google.inject.Inject;
 
@@ -52,7 +55,7 @@ import com.google.inject.Inject;
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.actions")
@@ -86,6 +89,12 @@ public class TestPictureRenditions {
 
     @Inject
     protected HotDeployer deployer;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     @Test
     public void shouldExposeAllPictureViewsAsRenditions() throws IOException {
@@ -155,5 +164,25 @@ public class TestPictureRenditions {
         Blob pdfRendition = imageToPDFRendition.getBlob();
         assertNotNull(pdfRendition);
         assertEquals("pdf", FilenameUtils.getExtension(pdfRendition.getFilename()));
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR")
+    public void shouldAllowPictureViewsGenerationOnImageToPDFRendition() throws IOException {
+        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/exif_sample.jpg"), "image/jpeg");
+        DocumentModel doc = session.createDocumentModel("/", "picture", "Picture");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+
+        // get a PDF stored rendition of the Picture
+        Rendition rendition = renditionService.getRendition(doc, "imageToPDF", true);
+        transactionalFeature.nextTransaction();
+
+        // check that the picture views have been generated without error for the rendition's host document
+        DocumentModel host = rendition.getHostDocument();
+        @SuppressWarnings("unchecked")
+        List<Serializable> pictureViews = (List<Serializable>) host.getPropertyValue("picture:views");
+        assertNotNull(pictureViews);
+        assertTrue(logCaptureResult.getCaughtEventMessages().isEmpty());
     }
 }
