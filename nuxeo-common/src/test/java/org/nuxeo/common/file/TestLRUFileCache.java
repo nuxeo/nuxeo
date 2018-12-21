@@ -154,4 +154,28 @@ public class TestLRUFileCache {
         assertEquals(0, cache.getNumberOfItems());
     }
 
+    @Test
+    public void testLRUFileCacheExternalCleanup() throws Exception {
+        LRUFileCache cache = new LRUFileCache(dir, 100, 9999, 1); // 100 bytes max
+
+        // create one file
+        cache.putFile("1", new ByteArrayInputStream(new byte[30]));
+        assertEquals(1, cache.getNumberOfItems());
+        assertEquals(30, cache.getSize());
+        assertEquals(30, getDirSize());
+        assertTrue(new File(dir, "1").exists());
+
+        // simulate external process doing cleanup
+        FileUtils.deleteDirectory(dir);
+
+        // we can still create entries without crashing
+        cache.putFile("2", new ByteArrayInputStream(new byte[40]));
+        // we only see the new one in stats
+        assertEquals(1, cache.getNumberOfItems());
+        assertEquals(40, cache.getSize());
+        assertEquals(40, getDirSize());
+        assertFalse(new File(dir, "1").exists());
+        assertTrue(new File(dir, "2").exists());
+    }
+
 }
