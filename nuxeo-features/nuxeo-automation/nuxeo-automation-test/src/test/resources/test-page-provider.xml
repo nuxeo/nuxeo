@@ -1,0 +1,22 @@
+<component name="org.nuxeo.ecm.automation.provider.test" version="1.0">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
+
+    <coreQueryPageProvider name="PageProvider">
+      <pattern>
+        SELECT * FROM Document
+      </pattern>
+      <sort column="dc:title" ascending="true"/>
+      <pageSize>2</pageSize>
+      <quickFilters>
+        <quickFilter name="SectionRoot">
+          <clause>ecm:primaryType = 'SectionRoot'</clause>
+        </quickFilter>
+      </quickFilters>
+    </coreQueryPageProvider>
+
+  </extension>
+
+</component>
