@@ -45,11 +45,6 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     /*------------- Read operations ----------------*/
     @Override
-    public List<FileSystemItem> getTopLevelChildren(NuxeoPrincipal principal) {
-        return getTopLevelFolder(principal).getChildren();
-    }
-
-    @Override
     public FolderItem getTopLevelFolder(NuxeoPrincipal principal) {
         return getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getTopLevelFolderItem(principal);
     }

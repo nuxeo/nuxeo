@@ -49,14 +49,6 @@ public interface FileSystemItemManager {
 
     /*------------- Read operations ----------------*/
     /**
-     * Gets the children of the top level {@link FolderItem} for the given principal.
-     *
-     * @deprecated use getTopLevelFolder#getChildren instead
-     */
-    @Deprecated
-    List<FileSystemItem> getTopLevelChildren(NuxeoPrincipal principal);
-
-    /**
      * Gets the top level {@link FolderItem} for the given principal.
      */
     FolderItem getTopLevelFolder(NuxeoPrincipal principal);
