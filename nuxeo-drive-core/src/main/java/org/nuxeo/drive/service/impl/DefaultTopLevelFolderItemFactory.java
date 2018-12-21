@@ -28,8 +28,8 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  *
  * @author Antoine Taillefer
  */
-public class DefaultTopLevelFolderItemFactory extends AbstractVirtualFolderItemFactory implements
-        TopLevelFolderItemFactory {
+public class DefaultTopLevelFolderItemFactory extends AbstractVirtualFolderItemFactory
+        implements TopLevelFolderItemFactory {
 
     /*---------------------- VirtualFolderItemFactory ---------------*/
     @Override

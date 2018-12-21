@@ -41,7 +41,7 @@ public interface VersioningFileSystemItemFactory extends FileSystemItemFactory {
      *
      * @see DocumentBackedFileItem#versionIfNeeded(DocumentModel doc, CoreSession session)
      * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     * drive level, this method is not used anymore
+     *             drive level, this method is not used anymore
      */
     @Deprecated
     boolean needsVersioning(DocumentModel doc);
@@ -51,7 +51,7 @@ public interface VersioningFileSystemItemFactory extends FileSystemItemFactory {
      *
      * @see DefaultFileSystemItemFactory#needsVersioning(DocumentModel)
      * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     * drive level, this method is not used anymore
+     *             drive level, this method is not used anymore
      */
     @Deprecated
     double getVersioningDelay();
@@ -60,7 +60,7 @@ public interface VersioningFileSystemItemFactory extends FileSystemItemFactory {
      * Sets the delay passed which a document needs to be versioned since its last modification.
      *
      * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     * drive level, this method is not used anymore
+     *             drive level, this method is not used anymore
      */
     @Deprecated
     void setVersioningDelay(double versioningDelay);
@@ -70,7 +70,7 @@ public interface VersioningFileSystemItemFactory extends FileSystemItemFactory {
      *
      * @see DocumentBackedFileItem#versionIfNeeded(DocumentModel doc, CoreSession session)
      * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     * drive level, this method is not used anymore
+     *             drive level, this method is not used anymore
      */
     @Deprecated
     VersioningOption getVersioningOption();
@@ -79,7 +79,7 @@ public interface VersioningFileSystemItemFactory extends FileSystemItemFactory {
      * Sets the increment option used when versioning a document.
      *
      * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
-     * drive level, this method is not used anymore
+     *             drive level, this method is not used anymore
      */
     @Deprecated
     void setVersioningOption(VersioningOption versioningOption);

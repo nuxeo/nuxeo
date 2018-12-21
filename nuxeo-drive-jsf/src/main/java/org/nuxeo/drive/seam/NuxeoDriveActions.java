@@ -224,9 +224,9 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
         Object obj = doc.getPropertyValue(xPath);
         if (!(obj instanceof Blob)) {
-            throw new NuxeoException(String.format(
-                "Property %s of document %s (%s) is not a blob, cannot get Drive Edit URL.",
-                xPath, doc.getPathAsString(), doc.getId()));
+            throw new NuxeoException(
+                    String.format("Property %s of document %s (%s) is not a blob, cannot get Drive Edit URL.", xPath,
+                            doc.getPathAsString(), doc.getId()));
         }
         Blob blob = (Blob) obj;
 
@@ -256,8 +256,8 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         }
         String downloadUrl = downloadService.getDownloadUrl(doc, xPath, filename);
 
-        return String.format(
-            editURL, NXDRIVE_PROTOCOL, PROTOCOL_COMMAND_EDIT, baseURL, user, repo, docId, filename, downloadUrl);
+        return String.format(editURL, NXDRIVE_PROTOCOL, PROTOCOL_COMMAND_EDIT, baseURL, user, repo, docId, filename,
+                downloadUrl);
     }
 
     public String navigateToUserCenterNuxeoDrive() {
