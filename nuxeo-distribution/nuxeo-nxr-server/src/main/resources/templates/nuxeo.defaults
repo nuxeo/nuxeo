@@ -29,32 +29,10 @@ org.nuxeo.ecm.product.version=FT 10.10-SNAPSHOT
 #nuxeo.db.user=
 #nuxeo.db.password=
 
-# Redis
-nuxeo.redis.enabled=false
-nuxeo.redis.prefix=nuxeo:
-nuxeo.redis.host=localhost
-nuxeo.redis.port=6379
-nuxeo.redis.password=
-nuxeo.redis.ssl=false
-nuxeo.redis.truststore.path=
-nuxeo.redis.truststore.password=
-nuxeo.redis.truststore.type=
-nuxeo.redis.keystore.path=
-nuxeo.redis.keystore.password=
-nuxeo.redis.keystore.type=
-nuxeo.redis.database=0
-nuxeo.redis.timeout=2000
-nuxeo.redis.maxTotal=16
-nuxeo.redis.maxIdle=8
-nuxeo.redis.ha.enabled=false
-nuxeo.redis.ha.master=mymaster
-nuxeo.redis.ha.hosts=localhost
-nuxeo.redis.ha.timeout=300
-nuxeo.redis.ha.port=26379
-nuxeo.pubsub.provider=redis
-nuxeo.keyvalue.provider=redis
-nuxeo.work.queuing=redis
-nuxeo.lock.manager=redis
+nuxeo.pubsub.provider=
+nuxeo.keyvalue.provider=
+nuxeo.work.queuing=
+nuxeo.lock.manager=
 
 # MongoDB
 nuxeo.mongodb.server=
