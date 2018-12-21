@@ -230,6 +230,9 @@ public class LRUFileCache implements FileCache {
 
     @Override
     public File getTempFile() throws IOException {
+        // make sure we have a temporary directory
+        // even if it's been deleted by an external process doing cleanup
+        Files.createDirectories(dir);
         return Files.createTempFile(dir, TMP_PREFIX, TMP_SUFFIX).toFile();
     }
 
