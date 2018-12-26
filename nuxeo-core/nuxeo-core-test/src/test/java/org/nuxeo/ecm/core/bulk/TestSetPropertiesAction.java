@@ -19,8 +19,10 @@
 package org.nuxeo.ecm.core.bulk;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.BULK_LOG_MANAGER_NAME;
 import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
@@ -34,7 +36,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +49,11 @@ import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DocumentSetRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -59,7 +65,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @RepositoryConfig(init = DocumentSetRepositoryInit.class)
 public class TestSetPropertiesAction {
 
-    private static final Logger log = LogManager.getLogger(BulkScrollerComputation.class);
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(BulkScrollerComputation.class);
 
     @Inject
     public BulkService service;
@@ -173,29 +179,43 @@ public class TestSetPropertiesAction {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-low-scroll-size-contrib.xml")
     public void testAbort() throws Exception {
-        DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
-        String commandId = service.submit(new Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
-                                                                        .user(session.getPrincipal().getName())
-                                                                        .param("dc:description", "foo")
-                                                                        .bucket(1)
-                                                                        .batch(1)
-                                                                        .build());
-        BulkStatus abortStatus = service.abort(commandId);
-        if (abortStatus.getState().equals(COMPLETED)) {
-            log.warn("Bulk command cannot be aborted because already completed");
-            return;
+        StreamService streamService = Framework.getService(StreamService.class);
+        LogManager logManager = streamService.getLogManager(BULK_LOG_MANAGER_NAME);
+        try (LogTailer<Record> tailer = logManager.createTailer("test", ACTION_NAME)) {
+            tailer.toLastCommitted();
+
+            DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
+            String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
+            String commandId = service.submit(new Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
+                                                                            .user(session.getPrincipal().getName())
+                                                                            .param("dc:description", "foo")
+                                                                            .bucket(1)
+                                                                            .batch(1)
+                                                                            .build());
+            BulkStatus abortStatus = service.abort(commandId);
+            if (abortStatus.getState().equals(COMPLETED)) {
+                log.warn("Bulk command cannot be aborted because already completed");
+                return;
+            }
+            assertEquals(ABORTED, abortStatus.getState());
+
+            BulkStatus status = service.getStatus(commandId);
+            assertEquals(ABORTED, status.getState());
+
+            assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
+
+            status = service.getStatus(commandId);
+            assertEquals(ABORTED, status.getState());
+
+            int scrolledDocument = 0;
+            while (tailer.read(Duration.ofSeconds(1)) != null) {
+                scrolledDocument++;
+            }
+            // scroller should have aborted and so we shouldn't have scrolled everything as scrollSize = bucketSize = 1
+            assertNotEquals(DOC_BY_LEVEL, scrolledDocument);
         }
-        assertEquals(ABORTED, abortStatus.getState());
-
-        BulkStatus status = service.getStatus(commandId);
-        assertEquals(ABORTED, status.getState());
-
-        assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
-
-        status = service.getStatus(commandId);
-        assertEquals(ABORTED, status.getState());
     }
 
 }
