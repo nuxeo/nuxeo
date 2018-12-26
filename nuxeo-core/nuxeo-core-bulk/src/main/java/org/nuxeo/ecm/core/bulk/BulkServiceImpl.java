@@ -67,9 +67,9 @@ public class BulkServiceImpl implements BulkService {
 
     public static final String RECORD_CODEC = "avro";
 
-    public static final String COMMAND_SUFFIX = ":command";
+    public static final String COMMAND_PREFIX = "command:";
 
-    public static final String STATUS_SUFFIX = ":status";
+    public static final String STATUS_PREFIX = "status:";
 
     public static final String PRODUCE_IMMEDIATE_OPTION = "produceImmediate";
 
@@ -140,7 +140,7 @@ public class BulkServiceImpl implements BulkService {
     @Override
     public BulkStatus getStatus(String commandId) {
         KeyValueStore keyValueStore = getKvStore();
-        byte[] statusAsBytes = keyValueStore.get(commandId + STATUS_SUFFIX);
+        byte[] statusAsBytes = keyValueStore.get(STATUS_PREFIX + commandId);
         if (statusAsBytes == null) {
             log.debug("Request status of unknown command: {}", commandId);
             return BulkStatus.unknownOf(commandId);
@@ -156,16 +156,16 @@ public class BulkServiceImpl implements BulkService {
         byte[] statusAsBytes = BulkCodecs.getStatusCodec().encode(status);
         switch (status.getState()) {
         case ABORTED:
-            kvStore.put(status.getId() + STATUS_SUFFIX, statusAsBytes, ABORTED_TTL_SECONDS);
+            kvStore.put(STATUS_PREFIX + status.getId(), statusAsBytes, ABORTED_TTL_SECONDS);
             // we remove the command from the kv store, so computation have to handle abort
-            kvStore.put(status.getId() + COMMAND_SUFFIX, (String) null);
+            kvStore.put(COMMAND_PREFIX + status.getId(), (String) null);
             break;
         case COMPLETED:
-            kvStore.put(status.getId() + STATUS_SUFFIX, statusAsBytes, COMPLETED_TTL_SECONDS);
-            kvStore.setTTL(status.getId() + COMMAND_SUFFIX, COMPLETED_TTL_SECONDS);
+            kvStore.put(STATUS_PREFIX + status.getId(), statusAsBytes, COMPLETED_TTL_SECONDS);
+            kvStore.setTTL(COMMAND_PREFIX + status.getId(), COMPLETED_TTL_SECONDS);
             break;
         default:
-            kvStore.put(status.getId() + STATUS_SUFFIX, statusAsBytes);
+            kvStore.put(STATUS_PREFIX + status.getId(), statusAsBytes);
         }
         return statusAsBytes;
     }
@@ -173,7 +173,7 @@ public class BulkServiceImpl implements BulkService {
     @Override
     public BulkCommand getCommand(String commandId) {
         KeyValueStore keyValueStore = getKvStore();
-        byte[] statusAsBytes = keyValueStore.get(commandId + COMMAND_SUFFIX);
+        byte[] statusAsBytes = keyValueStore.get(COMMAND_PREFIX + commandId);
         if (statusAsBytes == null) {
             return null;
         }
@@ -212,7 +212,7 @@ public class BulkServiceImpl implements BulkService {
     public byte[] setCommand(BulkCommand command) {
         KeyValueStore kvStore = getKvStore();
         byte[] commandAsBytes = BulkCodecs.getCommandCodec().encode(command);
-        kvStore.put(command.getId() + COMMAND_SUFFIX, commandAsBytes);
+        kvStore.put(COMMAND_PREFIX + command.getId(), commandAsBytes);
         return commandAsBytes;
     }
 
@@ -245,9 +245,8 @@ public class BulkServiceImpl implements BulkService {
     @Override
     public boolean await(Duration duration) throws InterruptedException {
         KeyValueStoreProvider kv = (KeyValueStoreProvider) getKvStore();
-        Set<String> commandIds = kv.keyStream()
-                                   .filter(k -> k.endsWith(STATUS_SUFFIX))
-                                   .map(k -> k.replaceFirst(STATUS_SUFFIX, ""))
+        Set<String> commandIds = kv.keyStream(STATUS_PREFIX)
+                                   .map(k -> k.replaceFirst(STATUS_PREFIX, ""))
                                    .collect(Collectors.toSet());
         // nanoTime is always monotonous
         long deadline = System.nanoTime() + duration.toNanos();
@@ -271,10 +270,10 @@ public class BulkServiceImpl implements BulkService {
     @Override
     public List<BulkStatus> getStatuses(String username) {
         KeyValueStoreProvider kv = (KeyValueStoreProvider) getKvStore();
-        return kv.keyStream()
-                 .filter(key -> key.endsWith(COMMAND_SUFFIX)
-                         && username.equals(BulkCodecs.getCommandCodec().decode(kv.get(key)).getUsername()))
-                 .map(key -> BulkCodecs.getStatusCodec().decode(kv.get(key.replace(COMMAND_SUFFIX, STATUS_SUFFIX))))
+        return kv.keyStream(STATUS_PREFIX)
+                 .map(kv::get)
+                 .map(BulkCodecs.getStatusCodec()::decode)
+                 .filter(status -> username.equals(status.getUsername()))
                  .collect(Collectors.toList());
     }
 
