@@ -81,9 +81,7 @@ public class BulkServiceImpl implements BulkService {
 
     @Override
     public String submit(BulkCommand command) {
-        if (log.isDebugEnabled()) {
-            log.debug("Run action with command=" + command);
-        }
+        log.debug("Run action with command={}", command);
         // check command
         BulkAdminService adminService = Framework.getService(BulkAdminService.class);
         if (!adminService.getActions().contains(command.getAction())) {
@@ -144,9 +142,7 @@ public class BulkServiceImpl implements BulkService {
         KeyValueStore keyValueStore = getKvStore();
         byte[] statusAsBytes = keyValueStore.get(commandId + STATUS_SUFFIX);
         if (statusAsBytes == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Request status of unknown command: " + commandId);
-            }
+            log.debug("Request status of unknown command: {}", commandId);
             return BulkStatus.unknownOf(commandId);
         }
         return BulkCodecs.getStatusCodec().decode(statusAsBytes);
@@ -188,7 +184,7 @@ public class BulkServiceImpl implements BulkService {
     public BulkStatus abort(String commandId) {
         BulkStatus status = getStatus(commandId);
         if (COMPLETED.equals(status.getState())) {
-            log.debug("Cannot abort a completed command: " + commandId);
+            log.debug("Cannot abort a completed command: {}", commandId);
             return status;
         }
         status.setState(ABORTED);
@@ -231,16 +227,14 @@ public class BulkServiceImpl implements BulkService {
             case ABORTED:
                 return true;
             case UNKNOWN:
-                log.error("Unknown status for command: " + commandId);
+                log.error("Unknown status for command: {}", commandId);
                 return false;
             default:
                 // continue
             }
             Thread.sleep(100);
         } while (deadline > System.currentTimeMillis());
-        if (log.isDebugEnabled()) {
-            log.debug("await timeout " + status + " after " + duration.toMillis() + " ms");
-        }
+        log.debug("await timeout on {} after {} ms", () -> getStatus(commandId), duration::toMillis);
         return false;
     }
 
@@ -266,9 +260,7 @@ public class BulkServiceImpl implements BulkService {
                 }
                 Thread.sleep(200);
                 if (deadline < System.nanoTime()) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("await timeout, at least one uncompleted command: " + status);
-                    }
+                    log.debug("await timeout, at least one uncompleted command: {}", status);
                     return false;
                 }
             }
