@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,8 +32,8 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.versioning.VersioningPolicyFilter;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
@@ -298,7 +299,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
         doc = session.saveDocument(doc);
         // get versions (document before update)
         versions = session.getVersions(doc.getRef());
-        versions.sort((v1, v2) -> v1.getVersionLabel().compareTo(v2.getVersionLabel()));
+        versions.sort(Comparator.comparing(DocumentModel::getVersionLabel));
         assertEquals(3, versions.size());
         DocumentModel versionAfterCreation = versions.get(0);
         DocumentModel versionBeforeUpdate = versions.get(1);
@@ -321,7 +322,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
         doc = session.saveDocument(doc);
         // get versions
         versions = session.getVersions(doc.getRef());
-        versions.sort((v1, v2) -> v1.getVersionLabel().compareTo(v2.getVersionLabel()));
+        versions.sort(Comparator.comparing(DocumentModel::getVersionLabel));
         // as document before update was already a version - service will just create one new version
         assertEquals(4, versions.size());
         versionAfterUpdate = versions.get(3);
@@ -350,7 +351,7 @@ public class TestAutoVersioning extends AbstractTestVersioning {
 
         // Check that before automatic versioning was trigger
         List<DocumentModel> versions = session.getVersions(doc.getRef());
-        versions.sort((v1, v2) -> v1.getVersionLabel().compareTo(v2.getVersionLabel()));
+        versions.sort(Comparator.comparing(DocumentModel::getVersionLabel));
         assertEquals(2, versions.size());
         assertEquals("0.1", versions.get(0).getVersionLabel());
         assertEquals("1.0", versions.get(1).getVersionLabel());

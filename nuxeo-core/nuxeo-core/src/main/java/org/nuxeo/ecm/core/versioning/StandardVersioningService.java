@@ -41,8 +41,8 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.model.Document;
@@ -63,7 +64,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class StandardVersioningService implements ExtendableVersioningService {
 
-    private static final Log log = LogFactory.getLog(StandardVersioningService.class);
+    private static final Logger log = LogManager.getLogger(StandardVersioningService.class);
 
     protected static final int DEFAULT_FORMER_RULE_ORDER = 10_000;
 
@@ -147,10 +148,10 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     protected long getVersion(DocumentModel docModel, String prop) {
         Object propVal = docModel.getPropertyValue(prop);
-        if (propVal == null || !(propVal instanceof Long)) {
-            return 0;
-        } else {
+        if (propVal instanceof Long) {
             return ((Long) propVal).longValue();
+        } else {
+            return 0;
         }
     }
 
@@ -164,10 +165,10 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     protected long getVersion(Document doc, String prop) {
         Object propVal = doc.getPropertyValue(prop);
-        if (propVal == null || !(propVal instanceof Long)) {
-            return 0;
-        } else {
+        if (propVal instanceof Long) {
             return ((Long) propVal).longValue();
+        } else {
+            return 0;
         }
     }
 
@@ -371,9 +372,8 @@ public class StandardVersioningService implements ExtendableVersioningService {
         Document base = doc.getBaseVersion();
         doc.checkOut();
         // set version number to that of the latest version
-        if (base.isLatestVersion()) {
-            // nothing to do, already at proper version
-        } else {
+        // nothing to do if base is latest version, already at proper version
+        if (!base.isLatestVersion()) {
             // this doc was restored from a non-latest version, find the latest one
             Document last = doc.getLastVersion();
             if (last != null) {
@@ -516,12 +516,12 @@ public class StandardVersioningService implements ExtendableVersioningService {
             DocumentModel currentDocument, boolean before) {
         return versioningPolicies.values()
                                  .stream()
-                                 .sorted()
                                  .filter(policy -> policy.isBeforeUpdate() == before)
-                                 .filter(policy -> isPolicyMatch(policy, previousDocument, currentDocument))
                                  // Filter out policy with null increment - possible if we declare a policy for the
                                  // initial state for all documents
                                  .filter(policy -> policy.getIncrement() != null)
+                                 .sorted()
+                                 .filter(policy -> isPolicyMatch(policy, previousDocument, currentDocument))
                                  .findFirst()
                                  .orElse(null);
     }
@@ -532,19 +532,20 @@ public class StandardVersioningService implements ExtendableVersioningService {
         for (String filterId : policyDescriptor.getFilterIds()) {
             VersioningFilterDescriptor filterDescriptor = versioningFilters.get(filterId);
             if (filterDescriptor == null) {
-                // TODO maybe throw something ?
-                log.warn("Versioning filter with id=" + filterId + " is referenced in the policy with id= "
-                        + policyDescriptor.getId() + ", but doesn't exist.");
+                log.warn("Versioning filter with id={} is referenced in the policy with id={}, but doesn't exist.",
+                        filterId, policyDescriptor.getId());
             } else if (!filterDescriptor.newInstance().test(previousDocument, currentDocument)) {
                 // As it's a AND, if one fails then policy doesn't match
                 return false;
             }
         }
         // All filters match the context (previousDocument + currentDocument)
+        log.debug("Document {} is a candidate for {}", currentDocument.getRef(), policyDescriptor);
         return true;
     }
 
-    protected void sendEvent(CoreSession session, Document doc, String previousLifecycleState, Map<String, Serializable> options) {
+    protected void sendEvent(CoreSession session, Document doc, String previousLifecycleState,
+            Map<String, Serializable> options) {
         String sid = session.getSessionId();
         DocumentModel docModel = DocumentModelFactory.createDocumentModel(doc, sid, null);
 
