@@ -87,11 +87,8 @@ public class BulkScrollerComputation extends AbstractComputation {
      * @param nbOutputStreams the number of registered bulk action streams
      * @param scrollBatchSize the batch size to scroll
      * @param scrollKeepAliveSeconds the scroll lifetime
+     * @param produceImmediate whether or not the record should be produced immedialitely while scrolling
      */
-    public BulkScrollerComputation(String name, int nbOutputStreams, int scrollBatchSize, int scrollKeepAliveSeconds) {
-        this(name, nbOutputStreams, scrollBatchSize, scrollKeepAliveSeconds, false);
-    }
-
     public BulkScrollerComputation(String name, int nbOutputStreams, int scrollBatchSize, int scrollKeepAliveSeconds,
             boolean produceImmediate) {
         super(name, 1, nbOutputStreams);
@@ -118,55 +115,49 @@ public class BulkScrollerComputation extends AbstractComputation {
                 if (bucketSize <= MAX_SCROLL_SIZE) {
                     scrollSize = bucketSize;
                 } else {
-                    log.warn(String.format("Bucket size: %d too big for command: %s, reduce to: %d", bucketSize,
-                            command, MAX_SCROLL_SIZE));
+                    log.warn("Bucket size: %d too big for command: %s, reduce to: %d", bucketSize, command,
+                            MAX_SCROLL_SIZE);
                     scrollSize = bucketSize = MAX_SCROLL_SIZE;
                 }
             }
             updateStatusAsScrolling(context, commandId);
-            LoginContext loginContext;
-            try {
-                loginContext = Framework.loginAsUser(command.getUsername());
-                try (CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository())) {
-                    // scroll documents
-                    ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollSize,
-                            scrollKeepAliveSeconds);
-                    long documentCount = 0;
-                    long bucketNumber = 1;
-                    while (scroll.hasResults()) {
-                        List<String> docIds = scroll.getResults();
-                        documentIds.addAll(docIds);
-                        while (documentIds.size() >= bucketSize) {
-                            produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++);
-                        }
-
-                        documentCount += docIds.size();
-                        // next batch
-                        scroll = session.scroll(scroll.getScrollId());
-                        TransactionHelper.commitOrRollbackTransaction();
-                        TransactionHelper.startTransaction();
-                    }
-                    // send remaining document ids
-                    // there's at most one record because we loop while scrolling
-                    if (!documentIds.isEmpty()) {
+            LoginContext loginContext = Framework.loginAsUser(command.getUsername());
+            try (CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository())) {
+                // scroll documents
+                ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollSize, scrollKeepAliveSeconds);
+                long documentCount = 0;
+                long bucketNumber = 1;
+                while (scroll.hasResults()) {
+                    List<String> docIds = scroll.getResults();
+                    documentIds.addAll(docIds);
+                    while (documentIds.size() >= bucketSize) {
                         produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++);
                     }
-                    updateStatusAfterScroll(context, commandId, documentCount);
-                } catch (IllegalArgumentException | QueryParseException | DocumentNotFoundException e) {
-                    log.error("Invalid query results in an empty document set: " + command.toString(), e);
-                    updateStatusAfterScroll(context, commandId, "Invalid query");
-                } finally {
-                    loginContext.logout();
+
+                    documentCount += docIds.size();
+                    // next batch
+                    scroll = session.scroll(scroll.getScrollId());
+                    TransactionHelper.commitOrRollbackTransaction();
+                    TransactionHelper.startTransaction();
                 }
-            } catch (LoginException e) {
-                throw new NuxeoException(e);
+                // send remaining document ids
+                // there's at most one record because we loop while scrolling
+                if (!documentIds.isEmpty()) {
+                    produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++);
+                }
+                updateStatusAfterScroll(context, commandId, documentCount);
+            } catch (IllegalArgumentException | QueryParseException | DocumentNotFoundException e) {
+                log.error("Invalid query results in an empty document set: {}", command, e);
+                updateStatusAfterScroll(context, commandId, "Invalid query");
+            } finally {
+                loginContext.logout();
             }
-        } catch (NuxeoException e) {
+        } catch (NuxeoException | LoginException e) {
             if (command != null) {
-                log.error("Invalid command produces an empty document set: " + command, e);
+                log.error("Invalid command produces an empty document set: {}", command, e);
                 updateStatusAfterScroll(context, command.getId(), "Invalid command");
             } else {
-                log.error("Discard invalid record: " + record, e);
+                log.error("Discard invalid record: {}", record, e);
             }
 
         }
@@ -184,6 +175,7 @@ public class BulkScrollerComputation extends AbstractComputation {
     protected void updateStatusAfterScroll(ComputationContext context, String commandId, String errorMessage) {
         updateStatusAfterScroll(context, commandId, 0, errorMessage);
     }
+
     protected void updateStatusAfterScroll(ComputationContext context, String commandId, long documentCount) {
         updateStatusAfterScroll(context, commandId, documentCount, null);
     }

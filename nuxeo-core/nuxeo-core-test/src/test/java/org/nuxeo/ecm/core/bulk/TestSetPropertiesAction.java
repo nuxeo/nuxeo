@@ -34,12 +34,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.bulk.computation.BulkScrollerComputation;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand.Builder;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -55,6 +58,8 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
 @RepositoryConfig(init = DocumentSetRepositoryInit.class)
 public class TestSetPropertiesAction {
+
+    private static final Logger log = LogManager.getLogger(BulkScrollerComputation.class);
 
     @Inject
     public BulkService service;
@@ -179,7 +184,7 @@ public class TestSetPropertiesAction {
                                                                         .build());
         BulkStatus abortStatus = service.abort(commandId);
         if (abortStatus.getState().equals(COMPLETED)) {
-            System.out.println("Bulk command cannot be aborted because already completed");
+            log.warn("Bulk command cannot be aborted because already completed");
             return;
         }
         assertEquals(ABORTED, abortStatus.getState());
