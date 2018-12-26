@@ -3,7 +3,7 @@
 
   <!-- define the template first -->
 
-  <extension target="org.nuxeo.ecm.directory.core.CoreDirectoryFactory" point="directories">
+  <extension target="org.nuxeo.ecm.directory.doc.DocDirectoryFactory" point="directories">
 
     <directory name="template-vocabulary" template="true">
       <schema>vocabulary</schema>

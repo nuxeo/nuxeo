@@ -16,7 +16,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.directory.core;
+package org.nuxeo.ecm.directory.doc;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
@@ -31,9 +31,9 @@ import org.nuxeo.runtime.model.ComponentContext;
  *
  * @since 8.2
  */
-public class CoreDirectoryFactory extends DefaultDirectoryFactory {
+public class DocDirectoryFactory extends DefaultDirectoryFactory {
 
-    protected RepositoryInitializationHandler initializationHandler = new CoreDirectoryInitializationHandler();
+    protected RepositoryInitializationHandler initializationHandler = new DocDirectoryInitializationHandler();
 
     @Override
     public void activate(ComponentContext context) {
@@ -46,24 +46,24 @@ public class CoreDirectoryFactory extends DefaultDirectoryFactory {
     }
 
     /**
-     * Finalizes Core Directories initialization as soon as the repositories are available.
+     * Finalizes Doc Directories initialization as soon as the repositories are available.
      *
      * @since 10.3
      */
-    public static class CoreDirectoryInitializationHandler extends RepositoryInitializationHandler {
+    public static class DocDirectoryInitializationHandler extends RepositoryInitializationHandler {
 
         @Override
         public void doInitializeRepository(CoreSession coreSession) {
             DirectoryService directoryService = Framework.getService(DirectoryService.class);
             for (Directory directory : directoryService.getDirectories()) {
-                if (!(directory instanceof CoreDirectory)) {
+                if (!(directory instanceof DocDirectory)) {
                     continue;
                 }
-                CoreDirectory coreDirectory = (CoreDirectory) directory;
-                if (!coreDirectory.repositoryName.equals(coreSession.getRepositoryName())) {
+                DocDirectory docDirectory = (DocDirectory) directory;
+                if (!docDirectory.repositoryName.equals(coreSession.getRepositoryName())) {
                     continue;
                 }
-                coreDirectory.initializeCoreSession(coreSession);
+                docDirectory.initializeCoreSession(coreSession);
             }
         }
 

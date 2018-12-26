@@ -17,7 +17,7 @@
  *     Maxime Hilaire
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.directory.core;
+package org.nuxeo.ecm.directory.doc;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.nuxeo.ecm.directory.core.CoreDirectory.DEFAULT_DIRECTORIES_PATH;
+import static org.nuxeo.ecm.directory.doc.DocDirectory.DEFAULT_DIRECTORIES_PATH;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -53,6 +53,7 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.doc.DocDirectorySession;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -64,9 +65,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.directory.api")
 @Deploy("org.nuxeo.ecm.directory")
-@Deploy("org.nuxeo.ecm.directory.core.tests:core/types-config.xml")
-@Deploy("org.nuxeo.ecm.directory.core.tests:core/directory-user-config.xml")
-public class TestCoreDirectory {
+@Deploy("org.nuxeo.ecm.directory.doc")
+@Deploy("org.nuxeo.ecm.directory.doc.tests:types-config.xml")
+@Deploy("org.nuxeo.ecm.directory.doc.tests:directory-user-config.xml")
+public class TestDocDirectory {
 
     public static final String SCHEMA_NAME = "schema1";
 
@@ -88,7 +90,7 @@ public class TestCoreDirectory {
 
     public static final String BAR2 = "bar2";
 
-    public static final String DIR_NAME = "userCoreDirectory";
+    public static final String DIR_NAME = "userDocDirectory";
 
     public static final String DIR_PATH = DEFAULT_DIRECTORIES_PATH + '/' + DIR_NAME;
 
@@ -128,7 +130,7 @@ public class TestCoreDirectory {
 
     public void populate() {
         // create user1 entry
-        DocumentModel user1 = createDocument(coreSession, DIR_PATH, USER1, "CoreDirDoc");
+        DocumentModel user1 = createDocument(coreSession, DIR_PATH, USER1, "DocDirDoc");
         user1.setPropertyValue(UID, USER1);
         user1.setPropertyValue(PWD, PWD1);
         user1.setPropertyValue(FOO, FOO1);
@@ -136,7 +138,7 @@ public class TestCoreDirectory {
         coreSession.saveDocument(user1);
 
         // create user2 entry
-        DocumentModel user2 = createDocument(coreSession, DIR_PATH, USER2, "CoreDirDoc");
+        DocumentModel user2 = createDocument(coreSession, DIR_PATH, USER2, "DocDirDoc");
         user2.setPropertyValue(UID, USER2);
         user2.setPropertyValue(PWD, PWD2_HASHED);
         user2.setPropertyValue(FOO, FOO2);
@@ -148,17 +150,17 @@ public class TestCoreDirectory {
 
     @Test
     public void testIdEscaping() {
-        assertEquals("foo", CoreDirectorySession.idToName("foo"));
-        assertEquals("foo=2fbar", CoreDirectorySession.idToName("foo/bar"));
-        assertEquals("foo=3dbar", CoreDirectorySession.idToName("foo=bar"));
-        assertEquals("foo=2fbar=3dbaz", CoreDirectorySession.idToName("foo/bar=baz"));
-        assertEquals("foo=3d", CoreDirectorySession.idToName("foo="));
+        assertEquals("foo", DocDirectorySession.idToName("foo"));
+        assertEquals("foo=2fbar", DocDirectorySession.idToName("foo/bar"));
+        assertEquals("foo=3dbar", DocDirectorySession.idToName("foo=bar"));
+        assertEquals("foo=2fbar=3dbaz", DocDirectorySession.idToName("foo/bar=baz"));
+        assertEquals("foo=3d", DocDirectorySession.idToName("foo="));
         for (String name : Arrays.asList("foo", "foo/bar", "foo=bar", "foo/bar=baz", "foo=")) {
-            assertEquals(name, CoreDirectorySession.nameToId(CoreDirectorySession.idToName(name)));
+            assertEquals(name, DocDirectorySession.nameToId(DocDirectorySession.idToName(name)));
         }
         for (String name : Arrays.asList("=", "=2", "=2X", "=XYZ", "a=", "a=2", "a=X", "a=2X")) {
             try {
-                CoreDirectorySession.nameToId(name);
+                DocDirectorySession.nameToId(name);
                 fail("Name should fail unescaping: " + name);
             } catch (NuxeoException e) {
                 assertTrue(e.getMessage(), e.getMessage().startsWith("Illegal name, bad encoding"));

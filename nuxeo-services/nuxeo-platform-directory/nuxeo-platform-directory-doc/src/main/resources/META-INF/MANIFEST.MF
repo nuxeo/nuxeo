@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.directory.doc;singleton:=true
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-Vendor: Nuxeo
+Bundle-Name: Nuxeo Directory Doc
+Nuxeo-Component: OSGI-INF/DocDirectory.xml

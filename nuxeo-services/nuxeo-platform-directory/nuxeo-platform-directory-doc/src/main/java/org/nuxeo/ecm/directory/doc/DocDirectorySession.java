@@ -17,7 +17,7 @@
  *     Maxime Hilaire
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.directory.core;
+package org.nuxeo.ecm.directory.doc;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Implementation of a {@link org.nuxeo.ecm.directory.Session Session} for a {@link CoreDirectory}.
+ * Implementation of a {@link org.nuxeo.ecm.directory.Session Session} for a {@link DocDirectory}.
  * <p>
  * Directory entries are stored as children documents of the directory folder, itself a child of a single directories
  * root folder.
@@ -67,7 +67,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @since 8.2
  */
-public class CoreDirectorySession extends BaseSession {
+public class DocDirectorySession extends BaseSession {
 
     protected String docType;
 
@@ -77,9 +77,9 @@ public class CoreDirectorySession extends BaseSession {
 
     protected String dirPath;
 
-    public CoreDirectorySession(CoreDirectory directory) {
+    public DocDirectorySession(DocDirectory directory) {
         super(directory, null);
-        CoreDirectoryDescriptor descriptor = directory.getDescriptor();
+        DocDirectoryDescriptor descriptor = directory.getDescriptor();
         docType = descriptor.docType;
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         if (!schemaManager.getDocumentType(docType).hasSchema(schemaName)) {
@@ -101,8 +101,8 @@ public class CoreDirectorySession extends BaseSession {
     }
 
     @Override
-    public CoreDirectory getDirectory() {
-        return (CoreDirectory) directory;
+    public DocDirectory getDirectory() {
+        return (DocDirectory) directory;
     }
 
     protected DocumentRef getDocumentRef(String id) {

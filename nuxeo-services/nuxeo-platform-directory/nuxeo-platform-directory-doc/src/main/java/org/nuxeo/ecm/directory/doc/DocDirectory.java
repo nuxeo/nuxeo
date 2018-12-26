@@ -17,7 +17,7 @@
  *     Maxime Hilaire
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.directory.core;
+package org.nuxeo.ecm.directory.doc;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 8.2
  */
-public class CoreDirectory extends AbstractDirectory {
+public class DocDirectory extends AbstractDirectory {
 
     public static final String DEFAULT_DIRECTORIES_PATH = "/directories"; // NOSONAR
 
@@ -57,13 +57,13 @@ public class CoreDirectory extends AbstractDirectory {
     /** The id of the folder for this directory. */
     protected String directoryFolderId;
 
-    public CoreDirectory(CoreDirectoryDescriptor descriptor) {
+    public DocDirectory(DocDirectoryDescriptor descriptor) {
         super(descriptor, null);
     }
 
     @Override
-    public CoreDirectoryDescriptor getDescriptor() {
-        return (CoreDirectoryDescriptor) descriptor;
+    public DocDirectoryDescriptor getDescriptor() {
+        return (DocDirectoryDescriptor) descriptor;
     }
 
     /** Gets the core path where entries for this directory live. */
@@ -74,7 +74,7 @@ public class CoreDirectory extends AbstractDirectory {
     /**
      * {@inheritDoc}
      * <p>
-     * Initialize only basic stuff. The rest of the initialization is called by the CoreDirectoryService
+     * Initialize only basic stuff. The rest of the initialization is called by the DocDirectoryFactory
      * RepositoryInitializationHandler when the session is ready.
      */
     @Override
@@ -86,11 +86,11 @@ public class CoreDirectory extends AbstractDirectory {
         }
     }
 
-    /** Called by CoreDirectoryInitializationHandler to finish initializing the directory given a CoreSession. */
+    /** Called by DocDirectoryInitializationHandler to finish initializing the directory given a CoreSession. */
     public void initializeCoreSession(CoreSession coreSession) {
         boolean loadData = false;
         boolean save = false;
-        CoreDirectoryDescriptor descriptor = getDescriptor();
+        DocDirectoryDescriptor descriptor = getDescriptor();
 
         String directoriesPath = getDirectoriesPath();
         DocumentModel directories;
@@ -155,7 +155,7 @@ public class CoreDirectory extends AbstractDirectory {
 
     @Override
     public Session getSession() {
-        CoreDirectorySession session = new CoreDirectorySession(this);
+        DocDirectorySession session = new DocDirectorySession(this);
         addSession(session);
         return session;
     }

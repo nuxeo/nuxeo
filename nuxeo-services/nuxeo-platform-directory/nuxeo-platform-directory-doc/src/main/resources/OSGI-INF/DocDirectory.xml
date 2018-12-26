@@ -1,24 +1,24 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.directory.core.CoreDirectoryFactory">
+<component name="org.nuxeo.ecm.directory.doc.DocDirectoryFactory">
 
   <require>org.nuxeo.ecm.core.api.CoreSessionServiceImpl</require>
 
   <implementation
-    class="org.nuxeo.ecm.directory.core.CoreDirectoryFactory" />
+    class="org.nuxeo.ecm.directory.doc.DocDirectoryFactory" />
 
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
 
-  <documentation>Core directory implementation.</documentation>
+  <documentation>Doc Directory implementation.</documentation>
 
   <extension-point name="directories">
-    <object class="org.nuxeo.ecm.directory.core.CoreDirectoryDescriptor" />
+    <object class="org.nuxeo.ecm.directory.doc.DocDirectoryDescriptor" />
 
     <documentation>
       This extension point can be used to register new
-      core directories.
+      doc directories.
       <code>
         ...
-        <directory name="myCoreDirectory">
+        <directory name="myDocDirectory">
           <schema>user</schema>
           <idField>username</idField>
           <passwordField>password</passwordField>

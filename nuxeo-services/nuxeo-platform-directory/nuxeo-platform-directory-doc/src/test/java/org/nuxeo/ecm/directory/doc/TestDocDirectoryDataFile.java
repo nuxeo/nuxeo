@@ -16,7 +16,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.directory.core;
+package org.nuxeo.ecm.directory.doc;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,9 +43,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features({ CoreFeature.class, ClientLoginFeature.class })
 @Deploy("org.nuxeo.ecm.directory.api")
 @Deploy("org.nuxeo.ecm.directory")
-@Deploy("org.nuxeo.ecm.directory.core.tests:core/types-config.xml")
-@Deploy("org.nuxeo.ecm.directory.core.tests:core/directory-data-config.xml")
-public class TestCoreDirectoryDataFile {
+@Deploy("org.nuxeo.ecm.directory.doc")
+@Deploy("org.nuxeo.ecm.directory.doc.tests:types-config.xml")
+@Deploy("org.nuxeo.ecm.directory.doc.tests:directory-data-config.xml")
+public class TestDocDirectoryDataFile {
 
     @Inject
     protected DirectoryService directoryService;
@@ -54,7 +55,7 @@ public class TestCoreDirectoryDataFile {
 
     @Before
     public void setUp() throws Exception {
-        Directory dir = directoryService.getDirectory("coreDirWithData");
+        Directory dir = directoryService.getDirectory("docDirWithData");
         session = dir.getSession();
     }
 

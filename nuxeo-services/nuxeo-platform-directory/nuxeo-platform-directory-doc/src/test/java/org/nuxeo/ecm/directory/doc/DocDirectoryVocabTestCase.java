@@ -17,7 +17,7 @@
  *     Maxime Hilaire
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.directory.core;
+package org.nuxeo.ecm.directory.doc;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -55,16 +55,17 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
- * This is slightly different from TestCoreDirectory because for vocabularies we have an id field and therefore need a
+ * This is slightly different from TestDocDirectory because for vocabularies we have an id field and therefore need a
  * separate core schema without id for storage.
  */
 @Features({ CoreFeature.class, ClientLoginFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.directory.api")
 @Deploy("org.nuxeo.ecm.directory")
-@Deploy("org.nuxeo.ecm.directory.core.tests:core/types-config.xml")
+@Deploy("org.nuxeo.ecm.directory.doc")
+@Deploy("org.nuxeo.ecm.directory.doc.tests:types-config.xml")
 // subclasses need to provide the definition for the "myvoc" directory
-public abstract class CoreDirectoryVocabTestCase {
+public abstract class DocDirectoryVocabTestCase {
 
     protected static final String DIR_NAME = "myvoc";
 

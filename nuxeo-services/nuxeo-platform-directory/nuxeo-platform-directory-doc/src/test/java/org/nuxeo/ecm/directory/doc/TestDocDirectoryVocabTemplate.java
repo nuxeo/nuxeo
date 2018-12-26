@@ -16,14 +16,14 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.directory.core;
+package org.nuxeo.ecm.directory.doc;
 
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Deploy("org.nuxeo.ecm.directory.core.tests:core/directory-myvoc-template-config.xml")
-public class TestCoreDirectoryVocabTemplate extends CoreDirectoryVocabTestCase {
+@Deploy("org.nuxeo.ecm.directory.doc.tests:directory-myvoc-template-config.xml")
+public class TestDocDirectoryVocabTemplate extends DocDirectoryVocabTestCase {
 
 }
