@@ -43,7 +43,7 @@
           <predicate parameter="nt:processId" operator="LIKE">
             <field schema="user_open_tasks_cv" name="task_processId" />
           </predicate>
-          <predicate parameter="nt:name" operator="ILIKE">
+          <predicate parameter="nt:name" operator="=">
             <field schema="user_open_tasks_cv" name="task_name" />
           </predicate>
           <predicate parameter="nt:dueDate" operator="BETWEEN">
