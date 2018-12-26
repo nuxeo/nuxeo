@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.bulk.computation;
 
 import static java.lang.Math.min;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
+import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.RUNNING;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCROLLING_RUNNING;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.bulk.BulkAdminService;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
+import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkBucket;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
@@ -128,6 +130,11 @@ public class BulkScrollerComputation extends AbstractComputation {
                 long documentCount = 0;
                 long bucketNumber = 1;
                 while (scroll.hasResults()) {
+                    if (isAbortedCommand(commandId)) {
+                        log.debug("Skipping aborted command: {}", commandId);
+                        context.askForCheckpoint();
+                        return;
+                    }
                     List<String> docIds = scroll.getResults();
                     documentIds.addAll(docIds);
                     while (documentIds.size() >= bucketSize) {
@@ -162,6 +169,12 @@ public class BulkScrollerComputation extends AbstractComputation {
 
         }
         context.askForCheckpoint();
+    }
+
+    protected boolean isAbortedCommand(String commandId) {
+        BulkService bulkService = Framework.getService(BulkService.class);
+        BulkStatus status = bulkService.getStatus(commandId);
+        return ABORTED.equals(status.getState());
     }
 
     protected void updateStatusAsScrolling(ComputationContext context, String commandId) {
