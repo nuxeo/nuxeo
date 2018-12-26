@@ -61,6 +61,28 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-initial-version-ordering.xml")
+    public void testInitialVersionOrdering() {
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
+        doc = session.createDocument(doc);
+        assertTrue(doc.isCheckedOut());
+        assertEquals("2.5+", doc.getVersionLabel());
+        doc.setPropertyValue("dc:title", "A");
+        doc = session.saveDocument(doc);
+        assertTrue(doc.isCheckedOut());
+        assertEquals("2.5+", doc.getVersionLabel());
+
+        doc = session.createDocumentModel("/", "testfile2", "Note");
+        doc = session.createDocument(doc);
+        assertTrue(doc.isCheckedOut());
+        assertEquals("3.0+", doc.getVersionLabel());
+        doc.setPropertyValue("dc:title", "A");
+        doc = session.saveDocument(doc);
+        assertTrue(doc.isCheckedOut());
+        assertEquals("3.0+", doc.getVersionLabel());
+    }
+
+    @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-always-minor.xml")
     public void testAlwaysVersionMinor() {
         // No initial state defined by policy

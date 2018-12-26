@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.versioning.test.initial-version">
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="standard1" order="1" increment="NONE">
+      <initialState major="2" minor="5" />
+      <filter-id>standard1</filter-id>
+    </policy>
+    <policy id="standard2" order="2" increment="NONE">
+      <initialState major="3" minor="0" />
+      <filter-id>standard2</filter-id>
+    </policy>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <filter id="standard1">
+      <facet>Downloadable</facet>
+    </filter>
+    <filter id="standard2">
+      <type>File</type>
+      <type>Note</type>
+    </filter>
+  </extension>
+
+</component>

@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.event.EventService;
@@ -212,17 +211,16 @@ public class StandardVersioningService implements ExtendableVersioningService {
      */
     protected void setInitialVersion(Document doc) {
         // Create a document model for filters
-        DocumentModelImpl documentModel = DocumentModelFactory.createDocumentModel(doc, null, null);
-        for (VersioningPolicyDescriptor policyDescriptor : versioningPolicies.values()) {
-            if (isPolicyMatch(policyDescriptor, null, documentModel)) {
-                InitialStateDescriptor initialState = policyDescriptor.getInitialState();
-                if (initialState != null) {
-                    setVersion(doc, initialState.getMajor(), initialState.getMinor());
-                    return;
-                }
-            }
-        }
-        setVersion(doc, 0, 0);
+        DocumentModel docModel = DocumentModelFactory.createDocumentModel(doc, null, null);
+        InitialStateDescriptor initialState = versioningPolicies.values()
+                                                                .stream()
+                                                                .sorted()
+                                                                .filter(policy -> policy.getInitialState() != null)
+                                                                .filter(policy -> isPolicyMatch(policy, null, docModel))
+                                                                .map(VersioningPolicyDescriptor::getInitialState)
+                                                                .findFirst()
+                                                                .orElseGet(InitialStateDescriptor::new);
+        setVersion(doc, initialState.getMajor(), initialState.getMinor());
     }
 
     @Override
