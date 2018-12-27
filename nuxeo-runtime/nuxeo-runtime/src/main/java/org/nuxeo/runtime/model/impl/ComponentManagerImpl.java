@@ -985,14 +985,23 @@ public class ComponentManagerImpl implements ComponentManager {
         }
     }
 
+    /**
+     * Applies the given stash when Nuxeo is started or is standby.
+     * <p>
+     * Started state corresponds to activated & started components.
+     * <p>
+     * Standby state corresponds to activated components.
+     */
     private void applyStashWhenRunning(Stash stash) throws InterruptedException {
         List<RegistrationInfo> toRemove = stash.getRegistrationsToRemove(registry);
+        // Nuxeo is started so stop components to remove first and remove them from started list
         if (isStarted()) {
             for (RegistrationInfo ri : toRemove) {
                 this.started.remove(ri);
                 stopComponent(ri);
             }
         }
+        // deactivate components to remove (and remove them from standby list if needed)
         for (RegistrationInfo ri : toRemove) {
             if (isStandby()) {
                 this.standby.remove(ri);
@@ -1002,28 +1011,18 @@ public class ComponentManagerImpl implements ComponentManager {
 
         applyStash(stash);
 
-        // activate the new components
+        // activate components to add (and add them to standby list if needed)
         for (RegistrationInfo ri : stash.toAdd) {
             if (ri.isResolved()) {
                 activateComponent(ri);
-            }
-        }
-        if (isStandby()) {
-            // activate the new components
-            for (RegistrationInfo ri : stash.toAdd) {
-                if (ri.isResolved()) {
-                    activateComponent(ri);
-                    // add new components to standby list
+                if (isStandby()) {
+                    // add new components to standby list in order to start them latter
                     this.standby.add(ri);
                 }
             }
-        } else if (isStarted()) {
-            // start the new components and add them to the started list
-            for (RegistrationInfo ri : stash.toAdd) {
-                if (ri.isResolved()) {
-                    activateComponent(ri);
-                }
-            }
+        }
+        // Nuxeo is started so start components to add and add them to the started list
+        if (isStarted()) {
             for (RegistrationInfo ri : stash.toAdd) {
                 if (ri.isActivated()) {
                     startComponent(ri);
