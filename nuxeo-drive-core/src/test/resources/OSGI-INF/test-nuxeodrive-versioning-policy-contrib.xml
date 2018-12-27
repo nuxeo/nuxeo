@@ -3,7 +3,7 @@
 
   <require>org.nuxeo.drive.versioning</require>
 
-  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+  <extension target="org.nuxeo.ecm.core.api.versioning.VersioningService" point="policies">
     <!-- We want to override the increment -->
     <policy id="collaborative-save" increment="MAJOR" beforeUpdate="true" order="100">
       <filter-id>last-contributor-different-filter</filter-id>

@@ -3,7 +3,7 @@
 
   <!-- These contributions replace the former behavior of Drive versioning when an automatic policy is setup
    and `nuxeo.drive.force.versioning` = true -->
-  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+  <extension target="org.nuxeo.ecm.core.api.versioning.VersioningService" point="policies">
     <policy id="drive-force-versioning" increment="NONE" order="200">
       <filter-id>file-type-filter</filter-id>
       <filter-id>drive-filter</filter-id>
@@ -14,7 +14,7 @@
     </policy>
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+  <extension target="org.nuxeo.ecm.core.api.versioning.VersioningService" point="filters">
     <filter id="file-type-filter">
       <type>File</type>
     </filter>

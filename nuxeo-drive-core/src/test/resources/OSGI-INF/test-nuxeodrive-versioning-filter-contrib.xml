@@ -3,7 +3,7 @@
 
   <require>org.nuxeo.drive.versioning</require>
 
-  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+  <extension target="org.nuxeo.ecm.core.api.versioning.VersioningService" point="filters">
     <!-- We want to override the delay -->
     <filter id="versioning-delay">
       <condition>#{currentDocument.dc.modified.time - previousDocument.dc.modified.time >= 1000}</condition>
