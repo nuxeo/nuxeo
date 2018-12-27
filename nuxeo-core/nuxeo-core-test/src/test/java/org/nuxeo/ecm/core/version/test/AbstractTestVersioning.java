@@ -81,18 +81,18 @@ public abstract class AbstractTestVersioning {
 
     protected long getVersion(DocumentModel doc, String prop) {
         Object propVal = doc.getPropertyValue(prop);
-        if (propVal == null || !(propVal instanceof Long)) {
-            return -1;
-        } else {
+        if (propVal instanceof Long) {
             return ((Long) propVal).longValue();
+        } else {
+            return -1;
         }
     }
 
-    protected void assertVersion(String expected, DocumentModel doc) throws Exception {
+    protected void assertVersion(String expected, DocumentModel doc) {
         assertEquals(expected, getMajor(doc) + "." + getMinor(doc));
     }
 
-    protected void assertLatestVersion(String expected, DocumentModel doc) throws Exception {
+    protected void assertLatestVersion(String expected, DocumentModel doc) {
         DocumentModel ver = doc.getCoreSession().getLastDocumentVersion(doc.getRef());
         if (ver == null) {
             assertNull(expected);

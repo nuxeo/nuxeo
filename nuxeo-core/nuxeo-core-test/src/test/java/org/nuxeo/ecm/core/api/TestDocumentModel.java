@@ -61,7 +61,7 @@ public class TestDocumentModel {
     }
 
     @Test
-    public void testContextDataOfCreatedDocument() throws Exception {
+    public void testContextDataOfCreatedDocument() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc.putContextData("key", "value");
         doc = session.createDocument(doc);
@@ -92,7 +92,7 @@ public class TestDocumentModel {
     }
 
     @Test
-    public void testDetachAttach() throws Exception {
+    public void testDetachAttach() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         String sid = doc.getSessionId();
@@ -123,7 +123,7 @@ public class TestDocumentModel {
      * Verifies that checked out state, lifecycle state and lock info are stored on a detached document.
      */
     @Test
-    public void testDetachedSystemInfo() throws Exception {
+    public void testDetachedSystemInfo() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         doc.setLock();
@@ -154,7 +154,7 @@ public class TestDocumentModel {
     }
 
     @Test
-    public void testDocumentLiveSerialization() throws Exception {
+    public void testDocumentLiveSerialization() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         doc.getProperty("common:icon").setValue("prefetched");
@@ -172,7 +172,7 @@ public class TestDocumentModel {
     }
 
     @Test
-    public void testDocumentDirtySerialization() throws Exception {
+    public void testDocumentDirtySerialization() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         doc.getProperty("dublincore:source").setValue("Source");
@@ -186,7 +186,7 @@ public class TestDocumentModel {
     }
 
     @Test
-    public void testDocumentDeletedSerialization() throws Exception {
+    public void testDocumentDeletedSerialization() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         doc.getProperty("dublincore:title").setValue("doc"); // prefetch
@@ -204,7 +204,7 @@ public class TestDocumentModel {
     }
 
     @Test
-    public void testDetachedDocumentSerialization() throws Exception {
+    public void testDetachedDocumentSerialization() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         doc.getProperty("dublincore:source").setValue("Source");
@@ -234,19 +234,19 @@ public class TestDocumentModel {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void forbidSlashOnCreate() throws Exception {
+    public void forbidSlashOnCreate() {
         session.createDocumentModel("/", "doc/doc", "File");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void forbidSlashOnMove() throws Exception {
+    public void forbidSlashOnMove() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         session.move(doc.getRef(), new PathRef("/"), "toto/tata");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void forbidSlashOnCopy() throws Exception {
+    public void forbidSlashOnCopy() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         session.copy(doc.getRef(), new PathRef("/"), "toto/tata");

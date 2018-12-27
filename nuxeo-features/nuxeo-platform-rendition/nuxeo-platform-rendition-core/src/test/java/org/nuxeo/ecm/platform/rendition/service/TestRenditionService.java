@@ -174,7 +174,7 @@ public class TestRenditionService {
     }
 
     @Test
-    public void testAvailableRenditionDefinitions() throws Exception {
+    public void testAvailableRenditionDefinitions() {
         DocumentModel file = session.createDocumentModel("/", "file", "File");
         file.setPropertyValue("dc:title", "TestFile");
         file = session.createDocument(file);
@@ -277,7 +277,7 @@ public class TestRenditionService {
         // rendition should be live
         assertFalse(rendition.isStored());
         // Live Rendition should point to the live doc
-        assertTrue(rendition.getHostDocument().getRef().equals(file.getRef()));
+        assertEquals(file.getRef(), rendition.getHostDocument().getRef());
 
         // needed for MySQL otherwise version order could be random
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
@@ -359,7 +359,7 @@ public class TestRenditionService {
     }
 
     @Test
-    public void doErrorLazyRendition() throws Exception {
+    public void doErrorLazyRendition() {
         DocumentModel file = createBlobFile();
         Calendar issued = new GregorianCalendar(2010, Calendar.OCTOBER, 10, 10, 10, 10);
         file.setPropertyValue("dc:issued", (Serializable) issued.clone());
@@ -490,14 +490,14 @@ public class TestRenditionService {
                 assertNotNull(rendition.getModificationDate());
                 assertFalse(blob.getMimeType().contains("empty=true"));
                 assertTrue(blob.getMimeType().contains("stale=true"));
-                assertFalse(blob.getFilename().equals(LazyRendition.IN_PROGRESS_MARKER));
+                assertNotEquals(LazyRendition.IN_PROGRESS_MARKER, blob.getFilename());
                 assertTrue(blob.getLength() > 0);
             } else {
                 assertFalse(rendition.isCompleted());
                 assertNull(rendition.getModificationDate());
                 assertTrue(blob.getMimeType().contains("empty=true"));
                 assertFalse(blob.getMimeType().contains("stale=true"));
-                assertTrue(blob.getFilename().equals(LazyRendition.IN_PROGRESS_MARKER));
+                assertEquals(LazyRendition.IN_PROGRESS_MARKER, blob.getFilename());
                 assertEquals(0, blob.getLength());
             }
             try {
@@ -806,8 +806,7 @@ public class TestRenditionService {
     @Test
     public void shouldNotStoreRenditionByDefault() {
         DocumentModel folder = createFolderWithChildren();
-        String renditionName = ZIP_TREE_EXPORT_RENDITION_DEFINITION;
-        Rendition rendition = renditionService.getRendition(folder, renditionName);
+        Rendition rendition = renditionService.getRendition(folder, ZIP_TREE_EXPORT_RENDITION_DEFINITION);
         assertNotNull(rendition);
         assertFalse(rendition.isStored());
     }
@@ -894,7 +893,6 @@ public class TestRenditionService {
         assertTrue(rendition.getBlob().getString().contains(desc));
 
         // verify the thread renditions
-        StorageConfiguration storageConfig = coreFeature.getStorageConfiguration();
         List<Rendition> renditions = Arrays.asList(t1.getDetachedRendition(), t2.getDetachedRendition());
         for (Rendition rend : renditions) {
             assertNotNull(rend);

@@ -22,10 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +32,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -71,7 +72,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @SuppressWarnings("unchecked")
 public class TestESHistoryProvider {
 
-    protected static final Calendar testDate = Calendar.getInstance();
+    private static final Logger log = LogManager.getLogger(TestESHistoryProvider.class);
 
     protected DocumentModel doc;
 
@@ -83,19 +84,8 @@ public class TestESHistoryProvider {
 
     protected Date t2;
 
-    protected boolean verbose = false;
-
-    protected void dump(Object ob) {
-        System.out.println(ob.toString());
-    }
-
-    protected void dump(List<?> obs) {
-        for (Object ob : obs) {
-            dump(ob);
-        }
-    }
-
-    protected @Inject CoreSession session;
+    @Inject
+    protected CoreSession session;
 
     protected void waitForAsyncCompletion() throws InterruptedException {
         TransactionHelper.commitOrRollbackTransaction();
@@ -183,13 +173,11 @@ public class TestESHistoryProvider {
 
         versions = session.getVersions(doc.getRef());
         assertEquals(2, versions.size());
-        if (verbose) {
-            for (DocumentModel version : versions) {
-                System.out.println("version: " + version.getId());
-                System.out.println("version series: " + version.getVersionSeriesId());
-                System.out.println("version label: " + version.getVersionLabel());
-                System.out.println("version date: " + ((Calendar) version.getPropertyValue("dc:modified")).getTime());
-            }
+        for (DocumentModel version : versions) {
+            log.trace("version: {}", version::getId);
+            log.trace("version series: {}", version::getVersionSeriesId);
+            log.trace("version label: {}", version::getVersionLabel);
+            log.trace("version date: {}", () -> ((Calendar) version.getPropertyValue("dc:modified")).getTime());
         }
 
         LogEntryGen.flushAndSync();
@@ -209,16 +197,7 @@ public class TestESHistoryProvider {
 
         LogEntryGen.flushAndSync();
         List<LogEntry> logs = reader.getLogEntriesFor(doc.getId(), doc.getRepositoryName());
-        if (verbose) {
-            dump(logs);
-        }
-
-        if (verbose) {
-            String matchAll = "{\n" + "            \"match_all\" : { }\n" + "        }";
-            logs = (List<LogEntry>) reader.nativeQuery(matchAll, 0, 30);
-            System.out.println("Total entries = " + logs.size());
-            dump(logs);
-        }
+        logs.forEach(entry -> log.trace("LogEntry: {}", entry));
     }
 
     @Test
@@ -235,7 +214,7 @@ public class TestESHistoryProvider {
         assertNotNull(ppdef);
         long startIdx = 0;
 
-        List<SortInfo> si = Arrays.asList(new SortInfo("id", true));
+        List<SortInfo> si = Collections.singletonList(new SortInfo("id", true));
 
         DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
         searchDoc.setPathInfo("/", "auditsearch");
@@ -244,11 +223,9 @@ public class TestESHistoryProvider {
         for (String ppName : new String[] { "DOCUMENT_HISTORY_PROVIDER_OLD", "DOCUMENT_HISTORY_PROVIDER" }) {
 
             if (ppName.endsWith("OLD")) {
-                pp = pps.getPageProvider(ppName, si, Long.valueOf(20), Long.valueOf(0),
-                        new HashMap<String, Serializable>(), doc.getId());
+                pp = pps.getPageProvider(ppName, si, Long.valueOf(20), Long.valueOf(0), new HashMap<>(), doc.getId());
             } else {
-                pp = pps.getPageProvider(ppName, si, Long.valueOf(20), Long.valueOf(0),
-                        new HashMap<String, Serializable>(), doc);
+                pp = pps.getPageProvider(ppName, si, Long.valueOf(20), Long.valueOf(0), new HashMap<>(), doc);
             }
 
             assertNotNull(pp);
@@ -260,10 +237,8 @@ public class TestESHistoryProvider {
 
             // Get Live doc history
             entries = (List<LogEntry>) pp.getCurrentPage();
-            if (verbose) {
-                System.out.println("Live doc history");
-                dump(entries);
-            }
+            log.trace("Live doc history");
+            entries.forEach(entry -> log.trace("LogEntry: {}", entry));
 
             // create, 15+1 update , 2 checkin, 1 bonus
             assertEquals(20, entries.size());
@@ -309,15 +284,13 @@ public class TestESHistoryProvider {
 
         // Get Proxy history
 
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si, Long.valueOf(30), Long.valueOf(0),
-                new HashMap<>(), proxy);
+        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si, Long.valueOf(30), Long.valueOf(0), new HashMap<>(),
+                proxy);
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
-        if (verbose) {
-            System.out.println("Proxy doc history");
-            dump(entries);
-        }
+        log.trace("Proxy doc history");
+        entries.forEach(entry -> log.trace("LogEntry: {}", entry));
 
         // 19 - 5 updates + create + proxyPublished
         int proxyEntriesCount = 19 - 5 + 1 + 1;
@@ -328,15 +301,13 @@ public class TestESHistoryProvider {
                 entries.get(proxyEntriesCount - 1).getId());
 
         // Get version 1 history
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si, Long.valueOf(20), Long.valueOf(0),
-                new HashMap<String, Serializable>(), versions.get(0));
+        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si, Long.valueOf(20), Long.valueOf(0), new HashMap<>(),
+                versions.get(0));
         pp.setSearchDocumentModel(searchDoc);
         entries = (List<LogEntry>) pp.getCurrentPage();
 
-        if (verbose) {
-            System.out.println("Version " + versions.get(0).getVersionLabel() + " doc history");
-            dump(entries);
-        }
+        log.trace("Verion {} doc history", () -> versions.get(0).getVersionLabel());
+        entries.forEach(entry -> log.trace("LogEntry: {}", entry));
 
         // creation + 5 updates + update + checkin + created
         int version1EntriesCount = 1 + 5 + 1 + 1 + 1;
@@ -350,16 +321,14 @@ public class TestESHistoryProvider {
         }
 
         // get version 2 history
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si, Long.valueOf(20), Long.valueOf(0),
-                new HashMap<String, Serializable>(), versions.get(1));
+        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si, Long.valueOf(20), Long.valueOf(0), new HashMap<>(),
+                versions.get(1));
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
 
-        if (verbose) {
-            System.out.println("Version " + versions.get(1).getVersionLabel() + " doc history");
-            dump(entries);
-        }
+        log.trace("Verion {} doc history", () -> versions.get(1).getVersionLabel());
+        entries.forEach(entry -> log.trace("LogEntry: {}", entry));
 
         // creation + 5x2 updates + checkin/update + checkin + created
         int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1 + 1;

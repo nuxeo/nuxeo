@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,10 +41,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
  * @since 8.3
@@ -161,10 +161,6 @@ public class GetLastDocumentVersionTest {
 
     /**
      * Runs the operation for the different document models of the test.
-     *
-     * @param input
-     * @return
-     * @throws OperationException
      */
     protected DocumentModel runOperation(DocumentModel input) throws OperationException {
         try (OperationContext ctx = new OperationContext(session)) {

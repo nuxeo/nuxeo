@@ -19,9 +19,9 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,7 +68,7 @@ public class TestDocumentAuditPageProviderOperation {
     private static final int MAX_ENTRIES = 500;
 
     /**
-     *  wait at least 1s to be sure we have a precise timestamp in all DB backend.
+     * wait at least 1s to be sure we have a precise timestamp in all DB backend.
      */
     protected static void sleep() {
         try {
@@ -130,7 +129,7 @@ public class TestDocumentAuditPageProviderOperation {
                 doc = session.saveDocument(doc);
             }
 
-            List<LogEntry> newEntries = new ArrayList<LogEntry>();
+            List<LogEntry> newEntries = new ArrayList<>();
 
             LogEntry entry = new LogEntryImpl();
             entry.setCategory("somecat");
@@ -144,8 +143,6 @@ public class TestDocumentAuditPageProviderOperation {
 
     }
 
-    protected static final Calendar testDate = Calendar.getInstance();
-
     @Inject
     protected AutomationService service;
 
@@ -158,46 +155,28 @@ public class TestDocumentAuditPageProviderOperation {
 
     protected List<DocumentModel> versions;
 
-    protected boolean verbose = false;
-
-    protected void dump(Object ob) {
-        System.out.println(ob.toString());
-    }
-
-    protected void dump(List<?> obs) {
-        for (Object ob : obs) {
-            dump(ob);
-        }
-    }
-
     @Inject
     TransactionalFeature txFeature;
-
-    protected void waitForEventsDispatched() {
-        txFeature.nextTransaction();
-    }
 
     @Inject
     protected AuditReader reader;
 
-    @Inject
-    protected AuditLogger auditLogger;
-
     protected int nbEntries = 0;
 
     @Before
-    public void initRepo() throws Exception {
-        waitForEventsDispatched();
+    @SuppressWarnings("unchecked")
+    public void initRepo() {
+        txFeature.nextTransaction();
         List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery("from LogEntry", 0, MAX_ENTRIES);
         nbEntries = entries.size();
-        // dump(entries);
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testSimpleQuery() throws Exception {
         OperationContext ctx = new OperationContext(session);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("query", "from LogEntry");
         params.put("pageSize", MAX_ENTRIES);
         params.put("maxResults", MAX_ENTRIES);
@@ -208,14 +187,14 @@ public class TestDocumentAuditPageProviderOperation {
         params.put("pageSize", 5);
         entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
         assertEquals(5, entries.size());
-        // dump(entries);
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testOwnerQuery() throws Exception {
         OperationContext ctx = new OperationContext(session);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("query", "FROM LogEntry log WHERE log.principalName=?");
         params.put("pageSize", MAX_ENTRIES);
         params.put("maxResults", MAX_ENTRIES);
@@ -226,15 +205,15 @@ public class TestDocumentAuditPageProviderOperation {
         params.put("queryParams", queryParams);
 
         List<LogEntry> entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
-        Assert.assertTrue(entries.size() > 0);
-        // dump(entries);
+        assertTrue(entries.size() > 0);
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testEmptyPageProviderQuery() throws Exception {
         OperationContext ctx = new OperationContext(session);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("providerName", "AUDIT_BROWSER");
         params.put("maxResults", MAX_ENTRIES);
         params.put("pageSize", 10);
@@ -244,7 +223,7 @@ public class TestDocumentAuditPageProviderOperation {
 
         assertEquals(10, entries.size());
         assertEquals(nbEntries, entries.getResultsCount());
-        Assert.assertTrue(entries.getNumberOfPages() > 1);
+        assertTrue(entries.getNumberOfPages() > 1);
 
         int total = entries.size();
 
@@ -254,14 +233,14 @@ public class TestDocumentAuditPageProviderOperation {
             total += entries.size();
         }
         assertEquals(nbEntries, total);
-        // dump(entries);
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testNonEmptyPageProviderQuery() throws Exception {
         OperationContext ctx = new OperationContext(session);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("providerName", "AUDIT_BROWSER");
         params.put("pageSize", MAX_ENTRIES);
         params.put("maxResults", MAX_ENTRIES);
@@ -272,16 +251,16 @@ public class TestDocumentAuditPageProviderOperation {
         params.put("namedQueryParams", namedParams);
 
         List<LogEntry> entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
-        Assert.assertTrue(entries.size() > 0);
-        Assert.assertTrue(nbEntries > entries.size());
-        // dump(entries);
+        assertTrue(entries.size() > 0);
+        assertTrue(nbEntries > entries.size());
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testNonEmptyPageProviderQuery2() throws Exception {
         OperationContext ctx = new OperationContext(session);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("providerName", "AUDIT_BROWSER");
         params.put("pageSize", MAX_ENTRIES);
         params.put("maxResults", MAX_ENTRIES);
@@ -294,23 +273,22 @@ public class TestDocumentAuditPageProviderOperation {
         params.put("namedQueryParams", namedParams);
 
         List<LogEntry> entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
-        Assert.assertTrue(entries.size() > 0);
-        Assert.assertTrue(entries.size() < nbEntries);
-        // dump(entries);
+        assertTrue(entries.size() > 0);
+        assertTrue(entries.size() < nbEntries);
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testPageProviderQueryViaId() throws Exception {
         OperationContext ctx = new OperationContext(session);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("providerName", "AUDIT_BROWSER");
         params.put("pageSize", 10);
         params.put("maxResults", 10);
         params.put("currentPageIndex", 0);
 
         List<LogEntry> entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
-        // dump(entries);
 
         long lastId = entries.get(entries.size() - 1).getId();
 
@@ -320,8 +298,7 @@ public class TestDocumentAuditPageProviderOperation {
 
         entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
 
-        Assert.assertEquals(lastId + 1, entries.get(0).getId());
-        // dump(entries);
+        assertEquals(lastId + 1, entries.get(0).getId());
     }
 
 }

@@ -25,6 +25,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_LIST;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -33,14 +42,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Deploy;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Test class for tag service based on facet
@@ -63,7 +64,7 @@ public class TestFacetedTagService extends AbstractTestTagService {
         tag2.put("username", "Administrator");
 
         file1.setPropertyValue(TAG_LIST, (Serializable) Arrays.asList(tag1, tag2));
-        file2.setPropertyValue(TAG_LIST, (Serializable) Arrays.asList(tag1));
+        file2.setPropertyValue(TAG_LIST, (Serializable) Collections.singletonList(tag1));
 
         session.saveDocument(file1);
         session.saveDocument(file2);
@@ -87,10 +88,10 @@ public class TestFacetedTagService extends AbstractTestTagService {
 
         DocumentModel note = session.createDocumentModel("/", "note", "TestNote");
         note.setPropertyValue("test:stringArray", new String[] { "test1" });
-        note.setPropertyValue("test:stringList", (Serializable) Arrays.asList("test1"));
+        note.setPropertyValue("test:stringList", (Serializable) Collections.singletonList("test1"));
         Map<String, Serializable> complex = new HashMap<>();
         complex.put("foo", "test");
-        complex.put("bar", (Serializable) Arrays.asList("test1"));
+        complex.put("bar", (Serializable) Collections.singletonList("test1"));
         note.setPropertyValue("test:complex", (Serializable) complex);
         note = session.createDocument(note);
         session.save();
@@ -101,7 +102,7 @@ public class TestFacetedTagService extends AbstractTestTagService {
         tag.put("label", "tag");
         tag.put("username", "Administrator");
 
-        note.setPropertyValue(TAG_LIST, (Serializable) Arrays.asList(tag));
+        note.setPropertyValue(TAG_LIST, (Serializable) Collections.singletonList(tag));
         // Disable auto checkout as we are only editing tags
         note.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
         note = session.saveDocument(note);
@@ -128,7 +129,7 @@ public class TestFacetedTagService extends AbstractTestTagService {
         assertEquals("0.3", note.getVersionLabel());
         assertEquals(0, tagService.getTags(session, note.getId()).size());
 
-        note.setPropertyValue(TAG_LIST, (Serializable) Arrays.asList(tag));
+        note.setPropertyValue(TAG_LIST, (Serializable) Collections.singletonList(tag));
         // Edit a list property of the document to trigger auto versioning
         note.setPropertyValue("test:stringList", (Serializable) Arrays.asList("test1", "test2", "test3"));
         note = session.saveDocument(note);
