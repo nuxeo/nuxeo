@@ -29,8 +29,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -52,9 +52,9 @@ public class CreateVersion {
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
         if (!doc.hasFacet(FacetNames.VERSIONABLE)) {
-            throw new NuxeoException(String.format(
-                    "The document (id:'%s') with title '%s' doesn't have 'versionable' facet", doc.getId(),
-                    doc.getTitle()));
+            throw new NuxeoException(
+                    String.format("The document (id:'%s') with title '%s' doesn't have 'versionable' facet",
+                            doc.getId(), doc.getTitle()));
         }
         VersioningOption vo;
         if ("Minor".equalsIgnoreCase(snapshot)) {

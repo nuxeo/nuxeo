@@ -13,6 +13,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.impl.TransactionBatchingDocumentPipeImpl;
@@ -25,7 +26,6 @@ import org.nuxeo.ecm.core.io.impl.transformers.FacetRemover;
 import org.nuxeo.ecm.core.io.impl.transformers.FieldMapper;
 import org.nuxeo.ecm.core.io.impl.transformers.SchemaRemover;
 import org.nuxeo.ecm.core.io.impl.transformers.SchemaRenamer;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 

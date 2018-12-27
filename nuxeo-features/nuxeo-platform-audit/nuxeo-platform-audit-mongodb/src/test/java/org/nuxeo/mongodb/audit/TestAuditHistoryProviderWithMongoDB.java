@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;

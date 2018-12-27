@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.versioning.VersioningService">
+<component name="org.nuxeo.ecm.core.api.versioning.VersioningService">
+  <alias>org.nuxeo.ecm.core.versioning.VersioningService</alias>
 
   <service>
     <provide interface="org.nuxeo.ecm.core.api.versioning.VersioningService" />
@@ -27,7 +28,7 @@
       </code>
 
       The provided class must implement
-      org.nuxeo.ecm.core.versioning.VersioningService
+      org.nuxeo.ecm.core.api.versioning.VersioningService
 
       The default implementation is
       org.nuxeo.ecm.core.versioning.StandardVersioningService You can contribute
@@ -114,8 +115,7 @@
     </documentation>
 
     <object class="org.nuxeo.ecm.core.versioning.VersioningRuleDescriptor" />
-    <object
-      class="org.nuxeo.ecm.core.versioning.DefaultVersioningRuleDescriptor" />
+    <object class="org.nuxeo.ecm.core.versioning.DefaultVersioningRuleDescriptor" />
 
   </extension-point>
 

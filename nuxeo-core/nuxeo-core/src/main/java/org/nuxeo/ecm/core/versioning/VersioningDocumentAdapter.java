@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.versioning;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
