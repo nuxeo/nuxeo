@@ -33,8 +33,11 @@ public class BaseExport {
 
     @Inject
     protected CoreSession session;
+
     String uuid;
+
     protected boolean skipBlobs = true;
+
     public static final String IODIR = "NX-Export-Import";
 
     protected DocumentModel createSomethingToExport(CoreSession session) throws Exception {
@@ -184,9 +187,7 @@ public class BaseExport {
             sb.append(doc.getVersionLabel());
             sb.append("\n");
 
-
         }
     }
-
 
 }

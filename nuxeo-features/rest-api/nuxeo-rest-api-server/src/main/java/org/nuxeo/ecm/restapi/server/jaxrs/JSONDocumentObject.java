@@ -146,7 +146,7 @@ public class JSONDocumentObject extends DocumentObject {
         List<String> sourceHeader = headers.getRequestHeader(RestConstants.SOURCE);
         if (versionHeader != null && !versionHeader.isEmpty()) {
             VersioningOption versioningOption = VersioningOption.valueOf(versionHeader.get(0).toUpperCase());
-            if (versioningOption != null && !versioningOption.equals(VersioningOption.NONE)) {
+            if (!versioningOption.equals(VersioningOption.NONE)) {
                 doc.putContextData(VersioningService.VERSIONING_OPTION, versioningOption);
                 isVersioning = true;
             }

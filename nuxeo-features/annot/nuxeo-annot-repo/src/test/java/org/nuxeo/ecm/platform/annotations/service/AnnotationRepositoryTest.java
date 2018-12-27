@@ -58,7 +58,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
 
     private DocumentModel version1;
 
-    private final NuxeoPrincipal user = new UserPrincipal("bob", new ArrayList<String>(), false, false);
+    private final NuxeoPrincipal user = new UserPrincipal("bob", new ArrayList<>(), false, false);
 
     @Override
     @Before

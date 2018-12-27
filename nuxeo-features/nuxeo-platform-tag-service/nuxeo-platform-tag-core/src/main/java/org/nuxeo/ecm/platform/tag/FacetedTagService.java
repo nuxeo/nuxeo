@@ -35,8 +35,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -51,7 +51,7 @@ import org.nuxeo.ecm.core.versioning.VersioningService;
  */
 public class FacetedTagService extends AbstractTagService {
 
-    private static final Log log = LogFactory.getLog(FacetedTagService.class);
+    private static final Logger log = LogManager.getLogger(FacetedTagService.class);
 
     public static final String LABEL_PROPERTY = "label";
 
@@ -59,6 +59,7 @@ public class FacetedTagService extends AbstractTagService {
 
     /**
      * Context data to disable versioning, used by NoVersioningFacetedTagFilter.
+     * 
      * @since 9.10
      */
     public static final String DISABLE_VERSIONING = "tag.facet.disable.versioning";
@@ -209,11 +210,9 @@ public class FacetedTagService extends AbstractTagService {
         try {
             return (List<Map<String, Serializable>>) docModel.getPropertyValue(TAG_LIST);
         } catch (PropertyNotFoundException e) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format(
-                        "Getting tags on %s failed since %s is missing on %s document type. This operation will be ignored.",
-                        docModel.getPathAsString(), TAG_FACET, docModel.getType()));
-            }
+            log.warn(
+                    "Getting tags on {} failed since {} is missing on {} document type. This operation will be ignored.",
+                    docModel::getPathAsString, () -> TAG_FACET, docModel::getType);
             return new ArrayList<>();
         }
     }
@@ -225,11 +224,9 @@ public class FacetedTagService extends AbstractTagService {
             }
             docModel.setPropertyValue(TAG_LIST, (Serializable) tags);
         } catch (PropertyNotFoundException e) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format(
-                        "Setting tags on %s failed since %s is missing on %s document type. This operation will be ignored.",
-                        docModel.getPathAsString(), TAG_FACET, docModel.getType()));
-            }
+            log.warn(
+                    "Setting tags on {} failed since {} is missing on {} document type. This operation will be ignored.",
+                    docModel::getPathAsString, () -> TAG_FACET, docModel::getType);
         }
     }
 }

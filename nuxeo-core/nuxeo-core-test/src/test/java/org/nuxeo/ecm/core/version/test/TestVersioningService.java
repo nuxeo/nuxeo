@@ -33,7 +33,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 public class TestVersioningService extends AbstractTestVersioning {
 
     @Test
-    public void testStandardVersioning() throws Exception {
+    public void testStandardVersioning() {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
@@ -150,7 +150,7 @@ public class TestVersioningService extends AbstractTestVersioning {
     }
 
     @Test
-    public void testVersioningOnLiveProxy() throws Exception {
+    public void testVersioningOnLiveProxy() {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel section = session.createDocumentModel("/", "section", "Folder");
@@ -214,7 +214,7 @@ public class TestVersioningService extends AbstractTestVersioning {
     }
 
     @Test
-    public void testLiveProxyUpdate() throws Exception {
+    public void testLiveProxyUpdate() {
         DocumentModel section = session.createDocumentModel("/", "section", "Folder");
         section = session.createDocument(section);
         DocumentModel doc = session.createDocumentModel("/", "file", "File");

@@ -143,9 +143,9 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         String doctype = sourceDocument.getType();
         String renditionMimeType = renditionBlob.getMimeType();
         BlobHolder blobHolder = sourceDocument.getAdapter(BlobHolder.class);
-        if (sourceDocument.hasFacet(FacetNames.FOLDERISH)
-                || blobHolder == null || (blobHolder instanceof DocumentStringBlobHolder
-                && !(renditionMimeType.startsWith("text/") || renditionMimeType.startsWith("application/xhtml")))) {
+        if (sourceDocument.hasFacet(FacetNames.FOLDERISH) || blobHolder == null
+                || (blobHolder instanceof DocumentStringBlobHolder && !(renditionMimeType.startsWith("text/")
+                        || renditionMimeType.startsWith("application/xhtml")))) {
             // We have a source document that is Folderish or is unable to hold blobs, or
             // we have a Note or other blob holder that can only hold strings, but the rendition is not a string-related
             // MIME type.

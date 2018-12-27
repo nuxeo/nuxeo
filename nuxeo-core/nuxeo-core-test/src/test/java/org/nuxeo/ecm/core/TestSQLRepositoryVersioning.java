@@ -105,13 +105,13 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testCreateVersionsManyTimes() throws Exception {
+    public void testCreateVersionsManyTimes() {
         for (int i = 0; i < 10; i++) {
             createVersions(i);
         }
     }
 
-    protected void createVersions(int i) throws Exception {
+    protected void createVersions(int i) {
         DocumentModel folder = session.createDocumentModel("/", "fold" + i, "Folder");
         session.createDocument(folder);
         DocumentModel file = session.createDocumentModel("/fold" + i, "file", "File");
@@ -147,7 +147,7 @@ public class TestSQLRepositoryVersioning {
 
     // Creates 3 versions and removes the first.
     @Test
-    public void testRemoveFirstDocVersion() throws Exception {
+    public void testRemoveFirstDocVersion() {
         DocumentModel folder = session.createDocumentModel("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
 
@@ -168,7 +168,7 @@ public class TestSQLRepositoryVersioning {
 
     // Creates 3 versions and removes the second.
     @Test
-    public void testRemoveMiddleDocVersion() throws Exception {
+    public void testRemoveMiddleDocVersion() {
         DocumentModel folder = session.createDocumentModel("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
 
@@ -189,7 +189,7 @@ public class TestSQLRepositoryVersioning {
 
     // Creates 3 versions and removes the last.
     @Test
-    public void testRemoveLastDocVersion() throws Exception {
+    public void testRemoveLastDocVersion() {
         DocumentModel folder = session.createDocumentModel("/", "folder#1", "Folder");
         folder = session.createDocument(folder);
 
@@ -236,7 +236,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     private void checkVersions(DocumentModel doc, String... labels) {
-        List<String> actual = new LinkedList<String>();
+        List<String> actual = new LinkedList<>();
         for (DocumentModel ver : session.getVersions(doc.getRef())) {
             assertTrue(ver.isVersion());
             actual.add(ver.getVersionLabel());
@@ -379,59 +379,53 @@ public class TestSQLRepositoryVersioning {
         // we need 2 threads to get 2 different sessions that send each other invalidations
         final CyclicBarrier barrier = new CyclicBarrier(2);
         Throwable[] throwables = new Throwable[2];
-        Thread t1 = new Thread() {
-            @Override
-            public void run() {
-                TransactionHelper.startTransaction();
-                try (CloseableCoreSession session = openSessionAs(SecurityConstants.ADMINISTRATOR)) {
-                    DocumentModel doc = session.getDocument(docRef);
-                    assertEquals("t2", doc.getPropertyValue("dc:title"));
-                    // 1. sync
-                    barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
-                    // 2. restore and next tx to send invalidations
-                    DocumentModel restored = session.restoreToVersion(docRef, v1);
-                    assertEquals("t1", restored.getPropertyValue("dc:title"));
-                    session.save();
-                    nextTransaction();
-                    // 3. sync
-                    barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
-                    // 4. wait
-                } catch (InterruptedException t) {
-                    Thread.currentThread().interrupt();
-                    throwables[0] = t;
-                } catch (Exception | AssertionError t) {
-                    throwables[0] = t;
-                } finally {
-                    TransactionHelper.commitOrRollbackTransaction();
-                }
+        Thread t1 = new Thread(() -> {
+            TransactionHelper.startTransaction();
+            try (CloseableCoreSession session = openSessionAs(SecurityConstants.ADMINISTRATOR)) {
+                DocumentModel doc1 = session.getDocument(docRef);
+                assertEquals("t2", doc1.getPropertyValue("dc:title"));
+                // 1. sync
+                barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
+                // 2. restore and next tx to send invalidations
+                DocumentModel restored = session.restoreToVersion(docRef, v1);
+                assertEquals("t1", restored.getPropertyValue("dc:title"));
+                session.save();
+                nextTransaction();
+                // 3. sync
+                barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
+                // 4. wait
+            } catch (InterruptedException t) {
+                Thread.currentThread().interrupt();
+                throwables[0] = t;
+            } catch (Exception | AssertionError t) {
+                throwables[0] = t;
+            } finally {
+                TransactionHelper.commitOrRollbackTransaction();
             }
-        };
-        Thread t2 = new Thread() {
-            @Override
-            public void run() {
-                TransactionHelper.startTransaction();
-                try (CloseableCoreSession session = openSessionAs(SecurityConstants.ADMINISTRATOR)) {
-                    DocumentModel doc = session.getDocument(docRef);
-                    assertEquals("t2", doc.getPropertyValue("dc:title"));
-                    // 1. sync
-                    barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
-                    // 2. nop
-                    // 3. sync
-                    barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
-                    // 4. next tx to get invalidations and check
-                    nextTransaction();
-                    DocumentModel restored = session.getDocument(docRef);
-                    assertEquals("t1", restored.getPropertyValue("dc:title"));
-                } catch (InterruptedException t) {
-                    Thread.currentThread().interrupt();
-                    throwables[1] = t;
-                } catch (Exception | AssertionError t) {
-                    throwables[1] = t;
-                } finally {
-                    TransactionHelper.commitOrRollbackTransaction();
-                }
+        });
+        Thread t2 = new Thread(() -> {
+            TransactionHelper.startTransaction();
+            try (CloseableCoreSession session = openSessionAs(SecurityConstants.ADMINISTRATOR)) {
+                DocumentModel doc12 = session.getDocument(docRef);
+                assertEquals("t2", doc12.getPropertyValue("dc:title"));
+                // 1. sync
+                barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
+                // 2. nop
+                // 3. sync
+                barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
+                // 4. next tx to get invalidations and check
+                nextTransaction();
+                DocumentModel restored = session.getDocument(docRef);
+                assertEquals("t1", restored.getPropertyValue("dc:title"));
+            } catch (InterruptedException t) {
+                Thread.currentThread().interrupt();
+                throwables[1] = t;
+            } catch (Exception | AssertionError t) {
+                throwables[1] = t;
+            } finally {
+                TransactionHelper.commitOrRollbackTransaction();
             }
-        };
+        });
         t1.start();
         t2.start();
         t1.join();

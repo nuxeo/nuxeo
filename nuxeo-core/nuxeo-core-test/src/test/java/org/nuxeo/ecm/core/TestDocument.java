@@ -114,14 +114,14 @@ public class TestDocument {
     protected final TriConsumer<Document, String, Object> DocumentSetValue = Document::setValue;
 
     @Test
-    public void testGetValueErrors() throws Exception {
+    public void testGetValueErrors() {
         Document root = session.getRootDocument();
         Document doc = root.addChild("doc", "TestDocument");
         tryUnknownProperty(xpath -> DocumentGetValue.apply(doc, xpath));
     }
 
     @Test
-    public void testSetValueErrors() throws Exception {
+    public void testSetValueErrors() {
         Document root = session.getRootDocument();
         Document doc = root.addChild("doc", "TestDocument");
         tryUnknownProperty(xpath -> DocumentSetValue.accept(doc, xpath, null));
@@ -150,7 +150,7 @@ public class TestDocument {
     }
 
     @Test
-    public void testSetValueErrors2() throws Exception {
+    public void testSetValueErrors2() {
         Document root = session.getRootDocument();
         Document doc1 = root.addChild("doc", "TestDocument");
         Document doc2 = root.addChild("doc2", "File");
@@ -200,7 +200,7 @@ public class TestDocument {
     }
 
     @Test
-    public void testComplexUnset() throws Exception {
+    public void testComplexUnset() {
         Document root = session.getRootDocument();
         Document doc = root.addChild("doc", "TestDocument");
         assertNull(doc.getValue("tp:complexChain/string"));
@@ -290,7 +290,7 @@ public class TestDocument {
     }
 
     @Test
-    public void testComplexFiles() throws Exception {
+    public void testComplexFiles() {
         Document root = session.getRootDocument();
         Document doc = root.addChild("doc", "File");
 
@@ -319,7 +319,7 @@ public class TestDocument {
     }
 
     @Test
-    public void testFacet() throws Exception {
+    public void testFacet() {
         Document root = session.getRootDocument();
         Document doc = root.addChild("doc", "File");
 
@@ -344,7 +344,7 @@ public class TestDocument {
     }
 
     @Test
-    public void testProxySchema() throws Exception {
+    public void testProxySchema() {
         Document root = session.getRootDocument();
         Document doc = root.addChild("doc", "File");
         Document proxy = session.createProxy(doc, root);
@@ -371,7 +371,7 @@ public class TestDocument {
     }
 
     @Test
-    public void testGetProxies() throws Exception {
+    public void testGetProxies() {
         Document root = session.getRootDocument();
         Document doc = root.addChild("docSubject", "File");
         Document proxy = session.createProxy(doc, root);
@@ -393,10 +393,12 @@ public class TestDocument {
         assertEquals("Must return all proxies, including version proxies", 2, proxiesWithSearch.size());
         assertEquals("Must return a document's proxies", 1, proxies.size());
         assertEquals(doc, proxies.get(0).getTargetDocument());
-        assertEquals(1, proxiesWithSearch.stream()
-                .filter(p -> doc.getUUID().equals(p.getTargetDocument().getUUID())).count());
-        assertEquals(1, proxiesWithSearch.stream()
-                .filter(p -> version2.getUUID().equals(p.getTargetDocument().getUUID())).count());
+        assertEquals(1,
+                proxiesWithSearch.stream().filter(p -> doc.getUUID().equals(p.getTargetDocument().getUUID())).count());
+        assertEquals(1,
+                proxiesWithSearch.stream()
+                                 .filter(p -> version2.getUUID().equals(p.getTargetDocument().getUUID()))
+                                 .count());
 
         Document proxy2 = session.createProxy(doc, root);
         proxiesWithSearch = session.getProxies(doc, null);
@@ -473,8 +475,8 @@ public class TestDocument {
         doc.addFacet("Aged");
 
         Blob blob = Blobs.createBlob("content1", "text/plain");
-        doc.setValue("cmpf:attachedFile",
-                Collections.singletonMap("vignettes", Collections.singletonList(Collections.singletonMap("content", blob))));
+        doc.setValue("cmpf:attachedFile", Collections.singletonMap("vignettes",
+                Collections.singletonList(Collections.singletonMap("content", blob))));
 
         // simulate an obsolete Aged facet present on the document but not in the schema manager
         Map<String, CompositeType> facets = getSchemaManagerFacets();
@@ -503,7 +505,7 @@ public class TestDocument {
     }
 
     @Test
-    public void testClearComplexPropertyBeforeSetDefault() throws Exception {
+    public void testClearComplexPropertyBeforeSetDefault() {
         boolean clearComplexPropertyBeforeSet = schemaManager.getClearComplexPropertyBeforeSet();
         // test the platform default behavior
         assertTrue(clearComplexPropertyBeforeSet);
@@ -529,7 +531,7 @@ public class TestDocument {
         }
     }
 
-    protected void testGetChanges() throws Exception {
+    protected void testGetChanges() {
         Document root = session.getRootDocument();
         Document doc = root.addChild("doc", "ComplexDoc");
 
@@ -646,7 +648,7 @@ public class TestDocument {
     }
 
     @Test
-    public void testDeltaAfterPhantomNull() throws Exception {
+    public void testDeltaAfterPhantomNull() {
         Document root = session.getRootDocument();
         Document doc = root.addChild("doc", "MyDocType");
 

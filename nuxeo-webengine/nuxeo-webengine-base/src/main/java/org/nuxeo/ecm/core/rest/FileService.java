@@ -140,7 +140,7 @@ public class FileService extends DefaultAdapter {
                 if ("files".equals(p.getSchema().getName())) { // treat the
                     // files schema
                     // separately
-                    Map<String, Serializable> map = new HashMap<String, Serializable>();
+                    Map<String, Serializable> map = new HashMap<>();
                     map.put("file", (Serializable) blob);
                     p.addValue(map);
                 } else {

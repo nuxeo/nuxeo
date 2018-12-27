@@ -33,6 +33,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class VersioningManagerImpl extends DefaultComponent implements VersioningManager {
 
+    /**
+     * @deprecated since 10.10, seems unused
+     */
     public static final String COMPONENT_ID = "org.nuxeo.ecm.platform.versioning.VersioningManager";
 
     @Override

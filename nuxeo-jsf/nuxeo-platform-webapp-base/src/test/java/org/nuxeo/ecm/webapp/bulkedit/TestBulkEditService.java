@@ -20,6 +20,7 @@ package org.nuxeo.ecm.webapp.bulkedit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -126,8 +127,8 @@ public class TestBulkEditService {
             doc = session.getDocument(doc.getRef());
             assertEquals("new title", doc.getPropertyValue("dc:title"));
             assertEquals("new creator", doc.getProperty("dc:creator").getValue());
-            assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
-            assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
+            assertNotEquals("new description", doc.getPropertyValue("dc:description"));
+            assertNotEquals("new source", doc.getPropertyValue("dc:source"));
 
             assertFalse(doc.isCheckedOut());
             assertEquals("0.1", doc.getVersionLabel());
@@ -135,8 +136,8 @@ public class TestBulkEditService {
             DocumentModel version = session.getLastDocumentVersion(doc.getRef());
             assertEquals("new title", version.getPropertyValue("dc:title"));
             assertEquals("new creator", version.getProperty("dc:creator").getValue());
-            assertFalse("new description".equals(version.getPropertyValue("dc:description")));
-            assertFalse("new source".equals(version.getPropertyValue("dc:source")));
+            assertNotEquals("new description", version.getPropertyValue("dc:description"));
+            assertNotEquals("new source", version.getPropertyValue("dc:source"));
             assertEquals("0.1", version.getVersionLabel());
         }
     }
@@ -165,8 +166,8 @@ public class TestBulkEditService {
         DocumentModel doc = session.getDocument(docs.get(0).getRef());
         assertEquals("new title", doc.getPropertyValue("dc:title"));
         assertEquals("new creator", doc.getProperty("dc:creator").getValue());
-        assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
-        assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
+        assertNotEquals("new description", doc.getPropertyValue("dc:description"));
+        assertNotEquals("new source", doc.getPropertyValue("dc:source"));
 
         List<String> tags = new ArrayList<>(tagService.getTags(session, doc.getId()));
         assertEquals(1, tags.size());
@@ -183,7 +184,7 @@ public class TestBulkEditService {
     }
 
     @Test
-    public void testBulkEditNoVersion() throws Exception {
+    public void testBulkEditNoVersion() {
 
         List<DocumentModel> docs = createTestDocuments();
         DocumentModel sourceDoc = buildSimpleDocumentModel();
@@ -193,8 +194,8 @@ public class TestBulkEditService {
             doc = session.getDocument(doc.getRef());
             assertEquals("new title", doc.getPropertyValue("dc:title"));
             assertEquals("new creator", doc.getProperty("dc:creator").getValue());
-            assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
-            assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
+            assertNotEquals("new description", doc.getPropertyValue("dc:description"));
+            assertNotEquals("new source", doc.getPropertyValue("dc:source"));
 
             assertTrue(doc.isCheckedOut());
             assertEquals("0.0", doc.getVersionLabel());
@@ -205,7 +206,7 @@ public class TestBulkEditService {
 
     @Test
     @Deploy("org.nuxeo.ecm.webapp.base:test-bulkedit-majorversion-contrib.xml")
-    public void testBulkEditMajorVersion() throws Exception {
+    public void testBulkEditMajorVersion() {
 
         List<DocumentModel> docs = createTestDocuments();
         DocumentModel sourceDoc = buildSimpleDocumentModel();
@@ -215,8 +216,8 @@ public class TestBulkEditService {
             doc = session.getDocument(doc.getRef());
             assertEquals("new title", doc.getPropertyValue("dc:title"));
             assertEquals("new creator", doc.getProperty("dc:creator").getValue());
-            assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
-            assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
+            assertNotEquals("new description", doc.getPropertyValue("dc:description"));
+            assertNotEquals("new source", doc.getPropertyValue("dc:source"));
 
             assertFalse(doc.isCheckedOut());
             assertEquals("1.0", doc.getVersionLabel());
@@ -224,15 +225,15 @@ public class TestBulkEditService {
             DocumentModel version = session.getLastDocumentVersion(doc.getRef());
             assertEquals("new title", doc.getPropertyValue("dc:title"));
             assertEquals("new creator", doc.getProperty("dc:creator").getValue());
-            assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
-            assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
+            assertNotEquals("new description", doc.getPropertyValue("dc:description"));
+            assertNotEquals("new source", doc.getPropertyValue("dc:source"));
             assertEquals("1.0", version.getVersionLabel());
         }
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.webapp.base:test-bulkedit-restricted-version-options.xml")
-    public void testBulkEditAutoVersioningFailure() throws Exception {
+    public void testBulkEditAutoVersioningFailure() {
 
         List<DocumentModel> docs = createTestDocuments();
         docs.forEach(doc -> doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR));

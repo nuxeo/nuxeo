@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.audit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.Serializable;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,7 +36,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.audit.TestDocumentAuditPageProvider.Pfouh;
-import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.DocumentHistoryReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.document.DocumentHistoryPageProvider;
@@ -61,13 +58,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RepositoryConfig(init = Pfouh.class)
 public class TestDocumentAuditPageProvider {
 
-    protected static final Calendar testDate = Calendar.getInstance();
-
     @Inject
-    AuditReader reader;
-
-    @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     protected static Pfouh pfouh;
 
@@ -76,8 +68,6 @@ public class TestDocumentAuditPageProvider {
         {
             pfouh = this;
         }
-
-        protected boolean verbose = false;
 
         DocumentModel doc;
 
@@ -151,8 +141,9 @@ public class TestDocumentAuditPageProvider {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    public void testDocumentHistoryPageProvider() throws Exception {
+    public void testDocumentHistoryPageProvider() {
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
@@ -161,7 +152,7 @@ public class TestDocumentAuditPageProvider {
         assertNotNull(ppdef);
 
         PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(20), Long.valueOf(0),
-                new HashMap<String, Serializable>(), pfouh.doc);
+                new HashMap<>(), pfouh.doc);
 
         DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
         searchDoc.setPathInfo("/", "auditsearch");
@@ -179,8 +170,8 @@ public class TestDocumentAuditPageProvider {
         long startId = entries.get(entries.size() - 1).getId();
 
         // Get Proxy history
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(20), Long.valueOf(0),
-                new HashMap<String, Serializable>(), pfouh.proxy);
+        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(20), Long.valueOf(0), new HashMap<>(),
+                pfouh.proxy);
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
@@ -193,8 +184,8 @@ public class TestDocumentAuditPageProvider {
         assertEquals(startId + proxyEntriesCount + 1, entries.get(0).getId());
 
         // Get version 1 history
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(20), Long.valueOf(0),
-                new HashMap<String, Serializable>(), pfouh.versions.get(0));
+        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(20), Long.valueOf(0), new HashMap<>(),
+                pfouh.versions.get(0));
         pp.setSearchDocumentModel(searchDoc);
         entries = (List<LogEntry>) pp.getCurrentPage();
 
@@ -209,8 +200,8 @@ public class TestDocumentAuditPageProvider {
         }
 
         // get version 2 history
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(20), Long.valueOf(0),
-                new HashMap<String, Serializable>(), pfouh.versions.get(1));
+        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(20), Long.valueOf(0), new HashMap<>(),
+                pfouh.versions.get(1));
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
@@ -228,7 +219,7 @@ public class TestDocumentAuditPageProvider {
 
     @Test
     @Ignore("NXP-21530")
-    public void testDocumentHistoryReader() throws Exception {
+    public void testDocumentHistoryReader() {
 
         List<LogEntry> entries = history.getDocumentHistory(pfouh.versions.get(1), 0, 20);
         assertNotNull(entries);
