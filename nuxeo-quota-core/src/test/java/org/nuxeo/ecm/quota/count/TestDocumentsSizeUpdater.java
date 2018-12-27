@@ -115,7 +115,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnAddContent() throws Exception {
+    public void testQuotaOnAddContent() {
 
         addContent();
 
@@ -129,7 +129,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnAddAndModifyContent() throws Exception {
+    public void testQuotaOnAddAndModifyContent() {
 
         addContent();
 
@@ -153,7 +153,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaInitialCheckIn() throws Exception {
+    public void testQuotaInitialCheckIn() {
 
         addContent();
 
@@ -197,7 +197,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnCheckInCheckOut() throws Exception {
+    public void testQuotaOnCheckInCheckOut() {
 
         addContent();
 
@@ -233,7 +233,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnVersions() throws Exception {
+    public void testQuotaOnVersions() {
 
         addContent();
 
@@ -304,7 +304,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnMoveContent() throws Exception {
+    public void testQuotaOnMoveContent() {
         // Given some content
         addContent();
 
@@ -324,7 +324,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnRemoveContent() throws Exception {
+    public void testQuotaOnRemoveContent() {
 
         addContent();
         doRemoveContent();
@@ -339,7 +339,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnCopyContent() throws Exception {
+    public void testQuotaOnCopyContent() {
 
         addContent();
 
@@ -360,7 +360,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnCopyFolderishContent() throws Exception {
+    public void testQuotaOnCopyFolderishContent() {
 
         addContent();
 
@@ -385,7 +385,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnRemoveFoldishContent() throws Exception {
+    public void testQuotaOnRemoveFoldishContent() {
         addContent();
 
         dump();
@@ -400,7 +400,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnMoveFoldishContent() throws Exception {
+    public void testQuotaOnMoveFoldishContent() {
 
         addContent();
 
@@ -420,7 +420,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaExceeded() throws Exception {
+    public void testQuotaExceeded() {
 
         addContent();
 
@@ -482,7 +482,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaExceededAfterDelete() throws Exception {
+    public void testQuotaExceededAfterDelete() {
         addContent();
 
         dump();
@@ -537,7 +537,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaExceededMassCopy() throws Exception {
+    public void testQuotaExceededMassCopy() {
         addContent();
 
         dump();
@@ -635,7 +635,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaExceededOnVersion() throws Exception {
+    public void testQuotaExceededOnVersion() {
 
         addContent();
 
@@ -669,7 +669,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testComputeInitialStatistics() throws Exception {
+    public void testComputeInitialStatistics() {
 
         EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         eventAdmin.setListenerEnabledFlag("quotaStatsListener", false);
@@ -711,7 +711,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testComputeInitialStatisticsAfterFileMovedToTrash() throws Exception {
+    public void testComputeInitialStatisticsAfterFileMovedToTrash() {
 
         EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         eventAdmin.setListenerEnabledFlag("quotaStatsListener", true);
@@ -742,7 +742,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testRecomputeStatisticsAfterCorruption() throws Exception {
+    public void testRecomputeStatisticsAfterCorruption() {
 
         addContent();
         doCheckIn();
@@ -798,7 +798,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnDeleteContent() throws Exception {
+    public void testQuotaOnDeleteContent() {
         addContent();
         doDeleteFileContent();
 
@@ -827,7 +827,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnDeleteVersion() throws Exception {
+    public void testQuotaOnDeleteVersion() {
         addContent();
 
         dump();
@@ -872,11 +872,10 @@ public class TestDocumentsSizeUpdater {
     /**
      * NXP-17350
      * 
-     * @throws Exception
      * @since TODO
      */
     @Test
-    public void testQuotaOnDeleteFolder() throws Exception {
+    public void testQuotaOnDeleteFolder() {
         addContent();
 
         dump();
@@ -912,7 +911,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnMoveContentWithVersions() throws Exception {
+    public void testQuotaOnMoveContentWithVersions() {
 
         addContent();
         // update and create a version
@@ -935,7 +934,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnCopyContentWithVersions() throws Exception {
+    public void testQuotaOnCopyContentWithVersions() {
 
         addContent();
         // update and create a version
@@ -962,7 +961,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testAllowSettingMaxQuota() throws Exception {
+    public void testAllowSettingMaxQuota() {
         addContent();
 
         // now add quota limit
@@ -1009,7 +1008,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testQuotaOnRevertVersion() throws Exception {
+    public void testQuotaOnRevertVersion() {
 
         addContent();
 
@@ -1068,7 +1067,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
-    public void testAllowSettingMaxQuotaOnUserWorkspace() throws Exception {
+    public void testAllowSettingMaxQuotaOnUserWorkspace() {
         addContent();
 
         try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
@@ -1116,31 +1115,27 @@ public class TestDocumentsSizeUpdater {
         titiUWQuota = titiUW.getAdapter(QuotaAware.class);
         assertEquals(200L, titiUWQuota.getTotalSize());
 
-        boolean canAddContent = true;
         try {
             secondFile = session.createDocumentModel(titiUW.getPathAsString(), "file2", "File");
             secondFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
             secondFile = session.createDocument(secondFile);
             secondFile = session.saveDocument(secondFile);
+            fail("Should have failed due to quota exceeded");
         } catch (Exception e) {
-            if (e.getCause() instanceof QuotaExceededException) {
-                canAddContent = false;
-            }
+            assertTrue("Should have failed with a QuotaExceededException cause",
+                       e.getCause() instanceof QuotaExceededException);
         }
-        assertFalse(canAddContent);
 
-        canAddContent = true;
         try {
             firstFile = session.createDocumentModel(totoUW.getPathAsString(), "file1", "File");
             firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
             firstFile = session.createDocument(firstFile);
             firstFile = session.saveDocument(firstFile);
+            fail("Should have failed due to quota exceeded");
         } catch (Exception e) {
-            if (e.getCause() instanceof QuotaExceededException) {
-                canAddContent = false;
-            }
+            assertTrue("Should have failed with a QuotaExceededException cause",
+                    e.getCause() instanceof QuotaExceededException);
         }
-        assertFalse(canAddContent);
     }
 
     protected Blob getFakeBlob(int size) {
@@ -1153,7 +1148,7 @@ public class TestDocumentsSizeUpdater {
         return blob;
     }
 
-    protected void addContent() throws Exception {
+    protected void addContent() {
         addContent(false);
     }
 
@@ -1373,51 +1368,30 @@ public class TestDocumentsSizeUpdater {
         assertEquals("versions: ", versionsSize, qa.getVersionsSize());
     }
 
-    /**
-     * @return
-     */
     protected DocumentModel getWorkspace() {
         return session.getDocument(wsRef);
     }
 
-    /**
-     * @return
-     */
     protected DocumentModel getFirstSubFolder() {
         return session.getDocument(firstSubFolderRef);
     }
 
-    /**
-     * @return
-     */
     protected DocumentModel getSecondSubFolder() {
         return session.getDocument(secondSubFolderRef);
     }
 
-    /**
-     * @return
-     */
     protected DocumentModel getFirstFolder() {
         return session.getDocument(firstFolderRef);
     }
 
-    /**
-     * @return
-     */
     protected DocumentModel getSecondFolder() {
         return session.getDocument(secondFolderRef);
     }
 
-    /**
-     * @return
-     */
     protected DocumentModel getSecondFile() {
         return session.getDocument(secondFileRef);
     }
 
-    /**
-     * @return
-     */
     protected DocumentModel getFirstFile() {
         return session.getDocument(firstFileRef);
     }
