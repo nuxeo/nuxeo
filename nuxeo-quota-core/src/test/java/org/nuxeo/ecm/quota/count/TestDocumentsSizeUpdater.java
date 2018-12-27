@@ -47,12 +47,12 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.trash.TrashService;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
@@ -1123,7 +1123,7 @@ public class TestDocumentsSizeUpdater {
             fail("Should have failed due to quota exceeded");
         } catch (Exception e) {
             assertTrue("Should have failed with a QuotaExceededException cause",
-                       e.getCause() instanceof QuotaExceededException);
+                    e.getCause() instanceof QuotaExceededException);
         }
 
         try {
