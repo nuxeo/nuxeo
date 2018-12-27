@@ -26,8 +26,8 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.versioning.StandardVersioningService;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 public class TestVersioningService extends AbstractTestVersioning {

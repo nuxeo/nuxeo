@@ -101,6 +101,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
@@ -121,7 +122,6 @@ import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule.IgnoreWindows;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -4992,7 +4992,7 @@ public class TestSQLRepositoryAPI {
                 // truncate to a random number of elements (at least 2)
                 int s = random.nextInt(DOCS - 1) + 2;
                 list = list.subList(0, s);
-                SavingJob job  = new SavingJob(list, barrier);
+                SavingJob job = new SavingJob(list, barrier);
                 jobs.add(job);
                 Thread thread = new Thread(job);
                 threads.add(thread);

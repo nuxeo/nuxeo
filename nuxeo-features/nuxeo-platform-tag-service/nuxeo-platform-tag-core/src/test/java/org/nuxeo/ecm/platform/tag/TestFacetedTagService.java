@@ -40,7 +40,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 /**

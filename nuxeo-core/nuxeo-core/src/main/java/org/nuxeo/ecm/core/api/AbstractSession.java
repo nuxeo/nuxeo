@@ -97,7 +97,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.services.config.ConfigurationService;

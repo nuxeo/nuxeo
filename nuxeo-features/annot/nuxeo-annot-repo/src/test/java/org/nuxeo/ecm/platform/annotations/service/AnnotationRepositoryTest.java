@@ -40,7 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;

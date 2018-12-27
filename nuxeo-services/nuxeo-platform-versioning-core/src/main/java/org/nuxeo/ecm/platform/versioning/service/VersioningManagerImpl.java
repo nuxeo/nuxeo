@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.versioning.service;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;

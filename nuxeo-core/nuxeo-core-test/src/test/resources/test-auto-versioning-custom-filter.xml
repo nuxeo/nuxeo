@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.versioning.test.custom-filter">
 
-  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+  <extension target="org.nuxeo.ecm.core.api.versioning.VersioningService" point="policies">
     <policy id="custom-filter" increment="MINOR">
       <filter-id>custom</filter-id>
     </policy>
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+  <extension target="org.nuxeo.ecm.core.api.versioning.VersioningService" point="filters">
     <filter id="custom" class="org.nuxeo.ecm.core.version.test.TestAutoVersioning$CustomVersioningFilter" />
   </extension>
 
