@@ -7,6 +7,12 @@
       <property name="path">${repository.binary.store}</property>
       <property name="key">${nuxeo.core.binarymanager_key}</property>
     </blobprovider>
+    <blobprovider name="transient">
+      <class>${nuxeo.core.binarymanager}</class>
+      <property name="transient">true</property>
+      <property name="path">${repository.transient.binary.store}</property>
+      <property name="key">${nuxeo.core.binarymanager_key}</property>
+    </blobprovider>
   </extension>
 
 <#if "${nuxeo.mongodb.server}" == "">

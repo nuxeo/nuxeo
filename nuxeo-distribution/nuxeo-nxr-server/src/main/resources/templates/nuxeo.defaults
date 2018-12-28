@@ -51,7 +51,9 @@ repository.clustering.enabled=false
 repository.clustering.id=
 repository.clustering.delay=1000
 # If clustering is activated, set repository.binary.store=/path/to/some/shared/folder/for/binaries
+# and repository.transient.binary.store=/path/to/some/shared/folder/for/transient/binaries
 repository.binary.store=
+repository.transient.binary.store=transient_binaries
 
 nuxeo.plaintext_parsing_extensions=xml,properties,nx,html,js
 nuxeo.freemarker_parsing_extensions=nxftl
