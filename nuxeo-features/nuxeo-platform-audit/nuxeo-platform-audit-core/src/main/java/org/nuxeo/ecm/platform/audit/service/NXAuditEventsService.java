@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.audit.api.AuditStorage;
 import org.nuxeo.ecm.platform.audit.api.DocumentHistoryReader;
 import org.nuxeo.ecm.platform.audit.api.document.DocumentHistoryReaderImpl;
@@ -68,9 +68,7 @@ public class NXAuditEventsService extends DefaultComponent {
      */
     public static final String DISABLE_AUDIT_LOGGER = "disableAuditLogger";
 
-    private static final String BACKEND_EXT_POINT = "backend";
-
-    protected static final Log log = LogFactory.getLog(NXAuditEventsService.class);
+    protected static final Logger log = LogManager.getLogger(NXAuditEventsService.class);
 
     protected final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<>();
 
@@ -91,7 +89,7 @@ public class NXAuditEventsService extends DefaultComponent {
     protected AuditBulkerDescriptor bulkerConfig = new AuditBulkerDescriptor();
 
     protected Map<String, AuditStorageDescriptor> auditStorageDescriptors = new HashMap<>();
-    
+
     protected Map<String, AuditStorage> auditStorages = new HashMap<>();
 
     @Override
@@ -144,20 +142,15 @@ public class NXAuditEventsService extends DefaultComponent {
     }
 
     protected void doRegisterAdapter(AdapterDescriptor desc) {
-        if (log.isDebugEnabled()) {
-            log.debug("Registered adapter : " + desc.getName());
-        }
+        log.debug("Registered adapter : {}", desc::getName);
         documentAdapters.add(desc);
     }
 
     protected void doRegisterEvent(EventDescriptor desc) {
         String eventName = desc.getName();
-        boolean eventEnabled = desc.getEnabled();
-        if (eventEnabled) {
+        if (desc.getEnabled()) {
             eventNames.add(eventName);
-            if (log.isDebugEnabled()) {
-                log.debug("Registered event: " + eventName);
-            }
+            log.debug("Registered event: {}", eventName);
             for (ExtendedInfoDescriptor extInfoDesc : desc.getExtendedInfoDescriptors()) {
                 if (extInfoDesc.getEnabled()) {
                     if (eventExtendedInfoDescriptors.containsKey(eventName)) {
@@ -173,40 +166,32 @@ public class NXAuditEventsService extends DefaultComponent {
                     }
                 }
             }
-        } else if (eventNames.contains(eventName) && !eventEnabled) {
+        } else if (eventNames.contains(eventName)) {
             doUnregisterEvent(desc);
         }
     }
 
     protected void doRegisterExtendedInfo(ExtendedInfoDescriptor desc) {
-        if (log.isDebugEnabled()) {
-            log.debug("Registered extended info mapping : " + desc.getKey());
-        }
+        log.debug("Registered extended info mapping : {}", desc::getKey);
         extendedInfoDescriptors.add(desc);
     }
 
     protected void doUnregisterAdapter(AdapterDescriptor desc) {
         // FIXME: this doesn't look right
         documentAdapters.remove(desc);
-        if (log.isDebugEnabled()) {
-            log.debug("Unregistered adapter: " + desc.getName());
-        }
+        log.debug("Unregistered adapter: {}", desc::getName);
     }
 
     protected void doUnregisterEvent(EventDescriptor desc) {
         eventNames.remove(desc.getName());
         eventExtendedInfoDescriptors.remove(desc.getName());
-        if (log.isDebugEnabled()) {
-            log.debug("Unregistered event: " + desc.getName());
-        }
+        log.debug("Unregistered event: {}", desc::getName);
     }
 
     protected void doUnregisterExtendedInfo(ExtendedInfoDescriptor desc) {
         // FIXME: this doesn't look right
         extendedInfoDescriptors.remove(desc);
-        if (log.isDebugEnabled()) {
-            log.debug("Unregistered extended info: " + desc.getKey());
-        }
+        log.debug("Unregistered extended info: {}", desc::getKey);
     }
 
     @Override
@@ -217,7 +202,7 @@ public class NXAuditEventsService extends DefaultComponent {
             if (backend != null) {
                 return adapter.cast(backend);
             } else {
-                log.error("Can not provide service " + adapter.getCanonicalName() + " since backend is undefined");
+                log.error("Can not provide service {} since backend is undefined", adapter::getCanonicalName);
                 return null;
             }
         }
@@ -255,10 +240,10 @@ public class NXAuditEventsService extends DefaultComponent {
         } else if (extensionPoint.equals(ADAPTER_POINT)) {
             doRegisterAdapter((AdapterDescriptor) contribution);
         } else if (contribution instanceof AuditBackendDescriptor) {
-            backendConfig = (AuditBackendDescriptor)contribution;
-        }  else if (contribution instanceof AuditBulkerDescriptor) {
-            bulkerConfig = (AuditBulkerDescriptor)contribution;
-        } else if (contribution instanceof  AuditStorageDescriptor) {
+            backendConfig = (AuditBackendDescriptor) contribution;
+        } else if (contribution instanceof AuditBulkerDescriptor) {
+            bulkerConfig = (AuditBulkerDescriptor) contribution;
+        } else if (contribution instanceof AuditStorageDescriptor) {
             AuditStorageDescriptor auditStorageDesc = (AuditStorageDescriptor) contribution;
             auditStorageDescriptors.put(auditStorageDesc.getId(), auditStorageDesc);
         }
