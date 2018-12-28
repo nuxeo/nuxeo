@@ -91,14 +91,14 @@ public class GetTaskNamesOperation {
             boolean partialMatch) {
         DocumentModelList list = new DocumentModelListImpl();
         String query = "Select * from Document where ecm:mixinType IN ('RoutingTask') AND ecm:isVersion = 0 AND ecm:currentLifeCycleState = 'opened'";
-        Map<String, DocumentModel> results = new HashMap<String, DocumentModel>();
+        Map<String, DocumentModel> results = new HashMap<>();
         DocumentModelList docs = session.query(query);
         int i = 0;
         for (DocumentModel doc : docs) {
             String taskName = (String) doc.getPropertyValue("nt:name");
             String taskLabel = getI18nLabel(taskName, locale);
             if (partialMatch) {
-                // a translaedLabel == "" corresponds to the list of all
+                // a translatedLabel == "" corresponds to the list of all
                 // tasks
                 if (searchTerm == null || "".equals(searchTerm)) {
                     doc.setPropertyValue("dc:title",
@@ -119,7 +119,6 @@ public class GetTaskNamesOperation {
             if (!partialMatch && searchTerm.equals(taskName)) {
                 doc.setPropertyValue("dc:title", "[" + getWorkflowTranslatedTitle(doc, locale) + "]" + " " + taskLabel);
                 results.put(taskName, doc);
-                i++;
                 break;
             }
             if (limit > 0 && i > limit) {
