@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     guillaume
+ *     Nuno Cunha (ncunha@nuxeo.com)
  */
 package org.nuxeo.ecm.platform.routing.core.api.operation;
 
@@ -89,7 +90,7 @@ public class GetTaskNamesOperation {
     protected DocumentModelList getAllUserOpenTask(CoreSession session, Locale locale, String searchTerm,
             boolean partialMatch) {
         DocumentModelList list = new DocumentModelListImpl();
-        String query = "Select * from TaskDoc where ecm:mixinType IN ('RoutingTask') AND ecm:isVersion = 0 AND ecm:currentLifeCycleState = 'opened'";
+        String query = "Select * from Document where ecm:mixinType IN ('RoutingTask') AND ecm:isVersion = 0 AND ecm:currentLifeCycleState = 'opened'";
         Map<String, DocumentModel> results = new HashMap<String, DocumentModel>();
         DocumentModelList docs = session.query(query);
         int i = 0;

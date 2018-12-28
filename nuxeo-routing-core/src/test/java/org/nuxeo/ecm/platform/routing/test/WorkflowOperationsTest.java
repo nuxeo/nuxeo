@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Mariana Cedica
+ *     Nuno Cunha (ncunha@nuxeo.com)
  */
 package org.nuxeo.ecm.platform.routing.test;
 
@@ -48,6 +49,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.operation.CompleteTaskOperation;
 import org.nuxeo.ecm.platform.routing.core.api.operation.GetOpenTasksOperation;
+import org.nuxeo.ecm.platform.routing.core.api.operation.GetTaskNamesOperation;
 import org.nuxeo.ecm.platform.routing.core.api.operation.SetWorkflowVar;
 import org.nuxeo.ecm.platform.routing.core.api.operation.StartWorkflowOperation;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
@@ -205,6 +207,17 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         tasks = (List<DocumentModel>) automationService.run(ctx, GetOpenTasksOperation.ID, params);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
+
+        // invoke GetTaskNamesOperation
+        ctx = new OperationContext();
+        ctx.setCoreSession(session);
+        params = new HashMap<>();
+        params.put("locale", "en");
+        params.put("searchTerm", "");
+        DocumentModelList list = (DocumentModelList) automationService.run(ctx, GetTaskNamesOperation.ID, params);
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        assertEquals("MyTaskDoc", list.get(0).getType());
 
         // invoke CompleteTaskOperation to end the task
         // send node and workflow vars
