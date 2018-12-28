@@ -21,6 +21,7 @@
     
     <doctype name="MyTaskDoc" extends="TaskDoc">
       <facet name="HiddenInNavigation" />
+      <facet name="RoutingTask"/>
     </doctype>
     
   </extension>
