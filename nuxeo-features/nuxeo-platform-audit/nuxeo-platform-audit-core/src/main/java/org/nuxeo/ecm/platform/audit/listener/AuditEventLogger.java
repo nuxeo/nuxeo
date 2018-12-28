@@ -33,7 +33,9 @@ import org.nuxeo.runtime.api.Framework;
  * PostCommit async listener that pushes {@link EventBundle} into the Audit log.
  *
  * @author tiry
+ * @deprecated since 10.10, audit event is now handled with {@link StreamAuditEventListener}
  */
+@Deprecated
 public class AuditEventLogger implements PostCommitFilteringEventListener {
 
     private static final Log log = LogFactory.getLog(AuditEventLogger.class);

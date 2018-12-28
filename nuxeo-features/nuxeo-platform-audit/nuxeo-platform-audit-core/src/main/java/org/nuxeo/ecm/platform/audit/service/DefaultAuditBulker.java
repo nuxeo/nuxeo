@@ -41,6 +41,10 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 
+/**
+ * @deprecated since 10.10, audit bulker is now handled with nuxeo-stream, no replacement
+ */
+@Deprecated
 public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
 
     final Log log = LogFactory.getLog(DefaultAuditBulker.class);
