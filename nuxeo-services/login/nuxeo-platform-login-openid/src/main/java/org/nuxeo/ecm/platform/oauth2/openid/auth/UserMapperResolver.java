@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProvider;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.usermapper.extension.UserMapper;
 import org.nuxeo.usermapper.service.UserMapperService;
 
 /**
@@ -43,9 +44,12 @@ public class UserMapperResolver extends UserResolver {
 
     @Override
     public String findOrCreateNuxeoUser(OpenIDUserInfo userInfo) {
-        NuxeoPrincipal principal = Framework.getService(UserMapperService.class)
-                                            .getMapper(mapperName)
-                                            .getOrCreateAndUpdateNuxeoPrincipal(userInfo);
+        UserMapper mapper = Framework.getService(UserMapperService.class)
+                                     .getMapper(mapperName);
+        
+        NuxeoPrincipal principal = Framework.doPrivileged(() -> 
+                                    mapper.getOrCreateAndUpdateNuxeoPrincipal(userInfo));
+
         if (principal != null) {
             return principal.getName();
         } else {
