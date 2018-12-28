@@ -107,7 +107,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     @Create
     public void initialize() {
         log.debug("Initializing...");
-        commentMap = new HashMap<String, UIComment>();
+        commentMap = new HashMap<>();
         showCreateForm = false;
 
         principal = userSession.getCurrentNuxeoPrincipal();
@@ -255,7 +255,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     public void initComments(DocumentModel commentedDoc) {
         commentableDoc = getCommentableDoc(commentedDoc);
         if (uiComments == null) {
-            uiComments = new ArrayList<UIComment>();
+            uiComments = new ArrayList<>();
             if (commentableDoc != null) {
                 List<DocumentModel> comments = commentableDoc.getComments();
                 for (DocumentModel comment : comments) {
@@ -267,7 +267,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     }
 
     public List<UIComment> getComments(DocumentModel doc) {
-        List<UIComment> allComments = new ArrayList<UIComment>();
+        List<UIComment> allComments = new ArrayList<>();
         commentableDoc = doc.getAdapter(CommentableDocument.class);
         if (commentableDoc != null) {
             List<DocumentModel> comments = commentableDoc.getComments();
@@ -284,7 +284,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
      */
     @Override
     public List<ThreadEntry> getCommentsAsThreadOnDoc(DocumentModel doc) {
-        List<ThreadEntry> allComments = new ArrayList<ThreadEntry>();
+        List<ThreadEntry> allComments = new ArrayList<>();
         List<UIComment> allUIComments = getComments(doc);
 
         for (UIComment uiComment : allUIComments) {
@@ -301,7 +301,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
         if (commentThread != null) {
             return commentThread;
         }
-        commentThread = new ArrayList<ThreadEntry>();
+        commentThread = new ArrayList<>();
         if (uiComments == null) {
             initComments(commentedDoc); // Fetches all the comments associated
             // with the
@@ -417,8 +417,8 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     public List<UIComment> getLastCommentsByDate(String commentNumber, DocumentModel commentedDoc)
             {
         int number = Integer.parseInt(commentNumber);
-        List<UIComment> comments = new ArrayList<UIComment>();
-        flatComments = new ArrayList<UIComment>();
+        List<UIComment> comments = new ArrayList<>();
+        flatComments = new ArrayList<>();
 
         // Initialize uiComments
         initComments(commentedDoc);
