@@ -383,6 +383,12 @@ public class AnnotationAdapterTest extends BaseTest {
             comment.setParentId(i % 2 == 0 ? annotation1.getId() : annotation2.getId());
             comment = commentManager.createComment(session, comment);
             commentIds.add(comment.getId());
+
+            Comment subComment = new CommentImpl();
+            subComment.setAuthor(session.getPrincipal().getName());
+            subComment.setParentId(comment.getId());
+            subComment = commentManager.createComment(session, subComment);
+            commentIds.add(subComment.getId());
         }
         fetchInvalidations();
 
@@ -392,6 +398,7 @@ public class AnnotationAdapterTest extends BaseTest {
                 annotationIds);
         Set<String> expectedIds = new HashSet<>(commentIds);
         Set<String> actualIds = new HashSet<>(node.findValuesAsText("id"));
+        assertEquals(10, actualIds.size());
         assertEquals(expectedIds, actualIds);
     }
 
