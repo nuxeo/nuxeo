@@ -360,6 +360,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     }
 
     @Override
+    @Deprecated
     public void logEvents(EventBundle bundle) {
         if (!isAuditable(bundle)) {
             return;
@@ -379,6 +380,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     }
 
     @Override
+    @Deprecated
     public void logEvent(Event event) {
         if (!getAuditableEventNames().contains(event.getName())) {
             return;
@@ -387,7 +389,11 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
         if (entry == null) {
             return;
         }
-        component.bulker.offer(entry);
+        if (Framework.isBooleanPropertyTrue(STREAM_AUDIT_ENABLED_PROP)) {
+            log.error("Usage of AuditLogger#logEvent while AuditBulker is disabled", new Exception());
+        } else {
+            component.bulker.offer(entry);
+        }
     }
 
     @Override

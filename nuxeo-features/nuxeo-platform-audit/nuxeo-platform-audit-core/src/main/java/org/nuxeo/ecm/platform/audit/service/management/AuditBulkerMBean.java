@@ -13,6 +13,10 @@
  *******************************************************************************/
 package org.nuxeo.ecm.platform.audit.service.management;
 
+/**
+ * @deprecated since 10.10, audit bulker is now handled with nuxeo-stream, no replacement
+ */
+@Deprecated
 public interface AuditBulkerMBean {
 
     int getBulkTimeout();

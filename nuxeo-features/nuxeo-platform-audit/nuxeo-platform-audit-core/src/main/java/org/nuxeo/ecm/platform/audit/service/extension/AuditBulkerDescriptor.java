@@ -27,6 +27,10 @@ import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.AuditBulker;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBulker;
 
+/**
+ * @deprecated since 10.10, audit bulker is now handled with nuxeo-stream, no replacement
+ */
+@Deprecated
 @XObject("bulk")
 public class AuditBulkerDescriptor implements Serializable {
 

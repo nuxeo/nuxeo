@@ -60,12 +60,20 @@ public interface AuditLogger {
 
     /**
      * Logs an Event.
+     *
+     * @deprecated since 10.10, audit event is now handled with nuxeo-stream, if you want to log events, contribute to
+     *             NXAuditEventsService#event extension point
      */
+    @Deprecated
     void logEvent(Event event);
 
     /**
      * Logs a bundle of events
+     * 
+     * @deprecated since 10.10, audit event is now handled with nuxeo-stream, if you want to log events, contribute to
+     *             NXAuditEventsService#event extension point
      */
+    @Deprecated
     void logEvents(EventBundle eventBundle);
 
     /**

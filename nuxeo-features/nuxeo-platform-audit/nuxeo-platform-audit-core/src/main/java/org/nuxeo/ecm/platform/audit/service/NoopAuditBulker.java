@@ -26,7 +26,9 @@ import org.nuxeo.ecm.platform.audit.service.extension.AuditBulkerDescriptor;
  *
  *
  * @since 8.3
+ * @deprecated since 10.10, audit bulker is now handled with nuxeo-stream, no replacement
  */
+@Deprecated
 public class NoopAuditBulker implements AuditBulker{
 
     final AuditBackend backend;

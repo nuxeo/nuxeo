@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.audit.service;
 
+import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_AUDIT_ENABLED_PROP;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +40,7 @@ import org.nuxeo.ecm.platform.audit.service.extension.AuditStorageDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -84,8 +87,16 @@ public class NXAuditEventsService extends DefaultComponent {
 
     protected AuditBackendDescriptor backendConfig = new AuditBackendDescriptor();
 
+    /**
+     * @deprecated since 10.10, audit bulker is now handled with nuxeo-stream, no replacement
+     */
+    @Deprecated
     protected AuditBulker bulker;
 
+    /**
+     * @deprecated since 10.10, audit bulker is now handled with nuxeo-stream, no replacement
+     */
+    @Deprecated
     protected AuditBulkerDescriptor bulkerConfig = new AuditBulkerDescriptor();
 
     protected Map<String, AuditStorageDescriptor> auditStorageDescriptors = new HashMap<>();
@@ -98,11 +109,14 @@ public class NXAuditEventsService extends DefaultComponent {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void start(ComponentContext context) {
         backend = backendConfig.newInstance(this);
         backend.onApplicationStarted();
-        bulker = bulkerConfig.newInstance(backend);
-        bulker.onApplicationStarted();
+        if (!Framework.isBooleanPropertyTrue(STREAM_AUDIT_ENABLED_PROP)) {
+            bulker = bulkerConfig.newInstance(backend);
+            bulker.onApplicationStarted();
+        }
         // init storages after runtime was started (as we don't have started order for storages which are backends)
         Framework.getRuntime().getComponentManager().addListener(new Listener() {
 
@@ -126,9 +140,12 @@ public class NXAuditEventsService extends DefaultComponent {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void stop(ComponentContext context) {
         try {
-            bulker.onApplicationStopped();
+            if (bulker != null) {
+                bulker.onApplicationStopped();
+            }
         } finally {
             backend.onApplicationStopped();
             // clear storages
@@ -232,6 +249,7 @@ public class NXAuditEventsService extends DefaultComponent {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(EVENT_EXT_POINT)) {
             doRegisterEvent((EventDescriptor) contribution);
@@ -243,6 +261,11 @@ public class NXAuditEventsService extends DefaultComponent {
             backendConfig = (AuditBackendDescriptor) contribution;
         } else if (contribution instanceof AuditBulkerDescriptor) {
             bulkerConfig = (AuditBulkerDescriptor) contribution;
+            String message = String.format(
+                    "AuditBulker on component %s is deprecated because it is now handled with nuxeo-stream, no replacement.",
+                    contributor.getName());
+            DeprecationLogger.log(message, "10.10");
+            Framework.getRuntime().getMessageHandler().addWarning(message);
         } else if (contribution instanceof AuditStorageDescriptor) {
             AuditStorageDescriptor auditStorageDesc = (AuditStorageDescriptor) contribution;
             auditStorageDescriptors.put(auditStorageDesc.getId(), auditStorageDesc);
