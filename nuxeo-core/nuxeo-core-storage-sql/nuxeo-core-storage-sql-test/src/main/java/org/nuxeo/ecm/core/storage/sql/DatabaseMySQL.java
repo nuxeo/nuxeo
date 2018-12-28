@@ -40,7 +40,7 @@ public class DatabaseMySQL extends DatabaseHelper {
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-mysql-contrib.xml";
 
-    private static final String DRIVER_MYSQL = "com.mysql.jdbc.Driver";
+    private static final String DRIVER_MYSQL = "com.mysql.cj.jdbc.Driver";
 
     private static final String DRIVER_MARIADB = "org.mariadb.jdbc.Driver";
 
