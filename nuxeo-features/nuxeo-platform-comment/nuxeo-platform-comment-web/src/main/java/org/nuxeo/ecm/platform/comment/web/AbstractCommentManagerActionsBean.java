@@ -79,8 +79,6 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
 
     protected List<UIComment> uiComments;
 
-    protected List<ThreadEntry> commentThread;
-
     // the id of the comment to delete
     @RequestParameter
     protected String deleteCommentId;
@@ -298,10 +296,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
 
     @Override
     public List<ThreadEntry> getCommentsAsThread(DocumentModel commentedDoc) {
-        if (commentThread != null) {
-            return commentThread;
-        }
-        commentThread = new ArrayList<>();
+        List<ThreadEntry> commentThread = new ArrayList<>();
         if (uiComments == null) {
             initComments(commentedDoc); // Fetches all the comments associated
             // with the
@@ -484,7 +479,6 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     public void cleanContextVariable() {
         commentableDoc = null;
         uiComments = null;
-        commentThread = null;
         showCreateForm = false;
         commentStarted = false;
         savedReplyCommentId = null;
