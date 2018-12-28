@@ -33,6 +33,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
@@ -71,9 +72,19 @@ public class AnnotationAdapter extends DefaultAdapter {
         CommentManager commentManager = Framework.getService(CommentManager.class);
         List<Comment> comments = new ArrayList<>();
         for (String annotationId : annotationIds) {
-            comments.addAll(commentManager.getComments(getContext().getCoreSession(), annotationId));
+            comments.addAll(getAllComments(annotationId, commentManager, getContext().getCoreSession()));
         }
         return comments;
+    }
+
+    protected List<Comment> getAllComments(String annotationId, CommentManager commentManager, CoreSession session) {
+        List<Comment> allComments = new ArrayList<>();
+        List<Comment> comments = commentManager.getComments(session, annotationId);
+        for (Comment comment : comments) {
+            allComments.addAll(getAllComments(comment.getId(), commentManager, session));
+            allComments.add(comment);
+        }
+        return allComments;
     }
 
     @GET
