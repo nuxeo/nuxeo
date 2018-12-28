@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.audit.api;
@@ -45,15 +43,11 @@ public interface AuditLogger {
 
     /**
      * Create a new LogEntry instance.
-     *
-     * @return
      */
     LogEntry newLogEntry();
 
     /**
      * Create a new ExtendedInfo instance
-     *
-     * @return
      */
     ExtendedInfo newExtendedInfo(Serializable value);
 
@@ -75,7 +69,6 @@ public interface AuditLogger {
     void logEvents(EventBundle eventBundle);
 
     /**
-     *
      * @since 8.2
      */
     boolean await(long time, TimeUnit unit) throws InterruptedException;

@@ -46,8 +46,7 @@ import java.util.concurrent.TimeUnit;
 import javax.el.ELException;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Logger;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -96,7 +95,7 @@ import org.nuxeo.runtime.stream.StreamService;
  */
 public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage {
 
-    protected static final Log log = LogFactory.getLog(AbstractAuditBackend.class);
+    protected static final Logger log = org.apache.logging.log4j.LogManager.getLogger(AbstractAuditBackend.class);
 
     public static final String FORCE_AUDIT_FACET = "ForceAudit";
 
@@ -213,12 +212,12 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
                     value = expressionEvaluator.evaluateExpression(context, exp, Serializable.class);
                 } catch (PropertyException | UnsupportedOperationException e) {
                     if (source instanceof DeletedDocumentModel) {
-                        log.debug("Can not evaluate the expression: " + exp + " on a DeletedDocumentModel, skipping.");
+                        log.debug("Can not evaluate the expression: {} on a DeletedDocumentModel, skipping.", exp);
                     }
                     continue;
                 } catch (DocumentNotFoundException e) {
                     if (!DocumentEventTypes.DOCUMENT_REMOVED.equals(entry.getEventId())) {
-                        log.error(String.format("Not found: %s, entry: %s", e.getMessage(), entry), e);
+                        log.error("Not found: {}, entry: {}", e.getMessage(), entry, e);
                     }
                     continue;
                 } catch (ELException e) {
@@ -271,7 +270,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
             if (principal != null) {
                 entry.setPrincipalName(principal.getActingUser());
             } else {
-                log.warn("received event " + eventName + " with null principal");
+                log.warn("received event {} with null principal", eventName);
             }
             entry.setComment((String) properties.get("comment"));
             if (document instanceof DeletedDocumentModel) {
@@ -328,10 +327,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
             DocumentModel root = guardedDocument(session, rootRef);
             long nbAddedEntries = doSyncNode(provider, session, root, recurs);
 
-            if (log.isDebugEnabled()) {
-                log.debug("synced " + nbAddedEntries + " entries on " + path);
-            }
-
+            log.debug("synced {}  entries on {}", nbAddedEntries, path);
             return nbAddedEntries;
         }
     }
@@ -506,23 +502,19 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
 
         while (scrollResult.hasResults()) {
             List<String> jsonEntries = scrollResult.getResults();
-            if (log.isDebugEnabled()) {
-                log.debug("Appending " + jsonEntries.size() + " entries");
-            }
+            log.debug("Appending {} entries", jsonEntries::size);
             total += jsonEntries.size();
             append(jsonEntries);
 
             double dt = (System.currentTimeMillis() - t0) / 1000.0;
             if (dt != 0) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Restoration speed: " + (total / dt) + " entries/s");
-                }
+                log.debug("Restoration speed: {} entries/s", total / dt);
             }
 
             scrollResult = auditStorage.scroll(scrollResult.getScrollId());
         }
 
-        log.info("Audit restoration done: " + total + " entries migrated from the audit storage");
+        log.info("Audit restoration done: {} entries migrated from the audit storage", total);
 
     }
 
