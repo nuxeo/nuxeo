@@ -28,8 +28,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -52,7 +52,7 @@ import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
  */
 public class CommentsMigrator extends AbstractRepositoryMigrator {
 
-    private static final Log log = LogFactory.getLog(CommentsMigrator.class);
+    private static final Logger log = LogManager.getLogger(CommentsMigrator.class);
 
     protected static final int BATCH_SIZE = 50;
 
@@ -121,8 +121,16 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
         DocumentModel comment = (DocumentModel) relationManager.getResourceRepresentation(config.commentNamespace,
                 subject, ctxMap);
 
-        comment.setPropertyValue(COMMENT_PARENT_ID, parent.getId());
-        session.saveDocument(comment);
+        if (parent != null && comment != null) {
+            comment.setPropertyValue(COMMENT_PARENT_ID, parent.getId());
+            session.saveDocument(comment);
+        } else if (parent == null && comment == null) {
+            log.debug("Documents {} and {} do not exist, they can not be migrated", object.getLocalName(),
+                    subject.getLocalName());
+        } else {
+            log.debug("Document {} does not exist, it can not be migrated",
+                    parent == null ? object.getLocalName() : subject.getLocalName());
+        }
 
         Graph graph = relationManager.getGraph(config.graphName, session);
         graph.remove(statement);
