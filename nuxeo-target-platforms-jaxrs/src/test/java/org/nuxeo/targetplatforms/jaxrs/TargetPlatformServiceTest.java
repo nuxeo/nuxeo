@@ -39,7 +39,6 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -47,7 +46,6 @@ import com.sun.jersey.api.client.WebResource;
 @RunWith(FeaturesRunner.class)
 @Features({ DetectThreadDeadlocksFeature.class, WebEngineFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@ServletContainer(port = 18090)
 @Deploy("org.nuxeo.targetplatforms.core")
 @Deploy("org.nuxeo.targetplatforms.core.test")
 @Deploy("org.nuxeo.targetplatforms.jaxrs")
@@ -55,12 +53,11 @@ import com.sun.jersey.api.client.WebResource;
 @Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml")
 public class TargetPlatformServiceTest extends BaseTest {
 
-    private static final String URL = "http://localhost:18090/target-platforms";
-
     @Ignore("NXP-17108")
     @Test
     public void ping() throws IOException {
-        WebResource resource = getServiceFor(URL, "Administrator", "Administrator");
+        String url = getBaseURL() + "/target-platforms";
+        WebResource resource = getServiceFor(url, "Administrator", "Administrator");
         try (CloseableClientResponse response = CloseableClientResponse.of(
                 resource.path("/platforms").accept(APPLICATION_JSON).get(ClientResponse.class))) {
             assertEquals(Status.OK.getStatusCode(), response.getStatus());
