@@ -34,7 +34,6 @@ import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 
 /**
  * Tests the {@link NuxeoDriveSetVersioningOptions} operation.
@@ -45,7 +44,6 @@ import org.nuxeo.runtime.test.runner.ServletContainer;
 @Deprecated
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveAutomationFeature.class)
-@ServletContainer(port = 18080)
 public class TestSetVersioningOptions {
 
     @Inject
