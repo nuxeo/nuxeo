@@ -19,6 +19,8 @@
 package org.nuxeo.runtime.server.tomcat;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -28,6 +30,8 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.apache.tomcat.util.scan.StandardJarScanner;
@@ -47,15 +51,12 @@ import org.nuxeo.runtime.server.ServletDescriptor;
  */
 public class TomcatServerConfigurator implements ServerConfigurator {
 
-    public static final int DEFAULT_PORT = 8080;
+    private static final Logger log = LogManager.getLogger(TomcatServerConfigurator.class);
 
     protected Tomcat tomcat;
 
     @Override
     public int initialize(int port) {
-        if (port <= 0) {
-            port = DEFAULT_PORT;
-        }
         tomcat = new Tomcat();
         tomcat.setBaseDir("."); // for tmp dir
         tomcat.setHostname("localhost");
@@ -63,6 +64,7 @@ public class TomcatServerConfigurator implements ServerConfigurator {
         Connector connector = tomcat.getConnector();
         connector.setProperty("maxKeepAliveRequests", "1"); // vital for clean shutdown
         connector.setProperty("socket.soReuseAddress", "true");
+        log.info("Configuring test Tomcat on port: {}", port);
         return port;
     }
 

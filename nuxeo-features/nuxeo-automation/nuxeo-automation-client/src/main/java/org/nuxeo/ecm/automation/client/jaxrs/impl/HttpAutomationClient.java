@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
+import java.util.function.Supplier;
+
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.params.ConnRoutePNames;
@@ -57,6 +59,17 @@ public class HttpAutomationClient extends AsyncAutomationClient {
      */
     public HttpAutomationClient(String url, int httpConnectionTimeout) {
         super(url);
+        init(httpConnectionTimeout);
+    }
+
+    /**
+     * Instantiates a new {@link HttpAutomationClient} with the given timeout in milliseconds for the HTTP connection
+     * and the default timeout for the wait of the asynchronous thread pool termination: 2 seconds.
+     *
+     * @since 10.10
+     */
+    public HttpAutomationClient(Supplier<String> urlSupplier, int httpConnectionTimeout) {
+        super(urlSupplier);
         init(httpConnectionTimeout);
     }
 

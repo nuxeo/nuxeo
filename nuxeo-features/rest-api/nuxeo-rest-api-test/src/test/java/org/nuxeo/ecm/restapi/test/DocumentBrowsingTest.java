@@ -67,7 +67,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -80,7 +79,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
-@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy("org.nuxeo.ecm.platform.thumbnail:OSGI-INF/marshallers-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.preview:OSGI-INF/marshallers-contrib.xml")

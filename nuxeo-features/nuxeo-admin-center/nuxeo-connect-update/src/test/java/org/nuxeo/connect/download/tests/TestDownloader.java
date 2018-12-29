@@ -29,13 +29,17 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.nuxeo.connect.NuxeoConnectClient;
+import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.data.PackageDescriptor;
 import org.nuxeo.connect.downloads.ConnectDownloadManager;
@@ -44,14 +48,22 @@ import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(DownloadFeature.class)
-@ServletContainer(port = 8082)
 public class TestDownloader {
 
     protected static final Log log = LogFactory.getLog(TestDownloader.class);
+
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
+
+    @Before
+    public void setUpPort() {
+        int port = servletContainerFeature.getPort();
+        ConnectUrlConfig.setTestPort(port);
+    }
 
     @Test
     public void testSimpleDownload() throws Exception {

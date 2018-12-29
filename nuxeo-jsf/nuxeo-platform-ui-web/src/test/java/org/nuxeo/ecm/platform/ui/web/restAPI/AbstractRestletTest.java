@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.util.Base64;
 import java.util.function.Function;
 
+import javax.inject.Inject;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -37,20 +39,20 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RestletFeature.class)
-@ServletContainer(port = AbstractRestletTest.PORT)
 public abstract class AbstractRestletTest {
-
-    protected static final int PORT = 18090;
 
     protected static final String USERNAME = "admin";
 
     protected static final String PASSWORD = "pass";
 
     protected static final String XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
 
     protected HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
 
@@ -100,8 +102,12 @@ public abstract class AbstractRestletTest {
         }
     }
 
+    protected int getPort() {
+        return servletContainerFeature.getPort();
+    }
+
     protected String getUri(String path) {
-        return "http://localhost:" + PORT + "/restAPI" + path;
+        return "http://localhost:" + getPort() + "/restAPI" + path;
     }
 
     protected void setAuthorization(HttpUriRequest request) {

@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet.DEVICE_
 import static org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet.PERMISSION_PARAM;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 
@@ -43,6 +44,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 /**
  * Tests the {@link TokenAuthenticationServlet} in the case of an anonymous user.
@@ -61,17 +63,14 @@ public class TestAnonymousTokenAuthenticationServlet {
     @Inject
     protected HotDeployer deployer;
 
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
+
     @Test
     public void testServletAsAnonymous() throws Exception {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             // ------------ Test anonymous user not allowed ----------------
-            String baseURL = "http://localhost:18080/authentication/token";
-            URI uri = new URIBuilder(baseURL).addParameter(APPLICATION_NAME_PARAM, "myFavoriteApp") //
-                                             .addParameter(DEVICE_ID_PARAM, "dead-beaf-cafe-babe")
-                                             .addParameter(PERMISSION_PARAM, "rw")
-                                             .build();
-            HttpGet get = new HttpGet(uri);
-            try (CloseableHttpResponse response = httpClient.execute(get)) {
+            try (CloseableHttpResponse response = httpClient.execute(getRequest())) {
                 assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
             }
 
@@ -80,7 +79,7 @@ public class TestAnonymousTokenAuthenticationServlet {
                     "org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-allow-anonymous-token-contrib.xml");
 
             String token;
-            try (CloseableHttpResponse response = httpClient.execute(get)) {
+            try (CloseableHttpResponse response = httpClient.execute(getRequest())) {
                 assertEquals(HttpStatus.SC_CREATED, response.getStatusLine().getStatusCode());
                 token = EntityUtils.toString(response.getEntity());
             }
@@ -88,6 +87,16 @@ public class TestAnonymousTokenAuthenticationServlet {
             assertNotNull(tokenAuthenticationService.getUserName(token));
             assertEquals(1, tokenAuthenticationService.getTokenBindings("Guest").size());
         }
+    }
+
+    protected HttpGet getRequest() throws URISyntaxException {
+        int port = servletContainerFeature.getPort();
+        String baseURL = "http://localhost:" + port + "/authentication/token";
+        URI uri = new URIBuilder(baseURL).addParameter(APPLICATION_NAME_PARAM, "myFavoriteApp") //
+                                         .addParameter(DEVICE_ID_PARAM, "dead-beaf-cafe-babe")
+                                         .addParameter(PERMISSION_PARAM, "rw")
+                                         .build();
+        return new HttpGet(uri);
     }
 
 }

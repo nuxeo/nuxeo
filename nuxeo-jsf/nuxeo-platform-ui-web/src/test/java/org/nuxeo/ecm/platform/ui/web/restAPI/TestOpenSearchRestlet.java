@@ -74,13 +74,15 @@ public class TestOpenSearchRestlet extends AbstractRestletTest {
         String query = "hello";
         String encodedQuery = URLEncoder.encode(query, "UTF-8");
         String path = ENDPOINT + "?q=" + encodedQuery;
+        String link = getUri(path);
+        String itemLink = "http://localhost:" + getPort() + "/nxpath/" + repositoryName + doc.getPathAsString();
         String expected = XML //
                 + "<rss xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\"" //
                 + " xmlns:atom=\"http://www.w3.org/2005/Atom\"" //
                 + " version=\"2.0\">" //
                 + "<channel>" //
                 + "<title>Nuxeo EP OpenSearch channel for " + query + "</title>" //
-                + "<link>http://localhost:" + PORT + "/restAPI/opensearch?q=" + encodedQuery + "</link>" //
+                + "<link>" + link + "</link>" //
                 + "<opensearch:totalResults>1</opensearch:totalResults>" //
                 + "<opensearch:startIndex>0</opensearch:startIndex>" //
                 + "<opensearch:itemsPerPage>1</opensearch:itemsPerPage>" //
@@ -88,7 +90,7 @@ public class TestOpenSearchRestlet extends AbstractRestletTest {
                 + "<item>" //
                 + "<title>" + doc.getTitle() + "</title>" //
                 + "<description>" + doc.getPropertyValue("dc:description") + "</description>" //
-                + "<link>http://localhost:" + PORT + "/nxpath/" + repositoryName + doc.getPathAsString() + "</link>"
+                + "<link>" + itemLink + "</link>" //
                 + "</item>" //
                 + "</channel>" //
                 + "</rss>";

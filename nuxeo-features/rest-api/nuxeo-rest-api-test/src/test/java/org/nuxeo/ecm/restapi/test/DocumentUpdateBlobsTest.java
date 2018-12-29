@@ -52,7 +52,6 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -66,7 +65,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RestServerFeature.class)
-@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class DocumentUpdateBlobsTest extends BaseTest {
 

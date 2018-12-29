@@ -19,6 +19,9 @@
 package org.nuxeo.ecm.automation.test;
 
 import java.io.IOException;
+import java.util.function.Supplier;
+
+import javax.inject.Inject;
 
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.AsyncSession;
@@ -28,6 +31,7 @@ import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 import com.google.inject.Binder;
 import com.google.inject.Scopes;
@@ -42,6 +46,9 @@ import com.google.inject.Scopes;
 public class EmbeddedAutomationServerFeature implements RunnerFeature {
 
     protected static final int HTTP_CONNECTION_TIMEOUT = 60000; // 60 seconds
+
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
 
     protected HttpAutomationClient client;
 
@@ -93,8 +100,9 @@ public class EmbeddedAutomationServerFeature implements RunnerFeature {
     }
 
     protected HttpAutomationClient getHttpAutomationClient() {
-        HttpAutomationClient client = new HttpAutomationClient("http://localhost:18080/automation",
-                HTTP_CONNECTION_TIMEOUT);
+        // port must be supplied dynamically because it may change after hot-reload of services
+        Supplier<String> urlSupplier = () -> "http://localhost:" + servletContainerFeature.getPort() + "/automation/";
+        HttpAutomationClient client = new HttpAutomationClient(urlSupplier, HTTP_CONNECTION_TIMEOUT);
         // Deactivate global operation registry cache to allow tests using this
         // feature in a test suite to deploy different set of operations
         client.setSharedRegistryExpirationDelay(0);

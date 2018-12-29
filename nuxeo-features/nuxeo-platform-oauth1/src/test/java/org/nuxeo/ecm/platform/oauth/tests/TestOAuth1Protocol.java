@@ -62,7 +62,7 @@ import org.nuxeo.jaxrs.test.JerseyClientHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 import com.sun.jersey.api.client.Client;
@@ -80,14 +80,11 @@ import net.oauth.OAuthMessage;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ OAuth1Feature.class, ServletContainerTransactionalFeature.class })
-@ServletContainer(port = 18090)
 @Deploy("org.nuxeo.ecm.platform.oauth1:OSGI-INF/test-servletcontainer-config.xml")
 @Deploy("org.nuxeo.ecm.platform.oauth1:OSGI-INF/test-authentication-config.xml")
 public class TestOAuth1Protocol {
 
     protected static final String HMAC_SHA1 = "HMAC-SHA1";
-
-    protected static final String BASE_URL = "http://localhost:18090";
 
     protected static final String ENDPOINT = "oauth";
 
@@ -113,6 +110,9 @@ public class TestOAuth1Protocol {
 
     @Inject
     protected TransactionalFeature txFeature;
+
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
 
     protected Client client;
 
@@ -144,6 +144,11 @@ public class TestOAuth1Protocol {
         client.destroy();
     }
 
+    protected String getBaseURL() {
+        int port = servletContainerFeature.getPort();
+        return "http://localhost:" + port;
+    }
+
     protected static MultivaluedMap<String, String> multivalued(Map<String, String> map) {
         MultivaluedMap<String, String> mvmap = new MultivaluedMapImpl();
         map.forEach((k, v) -> mvmap.putSingle(k, v));
@@ -162,7 +167,7 @@ public class TestOAuth1Protocol {
 
     @Test
     public void testRequestTokenBadConsumerKey() {
-        WebResource resource = client.resource(BASE_URL).path(ENDPOINT).path(ENDPOINT_REQUEST_TOKEN);
+        WebResource resource = client.resource(getBaseURL()).path(ENDPOINT).path(ENDPOINT_REQUEST_TOKEN);
         Map<String, String> params = new HashMap<>();
         params.put("oauth_consumer_key", "nosuchconsumer");
         ClientResponse cr = resource.queryParams(multivalued(params)).get(ClientResponse.class);
@@ -188,7 +193,7 @@ public class TestOAuth1Protocol {
 
         txFeature.nextTransaction();
 
-        WebResource resource = client.resource(BASE_URL).path(ENDPOINT).path(ENDPOINT_REQUEST_TOKEN);
+        WebResource resource = client.resource(getBaseURL()).path(ENDPOINT).path(ENDPOINT_REQUEST_TOKEN);
         Map<String, String> params = new HashMap<>();
         params.put("oauth_consumer_key", CONSUMER);
         params.put("oauth_signature_method", HMAC_SHA1);
@@ -221,7 +226,7 @@ public class TestOAuth1Protocol {
 
     @Test
     public void testAuthorizeGetBadToken() throws Exception {
-        WebResource resource = client.resource(BASE_URL).path(ENDPOINT).path(ENDPOINT_AUTHORIZE);
+        WebResource resource = client.resource(getBaseURL()).path(ENDPOINT).path(ENDPOINT_AUTHORIZE);
         Map<String, String> params = new HashMap<>();
         params.put("oauth_token", "nosuchtoken");
         ClientResponse cr = resource.queryParams(multivalued(params)).get(ClientResponse.class);
@@ -229,7 +234,7 @@ public class TestOAuth1Protocol {
             assertEquals(SC_MOVED_TEMPORARILY, response.getStatus());
             URI uri = response.getLocation();
             String expectedRedir = "oauthGrant.jsp?oauth_token=nosuchtoken";
-            String expected = BASE_URL + "/login.jsp?requestedUrl=" + URLEncoder.encode(expectedRedir, "UTF-8");
+            String expected = getBaseURL() + "/login.jsp?requestedUrl=" + URLEncoder.encode(expectedRedir, "UTF-8");
             assertEquals(expected, uri.toASCIIString());
         }
     }
@@ -241,7 +246,7 @@ public class TestOAuth1Protocol {
 
         txFeature.nextTransaction();
 
-        WebResource resource = client.resource(BASE_URL).path(ENDPOINT).path(ENDPOINT_AUTHORIZE);
+        WebResource resource = client.resource(getBaseURL()).path(ENDPOINT).path(ENDPOINT_AUTHORIZE);
         Map<String, String> params = new HashMap<>();
         params.put("oauth_token", rToken.getToken());
         ClientResponse cr = resource.queryParams(multivalued(params)).get(ClientResponse.class);
@@ -249,7 +254,7 @@ public class TestOAuth1Protocol {
             assertEquals(SC_MOVED_TEMPORARILY, response.getStatus());
             URI uri = response.getLocation();
             String expectedRedir = "oauthGrant.jsp?oauth_token=" + rToken.getToken();
-            String expected = BASE_URL + "/login.jsp?requestedUrl=" + URLEncoder.encode(expectedRedir, "UTF-8");
+            String expected = getBaseURL() + "/login.jsp?requestedUrl=" + URLEncoder.encode(expectedRedir, "UTF-8");
             assertEquals(expected, uri.toASCIIString());
         }
     }
@@ -261,7 +266,7 @@ public class TestOAuth1Protocol {
 
         txFeature.nextTransaction();
 
-        WebResource resource = client.resource(BASE_URL).path(ENDPOINT).path(ENDPOINT_AUTHORIZE);
+        WebResource resource = client.resource(getBaseURL()).path(ENDPOINT).path(ENDPOINT_AUTHORIZE);
         Map<String, String> params = new HashMap<>();
         params.put("oauth_token", rToken.getToken());
         params.put("nuxeo_login", "bob");
@@ -311,7 +316,7 @@ public class TestOAuth1Protocol {
 
         txFeature.nextTransaction();
 
-        WebResource resource = client.resource(BASE_URL).path(ENDPOINT).path(ENDPOINT_ACCESS_TOKEN);
+        WebResource resource = client.resource(getBaseURL()).path(ENDPOINT).path(ENDPOINT_ACCESS_TOKEN);
         Map<String, String> params = new HashMap<>();
         params.put("oauth_consumer_key", CONSUMER);
         params.put("oauth_token", rToken.getToken());
@@ -389,7 +394,7 @@ public class TestOAuth1Protocol {
         txFeature.nextTransaction();
 
         DummyFilter.info = null;
-        WebResource resource = client.resource(BASE_URL).path("somepage.html");
+        WebResource resource = client.resource(getBaseURL()).path("somepage.html");
         Map<String, String> params = new HashMap<>();
         params.put("oauth_consumer_key", CONSUMER);
         params.put("oauth_token", token);

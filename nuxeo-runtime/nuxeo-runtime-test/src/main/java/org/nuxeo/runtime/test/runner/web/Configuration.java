@@ -39,6 +39,13 @@ public class Configuration {
     protected DriverFactory factory;
 
     /**
+     * Port to use for parameter replacement in the home URL.
+     *
+     * @since 10.10
+     */
+    protected int port;
+
+    /**
      * Initial URL (the one to be used by the home page)
      */
     protected String home;
@@ -73,12 +80,27 @@ public class Configuration {
         return factory;
     }
 
+    protected static final String PORT_PLACEHOLDER = "${PORT}";
+
+    /**
+     * Sets the port to use for parameter replacement in the home URL.
+     *
+     * @since 10.10
+     */
+    public void setPort(int port) {
+        this.port = port;
+    }
+
     public void setHome(String url) {
         home = url;
     }
 
     public String getHome() {
-        return home;
+        String url = home;
+        if (url != null && url.contains(PORT_PLACEHOLDER)) {
+            url = url.replace(PORT_PLACEHOLDER, String.valueOf(port));
+        }
+        return url;
     }
 
     public void setHomePageClass(Class<? extends WebPage> homePageClass) {
@@ -90,8 +112,8 @@ public class Configuration {
     }
 
     public void home() {
-        if (home != null && driver != null) {
-            driver.get(home);
+        if (getHome() != null && driver != null) {
+            driver.get(getHome());
         }
     }
 

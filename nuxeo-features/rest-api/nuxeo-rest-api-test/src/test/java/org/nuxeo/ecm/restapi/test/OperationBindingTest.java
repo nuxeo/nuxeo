@@ -46,7 +46,6 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -58,7 +57,6 @@ import com.sun.jersey.api.client.WebResource.Builder;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @Deploy("org.nuxeo.ecm.platform.restapi.test:operation-contrib.xml")
-@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class OperationBindingTest extends BaseTest {
 
@@ -181,8 +179,7 @@ public class OperationBindingTest extends BaseTest {
 
     @Test
     public void automationResourceIsAlsoAvailableBehindAPIRoot() throws Exception {
-        WebResource wr = getServiceFor("http://localhost:18090/api/v1/automation/doc", "Administrator",
-                "Administrator");
+        WebResource wr = getServiceFor(getRestApiUrl() + "automation/doc", "Administrator", "Administrator");
         Builder builder = wr.accept(MediaType.TEXT_HTML);
         try (CloseableClientResponse response = CloseableClientResponse.of(builder.get(ClientResponse.class))) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());

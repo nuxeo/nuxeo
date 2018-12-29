@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.automation.client.Constants.CTYPE_AUTOMATION;
 import static org.nuxeo.ecm.automation.client.Constants.CTYPE_ENTITY;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 
 import org.nuxeo.ecm.automation.client.AdapterFactory;
 import org.nuxeo.ecm.automation.client.AdapterManager;
@@ -56,12 +57,19 @@ public abstract class AbstractAutomationClient implements AutomationClient {
 
     protected String url;
 
+    protected Supplier<String> urlSupplier;
+
     protected volatile OperationRegistry registry;
 
     protected RequestInterceptor requestInterceptor;
 
     protected AbstractAutomationClient(String url) {
         this.url = url.endsWith("/") ? url : url + "/";
+    }
+
+    /** @since 10.10 */
+    protected AbstractAutomationClient(Supplier<String> urlSupplier) {
+        this.urlSupplier = urlSupplier;
     }
 
     /**
@@ -81,7 +89,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
 
     @Override
     public String getBaseUrl() {
-        return url;
+        return urlSupplier == null ? url : urlSupplier.get();
     }
 
     public void setBasicAuth(String username, String password) {
@@ -104,7 +112,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
     }
 
     protected OperationRegistry connect(Connector connector) throws IOException {
-        Request req = new Request(Request.GET, url);
+        Request req = new Request(Request.GET, getBaseUrl());
         req.put("Accept", CTYPE_AUTOMATION);
         // TODO handle authorization failure
         return (OperationRegistry) connector.execute(req);
@@ -113,6 +121,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
     public synchronized void shutdown() {
         adapterManager.clear();
         url = null;
+        urlSupplier = null;
         registry = null;
     }
 
@@ -169,7 +178,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
     }
 
     protected Session login(Connector connector) throws IOException {
-        Request request = new Request(Request.POST, url + getRegistry().getPath("login"));
+        Request request = new Request(Request.POST, getBaseUrl() + getRegistry().getPath("login"));
         request.put("Accept", CTYPE_ENTITY);
         LoginInfo login = (LoginInfo) connector.execute(request);
         return createSession(connector, login);

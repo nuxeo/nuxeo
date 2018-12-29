@@ -45,7 +45,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -60,7 +59,6 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RestServerFeature.class)
-@ServletContainer(port = 18090)
 @Deploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class DocumentListTest extends BaseTest {

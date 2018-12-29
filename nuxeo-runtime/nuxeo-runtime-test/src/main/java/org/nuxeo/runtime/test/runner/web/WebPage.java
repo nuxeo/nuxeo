@@ -90,7 +90,7 @@ public abstract class WebPage {
     }
 
     public void home() {
-        driver.get(config.home);
+        driver.get(config.getHome());
     }
 
     public void to(String path) {
@@ -98,7 +98,7 @@ public abstract class WebPage {
             driver.get(path);
         } else {
             try {
-                URL url = new URL(new URL(config.home), path);
+                URL url = new URL(new URL(config.getHome()), path);
                 driver.navigate().to(url);
             } catch (MalformedURLException e) {
                 throw new WebDriverException(e);

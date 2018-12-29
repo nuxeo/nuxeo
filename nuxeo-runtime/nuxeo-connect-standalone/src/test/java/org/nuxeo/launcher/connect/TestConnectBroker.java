@@ -64,7 +64,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 /**
@@ -73,7 +72,6 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 @RunWith(FeaturesRunner.class)
 @Features({ LogCaptureFeature.class, ServletContainerFeature.class })
 @Deploy("org.nuxeo.connect.standalone.test:OSGI-INF/server-deploy-contrib.xml")
-@ServletContainer(port = ConnectUrlConfig.CONNECT_TEST_MODE_PORT)
 public class TestConnectBroker {
 
     public static final String TEST_STORE_PATH = "src/test/resources/packages/store";
@@ -90,6 +88,15 @@ public class TestConnectBroker {
 
     @Inject
     LogCaptureFeature.Result logCaptureResult;
+
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
+
+    @Before
+    public void setUpPort() {
+        int port = servletContainerFeature.getPort();
+        ConnectUrlConfig.setTestPort(port);
+    }
 
     public static class PkgRequestLogFilter implements LogCaptureFeature.Filter {
         @Override

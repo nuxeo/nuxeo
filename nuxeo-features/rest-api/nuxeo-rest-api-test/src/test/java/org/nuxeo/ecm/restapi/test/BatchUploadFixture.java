@@ -59,7 +59,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
@@ -74,7 +73,6 @@ import com.sun.jersey.multipart.file.StreamDataBodyPart;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransientStoreFeature.class, RestServerFeature.class })
-@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy("org.nuxeo.ecm.platform.restapi.test:multiblob-doctype.xml")
 @Deploy("org.nuxeo.ecm.platform.restapi.test:test-conflict-batch-handler.xml")

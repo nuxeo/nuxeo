@@ -30,6 +30,8 @@ import static org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet.REVOKE_
 import java.io.IOException;
 import java.net.URI;
 
+import javax.inject.Inject;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -46,6 +48,7 @@ import org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -58,6 +61,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(TokenAuthenticationServletContainerFeature.class)
 public class TestTokenAuthenticationServlet {
 
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
+
     protected void nextTransaction() {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
@@ -65,7 +71,8 @@ public class TestTokenAuthenticationServlet {
 
     @Test
     public void testServlet() throws Exception {
-        String baseURL = "http://localhost:18080/authentication/token";
+        int port = servletContainerFeature.getPort();
+        String baseURL = "http://localhost:" + port + "/authentication/token";
         String applicationName = "Nuxeo Drive Café"; // name with space and non-ascii char
         String deviceId = "dead-beaf-cafe-babe";
         String userName = "Administrator";

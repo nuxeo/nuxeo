@@ -78,12 +78,12 @@ public class HttpClientTestRule implements TestRule {
         };
     }
 
-    protected void starting() {
+    public void starting() {
         client = JerseyClientHelper.clientBuilder().setCredentials(username, password).build();
         service = client.resource(url);
     }
 
-    protected void finished() {
+    public void finished() {
         client.destroy();
     }
 

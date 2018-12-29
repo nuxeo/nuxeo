@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.jaxrs.test.JerseyClientHelper;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -56,7 +57,8 @@ import com.sun.jersey.multipart.MultiPartMediaTypes;
  */
 public class BaseTest {
 
-    protected static final String REST_API_URL = "http://localhost:18090/api/v1/";
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
 
     protected static enum RequestType {
         GET, POST, DELETE, PUT, POSTREQUEST
@@ -79,6 +81,15 @@ public class BaseTest {
         client.destroy();
     }
 
+    protected String getBaseURL() {
+        int port = servletContainerFeature.getPort();
+        return "http://localhost:" + port;
+    }
+
+    protected String getRestApiUrl () {
+        return getBaseURL() + "/api/v1/";
+    }
+
     /**
      * Returns a {@link WebResource} to perform REST API calls with the given credentials.
      * <p>
@@ -87,7 +98,7 @@ public class BaseTest {
      * @since 5.7.3
      */
     protected WebResource getServiceFor(String username, String password) {
-        return getServiceFor(REST_API_URL, username, password);
+        return getServiceFor(getRestApiUrl(), username, password);
     }
 
     /**
