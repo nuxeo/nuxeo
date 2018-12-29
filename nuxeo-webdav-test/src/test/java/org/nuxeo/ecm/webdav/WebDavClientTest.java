@@ -65,6 +65,7 @@ import org.apache.jackrabbit.webdav.lock.Type;
 import org.apache.jackrabbit.webdav.property.DavProperty;
 import org.apache.jackrabbit.webdav.property.DavPropertyName;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
@@ -79,6 +80,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.w3c.dom.Element;
@@ -94,7 +96,7 @@ public class WebDavClientTest extends AbstractServerTest {
 
     private static CloseableHttpClient client;
 
-    private static HttpClientContext context;
+    private HttpClientContext context;
 
     @Inject
     protected CoreSession session;
@@ -105,23 +107,31 @@ public class WebDavClientTest extends AbstractServerTest {
     @Inject
     protected TransactionalFeature transactionalFeature;
 
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
+
     @BeforeClass
     public static void setUpClass() {
-        context = getBasicAuthHttpContext(USERNAME, PASSWORD);
         client = HttpClients.createDefault();
     }
 
-    protected static HttpClientContext getBasicAuthHttpContext(String username, String password) {
+    @Before
+    public void setUp() {
+        context = getBasicAuthHttpContext(USERNAME, PASSWORD);
+    }
+
+    protected HttpClientContext getBasicAuthHttpContext(String username, String password) {
         // credentials
         BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
         return getHttpContext(credentialsProvider);
     }
 
-    protected static HttpClientContext getHttpContext(CredentialsProvider credentialsProvider) {
+    protected HttpClientContext getHttpContext(CredentialsProvider credentialsProvider) {
         // AuthCache instance for preemptive authentication
         AuthCache authCache = new BasicAuthCache();
-        authCache.put(new HttpHost("localhost", WebDavServerFeature.PORT), new BasicScheme());
+        int port = servletContainerFeature.getPort();
+        authCache.put(new HttpHost("localhost", port), new BasicScheme());
 
         // create context
         HttpClientContext context = HttpClientContext.create();
@@ -133,7 +143,7 @@ public class WebDavClientTest extends AbstractServerTest {
 
     @Test
     public void testNotFoundVirtualRoot() throws Exception {
-        HttpPropfind request = new HttpPropfind(TEST_URI + "/nosuchpath", DavConstants.PROPFIND_ALL_PROP,
+        HttpPropfind request = new HttpPropfind(getTestUri() + "/nosuchpath", DavConstants.PROPFIND_ALL_PROP,
                 DavConstants.DEPTH_0);
         int status;
         try (CloseableHttpResponse response = client.execute(request, context)) {
@@ -144,7 +154,7 @@ public class WebDavClientTest extends AbstractServerTest {
 
     @Test
     public void testNotFoundRegularPath() throws Exception {
-        HttpPropfind request = new HttpPropfind(ROOT_URI + "/nosuchpath", DavConstants.PROPFIND_ALL_PROP,
+        HttpPropfind request = new HttpPropfind(getRootUri() + "/nosuchpath", DavConstants.PROPFIND_ALL_PROP,
                 DavConstants.DEPTH_0);
         int status;
         try (CloseableHttpResponse response = client.execute(request, context)) {
@@ -155,7 +165,7 @@ public class WebDavClientTest extends AbstractServerTest {
 
     @Test
     public void testPropFindOnFolderDepthInfinity() throws Exception {
-        HttpPropfind request = new HttpPropfind(ROOT_URI, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_INFINITY);
+        HttpPropfind request = new HttpPropfind(getRootUri(), DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_INFINITY);
         try (CloseableHttpResponse response = client.execute(request, context)) {
             MultiStatus multiStatus = request.getResponseBodyAsMultiStatus(response);
             // Not quite nice, but for a example ok
@@ -168,7 +178,7 @@ public class WebDavClientTest extends AbstractServerTest {
 
     @Test
     public void testPropFindOnFolderDepthZero() throws Exception {
-        HttpPropfind request = new HttpPropfind(ROOT_URI, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_0);
+        HttpPropfind request = new HttpPropfind(getRootUri(), DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_0);
         try (CloseableHttpResponse response = client.execute(request, context)) {
             MultiStatus multiStatus = request.getResponseBodyAsMultiStatus(response);
             // Not quite nice, but for a example ok
@@ -181,7 +191,7 @@ public class WebDavClientTest extends AbstractServerTest {
 
     @Test
     public void testListVirtualFolderContentsHTML() throws Exception {
-        HttpGet request = new HttpGet(TEST_URI + "/");
+        HttpGet request = new HttpGet(getTestUri() + "/");
         try (CloseableHttpResponse response = client.execute(request, context)) {
             String body;
             try (InputStream in = response.getEntity().getContent()) {
@@ -201,7 +211,7 @@ public class WebDavClientTest extends AbstractServerTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        HttpGet request = new HttpGet(ROOT_URI);
+        HttpGet request = new HttpGet(getRootUri());
         try (CloseableHttpResponse response = client.execute(request, context)) {
             String body;
             try (InputStream in = response.getEntity().getContent()) {
@@ -217,7 +227,7 @@ public class WebDavClientTest extends AbstractServerTest {
 
     @Test
     public void testListFolderContents() throws Exception {
-        HttpPropfind request = new HttpPropfind(ROOT_URI, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
+        HttpPropfind request = new HttpPropfind(getRootUri(), DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
         try (CloseableHttpResponse response = client.execute(request, context)) {
             MultiStatus multiStatus = request.getResponseBodyAsMultiStatus(response);
             MultiStatusResponse[] responses = multiStatus.getResponses();
@@ -249,7 +259,7 @@ public class WebDavClientTest extends AbstractServerTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        HttpPropfind request = new HttpPropfind(ROOT_URI, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
+        HttpPropfind request = new HttpPropfind(getRootUri(), DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
         try (CloseableHttpResponse response = client.execute(request, context)) {
             MultiStatus multiStatus = request.getResponseBodyAsMultiStatus(response);
             MultiStatusResponse[] responses = multiStatus.getResponses();
@@ -269,7 +279,7 @@ public class WebDavClientTest extends AbstractServerTest {
 
     @Test
     public void testGetDocProperties() throws Exception {
-        HttpPropfind request = new HttpPropfind(ROOT_URI + "quality.jpg", DavConstants.PROPFIND_ALL_PROP,
+        HttpPropfind request = new HttpPropfind(getRootUri() + "quality.jpg", DavConstants.PROPFIND_ALL_PROP,
                 DavConstants.DEPTH_1);
         try (CloseableHttpResponse response = client.execute(request, context)) {
             MultiStatus multiStatus = request.getResponseBodyAsMultiStatus(response);
@@ -284,7 +294,7 @@ public class WebDavClientTest extends AbstractServerTest {
     public void testCreateFolder() throws Exception {
         String name = "newfolder";
 
-        HttpMkcol request = new HttpMkcol(ROOT_URI + name);
+        HttpMkcol request = new HttpMkcol(getRootUri() + name);
         int status;
         try (CloseableHttpResponse response = client.execute(request, context)) {
             status = response.getStatusLine().getStatusCode();
@@ -360,7 +370,7 @@ public class WebDavClientTest extends AbstractServerTest {
         // rename it to a docx file
         String newName = "sample.docx";
 
-        HttpMove request = new HttpMove(ROOT_URI + name, ROOT_URI + newName, false);
+        HttpMove request = new HttpMove(getRootUri() + name, getRootUri() + newName, false);
         int status;
         try (CloseableHttpResponse response = client.execute(request, context)) {
             status = response.getStatusLine().getStatusCode();
@@ -380,7 +390,7 @@ public class WebDavClientTest extends AbstractServerTest {
     protected void doTestPutFile(String name, byte[] bytes, String mimeType, String expectedType) throws Exception {
         InputStream is = new ByteArrayInputStream(bytes);
 
-        HttpPut request = new HttpPut(ROOT_URI + name);
+        HttpPut request = new HttpPut(getRootUri() + name);
         request.setEntity(new InputStreamEntity(is, bytes.length, ContentType.create(mimeType)));
         int status;
         try (CloseableHttpResponse response = client.execute(request, context)) {
@@ -409,7 +419,7 @@ public class WebDavClientTest extends AbstractServerTest {
     public void testMoveFolder() throws Exception {
         // create a folder
         String name = "myfolder";
-        HttpMkcol mkcol = new HttpMkcol(ROOT_URI + name);
+        HttpMkcol mkcol = new HttpMkcol(getRootUri() + name);
         int status;
         try (CloseableHttpResponse response = client.execute(mkcol, context)) {
             status = response.getStatusLine().getStatusCode();
@@ -418,7 +428,7 @@ public class WebDavClientTest extends AbstractServerTest {
 
         // rename it
         String newName = "myfolderRenamed";
-        HttpMove move = new HttpMove(ROOT_URI + name, ROOT_URI + newName, false);
+        HttpMove move = new HttpMove(getRootUri() + name, getRootUri() + newName, false);
         try (CloseableHttpResponse response = client.execute(move, context)) {
             status = response.getStatusLine().getStatusCode();
         }
@@ -429,7 +439,7 @@ public class WebDavClientTest extends AbstractServerTest {
     public void testDeleteFile() throws Exception {
         String name = "test.txt";
 
-        HttpDelete request = new HttpDelete(ROOT_URI + name);
+        HttpDelete request = new HttpDelete(getRootUri() + name);
         int status;
         try (CloseableHttpResponse response = client.execute(request, context)) {
             status = response.getStatusLine().getStatusCode();
@@ -450,7 +460,7 @@ public class WebDavClientTest extends AbstractServerTest {
     public void testDeleteMissingFile() throws Exception {
         String name = "nosuchfile.txt";
 
-        HttpDelete request = new HttpDelete(ROOT_URI + name);
+        HttpDelete request = new HttpDelete(getRootUri() + name);
         int status;
         try (CloseableHttpResponse response = client.execute(request, context)) {
             status = response.getStatusLine().getStatusCode();
@@ -474,7 +484,7 @@ public class WebDavClientTest extends AbstractServerTest {
     }
 
     protected void checkAccept(String accept) throws Exception {
-        HttpPropfind request = new HttpPropfind(ROOT_URI, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_0);
+        HttpPropfind request = new HttpPropfind(getRootUri(), DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_0);
         request.setHeader("Accept", accept);
         try (CloseableHttpResponse response = client.execute(request, context)) {
             MultiStatus multiStatus = request.getResponseBodyAsMultiStatus(response);
@@ -487,7 +497,7 @@ public class WebDavClientTest extends AbstractServerTest {
 
     @Test
     public void testPropFindOnLockedFile() throws Exception {
-        String fileUri = ROOT_URI + "quality.jpg";
+        String fileUri = getRootUri() + "quality.jpg";
 
         HttpLock request = new HttpLock(fileUri, new LockInfo(Scope.EXCLUSIVE, Type.WRITE, USERNAME, 10000L, false));
         try (CloseableHttpResponse response = client.execute(request, context)) {
@@ -532,7 +542,6 @@ public class WebDavClientTest extends AbstractServerTest {
     public void testMSOfficeSaveFileFlow() throws Exception {
         // create a fake bin tmp file which will finally be a docx file
         String basePath = "/workspaces/workspace/";
-        String rootUri = TEST_URI + basePath;
         String origName = "Document.docx";
         String octetStreamMimeType = MimetypeRegistry.DEFAULT_MIMETYPE;
         byte[] bytes = "Fake BIN".getBytes(UTF_8);
@@ -574,20 +583,20 @@ public class WebDavClientTest extends AbstractServerTest {
         // rename it to a temp file
         String origTempName = "bar.tmp";
 
-        HttpMove request = new HttpMove(ROOT_URI + origName, ROOT_URI + origTempName, false);
+        HttpMove request = new HttpMove(getRootUri() + origName, getRootUri() + origTempName, false);
         int status;
         try (CloseableHttpResponse response = client.execute(request, fooClientContext)) {
             status = response.getStatusLine().getStatusCode();
         }
         assertEquals(HttpStatus.SC_CREATED, status);
 
-        request = new HttpMove(ROOT_URI + tempName, ROOT_URI + origName, false);
+        request = new HttpMove(getRootUri() + tempName, getRootUri() + origName, false);
         try (CloseableHttpResponse response = client.execute(request, fooClientContext)) {
             status = response.getStatusLine().getStatusCode();
         }
         assertEquals(HttpStatus.SC_CREATED, status);
 
-        HttpDelete deleteRequest = new HttpDelete(ROOT_URI + origTempName);
+        HttpDelete deleteRequest = new HttpDelete(getRootUri() + origTempName);
         try (CloseableHttpResponse response = client.execute(deleteRequest, fooClientContext)) {
             status = response.getStatusLine().getStatusCode();
         }
@@ -608,7 +617,7 @@ public class WebDavClientTest extends AbstractServerTest {
     }
 
     protected void testLockUnlock(String accept) throws Exception {
-        String fileUri = ROOT_URI + "quality.jpg";
+        String fileUri = getRootUri() + "quality.jpg";
 
         HttpLock request = new HttpLock(fileUri, new LockInfo(Scope.EXCLUSIVE, Type.WRITE, USERNAME, 10000L, false));
         if (accept != null) {

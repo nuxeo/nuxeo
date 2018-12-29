@@ -21,12 +21,15 @@
 
 package org.nuxeo.ecm.webdav;
 
+import javax.inject.Inject;
+
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(WebDavServerFeature.class)
@@ -34,8 +37,16 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = WebDavRepoInit.class)
 public abstract class AbstractServerTest {
 
-    public static final String TEST_URI = "http://localhost:" + WebDavServerFeature.PORT;
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
 
-    static final String ROOT_URI = TEST_URI + "/workspace/";
+    public String getTestUri() {
+        int port = servletContainerFeature.getPort();
+        return "http://localhost:" + port;
+    }
+
+    public String getRootUri() {
+        return getTestUri() + "/workspace/";
+    }
 
 }

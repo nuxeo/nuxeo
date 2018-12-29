@@ -21,14 +21,12 @@ package org.nuxeo.ecm.webdav;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 /**
  * @since 5.8
  */
 @Features(ServletContainerFeature.class)
-@ServletContainer(port = WebDavServerFeature.PORT)
 @Deploy("org.nuxeo.ecm.platform.types.api")
 @Deploy("org.nuxeo.ecm.platform.types.core")
 @Deploy("org.nuxeo.ecm.platform.dublincore")
@@ -37,7 +35,5 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 @Deploy("org.nuxeo.ecm.platform.filemanager.core.listener")
 @Deploy("org.nuxeo.ecm.webdav.test.tests:OSGI-INF/servletcontainer-config.xml")
 public class WebDavServerFeature extends WebEngineFeature {
-
-    protected static final int PORT = 9998;
 
 }
