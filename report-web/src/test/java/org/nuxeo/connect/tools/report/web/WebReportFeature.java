@@ -23,7 +23,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.test.runner.web.Browser;
 import org.nuxeo.runtime.test.runner.web.BrowserFamily;
 import org.nuxeo.runtime.test.runner.web.HomePage;
@@ -31,8 +30,7 @@ import org.nuxeo.runtime.test.runner.web.HomePage;
 @Features({ ReportFeature.class, WebEngineFeature.class })
 @Deploy("org.nuxeo.connect.tools.report.web")
 @Browser(type = BrowserFamily.HTML_UNIT_JS)
-@HomePage(type = WebEngineHomePage.class, url = "http://localhost:8082/")
-@ServletContainer(port = 8082)
+@HomePage(type = WebEngineHomePage.class, url = "http://localhost:${PORT}/")
 public class WebReportFeature implements RunnerFeature {
 
     static FeaturesRunner runner;
