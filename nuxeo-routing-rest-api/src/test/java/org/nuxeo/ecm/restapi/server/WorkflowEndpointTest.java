@@ -78,7 +78,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -92,7 +91,6 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @RunWith(FeaturesRunner.class)
 @Features({ EmbeddedAutomationServerFeature.class, WorkflowFeature.class, AuditFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-@ServletContainer(port = 18090)
 @Deploy("org.nuxeo.ecm.platform.restapi.server.routing")
 @Deploy("org.nuxeo.ecm.automation.test")
 @Deploy("org.nuxeo.ecm.platform.restapi.io")
@@ -724,7 +722,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
             assertEquals(2, taskActions.size());
             JsonNode taskAction = taskActions.elements().next();
             assertNotNull(taskAction);
-            assertEquals(String.format("http://localhost:18090/api/v1/task/%s/cancel", element.get("id").textValue()),
+            assertEquals(String.format(getRestApiUrl() + "task/%s/cancel", element.get("id").textValue()),
                     taskAction.get("url").textValue());
         }
     }
@@ -1124,7 +1122,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
             assertEquals("Administrator", taskNode.get("workflowInitiator").textValue());
             assertEquals("wf.serialDocumentReview.SerialDocumentReview", taskNode.get("workflowTitle").textValue());
             assertEquals("running", taskNode.get("workflowLifeCycleState").textValue());
-            assertEquals(String.format("http://localhost:18090/api/v1/workflow/%s/graph", createdWorkflowInstanceId),
+            assertEquals(String.format(getRestApiUrl() + "workflow/%s/graph", createdWorkflowInstanceId),
                     taskNode.get("graphResource").textValue());
         }
 
