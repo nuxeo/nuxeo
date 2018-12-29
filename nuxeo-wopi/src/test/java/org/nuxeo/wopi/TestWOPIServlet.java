@@ -46,7 +46,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
@@ -58,10 +58,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.wopi:OSGI-INF/test-jwt-contrib.xml")
 @Deploy("org.nuxeo.wopi:OSGI-INF/test-authentication-contrib.xml")
 @Deploy("org.nuxeo.wopi:OSGI-INF/test-servletcontainer-contrib.xml")
-@ServletContainer(port = 18090)
 public class TestWOPIServlet {
-
-    public static final String BASE_URL = "http://localhost:18090/";
 
     protected static final String BASIC_AUTH = "Basic "
             + Base64.getEncoder().encodeToString(("Administrator:Administrator").getBytes());
@@ -74,6 +71,9 @@ public class TestWOPIServlet {
 
     @Inject
     protected TransactionalFeature transactionalFeature;
+
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
 
     protected DocumentModel docxDoc;
 
@@ -97,40 +97,45 @@ public class TestWOPIServlet {
         transactionalFeature.nextTransaction();
     }
 
+    protected String getBaseURL() {
+        int port = servletContainerFeature.getPort();
+        return "http://localhost:" + port + "/";
+    }
+
     @Test
     public void testDocumentNotFound() throws IOException {
-        String url = BASE_URL + "wopi/view/test/unknownid/" + FILE_CONTENT_PROPERTY;
+        String url = getBaseURL() + "wopi/view/test/unknownid/" + FILE_CONTENT_PROPERTY;
         doGet(url, response -> assertEquals(404, response.getStatusLine().getStatusCode()));
     }
 
     @Test
     public void testBlobNotFound() throws IOException {
-        String url = Helpers.getWOPIURL(BASE_URL, "view", docxDoc, "files:files/0/file");
+        String url = Helpers.getWOPIURL(getBaseURL(), "view", docxDoc, "files:files/0/file");
         doGet(url, response -> assertEquals(404, response.getStatusLine().getStatusCode()));
     }
 
     @Test
     public void testUnsupportedBlob() throws IOException {
-        String url = Helpers.getWOPIURL(BASE_URL, "view", binDoc, FILE_CONTENT_PROPERTY);
+        String url = Helpers.getWOPIURL(getBaseURL(), "view", binDoc, FILE_CONTENT_PROPERTY);
         doGet(url, response -> assertEquals(404, response.getStatusLine().getStatusCode()));
     }
 
     @Test
     public void testSupportedBlob() throws IOException {
-        String url = Helpers.getWOPIURL(BASE_URL, "view", docxDoc, FILE_CONTENT_PROPERTY);
+        String url = Helpers.getWOPIURL(getBaseURL(), "view", docxDoc, FILE_CONTENT_PROPERTY);
         doGet(url, response -> assertEquals(200, response.getStatusLine().getStatusCode()));
     }
 
     @Test
     public void testNullPath() throws IOException {
-        String url = BASE_URL + WOPI_SERVLET_PATH;
+        String url = getBaseURL() + WOPI_SERVLET_PATH;
         doGet(url, response -> assertEquals(400, response.getStatusLine().getStatusCode()));
     }
 
     @Test
     public void testInvalidPath() throws IOException {
         // invalid path: no doc id, no xpath
-        String url = BASE_URL + WOPI_SERVLET_PATH + "/view/default/";
+        String url = getBaseURL() + WOPI_SERVLET_PATH + "/view/default/";
         doGet(url, response -> assertEquals(400, response.getStatusLine().getStatusCode()));
     }
 
@@ -141,7 +146,7 @@ public class TestWOPIServlet {
         ((WOPIServiceImpl) wopiService).extensionAppNames.clear();
 
         // ask for a supported blob
-        String url = Helpers.getWOPIURL(BASE_URL, "view", docxDoc, FILE_CONTENT_PROPERTY);
+        String url = Helpers.getWOPIURL(getBaseURL(), "view", docxDoc, FILE_CONTENT_PROPERTY);
         doGet(url, response -> assertEquals(404, response.getStatusLine().getStatusCode()));
     }
 

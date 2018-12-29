@@ -95,7 +95,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.wopi.FileInfo;
 import org.nuxeo.wopi.Operation;
@@ -120,12 +120,9 @@ import com.sun.jersey.api.client.WebResource;
 @Deploy("org.nuxeo.ecm.jwt")
 @Deploy("org.nuxeo.wopi:OSGI-INF/test-jwt-contrib.xml")
 @Deploy("org.nuxeo.wopi:OSGI-INF/test-webengine-servletcontainer-contrib.xml")
-@ServletContainer(port = 18090)
 public class TestFilesEndpoint {
 
-    public static final String BASE_URL = "http://localhost:18090/";
-
-    public static final String WOPI_FILES_BASE_URL = "http://localhost:18090/site/wopi/files";
+    public static final String WOPI_FILES = "site/wopi/files";
 
     public static final String CONTENTS_PATH = "contents";
 
@@ -143,6 +140,9 @@ public class TestFilesEndpoint {
 
     @Inject
     protected TransactionalFeature transactionalFeature;
+
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
 
     protected Client client;
 
@@ -195,6 +195,11 @@ public class TestFilesEndpoint {
         transactionalFeature.nextTransaction();
 
         Framework.getProperties().put(Environment.PRODUCT_NAME, "WOPI Test");
+    }
+
+    protected String getBaseURL() {
+        int port = servletContainerFeature.getPort();
+        return "http://localhost:" + port + "/";
     }
 
     protected void createUsers() {
@@ -878,7 +883,7 @@ public class TestFilesEndpoint {
         try (CloseableClientResponse response = post(johnToken, data, headers, blobDocFileId)) {
             // a version is done before updating the document, thus 0.1+
             assertPutRelativeFileCreateVersionResponse(response, blobDoc.getRef(), FILE_CONTENT_PROPERTY,
-                    "new file.docx", BASE_URL, data, "0.1+");
+                    "new file.docx", getBaseURL(), data, "0.1+");
 
         }
 
@@ -888,7 +893,7 @@ public class TestFilesEndpoint {
         try (CloseableClientResponse response = post(johnToken, data, headers, zeroLengthBlobDocFileId)) {
             // a version is done before updating the document, thus 0.1+
             assertPutRelativeFileCreateVersionResponse(response, zeroLengthBlobDoc.getRef(), FILE_CONTENT_PROPERTY,
-                    "zero-length-blob.docx", BASE_URL, data, "0.1+");
+                    "zero-length-blob.docx", getBaseURL(), data, "0.1+");
         }
 
         // success - 200 - conversion from suggested filename
@@ -896,7 +901,7 @@ public class TestFilesEndpoint {
         try (CloseableClientResponse response = post(johnToken, data, headers, hugeBlobDocFileId)) {
             // a version is done before updating the document, thus 0.1+
             assertPutRelativeFileCreateVersionResponse(response, hugeBlobDoc.getRef(), FILE_CONTENT_PROPERTY,
-                    "foo.docx", BASE_URL, data, "0.1+");
+                    "foo.docx", getBaseURL(), data, "0.1+");
         }
 
         // success - 200 - conversion from suggested filename with a custom WOPI base URL
@@ -924,11 +929,11 @@ public class TestFilesEndpoint {
         assertTrue(jsonNode.asText().startsWith(wopiBaseURL));
         jsonNode = node.get(HOST_EDIT_URL);
         assertNotNull(jsonNode);
-        assertTrue(jsonNode.asText().startsWith(BASE_URL));
+        assertTrue(jsonNode.asText().startsWith(getBaseURL()));
         jsonNode = node.get(HOST_VIEW_URL);
         assertNotNull(jsonNode);
         String hostViewUrl = jsonNode.asText();
-        assertTrue(hostViewUrl.startsWith(BASE_URL));
+        assertTrue(hostViewUrl.startsWith(getBaseURL()));
 
         transactionalFeature.nextTransaction();
         DocumentModel doc = session.getDocument(docRef);
@@ -1034,7 +1039,7 @@ public class TestFilesEndpoint {
         try (CloseableClientResponse response = post(johnToken, data, headers, multipleBlobsDocAttachementId)) {
             // a version is done before updating the document, thus 0.1+
             assertPutRelativeFileCreateVersionResponse(response, multipleBlobsDoc.getRef(), FILES_FIRST_FILE_PROPERTY,
-                    "test-attachment.docx", BASE_URL, data, "0.1+");
+                    "test-attachment.docx", getBaseURL(), data, "0.1+");
         }
     }
 
@@ -1224,6 +1229,8 @@ public class TestFilesEndpoint {
     protected void checkJSONResponse(ClientResponse response, String expectedJSONFile, Map<String, String> toReplace)
             throws IOException, JSONException {
         assertEquals(200, response.getStatus());
+        toReplace = new HashMap<>(toReplace);
+        toReplace.put("PORT", String.valueOf(servletContainerFeature.getPort()));
         String json = response.getEntity(String.class);
         File file = FileUtils.getResourceFileFromContext(expectedJSONFile);
         String expected = readFile(file, toReplace);
@@ -1235,7 +1242,7 @@ public class TestFilesEndpoint {
     }
 
     protected CloseableClientResponse get(String token, Map<String, String> headers, String... path) {
-        WebResource wr = client.resource(WOPI_FILES_BASE_URL)
+        WebResource wr = client.resource(getBaseURL() + WOPI_FILES)
                                .path(String.join("/", path))
                                .queryParam(ACCESS_TOKEN_PARAMETER, token);
         WebResource.Builder builder = wr.getRequestBuilder();
@@ -1250,7 +1257,7 @@ public class TestFilesEndpoint {
     }
 
     protected CloseableClientResponse post(String token, String data, Map<String, String> headers, String... path) {
-        WebResource wr = client.resource(WOPI_FILES_BASE_URL)
+        WebResource wr = client.resource(getBaseURL() + WOPI_FILES)
                                .path(String.join("/", path))
                                .queryParam(ACCESS_TOKEN_PARAMETER, token);
         WebResource.Builder builder = wr.getRequestBuilder();

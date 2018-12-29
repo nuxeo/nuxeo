@@ -18,10 +18,10 @@
   "UserCanWrite": false,
   "UserCanNotWriteRelative": true,
   "BreadcrumbBrandName": "WOPI Test",
-  "BreadcrumbBrandUrl": "http://localhost:18090/",
+  "BreadcrumbBrandUrl": "http://localhost:${PORT}/",
   "BreadcrumbFolderName": "wopi",
-  "DownloadUrl": "http://localhost:18090/nxfile/${REPOSITORY}/${DOC_ID}/${XPATH}/${FILENAME}?changeToken=${CHANGE_TOKEN}",
-  "HostEditUrl": "http://localhost:18090/wopi/edit/${REPOSITORY}/${DOC_ID}/${XPATH}",
-  "HostViewUrl": "http://localhost:18090/wopi/view/${REPOSITORY}/${DOC_ID}/${XPATH}",
-  "SignoutUrl": "http://localhost:18090/logout"
+  "DownloadUrl": "http://localhost:${PORT}/nxfile/${REPOSITORY}/${DOC_ID}/${XPATH}/${FILENAME}?changeToken=${CHANGE_TOKEN}",
+  "HostEditUrl": "http://localhost:${PORT}/wopi/edit/${REPOSITORY}/${DOC_ID}/${XPATH}",
+  "HostViewUrl": "http://localhost:${PORT}/wopi/view/${REPOSITORY}/${DOC_ID}/${XPATH}",
+  "SignoutUrl": "http://localhost:${PORT}/logout"
 }

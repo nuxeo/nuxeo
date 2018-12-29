@@ -24,6 +24,8 @@ package org.nuxeo.wopi;
  */
 public class TestConstants {
 
+    public static final String PORT_VAR = "PORT";
+
     public static final String CHANGE_TOKEN_VAR = "CHANGE_TOKEN";
 
     public static final String DOC_ID_VAR = "DOC_ID";

@@ -20,8 +20,6 @@
 
 package org.nuxeo.wopi;
 
-import static org.nuxeo.wopi.TestWOPIServlet.BASE_URL;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -39,6 +37,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 /**
  * @since 10.3
@@ -53,7 +52,9 @@ public class WOPIServletContainerFeature implements RunnerFeature, WorkingDirect
 
     @Override
     public void start(FeaturesRunner runner) {
-        Framework.getProperties().setProperty(Constants.WOPI_DISCOVERY_URL_PROPERTY, BASE_URL + "discovery.xml");
+        int port = runner.getFeature(ServletContainerFeature.class).getPort();
+        String baseURL = "http://localhost:" + port + "/";
+        Framework.getProperties().setProperty(Constants.WOPI_DISCOVERY_URL_PROPERTY, baseURL + "discovery.xml");
     }
 
     @Override
