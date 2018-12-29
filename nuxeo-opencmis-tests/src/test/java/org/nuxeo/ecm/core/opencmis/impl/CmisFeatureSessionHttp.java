@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 /**
@@ -41,7 +40,6 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
  * This is abstract, so subclasses can specify if AtomPub or Browser Bindings are used
  */
 @Features(ServletContainerFeature.class)
-@ServletContainer(port = CmisFeatureSessionHttp.PORT)
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/servletcontainer-base-config.xml")
 @Deploy("org.nuxeo.ecm.platform.web.common")
 public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
@@ -49,8 +47,6 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
     public static final String BASE_RESOURCE = "web";
 
     public static final String HOST = "localhost";
-
-    public static final int PORT = 17488;
 
     // org.apache.chemistry.opencmis.server.shared.HttpUtils.splitPath returns [""] instead of []
     // if there's not at least a non-empty servlet or context, so provide one.
@@ -61,8 +57,9 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
 
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
+        int port = runner.getFeature(ServletContainerFeature.class).getPort();
+        setUpServer(port);
         String repositoryName = runner.getFeature(CoreFeature.class).getRepositoryName();
-        setUpServer();
         setUpCmisSession(repositoryName);
     }
 
@@ -106,9 +103,8 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
     /** Adds protocol-specific parameters. */
     protected abstract void addParams(Map<String, String> params);
 
-    protected void setUpServer() throws Exception {
-        serverURI = new URI("http://localhost:" + PORT + '/' + CONTEXT);
-
+    protected void setUpServer(int port) throws Exception {
+        serverURI = new URI("http://localhost:" + port + '/' + CONTEXT);
     }
 
 }
