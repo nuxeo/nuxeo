@@ -161,7 +161,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         CollectionProperty prop = root.getCollectionProperty(Model.ACL_PROP);
         Serializable[] origValue = prop.getValue();
         assertEquals(3, origValue.length); // root acls preexist
-        ACLRow acl1 = new ACLRow(1, "test", true, "Write", "steve", null);
+        ACLRow acl1 = new ACLRow(0, "test", true, "Write", "steve", null);
         ACLRow acl2 = new ACLRow(1, "test", true, "Write", "jobs", null);
         prop.setValue(new ACLRow[] { acl1, acl2 });
         session.save(); // send invalidations, fragment in session2 is INVALIDATED_MODIFIED
