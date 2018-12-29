@@ -20,6 +20,7 @@ package org.nuxeo.ecm.multi.tenant;
 
 import static org.junit.Assert.assertEquals;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Test;
@@ -33,7 +34,7 @@ import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 /**
  * @since 5.8
@@ -41,7 +42,6 @@ import org.nuxeo.runtime.test.runner.ServletContainer;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = MultiTenantRepositoryInit.class)
-@ServletContainer(port = 18080)
 @Deploy("org.nuxeo.ecm.multi.tenant")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.core.cache")
@@ -50,10 +50,13 @@ import org.nuxeo.runtime.test.runner.ServletContainer;
 @Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-enabled-default-test-contrib.xml")
 public class TestRestAPIWithMultiTenant {
 
-    HttpAutomationClient client = new HttpAutomationClient("http://localhost:18080/automation/");
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
 
     @Test
     public void restAPICanAccessTenantSpecifyingDomainPart() throws Exception {
+        int port = servletContainerFeature.getPort();
+        HttpAutomationClient client = new HttpAutomationClient("http://localhost:" + port + "/automation/");
         client.getSession("user1", "user1");
         RestClient rclient = client.getRestClient();
 
