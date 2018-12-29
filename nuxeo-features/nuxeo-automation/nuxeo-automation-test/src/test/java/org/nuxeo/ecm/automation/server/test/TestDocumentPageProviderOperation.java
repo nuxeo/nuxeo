@@ -34,7 +34,6 @@ import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 
 /**
  * @since 10.10
@@ -42,7 +41,6 @@ import org.nuxeo.runtime.test.runner.ServletContainer;
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
 @Deploy("org.nuxeo.ecm.automation.test.test:test-page-provider.xml")
-@ServletContainer(port = 18080)
 public class TestDocumentPageProviderOperation {
 
     @Inject

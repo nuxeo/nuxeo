@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.userworkspace.operations.UserWorkspaceCreateFromBl
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
@@ -41,7 +40,6 @@ import org.nuxeo.runtime.test.runner.ServletContainer;
 @Deploy("org.nuxeo.ecm.platform.userworkspace.api")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")
-@ServletContainer(port = 18080)
 public class CanCreateInWorkspacesFromBlobTest {
 
     @Inject

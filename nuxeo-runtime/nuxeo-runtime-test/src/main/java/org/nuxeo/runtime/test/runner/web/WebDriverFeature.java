@@ -25,6 +25,7 @@ import org.junit.runner.manipulation.Filter;
 import org.junit.runner.manipulation.NoTestsRemainException;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import org.openqa.selenium.WebDriver;
 
 import com.google.inject.Binder;
@@ -99,6 +100,8 @@ public class WebDriverFeature implements RunnerFeature {
     @SuppressWarnings("unchecked")
     @Override
     public void configure(final FeaturesRunner runner, Binder binder) {
+        int port = runner.getFeature(ServletContainerFeature.class).getPort();
+        config.setPort(port);
         binder.bind(Configuration.class).toInstance(config);
         binder.bind(WebDriver.class).toProvider(() -> config.getDriver());
         if (config.getHomePageClass() != null) {

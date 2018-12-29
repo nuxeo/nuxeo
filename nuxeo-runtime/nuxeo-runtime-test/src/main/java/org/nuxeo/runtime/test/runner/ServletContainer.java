@@ -26,12 +26,16 @@ import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ * @deprecated since 10.10, as it prevents automatic port allocation, use {@link ServletContainerFeature#getPort}
+ *             instead
  */
 @Inherited
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface ServletContainer {
 
-    int port() default 8080;
+    int port() default 0;
 
 }

@@ -67,7 +67,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -79,7 +78,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class, RepositoryElasticSearchFeature.class, DirectoryFeature.class })
-@ServletContainer(port = 18090)
 @Deploy("org.nuxeo.ecm.platform.tag")
 @Deploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.restapi.test:elasticsearch-test-contrib.xml")

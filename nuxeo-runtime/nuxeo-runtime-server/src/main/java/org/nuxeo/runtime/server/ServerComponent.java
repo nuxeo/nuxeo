@@ -54,8 +54,6 @@ public class ServerComponent extends DefaultComponent {
 
     protected ServerConfigurator configurator;
 
-    protected int port;
-
     @Override
     public void activate(ComponentContext context) {
         try {
@@ -73,7 +71,7 @@ public class ServerComponent extends DefaultComponent {
                 log.error("Invalid port for embedded servlet container: " + configPort);
             }
         }
-        port = configurator.initialize(p);
+        configurator.initialize(p);
     }
 
     @Override
@@ -112,15 +110,6 @@ public class ServerComponent extends DefaultComponent {
     @Override
     public void stop(ComponentContext context) {
         configurator.stop();
-    }
-
-    /**
-     * Gets the port which is used by the server.
-     *
-     * @return the port
-     */
-    public int getPort() {
-        return port;
     }
 
 }

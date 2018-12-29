@@ -18,8 +18,12 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.ServerSocket;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.server.ServerComponent;
 
 import sun.net.www.http.HttpClient;
@@ -40,22 +44,45 @@ import sun.net.www.http.HttpClient;
 @Features(RuntimeFeature.class)
 public class ServletContainerFeature implements RunnerFeature {
 
+    private static final Logger log = LogManager.getLogger(ServletContainerFeature.class);
+
+    protected static final int RETRIES = 1000;
+
+    protected int port;
+
+    @SuppressWarnings("deprecation")
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         disableSunHttpClientRetryPostProp();
 
         ServletContainer conf = runner.getConfig(ServletContainer.class);
-        if (conf == null) {
-            conf = Defaults.of(ServletContainer.class);
+        int port = conf == null ? 0 : conf.port();
+        if (port <= 0) {
+            port = findFreePort();
         }
-        configureServletContainer(conf);
+        this.port = port;
+        System.setProperty(ServerComponent.PORT_SYSTEM_PROP, String.valueOf(port));
     }
 
-    protected void configureServletContainer(ServletContainer conf) {
-        int p = conf.port();
-        if (p > 0) {
-            System.setProperty(ServerComponent.PORT_SYSTEM_PROP, String.valueOf(p));
+    protected int findFreePort() {
+        for (int i = 0; i < RETRIES; i++) {
+            try (ServerSocket socket = new ServerSocket(0)) {
+                socket.setReuseAddress(true);
+                return socket.getLocalPort();
+            } catch (IOException e) {
+                log.trace("Failed to allocate port", e);
+            }
         }
+        throw new RuntimeException("Unable to find free port after " + RETRIES + " retries");
+    }
+
+    /**
+     * Returns the port allocated for this servlet container.
+     *
+     * @since 10.10
+     */
+    public int getPort() {
+        return port;
     }
 
     /**

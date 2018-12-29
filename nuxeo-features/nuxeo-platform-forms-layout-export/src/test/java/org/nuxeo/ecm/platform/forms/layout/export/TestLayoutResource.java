@@ -21,7 +21,10 @@ package org.nuxeo.ecm.platform.forms.layout.export;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Rule;
+import javax.inject.Inject;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -32,14 +35,13 @@ import org.nuxeo.jaxrs.test.HttpClientTestRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 /**
  * @since 10.1
  */
 @RunWith(FeaturesRunner.class)
 @Features({ WebEngineFeature.class })
-@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.forms.layout.core")
 @Deploy("org.nuxeo.ecm.platform.forms.layout.export")
@@ -47,9 +49,28 @@ import org.nuxeo.runtime.test.runner.ServletContainer;
 @Deploy("org.nuxeo.ecm.platform.forms.layout.export.tests:OSGI-INF/layouts-test-contrib.xml")
 public class TestLayoutResource {
 
-    @Rule
-    public HttpClientTestRule httpClientRule = new HttpClientTestRule.Builder().url(
-            "http://localhost:18090/layout-manager/layouts").build();
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
+
+    // do not use @Rule because it's executed before runner injection
+    public HttpClientTestRule httpClientRule;
+
+    protected HttpClientTestRule getRule() {
+        int port = servletContainerFeature.getPort();
+        String url = "http://localhost:" + port + "/layout-manager/layouts";
+        return new HttpClientTestRule.Builder().url(url).build();
+    }
+
+    @Before
+    public void before() {
+        httpClientRule = getRule();
+        httpClientRule.starting();
+    }
+
+    @After
+    public void after() {
+        httpClientRule.finished();
+    }
 
     @Test
     public void testSimpleGet() {

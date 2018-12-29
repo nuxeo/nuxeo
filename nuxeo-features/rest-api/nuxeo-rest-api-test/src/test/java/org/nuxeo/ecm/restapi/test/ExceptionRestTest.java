@@ -40,13 +40,11 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 @RunWith(FeaturesRunner.class)
 @Features({ LogCaptureFeature.class, RestServerFeature.class })
-@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy("org.nuxeo.ecm.platform.restapi.test.test")
 public class ExceptionRestTest extends BaseTest {
@@ -100,8 +98,7 @@ public class ExceptionRestTest extends BaseTest {
             assertEquals(404, r.getStatus());
             JsonNode node = mapper.readTree(r.getEntityInputStream());
             assertEquals(404, node.get("status").numberValue());
-            assertEquals(
-                    "com.sun.jersey.api.NotFoundException: null for uri: http://localhost:18090/api/v1/foo/notfound",
+            assertEquals("com.sun.jersey.api.NotFoundException: null for uri: " + getRestApiUrl() + "foo/notfound",
                     node.get("message").textValue());
 
             List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();

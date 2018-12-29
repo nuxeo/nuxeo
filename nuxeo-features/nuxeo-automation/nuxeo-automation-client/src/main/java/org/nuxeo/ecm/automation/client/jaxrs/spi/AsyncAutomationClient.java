@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,16 +41,31 @@ public abstract class AsyncAutomationClient extends AbstractAutomationClient {
      */
     protected long asyncAwaitTerminationTimeout = 2000;
 
+    protected static ExecutorService getExecutorService() {
+        return Executors.newCachedThreadPool(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread("AutomationAsyncExecutor");
+            }
+        });
+    }
+
     /**
      * Instantiates a new asynchronous automation client with the default timeout for the wait of the asynchronous
      * thread pool termination: 2 seconds.
      */
     public AsyncAutomationClient(String url) {
-        this(url, Executors.newCachedThreadPool(new ThreadFactory() {
-            public Thread newThread(Runnable r) {
-                return new Thread("AutomationAsyncExecutor");
-            }
-        }));
+        this(url, getExecutorService());
+    }
+
+    /**
+     * Instantiates a new asynchronous automation client with the default timeout for the wait of the asynchronous
+     * thread pool termination: 2 seconds.
+     *
+     * @since 10.10
+     */
+    public AsyncAutomationClient(Supplier<String> urlSupplier) {
+        this(urlSupplier, getExecutorService());
     }
 
     /**
@@ -58,6 +74,17 @@ public abstract class AsyncAutomationClient extends AbstractAutomationClient {
      */
     public AsyncAutomationClient(String url, ExecutorService executor) {
         super(url);
+        async = executor;
+    }
+
+    /**
+     * Instantiates a new asynchronous automation client with the given asynchronous executor and the default timeout
+     * for the wait of the asynchronous thread pool termination: 2 seconds.
+     *
+     * @since 10.10
+     */
+    public AsyncAutomationClient(Supplier<String> urlSupplier, ExecutorService executor) {
+        super(urlSupplier);
         async = executor;
     }
 

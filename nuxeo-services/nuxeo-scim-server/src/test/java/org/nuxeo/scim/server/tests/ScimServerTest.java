@@ -49,7 +49,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 import com.google.inject.Inject;
 import com.unboundid.scim.data.Entry;
@@ -61,7 +61,6 @@ import com.unboundid.scim.sdk.SCIMService;
 
 @RunWith(FeaturesRunner.class)
 @Features({ ScimFeature.class })
-@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = ScimServerInit.class)
 @Ignore("Unable to make it run reliability because of internal parser issues ...")
 public class ScimServerTest {
@@ -69,10 +68,14 @@ public class ScimServerTest {
     @Inject
     CoreSession session;
 
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
+
     @Test
     public void shouldListUsers() throws Exception {
 
-        final URI uri = URI.create("http://localhost:18090/scim/v1/");
+        int port = servletContainerFeature.getPort();
+        final URI uri = URI.create("http://localhost:" + port + "/scim/v1/");
 
         final ClientConfig clientConfig = createHttpBasicClientConfig("user0", "user0");
         final SCIMService scimService = new SCIMService(uri, clientConfig);
@@ -88,7 +91,7 @@ public class ScimServerTest {
         Assert.assertEquals("user0", u.getId());
         Assert.assertEquals("Steve", u.getName().getGivenName());
         Assert.assertEquals("Jobs", u.getName().getFamilyName());
-        Assert.assertEquals("http://localhost:18090/scim/v1/Users/user0", u.getMeta().getLocation().toString());
+        Assert.assertEquals("http://localhost:" + port + "/scim/v1/Users/user0", u.getMeta().getLocation().toString());
 
         List<String> actualGroups = new ArrayList<>();
         for (Entry<String> group : u.getGroups()) {

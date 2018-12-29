@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -48,7 +47,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreBulkFeature.class, RestServerFeature.class })
-@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class BulkActionFrameworkTest extends BaseTest {
 

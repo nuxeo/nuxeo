@@ -46,7 +46,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.ServletContainer;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import org.nuxeo.scim.server.tests.ScimFeature;
 import org.nuxeo.scim.server.tests.ScimServerInit;
 
@@ -54,7 +54,6 @@ import com.google.inject.Inject;
 
 @RunWith(OrderedFeaturesRunner.class)
 @Features({ ScimFeature.class })
-@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.CLASS, init = ScimServerInit.class)
 public class ScimComplianceTest {
 
@@ -63,6 +62,9 @@ public class ScimComplianceTest {
 
     @Inject
     CoreSession session;
+
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
 
     protected static CSP csp = null;
 
@@ -85,7 +87,6 @@ public class ScimComplianceTest {
     @BeforeClass
     public static void initComplianceSuite() {
         csp = new CSP();
-        csp.setUrl("http://localhost:18090/scim");
         csp.setVersion("/v1");
         csp.setAuthentication("basicAuth");
         csp.setUsername("Administrator");
@@ -94,6 +95,12 @@ public class ScimComplianceTest {
         userCache = new ResourceCache<User>();
         groupCache = new ResourceCache<Group>();
         configTest = new ConfigTest();
+    }
+
+    @Before
+    public void initUrl() {
+        int port = servletContainerFeature.getPort();
+        csp.setUrl("http://localhost:" + port + "/scim");
     }
 
     protected void verifyTests() {

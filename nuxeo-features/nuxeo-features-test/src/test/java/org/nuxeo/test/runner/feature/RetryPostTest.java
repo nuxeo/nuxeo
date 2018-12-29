@@ -61,7 +61,7 @@ import sun.net.www.http.HttpClient;
 @Features(RuntimeFeature.class)
 public class RetryPostTest {
 
-    protected static final int PORT = 18090;
+    protected static final int RETRIES = 1000;
 
     protected static final int CLIENT_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 
@@ -146,14 +146,27 @@ public class RetryPostTest {
 
     @Before
     public void initClient() {
-        dummyServer = new DummyHttpServer(PORT);
+        int port = findFreePort();
+        dummyServer = new DummyHttpServer(port);
         thread = new Thread(dummyServer);
         thread.start();
 
         Client client = Client.create();
         client.setConnectTimeout(CLIENT_TIMEOUT);
         client.setReadTimeout(CLIENT_TIMEOUT);
-        webResource = client.resource("http://localhost:18090").path("testRetryPost");
+        webResource = client.resource("http://localhost:" + port).path("testRetryPost");
+    }
+
+    protected int findFreePort() {
+        for (int i = 0; i < RETRIES; i++) {
+            try (ServerSocket socket = new ServerSocket(0)) {
+                socket.setReuseAddress(true);
+                return socket.getLocalPort();
+            } catch (IOException e) {
+                // retry
+            }
+        }
+        throw new RuntimeException("Unable to find free port after " + RETRIES + " retries");
     }
 
     @After

@@ -43,7 +43,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 
 /**
  * Tests the {@link TokenAuthenticator} in the case of an anonymous user.
@@ -54,7 +53,6 @@ import org.nuxeo.runtime.test.runner.ServletContainer;
 @RunWith(FeaturesRunner.class)
 @Features({ TokenAuthenticationServiceFeature.class, EmbeddedAutomationServerFeature.class })
 @Deploy("org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-anonymous-contrib.xml")
-@ServletContainer(port = 18080)
 @RepositoryConfig(init = TokenAuthenticationRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestAnonymousTokenAuthenticator {
 

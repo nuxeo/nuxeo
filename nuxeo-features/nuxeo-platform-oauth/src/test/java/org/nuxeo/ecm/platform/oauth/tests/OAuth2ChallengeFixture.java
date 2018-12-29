@@ -82,7 +82,7 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.jaxrs.test.JerseyClientHelper;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -97,7 +97,6 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ OAuthFeature.class, OAuth2ServletContainerFeature.class })
-@ServletContainer(port = 18090)
 public class OAuth2ChallengeFixture {
 
     protected static final String CLIENT_ID = "testClient";
@@ -108,13 +107,14 @@ public class OAuth2ChallengeFixture {
 
     protected static final String STATE = "testState";
 
-    protected static final String BASE_URL = "http://localhost:18090";
-
     @Inject
     protected TransientStoreService transientStoreService;
 
     @Inject
     protected TransactionalFeature txFeature;
+
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
 
     protected Client client;
 
@@ -138,6 +138,11 @@ public class OAuth2ChallengeFixture {
     @After
     public void tearDown() {
         client.destroy();
+    }
+
+    protected String getBaseURL() {
+        int port = servletContainerFeature.getPort();
+        return "http://localhost:" + port;
     }
 
     @Test
@@ -363,7 +368,7 @@ public class OAuth2ChallengeFixture {
     @Test
     public void getAuthorizeSubmitShouldReturn500() {
         try (CloseableClientResponse response = CloseableClientResponse.of(
-                client.resource(BASE_URL).path("oauth2").path(ENDPOINT_AUTH_SUBMIT).get(ClientResponse.class))) {
+                client.resource(getBaseURL()).path("oauth2").path(ENDPOINT_AUTH_SUBMIT).get(ClientResponse.class))) {
             assertEquals(405, response.getStatus());
         }
     }
@@ -371,7 +376,7 @@ public class OAuth2ChallengeFixture {
     @Test
     public void getTokenShouldReturn500() {
         try (CloseableClientResponse response = CloseableClientResponse.of(
-                client.resource(BASE_URL).path("oauth2").path(ENDPOINT_TOKEN).get(ClientResponse.class))) {
+                client.resource(getBaseURL()).path("oauth2").path(ENDPOINT_TOKEN).get(ClientResponse.class))) {
             assertEquals(405, response.getStatus());
         }
     }
@@ -689,7 +694,7 @@ public class OAuth2ChallengeFixture {
     }
 
     protected CloseableClientResponse responseFromGetAuthorizeWith(Map<String, String> queryParams) {
-        WebResource wr = client.resource(BASE_URL).path("oauth2").path(ENDPOINT_AUTH);
+        WebResource wr = client.resource(getBaseURL()).path("oauth2").path(ENDPOINT_AUTH);
 
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         for (Map.Entry<String, String> entry : queryParams.entrySet()) {
@@ -700,7 +705,7 @@ public class OAuth2ChallengeFixture {
     }
 
     protected CloseableClientResponse responseFromPostAuthorizeWith(Map<String, String> queryParams) {
-        WebResource wr = client.resource(BASE_URL).path("oauth2").path(ENDPOINT_AUTH_SUBMIT);
+        WebResource wr = client.resource(getBaseURL()).path("oauth2").path(ENDPOINT_AUTH_SUBMIT);
 
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         for (Map.Entry<String, String> entry : queryParams.entrySet()) {
@@ -711,7 +716,7 @@ public class OAuth2ChallengeFixture {
     }
 
     protected CloseableClientResponse responseFromTokenWith(Map<String, String> params) {
-        WebResource wr = client.resource(BASE_URL).path("oauth2").path(ENDPOINT_TOKEN);
+        WebResource wr = client.resource(getBaseURL()).path("oauth2").path(ENDPOINT_TOKEN);
 
         MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
         for (Map.Entry<String, String> entry : params.entrySet()) {

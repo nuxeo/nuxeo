@@ -34,14 +34,12 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 
 /**
  * @since 10.2
  */
 @RunWith(FeaturesRunner.class)
 @Features(RestServerFeature.class)
-@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-incorrect-listener-contrib.xml")
 public class DocumentCreateIncorrectListenerTest extends BaseTest {

@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
+import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 /**
  * @since 7.3
@@ -56,7 +56,6 @@ import org.nuxeo.runtime.test.runner.ServletContainer;
 @Deploy("org.nuxeo.ecm.platform.types.core")
 @Deploy("org.nuxeo.ecm.platform.restapi.io")
 @Deploy("org.nuxeo.ecm.platform.restapi.server")
-@ServletContainer(port = 18090)
 @RepositoryConfig(init = AutomationRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestHttpHelpers {
 
@@ -66,11 +65,18 @@ public class TestHttpHelpers {
     @Inject
     AutomationService automationService;
 
+    @Inject
+    protected ServletContainerFeature servletContainerFeature;
+
+    protected String getBaseURL() {
+        int port = servletContainerFeature.getPort();
+        return "http://localhost:" + port;
+    }
     @Test
     public void canUseHttpHelperGET() throws OperationException, IOException {
         Map<String, Object> params = new HashMap<>();
-        params.put("script",
-                "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \"http://localhost:18090/api/v1/path/default-domain\");");
+        params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \""
+                + getBaseURL() + "/api/v1/path/default-domain\");");
         OperationContext ctx = new OperationContext(session);
         automationService.run(ctx, "RunScript", params);
         String result = ((Blob) ctx.get("result")).getString();
@@ -87,8 +93,8 @@ public class TestHttpHelpers {
         OperationContext ctx = new OperationContext(session);
         ctx.put("data", data);
         ctx.put("headers", headers);
-        params.put("script",
-                "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"POST\", \"http://localhost:18090/api/v1/path/default-domain\", Context.data, Context.headers);");
+        params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"POST\", \""
+                + getBaseURL() + "/api/v1/path/default-domain\", Context.data, Context.headers);");
         automationService.run(ctx, "RunScript", params);
         String result = ((Blob) ctx.get("result")).getString();
         assertNotEquals("Internal Server Error", result);
@@ -98,8 +104,8 @@ public class TestHttpHelpers {
     @Test
     public void canUseHttpHelperGETStringBlob() throws OperationException, IOException {
         Map<String, Object> params = new HashMap<>();
-        params.put("script",
-                "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \"http://localhost:18090/api/v1/path/testBlob/@blob/file:content\");");
+        params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \""
+                + getBaseURL() + "/api/v1/path/testBlob/@blob/file:content\");");
         OperationContext ctx = new OperationContext(session);
         automationService.run(ctx, "RunScript", params);
         String result = ((Blob) ctx.get("result")).getString();
@@ -110,8 +116,8 @@ public class TestHttpHelpers {
     @Test
     public void canUseHttpHelperGETBlob() throws OperationException, IOException {
         Map<String, Object> params = new HashMap<>();
-        params.put("script",
-                "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \"http://localhost:18090/api/v1/path/testBlob2/@blob/file:content\");");
+        params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \""
+                + getBaseURL() + "/api/v1/path/testBlob2/@blob/file:content\");");
         OperationContext ctx = new OperationContext(session);
         automationService.run(ctx, "RunScript", params);
         Blob result = ((Blob) ctx.get("result"));

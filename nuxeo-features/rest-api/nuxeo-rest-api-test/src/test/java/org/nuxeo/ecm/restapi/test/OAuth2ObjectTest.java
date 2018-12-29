@@ -38,7 +38,6 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -47,7 +46,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class, CoreFeature.class, DirectoryFeature.class })
-@ServletContainer(port = 18090)
 @Deploy("org.nuxeo.ecm.platform.oauth")
 @Deploy("org.nuxeo.ecm.directory.api")
 @Deploy("org.nuxeo.ecm.directory")
@@ -275,7 +273,7 @@ public class OAuth2ObjectTest extends BaseTest {
                     child.get("clientId").textValue().equals(TEST_OAUTH2_CLIENTID) &&
                     child.get("authorizationURL").textValue().equals(AUTHORIZATION_SERVER_URL + "?client_id="
                             + TEST_OAUTH2_CLIENTID
-                            + "&redirect_uri=http://localhost:18090/site/oauth2/" + serviceName + "/callback"
+                            + "&redirect_uri=" + getBaseURL() + "/site/oauth2/" + serviceName + "/callback"
                             + "&response_type=code&scope=" + getScopeUrl(0) + "%20" + getScopeUrl(1)) &&
                     (checkToken ? child.get("userId").textValue().equals(TEST_OAUTH2_SERVICE_USERID) : true)) {
                     return;
@@ -288,7 +286,7 @@ public class OAuth2ObjectTest extends BaseTest {
             assertEquals(TEST_OAUTH2_CLIENTID, node.get("clientId").textValue());
             assertEquals(
                     AUTHORIZATION_SERVER_URL + "?client_id=" + TEST_OAUTH2_CLIENTID
-                            + "&redirect_uri=http://localhost:18090/site/oauth2/" + serviceName + "/callback"
+                            + "&redirect_uri=" + getBaseURL() + "/site/oauth2/" + serviceName + "/callback"
                             + "&response_type=code&scope=" + getScopeUrl(0) + "%20" + getScopeUrl(1),
                     node.get("authorizationURL").textValue());
             if (checkToken) {

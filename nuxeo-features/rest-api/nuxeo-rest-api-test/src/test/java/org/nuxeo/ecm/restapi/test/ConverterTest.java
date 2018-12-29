@@ -40,7 +40,6 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -54,7 +53,6 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
-@ServletContainer(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.platform.convert")
@@ -132,10 +130,10 @@ public class ConverterTest extends BaseTest {
             String id = node.get("conversionId").textValue();
             assertNotNull(id);
             pollingURL = node.get("pollingURL").textValue();
-            String computedPollingURL = String.format("http://localhost:18090/api/v1/conversions/%s/poll", id);
+            String computedPollingURL = String.format(getRestApiUrl() + "conversions/%s/poll", id);
             assertEquals(computedPollingURL, pollingURL);
             String resultURL = node.get("resultURL").textValue();
-            computedResultURL = String.format("http://localhost:18090/api/v1/conversions/%s/result", id);
+            computedResultURL = String.format(getRestApiUrl() + "conversions/%s/result", id);
             assertEquals(computedResultURL, resultURL);
         }
 
