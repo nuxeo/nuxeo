@@ -81,7 +81,9 @@ public class DocumentSetRepositoryInit extends DefaultRepositoryInit {
                 s.createDocument(s.createDocumentModel(p.getPathAsString(), p.getName() + "file" + i, "File"));
                 s.createDocument(s.createDocumentModel(p.getPathAsString(), p.getName() + "note" + i, "Note"));
                 DocumentModel child = s.createDocumentModel(p.getPathAsString(), p.getName() + "doc" + i, "ComplexDoc");
-                child.setProperty("dublincore", "modified", new Date());
+                child.setPropertyValue("dc:modified", new Date());
+                child.setPropertyValue("dc:nature", "article");
+                child.setPropertyValue("dc:contributors", new String[] { "bob", "Administrator" });
                 child = s.createDocument(child);
                 s.createProxy(child.getRef(), p.getRef());
                 DocumentModel folder = s.createDocumentModel(p.getPathAsString(), p.getName() + "folder" + i, "Folder");

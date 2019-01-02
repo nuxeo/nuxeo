@@ -80,9 +80,13 @@ public class SortBlob extends AbstractTransientBlobComputation {
             IOUtils.copy(is, os);
             os.write(in.getFooter());
             os.flush();
-            Files.delete(tmpBlob.getFile().toPath());
         } catch (IOException e) {
             log.error("Unable to copy header/footer", e);
+        }
+        try {
+            Files.delete(tmpBlob.getFile().toPath());
+        } catch (IOException e) {
+            log.error("Unable to delete tmp file", e);
         }
 
         storeBlob(new FileBlob(path.toFile()), commandId, storeName);

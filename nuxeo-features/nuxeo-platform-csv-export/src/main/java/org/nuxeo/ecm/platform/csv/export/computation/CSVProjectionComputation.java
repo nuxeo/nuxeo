@@ -24,10 +24,8 @@ import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.SCHEMA
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.XPATHS_CTX_DATA;
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentPropertyCSVWriter.LANG_CTX_DATA;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +41,7 @@ import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.bulk.message.DataBucket;
+import org.nuxeo.ecm.core.io.marshallers.csv.OutputStreamWithCSVWriter;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
@@ -70,7 +69,7 @@ public class CSVProjectionComputation extends AbstractBulkComputation {
 
     public static final String PARAM_LANG = "lang";
 
-    protected ByteArrayOutputStream out;
+    protected OutputStreamWithCSVWriter out;
 
     protected RenderingContext renderingCtx;
 
@@ -80,7 +79,7 @@ public class CSVProjectionComputation extends AbstractBulkComputation {
 
     @Override
     public void startBucket(String bucketKey) {
-        out = new ByteArrayOutputStream();
+        out = new OutputStreamWithCSVWriter();
         BulkCommand command = getCurrentCommand();
         renderingCtx = RenderingContext.CtxBuilder.get();
         renderingCtx.setParameterValues(SCHEMAS_CTX_DATA, getList(command.getParams().get(PARAM_SCHEMAS)));
@@ -103,21 +102,16 @@ public class CSVProjectionComputation extends AbstractBulkComputation {
     @Override
     public void endBucket(ComputationContext context, BulkStatus delta) {
         String commandId = delta.getId();
-        try {
-            // Extract header from data
-            String csv = out.toString(UTF_8.name());
-            String recordSeparator = CSVFormat.DEFAULT.getRecordSeparator();
-            String header = getHeader(csv, recordSeparator);
-            String data = getData(csv, recordSeparator);
-            DataBucket dataBucket = new DataBucket(commandId, delta.getProcessed(), data.getBytes(UTF_8),
-                    header.getBytes(UTF_8),
-                    new byte[0]);
-            Record record = Record.of(commandId, BulkCodecs.getDataBucketCodec().encode(dataBucket));
-            context.produceRecord(OUTPUT_1, record);
-            out = null;
-        } catch (UnsupportedEncodingException e) {
-            log.error("Unable to extract csv content", e);
-        }
+        // Extract header from data
+        String csv = out.toString();
+        String recordSeparator = CSVFormat.DEFAULT.getRecordSeparator();
+        String header = getHeader(csv, recordSeparator);
+        String data = getData(csv, recordSeparator);
+        DataBucket dataBucket = new DataBucket(commandId, delta.getProcessed(), data.getBytes(UTF_8),
+                header.getBytes(UTF_8), new byte[0]);
+        Record record = Record.of(commandId, BulkCodecs.getDataBucketCodec().encode(dataBucket));
+        context.produceRecord(OUTPUT_1, record);
+        out = null;
     }
 
     protected String getHeader(String csv, String recordSeparator) {

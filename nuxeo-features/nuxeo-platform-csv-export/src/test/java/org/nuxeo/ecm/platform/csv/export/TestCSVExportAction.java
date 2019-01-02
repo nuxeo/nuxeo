@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.core.bulk.action.computation.SortBlob.SORT_PARAMETER;
 import static org.nuxeo.ecm.core.bulk.action.computation.ZipBlob.ZIP_PARAMETER;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
-import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.DOC_BY_LEVEL;
+import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_TOTAL;
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVHelper.SYSTEM_PROPERTIES_HEADER_FIELDS;
 
 import java.io.File;
@@ -143,8 +143,8 @@ public class TestCSVExportAction {
 
         BulkStatus status = bulkService.getStatus(command.getId());
         assertEquals(COMPLETED, status.getState());
-        assertEquals(DOC_BY_LEVEL, status.getProcessed());
-        assertEquals(DOC_BY_LEVEL, status.getTotal());
+        assertEquals(CREATED_TOTAL, status.getProcessed());
+        assertEquals(CREATED_TOTAL, status.getTotal());
 
         String url = Framework.getService(DownloadService.class).getDownloadUrl(command.getId());
         assertEquals(url, status.getResult().get("url"));
@@ -167,7 +167,7 @@ public class TestCSVExportAction {
         // file has the correct number of lines
         List<String> lines = Files.lines(file.toPath()).collect(Collectors.toList());
         // number of docs plus the header
-        assertEquals(DOC_BY_LEVEL + 1, lines.size());
+        assertEquals(CREATED_TOTAL + 1, lines.size());
 
         // Check header
         assertArrayEquals(SYSTEM_PROPERTIES_HEADER_FIELDS, lines.get(0).split(","));
@@ -221,8 +221,8 @@ public class TestCSVExportAction {
 
         BulkStatus status = bulkService.getStatus(command.getId());
         assertEquals(COMPLETED, status.getState());
-        assertEquals(DOC_BY_LEVEL, status.getProcessed());
-        assertEquals(DOC_BY_LEVEL, status.getTotal());
+        assertEquals(CREATED_TOTAL, status.getProcessed());
+        assertEquals(CREATED_TOTAL, status.getTotal());
 
         Blob blob = getBlob(command.getId());
         File file = blob.getFile();
@@ -247,7 +247,9 @@ public class TestCSVExportAction {
             // There should be headerSize - 1 number of commas for headerSize number of properties
             assertEquals(headerSize - 1, StringUtils.countMatches(doc, ","));
             List<String> properties = Arrays.asList(doc.split(","));
-            assertTrue(properties.contains("Article FR"));
+            if (properties.contains("ComplexDoc")) {
+                assertTrue(properties.contains("Article FR"));
+            }
             if (testIds.contains(properties.get(1))) {
                 assertTrue(properties.contains("art/architecture"));
             }
@@ -277,11 +279,11 @@ public class TestCSVExportAction {
 
         BulkStatus status = bulkService.getStatus(command1.getId());
         assertEquals(COMPLETED, status.getState());
-        assertEquals(DOC_BY_LEVEL, status.getProcessed());
+        assertEquals(CREATED_TOTAL, status.getProcessed());
 
         status = bulkService.getStatus(command2.getId());
         assertEquals(COMPLETED, status.getState());
-        assertEquals(DOC_BY_LEVEL, status.getProcessed());
+        assertEquals(CREATED_TOTAL, status.getProcessed());
 
         Blob blob1 = getBlob(command1.getId());
         Blob blob2 = getBlob(command2.getId());
@@ -295,26 +297,17 @@ public class TestCSVExportAction {
     @Test
     public void testDownloadCSV() throws Exception {
 
-        DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        List<DocumentModel> children = session.getChildren(model.getRef());
-        for (int i = 0; i < children.size(); i++) {
-            DocumentModel child = children.get(i);
-            child.setPropertyValue("dc:nature", "article");
-            child.setPropertyValue("dc:contributors", new String[] { "bob", "Administrator" });
-            session.saveDocument(child);
-        }
-        session.save();
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-
-        BulkCommand command = createBuilder().param("schemas", ImmutableList.of("dublincore")).build();
+        BulkCommand command = createBuilder().param("schemas", ImmutableList.of("dublincore"))
+                                             .bucket(100)
+                                             .batch(40)
+                                             .build();
         bulkService.submit(command);
         assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
 
         BulkStatus status = bulkService.getStatus(command.getId());
         assertEquals(COMPLETED, status.getState());
-        assertEquals(DOC_BY_LEVEL, status.getProcessed());
-        assertEquals(DOC_BY_LEVEL, status.getTotal());
+        assertEquals(CREATED_TOTAL, status.getProcessed());
+        assertEquals(CREATED_TOTAL, status.getTotal());
 
         Path dir = Files.createTempDirectory(CSVExportAction.ACTION_NAME + "test" + System.currentTimeMillis());
         File testCsv = new File(dir.toFile(), "test.csv");
@@ -338,8 +331,10 @@ public class TestCSVExportAction {
         }
 
         List<String> lines = Files.lines(testCsv.toPath()).collect(Collectors.toList());
+        long headerCount = lines.stream().filter(line -> line.startsWith("repository,uid")).count();
+        assertEquals(1, headerCount);
         // number of docs plus header
-        assertEquals(DOC_BY_LEVEL + 1, lines.size());
+        assertEquals(CREATED_TOTAL + headerCount, lines.size());
 
     }
 
@@ -349,7 +344,7 @@ public class TestCSVExportAction {
 
     protected Builder createBuilder(boolean sorted, boolean zipped) {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        String nxql = String.format("SELECT * from Document where ecm:parentId='%s'", model.getId());
+        String nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", model.getId());
         return new BulkCommand.Builder(CSVExportAction.ACTION_NAME, nxql).repository(session.getRepositoryName())
                                                                          .user(session.getPrincipal().getName())
                                                                          .param(SORT_PARAMETER, sorted)
