@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
@@ -210,6 +211,9 @@ public class JSONPropertyWriter {
     protected void writeScalarProperty(JsonGenerator jg, Property prop, PropertyConsumer fieldNameWriter)
             throws PropertyException, IOException {
         Type type = prop.getType();
+        if (type instanceof SimpleType) {
+            type = ((SimpleType) type).getPrimitiveType();
+        }
         Object v = prop.getValue();
         if (v == null) {
             if (writeNull) {

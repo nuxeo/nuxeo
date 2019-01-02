@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.api.model.impl.PropertyFactory;
 import org.nuxeo.ecm.core.schema.Namespace;
+import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.core.schema.types.FieldImpl;
 import org.nuxeo.ecm.core.schema.types.ListTypeImpl;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.SchemaImpl;
+import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
@@ -98,6 +100,12 @@ public class TestJSONPropertyWriter {
     @Test
     public void testWritePropertyWithDoubleProperty() throws IOException {
         testWriteProperty(JSONPropertyWriter.create(), DoubleType.INSTANCE, Double.valueOf(2.5), "{\"property\":2.5}");
+    }
+
+    @Test
+    public void testWritePropertyWithRestrictedDoubleProperty() throws IOException {
+        Type restrictedType = new SimpleTypeImpl(DoubleType.INSTANCE, SchemaNames.BUILTIN, "type name");
+        testWriteProperty(JSONPropertyWriter.create(), restrictedType, Double.valueOf(2.5), "{\"property\":2.5}");
     }
 
     @Test
