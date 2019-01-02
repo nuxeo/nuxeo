@@ -155,12 +155,23 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
-    point="listener">
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="auditLoggerListener" async="false" postCommit="false" priority="500"
+              class="org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener" />
+  </extension>
 
-    <listener name="auditLoggerListener" async="false"
-      class="org.nuxeo.ecm.platform.audit.listener.AuditEventLogger" />
+  <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
+    <logConfig name="${nuxeo.stream.audit.log.config:=audit}" />
+  </extension>
 
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="auditLogWriter" logConfig="${nuxeo.stream.audit.log.config:=audit}"
+                     defaultConcurrency="1" defaultPartitions="1" defaultCodec="${nuxeo.stream.audit.log.codec:=legacy}"
+                     class="org.nuxeo.ecm.platform.audit.impl.StreamAuditWriter">
+      <policy name="AuditLogWriter" batchCapacity="${nuxeo.stream.audit.batch.size:=10}"
+              batchThreshold="${nuxeo.stream.audit.batch.threshold.ms:=50}ms"
+              maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="false" />
+    </streamProcessor>
   </extension>
 
 </component>

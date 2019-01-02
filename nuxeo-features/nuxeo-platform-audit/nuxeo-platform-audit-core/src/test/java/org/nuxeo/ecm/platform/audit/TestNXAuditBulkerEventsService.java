@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.platform.audit;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -30,19 +29,13 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features(StreamAuditFeature.class)
+@Features(AuditBulkerFeature.class)
 @RepositoryConfig(init = MyInit.class, cleanup = Granularity.METHOD)
-public class TestNXStreamAuditEventsService extends TestNXAuditEventsService {
-
-    @Test
-    @Override
-    public void testLogRetentionActiveChange() throws Exception {
-        super.testLogRetentionActiveChange();
-    }
+public class TestNXAuditBulkerEventsService extends TestNXAuditEventsService {
 
     @Override
     public boolean extendedInfosComputedWithFullDocumentModel() {
-        return true;
+        return false;
     }
 
 }
