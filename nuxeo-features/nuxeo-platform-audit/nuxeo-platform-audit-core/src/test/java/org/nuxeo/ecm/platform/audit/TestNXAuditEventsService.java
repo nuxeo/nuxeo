@@ -26,8 +26,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 
-import java.io.Serializable;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -35,10 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -53,23 +51,20 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.audit.TestNXAuditEventsService.MyInit;
-import org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData;
+import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
-import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
-import org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricFactory;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.management.ObjectNameFactory;
-import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -107,25 +102,18 @@ public class TestNXAuditEventsService {
     }
 
     @Inject
-    Logs serviceUnderTest;
-
-    protected MBeanServer mbeanServer;
+    protected Logs serviceUnderTest;
 
     @Inject
     protected EventService eventService;
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     @Inject
-    TransactionalFeature txFeature;
+    protected TransactionalFeature txFeature;
 
-    @Before
-    public void setUp() throws Exception {
-        mbeanServer = Framework.getService(ServerLocator.class).lookupServer();
-    }
-
-    public void waitForAsyncCompletion() throws InterruptedException {
+    public void waitForAsyncCompletion() {
         txFeature.nextTransaction(Duration.ofSeconds(20));
     }
 
@@ -134,7 +122,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testAuditContribution() throws Exception {
+    public void testAuditContribution() {
         NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime()
                                                                             .getComponent(NXAuditEventsService.NAME);
         assertNotNull(auditService);
@@ -147,7 +135,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testLogDocumentMessageWithoutCategory() throws InterruptedException {
+    public void testLogDocumentMessageWithoutCategory() {
         EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), repo.source);
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
         event.setInline(false);
@@ -155,7 +143,8 @@ public class TestNXAuditEventsService {
         eventService.fireEvent(event);
         waitForAsyncCompletion();
 
-        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source.getId());
+        List<LogEntry> entries = serviceUnderTest.queryLogs(
+                new AuditQueryBuilder().predicate(Predicates.eq(LOG_DOC_UUID, repo.source.getId())).defaultOrder());
         assertEquals(2, entries.size());
 
         // entries are not ordered => skip creation log
@@ -176,7 +165,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testLogDocumentMessageWithCategory() throws InterruptedException {
+    public void testLogDocumentMessageWithCategory() {
         EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), repo.source);
         ctx.setProperty("category", "myCategory");
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
@@ -185,7 +174,8 @@ public class TestNXAuditEventsService {
         eventService.fireEvent(event);
         waitForAsyncCompletion();
 
-        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source.getId(), repo.source.getRepositoryName());
+        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source.getId(),
+                repo.source.getRepositoryName());
         assertEquals(2, entries.size());
 
         // entries are not ordered => skip creation log
@@ -206,7 +196,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testLogMiscMessage() throws InterruptedException {
+    public void testLogMiscMessage() {
 
         DefaultAuditBackend backend = (DefaultAuditBackend) serviceUnderTest;
 
@@ -225,7 +215,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testsyncLogCreation() throws Exception {
+    public void testsyncLogCreation() {
         DocumentModel rootDocument = session.getRootDocument();
         long count = serviceUnderTest.syncLogCreationEntries(session.getRepositoryName(),
                 rootDocument.getPathAsString(), true);
@@ -247,7 +237,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void setSimplePincipalNameIsLoggedAsPrincipalName() throws Exception {
+    public void setSimplePincipalNameIsLoggedAsPrincipalName() {
         // Given a simple principal
         NuxeoPrincipal principal = new UserPrincipal("testuser", null, false, false);
         // I get it in the logs
@@ -255,7 +245,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testPrincipalNameIsActingUser() throws Exception {
+    public void testPrincipalNameIsActingUser() {
         // Given a Nuxeo principal with an acting user
         NuxeoPrincipal principal = new NuxeoPrincipalImpl("mysystem", false, true);
         principal.setOriginatingUser("actualuser");
@@ -263,11 +253,11 @@ public class TestNXAuditEventsService {
         doTestPrincipalName("actualuser", principal);
     }
 
-    protected void doTestPrincipalName(String expected, NuxeoPrincipal principal) throws InterruptedException {
+    protected void doTestPrincipalName(String expected, NuxeoPrincipal principal) {
         // Given a principal
         // When i fire an event with it
         int oldCount = serviceUnderTest.getEventsCount("loginSuccess").intValue();
-        EventContext ctx = new UnboundEventContext(principal, new HashMap<String, Serializable>());
+        EventContext ctx = new UnboundEventContext(principal, new HashMap<>());
         eventService.fireEvent(ctx.newEvent("loginSuccess"));
         waitForAsyncCompletion();
 
@@ -279,7 +269,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testExtendedInfos() throws InterruptedException {
+    public void testExtendedInfos() {
         DocumentModel rootDocument = session.getRootDocument();
         DocumentModel model = session.createDocumentModel(rootDocument.getPathAsString(), "youps", "File");
         model.setProperty("dublincore", "title", "huum");
@@ -304,15 +294,10 @@ public class TestNXAuditEventsService {
 
         waitForAsyncCompletion();
 
-        FilterMapEntry filterByDocRemoved = new FilterMapEntry();
-        filterByDocRemoved.setColumnName(BuiltinLogEntryData.LOG_EVENT_ID);
-        filterByDocRemoved.setOperator("=");
-        filterByDocRemoved.setQueryParameterName(BuiltinLogEntryData.LOG_EVENT_ID);
-        filterByDocRemoved.setObject("documentRemoved");
-
-        Map<String, FilterMapEntry> filterMap = new HashMap<String, FilterMapEntry>();
-        filterMap.put("eventId", filterByDocRemoved);
-        entries = serviceUnderTest.getLogEntriesFor(model.getId(), filterMap, true);
+        entries = serviceUnderTest.queryLogs(
+                new AuditQueryBuilder().predicate(Predicates.eq(LOG_DOC_UUID, model.getId()))
+                                       .and(Predicates.eq(LOG_EVENT_ID, "documentRemoved"))
+                                       .defaultOrder());
         assertEquals(1, entries.size());
         Map<String, ExtendedInfo> infos = entries.get(0).getExtendedInfos();
         assertEquals("/", infos.get("parentPath").getSerializableValue());
@@ -328,26 +313,8 @@ public class TestNXAuditEventsService {
         }
     }
 
-    protected Set<ObjectName> doQuery(String name) {
-        String qualifiedName = ObjectNameFactory.getQualifiedName(name);
-        ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
-        return mbeanServer.queryNames(objectName, null);
-    }
-
-    public void TODOtestCount() throws Exception {
-        DocumentModel rootDocument = session.getRootDocument();
-        DocumentModel model = session.createDocumentModel(rootDocument.getPathAsString(), "youps", "File");
-        model.setProperty("dublincore", "title", "huum");
-        session.createDocument(model);
-        session.save();
-        waitForAsyncCompletion();
-        ObjectName objectName = AuditEventMetricFactory.getObjectName("documentCreated");
-        Long count = (Long) mbeanServer.getAttribute(objectName, "count");
-        assertEquals(new Long(1L), count);
-    }
-
     @Test
-    public void testGetLatestLogId() throws Exception {
+    public void testGetLatestLogId() {
         String repositoryId = "test";
         createLogEntry("documentModified");
         long id1 = serviceUnderTest.getLatestLogId(repositoryId, "documentModified");
@@ -359,11 +326,11 @@ public class TestNXAuditEventsService {
         long id = serviceUnderTest.getLatestLogId(repositoryId, "documentModified");
         assertEquals(id1, id);
         id = serviceUnderTest.getLatestLogId(repositoryId, "unknownEvent");
-        assertTrue("id: " + id, id == 0);
+        assertEquals("id: " + id, 0, id);
     }
 
     @Test
-    public void testGetLogEntriesAfter() throws Exception {
+    public void testGetLogEntriesAfter() {
         String repositoryId = "test";
         createLogEntry("something");
         createLogEntry("documentModified");
@@ -381,7 +348,8 @@ public class TestNXAuditEventsService {
         long id4 = serviceUnderTest.getLatestLogId(repositoryId, "documentModified", "documentCreated");
         assertTrue(id4 > id3);
 
-        List<LogEntry> entries = serviceUnderTest.getLogEntriesAfter(id1, 5, repositoryId, "documentCreated", "documentModified");
+        List<LogEntry> entries = serviceUnderTest.getLogEntriesAfter(id1, 5, repositoryId, "documentCreated",
+                "documentModified");
         assertEquals(4, entries.size());
         assertEquals(id1, entries.get(0).getId());
 
@@ -390,7 +358,7 @@ public class TestNXAuditEventsService {
         assertEquals(id2, entries.get(0).getId());
     }
 
-    protected void createLogEntry(String eventId) throws InterruptedException {
+    protected void createLogEntry(String eventId) {
         EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), repo.source);
         Event event = ctx.newEvent(eventId);
         event.setInline(false);
@@ -400,7 +368,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testLogRetentionActiveChange() throws Exception {
+    public void testLogRetentionActiveChange() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
 
