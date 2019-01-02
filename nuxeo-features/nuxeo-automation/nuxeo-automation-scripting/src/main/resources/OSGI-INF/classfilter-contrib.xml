@@ -3,10 +3,12 @@
 
   <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="classFilter">
     <classFilter>
+      <allow>java.text.SimpleDateFormat</allow>
       <allow>java.util.ArrayList</allow>
       <allow>java.util.Arrays</allow>
       <allow>java.util.Collections</allow>
       <allow>java.util.UUID</allow>
+      <allow>org.apache.commons.codec.digest.DigestUtils</allow>
       <allow>org.nuxeo.runtime.transaction.TransactionHelper</allow>
       <allow>org.nuxeo.ecm.core.api.Blobs</allow>
       <allow>org.nuxeo.ecm.core.api.impl.blob.StringBlob</allow>
