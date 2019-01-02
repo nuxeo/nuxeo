@@ -78,13 +78,21 @@ public abstract class AbstractCSVWriter<T> implements Writer<T> {
 
     protected abstract void write(T entity, CSVPrinter printer) throws IOException;
 
-    protected abstract void writeHeader(T entity, CSVPrinter printer) throws  IOException;
+    protected abstract void writeHeader(T entity, CSVPrinter printer) throws IOException;
 
     protected CSVPrinter getCSVPrinter(T entity, OutputStream out) throws IOException {
+        CSVPrinter printer;
         if (out instanceof OutputStreamWithCSVWriter) {
-            return ((OutputStreamWithCSVWriter) out).getCsvPrinter();
+            OutputStreamWithCSVWriter oscsv = (OutputStreamWithCSVWriter) out;
+            if (oscsv.getCsvPrinter() != null) {
+                return oscsv.getCsvPrinter();
+            } else {
+                printer = new CSVPrinter(new StringBuilder(), CSVFormat.DEFAULT);
+                oscsv.setCSVPrinter(printer);
+            }
+        } else {
+            printer = new CSVPrinter(new OutputStreamWriter(out), CSVFormat.DEFAULT);
         }
-        CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(out), CSVFormat.DEFAULT);
         writeHeader(entity, printer);
         return printer;
     }

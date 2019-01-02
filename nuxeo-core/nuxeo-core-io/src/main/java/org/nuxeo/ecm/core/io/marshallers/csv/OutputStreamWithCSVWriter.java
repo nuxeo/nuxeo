@@ -21,11 +21,9 @@ package org.nuxeo.ecm.core.io.marshallers.csv;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.io.output.WriterOutputStream;
+import org.apache.commons.io.output.AppendableOutputStream;
 
 /**
  * Wrapper for {@link CSVPrinter}.
@@ -34,14 +32,22 @@ import org.apache.commons.io.output.WriterOutputStream;
  */
 public class OutputStreamWithCSVWriter extends OutputStream {
 
-    protected OutputStream out;
+    protected AppendableOutputStream<Appendable> out;
 
     protected CSVPrinter csvPrinter;
 
+    public OutputStreamWithCSVWriter() {
+        super();
+    }
+
     public OutputStreamWithCSVWriter(CSVPrinter csvPrinter) {
         super();
+        setCSVPrinter(csvPrinter);
+    }
+
+    public void setCSVPrinter(CSVPrinter csvPrinter) {
         this.csvPrinter = csvPrinter;
-        out = new WriterOutputStream(((OutputStreamWriter) csvPrinter.getOut()), StandardCharsets.UTF_8);
+        out = new AppendableOutputStream<>(csvPrinter.getOut());
     }
 
     @Override
@@ -76,5 +82,10 @@ public class OutputStreamWithCSVWriter extends OutputStream {
      */
     public CSVPrinter getCsvPrinter() {
         return csvPrinter;
+    }
+
+    @Override
+    public String toString() {
+        return out.getAppendable().toString();
     }
 }
