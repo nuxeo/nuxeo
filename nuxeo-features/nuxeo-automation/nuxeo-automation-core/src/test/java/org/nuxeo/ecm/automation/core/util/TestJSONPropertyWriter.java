@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -401,7 +401,7 @@ public class TestJSONPropertyWriter {
             throws IOException {
         // Init generator
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = getFactory().createJsonGenerator(out);
+        JsonGenerator jg = getFactory().createGenerator(out);
 
         // Write value
         Property property = createProperty(type, value);
@@ -434,7 +434,7 @@ public class TestJSONPropertyWriter {
             String filesBaseUrl) throws IOException {
         // Init generator
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = getFactory().createJsonGenerator(out);
+        JsonGenerator jg = getFactory().createGenerator(out);
 
         // Write value
         Property property = createProperty(type, value);

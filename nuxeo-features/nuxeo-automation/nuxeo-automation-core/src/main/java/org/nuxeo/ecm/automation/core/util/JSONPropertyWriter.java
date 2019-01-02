@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.automation.core.util;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -40,7 +39,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
@@ -172,8 +170,7 @@ public class JSONPropertyWriter {
      *
      * @since 9.1
      */
-    public void writeProperty(JsonGenerator jg, Property prop)
-            throws PropertyException, JsonGenerationException, IOException {
+    public void writeProperty(JsonGenerator jg, Property prop) throws PropertyException, IOException {
         PropertyConsumer fieldNameWriter;
         if (prefix == null) {
             fieldNameWriter = (j, p) -> j.writeFieldName(p.getName());
@@ -191,7 +188,7 @@ public class JSONPropertyWriter {
      *            property, or nothing for arrays and lists
      */
     protected void writeProperty(JsonGenerator jg, Property prop, PropertyConsumer fieldNameWriter)
-            throws PropertyException, JsonGenerationException, IOException {
+            throws PropertyException, IOException {
         if (prop.isScalar()) {
             writeScalarProperty(jg, prop, fieldNameWriter);
         } else if (prop.isList()) {
@@ -211,7 +208,7 @@ public class JSONPropertyWriter {
     }
 
     protected void writeScalarProperty(JsonGenerator jg, Property prop, PropertyConsumer fieldNameWriter)
-            throws PropertyException, JsonGenerationException, IOException {
+            throws PropertyException, IOException {
         Type type = prop.getType();
         Object v = prop.getValue();
         if (v == null) {
@@ -246,7 +243,7 @@ public class JSONPropertyWriter {
     }
 
     protected void writeListProperty(JsonGenerator jg, Property prop, PropertyConsumer fieldNameWriter)
-            throws PropertyException, JsonGenerationException, IOException {
+            throws PropertyException, IOException {
         // test if array/list is empty - don't write empty case
         if (!writeEmpty && (prop == null || (prop instanceof ArrayProperty && prop.getValue() == null)
                 || (prop instanceof ListProperty && prop.getChildren().isEmpty()))) {
@@ -274,7 +271,7 @@ public class JSONPropertyWriter {
     }
 
     protected void writeMapProperty(JsonGenerator jg, ComplexProperty prop, PropertyConsumer fieldNameWriter)
-            throws PropertyException, JsonGenerationException, IOException {
+            throws PropertyException, IOException {
         if (!writeEmpty && (prop == null || prop.getChildren().isEmpty())) {
             return;
         }
@@ -288,7 +285,7 @@ public class JSONPropertyWriter {
     }
 
     protected void writeBlobProperty(JsonGenerator jg, Property prop, PropertyConsumer fieldNameWriter)
-            throws PropertyException, JsonGenerationException, IOException {
+            throws PropertyException, IOException {
         Blob blob = (Blob) prop.getValue();
         if (blob == null) {
             if (writeNull) {
@@ -343,8 +340,7 @@ public class JSONPropertyWriter {
      *
      * @since 5.9.3
      */
-    private static String getBlobUrl(Property prop, String filesBaseUrl)
-            throws UnsupportedEncodingException, PropertyException {
+    private static String getBlobUrl(Property prop, String filesBaseUrl) throws PropertyException {
         StringBuilder blobUrlBuilder = new StringBuilder(filesBaseUrl);
         String xpath = prop.getXPath();
         if (!xpath.contains(":")) {
@@ -365,7 +361,7 @@ public class JSONPropertyWriter {
      * locate blob content and is useful to generate blob URLs.
      */
     public static void writePropertyValue(JsonGenerator jg, Property prop, DateTimeFormat dateTimeFormat,
-            String filesBaseUrl) throws PropertyException, JsonGenerationException, IOException {
+            String filesBaseUrl) throws PropertyException, IOException {
         JSONPropertyWriter writer = create().dateTimeFormat(dateTimeFormat).filesBaseUrl(filesBaseUrl);
         // as we just want to write property value, give a nothing consumer
         writer.writeProperty(jg, prop, PropertyConsumer.nothing());
@@ -374,7 +370,7 @@ public class JSONPropertyWriter {
     @FunctionalInterface
     public interface PropertyConsumer {
 
-        void accept(JsonGenerator jg, Property prop) throws JsonGenerationException, IOException;
+        void accept(JsonGenerator jg, Property prop) throws IOException;
 
         static PropertyConsumer nothing() {
             return (jg, prop) -> {
