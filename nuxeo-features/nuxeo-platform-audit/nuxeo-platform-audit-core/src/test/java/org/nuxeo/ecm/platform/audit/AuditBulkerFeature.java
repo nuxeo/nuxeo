@@ -33,19 +33,19 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.core.persistence")
 @Deploy("org.nuxeo.ecm.platform.audit")
 @Deploy("org.nuxeo.ecm.platform.audit:nxaudit-ds.xml")
-@Deploy("org.nuxeo.ecm.platform.audit:test-stream-audit-contrib.xml")
-public class StreamAuditFeature extends AuditFeature {
+@Deploy("org.nuxeo.ecm.platform.audit:test-audit-bulker-contrib.xml")
+public class AuditBulkerFeature extends AuditFeature {
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {
         // enable it for AuditLogger#await
-        Framework.getProperties().setProperty(STREAM_AUDIT_ENABLED_PROP, "true");
+        Framework.getProperties().setProperty(STREAM_AUDIT_ENABLED_PROP, "false");
     }
 
     @Override
     public void stop(FeaturesRunner runner) throws Exception {
         // disable it for next tests
-        Framework.getProperties().setProperty(STREAM_AUDIT_ENABLED_PROP, "false");
+        Framework.getProperties().setProperty(STREAM_AUDIT_ENABLED_PROP, "true");
     }
 
 }

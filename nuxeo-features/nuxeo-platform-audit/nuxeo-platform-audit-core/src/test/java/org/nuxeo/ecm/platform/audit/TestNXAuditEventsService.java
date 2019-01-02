@@ -118,7 +118,7 @@ public class TestNXAuditEventsService {
     }
 
     public boolean extendedInfosComputedWithFullDocumentModel() {
-        return false;
+        return true;
     }
 
     @Test

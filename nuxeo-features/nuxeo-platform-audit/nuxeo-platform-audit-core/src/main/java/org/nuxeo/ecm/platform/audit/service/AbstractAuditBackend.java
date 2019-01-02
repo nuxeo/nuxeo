@@ -389,16 +389,18 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
         if (entry == null) {
             return;
         }
-        if (Framework.isBooleanPropertyTrue(STREAM_AUDIT_ENABLED_PROP)) {
-            log.error("Usage of AuditLogger#logEvent while AuditBulker is disabled", new Exception());
-        } else {
+        if (Framework.isBooleanPropertyFalse(STREAM_AUDIT_ENABLED_PROP)) {
             component.bulker.offer(entry);
+        } else {
+            log.error("Usage of AuditLogger#logEvent while AuditBulker is disabled", new Exception());
         }
     }
 
     @Override
     public boolean await(long time, TimeUnit unit) throws InterruptedException {
-        if (Framework.isBooleanPropertyTrue(STREAM_AUDIT_ENABLED_PROP)) {
+        if (Framework.isBooleanPropertyFalse(STREAM_AUDIT_ENABLED_PROP)) {
+            return component.bulker.await(time, unit);
+        } else {
             StreamService service = Framework.getService(StreamService.class);
             LogManager logManager = service.getLogManager(DEFAULT_LOG_CONFIG);
             // when there is no lag between producer and consumer we are done
@@ -410,8 +412,6 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
                 Thread.sleep(50);
             }
             return true;
-        } else {
-            return component.bulker.await(time, unit);
         }
     }
 

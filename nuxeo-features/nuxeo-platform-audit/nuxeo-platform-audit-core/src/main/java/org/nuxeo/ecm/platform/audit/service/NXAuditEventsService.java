@@ -113,7 +113,7 @@ public class NXAuditEventsService extends DefaultComponent {
     public void start(ComponentContext context) {
         backend = backendConfig.newInstance(this);
         backend.onApplicationStarted();
-        if (!Framework.isBooleanPropertyTrue(STREAM_AUDIT_ENABLED_PROP)) {
+        if (Framework.isBooleanPropertyFalse(STREAM_AUDIT_ENABLED_PROP)) {
             bulker = bulkerConfig.newInstance(backend);
             bulker.onApplicationStarted();
         }
