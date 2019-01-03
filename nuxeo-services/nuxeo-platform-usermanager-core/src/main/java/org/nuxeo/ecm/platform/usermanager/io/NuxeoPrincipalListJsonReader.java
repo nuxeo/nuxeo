@@ -21,9 +21,9 @@ package org.nuxeo.ecm.platform.usermanager.io;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
-import static org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupListJsonWriter.ENTITY_TYPE;
+import static org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalListJsonWriter.ENTITY_TYPE;
 
-import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.io.marshallers.json.DefaultListJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 
@@ -33,10 +33,10 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
  * @since 7.2
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
-public class NuxeoPrincipalListJsonReader extends DefaultListJsonReader<NuxeoGroup> {
+public class NuxeoPrincipalListJsonReader extends DefaultListJsonReader<NuxeoPrincipal> {
 
     public NuxeoPrincipalListJsonReader() {
-        super(ENTITY_TYPE, NuxeoGroup.class);
+        super(ENTITY_TYPE, NuxeoPrincipal.class);
     }
 
 }

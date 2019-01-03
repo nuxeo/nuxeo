@@ -11,6 +11,8 @@
       class="org.nuxeo.ecm.automation.server.test.business.client.TestBusinessArray" />
     <operation
             class="org.nuxeo.ecm.automation.server.test.TestContextReaderOperation" />
+    <operation
+      class="org.nuxeo.ecm.automation.server.test.operations.UpdateMailOperation" />
   </extension>
 
   <extension point="chains"
