@@ -18,8 +18,9 @@
  */
 package org.nuxeo.ecm.platform.htmlsanitizer;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -28,15 +29,13 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.owasp.validator.html.AntiSamy;
-import org.owasp.validator.html.CleanResults;
-import org.owasp.validator.html.Policy;
-import org.owasp.validator.html.PolicyException;
-import org.owasp.validator.html.ScanException;
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
 
 /**
  * Service that sanitizes some HMTL fields to remove potential cross-site scripting attacks in them.
@@ -53,7 +52,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements HtmlSa
     public LinkedList<HtmlSanitizerAntiSamyDescriptor> allPolicies = new LinkedList<HtmlSanitizerAntiSamyDescriptor>();
 
     /** Effective policy. */
-    public Policy policy;
+    public PolicyFactory policy;
 
     /** All sanitizers registered. */
     public List<HtmlSanitizerDescriptor> allSanitizers = new ArrayList<HtmlSanitizerDescriptor>(1);
@@ -123,18 +122,23 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements HtmlSa
             policy = null;
         } else {
             HtmlSanitizerAntiSamyDescriptor desc = allPolicies.removeLast();
-            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(desc.policy);
+            URL url = Thread.currentThread().getContextClassLoader().getResource(desc.policy);
+            HtmlPolicyBuilder builder = new HtmlPolicyBuilder();
             try {
-                policy = Policy.getInstance(is);
-            } catch (PolicyException e) {
+                builder.loadAntiSamyPolicy(url);
+                initializeBuilder(builder);
+                policy = builder.toFactory();
+            } catch (IOException e) {
                 policy = null;
-                throw new RuntimeException("Cannot parse AntiSamy policy: " + desc.policy, e);
+                throw new NuxeoException("Cannot parse AntiSamy policy: " + desc.policy, e);
             }
         }
     }
 
-    protected Policy getPolicy() {
-        return policy;
+    protected void initializeBuilder(HtmlPolicyBuilder builder) {
+        builder.allowStandardUrlProtocols();
+        builder.allowStyling();
+        builder.disallowElements("script");
     }
 
     protected void addSanitizer(HtmlSanitizerDescriptor desc) {
@@ -229,16 +233,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements HtmlSa
             log.error("Cannot sanitize, no policy registered");
             return string;
         }
-        try {
-            CleanResults cr = new AntiSamy().scan(string, policy);
-            for (Object err : cr.getErrorMessages()) {
-                log.debug(String.format("Sanitizing %s: %s", info == null ? "" : info, err));
-            }
-            return cr.getCleanHTML();
-        } catch (ScanException | PolicyException e) {
-            log.error(String.format("Cannot sanitize %s: %s", info == null ? "" : info, e));
-            return string;
-        }
+        return policy.sanitize(string);
     }
 
 }
