@@ -26,9 +26,11 @@ import java.util.stream.Collectors;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.automation.core.util.RecordSet;
@@ -41,6 +43,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentRefList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
@@ -112,6 +115,12 @@ public class ResponseHelper {
             CoreSession session = SessionFactory.getSession(request);
             return Response.status(httpStatus).entity(((DocumentRefList) result).stream().map(session::getDocument)
                     .collect(Collectors.toCollection(DocumentModelListImpl::new))).build();
+        } else if (result instanceof List && !((List<?>) result).isEmpty()
+                && ((List<?>) result).get(0) instanceof NuxeoPrincipal) {
+            return Response.status(httpStatus)
+                           .entity(new GenericEntity<>(result,
+                                   TypeUtils.parameterize(List.class, NuxeoPrincipal.class)))
+                           .build();
         } else if (result instanceof DocumentModel || result instanceof DocumentModelList
                 || result instanceof JsonAdapter || result instanceof RecordSet || result instanceof Paginable<?>) {
             return Response.status(httpStatus).entity(result).build();
