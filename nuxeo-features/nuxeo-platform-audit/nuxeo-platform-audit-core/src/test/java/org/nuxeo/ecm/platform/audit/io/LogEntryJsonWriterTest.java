@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
  * Contributors:
  *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
-
 package org.nuxeo.ecm.platform.audit.io;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
@@ -57,7 +55,7 @@ public class LogEntryJsonWriterTest extends AbstractJsonWriterTest.External<LogE
     public void test() throws Exception {
         DocumentModel root = session.getDocument(new PathRef("/"));
         PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(20), Long.valueOf(0),
-                new HashMap<String, Serializable>(), root);
+                new HashMap<>(), root);
         @SuppressWarnings("unchecked")
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
         JsonAssert json = jsonAssert(entries.get(0));
