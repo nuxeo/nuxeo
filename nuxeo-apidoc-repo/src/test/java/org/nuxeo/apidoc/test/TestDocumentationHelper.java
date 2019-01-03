@@ -37,20 +37,21 @@ public class TestDocumentationHelper extends NXRuntimeTestCase {
 
     @Test
     public void test() throws Exception {
-        assertEquals("<p>\nfoo\n</p>\n" //
+        assertEquals("<p>\nfoo\n</p>" //
                 + "<p>\nbar</p>", //
                 DocumentationHelper.getHtml("foo\n\nbar"));
-        assertEquals("<p>\nfoo\n</p>\n" //
+        assertEquals("<p>\nfoo\n</p>" //
                 + "<p>\nbar</p>", //
                 DocumentationHelper.getHtml("foo\n\n<br/>\nbar"));
-        assertEquals("<p>\nfoo\n</p>\n" //
-                + "<pre><code>bar\n" //
-                + "</code></pre>\n" //
+        assertEquals("<p>\nfoo\n</p>" //
+                + "<p></p><pre><code>bar\n" //
+                + "</code></pre>" //
                 + "<p>\nbaz</p>", //
                 DocumentationHelper.getHtml("foo\n<code>\nbar\n</code>\nbaz"));
-        assertEquals("<p>\nfoo\n</p>\n<ul>\n" //
-                + "<li>bar</li>\n</ul>", DocumentationHelper.getHtml("foo\n<ul>\n<li>bar</li>\n</ul>\n"));
-        assertEquals("<p>\nfoo\n</p>\n" //
+        assertEquals("<p>\nfoo\n</p><ul>" //
+                + "<li>bar</li></ul>", //
+                DocumentationHelper.getHtml("foo\n<ul>\n<li>bar</li>\n</ul>\n"));
+        assertEquals("<p>\nfoo\n</p>" //
                 + "<p>\nbar</p>", //
                 DocumentationHelper.getHtml("foo\n@author you\nbar"));
     }
