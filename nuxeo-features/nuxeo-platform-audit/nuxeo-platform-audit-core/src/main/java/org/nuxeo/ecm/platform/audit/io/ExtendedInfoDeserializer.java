@@ -20,20 +20,25 @@
 
 package org.nuxeo.ecm.platform.audit.io;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.SerializationUtils;
+import org.nuxeo.ecm.platform.audit.api.AuditLogger;
+import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
+import org.nuxeo.runtime.api.Framework;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.core.util.Base64;
-import org.apache.commons.lang3.SerializationUtils;
-import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
-import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.time.format.DateTimeParseException;
-import java.util.Date;
 
 /**
  * Deserializer class for extended info from a JSON object
@@ -45,41 +50,41 @@ public class ExtendedInfoDeserializer extends JsonDeserializer<ExtendedInfo> {
     @Override
     public ExtendedInfo deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 
-        ExtendedInfo info;
         ObjectMapper mapper = (ObjectMapper) jp.getCodec();
         JsonNode node = mapper.readTree(jp);
+        Serializable value;
         switch (node.getNodeType()) {
         case STRING:
-            String value = node.textValue();
+            value = node.textValue();
             try {
-                Date date = Date.from(Instant.parse(value));
-                info = new ExtendedInfoImpl.DateInfo(date);
+                value = Date.from(Instant.parse((String) value));
             } catch (DateTimeParseException e) {
-                info = new ExtendedInfoImpl.StringInfo(value);
+                // ignore
             }
             break;
         case BOOLEAN:
-            info = new ExtendedInfoImpl.BooleanInfo(node.booleanValue());
+            value = node.booleanValue();
             break;
         case NUMBER:
-            Number number = node.numberValue();
-            if (number instanceof Double) {
-                info = new ExtendedInfoImpl.DoubleInfo(node.doubleValue());
-            } else {
-                info = new ExtendedInfoImpl.LongInfo(node.longValue());
+            value = node.numberValue();
+            if (value instanceof Integer) {
+                // convert it to long, it is the original type and json can't differentiate int and long
+                value = Integer.valueOf((Integer) value).longValue();
             }
             break;
         case BINARY:
-            info = new ExtendedInfoImpl.BlobInfo(SerializationUtils.deserialize(Base64.decode(node.binaryValue())));
+            value = SerializationUtils.deserialize(Base64.decode(node.binaryValue()));
             break;
         case ARRAY:
+            value = (Serializable) mapper.convertValue(node, List.class);
+            break;
         case OBJECT:
-            info = new ExtendedInfoImpl.StringInfo(mapper.writeValueAsString(node));
+            value = (Serializable) mapper.convertValue(node, Map.class);
             break;
         default:
             throw new UnsupportedOperationException("Error when deserializing type: " + node.getNodeType());
         }
-        return info;
+        return Framework.getService(AuditLogger.class).newExtendedInfo(value);
     }
 
 }
