@@ -45,7 +45,7 @@ public class TestHtmlSanitizerServiceImpl {
 
     public static final String XML = "<b>caf\u00e9</b>";
 
-    public static final String SANITIZED_XML = "<b>caf&eacute;</b>";
+    public static final String SANITIZED_XML = "<b>caf\u00e9</b>";
 
     public static final String NORMAL_TEXT = "Caf\u00e9 < Tea";
 
@@ -55,9 +55,9 @@ public class TestHtmlSanitizerServiceImpl {
     public static final String WIKI_MARKUP = "<script></script>[image:http://server/path/image.jpg My Image]";
 
     public static final String BAD_HTML5 =
-            "<video id=\"test\"><source src=\"test\" type=\"video/mp4\"/><img src=\"a wrong image location specification\"/></video>";
+            "<video id=\"test\"><source src=\"test\" type=\"video/mp4\"/><img src=\"file://wrongpath\"/></video>";
 
-    public static final String SANITIZED_HTML5 = "<video id=\"test\"><source src=\"test\" type=\"video/mp4\" /></video>";
+    public static final String SANITIZED_HTML5 = "<video id=\"test\"><source src=\"test\" type=\"video/mp4\" /><img /></video>";
 
     @Inject
     CoreSession session;
@@ -181,9 +181,10 @@ public class TestHtmlSanitizerServiceImpl {
     @Test
     public void sanitizeKeepLinkTargetBlank() throws Exception {
         String html = "<a href=\"foo\" target=\"_blank\">link</a>";
+        String expected = "<a href=\"foo\" target=\"_blank\" rel=\"noopener noreferrer\">link</a>";
         HtmlSanitizerService service = Framework.getService(HtmlSanitizerService.class);
         String res = service.sanitizeString(html, null);
-        assertEquals(html, res);
+        assertEquals(expected, res);
     }
 
     @Test
@@ -203,7 +204,7 @@ public class TestHtmlSanitizerServiceImpl {
     public void testSanitizeSpaces() {
         HtmlSanitizerService service = Framework.getService(HtmlSanitizerService.class);
         assertEquals("<strong>strong</strong>\n<em>content</em>",
-                service.sanitizeString("<strong>strong</strong><em>content</em>", null));
+                service.sanitizeString("<strong>strong</strong>\n<em>content</em>", null));
         assertEquals("<p><strong>strong</strong><em>content</em></p>",
                 service.sanitizeString("<p><strong>strong</strong><em>content</em></p>", null));
     }
