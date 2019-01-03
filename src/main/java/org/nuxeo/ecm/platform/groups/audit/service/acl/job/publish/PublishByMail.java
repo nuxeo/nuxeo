@@ -132,7 +132,6 @@ public class PublishByMail implements IResultPublisher {
             {
         DocumentModel document = session.createDocumentModel("File");
         document.setPropertyValue("file:content", (Serializable) blob);
-        document.setPropertyValue("file:filename", filename);
         document.setPropertyValue("dublincore:title", title);
         return document;
     }
