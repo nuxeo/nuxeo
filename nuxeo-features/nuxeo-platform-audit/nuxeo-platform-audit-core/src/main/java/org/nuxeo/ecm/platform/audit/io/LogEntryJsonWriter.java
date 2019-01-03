@@ -38,8 +38,12 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITOR
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -83,9 +87,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *             <-- additional property provided by extend() method
  * }
  * </pre>
- *
  * </p>
- *
  * @since 7.2
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
@@ -143,7 +145,22 @@ public class LogEntryJsonWriter extends ExtensibleEntityJsonWriter<LogEntry> {
             jg.writeStringField(key, (String) value);
         } else if (Boolean.class.isAssignableFrom(clazz)) {
             jg.writeBooleanField(key, (Boolean) value);
+        } else if (clazz.isArray() || List.class.isAssignableFrom(clazz)) {
+            jg.writeObjectField(key, value);
+        } else if (Map.class.isAssignableFrom(clazz)) {
+            @SuppressWarnings("unchecked")
+            Map<String, Serializable> map = //
+                    ((Map<String, Serializable>) value).entrySet()
+                                                       .stream()
+                                                       // keep primitive values
+                                                       // blobs can be in WorkflowVariables for instance
+                                                       .filter(entry -> entry.getValue() != null
+                                                               && ClassUtils.isPrimitiveOrWrapper(
+                                                                       entry.getValue().getClass()))
+                                                       .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+            jg.writeObjectField(key, map);
         } else {
+            // mainly blobs
             jg.writeStringField(key, value.toString());
         }
     }

@@ -111,7 +111,7 @@ public class TestPageProviderTracking {
 
         assertEquals(0L, entry.getExtendedInfos().get("resultsCountInPage").getSerializableValue());
 
-        assertTrue(((String) entry.getExtendedInfos().get("params").getSerializableValue()).contains(
+        assertTrue(((List<String>) entry.getExtendedInfos().get("params").getSerializableValue()).contains(
                 session.getRootDocument().getId()));
 
         pp.getCurrentPage();
