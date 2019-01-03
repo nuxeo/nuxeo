@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,9 @@ package org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish;
 import java.io.Serializable;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -37,7 +36,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.utils.MessageAccessor;
 import org.nuxeo.runtime.api.Framework;
 
@@ -45,7 +43,7 @@ public class PublishByMail implements IResultPublisher {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(PublishByMail.class);
+    private static final Logger log = LogManager.getLogger(PublishByMail.class);
 
     public static final String PROPERTY_ACLAUDIT_SENDMAIL_CHAIN = "ACL.Audit.SendMail";
 
@@ -84,8 +82,8 @@ public class PublishByMail implements IResultPublisher {
         }.runUnrestricted();
     }
 
-    protected void doCallOperationSendMail(CoreSession session, DocumentModel docToSend, String to, String defaultFrom)
-            {
+    protected void doCallOperationSendMail(CoreSession session, DocumentModel docToSend, String to,
+            String defaultFrom) {
         String title = MessageAccessor.get(session, PROPERTY_MAIL_SUBJECT);
         String body = MessageAccessor.get(session, PROPERTY_MAIL_BODY);
         String from = Framework.getProperty(PROPERTY_MAILFROM, defaultFrom);
@@ -97,7 +95,7 @@ public class PublishByMail implements IResultPublisher {
             OperationChain chain = new OperationChain(PROPERTY_ACLAUDIT_SENDMAIL_CHAIN);
             OperationParameters params = chain.add(SendMail.ID);
             if (params == null) {
-                log.error("failed to retrieve operation " + SendMail.ID + " in chain " + chain);
+                log.error("failed to retrieve operation {} in chain {}", SendMail.ID, chain);
                 return;
             }
 
@@ -111,9 +109,9 @@ public class PublishByMail implements IResultPublisher {
             // TODO: see SendMail test case where we can directly pass a blob
 
             // do send mail
-            log.debug("Automation run " + PROPERTY_ACLAUDIT_SENDMAIL_CHAIN + " for " + to);
+            log.debug("Automation run {} for {}", PROPERTY_ACLAUDIT_SENDMAIL_CHAIN, to);
             automation.run(ctx, chain);
-            log.debug("Automation done " + PROPERTY_ACLAUDIT_SENDMAIL_CHAIN + " for " + to);
+            log.debug("Automation done {} for {}", PROPERTY_ACLAUDIT_SENDMAIL_CHAIN, to);
         } catch (OperationException e) {
             throw new NuxeoException(e);
         }
@@ -122,13 +120,13 @@ public class PublishByMail implements IResultPublisher {
     protected OperationParameters findParameters(OperationChain chain, String id) {
         List<OperationParameters> params = chain.getOperations();
         for (OperationParameters p : params)
-            if (p.id().equals(id))
+            if (p.id().equals(id)) {
                 return p;
+            }
         return null;
     }
 
-    protected DocumentModel createDocument(CoreSession session, Blob blob, String title, String filename)
-            {
+    protected DocumentModel createDocument(CoreSession session, Blob blob, String title, String filename) {
         DocumentModel document = session.createDocumentModel("File");
         document.setPropertyValue("file:content", (Serializable) blob);
         document.setPropertyValue("file:filename", filename);
@@ -138,10 +136,10 @@ public class PublishByMail implements IResultPublisher {
 
     protected void logMailerConfiguration() {
         Mailer m = SendMail.COMPOSER.getMailer();
-        log.info("mail.smtp.auth:" + m.getConfiguration().get("mail.smtp.auth"));
-        log.info("mail.smtp.starttls.enable:" + m.getConfiguration().get("mail.smtp.starttls.enable"));
-        log.info("mail.smtp.host:" + m.getConfiguration().get("mail.smtp.host"));
-        log.info("mail.smtp.user:" + m.getConfiguration().get("mail.smtp.user"));
-        log.info("mail.smtp.password:" + m.getConfiguration().get("mail.smtp.password"));
+        log.info("mail.smtp.auth:{}", m.getConfiguration().get("mail.smtp.auth"));
+        log.info("mail.smtp.starttls.enable:{}", m.getConfiguration().get("mail.smtp.starttls.enable"));
+        log.info("mail.smtp.host:{}", m.getConfiguration().get("mail.smtp.host"));
+        log.info("mail.smtp.user:{}", m.getConfiguration().get("mail.smtp.user"));
+        log.info("mail.smtp.password:{}", m.getConfiguration().get("mail.smtp.password"));
     }
 }
