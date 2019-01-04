@@ -25,6 +25,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_ID_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SECRET_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SESSION_TOKEN_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_PREFIX_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_REGION_PROPERTY;
@@ -52,8 +53,8 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
+import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
 import com.amazonaws.services.securitytoken.model.Credentials;
-import com.amazonaws.services.securitytoken.model.GetFederationTokenRequest;
 
 /**
  * Batch Handler allowing direct S3 upload.
@@ -73,6 +74,11 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
     public static final String ACCELERATE_MODE_ENABLED_PROPERTY = "accelerateMode";
 
     public static final String POLICY_TEMPLATE_PROPERTY = "policyTemplate";
+
+    /**
+     * @since 10.10
+     */
+    public static final String ROLE_ARN_PROPERTY = "roleArn";
 
     // keys in the batch properties, returned to the client
 
@@ -108,6 +114,8 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     protected String policy;
 
+    protected String roleArn;
+
     @Override
     protected void initialize(Map<String, String> properties) {
         super.initialize(properties);
@@ -119,14 +127,20 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         if (isBlank(bucket)) {
             throw new NuxeoException("Missing configuration property: " + BUCKET_NAME_PROPERTY);
         }
+        roleArn = properties.get(ROLE_ARN_PROPERTY);
+        if (isBlank(roleArn)) {
+            throw new NuxeoException("Missing configuration property: " + ROLE_ARN_PROPERTY);
+        }
         bucketPrefix = defaultString(properties.get(BUCKET_PREFIX_PROPERTY));
         accelerateModeEnabled = Boolean.parseBoolean(properties.get(ACCELERATE_MODE_ENABLED_PROPERTY));
         String awsSecretKeyId = properties.get(AWS_ID_PROPERTY);
         String awsSecretAccessKey = properties.get(AWS_SECRET_PROPERTY);
+        String awsSessionToken = properties.get(AWS_SESSION_TOKEN_PROPERTY);
         expiration = Integer.parseInt(defaultIfEmpty(properties.get(INFO_EXPIRATION), "0"));
         policy = properties.get(POLICY_TEMPLATE_PROPERTY);
 
-        AWSCredentialsProvider credentials = S3Utils.getAWSCredentialsProvider(awsSecretKeyId, awsSecretAccessKey);
+        AWSCredentialsProvider credentials = S3Utils.getAWSCredentialsProvider(awsSecretKeyId, awsSecretAccessKey,
+                awsSessionToken);
         stsClient = initializeSTSClient(credentials);
         amazonS3 = initializeS3Client(credentials);
 
@@ -162,15 +176,14 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         // create the batch
         Batch batch = new Batch(batchId, parameters, getName(), getTransientStore());
 
-        String name = batchId.substring(0, Math.min(32, batchId.length()));
-
-        GetFederationTokenRequest request = new GetFederationTokenRequest().withPolicy(policy).withName(name);
-
+        AssumeRoleRequest request = new AssumeRoleRequest().withRoleArn(roleArn)
+                                                           .withPolicy(policy)
+                                                           .withRoleSessionName(batchId);
         if (expiration > 0) {
             request.setDurationSeconds(expiration);
         }
 
-        Credentials credentials = getSTSCredentials(request);
+        Credentials credentials = assumeRole(request);
 
         Map<String, Object> properties = batch.getProperties();
         properties.put(INFO_AWS_SECRET_KEY_ID, credentials.getAccessKeyId());
@@ -185,8 +198,8 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         return batch;
     }
 
-    protected Credentials getSTSCredentials(GetFederationTokenRequest request) {
-        return stsClient.getFederationToken(request).getCredentials();
+    protected Credentials assumeRole(AssumeRoleRequest request) {
+        return stsClient.assumeRole(request).getCredentials();
     }
 
     @Override

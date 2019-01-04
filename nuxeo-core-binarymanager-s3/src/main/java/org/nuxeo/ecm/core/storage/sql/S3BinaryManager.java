@@ -120,6 +120,11 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     public static final String AWS_SECRET_PROPERTY = "awssecret";
 
+    /**
+     * @since 10.10
+     */
+    public static final String AWS_SESSION_TOKEN_PROPERTY = "awstoken";
+
     /** AWS ClientConfiguration default 50 */
     public static final String CONNECTION_MAX_PROPERTY = "connection.max";
 
@@ -216,6 +221,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         }
         String awsID = getProperty(AWS_ID_PROPERTY);
         String awsSecret = getProperty(AWS_SECRET_PROPERTY);
+        String awsToken = getProperty(AWS_SESSION_TOKEN_PROPERTY);
 
         String proxyHost = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
         String proxyPort = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
@@ -249,7 +255,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             bucketNamePrefix += "/";
         }
         // set up credentials
-        awsCredentialsProvider = S3Utils.getAWSCredentialsProvider(awsID, awsSecret);
+        awsCredentialsProvider = S3Utils.getAWSCredentialsProvider(awsID, awsSecret, awsToken);
 
         // set up client configuration
         clientConfiguration = new ClientConfiguration();
