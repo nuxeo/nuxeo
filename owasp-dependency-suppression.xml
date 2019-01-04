@@ -94,13 +94,54 @@
    <cve>CVE-2007-1358</cve>
    <cve>CVE-2007-2449</cve>
    <cve>CVE-2007-2450</cve>
+   <cve>CVE-2007-3382</cve>
    <cve>CVE-2007-3383</cve>
+   <cve>CVE-2007-3385</cve>
+   <cve>CVE-2007-3386</cve>
+   <cve>CVE-2007-5333</cve>
+   <cve>CVE-2007-5342</cve>
    <cve>CVE-2007-5461</cve>
+   <cve>CVE-2007-6286</cve>
    <cve>CVE-2008-0128</cve>
+   <cve>CVE-2008-1232</cve>
+   <cve>CVE-2008-1947</cve>
+   <cve>CVE-2008-2370</cve>
+   <cve>CVE-2008-2938</cve>
+   <cve>CVE-2008-5515</cve>
    <cve>CVE-2008-5519</cve>
+   <cve>CVE-2009-0033</cve>
+   <cve>CVE-2009-0580</cve>
+   <cve>CVE-2009-0781</cve>
+   <cve>CVE-2009-0783</cve>
+   <cve>CVE-2009-2693</cve>
    <cve>CVE-2009-2696</cve>
+   <cve>CVE-2009-2901</cve>
+   <cve>CVE-2009-2902</cve>
    <cve>CVE-2009-3548</cve>
+   <cve>CVE-2010-1157</cve>
+   <cve>CVE-2010-2227</cve>
+   <cve>CVE-2010-3718</cve>
+   <cve>CVE-2010-4312</cve>
+   <cve>CVE-2011-0013</cve>
+   <cve>CVE-2011-0534</cve>
+   <cve>CVE-2011-1184</cve>
+   <cve>CVE-2011-2204</cve>
+   <cve>CVE-2011-2526</cve>
+   <cve>CVE-2011-3190</cve>
+   <cve>CVE-2011-4858</cve>
+   <cve>CVE-2011-5062</cve>
+   <cve>CVE-2011-5063</cve>
+   <cve>CVE-2011-5064</cve>
+   <cve>CVE-2012-0022</cve>
+   <cve>CVE-2012-2733</cve>
+   <cve>CVE-2012-3544</cve>
+   <cve>CVE-2012-3546</cve>
+   <cve>CVE-2012-4431</cve>
+   <cve>CVE-2012-4534</cve>
    <cve>CVE-2012-5568</cve>
+   <cve>CVE-2012-5885</cve>
+   <cve>CVE-2012-5886</cve>
+   <cve>CVE-2012-5887</cve>
    <cve>CVE-2013-2185</cve>
    <cve>CVE-2013-4286</cve>
    <cve>CVE-2013-4322</cve>
@@ -111,8 +152,27 @@
    <cve>CVE-2014-0096</cve>
    <cve>CVE-2014-0099</cve>
    <cve>CVE-2014-0119</cve>
+   <cve>CVE-2014-0227</cve>
+   <cve>CVE-2014-0230</cve>
+   <cve>CVE-2014-7810</cve>
+   <cve>CVE-2015-5174</cve>
+   <cve>CVE-2015-5345</cve>
+   <cve>CVE-2016-0706</cve>
+   <cve>CVE-2016-0714</cve>
+   <cve>CVE-2016-0762</cve>
+   <cve>CVE-2016-1240</cve>
+   <cve>CVE-2016-5018</cve>
+   <cve>CVE-2016-5388</cve>
    <cve>CVE-2016-5425</cve>
    <cve>CVE-2016-6325</cve>
+   <cve>CVE-2016-6794</cve>
+   <cve>CVE-2016-6796</cve>
+   <cve>CVE-2016-6797</cve>
+   <cve>CVE-2016-6816</cve>
+   <cve>CVE-2016-8735</cve>
+   <cve>CVE-2016-9774</cve>
+   <cve>CVE-2016-9775</cve>
+   <cve>CVE-2017-5647</cve>
    <cve>CVE-2017-6056</cve>
 </suppress>
 <suppress>
