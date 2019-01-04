@@ -37,6 +37,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -132,6 +133,15 @@ public class TestCreateOrUpdateUser {
             NuxeoPrincipal principal = userManager.getPrincipal(USERNAME);
             assertEquals(FIRSTNAME, principal.getFirstName());
             assertEquals(Arrays.asList(MEMBERS), principal.getGroups());
+
+            DocumentModel group1 = userManager.getBareGroupModel();
+            DocumentModel group2 = userManager.getBareGroupModel();
+
+            group1.setProperty("group", "groupname", GROUP1);
+            group2.setProperty("group", "groupname", GROUP2);
+
+            userManager.createGroup(group1);
+            userManager.createGroup(group2);
 
             // now update, use properties
             params = new HashMap<>();
