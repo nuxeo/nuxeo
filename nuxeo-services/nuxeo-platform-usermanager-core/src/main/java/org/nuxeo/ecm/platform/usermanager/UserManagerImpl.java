@@ -21,6 +21,9 @@
  */
 package org.nuxeo.ecm.platform.usermanager;
 
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static org.nuxeo.ecm.platform.usermanager.UserConfig.GROUPS_COLUMN;
+
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -1203,6 +1206,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             checkPasswordValidity(userModel);
 
             String schema = dirService.getDirectorySchema(userDirectoryName);
+            // If trying to create the user with groups, check that the groups exist
+            checkGroupsExistence(userModel, schema, context);
+
             String clearUsername = (String) userModel.getProperty(schema, userDir.getIdField());
             String clearPassword = (String) userModel.getProperty(schema, userDir.getPasswordField());
 
@@ -1213,6 +1219,21 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             notifyUserChanged(userId, USERCREATED_EVENT_ID);
             return userModel;
 
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void checkGroupsExistence(DocumentModel userModel, String schema, DocumentModel context) {
+        List<String> groups = (List<String>) userModel.getProperty(schema, GROUPS_COLUMN);
+        if (groups == null || groups.isEmpty()) {
+            return;
+        }
+        try (Session groupDir = dirService.open(groupDirectoryName, context)) {
+            for (String group : groups) {
+                if (!groupDir.hasEntry(group)) {
+                    throw new NuxeoException("group does not exist: " + group, SC_FORBIDDEN);
+                }
+            }
         }
     }
 
@@ -1243,6 +1264,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             }
 
             String schema = dirService.getDirectorySchema(userDirectoryName);
+            // If trying to update the user with groups, check that the groups exist
+            checkGroupsExistence(userModel, schema, context);
 
             checkPasswordValidity(userModel);
 
