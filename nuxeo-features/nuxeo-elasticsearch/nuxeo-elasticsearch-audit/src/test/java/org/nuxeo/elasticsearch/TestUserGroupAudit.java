@@ -104,6 +104,11 @@ public class TestUserGroupAudit {
 
         entries = reader.queryLogs(new String[] { UserManagerImpl.USERMODIFIED_EVENT_ID }, null);
         assertEquals(0, entries.size());
+
+        DocumentModel groupModel = userManager.getBareGroupModel();
+        groupModel.setProperty("group", "groupname", "StaticGroup");
+        userManager.createGroup(groupModel);
+
         List<String> staticGroups = new ArrayList<String>();
         staticGroups.add("StaticGroup");
         newUser = userManager.getUserModel(userName);

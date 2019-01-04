@@ -84,6 +84,11 @@ public class TestUserGroupAuditWithMongoDB {
 
         entries = reader.queryLogs(new String[] { UserManagerImpl.USERMODIFIED_EVENT_ID }, null);
         assertEquals(0, entries.size());
+
+        DocumentModel groupModel = userManager.getBareGroupModel();
+        groupModel.setProperty("group", "groupname", "StaticGroup");
+        userManager.createGroup(groupModel);
+
         List<String> staticGroups = new ArrayList<>();
         staticGroups.add("StaticGroup");
         newUser = userManager.getUserModel(userName);

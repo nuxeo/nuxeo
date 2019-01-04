@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -640,6 +641,46 @@ public class UserGroupTest extends BaseUserTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEqualsUser("transient/foo@bar.com/666", "foo@bar.com", "null", "foo@bar.com", node);
+        }
+    }
+
+    /**
+     * @since 10.10
+     */
+    @Test
+    public void itCantCreateUserWithUnknownGroup() throws Exception {
+
+        NuxeoPrincipal principal = new NuxeoPrincipalImpl("newuser");
+        principal.setFirstName("test");
+        principal.setLastName("user");
+        principal.setCompany("nuxeo");
+        principal.setEmail("test@nuxeo.com");
+        principal.setGroups(Collections.singletonList("unknownGroup"));
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/user", getPrincipalAsJson(principal))) {
+            assertEquals(SC_FORBIDDEN, response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("group does not exist: unknownGroup", node.get("message").getValueAsText());
+        }
+    }
+
+    /**
+     * @since 10.10
+     */
+    @Test
+    public void itCantUpdateAUserWithUnknownGroup() throws Exception {
+
+        NuxeoPrincipal user = um.getPrincipal("user1");
+        user.setFirstName("Paul");
+        user.setLastName("McCartney");
+        user.setGroups(Collections.singletonList("unknownGroup"));
+        String userJson = getPrincipalAsJson(user);
+
+        // When I call a PUT on the Rest endpoint
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/user/user1", userJson)) {
+            assertEquals(SC_FORBIDDEN, response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("group does not exist: unknownGroup", node.get("message").getValueAsText());
         }
     }
 
