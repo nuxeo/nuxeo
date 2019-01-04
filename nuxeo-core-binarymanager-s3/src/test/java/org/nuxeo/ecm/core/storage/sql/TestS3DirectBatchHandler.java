@@ -73,6 +73,8 @@ public class TestS3DirectBatchHandler {
 
     private static String envSecret;
 
+    private static String envToken;
+
     @Inject
     public BatchManager batchManager;
 
@@ -82,9 +84,12 @@ public class TestS3DirectBatchHandler {
                 System.getenv(SDKGlobalConfiguration.ALTERNATE_ACCESS_KEY_ENV_VAR));
         envSecret = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.SECRET_KEY_ENV_VAR),
                 System.getenv(SDKGlobalConfiguration.ALTERNATE_SECRET_KEY_ENV_VAR));
-        assumeTrue("AWS Credentials not set in the environment variables", StringUtils.isNoneBlank(envId, envSecret));
+        envToken = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.AWS_SESSION_TOKEN_ENV_VAR), "");
+        assumeTrue("AWS Credentials not set in the environment variables",
+                StringUtils.isNoneBlank(envId, envSecret, envToken));
         System.setProperty(S3DIRECT_PREFIX + S3BinaryManager.AWS_ID_PROPERTY, envId);
         System.setProperty(S3DIRECT_PREFIX + S3BinaryManager.AWS_SECRET_PROPERTY, envSecret);
+        System.setProperty(S3DIRECT_PREFIX + S3BinaryManager.AWS_SESSION_TOKEN_PROPERTY, envToken);
     }
 
     @Test
@@ -157,7 +162,7 @@ public class TestS3DirectBatchHandler {
         // create priviledged client
         properties.put(S3DirectBatchHandler.INFO_AWS_SECRET_KEY_ID, envId);
         properties.put(S3DirectBatchHandler.INFO_AWS_SECRET_ACCESS_KEY, envSecret);
-        properties.remove(S3DirectBatchHandler.INFO_AWS_SESSION_TOKEN);
+        properties.put(S3DirectBatchHandler.INFO_AWS_SESSION_TOKEN, envToken);
         AmazonS3 priviledgedS3Client = createS3Client(properties);
 
         // check the initial upload has been succesfull

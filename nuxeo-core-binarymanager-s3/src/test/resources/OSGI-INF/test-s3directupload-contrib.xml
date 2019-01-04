@@ -18,6 +18,7 @@
       <class>org.nuxeo.ecm.core.storage.sql.S3BinaryManager</class>
       <property name="awsid">${nuxeo.s3storage.transient.awsid}</property>
       <property name="awssecret">${nuxeo.s3storage.transient.awssecret}</property>
+      <property name="awstoken">${nuxeo.s3storage.transient.awstoken}</property>
       <property name="bucket">nxp-24754-transient</property>
       <property name="region">eu-west-3</property>
       <property name="bucket_prefix">transient-prefix/</property>
@@ -38,9 +39,11 @@
       <property name="transientStore">s3TransientStore</property>
       <property name="awsid">${nuxeo.s3storage.transient.awsid}</property>
       <property name="awssecret">${nuxeo.s3storage.transient.awssecret}</property>
+      <property name="awstoken">${nuxeo.s3storage.transient.awstoken}</property>
       <property name="bucket">nxp-24754-transient</property>
       <property name="region">eu-west-3</property>
       <property name="bucket_prefix">transient-prefix/</property>
+      <property name="roleArn">arn:aws:iam::783725821734:role/nuxeo-s3directupload-role</property>
       <property name="policyTemplate">{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:PutObject","Resource":["arn:aws:s3:::nxp-24754-transient/*"]}]}
       </property>
     </batchHandler>
