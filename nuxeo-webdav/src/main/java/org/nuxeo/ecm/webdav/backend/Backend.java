@@ -30,8 +30,12 @@ import java.util.List;
 
 public interface Backend {
 
+    /** @deprecated since 10.10, unused */
+    @Deprecated
     String getRootPath();
 
+    /** @deprecated since 10.10, unused */
+    @Deprecated
     String getRootUrl();
 
     CoreSession getSession();
@@ -60,8 +64,12 @@ public interface Backend {
 
     void removeItem(DocumentRef ref);
 
+    /** @deprecated since 10.10, unused, use {@link #moveItem} instead */
+    @Deprecated
     void renameItem(DocumentModel source, String destinationName);
 
+    /** @deprecated since 10.10, unused */
+    @Deprecated
     DocumentModel moveItem(DocumentModel source, PathRef targetParentRef);
 
     DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name);
@@ -74,10 +82,14 @@ public interface Backend {
 
     DocumentModel createFile(String parentPath, String name, Blob content);
 
+    /** @deprecated since 10.10, unused */
+    @Deprecated
     DocumentModel createFile(String parentPath, String name);
 
     List<DocumentModel> getChildren(DocumentRef ref);
 
+    /** @deprecated since 10.10, unused */
+    @Deprecated
     boolean isRename(String source, String destination);
 
     boolean exists(String location);
@@ -92,6 +104,8 @@ public interface Backend {
 
     boolean isVirtual();
 
+    /** @deprecated since 10.10, unused */
+    @Deprecated
     boolean isRoot();
 
     String getVirtualPath(String path);
