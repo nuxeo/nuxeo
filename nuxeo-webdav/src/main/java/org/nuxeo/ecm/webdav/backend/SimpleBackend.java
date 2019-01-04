@@ -342,15 +342,18 @@ public class SimpleBackend extends AbstractCoreBackend {
     public DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name)
             {
         cleanTrashPath(targetParentRef, name);
+        source.setPropertyValue("dc:title", name);
         BlobHolder blobHolder = source.getAdapter(BlobHolder.class);
         if (blobHolder != null) {
             Blob blob = blobHolder.getBlob();
             if (blob != null) {
                 blob.setFilename(name);
+                // as the name may have changed, reset the mime type so that the correct one will be computed
+                blob.setMimeType(null);
                 blobHolder.setBlob(blob);
-                source = getSession().saveDocument(source);
             }
         }
+        source = getSession().saveDocument(source);
         DocumentModel model = getSession().move(source.getRef(), targetParentRef, name);
         return model;
     }
