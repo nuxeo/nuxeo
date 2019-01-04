@@ -425,6 +425,11 @@ public class WebDavClientTest extends AbstractServerTest {
             status = response.getStatusLine().getStatusCode();
         }
         assertEquals(HttpStatus.SC_CREATED, status);
+        PathRef ref = new PathRef("/workspaces/workspace/" + name);
+        session.save(); // process invalidations
+        assertTrue(session.exists(ref));
+        DocumentModel doc = session.getDocument(ref);
+        assertEquals(name, doc.getTitle());
 
         // rename it
         String newName = "myfolderRenamed";
@@ -433,6 +438,12 @@ public class WebDavClientTest extends AbstractServerTest {
             status = response.getStatusLine().getStatusCode();
         }
         assertEquals(HttpStatus.SC_CREATED, status);
+        PathRef newRef = new PathRef("/workspaces/workspace/" + newName);
+        session.save(); // process invalidations
+        assertFalse(session.exists(ref)); // not here anymore, was renamed
+        assertTrue(session.exists(newRef));
+        doc = session.getDocument(newRef);
+        assertEquals(newName, doc.getTitle());
     }
 
     @Test
