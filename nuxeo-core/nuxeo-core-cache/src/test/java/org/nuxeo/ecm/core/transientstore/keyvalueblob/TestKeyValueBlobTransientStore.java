@@ -95,6 +95,26 @@ public class TestKeyValueBlobTransientStore {
     }
 
     @Test
+    public void verifyDefaultAndFallback() {
+        TransientStore def = tss.getStore("default");
+        TransientStore other1 = tss.getStore("storeNotRegisteredInXML");
+        TransientStore other2 = tss.getStore("otherStoreNotRegisteredInXML");
+        assertTrue(def instanceof KeyValueBlobTransientStore);
+        assertTrue(other1 instanceof KeyValueBlobTransientStore);
+        assertTrue(other2 instanceof KeyValueBlobTransientStore);
+        // put a key in the default one
+        def.putParameter("foo", "A", "bar");
+        assertEquals("bar", def.getParameter("foo", "A"));
+        // make sure there's no key collision
+        assertNull(other1.getParameter("foo", "A"));
+        // put a key in the first derived one
+        other1.putParameter("gee", "B", "moo");
+        // make sure there's no key collision
+        assertNull(def.getParameter("gee", "B"));
+        assertNull(other2.getParameter("gee", "B"));
+    }
+
+    @Test
     public void verifyStorage() throws Exception {
 
         String key = "mykey";

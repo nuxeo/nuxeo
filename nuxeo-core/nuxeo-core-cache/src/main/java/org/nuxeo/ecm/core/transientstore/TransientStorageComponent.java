@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +15,32 @@
  *
  * Contributors:
  *     Tiry
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.transientstore;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
- * Component exposing the {@link TransientStoreService} and managing the unerlying extension point
+ * Component exposing the {@link TransientStoreService} and managing the underlying extension point
  *
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
  */
 public class TransientStorageComponent extends DefaultComponent implements TransientStoreService {
 
-    protected Map<String, TransientStoreConfig> configs = new HashMap<>();
+    private static final Logger log = LogManager.getLogger(TransientStorageComponent.class);
 
     protected Map<String, TransientStoreProvider> stores = new HashMap<>();
 
@@ -46,70 +49,71 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
     public static final String DEFAULT_STORE_NAME = "default";
 
     @Override
-    public TransientStore getStore(String name) {
+    public synchronized TransientStore getStore(String name) {
         TransientStore store = stores.get(name);
         if (store == null) {
-            store = stores.get(DEFAULT_STORE_NAME);
-            if (store == null) {
-                store = registerDefaultStore();
+            TransientStoreConfig descriptor = getDescriptor(EP_STORE, name);
+            if (descriptor == null) {
+                // instantiate a copy of the default descriptor
+                descriptor = getDescriptor(EP_STORE, DEFAULT_STORE_NAME);
+                if (descriptor == null) {
+                    // TODO make this a hard error
+                    String message = "Missing configuration for default transient store, using in-memory";
+                    log.warn(message);
+                    Framework.getRuntime().getMessageHandler().addWarning(message);
+                    // use in-memory store
+                    descriptor = new TransientStoreConfig(DEFAULT_STORE_NAME);
+                }
+                descriptor = new TransientStoreConfig(descriptor); // copy
+                descriptor.name = name; // set new name in copy
             }
+            TransientStoreProvider provider;
+            try {
+                provider = descriptor.implClass.getDeclaredConstructor().newInstance();
+                provider.init(descriptor);
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+            stores.put(name, provider);
+            store = provider;
         }
         return store;
     }
 
-    protected TransientStore registerDefaultStore() {
-        synchronized (this) {
-            TransientStoreProvider defaultStore = stores.get(DEFAULT_STORE_NAME);
-            if (defaultStore == null) {
-                TransientStoreConfig defaultConfig = new TransientStoreConfig(DEFAULT_STORE_NAME);
-                defaultStore = defaultConfig.getStore();
-                stores.put(defaultConfig.getName(), defaultStore);
-            }
-            return defaultStore;
-        }
-    }
-
     @Override
-	public void doGC() {
+    public void doGC() {
         stores.values().forEach(TransientStoreProvider::doGC);
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (EP_STORE.equals(extensionPoint)) {
-            TransientStoreConfig config = (TransientStoreConfig) contribution;
-            // XXX merge
-            configs.put(config.getName(), config);
+    protected boolean unregister(String xp, Descriptor descriptor) {
+        boolean removed = super.unregister(xp, descriptor);
+        if (removed) {
+            TransientStoreProvider store = stores.remove(descriptor.getId());
+            if (store != null) {
+                store.shutdown();
+            }
         }
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (EP_STORE.equals(extensionPoint)) {
-            TransientStoreConfig config = (TransientStoreConfig) contribution;
-            TransientStoreProvider store = stores.get(config.getName());
-            store.shutdown();
-        }
+        return removed;
     }
 
     @Override
     public void start(ComponentContext context) {
-        for (TransientStoreConfig config : configs.values()) {
-            registerStore(config);
-        }
+        // make sure we have a default store
+        getStore(DEFAULT_STORE_NAME);
+        // instantiate all registered stores
+        getDescriptors(EP_STORE).forEach(desc -> getStore(desc.getId()));
     }
 
-    protected TransientStore registerStore(TransientStoreConfig config) {
-        TransientStoreProvider store = config.getStore();
-        stores.put(config.getName(), store);
-        return store;
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        stores.values().forEach(TransientStoreProvider::shutdown);
+        super.stop(context);
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-        stores.values().forEach(TransientStoreProvider::shutdown);
         stores.clear();
-        configs.values().forEach(TransientStoreConfig::flush);
         super.deactivate(context);
     }
 

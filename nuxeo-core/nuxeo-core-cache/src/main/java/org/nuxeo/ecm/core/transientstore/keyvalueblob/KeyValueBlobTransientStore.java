@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobManagerComponent;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
@@ -155,13 +156,16 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
 
     @Override
     public void init(TransientStoreConfig config) {
-        String name = config.getName();
+        String defaultName = config.getName();
+        if (!defaultName.startsWith(BlobManagerComponent.TRANSIENT_ID_PREFIX)) {
+            defaultName = BlobManagerComponent.TRANSIENT_ID_PREFIX + "_" + defaultName;
+        }
         Map<String, String> properties = config.getProperties();
         if (properties == null) {
             properties = Collections.emptyMap();
         }
-        keyValueStoreName = defaultIfBlank(properties.get(CONFIG_KEY_VALUE_STORE), name);
-        blobProviderId = defaultIfBlank(properties.get(CONFIG_BLOB_PROVIDER), name);
+        keyValueStoreName = defaultIfBlank(properties.get(CONFIG_KEY_VALUE_STORE), defaultName);
+        blobProviderId = defaultIfBlank(properties.get(CONFIG_BLOB_PROVIDER), defaultName);
         mapper = new ObjectMapper();
         ttl = config.getFirstLevelTTL() * 60;
         releaseTTL = config.getSecondLevelTTL() * 60;
