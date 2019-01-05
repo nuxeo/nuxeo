@@ -78,6 +78,7 @@ import com.amazonaws.services.s3.model.EncryptedPutObjectRequest;
 import com.amazonaws.services.s3.model.EncryptionMaterials;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -159,6 +160,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     public static final String DIRECTDOWNLOAD_PROPERTY_COMPAT = "downloadfroms3";
 
     public static final String DIRECTDOWNLOAD_EXPIRE_PROPERTY_COMPAT = "downloadfroms3.expire";
+
+    public static final String DELIMITER = "/";
 
     private static final Pattern MD5_RE = Pattern.compile("[0-9a-f]{32}");
 
@@ -249,10 +252,10 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             throw new RuntimeException("Missing conf: " + BUCKET_NAME_PROPERTY);
         }
 
-        if (!isBlank(bucketNamePrefix) && !bucketNamePrefix.endsWith("/")) {
+        if (!isBlank(bucketNamePrefix) && !bucketNamePrefix.endsWith(DELIMITER)) {
             log.warn(String.format("%s %s S3 bucket prefix should end with '/' : added automatically.",
                     BUCKET_PREFIX_PROPERTY, bucketNamePrefix));
-            bucketNamePrefix += "/";
+            bucketNamePrefix += DELIMITER;
         }
         // set up credentials
         awsCredentialsProvider = S3Utils.getAWSCredentialsProvider(awsID, awsSecret, awsToken);
@@ -642,7 +645,10 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             ObjectListing list = null;
             do {
                 if (list == null) {
-                    list = binaryManager.amazonS3.listObjects(binaryManager.bucketName, binaryManager.bucketNamePrefix);
+                    // use delimiter to avoid useless listing of objects in "subdirectories"
+                    ListObjectsRequest listObjectsRequest = new ListObjectsRequest(binaryManager.bucketName,
+                            binaryManager.bucketNamePrefix, null, DELIMITER, null);
+                    list = binaryManager.amazonS3.listObjects(listObjectsRequest);
                 } else {
                     list = binaryManager.amazonS3.listNextBatchOfObjects(list);
                 }

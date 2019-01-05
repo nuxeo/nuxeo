@@ -28,6 +28,7 @@ import static org.junit.Assume.assumeTrue;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -158,6 +159,8 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
             Throwable c = e.getCause();
             assertTrue(c.getClass().getName(), c instanceof ConnectionPoolTimeoutException);
         }
+        // abort reading stream to avoid WARN about incomplete read since AWS SDK 1.11.99
+        o.getObjectContent().abort();
         o.close();
     }
 
@@ -181,7 +184,7 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         }
         assertTrue("IOException should occured as content is corrupted", exceptionOccured);
     }
-    
+
     @Override
     @Test
     public void testBinaryManagerGC() throws Exception {
@@ -198,14 +201,23 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
             metadata.setContentLength(1);
             binaryManager.amazonS3.putObject(binaryManager.bucketName, digest, in, metadata);
         }
-        assertEquals(Collections.singleton(digest), listAllObjects());
+        // create a md5-looking extra file in a "subdirectory" of the bucket prefix
+        String digest2 = binaryManager.bucketNamePrefix + "subfolder/12345678901234567890123456789999";
+        try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(1);
+            binaryManager.amazonS3.putObject(binaryManager.bucketName, digest2, in, metadata);
+        }
+        // check that the files are here
+        assertEquals(new HashSet<>(Arrays.asList(digest, digest2)), listAllObjects());
 
         // run base test with the bucket name prefix
         super.testBinaryManagerGC();
 
-        // check that the extra file is still here
+        // check that the extra files are still here
         Set<String> res = listAllObjects();
         assertTrue(res.contains(digest));
+        assertTrue(res.contains(digest2));
     }
 
     @Override
