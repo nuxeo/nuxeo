@@ -25,8 +25,8 @@ import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.transientstore.SimpleTransientStore;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * {@link XMap} descriptor for representing the Configuration of a {@link TransientStore}
@@ -35,10 +35,10 @@ import org.nuxeo.ecm.core.transientstore.SimpleTransientStore;
  * @since 7.2
  */
 @XObject("store")
-public class TransientStoreConfig {
+public class TransientStoreConfig implements Descriptor {
 
     @XNode("@name")
-    protected String name;
+    public String name;
 
     @XNode("@path")
     protected String path;
@@ -61,18 +61,38 @@ public class TransientStoreConfig {
     protected int minimalRetention = 10;
 
     @XNode("@class")
-    protected Class<? extends TransientStoreProvider> implClass = SimpleTransientStore.class;
-
-    protected TransientStoreProvider store;
+    public Class<? extends TransientStoreProvider> implClass = SimpleTransientStore.class;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class, nullByDefault = true)
-    protected Map<String, String> properties;
+    protected Map<String, String> properties  = new HashMap<>();
 
     public TransientStoreConfig() {
     }
 
     public TransientStoreConfig(String name) {
         this.name = name;
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @since 10.10
+     */
+    public TransientStoreConfig(TransientStoreConfig other) {
+        name = other.name;
+        path = other.path;
+        targetMaxSizeMB = other.targetMaxSizeMB;
+        absoluteMaxSizeMB = other.absoluteMaxSizeMB;
+        firstLevelTTL = other.firstLevelTTL;
+        secondLevelTTL = other.secondLevelTTL;
+        minimalRetention = other.minimalRetention;
+        implClass = other.implClass;
+        properties.putAll(other.properties);
+    }
+
+    @Override
+    public String getId() {
+        return name;
     }
 
     public String getName() {
@@ -109,27 +129,6 @@ public class TransientStoreConfig {
 
     public void setSecondLevelTTL(int secondLevelTTL) {
         this.secondLevelTTL = secondLevelTTL;
-    }
-
-    public TransientStoreProvider getStore() {
-        if (store == null) {
-            try {
-                store = implClass.newInstance();
-                store.init(this);
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new NuxeoException(e);
-            }
-        }
-        return store;
-    }
-
-    /**
-     * Flush the cached store if any
-     *
-     * @since 9.2
-     */
-    public void flush() {
-        store = null;
     }
 
     /**
