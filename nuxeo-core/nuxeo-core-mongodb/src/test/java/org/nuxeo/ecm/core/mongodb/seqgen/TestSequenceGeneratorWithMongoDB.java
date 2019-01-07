@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -46,7 +45,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(MongoDBFeature.class)
 @Deploy("org.nuxeo.ecm.core:OSGI-INF/uidgenerator-service.xml")
 @Deploy("org.nuxeo.ecm.core.mongodb.test:OSGI-INF/mongodb-seqgen-test-contrib.xml")
-@Ignore
 public class TestSequenceGeneratorWithMongoDB {
 
     @Inject

@@ -262,7 +262,6 @@ public abstract class AbstractWorkManagerTest {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.event:test-work-failure-listeners.xml")
-    @Ignore
     public void itCanFireWorkFailureEvent() throws Exception {
         int initCount = DummyPostCommitEventListener.handledCount();
         int initEvtCount = DummyPostCommitEventListener.eventCount();
