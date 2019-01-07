@@ -21,7 +21,15 @@ pipeline {
            sh " mvn clean package"
           }
           dir('nuxeo-core') {
-            sh " mvn clean package"
+            script {
+              try {
+                sh " mvn clean package"
+              }
+              catch(err) {}
+              finally {
+                step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'])
+              }
+            }
           }
         }
       }
@@ -43,8 +51,16 @@ pipeline {
           sh "echo nuxeo.test.mongodb.server=mongodb://preview-${APP_NAME}.${BRANCH_NAME}.svc.cluster.local >> /root/nuxeo-test-vcs.properties"
           sh "echo nuxeo.test.mongodb.dbname=vcstest >> /root/nuxeo-test-vcs.properties"  
           dir('nuxeo-core') {
-            sh "mvn clean package -Pcustomdb,mongodb"
-          }
+            script {
+              try {
+                sh "mvn clean package -Pcustomdb,mongodb"
+              }
+              catch(err) {}
+              finally {
+                step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'])
+              }
+             }
+            }
           sh "kubectl delete namespace ${BRANCH_NAME}"
         }
       }  
@@ -67,15 +83,23 @@ pipeline {
           sh "echo nuxeo.test.vcs.user=nuxeo >> /root/nuxeo-test-vcs.properties"
           sh "echo nuxeo.test.vcs.password=nuxeo >> /root/nuxeo-test-vcs.properties"  
           dir('nuxeo-core') {
-            sh "mvn clean package -Pcustomdb,pgsql"
+            script {
+              try {
+                sh "mvn clean package -Pcustomdb,pgsql"
+              }
+              catch(err) {}
+              finally {
+                step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'])
+              }
+            }
           }
-          sh "kubectl delete namespace ${BRANCH_NAME}"
         }
       }  
     }
   }
   post {
         always {
+          sh "kubectl delete namespace ${BRANCH_NAME}"
           cleanWs()
         }
   }
