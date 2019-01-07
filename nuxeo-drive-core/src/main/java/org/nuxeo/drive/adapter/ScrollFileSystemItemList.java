@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.adapter;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -26,7 +25,7 @@ import java.util.List;
  *
  * @since 8.3
  */
-public interface ScrollFileSystemItemList extends List<FileSystemItem>, Serializable {
+public interface ScrollFileSystemItemList extends List<FileSystemItem> {
 
     String getScrollId();
 

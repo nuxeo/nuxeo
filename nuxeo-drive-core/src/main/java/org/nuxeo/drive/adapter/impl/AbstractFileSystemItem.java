@@ -37,8 +37,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractFileSystemItem implements FileSystemItem {
 
-    private static final long serialVersionUID = 1L;
-
     public static final String FILE_SYSTEM_ITEM_ID_SEPARATOR = "#";
 
     public static final String FILE_SYSTEM_ITEM_PATH_SEPARATOR = "/";
@@ -71,8 +69,7 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     protected String path;
 
-    // Must not be serialized => transient
-    protected transient NuxeoPrincipal principal;
+    protected NuxeoPrincipal principal;
 
     /**
      * Needed for JSON serialization/deserialization since we don't serialize the principal

@@ -47,8 +47,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class UserWorkspaceSyncRootParentFolderItem extends AbstractVirtualFolderItem {
 
-    private static final long serialVersionUID = 1L;
-
     private static final Logger log = LogManager.getLogger(UserWorkspaceSyncRootParentFolderItem.class);
 
     public UserWorkspaceSyncRootParentFolderItem(String factoryName, NuxeoPrincipal principal, String parentId,

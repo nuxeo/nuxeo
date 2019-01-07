@@ -18,8 +18,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.io.Serializable;
-
 import org.nuxeo.drive.service.FileSystemItemFactory;
 
 /**
@@ -27,9 +25,7 @@ import org.nuxeo.drive.service.FileSystemItemFactory;
  *
  * @author Antoine Taillefer
  */
-public class FileSystemItemFactoryWrapper implements Serializable {
-
-    private static final long serialVersionUID = 6038185061388418020L;
+public class FileSystemItemFactoryWrapper {
 
     protected String docType;
 

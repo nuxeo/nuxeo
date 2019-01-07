@@ -47,8 +47,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem {
 
-    private static final long serialVersionUID = 1L;
-
     public CollectionSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc) {
         this(factoryName, parentItem, doc, false);
     }

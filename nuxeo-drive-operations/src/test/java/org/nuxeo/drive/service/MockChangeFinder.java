@@ -51,8 +51,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MockChangeFinder implements FileSystemChangeFinder {
 
-    private static final long serialVersionUID = -8829376616919987451L;
-
     private static final Logger log = LogManager.getLogger(MockChangeFinder.class);
 
     protected Map<String, String> parameters = new HashMap<String, String>();

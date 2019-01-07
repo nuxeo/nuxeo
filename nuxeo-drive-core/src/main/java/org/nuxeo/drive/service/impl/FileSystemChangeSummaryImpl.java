@@ -37,8 +37,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  */
 public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
 
-    private static final long serialVersionUID = 1L;
-
     protected List<FileSystemItemChange> fileSystemChanges;
 
     protected Long syncDate = null;

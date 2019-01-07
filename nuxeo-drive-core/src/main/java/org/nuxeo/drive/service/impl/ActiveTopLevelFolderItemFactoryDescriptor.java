@@ -18,8 +18,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.io.Serializable;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
@@ -31,9 +29,7 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
  * @author Antoine Taillefer
  */
 @XObject("activeTopLevelFolderItemFactory")
-public class ActiveTopLevelFolderItemFactoryDescriptor implements Serializable {
-
-    private static final long serialVersionUID = -1033445032142441572L;
+public class ActiveTopLevelFolderItemFactoryDescriptor {
 
     @XNode("")
     protected String name;

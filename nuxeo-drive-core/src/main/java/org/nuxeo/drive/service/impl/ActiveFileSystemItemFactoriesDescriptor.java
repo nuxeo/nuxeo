@@ -36,13 +36,14 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 @XObject("activeFileSystemItemFactories")
 public class ActiveFileSystemItemFactoriesDescriptor implements Serializable {
 
-    private static final long serialVersionUID = -6359900042974173427L;
+    private static final long serialVersionUID = 1L;
 
     @XNode("@merge")
     protected boolean merge = false;
 
     @XNodeList(value = "factories/factory", type = ArrayList.class, componentType = ActiveFileSystemItemFactoryDescriptor.class)
-    protected List<ActiveFileSystemItemFactoryDescriptor> factories;
+    protected List<ActiveFileSystemItemFactoryDescriptor> factories; // NOSONAR, serialization is actually performed by
+                                                                     // SerializationUtils#clone during merge/clone
 
     public boolean isMerge() {
         return merge;

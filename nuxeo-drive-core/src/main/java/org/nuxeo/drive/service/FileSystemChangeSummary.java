@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.service;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -31,7 +30,7 @@ import java.util.List;
  *
  * @author Antoine Taillefer
  */
-public interface FileSystemChangeSummary extends Serializable {
+public interface FileSystemChangeSummary {
 
     List<FileSystemItemChange> getFileSystemChanges();
 

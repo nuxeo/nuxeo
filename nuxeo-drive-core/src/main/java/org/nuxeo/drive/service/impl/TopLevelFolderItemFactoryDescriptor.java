@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,9 +34,7 @@ import org.nuxeo.drive.service.TopLevelFolderItemFactory;
  * @author Antoine Taillefer
  */
 @XObject("topLevelFolderItemFactory")
-public class TopLevelFolderItemFactoryDescriptor implements Serializable {
-
-    private static final long serialVersionUID = -7837197812448232426L;
+public class TopLevelFolderItemFactoryDescriptor {
 
     @XNode("@class")
     protected Class<? extends TopLevelFolderItemFactory> factoryClass;

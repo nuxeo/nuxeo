@@ -48,8 +48,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  */
 public class PermissionTopLevelFolderItem extends AbstractVirtualFolderItem {
 
-    private static final long serialVersionUID = 5179858544427598560L;
-
     protected List<String> childrenFactoryNames;
 
     public PermissionTopLevelFolderItem(String factoryName, NuxeoPrincipal principal, String folderName,

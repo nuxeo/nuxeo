@@ -28,8 +28,6 @@ import org.nuxeo.drive.adapter.FolderItem;
  */
 public class SimpleFileSystemItem extends AbstractFileSystemItem {
 
-    private static final long serialVersionUID = 1L;
-
     protected String downloadURL;
 
     protected String digestAlgorithm;

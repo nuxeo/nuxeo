@@ -33,8 +33,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem {
 
-    private static final long serialVersionUID = 1L;
-
     public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc) {
         this(factoryName, parentItem, doc, false);
     }

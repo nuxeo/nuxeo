@@ -54,8 +54,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
 
-    private static final long serialVersionUID = 1L;
-
     private static final Logger log = LogManager.getLogger(UserWorkspaceTopLevelFolderItem.class);
 
     protected DocumentModel userWorkspace;

@@ -41,8 +41,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem implements FileItem {
 
-    private static final long serialVersionUID = 1L;
-
     protected String downloadURL;
 
     protected String digestAlgorithm;

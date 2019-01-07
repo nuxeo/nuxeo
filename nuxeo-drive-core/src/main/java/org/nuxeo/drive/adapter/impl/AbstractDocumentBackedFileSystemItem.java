@@ -55,8 +55,6 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileSystemItem {
 
-    private static final long serialVersionUID = 1L;
-
     private static final Logger log = LogManager.getLogger(AbstractDocumentBackedFileSystemItem.class);
 
     protected static final String PERMISSION_CHECK_OPTIMIZED_PROPERTY = "org.nuxeo.drive.permissionCheckOptimized";

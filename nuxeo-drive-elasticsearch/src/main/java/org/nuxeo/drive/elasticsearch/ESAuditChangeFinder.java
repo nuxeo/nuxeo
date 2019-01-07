@@ -84,8 +84,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class ESAuditChangeFinder extends AuditChangeFinder {
 
-    private static final long serialVersionUID = 1L;
-
     private static final Logger log = LogManager.getLogger(ESAuditChangeFinder.class);
 
     protected static final String EVENT_ID = "eventId";

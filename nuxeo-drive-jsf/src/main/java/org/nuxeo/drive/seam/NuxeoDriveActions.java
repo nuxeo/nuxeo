@@ -21,7 +21,6 @@ package org.nuxeo.drive.seam;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -75,9 +74,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("nuxeoDriveActions")
 @Scope(ScopeType.PAGE)
 @Install(precedence = Install.FRAMEWORK)
-public class NuxeoDriveActions extends InputController implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class NuxeoDriveActions extends InputController {
 
     private static final Logger log = LogManager.getLogger(NuxeoDriveActions.class);
 
@@ -111,13 +108,13 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     private static final String DRIVE_METADATA_VIEW = "view_drive_metadata";
 
     @In(create = true, required = false)
-    protected transient CoreSession documentManager;
+    protected CoreSession documentManager;
 
     @In(create = true, required = false)
-    protected transient UserCenterViewManager userCenterViews;
+    protected UserCenterViewManager userCenterViews;
 
     @In(create = true)
-    protected transient DocumentActions documentActions;
+    protected DocumentActions documentActions;
 
     @Factory(value = CURRENT_SYNCHRONIZATION_ROOT, scope = ScopeType.EVENT)
     public DocumentModel getCurrentSynchronizationRoot() {

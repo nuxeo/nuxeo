@@ -30,8 +30,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  */
 public class FileSystemItemChangeImpl implements FileSystemItemChange {
 
-    private static final long serialVersionUID = -5697869523880291618L;
-
     protected String repositoryId;
 
     protected String eventId;

@@ -55,8 +55,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AuditChangeFinder implements FileSystemChangeFinder {
 
-    private static final long serialVersionUID = 1963018967324857522L;
-
     private static final Logger log = LogManager.getLogger(AuditChangeFinder.class);
 
     protected Map<String, String> parameters = new HashMap<>();

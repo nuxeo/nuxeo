@@ -31,7 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("factory")
 public class ActiveFileSystemItemFactoryDescriptor implements Serializable {
 
-    private static final long serialVersionUID = 1630714012089221788L;
+    private static final long serialVersionUID = 1L;
 
     @XNode("")
     protected String name;

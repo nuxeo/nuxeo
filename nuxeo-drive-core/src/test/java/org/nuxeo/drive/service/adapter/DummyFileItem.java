@@ -32,8 +32,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class DummyFileItem extends DocumentBackedFileItem {
 
-    private static final long serialVersionUID = 1L;
-
     public DummyFileItem(FileSystemItemFactory factory, DocumentModel doc) {
         super(factory, doc);
     }

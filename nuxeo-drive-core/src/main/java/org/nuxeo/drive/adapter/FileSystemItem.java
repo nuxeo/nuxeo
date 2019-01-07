@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.adapter;
 
-import java.io.Serializable;
 import java.util.Calendar;
 
 import org.nuxeo.drive.adapter.impl.AbstractDocumentBackedFileSystemItem;
@@ -34,7 +33,7 @@ import org.nuxeo.ecm.core.api.Lock;
  * @see FileItem
  * @see FolderItem
  */
-public interface FileSystemItem extends Comparable<FileSystemItem>, Serializable {
+public interface FileSystemItem extends Comparable<FileSystemItem> {
 
     /**
      * Gets a unique id generated server-side.

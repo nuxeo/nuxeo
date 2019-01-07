@@ -38,8 +38,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ESSyncRootFolderItem extends DefaultSyncRootFolderItem {
 
-    private static final long serialVersionUID = 1020938498677864484L;
-
     private static final Logger log = LogManager.getLogger(ESSyncRootFolderItem.class);
 
     public ESSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc) {

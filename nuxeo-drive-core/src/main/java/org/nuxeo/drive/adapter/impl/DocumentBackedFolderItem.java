@@ -70,8 +70,6 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
     private static final Logger log = LogManager.getLogger(DocumentBackedFolderItem.class);
 
-    private static final long serialVersionUID = 1L;
-
     private static final String FOLDER_ITEM_CHILDREN_PAGE_PROVIDER = "FOLDER_ITEM_CHILDREN";
 
     protected static final String DESCENDANTS_SCROLL_CACHE = "driveDescendantsScroll";

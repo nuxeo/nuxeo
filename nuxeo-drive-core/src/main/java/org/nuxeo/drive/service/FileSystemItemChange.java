@@ -18,8 +18,6 @@
  */
 package org.nuxeo.drive.service;
 
-import java.io.Serializable;
-
 import org.nuxeo.drive.adapter.FileSystemItem;
 
 /**
@@ -27,7 +25,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
  *
  * @author Antoine Taillefer
  */
-public interface FileSystemItemChange extends Serializable {
+public interface FileSystemItemChange {
 
     String getFileSystemItemId();
 

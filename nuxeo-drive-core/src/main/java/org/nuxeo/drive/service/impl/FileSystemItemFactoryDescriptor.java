@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 @XObject("fileSystemItemFactory")
 public class FileSystemItemFactoryDescriptor implements Serializable, Comparable<FileSystemItemFactoryDescriptor> {
 
-    private static final long serialVersionUID = -7840980495329452651L;
+    private static final long serialVersionUID = 1L;
 
     @XNode("@name")
     protected String name;
@@ -57,7 +57,8 @@ public class FileSystemItemFactoryDescriptor implements Serializable, Comparable
     protected Class<? extends FileSystemItemFactory> factoryClass;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> parameters = new HashMap<String, String>();
+    protected Map<String, String> parameters = new HashMap<>(); // NOSONAR, serialization is actually performed by
+                                                                // SerializationUtils#clone during merge/clone
 
     public String getName() {
         return name;

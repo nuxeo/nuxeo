@@ -36,8 +36,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
  */
 public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem implements FolderItem {
 
-    private static final long serialVersionUID = 1L;
-
     protected boolean canCreateChild;
 
     protected boolean canScrollDescendants;

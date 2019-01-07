@@ -18,7 +18,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,9 +34,7 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
  * @since 7.3
  */
 @XObject("changeFinder")
-public class ChangeFinderDescriptor implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ChangeFinderDescriptor {
 
     @XNode("@class")
     protected Class<? extends FileSystemChangeFinder> changeFinderClass;
