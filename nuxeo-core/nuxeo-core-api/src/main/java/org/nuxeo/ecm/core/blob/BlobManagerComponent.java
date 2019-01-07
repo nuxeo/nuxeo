@@ -54,6 +54,14 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
 
     public static final String DEFAULT_ID = "default";
 
+    /**
+     * Blob providers whose id starts with this prefix are automatically marked transient.
+     *
+     * @since 10.10
+     * @see BlobProvider#isTransient
+     */
+    public static final String TRANSIENT_ID_PREFIX = "transient";
+
     protected BlobProviderDescriptorRegistry blobProviderDescriptorsRegistry = new BlobProviderDescriptorRegistry();
 
     protected Map<String, BlobProvider> blobProviders = new HashMap<>();
@@ -174,6 +182,10 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
                 }
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
+            }
+            // make it transient if needed
+            if (providerId.startsWith(TRANSIENT_ID_PREFIX)) {
+                descr.properties.put(BlobProviderDescriptor.TRANSIENT, "true");
             }
             try {
                 blobProvider.initialize(providerId, properties);

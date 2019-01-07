@@ -68,34 +68,7 @@ public class TestDocumentBlobManager {
 
     @Test
     public void testGetSetMetadata() throws Exception {
-        // read without prefix
-        BlobInfo blobInfo = new BlobInfo();
-        blobInfo.key = "1234";
-        blobInfo.mimeType = "test/type";
-        blobInfo.encoding = "UTF-8";
-        blobInfo.filename = "doc.ext";
-        blobInfo.length = Long.valueOf(123);
-        blobInfo.digest = "55667788";
-        ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, DUMMY);
-        assertNotNull(blob);
-        assertEquals("1234", blob.getKey());
-        assertEquals("test/type", blob.getMimeType());
-        assertEquals("UTF-8", blob.getEncoding());
-        assertEquals("doc.ext", blob.getFilename());
-        assertEquals(123, blob.getLength());
-        assertEquals("55667788", blob.getDigest());
-
-        // read with prefix
-        blobInfo.key = DUMMY + ":1234";
-        blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, null);
-        assertNotNull(blob);
-        assertEquals("dummy:1234", blob.getKey());
-        assertEquals("test/type", blob.getMimeType());
-        assertEquals("UTF-8", blob.getEncoding());
-        assertEquals("doc.ext", blob.getFilename());
-        assertEquals(123, blob.getLength());
-        assertEquals("55667788", blob.getDigest());
-
+        Blob b = Blobs.createBlob("foo");
         // write
         Document doc = mockery.mock(Document.class);
         mockery.checking(new Expectations() {
@@ -105,8 +78,38 @@ public class TestDocumentBlobManager {
 
             }
         });
-        String key = documentBlobManager.writeBlob(blob, doc, "somexpath");
-        assertEquals("dummy:1234", key);
+        DummyBlobProvider.resetAllCounters();
+        String key = documentBlobManager.writeBlob(b, doc, "somexpath");
+        assertEquals("1", key);
+
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.mimeType = "test/type";
+        blobInfo.encoding = "UTF-8";
+        blobInfo.filename = "doc.ext";
+        blobInfo.length = Long.valueOf(123);
+        blobInfo.digest = "55667788";
+
+        // read without prefix
+        blobInfo.key = "1";
+        ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, DUMMY);
+        assertNotNull(blob);
+        assertEquals(blobInfo.key, blob.getKey());
+        assertEquals(blobInfo.mimeType, blob.getMimeType());
+        assertEquals(blobInfo.encoding, blob.getEncoding());
+        assertEquals(blobInfo.filename, blob.getFilename());
+        assertEquals(blobInfo.length.intValue(), blob.getLength());
+        assertEquals(blobInfo.digest, blob.getDigest());
+
+        // read with prefix
+        blobInfo.key = DUMMY + ":1";
+        blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, null);
+        assertNotNull(blob);
+        assertEquals(blobInfo.key, blob.getKey());
+        assertEquals(blobInfo.mimeType, blob.getMimeType());
+        assertEquals(blobInfo.encoding, blob.getEncoding());
+        assertEquals(blobInfo.filename, blob.getFilename());
+        assertEquals(blobInfo.length.intValue(), blob.getLength());
+        assertEquals(blobInfo.digest, blob.getDigest());
     }
 
     @Test

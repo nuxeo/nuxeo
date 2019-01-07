@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.trackers.files.FileEventTracker;
 
@@ -100,6 +101,11 @@ public class LocalBinaryManager extends AbstractBinaryManager {
                 log.warn("Old binaries path used (NXP-5370). Please move " + oldBase + " to " + base);
                 base = oldBase;
             }
+        }
+        // take namespace into account
+        String namespace = properties.get(BlobProviderDescriptor.NAMESPACE);
+        if (StringUtils.isNotBlank(namespace)) {
+            base = new File(base.getParentFile(), base.getName() + "_" + namespace.trim());
         }
 
         log.info("Registering binary manager '" + blobProviderId + "' using "
