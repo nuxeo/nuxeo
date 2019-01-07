@@ -61,6 +61,16 @@ public interface BlobManager {
     BlobProvider getBlobProvider(String id);
 
     /**
+     * Gets the blob provider with the given id, or, if none has been registered, a namespaced version of the default
+     * blob provider.
+     *
+     * @param id the blob provider id or namespace
+     * @return the blob provider
+     * @since 10.10
+     */
+    BlobProvider getBlobProviderWithNamespace(String id);
+
+    /**
      * Gets the blob provider for the given blob.
      *
      * @return the blob provider
