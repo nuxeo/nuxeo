@@ -145,7 +145,45 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
                 log.error("Unknown migration id received in invalidation: {}", id);
                 return;
             }
+            // don't send again invalidation, call sub migrator directly
+            ((InvalidatorMigrator) migrator).migrator.notifyStatusChange();
+        }
+    }
+
+    /**
+     * A {@link Migrator migrator} wrapper to send invalidations to other nodes when calling
+     * {@link #notifyStatusChange()}.
+     *
+     * @since 10.10
+     */
+    public static class InvalidatorMigrator implements Migrator {
+
+        protected final String id;
+
+        protected final Migrator migrator;
+
+        protected final MigrationInvalidator invalidator;
+
+        public InvalidatorMigrator(String id, Migrator migrator, MigrationInvalidator invalidator) {
+            this.id = id;
+            this.migrator = migrator;
+            this.invalidator = invalidator;
+        }
+
+        @Override
+        public String probeState() {
+            return migrator.probeState();
+        }
+
+        @Override
+        public void run(String step, MigrationContext migrationContext) {
+            migrator.run(step, migrationContext);
+        }
+
+        @Override
+        public void notifyStatusChange() {
             migrator.notifyStatusChange();
+            invalidator.sendMessage(new MigrationInvalidation(id));
         }
     }
 
@@ -323,6 +361,10 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
     @Override
     public void stop(ComponentContext context) throws InterruptedException {
+        if (invalidator != null) {
+            invalidator.close();
+            invalidator = null;
+        }
         // interrupt all migration tasks
         executor.shutdownNow();
         executor.awaitTermination(10, TimeUnit.SECONDS); // wait 10s for termination
@@ -459,7 +501,11 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
                     "Invalid class not implementing Migrator: " + klass.getName() + " for migration: " + id);
         }
         try {
-            return (Migrator) klass.getConstructor().newInstance();
+            Migrator migrator = (Migrator) klass.getConstructor().newInstance();
+            if (invalidator != null) {
+                migrator = new InvalidatorMigrator(id, migrator, invalidator);
+            }
+            return migrator;
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
