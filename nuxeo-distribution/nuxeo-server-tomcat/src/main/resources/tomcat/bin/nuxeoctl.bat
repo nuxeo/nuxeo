@@ -181,11 +181,6 @@ echo Found JAVA_HOME = %JAVA_HOME%
 set PATH=%JAVA_HOME%\bin;%PATH%
 set JAVA=%JAVA_HOME%\bin\java.exe
 set JAVA_TOOLS=%JAVA_HOME%\lib\tools.jar
-if not exist "%JAVA_TOOLS%" (
-echo Could not find tools.jar in JAVA_HOME\lib. Please fix or remove JAVA_HOME; ensure JDK is properly installed.
-timeout /t 30
-goto END
-)
 if not exist "%JAVA%" (
 echo Could not find java.exe in JAVA_HOME\bin. Please fix or remove JAVA_HOME; ensure JDK is properly installed.
 timeout /t 30
@@ -197,16 +192,25 @@ goto HAS_JAVA
 if  "%JAVA_HOME%" == "" goto FIND_JAVA_HOME
 echo Using JAVA = %JAVA%
 REM ***** Check Java version
-set REQUIRED_JAVA_VERSION=1.8
-for /f "tokens=3" %%g in ('java -version 2^>^&1 ^| findstr /i "version"') do (
-    set JAVA_VERSION=%%g
+set REQUIRED_JAVA_VERSION=180
+set REQUIRED_JAVA_VERSION_LABEL=1.8.0
+for /f tokens^=2-5^ delims^=.-_+^" %%j in ('java -fullversion 2^>^&1') do (
+    set "JAVA_VERSION=%%j%%k%%l"
+    set "JAVA_VERSION_LABEL=%%j.%%k.%%l"
 )
-set JAVA_VERSION=%JAVA_VERSION:"=%
-if "%JAVA_VERSION%" lss "%REQUIRED_JAVA_VERSION%" (
-  echo Nuxeo requires Java JDK %REQUIRED_JAVA_VERSION%+ ^(detected %JAVA_VERSION%^)
+if %JAVA_VERSION% lss %REQUIRED_JAVA_VERSION% (
+  echo Nuxeo requires Java JDK %REQUIRED_JAVA_VERSION_LABEL%+ ^(detected %JAVA_VERSION_LABEL%^)
   timeout /t 30
   goto END
 )
+set JAVA_VERSION_TOOLS=900
+if %JAVA_VERSION% lss %JAVA_VERSION_TOOLS% (
+  if not exist "%JAVA_TOOLS%" (
+    echo Could not find tools.jar in JAVA_HOME\lib. Please fix or remove JAVA_HOME; ensure JDK is properly installed.
+    timeout /t 30
+    goto END
+  )
+) 
 REM ***** Check Java JDK
 set JAVAC=%JAVA_HOME%\bin\javac.exe
 if not exist "%JAVAC%" (
