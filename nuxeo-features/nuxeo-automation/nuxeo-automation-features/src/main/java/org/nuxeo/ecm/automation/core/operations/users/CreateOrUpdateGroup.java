@@ -19,8 +19,8 @@
  */
 package org.nuxeo.ecm.automation.core.operations.users;
 
-import java.util.Arrays;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Arrays;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
@@ -149,10 +149,9 @@ public class CreateOrUpdateGroup {
             groupDoc.setProperty(GROUP_SCHEMA, key, value);
         }
         if (create) {
-            groupDoc = userManager.createGroup(groupDoc);
+            userManager.createGroup(groupDoc);
         } else {
             userManager.updateGroup(groupDoc);
-            groupDoc = userManager.getGroupModel(tenantGroupName);
         }
     }
 
