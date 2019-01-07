@@ -81,6 +81,8 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
 
     protected boolean transientFlag;
 
+    protected String namespace;
+
     public static final String CACHE_SIZE_PROPERTY = "cachesize";
 
     public static final String CACHE_COUNT_PROPERTY = "cachecount";
@@ -114,6 +116,7 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         }
 
         transientFlag = Boolean.parseBoolean(getProperty(BlobProviderDescriptor.TRANSIENT));
+        namespace = getProperty(BlobProviderDescriptor.NAMESPACE);
 
         // Setup remote client
         setupCloudClient();

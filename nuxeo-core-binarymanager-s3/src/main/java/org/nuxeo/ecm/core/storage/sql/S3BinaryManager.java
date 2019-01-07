@@ -257,6 +257,14 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                     BUCKET_PREFIX_PROPERTY, bucketNamePrefix));
             bucketNamePrefix += DELIMITER;
         }
+        if (isNotBlank(namespace)) {
+            // use namespace as an additional prefix
+            bucketNamePrefix += namespace;
+            if (!bucketNamePrefix.endsWith(DELIMITER)) {
+                bucketNamePrefix += DELIMITER;
+            }
+        }
+
         // set up credentials
         awsCredentialsProvider = S3Utils.getAWSCredentialsProvider(awsID, awsSecret, awsToken);
 
