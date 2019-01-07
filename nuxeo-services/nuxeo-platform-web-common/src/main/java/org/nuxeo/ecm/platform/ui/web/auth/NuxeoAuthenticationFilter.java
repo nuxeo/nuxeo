@@ -31,6 +31,8 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORM_SUBMITTED_MARKER;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGINCONTEXT_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_FAILED;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_MISSING;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_STATUS_CODE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
@@ -1072,6 +1074,12 @@ public class NuxeoAuthenticationFilter implements Filter {
                 HttpServletResponse response = new HttpServletResponseWrapper(httpResponse) {
                     @Override
                     public void sendRedirect(String location) throws IOException {
+                        Map<String, String> parameters =  URIUtils.getRequestParameters(location);
+                        // failed form authentication, fragment is already stored
+                        if (parameters.containsKey(LOGIN_MISSING) || parameters.containsKey(LOGIN_FAILED)) {
+                            super.sendRedirect(location);
+                            return;
+                        }
                         HttpServletResponse response = (HttpServletResponse) getResponse();
                         StringBuilder sb = new StringBuilder();
                         sb.append("<script type=\"text/javascript\">\n");

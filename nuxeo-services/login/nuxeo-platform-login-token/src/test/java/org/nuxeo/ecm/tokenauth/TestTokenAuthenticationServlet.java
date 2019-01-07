@@ -85,8 +85,8 @@ public class TestTokenAuthenticationServlet {
                                          .addParameter(PERMISSION_PARAM, "rw")
                                          .build();
             try (CloseableHttpResponse response = executeGetMethod(httpClient, uri, userName, "badPassword")) {
-                // Receives 401 because of because of unauthorized user
-                assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
+                // Receives 404 because of redirection to error page
+                assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
             }
 
             // ------------ Test omitting required parameters ----------------

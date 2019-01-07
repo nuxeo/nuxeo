@@ -43,6 +43,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginForm.DUMMY_AUTH_
 import static org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginSSO.DUMMY_SSO_TICKET;
 import static org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginToken.DUMMY_AUTH_TOKEN_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.CALLBACK_URL_PARAMETER;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
@@ -219,6 +220,31 @@ public class TestNuxeoAuthenticationFilter {
             attributes.clear();
             return null;
         }).when(session).invalidate();
+        return attributes;
+    }
+
+    protected Map<String, Object> mockRequestAttributes(HttpServletRequest request) {
+        Map<String, Object> attributes = new HashMap<>();
+        // getAttribute
+        doAnswer(i -> {
+            String key = (String) i.getArguments()[0];
+            return attributes.get(key);
+        }).when(request).getAttribute(anyString());
+        // setAttribute
+        doAnswer(i -> {
+            String key = (String) i.getArguments()[0];
+            Object value = i.getArguments()[1];
+            attributes.put(key, value);
+            return null;
+        }).when(request).setAttribute(anyString(), any());
+        // removeAttribute
+        doAnswer(i -> {
+            String key = (String) i.getArguments()[0];
+            attributes.remove(key);
+            return null;
+        }).when(request).removeAttribute(anyString());
+        // getAttributeNames
+        doAnswer(i -> attributes.keySet()).when(request).getAttributeNames();
         return attributes;
     }
 
@@ -530,7 +556,7 @@ public class TestNuxeoAuthenticationFilter {
         writer.flush();
         String entity = out.toString(UTF_8);
         assertTrue(entity, entity.contains(
-                "window.location = 'http://localhost:8080/nuxeo/dummy_login.jsp?requestedUrl=mystart/foo';"));
+                "window.location = 'http://localhost:8080/nuxeo/dummy_login.jsp?requestedUrl=mystart%2Ffoo';"));
     }
 
     /**
@@ -625,6 +651,40 @@ public class TestNuxeoAuthenticationFilter {
 
         // redirect was called
         verify(response).sendRedirect(eq("http://localhost:8080/nuxeo/mystart/foo"));
+    }
+
+    /**
+     * Failed login from form auth resulting in redirect to login page.
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-loginmodule.xml")
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-form.xml")
+    public void testAuthPluginFormFailedSoRedirectToLoginPage() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        Map<String, Object> requestAttributes = mockRequestAttributes(request);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession session = mock(HttpSession.class);
+        mockSessionAttributes(session);
+        when(request.getSession(anyBoolean())).thenReturn(session);
+        mockRequestURI(request, "/doesnotmatter", "", "requestedUrl=mystart/foo");
+        // login info
+        when(request.getParameter(eq(DUMMY_AUTH_FORM_USERNAME_KEY))).thenReturn("bob");
+        when(request.getParameter(eq(DUMMY_AUTH_FORM_PASSWORD_KEY))).thenReturn("");
+        when(request.getParameter(eq(REQUESTED_URL))).thenReturn("mystart/foo");
+
+        filter.doFilter(request, response, chain);
+
+        // chain not called, as we redirect
+        assertFalse(chain.called);
+
+        // no login event
+        checkNoEvents();
+
+        // redirect was called
+        verify(response).sendRedirect(eq("http://localhost:8080/nuxeo/dummy_login.jsp?loginFailed=true"));
+
+        // login error
+        assertEquals("Username and password do not match", requestAttributes.get(LOGIN_ERROR));
     }
 
     /**

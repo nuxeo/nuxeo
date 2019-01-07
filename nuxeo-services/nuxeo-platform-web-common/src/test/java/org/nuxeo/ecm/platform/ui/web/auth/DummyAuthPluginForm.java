@@ -21,11 +21,14 @@ package org.nuxeo.ecm.platform.ui.web.auth;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_FAILED;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE_KEY;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
@@ -61,6 +65,7 @@ public class DummyAuthPluginForm implements NuxeoAuthenticationPlugin, NuxeoAuth
         String username = request.getParameter(DUMMY_AUTH_FORM_USERNAME_KEY);
         String password = request.getParameter(DUMMY_AUTH_FORM_PASSWORD_KEY);
         if (!checkUsernamePassword(username, password)) {
+            request.setAttribute(LOGIN_ERROR, "Username and password do not match");
             return null;
         }
         return new UserIdentificationInfo(username, password);
@@ -81,10 +86,16 @@ public class DummyAuthPluginForm implements NuxeoAuthenticationPlugin, NuxeoAuth
         String url = baseURL + LOGIN_PAGE;
         HttpSession session = request.getSession(false);
         if (session != null) {
+            Map<String, String> parameters = new HashMap<>();
             String requestedUrl = (String) session.getAttribute(START_PAGE_SAVE_KEY);
             if (isNotBlank(requestedUrl)) {
-                url += "?" + REQUESTED_URL + '=' + requestedUrl;
+                parameters.put(REQUESTED_URL, requestedUrl);
             }
+            String loginError = (String) request.getAttribute(LOGIN_ERROR);
+            if (isNotBlank(loginError)) {
+                parameters.put(LOGIN_FAILED, "true");
+            }
+            url = URIUtils.addParametersToURIQuery(url, parameters);
         }
         try {
             response.sendRedirect(url);
