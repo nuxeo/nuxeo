@@ -98,8 +98,8 @@ public class TestCreateOrUpdateGroup {
             NuxeoGroup group = userManager.getGroup(GROUP);
             assertNotNull(group);
             assertEquals(GROUPLABEL, group.getLabel());
-            assertEquals(Arrays.asList(GROUP2), group.getParentGroups());
-            assertEquals(Arrays.asList(USER1), group.getMemberUsers());
+            assertEquals(Collections.singletonList(GROUP2), group.getParentGroups());
+            assertEquals(Collections.singletonList(USER1), group.getMemberUsers());
 
             // cannot create if mode = create and the group exists
             params.put("mode", "create");
@@ -138,8 +138,8 @@ public class TestCreateOrUpdateGroup {
             NuxeoGroup group = userManager.getGroup(GROUP);
             assertNotNull(group);
             assertEquals(GROUPLABEL, group.getLabel());
-            assertEquals(Arrays.asList(GROUP2), group.getParentGroups());
-            assertEquals(Arrays.asList(USER1), group.getMemberUsers());
+            assertEquals(Collections.singletonList(GROUP2), group.getParentGroups());
+            assertEquals(Collections.singletonList(USER1), group.getMemberUsers());
 
             // now update
             params = new HashMap<>();
@@ -155,7 +155,7 @@ public class TestCreateOrUpdateGroup {
             assertNotNull(group);
             assertEquals(GROUPLABEL2, group.getLabel());
             // list of parent groups is replaced
-            assertEquals(Arrays.asList(GROUP3), group.getParentGroups());
+            assertEquals(Collections.singletonList(GROUP3), group.getParentGroups());
             assertEquals(Arrays.asList(USER2, USER3), group.getMemberUsers());
 
             // clear parent groups
@@ -182,7 +182,7 @@ public class TestCreateOrUpdateGroup {
             group = userManager.getGroup(GROUP);
             assertNotNull(group);
             // list of parent groups is cleared
-            assertEquals(Arrays.asList(GROUP2), group.getMemberGroups());
+            assertEquals(Collections.singletonList(GROUP2), group.getMemberGroups());
         }
     }
 
