@@ -34,6 +34,13 @@ public class BlobProviderDescriptor {
     public static final String PREVENT_USER_UPDATE = "preventUserUpdate";
 
     /**
+     * An optional namespace that may be used to disambiguate otherwise similar descriptors (in particular, copies).
+     *
+     * @since 10.10
+     */
+    public static final String NAMESPACE = "namespace";
+
+    /**
      * Flags this blob provider as transient: blobs may disappear after a while, so a caller should not rely on them
      * being available forever.
      *
@@ -43,7 +50,7 @@ public class BlobProviderDescriptor {
 
     /**
      * A comma-separated list of users that can create blobs in this blob provider based only on a key.
-     * 
+     *
      * @since 10.2
      */
     public static final String CREATE_FROM_KEY_USERS = "createFromKey.users";

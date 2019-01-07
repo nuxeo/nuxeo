@@ -52,6 +52,8 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
 
     protected static final String XP = "configuration";
 
+    public static final String DEFAULT_ID = "default";
+
     protected BlobProviderDescriptorRegistry blobProviderDescriptorsRegistry = new BlobProviderDescriptorRegistry();
 
     protected Map<String, BlobProvider> blobProviders = new HashMap<>();
@@ -181,6 +183,27 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
             blobProviders.put(providerId, blobProvider);
         }
         return blobProvider;
+    }
+
+    @Override
+    public synchronized BlobProvider getBlobProviderWithNamespace(String providerId) {
+        BlobProvider blobProvider = getBlobProvider(providerId);
+        if (blobProvider != null) {
+            return blobProvider;
+        }
+        // create and register a blob provider from the "default" configuration
+        BlobProviderDescriptor defaultDescr = blobProviderDescriptorsRegistry.getBlobProviderDescriptor(DEFAULT_ID);
+        if (defaultDescr == null) {
+            throw new NuxeoException("Missing configuration for default blob provider");
+        }
+        // copy
+        BlobProviderDescriptor descr = new BlobProviderDescriptor(defaultDescr);
+        // set new name and namespace
+        descr.name = providerId;
+        descr.properties.put(BlobProviderDescriptor.NAMESPACE, providerId);
+        // register and return it
+        registerBlobProvider(descr);
+        return getBlobProvider(providerId);
     }
 
     @Override
