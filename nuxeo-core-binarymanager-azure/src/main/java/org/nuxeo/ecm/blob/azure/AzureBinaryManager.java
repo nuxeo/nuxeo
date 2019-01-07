@@ -69,11 +69,16 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
 
     public static final String CONTAINER_PROPERTY = "container";
 
+    /** @since 10.10 */
+    public static final String PREFIX_PROPERTY = "prefix";
+
     protected CloudStorageAccount storageAccount;
 
     protected CloudBlobClient blobClient;
 
     protected CloudBlobContainer container;
+
+    protected String prefix;
 
     @Override
     protected String getSystemPropertyPrefix() {
@@ -99,6 +104,18 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
         } catch (URISyntaxException | InvalidKeyException | StorageException e) {
             throw new IOException("Unable to initialize Azure binary manager", e);
         }
+        prefix = StringUtils.defaultIfBlank(properties.get(PREFIX_PROPERTY), "");
+        String delimiter = blobClient.getDirectoryDelimiter();
+        if (StringUtils.isNotBlank(prefix) && !prefix.endsWith(delimiter)) {
+            prefix += delimiter;
+        }
+        if (StringUtils.isNotBlank(namespace)) {
+            // use namespace as an additional prefix
+            prefix += namespace;
+            if (!prefix.endsWith(delimiter)) {
+                prefix += delimiter;
+            }
+        }
     }
 
     protected BinaryGarbageCollector instantiateGarbageCollector() {
@@ -106,7 +123,7 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
     }
 
     protected FileStorage getFileStorage() {
-        return new AzureFileStorage(container);
+        return new AzureFileStorage(container, prefix);
     }
 
     @Override
@@ -138,7 +155,7 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
 
     protected void removeBinary(String digest) {
         try {
-            container.getBlockBlobReference(digest).delete();
+            container.getBlockBlobReference(prefix + digest).delete();
         } catch (StorageException | URISyntaxException e) {
             log.error("Unable to remove binary " + digest, e);
         }

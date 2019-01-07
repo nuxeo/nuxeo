@@ -44,7 +44,7 @@ public class AzureGarbageCollector extends AbstractBinaryGarbageCollector<AzureB
 
     private static final Log log = LogFactory.getLog(AzureGarbageCollector.class);
 
-    private static final Pattern MD5_RE = Pattern.compile("(.*/)?[0-9a-f]{32}");
+    private static final Pattern MD5_RE = Pattern.compile("[0-9a-f]{32}");
 
     public AzureGarbageCollector(AzureBinaryManager binaryManager) {
         super(binaryManager);
@@ -62,8 +62,8 @@ public class AzureGarbageCollector extends AbstractBinaryGarbageCollector<AzureB
         ResultSegment<ListBlobItem> lbs;
         do {
             try {
-                lbs = binaryManager.container.listBlobsSegmented(null, false, EnumSet.noneOf(BlobListingDetails.class),
-                        null, continuationToken, null, null);
+                lbs = binaryManager.container.listBlobsSegmented(binaryManager.prefix, false,
+                        EnumSet.noneOf(BlobListingDetails.class), null, continuationToken, null, null);
             } catch (StorageException e) {
                 throw new RuntimeException(e);
             }
@@ -71,7 +71,7 @@ public class AzureGarbageCollector extends AbstractBinaryGarbageCollector<AzureB
             for (ListBlobItem item : lbs.getResults()) {
 
                 if (!(item instanceof CloudBlockBlob)) {
-                    // ignore wrong blob type
+                    // ignore subdirectories
                     continue;
                 }
 
@@ -79,7 +79,8 @@ public class AzureGarbageCollector extends AbstractBinaryGarbageCollector<AzureB
 
                 String digest;
                 try {
-                    digest = blob.getName();
+                    String name = blob.getName();
+                    digest = name.substring(binaryManager.prefix.length());
                 } catch (URISyntaxException e) {
                     // Should never happends
                     // @see com.microsoft.azure.storage.blob.CloudBlob.getName()

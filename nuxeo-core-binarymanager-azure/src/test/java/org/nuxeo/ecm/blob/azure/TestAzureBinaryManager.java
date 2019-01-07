@@ -20,10 +20,12 @@
 package org.nuxeo.ecm.blob.azure;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -90,6 +92,8 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
 
     protected static Map<String, String> properties = new HashMap<>();
 
+    protected static final String PREFIX = "testfolder/";
+
     @BeforeClass
     public static void initialize() {
         AbstractCloudBinaryManager bm = new AzureBinaryManager();
@@ -101,6 +105,7 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
         PARAMETERS.forEach(s -> {
             assumeFalse(isBlank(properties.get(s)));
         });
+        properties.put("prefix", PREFIX);
     }
 
     @AfterClass
@@ -120,14 +125,31 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
     @Override
     protected Set<String> listObjects() {
         Set<String> digests = new HashSet<>();
-        binaryManager.container.listBlobs().forEach(lb -> {
+        binaryManager.container.listBlobs(PREFIX, false).forEach(lb -> {
             try {
-                digests.add(((CloudBlockBlob) lb).getName());
+                if (lb instanceof CloudBlockBlob) { // ignore subdirectories
+                    String name = ((CloudBlockBlob) lb).getName();
+                    String digest = name.substring(PREFIX.length());
+                    digests.add(digest);
+                }
             } catch (URISyntaxException e) {
                 // Do nothing.
             }
         });
         return digests;
+    }
+
+    protected Set<String> listAllObjects() {
+        Set<String> names = new HashSet<>();
+        binaryManager.container.listBlobs("", true).forEach(lb -> {
+            try {
+                String name = ((CloudBlockBlob) lb).getName();
+                names.add(name);
+            } catch (URISyntaxException e) {
+                // Do nothing.
+            }
+        });
+        return names;
     }
 
     @Test
@@ -191,4 +213,38 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
 
         assertTrue(AzureFileStorage.isBlobDigestCorrect(CONTENT2_MD5, contentMd5));
     }
+
+    @Override
+    @Test
+    public void testBinaryManagerGC() throws Exception {
+        if (binaryManager.prefix.isEmpty()) {
+            // no additional test if no bucket name prefix
+            super.testBinaryManagerGC();
+            return;
+        }
+
+        // create a md5-looking extra file at the root
+        String name1 = "12345678901234567890123456789012";
+        try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
+            CloudBlockBlob blob = binaryManager.container.getBlockBlobReference(name1);
+            blob.upload(in, 1);
+        }
+        // create a md5-looking extra file in a "subdirectory" of the prefix
+        String name2 = binaryManager.prefix + "subfolder/12345678901234567890123456789999";
+        try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
+            CloudBlockBlob blob = binaryManager.container.getBlockBlobReference(name2);
+            blob.upload(in, 1);
+        }
+        // check that the files are here
+        assertEquals(new HashSet<>(Arrays.asList(name1, name2)), listAllObjects());
+
+        // run base test with the prefix
+        super.testBinaryManagerGC();
+
+        // check that the extra files are still here
+        Set<String> res = listAllObjects();
+        assertTrue(res.contains(name1));
+        assertTrue(res.contains(name2));
+    }
+
 }

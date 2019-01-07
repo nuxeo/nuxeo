@@ -48,8 +48,11 @@ public class AzureFileStorage implements FileStorage {
 
     protected CloudBlobContainer container;
 
-    public AzureFileStorage(CloudBlobContainer container) {
+    protected String prefix;
+
+    public AzureFileStorage(CloudBlobContainer container, String prefix) {
         this.container = container;
+        this.prefix = prefix;
     }
 
     @Override
@@ -61,7 +64,7 @@ public class AzureFileStorage implements FileStorage {
         }
         CloudBlockBlob blob;
         try {
-            blob = container.getBlockBlobReference(digest);
+            blob = container.getBlockBlobReference(prefix + digest);
             if (blob.exists()) {
                 if (isBlobDigestCorrect(digest, blob)) {
                     if (log.isDebugEnabled()) {
@@ -92,7 +95,7 @@ public class AzureFileStorage implements FileStorage {
             log.debug("fetching blob " + digest + " from Azure");
         }
         try {
-            CloudBlockBlob blob = container.getBlockBlobReference(digest);
+            CloudBlockBlob blob = container.getBlockBlobReference(prefix + digest);
             if (!(blob.exists() && isBlobDigestCorrect(digest, blob))) {
                 log.error("Invalid ETag in Azure, AzDigest=" + blob.getProperties().getContentMD5() + " digest="
                         + digest);

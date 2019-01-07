@@ -35,6 +35,8 @@ If you want to use Azure CDN as a front instead of Storage; you should read  [Mi
 
 ### Optional parameters
 
+- nuxeo.storage.azure.prefix : the directory prefix to use inside the container
+
 - nuxeo.storage.azure.endpointProtocol : the url protocol (default is `HTTPS`)
 
 - nuxeo.storage.azure.cachesize : size of the local cache (default is `100MB`).
