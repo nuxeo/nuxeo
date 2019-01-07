@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.core.operations.users;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -71,6 +73,8 @@ public class TestCreateOrUpdateGroup {
     public static final String USER2 = "pete";
 
     public static final String USER3 = "steve";
+
+    public static final String TENANT_ID = "foo";
 
     @Inject
     protected CoreSession session;
@@ -180,6 +184,28 @@ public class TestCreateOrUpdateGroup {
             assertNotNull(group);
             // list of parent groups is cleared
             assertEquals(Collections.singletonList(GROUP2), group.getMemberGroups());
+        }
+    }
+
+    @Test
+    public void testCreateWithTenant() throws Exception {
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("groupname", GROUP);
+            params.put("grouplabel", GROUPLABEL);
+            params.put("members", new String[] { USER1 });
+            params.put("parentGroups", new String[] { GROUP2 });
+            params.put("tenantId", TENANT_ID);
+
+            automationService.run(ctx, CreateOrUpdateGroup.ID, params);
+
+            NuxeoGroup group = userManager.getGroup(GROUP);
+            assertNull(group);
+            group = userManager.getGroup(BaseSession.computeMultiTenantDirectoryId(TENANT_ID, GROUP));
+            assertNotNull(group);
+            assertEquals(GROUPLABEL, group.getLabel());
+            assertEquals(Collections.singletonList(GROUP2), group.getParentGroups());
+            assertEquals(Collections.singletonList(USER1), group.getMemberUsers());
         }
     }
 
