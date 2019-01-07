@@ -114,7 +114,7 @@ public class CreateOrUpdateGroup {
             }
             create = true;
             groupDoc = userManager.getBareGroupModel();
-            groupDoc.setProperty(GROUP_SCHEMA, GROUP_NAME, groupName);
+            groupDoc.setProperty(GROUP_SCHEMA, GROUP_NAME, tenantGroupName);
         } else {
             if (CREATE.equals(mode)) {
                 throw new OperationException("Cannot create already-existing group: " + groupName);
