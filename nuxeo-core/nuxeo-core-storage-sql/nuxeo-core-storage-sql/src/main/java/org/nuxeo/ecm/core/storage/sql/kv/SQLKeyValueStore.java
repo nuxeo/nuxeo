@@ -751,7 +751,7 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
 
     @Override
     public boolean compareAndSet(String key, String expected, String value, long ttl) {
-        return compareAndSet(key, (Object) expected, (Object) value, ttl);
+        return compareAndSet(key, toStorage(expected), toStorage(value), ttl);
     }
 
     protected boolean compareAndSet(String key, Object expected, Object value, long ttl) {
