@@ -23,9 +23,6 @@
     <package id="nuxeo-template-rendering" label="Template Rendering" color="#c3c7c9" textcolor="#FFF"
       shortlabel="TMPL" implies="nuxeo-web-ui"
       desc="The Nuxeo Template Rendering addon provides a way to associate a Nuxeo Document with a template that can be a Word document, an Excel sheet, a Powerpoint presentation or an HTLM website and merge document properties with the template so as to produce the final document as a rendition of the initial one." />
-    <package id="nuxeo-template-rendering-samples" label="Template Rendering (with samples)" color="#c3c7c9" textcolor="#FFF"
-      shortlabel="TMPLS" implies="nuxeo-template-rendering"
-      desc="Discover through an inspiring demo how the Template Rendering addon can improve your everyday business processes. This demo showcases the BigCorp company, generating financial reports for internal use, and case studies demonstrating their expertise for potential new customers. All being achieved by extracting their relevant content into office templates on the fly." />
     <package id="nuxeo-liveconnect" label="Live Connect" color="#ff452a" textcolor="#FFF" shortlabel="LIVE" implies="nuxeo-web-ui"
       desc="The Nuxeo Live Connect addon allows users to reference their files stored on most common EFSS systems (Dropbox, Box, Google Drive, One Drive). User can then apply business workflows to those external ressources, benefit from full text search and edit metadata as if they were stored in the Nuxeo repository." />
     <package id="nuxeo-web-ui" label="Nuxeo Web UI" color="#00adff" textcolor="#FFF"
@@ -50,7 +47,6 @@
           <package ref="nuxeo-liveconnect" exclusive="false" />
           <package ref="nuxeo-showcase-content" exclusive="false" />
           <package ref="nuxeo-template-rendering" exclusive="false" />
-          <package ref="nuxeo-template-rendering-samples" exclusive="false" />
           <package ref="nuxeo-spreadsheet" exclusive="false" />
           <package ref="nuxeo-vision" exclusive="false" />
         </package>
@@ -59,7 +55,7 @@
   </install>
   <presets>
     <preset id="nuxeo-server-preset" label="Nuxeo Server Preset">
-      nuxeo-server,nuxeo-web-ui,nuxeo-dam,nuxeo-drive,nuxeo-spreadsheet,nuxeo-showcase-content,nuxeo-template-rendering-samples
+      nuxeo-server,nuxeo-web-ui,nuxeo-dam,nuxeo-drive,nuxeo-spreadsheet,nuxeo-showcase-content
     </preset>
   </presets>
 </packages>
