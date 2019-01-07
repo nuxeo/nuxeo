@@ -159,6 +159,26 @@ public class TestDefaultBinaryManager {
         binaryManager.close();
     }
 
+    @Test
+    public void testPath() throws IOException {
+        DefaultBinaryManager binaryManager = new DefaultBinaryManager();
+        binaryManager.initialize("repo", Collections.emptyMap());
+        File dir = binaryManager.getStorageDir();
+        String path = dir.getPath().replace(File.separatorChar, '/');
+        assertTrue(path, path.endsWith("/binaries/data"));
+        binaryManager.close();
+    }
+
+    @Test
+    public void testPathWithNamespace() throws IOException {
+        DefaultBinaryManager binaryManager = new DefaultBinaryManager();
+        binaryManager.initialize("repo", Collections.singletonMap("namespace", "myns"));
+        File dir = binaryManager.getStorageDir();
+        String path = dir.getPath().replace(File.separatorChar, '/');
+        assertTrue(path, path.endsWith("/binaries_myns/data"));
+        binaryManager.close();
+    }
+
     protected static int countFiles(File dir) {
         int n = 0;
         for (File f : dir.listFiles()) {

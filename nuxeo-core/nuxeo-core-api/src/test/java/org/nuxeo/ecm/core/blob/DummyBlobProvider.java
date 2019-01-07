@@ -62,14 +62,18 @@ public class DummyBlobProvider extends AbstractBlobProvider {
     }
 
     @Override
-    public Blob readBlob(BlobInfo blobInfo) {
+    public Blob readBlob(BlobInfo blobInfo) throws IOException {
+        String key = blobInfo.key;
+        int colon = key.indexOf(':');
+        String k = colon < 0 ? key : key.substring(colon + 1);
+        if (!blobs.containsKey(k)) {
+            throw new IOException("Unknown blob: " + key);
+        }
         return new SimpleManagedBlob(blobInfo) {
             private static final long serialVersionUID = 1L;
 
             @Override
             public InputStream getStream() throws IOException {
-                int colon = key.indexOf(':');
-                String k = colon < 0 ? key : key.substring(colon + 1);
                 byte[] bytes = blobs.get(k);
                 return new ByteArrayInputStream(bytes);
             }

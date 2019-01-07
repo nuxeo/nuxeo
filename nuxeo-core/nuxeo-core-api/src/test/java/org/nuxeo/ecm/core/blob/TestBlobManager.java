@@ -20,13 +20,18 @@ package org.nuxeo.ecm.core.blob;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -50,6 +55,41 @@ public class TestBlobManager {
     @Test
     public void testGetBlobProviders() throws Exception {
         Map<String, BlobProvider> providers = blobManager.getBlobProviders();
-        assertEquals(1, providers.size());
+        assertEquals(2, providers.size()); // default and dummy
     }
+
+    @Test
+    public void testDefaultAndNamespace() throws Exception {
+        BlobProvider def = blobManager.getBlobProvider("default");
+        BlobProvider other1 = blobManager.getBlobProviderWithNamespace("providerNotRegisteredInXML");
+        BlobProvider other2 = blobManager.getBlobProviderWithNamespace("otherProviderNotRegisteredInXML");
+        assertNotNull(def);
+        assertEquals(def.getClass(), other1.getClass());
+        assertEquals(def.getClass(), other2.getClass());
+        // put a blob in the default one
+        String key = def.writeBlob(new StringBlob("foo"));
+        assertEquals("foo", readBlob(def, key));
+        assertNull(readBlob(other1, key));
+        assertNull(readBlob(other2, key));
+        // put a blob in the first namespaced one
+        String key2 = other1.writeBlob(new StringBlob("bar"));
+        // make sure there's no key collision
+        assertEquals("foo", readBlob(def, key));
+        assertEquals("bar", readBlob(other1, key2));
+        assertNull(readBlob(other2, key));
+        assertNull(readBlob(other2, key2));
+    }
+
+    protected static String readBlob(BlobProvider blobProvider, String key) {
+        try {
+            BlobInfo blobInfo = new BlobInfo();
+            blobInfo.key = key;
+            Blob blob = blobProvider.readBlob(blobInfo);
+            return blob.getString();
+        } catch (IOException e) {
+            assertTrue(e.getMessage(), e.getMessage().equals("Unknown blob: " + key));
+            return null;
+        }
+    }
+
 }
