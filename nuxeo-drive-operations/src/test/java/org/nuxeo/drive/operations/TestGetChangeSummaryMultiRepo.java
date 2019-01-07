@@ -181,7 +181,7 @@ public class TestGetChangeSummaryMultiRepo {
 
     protected FileSystemChangeSummary getChangeSummary() throws Exception {
         // Wait 1 second as the mock change finder relies on steps of 1 second
-        Thread.sleep(1000);
+        Thread.sleep(1000); // NOSONAR
         Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChangeSummary.ID)
                                                         .set("lowerBound", lastEventLogId)
                                                         .set("lastSyncActiveRootDefinitions", lastSyncActiveRoots)

@@ -49,9 +49,6 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     protected String folderName = DEFAULT_FOLDER_NAME;
 
     @Override
-    public abstract FolderItem getVirtualFolderItem(NuxeoPrincipal principal);
-
-    @Override
     public String getName() {
         return name;
     }

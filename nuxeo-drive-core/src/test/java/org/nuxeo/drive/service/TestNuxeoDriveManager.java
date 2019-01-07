@@ -454,7 +454,7 @@ public class TestNuxeoDriveManager {
         CollectionManager cm = Framework.getService(CollectionManager.class);
         DocumentModel userCollections = cm.getUserDefaultCollections(session);
         DocumentRef locallyEditedCollectionRef = new PathRef(userCollections.getPath().toString(),
-                NuxeoDriveManager.LOCALLY_EDITED_COLLECTION_NAME);
+                NuxeoDriveManagerImpl.LOCALLY_EDITED_COLLECTION_NAME);
         assertTrue(session.exists(locallyEditedCollectionRef));
         DocumentModel locallyEditedCollection = session.getDocument(locallyEditedCollectionRef);
         assertTrue(cm.isCollection(locallyEditedCollection));
@@ -492,7 +492,7 @@ public class TestNuxeoDriveManager {
         log.trace("Create 'Locally Edited' collection and register it as a sync root");
         CollectionManager cm = Framework.getService(CollectionManager.class);
         DocumentModel locallyEditedCollection = cm.createCollection(session,
-                NuxeoDriveManager.LOCALLY_EDITED_COLLECTION_NAME, "Locally Edited collection",
+                NuxeoDriveManagerImpl.LOCALLY_EDITED_COLLECTION_NAME, "Locally Edited collection",
                 workspace_1.getPathAsString());
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), locallyEditedCollection, session);
         assertTrue(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), locallyEditedCollection));

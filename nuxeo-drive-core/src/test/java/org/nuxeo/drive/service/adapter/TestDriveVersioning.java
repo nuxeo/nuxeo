@@ -236,7 +236,7 @@ public class TestDriveVersioning {
             // 2. Change with delay
             // ------------------------------------------------------
             // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY);
+            Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
             newBlob.setFilename("File name modified.txt");
             fileItem.setBlob(newBlob);
@@ -257,7 +257,7 @@ public class TestDriveVersioning {
             // 3. Change with delay
             // ------------------------------------------------------
             // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY);
+            Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
             newBlob.setFilename("File name modified again.txt");
             fileItem.setBlob(newBlob);
@@ -318,7 +318,7 @@ public class TestDriveVersioning {
             // 6. Change with delay with the same user
             // ------------------------------------------------------
             // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY);
+            Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
@@ -407,7 +407,7 @@ public class TestDriveVersioning {
             // 2. Change with delay
             // ------------------------------------------------------
             // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY);
+            Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
             newBlob.setFilename("File name modified.txt");
             fileItem.setBlob(newBlob);
@@ -435,7 +435,7 @@ public class TestDriveVersioning {
             // 3. Change with delay
             // ------------------------------------------------------
             // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY);
+            Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
             newBlob.setFilename("File name modified again.txt");
             fileItem.setBlob(newBlob);
@@ -504,7 +504,7 @@ public class TestDriveVersioning {
             // 6. Change with delay with the same user
             // ------------------------------------------------------
             // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY);
+            Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
@@ -590,7 +590,7 @@ public class TestDriveVersioning {
             // 2. Change with delay
             // ------------------------------------------------------
             // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY);
+            Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
             newBlob.setFilename("File name modified.txt");
             fileItem.setBlob(newBlob);
@@ -618,7 +618,7 @@ public class TestDriveVersioning {
             // 3. Change with delay
             // ------------------------------------------------------
             // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY);
+            Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
             newBlob.setFilename("File name modified again.txt");
             fileItem.setBlob(newBlob);
@@ -681,7 +681,7 @@ public class TestDriveVersioning {
             // 6. Change with delay with the same user
             // ------------------------------------------------------
             // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY);
+            Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
@@ -712,7 +712,7 @@ public class TestDriveVersioning {
         assertTrue(session.getVersions(syncRootFolder.getRef()).isEmpty());
 
         // Wait for the versioning delay and update the synchronization root
-        Thread.sleep(VERSIONING_DELAY);
+        Thread.sleep(VERSIONING_DELAY); // NOSONAR
         FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
                 "defaultSyncRootFolderItemFactory");
         FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
@@ -735,7 +735,7 @@ public class TestDriveVersioning {
         assertTrue(session.getVersions(folder.getRef()).isEmpty());
 
         // Wait for the versioning delay and update the folder
-        Thread.sleep(VERSIONING_DELAY);
+        Thread.sleep(VERSIONING_DELAY); // NOSONAR
         FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
         folderItem.rename("aFolderRenamed");
         folder = session.getDocument(folder.getRef());

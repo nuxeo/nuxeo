@@ -86,7 +86,9 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     private static final long serialVersionUID = 1L;
 
-    public static final Logger log = LogManager.getLogger(ESAuditChangeFinder.class);
+    private static final Logger log = LogManager.getLogger(ESAuditChangeFinder.class);
+
+    protected static final String EVENT_ID = "eventId";
 
     protected List<LogEntry> queryESAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
             Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, int limit) {
@@ -96,7 +98,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
         QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
         QueryBuilder filterBuilder = buildFilterClauses(session, activeRoots, collectionSyncRootMemberIds, lowerBound,
-                upperBound, limit);
+                upperBound);
         SearchSourceBuilder source = new SearchSourceBuilder().query(
                 QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder));
         source.sort("repositoryId", SortOrder.ASC).sort("eventDate", SortOrder.DESC);
@@ -118,7 +120,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     }
 
     protected QueryBuilder buildFilterClauses(CoreSession session, SynchronizationRoots activeRoots,
-            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, int limit) {
+            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound) {
         BoolQueryBuilder filterBuilder = QueryBuilders.boolQuery();
 
         // from LogEntry log where log.repositoryId = :repositoryId
@@ -142,7 +144,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
             // 'documentLocked' or log.eventId = 'documentUnlocked') or log.category =
             // 'eventLifeCycleCategory' and log.eventId =
             // 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' )
-            String eventIds[] = { "documentCreated", "documentModified", "documentMoved", "documentCreatedByCopy",
+            String[] eventIds = { "documentCreated", "documentModified", "documentMoved", "documentCreatedByCopy",
                     "documentRestored", "addedToCollection", "documentProxyPublished", "documentLocked",
                     "documentUnlocked", "documentUntrashed" };
             BoolQueryBuilder orEventsFilter = QueryBuilders.boolQuery();
@@ -152,7 +154,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
             orEventsFilter.should(getEventsClause("eventLifeCycleCategory", new String[] { "deleted" }, false));
 
             // ROOT_PATHS log.docPath like :rootPath1
-            if (collectionSyncRootMemberIds != null && collectionSyncRootMemberIds.size() > 0) {
+            if (collectionSyncRootMemberIds != null && !collectionSyncRootMemberIds.isEmpty()) {
                 BoolQueryBuilder rootsOrCollectionsFilter = QueryBuilders.boolQuery();
                 rootsOrCollectionsFilter.should(getCurrentRootsClause(activeRoots.getPaths()));
                 rootsOrCollectionsFilter.should(getCollectionSyncRootClause(collectionSyncRootMemberIds));
@@ -200,7 +202,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     protected BoolQueryBuilder getDriveLogsQueryClause() {
         BoolQueryBuilder filterBuilder = QueryBuilders.boolQuery();
         filterBuilder.must(QueryBuilders.termQuery("category", "NuxeoDrive"));
-        filterBuilder.mustNot(QueryBuilders.termQuery("eventId", "rootUnregistered"));
+        filterBuilder.mustNot(QueryBuilders.termQuery(EVENT_ID, "rootUnregistered"));
         return filterBuilder;
     }
 
@@ -210,15 +212,15 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         if (eventIds != null && eventIds.length > 0) {
             if (eventIds.length == 1) {
                 if (shouldMatch) {
-                    filterBuilder.must(QueryBuilders.termQuery("eventId", eventIds[0]));
+                    filterBuilder.must(QueryBuilders.termQuery(EVENT_ID, eventIds[0]));
                 } else {
-                    filterBuilder.mustNot(QueryBuilders.termQuery("eventId", eventIds[0]));
+                    filterBuilder.mustNot(QueryBuilders.termQuery(EVENT_ID, eventIds[0]));
                 }
             } else {
                 if (shouldMatch) {
-                    filterBuilder.must(QueryBuilders.termsQuery("eventId", eventIds));
+                    filterBuilder.must(QueryBuilders.termsQuery(EVENT_ID, eventIds));
                 } else {
-                    filterBuilder.mustNot(QueryBuilders.termsQuery("eventId", eventIds));
+                    filterBuilder.mustNot(QueryBuilders.termsQuery(EVENT_ID, eventIds));
                 }
             }
         }

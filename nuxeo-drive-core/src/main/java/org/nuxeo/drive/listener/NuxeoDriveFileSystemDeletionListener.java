@@ -102,11 +102,10 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
                 return;
             }
         }
-        if (!DOCUMENT_TRASHED.equals(event.getName())) {
-            // Fallback on the transition event check
-            if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName()) && !handleLifeCycleTransition(ctx)) {
-                return;
-            }
+        // Fallback on the transition event check
+        if (!DOCUMENT_TRASHED.equals(event.getName()) && LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())
+                && !handleLifeCycleTransition(ctx)) {
+            return;
         }
         if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) && !handleAboutToRemove(doc)) {
             return;
@@ -242,7 +241,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         entry.setRepositoryId(repositoryName);
         entry.setDocLifeCycle(currentLifeCycleState);
 
-        Map<String, ExtendedInfo> extendedInfos = new HashMap<String, ExtendedInfo>();
+        Map<String, ExtendedInfo> extendedInfos = new HashMap<>();
         if (impactedUserName != null) {
             extendedInfos.put("impactedUserName", logger.newExtendedInfo(impactedUserName));
         }

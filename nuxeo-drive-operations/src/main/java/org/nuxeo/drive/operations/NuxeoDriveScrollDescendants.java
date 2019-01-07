@@ -66,7 +66,7 @@ public class NuxeoDriveScrollDescendants {
     protected OperationContext ctx;
 
     @Param(name = "id", description = "Id of the file system item whose descendants to retrieve.")
-    protected String id;
+    protected String id; // NOSONAR
 
     @Param(name = "scrollId", required = false, description = "Optional scroll id.")
     protected String scrollId;

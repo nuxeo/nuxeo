@@ -39,7 +39,7 @@ public class ActiveFileSystemItemFactoryRegistry
 
     protected static final String CONTRIBUTION_ID = "activeFileSystemItemFactoriesContrib";
 
-    protected Set<String> activeFactories = new HashSet<String>();
+    protected Set<String> activeFactories = new HashSet<>();
 
     @Override
     public String getContributionId(ActiveFileSystemItemFactoriesDescriptor contrib) {

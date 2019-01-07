@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.runtime.api.Framework;
@@ -76,7 +77,7 @@ public class NuxeoDriveGetRootsOperation {
             } else {
                 if (allRepositories) {
                     // XXX: do we really need to implement this now?
-                    throw new RuntimeException("Multi repo roots not yet implemented");
+                    throw new NuxeoException("Multi repo roots not yet implemented");
                 }
             }
         }

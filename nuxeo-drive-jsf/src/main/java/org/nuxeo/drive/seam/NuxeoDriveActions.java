@@ -59,7 +59,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -388,12 +387,12 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     @Factory(value = "desktopPackageBaseURL", scope = ScopeType.APPLICATION)
     public Object getDesktopPackageBaseURL() {
-        String URL = Framework.getProperty(NuxeoDriveConstants.UPDATE_SITE_URL_PROP_KEY);
-        if (URL == null) {
+        String url = Framework.getProperty(NuxeoDriveConstants.UPDATE_SITE_URL_PROP_KEY);
+        if (url == null) {
             return ObjectUtils.NULL;
         }
-        StringBuilder sb = new StringBuilder(URL);
-        if (!URL.endsWith("/")) {
+        StringBuilder sb = new StringBuilder(url);
+        if (!url.endsWith("/")) {
             sb.append("/");
         }
         return sb.toString();

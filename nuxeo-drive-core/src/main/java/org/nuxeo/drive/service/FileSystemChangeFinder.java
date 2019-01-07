@@ -59,7 +59,7 @@ public interface FileSystemChangeFinder extends Serializable {
      */
     List<FileSystemItemChange> getFileSystemChanges(CoreSession session, Set<IdRef> lastActiveRootRefs,
             SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound,
-            int limit) throws TooManyChangesException;
+            int limit);
 
     /**
      * Return the upper bound of the range clause in the change query.

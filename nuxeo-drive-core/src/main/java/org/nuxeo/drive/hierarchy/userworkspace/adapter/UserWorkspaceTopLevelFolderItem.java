@@ -117,7 +117,7 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
             }
         }
 
-        List<FileSystemItem> children = new ArrayList<FileSystemItem>();
+        List<FileSystemItem> children = new ArrayList<>();
 
         // Add user workspace children
         children.addAll(super.getChildren());
@@ -143,6 +143,18 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
     public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize, long keepAlive) {
         throw new UnsupportedOperationException(
                 "Cannot scroll through the descendants of the user workspace top level folder item, please call getChildren() instead.");
+    }
+
+    // Override equals and hashCode to explicitly show that their implementation rely on the parent class and doesn't
+    // depend on the fields added to this class.
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     protected NuxeoDriveManager getNuxeoDriveManager() {

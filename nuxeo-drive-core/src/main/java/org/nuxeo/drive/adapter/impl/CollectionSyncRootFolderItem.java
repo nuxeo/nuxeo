@@ -73,13 +73,13 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem {
     public List<FileSystemItem> getChildren() {
         try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
-            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            Map<String, Serializable> props = new HashMap<>();
             props.put(CORE_SESSION_PROPERTY, (Serializable) session);
             PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
                     CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER, null, null, 0L, props, docId);
             List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
 
-            List<FileSystemItem> children = new ArrayList<FileSystemItem>(dmChildren.size());
+            List<FileSystemItem> children = new ArrayList<>(dmChildren.size());
             for (DocumentModel dmChild : dmChildren) {
                 // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
                 FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this, false, false,

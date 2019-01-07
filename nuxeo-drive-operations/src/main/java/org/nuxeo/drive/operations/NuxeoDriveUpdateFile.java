@@ -50,7 +50,7 @@ public class NuxeoDriveUpdateFile {
     protected OperationContext ctx;
 
     @Param(name = "id", description = "Id of the file system item backed by the document to update.")
-    protected String id;
+    protected String id; // NOSONAR
 
     /**
      * @since 6.0

@@ -18,8 +18,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.util.Map;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -49,14 +47,6 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     private static final Logger log = LogManager.getLogger(AbstractFileSystemItemFactory.class);
 
     protected String name;
-
-    /*--------------------------- FileSystemItemFactory ---------------------*/
-    @Override
-    public abstract void handleParameters(Map<String, String> parameters);
-
-    @Override
-    public abstract boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted,
-            boolean relaxSyncRootConstraint);
 
     /**
      * Adapts the given {@link DocumentModel} to a {@link FileSystemItem}.

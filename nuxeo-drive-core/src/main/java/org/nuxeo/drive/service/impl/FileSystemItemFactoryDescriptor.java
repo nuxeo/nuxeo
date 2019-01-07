@@ -21,12 +21,14 @@ package org.nuxeo.drive.service.impl;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * XMap descriptor for factories contributed to the {@code fileSystemItemFactory} extension point of the
@@ -114,7 +116,7 @@ public class FileSystemItemFactoryDescriptor implements Serializable, Comparable
         try {
             factory = factoryClass.newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
         factory.setName(name);
         factory.handleParameters(parameters);
@@ -129,6 +131,16 @@ public class FileSystemItemFactoryDescriptor implements Serializable, Comparable
         sb.append(getOrder());
         sb.append(")");
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return Objects.equals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this);
     }
 
     @Override

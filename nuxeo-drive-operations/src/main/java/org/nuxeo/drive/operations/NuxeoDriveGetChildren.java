@@ -49,7 +49,7 @@ public class NuxeoDriveGetChildren {
     protected OperationContext ctx;
 
     @Param(name = "id", description = "Id of the file system item backed by the document whose children to get.")
-    protected String id;
+    protected String id; // NOSONAR
 
     @OperationMethod
     public Blob run() throws IOException {

@@ -48,7 +48,7 @@ public class NuxeoDriveRename {
     protected OperationContext ctx;
 
     @Param(name = "id", description = "Id of the file system item backed by the document to rename.")
-    protected String id;
+    protected String id; // NOSONAR
 
     @Param(name = "name", description = "The new name.")
     protected String name;

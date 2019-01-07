@@ -221,6 +221,19 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         }
     }
 
+    /*--------------------- Object -----------------*/
+    // Override equals and hashCode to explicitly show that their implementation rely on the parent class and doesn't
+    // depend on the fields added to this class.
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /*--------------------- Protected -----------------*/
     /**
      * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at

@@ -76,7 +76,7 @@ public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeF
             // - rootRegistered for folder1
             // The documentCreated event for folder1 might have already been "swallowed" by the first call to
             // #getChanges() if the test initialization takes too much time, sometimes happens with an Oracle database
-            Thread.sleep(3000);
+            Thread.sleep(3000); // NOSONAR
             changes = getChanges();
             assertTrue(changes.size() >= 2);
             Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
@@ -104,7 +104,7 @@ public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeF
         // Wait for (2 * clustering delay + 1 second) then check changes, expecting 2:
         // - documentCreated for file2
         // - documentModified for file1
-        Thread.sleep(3000);
+        Thread.sleep(3000); // NOSONAR
         changes = getChanges();
         assertEquals(2, changes.size());
         Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();

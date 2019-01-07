@@ -40,8 +40,8 @@ import org.junit.Test;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemChangeSummary;
 import org.nuxeo.drive.service.FileSystemItemChange;
-import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.SynchronizationRoots;
+import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -686,7 +686,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
         try {
             activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
             assertNotNull(activeRootRefs);
-            assertEquals(activeRootRefs.size(), 1);
+            assertEquals(1, activeRootRefs.size());
 
             changeSummary = getChangeSummary(admin);
             changes = changeSummary.getFileSystemChanges();
@@ -909,7 +909,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             nuxeoDriveManager.addToLocallyEditedCollection(session, doc2);
             DocumentModel userCollections = collectionManager.getUserDefaultCollections(session);
             DocumentRef locallyEditedCollectionRef = new PathRef(userCollections.getPath().toString(),
-                    NuxeoDriveManager.LOCALLY_EDITED_COLLECTION_NAME);
+                    NuxeoDriveManagerImpl.LOCALLY_EDITED_COLLECTION_NAME);
             locallyEditedCollection = session.getDocument(locallyEditedCollectionRef);
             // Re-fetch documents to get rid of the disabled events in context
             // data

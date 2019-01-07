@@ -19,7 +19,6 @@
 package org.nuxeo.drive.adapter.impl;
 
 import java.util.Calendar;
-import java.util.List;
 
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -59,7 +58,7 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
         canDelete = false;
         canCreateChild = false;
         canScrollDescendants = false;
-        path = "/" + getId();
+        path = FILE_SYSTEM_ITEM_PATH_SEPARATOR + getId();
         if (parentPath != null) {
             path = parentPath + path;
         }
@@ -68,10 +67,6 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
     protected AbstractVirtualFolderItem() {
         // Needed for JSON deserialization
     }
-
-    /*----------------------- FolderItem -----------------------*/
-    @Override
-    public abstract List<FileSystemItem> getChildren();
 
     /*--------------------- FileSystemItem ---------------------*/
     @Override
@@ -119,6 +114,19 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
     @Override
     public FileItem createFile(Blob blob, boolean overwrite) {
         throw new UnsupportedOperationException("Cannot create a file in a virtual folder item.");
+    }
+
+    /*--------------------- Object -----------------*/
+    // Override equals and hashCode to explicitly show that their implementation rely on the parent class and doesn't
+    // depend on the fields added to this class.
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     /*---------- Needed for JSON deserialization ----------*/

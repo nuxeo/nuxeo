@@ -59,7 +59,7 @@ public class NuxeoDriveCreateTestDocuments {
     protected long delay = 1000L;
 
     @OperationMethod
-    public Blob run(DocumentModel parent) throws Exception {
+    public Blob run(DocumentModel parent) throws Exception { // NOSONAR
         NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
         FileManager fileManager = Framework.getService(FileManager.class);
         for (int i = 0; i < number; i++) {

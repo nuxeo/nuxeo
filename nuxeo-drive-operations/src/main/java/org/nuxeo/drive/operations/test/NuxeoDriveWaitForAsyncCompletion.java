@@ -18,9 +18,6 @@
  */
 package org.nuxeo.drive.operations.test;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -38,7 +35,7 @@ public class NuxeoDriveWaitForAsyncCompletion {
     public static final String ID = "NuxeoDrive.WaitForAsyncCompletion";
 
     @OperationMethod
-    public void run() throws InterruptedException, ExecutionException, TimeoutException {
+    public void run() throws InterruptedException {
         NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
         NuxeoDriveIntegrationTestsHelper.waitForAsyncCompletion();
         NuxeoDriveIntegrationTestsHelper.waitForAuditIngestion();

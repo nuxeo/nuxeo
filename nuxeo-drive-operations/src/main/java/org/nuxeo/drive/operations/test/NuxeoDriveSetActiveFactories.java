@@ -18,6 +18,7 @@
  */
 package org.nuxeo.drive.operations.test;
 
+import java.io.IOException;
 import java.net.URL;
 
 import org.apache.logging.log4j.LogManager;
@@ -50,7 +51,7 @@ public class NuxeoDriveSetActiveFactories {
     protected boolean enable = true;
 
     @OperationMethod
-    public boolean run() throws Exception {
+    public boolean run() throws IOException {
         NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
         String contrib;
         if ("userworkspace".equals(profile)) {

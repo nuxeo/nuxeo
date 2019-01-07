@@ -639,7 +639,7 @@ public class DefaultFileSystemItemFactoryFixture {
             assertVersion("0.0", file);
 
             // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY);
+            Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
             newBlob.setFilename("File name modified.txt");
             fileItem.setBlob(newBlob);
@@ -696,7 +696,7 @@ public class DefaultFileSystemItemFactoryFixture {
             assertVersion("0.3", file);
 
             // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY);
+            Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
             fileItem.rename("Renamed again.txt");
             file = session.getDocument(file.getRef());

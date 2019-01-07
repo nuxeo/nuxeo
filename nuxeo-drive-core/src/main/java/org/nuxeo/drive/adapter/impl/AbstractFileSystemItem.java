@@ -22,7 +22,6 @@ import java.util.Calendar;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
-import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -41,6 +40,8 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     private static final long serialVersionUID = 1L;
 
     public static final String FILE_SYSTEM_ITEM_ID_SEPARATOR = "#";
+
+    public static final String FILE_SYSTEM_ITEM_PATH_SEPARATOR = "/";
 
     /** {@link FileSystemItem} attributes */
     protected String id;
@@ -99,18 +100,6 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     }
 
     /*--------------------- FileSystemItem ---------------------*/
-    @Override
-    public abstract void rename(String name);
-
-    @Override
-    public abstract void delete();
-
-    @Override
-    public abstract boolean canMove(FolderItem dest);
-
-    @Override
-    public abstract FileSystemItem move(FolderItem dest);
-
     @Override
     public String getId() {
         return id;

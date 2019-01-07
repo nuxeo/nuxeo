@@ -110,7 +110,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
                     throw new RootlessItemException();
                 }
                 parentId = parent.getId();
-                path = parent.getPath() + '/' + id;
+                path = parent.getPath() + FILE_SYSTEM_ITEM_PATH_SEPARATOR + id;
             }
         } catch (RootlessItemException e) {
             log.trace(
@@ -151,7 +151,6 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
                     log.trace(
                             "The collection {} ({}) of which doc {} ({}) is a member cannot be adapted as a FileSystemItem.",
                             collection::getPathAsString, collection::getId, doc::getPathAsString, doc::getId);
-                    continue;
                 }
             }
             if (parent == null) {
@@ -165,7 +164,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
                     collection::getPathAsString, collection::getId, doc::getPathAsString, doc::getId);
 
             parentId = parent.getId();
-            path = parent.getPath() + '/' + id;
+            path = parent.getPath() + FILE_SYSTEM_ITEM_PATH_SEPARATOR + id;
             return true;
         }
     }
@@ -215,7 +214,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
             parentId = null;
             parentPath = "";
         }
-        path = parentPath + '/' + id;
+        path = parentPath + FILE_SYSTEM_ITEM_PATH_SEPARATOR + id;
     }
 
     protected AbstractDocumentBackedFileSystemItem() {
@@ -242,7 +241,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
                 DocumentModel collection = getDocumentById(parentDocId, session);
                 Framework.getService(CollectionManager.class).removeFromCollection(collection, doc, session);
             } else {
-                List<DocumentModel> docs = new ArrayList<DocumentModel>();
+                List<DocumentModel> docs = new ArrayList<>();
                 docs.add(doc);
                 getTrashService().trashDocuments(docs);
             }
@@ -266,10 +265,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
             sessionRepo = destRepoName;
         }
         try (CloseableCoreSession session = CoreInstance.openCoreSession(sessionRepo, principal)) {
-            if (!session.hasPermission(destDocRef, SecurityConstants.ADD_CHILDREN)) {
-                return false;
-            }
-            return true;
+            return session.hasPermission(destDocRef, SecurityConstants.ADD_CHILDREN);
         }
     }
 
@@ -291,6 +287,19 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
             // TODO: implement move to another repository
             throw new UnsupportedOperationException("Multi repository move is not supported yet.");
         }
+    }
+
+    /*--------------------- Object -----------------*/
+    // Override equals and hashCode to explicitly show that their implementation rely on the parent class and doesn't
+    // depend on the fields added to this class.
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     /*--------------------- Protected -------------------------*/

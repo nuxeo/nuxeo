@@ -45,7 +45,7 @@ public class GetRepositoriesOperation {
 
     @OperationMethod
     public List<String> run() {
-        List<String> repositoryNames = new ArrayList<String>(repositoryManager.getRepositoryNames());
+        List<String> repositoryNames = new ArrayList<>(repositoryManager.getRepositoryNames());
         // Make order deterministic to make it simpler to write tests.
         Collections.sort(repositoryNames);
         return repositoryNames;

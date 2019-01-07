@@ -65,7 +65,7 @@ public class PermissionTopLevelFolderItem extends AbstractVirtualFolderItem {
     @Override
     public List<FileSystemItem> getChildren() {
 
-        List<FileSystemItem> children = new ArrayList<FileSystemItem>();
+        List<FileSystemItem> children = new ArrayList<>();
         for (String childFactoryName : childrenFactoryNames) {
             VirtualFolderItemFactory factory = getFileSystemItemAdapterService().getVirtualFolderItemFactory(
                     childFactoryName);
@@ -75,6 +75,18 @@ public class PermissionTopLevelFolderItem extends AbstractVirtualFolderItem {
             }
         }
         return children;
+    }
+
+    // Override equals and hashCode to explicitly show that their implementation rely on the parent class and doesn't
+    // depend on the fields added to this class.
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
 }

@@ -99,12 +99,12 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
         if (isUserWorkspaceSyncRoot) {
             return super.getChildren();
         } else {
-            List<FileSystemItem> children = new ArrayList<FileSystemItem>();
+            List<FileSystemItem> children = new ArrayList<>();
             Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getService(NuxeoDriveManager.class)
                                                                          .getSynchronizationRoots(principal);
-            for (String repositoryName : syncRootsByRepo.keySet()) {
-                try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-                    Set<IdRef> syncRootRefs = syncRootsByRepo.get(repositoryName).getRefs();
+            for (Map.Entry<String, SynchronizationRoots> entry : syncRootsByRepo.entrySet()) {
+                try (CloseableCoreSession session = CoreInstance.openCoreSession(entry.getKey(), principal)) {
+                    Set<IdRef> syncRootRefs = entry.getValue().getRefs();
                     Iterator<IdRef> syncRootRefsIt = syncRootRefs.iterator();
                     while (syncRootRefsIt.hasNext()) {
                         IdRef idRef = syncRootRefsIt.next();
@@ -151,6 +151,18 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
             throw new UnsupportedOperationException(
                     "Cannot scroll through the descendants of the user sync root parent folder item, please call getChildren() instead.");
         }
+    }
+
+    // Override equals and hashCode to explicitly show that their implementation rely on the parent class and doesn't
+    // depend on the fields added to this class.
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     private boolean isUserWorkspaceSyncRoot(DocumentModel doc) {

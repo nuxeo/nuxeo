@@ -97,7 +97,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     public static final String DRIVE_SYNC_ROOT_CACHE = "driveSyncRoot";
 
-    public static final String DRIVE_COLLECTION_SYNC_ROOT__MEMBER_CACHE = "driveCollectionSyncRootMember";
+    public static final String DRIVE_COLLECTION_SYNC_ROOT_MEMBER_CACHE = "driveCollectionSyncRootMember";
+
+    public static final String LOCALLY_EDITED_COLLECTION_NAME = "Locally Edited";
 
     protected static final long COLLECTION_CONTENT_PAGE_SIZE = 1000L;
 
@@ -112,7 +114,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
      */
     protected Cache collectionSyncRootMemberCache;
 
-    protected static ChangeFinderRegistry changeFinderRegistry;
+    protected ChangeFinderRegistry changeFinderRegistry;
 
     protected FileSystemChangeFinder changeFinder;
 
@@ -160,7 +162,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         // Edited' collection to be registered as sync roots
         Map<String, SynchronizationRoots> syncRoots = getSynchronizationRoots(principal);
         SynchronizationRoots synchronizationRoots = syncRoots.get(session.getRepositoryName());
-        if (!NuxeoDriveManager.LOCALLY_EDITED_COLLECTION_NAME.equals(newRootContainer.getName())) {
+        if (!LOCALLY_EDITED_COLLECTION_NAME.equals(newRootContainer.getName())) {
             for (String syncRootPath : synchronizationRoots.getPaths()) {
                 String syncRootPrefixedPath = syncRootPath + "/";
 
@@ -191,20 +193,19 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
             }
         }
 
-        checkCanUpdateSynchronizationRoot(newRootContainer, session);
+        checkCanUpdateSynchronizationRoot(newRootContainer);
 
         // Unregister any sub-folder of the new root, except for the 'Locally
         // Edited' collection
         String newRootPrefixedPath = newRootContainer.getPathAsString() + "/";
         for (String existingRootPath : synchronizationRoots.getPaths()) {
-            if (!existingRootPath.endsWith(NuxeoDriveManager.LOCALLY_EDITED_COLLECTION_NAME)) {
-                if (existingRootPath.startsWith(newRootPrefixedPath)) {
-                    // Unregister the nested root sub-folder first
-                    PathRef ref = new PathRef(existingRootPath);
-                    if (session.exists(ref)) {
-                        DocumentModel subFolder = session.getDocument(ref);
-                        unregisterSynchronizationRoot(principal, subFolder, session);
-                    }
+            if (!existingRootPath.endsWith(LOCALLY_EDITED_COLLECTION_NAME)
+                    && existingRootPath.startsWith(newRootPrefixedPath)) {
+                // Unregister the nested root sub-folder first
+                PathRef ref = new PathRef(existingRootPath);
+                if (session.exists(ref)) {
+                    DocumentModel subFolder = session.getDocument(ref);
+                    unregisterSynchronizationRoot(principal, subFolder, session);
                 }
             }
         }
@@ -231,7 +232,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
                     }
                 }
                 if (!updated) {
-                    Map<String, Object> subscription = new HashMap<String, Object>();
+                    Map<String, Object> subscription = new HashMap<>();
                     subscription.put("username", userName);
                     subscription.put("enabled", Boolean.TRUE);
                     subscription.put("lastChangeDate", Calendar.getInstance(UTC));
@@ -259,7 +260,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
             CoreSession session) {
         final String userName = principal.getName();
         log.debug("Unregistering synchronization root {} for {}", rootContainer, userName);
-        checkCanUpdateSynchronizationRoot(rootContainer, session);
+        checkCanUpdateSynchronizationRoot(rootContainer);
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(session) {
             @Override
             public void run() {
@@ -329,9 +330,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
             long lowerBound) {
         Map<String, SynchronizationRoots> roots = getSynchronizationRoots(principal);
         Map<String, Set<String>> collectionSyncRootMemberIds = getCollectionSyncRootMemberIds(principal);
-        List<FileSystemItemChange> allChanges = new ArrayList<FileSystemItemChange>();
+        List<FileSystemItemChange> allChanges = new ArrayList<>();
         // Compute the list of all repositories to consider for the aggregate summary
-        Set<String> allRepositories = new TreeSet<String>();
+        Set<String> allRepositories = new TreeSet<>();
         allRepositories.addAll(roots.keySet());
         allRepositories.addAll(lastSyncRootRefs.keySet());
         allRepositories.addAll(collectionSyncRootMemberIds.keySet());
@@ -377,7 +378,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         // Send back to the client the list of currently active roots to be able
         // to efficiently detect root unregistration events for the next
         // incremental change summary
-        Map<String, Set<IdRef>> activeRootRefs = new HashMap<String, Set<IdRef>>();
+        Map<String, Set<IdRef>> activeRootRefs = new HashMap<>();
         for (Map.Entry<String, SynchronizationRoots> rootsEntry : roots.entrySet()) {
             activeRootRefs.put(rootsEntry.getKey(), rootsEntry.getValue().getRefs());
         }
@@ -423,7 +424,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     protected Map<String, SynchronizationRoots> computeSynchronizationRoots(String query, NuxeoPrincipal principal) {
-        Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
+        Map<String, SynchronizationRoots> syncRoots = new HashMap<>();
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
             try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
@@ -434,9 +435,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     protected Map<String, SynchronizationRoots> queryAndFetchSynchronizationRoots(CoreSession session, String query) {
-        Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
-        Set<IdRef> references = new LinkedHashSet<IdRef>();
-        Set<String> paths = new LinkedHashSet<String>();
+        Map<String, SynchronizationRoots> syncRoots = new HashMap<>();
+        Set<IdRef> references = new LinkedHashSet<>();
+        Set<String> paths = new LinkedHashSet<>();
         try (IterableQueryResult results = session.queryAndFetch(query, NXQL.NXQL)) {
             for (Map<String, Serializable> result : results) {
                 IdRef docRef = new IdRef(result.get("ecm:uuid").toString());
@@ -460,13 +461,13 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     @SuppressWarnings("unchecked")
     protected Map<String, Set<String>> computeCollectionSyncRootMemberIds(NuxeoPrincipal principal) {
-        Map<String, Set<String>> collectionSyncRootMemberIds = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> collectionSyncRootMemberIds = new HashMap<>();
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            Set<String> collectionMemberIds = new HashSet<String>();
+            Set<String> collectionMemberIds = new HashSet<>();
             try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-                Map<String, Serializable> props = new HashMap<String, Serializable>();
+                Map<String, Serializable> props = new HashMap<>();
                 props.put(CORE_SESSION_PROPERTY, (Serializable) session);
                 PageProvider<DocumentModel> collectionPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
                         CollectionConstants.ALL_COLLECTIONS_PAGE_PROVIDER, null, null, 0L, props);
@@ -488,7 +489,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         return collectionSyncRootMemberIds;
     }
 
-    protected void checkCanUpdateSynchronizationRoot(DocumentModel newRootContainer, CoreSession session) {
+    protected void checkCanUpdateSynchronizationRoot(DocumentModel newRootContainer) {
         // Cannot update a proxy or a version
         if (newRootContainer.isProxy() || newRootContainer.isVersion()) {
             throw new NuxeoException(String.format(
@@ -595,7 +596,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     public void start(ComponentContext context) {
         syncRootCache = Framework.getService(CacheService.class).getCache(DRIVE_SYNC_ROOT_CACHE);
         collectionSyncRootMemberCache = Framework.getService(CacheService.class)
-                                                 .getCache(DRIVE_COLLECTION_SYNC_ROOT__MEMBER_CACHE);
+                                                 .getCache(DRIVE_COLLECTION_SYNC_ROOT_MEMBER_CACHE);
         changeFinder = changeFinderRegistry.changeFinder;
     }
 

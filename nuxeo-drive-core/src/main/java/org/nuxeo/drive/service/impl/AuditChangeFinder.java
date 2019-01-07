@@ -69,7 +69,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     @Override
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session, Set<IdRef> lastActiveRootRefs,
             SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound,
-            int limit) throws TooManyChangesException {
+            int limit) {
         String principalName = session.getPrincipal().getName();
         List<FileSystemItemChange> changes = new ArrayList<>();
 

@@ -158,7 +158,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertFalse(topLevelFolderItem.getCanCreateChild());
 
         for (FileSystemItem child : children) {
-            assertEquals(topLevelFolderItem.getPath() + '/' + child.getId(), child.getPath());
+            assertEquals(topLevelFolderItem.getPath() + "/" + child.getId(), child.getPath());
         }
         try {
             topLevelFolderItem.createFile(new StringBlob("Child file content."), false);

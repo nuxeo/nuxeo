@@ -62,6 +62,18 @@ public class ScrollFileSystemItemListImpl extends ArrayList<FileSystemItem> impl
         this.scrollId = scrollId;
     }
 
+    // Override equals and hashCode to explicitly show that their implementation rely on the parent class and doesn't
+    // depend on the fields added to this class.
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     @Override
     public String toString() {
         return String.format("scrollId = %s, fileSystemItems = %s", scrollId, super.toString());

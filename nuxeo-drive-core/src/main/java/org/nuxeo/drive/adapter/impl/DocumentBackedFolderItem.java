@@ -242,7 +242,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
     @SuppressWarnings("unchecked")
     protected ScrollDocumentModelList getScrollBatch(String scrollId, int batchSize, CoreSession session,
-            long keepAlive) {
+            long keepAlive) { // NOSONAR
         Cache scrollingCache = Framework.getService(CacheService.class).getCache(DESCENDANTS_SCROLL_CACHE);
         if (scrollingCache == null) {
             throw new NuxeoException("Cache not found: " + DESCENDANTS_SCROLL_CACHE);
@@ -473,6 +473,19 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             throw new NuxeoException(
                     String.format("Error while trying to create file %s as a child of doc %s", fileName, docPath), e);
         }
+    }
+
+    /*--------------------- Object -----------------*/
+    // Override equals and hashCode to explicitly show that their implementation rely on the parent class and doesn't
+    // depend on the fields added to this class.
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     /*--------------------- Protected -----------------*/

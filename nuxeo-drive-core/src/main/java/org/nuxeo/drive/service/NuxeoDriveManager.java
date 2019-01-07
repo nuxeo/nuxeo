@@ -32,8 +32,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  */
 public interface NuxeoDriveManager {
 
-    public static final String LOCALLY_EDITED_COLLECTION_NAME = "Locally Edited";
-
     /**
      * @param principal the Nuxeo Drive user
      * @param newRootContainer the folderish document to be used as synchronization root: must be bound to an active

@@ -42,9 +42,6 @@ public class SimpleFileSystemItem extends AbstractFileSystemItem {
 
     protected boolean canScrollDescendants;
 
-    public SimpleFileSystemItem() {
-    }
-
     public String getDownloadURL() {
         return downloadURL;
     }
@@ -111,6 +108,18 @@ public class SimpleFileSystemItem extends AbstractFileSystemItem {
     @Override
     public FileSystemItem move(FolderItem dest) {
         throw new UnsupportedOperationException();
+    }
+
+    // Override equals and hashCode to explicitly show that their implementation rely on the parent class and doesn't
+    // depend on the fields added to this class.
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
 }

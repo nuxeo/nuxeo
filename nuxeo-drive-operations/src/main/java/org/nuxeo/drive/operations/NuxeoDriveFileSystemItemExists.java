@@ -47,7 +47,7 @@ public class NuxeoDriveFileSystemItemExists {
     protected OperationContext ctx;
 
     @Param(name = "id", description = "Id of the file system item backed by the document whose existence to check.")
-    protected String id;
+    protected String id; // NOSONAR
 
     @OperationMethod
     public Blob run() throws IOException {
