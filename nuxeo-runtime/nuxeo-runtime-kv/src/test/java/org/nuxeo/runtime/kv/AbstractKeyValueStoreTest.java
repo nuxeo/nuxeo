@@ -236,6 +236,11 @@ public abstract class AbstractKeyValueStoreTest {
         assertTrue(store.compareAndSet(key, null, bytes));
         bytes[0] = 'c';
         assertEquals(ZAP, new String(store.get(key)));
+
+        // non-canonical form for Long in some storages
+        store.put(key, "0");
+        assertTrue(store.compareAndSet(key, "0", "1"));
+        assertTrue(store.compareAndSet(key, "1".getBytes(), "2".getBytes()));
     }
 
     @Test
