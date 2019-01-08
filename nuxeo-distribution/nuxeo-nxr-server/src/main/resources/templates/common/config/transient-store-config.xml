@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.transient.store.config">
+
+  <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent"
+    point="store">
+
+    <store name="default" class="org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore">
+      <targetMaxSizeMB>-1</targetMaxSizeMB>
+      <absoluteMaxSizeMB>-1</absoluteMaxSizeMB>
+      <firstLevelTTL>240</firstLevelTTL>
+      <secondLevelTTL>10</secondLevelTTL>
+    </store>
+
+    <store name="authorizationRequestStore">
+      <firstLevelTTL>10</firstLevelTTL>
+      <secondLevelTTL>0</secondLevelTTL>
+    </store>
+
+  </extension>
+
+</component>

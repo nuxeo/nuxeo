@@ -178,7 +178,8 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
     }
 
     protected BlobProvider getBlobProvider() {
-        BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blobProviderId);
+        BlobProvider blobProvider = Framework.getService(BlobManager.class)
+                                             .getBlobProviderWithNamespace(blobProviderId);
         if (blobProvider == null) {
             throw new NuxeoException("No blob provider with id: " + blobProviderId);
         }

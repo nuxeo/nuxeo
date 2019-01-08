@@ -1,35 +1,18 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.cache.ts.keyvalueblob.test">
 
-  <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
-    <store name="testkvb" class="org.nuxeo.runtime.kv.MemKeyValueStore">
-    </store>
-  </extension>
+  <!-- a default key/value store is already provided by another contrib -->
 
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
-    <blobprovider name="testkvb">
+    <blobprovider name="default">
       <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
-      <property name="transient">true</property>
     </blobprovider>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
     <store name="default" class="org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore">
-    </store>
-    <store name="testkvb" class="org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore">
-      <!-- no properties for key/value store or blob provider, default to the transient store name -->
       <targetMaxSizeMB>1</targetMaxSizeMB>
       <absoluteMaxSizeMB>1</absoluteMaxSizeMB>
-      <firstLevelTTL>120</firstLevelTTL>
-      <secondLevelTTL>10</secondLevelTTL>
-    </store>
-    <store name="testkvb2" class="org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore">
-      <property name="keyValueStore">testkvb</property>
-      <property name="blobProvider">testkvb</property>
-      <targetMaxSizeMB>1</targetMaxSizeMB>
-      <absoluteMaxSizeMB>1</absoluteMaxSizeMB>
-      <firstLevelTTL>120</firstLevelTTL>
-      <secondLevelTTL>10</secondLevelTTL>
     </store>
   </extension>
 

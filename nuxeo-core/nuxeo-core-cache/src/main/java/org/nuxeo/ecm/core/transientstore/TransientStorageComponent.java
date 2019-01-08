@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.transientstore;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,26 +51,25 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
 
     @Override
     public synchronized TransientStore getStore(String name) {
+        Objects.requireNonNull(name, "Transient store name cannot be null");
         TransientStore store = stores.get(name);
         if (store == null) {
             TransientStoreConfig descriptor = getDescriptor(EP_STORE, name);
             if (descriptor == null) {
                 // instantiate a copy of the default descriptor
-                descriptor = getDescriptor(EP_STORE, DEFAULT_STORE_NAME);
-                if (descriptor == null) {
-                    // TODO make this a hard error
-                    String message = "Missing configuration for default transient store, using in-memory";
-                    log.warn(message);
-                    Framework.getRuntime().getMessageHandler().addWarning(message);
-                    // use in-memory store
-                    descriptor = new TransientStoreConfig(DEFAULT_STORE_NAME);
-                }
-                descriptor = new TransientStoreConfig(descriptor); // copy
+                descriptor = new TransientStoreConfig(getDefaultDescriptor()); // copy
                 descriptor.name = name; // set new name in copy
+            } else if (!DEFAULT_STORE_NAME.equals(name)) {
+                // make sure descriptor inherits config from default
+                descriptor = getDefaultDescriptor().merge(descriptor);
             }
             TransientStoreProvider provider;
             try {
-                provider = descriptor.implClass.getDeclaredConstructor().newInstance();
+                Class<? extends TransientStoreProvider> klass = descriptor.implClass;
+                if (klass == null) {
+                    klass = SimpleTransientStore.class;
+                }
+                provider = klass.getDeclaredConstructor().newInstance();
                 provider.init(descriptor);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
@@ -78,6 +78,19 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
             store = provider;
         }
         return store;
+    }
+
+    protected TransientStoreConfig getDefaultDescriptor() {
+        TransientStoreConfig descriptor = getDescriptor(EP_STORE, DEFAULT_STORE_NAME);
+        if (descriptor == null) {
+            // TODO make this a hard error
+            String message = "Missing configuration for default transient store, using in-memory";
+            log.warn(message);
+            Framework.getRuntime().getMessageHandler().addWarning(message);
+            // use in-memory store
+            descriptor = new TransientStoreConfig(DEFAULT_STORE_NAME);
+        }
+        return descriptor;
     }
 
     @Override

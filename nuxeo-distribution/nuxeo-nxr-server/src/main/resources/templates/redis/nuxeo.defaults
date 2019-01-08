@@ -31,3 +31,4 @@ nuxeo.pubsub.provider=redis
 nuxeo.keyvalue.provider=redis
 nuxeo.work.queuing=redis
 nuxeo.lock.manager=redis
+nuxeo.transientstore.provider=redis
