@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.audit.StreamAuditFeature;
+import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
@@ -43,7 +43,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 9.10
  */
 @RunWith(FeaturesRunner.class)
-@Features({ StreamAuditFeature.class })
+@Features(AuditFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.audit.storage.directory")
 @Deploy("org.nuxeo.runtime.stream")
