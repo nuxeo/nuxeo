@@ -84,8 +84,8 @@ public class TestContentFilter extends AbstractAclLayoutTest {
         u1.setProperty("user", "email", "test@u1");
         // Set user/subgroup/group bindings
         u1.setProperty("user", "groups", Arrays.asList("test_g1"));
-        userManager.createUser(u1);
         userManager.createGroup(g1);
+        userManager.createUser(u1);
         userManager.createGroup(g2);
 
         IContentFilter filter = new AcceptsAllContent();
