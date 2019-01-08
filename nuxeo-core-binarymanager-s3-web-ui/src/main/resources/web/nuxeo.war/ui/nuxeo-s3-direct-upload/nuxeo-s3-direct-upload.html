@@ -37,16 +37,18 @@ limitations under the License.
     S3Provider.prototype._upload = function(file, callback) {
       return new Promise(function(resolve, reject) {
         callback({ type: 'uploadStarted', file });
-        this.uploader.upload({
+        file.managedUpload = this.uploader.upload({
           Key: this.extraInfo.baseKey.replace(/^\/+/g, '').concat(file.name),
           ContentType: file.type,
           Body: file
-        }).on('httpUploadProgress', function(evt) {
+        });
+        file.managedUpload.on('httpUploadProgress', function(evt) {
           if (typeof callback === 'function') {
             callback({ type: 'uploadProgress', fileIdx: file.index, progress: (evt.loaded / evt.total) * 100 });
           }
         }.bind(this)).send(function(error, data) {
           if (error === null) {
+            file.managedUpload = null;
             var resource = this._resource();
             resource.path = ['upload', this.batchId, file.index, 'complete'].join('/');
             resource.data = {
@@ -81,8 +83,7 @@ limitations under the License.
       AWS.config.update({
         credentials: new AWS.Credentials(options.awsSecretKeyId, options.awsSecretAccessKey, options.awsSessionToken),
         region: options.region,
-        useAccelerateEndpoint: options.useS3Accelerate || false,
-        leavePartsOnError: true
+        useAccelerateEndpoint: options.useS3Accelerate || false
       });
 
       AWS.config.credentials.expireTime = new Date(options.expiration);
@@ -132,6 +133,14 @@ limitations under the License.
     };
 
     S3Provider.prototype.cancelBatch = function() {
+      if (this.uploader) {
+        for (var i = 0; i < this.files.length; ++i) {
+          var file = this.files[i];
+          if (file.managedUpload) {
+            file.managedUpload.abort();
+          }
+        }
+      }
       this.uploader = null;
       this.batchId = null;
       this.files = [];
