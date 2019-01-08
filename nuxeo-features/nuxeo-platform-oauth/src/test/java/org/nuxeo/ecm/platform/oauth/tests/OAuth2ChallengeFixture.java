@@ -89,6 +89,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.ClientFilter;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -116,6 +118,8 @@ public class OAuth2ChallengeFixture {
     @Inject
     protected ServletContainerFeature servletContainerFeature;
 
+    protected Client authenticatedClient;
+
     protected Client client;
 
     protected TransientStoreProvider transientStore;
@@ -124,11 +128,14 @@ public class OAuth2ChallengeFixture {
 
     @Before
     public void initOAuthClient() {
-        // Client to make the requests like a "Client" as the OAuth2 RFC describes it
-        client = JerseyClientHelper.clientBuilder()
-                                   .setRedirectsEnabled(false)
-                                   .setCredentials("Administrator", "Administrator")
-                                   .build();
+        // Clients to make the requests like a "Client" as the OAuth2 RFC describes it
+        // Authenticated client for the /oauth2/authorize and /oauth2/authorize_submit endpoints
+        authenticatedClient = JerseyClientHelper.clientBuilder()
+                                                .setRedirectsEnabled(false)
+                                                .setCredentials("Administrator", "Administrator")
+                                                .build();
+        // Unauthenticated client for the /oauth2/token endpoint
+        client = JerseyClientHelper.clientBuilder().setRedirectsEnabled(false).build();
 
         transientStore = (TransientStoreProvider) transientStoreService.getStore(AuthorizationRequest.STORE_NAME);
 
@@ -138,6 +145,7 @@ public class OAuth2ChallengeFixture {
     @After
     public void tearDown() {
         client.destroy();
+        authenticatedClient.destroy();
     }
 
     protected String getBaseURL() {
@@ -274,8 +282,7 @@ public class OAuth2ChallengeFixture {
             String error = extractParameter(redirect, ERROR_PARAM);
             assertEquals(ACCESS_DENIED, error);
             String errorDescription = extractParameter(redirect, ERROR_DESCRIPTION_PARAM);
-            assertEquals(URLEncoder.encode("Access denied by the user", UTF_8.name()),
-                    errorDescription);
+            assertEquals(URLEncoder.encode("Access denied by the user", UTF_8.name()), errorDescription);
             String state = extractParameter(redirect, STATE_PARAM);
             assertEquals(STATE, state);
             // ensure no authorization request has been stored
@@ -368,7 +375,10 @@ public class OAuth2ChallengeFixture {
     @Test
     public void getAuthorizeSubmitShouldReturn500() {
         try (CloseableClientResponse response = CloseableClientResponse.of(
-                client.resource(getBaseURL()).path("oauth2").path(ENDPOINT_AUTH_SUBMIT).get(ClientResponse.class))) {
+                authenticatedClient.resource(getBaseURL())
+                                   .path("oauth2")
+                                   .path(ENDPOINT_AUTH_SUBMIT)
+                                   .get(ClientResponse.class))) {
             assertEquals(405, response.getStatus());
         }
     }
@@ -453,6 +463,57 @@ public class OAuth2ChallengeFixture {
             assertEquals("Invalid redirect URI: null", error.get(ERROR_DESCRIPTION_PARAM));
             assertStoreIsEmpty();
         }
+    }
+
+    @Test
+    public void tokenAllowClientAuthentication() throws IOException {
+        ObjectMapper obj = new ObjectMapper();
+        initValidAuthorizeRequestCall();
+        String code = getAuthorizationCode();
+        Map<String, String> params = new HashMap<>();
+        params.put(GRANT_TYPE_PARAM, AUTHORIZATION_CODE_GRANT_TYPE);
+        params.put(REDIRECT_URI_PARAM, REDIRECT_URI);
+        params.put(AUTHORIZATION_CODE_PARAM, code);
+
+        // invalid client_id as part of the Authorization header
+        ClientFilter clientFilter = new HTTPBasicAuthFilter("unknown", CLIENT_SECRET);
+        client.addFilter(clientFilter);
+        try (CloseableClientResponse cr = responseFromTokenWith(params)) {
+            assertEquals(400, cr.getStatus());
+            String json = cr.getEntity(String.class);
+            Map<?, ?> error = obj.readValue(json, Map.class);
+            assertEquals(INVALID_CLIENT, error.get(ERROR_PARAM));
+            assertEquals("Invalid client id: unknown", error.get(ERROR_DESCRIPTION_PARAM));
+            assertStoreIsEmpty();
+        }
+        client.removeFilter(clientFilter);
+
+        // invalid client_secret as part of the Authorization header
+        initValidAuthorizeRequestCall();
+        code = getAuthorizationCode();
+        params.put(AUTHORIZATION_CODE_PARAM, code);
+        clientFilter = new HTTPBasicAuthFilter(CLIENT_ID, "invalidSecret");
+        client.addFilter(clientFilter);
+        try (CloseableClientResponse cr = responseFromTokenWith(params)) {
+            assertEquals(400, cr.getStatus());
+            String json = cr.getEntity(String.class);
+            Map<?, ?> error = obj.readValue(json, Map.class);
+            assertEquals(INVALID_CLIENT, error.get(ERROR_PARAM));
+            assertEquals("Disabled client or invalid client secret", error.get(ERROR_DESCRIPTION_PARAM));
+            assertStoreIsEmpty();
+        }
+        client.removeFilter(clientFilter);
+
+        // valid client_id and client_secret as part of the Authorization header
+        initValidAuthorizeRequestCall();
+        code = getAuthorizationCode();
+        params.put(AUTHORIZATION_CODE_PARAM, code);
+        clientFilter = new HTTPBasicAuthFilter(CLIENT_ID, CLIENT_SECRET);
+        client.addFilter(clientFilter);
+        try (CloseableClientResponse cr = responseFromTokenWith(params)) {
+            assertEquals(200, cr.getStatus());
+        }
+        client.removeFilter(clientFilter);
     }
 
     /**
@@ -694,7 +755,7 @@ public class OAuth2ChallengeFixture {
     }
 
     protected CloseableClientResponse responseFromGetAuthorizeWith(Map<String, String> queryParams) {
-        WebResource wr = client.resource(getBaseURL()).path("oauth2").path(ENDPOINT_AUTH);
+        WebResource wr = authenticatedClient.resource(getBaseURL()).path("oauth2").path(ENDPOINT_AUTH);
 
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         for (Map.Entry<String, String> entry : queryParams.entrySet()) {
@@ -705,7 +766,7 @@ public class OAuth2ChallengeFixture {
     }
 
     protected CloseableClientResponse responseFromPostAuthorizeWith(Map<String, String> queryParams) {
-        WebResource wr = client.resource(getBaseURL()).path("oauth2").path(ENDPOINT_AUTH_SUBMIT);
+        WebResource wr = authenticatedClient.resource(getBaseURL()).path("oauth2").path(ENDPOINT_AUTH_SUBMIT);
 
         MultivaluedMap<String, String> params = new MultivaluedMapImpl();
         for (Map.Entry<String, String> entry : queryParams.entrySet()) {
