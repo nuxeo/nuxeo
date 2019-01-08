@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Tiry
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.transientstore.api;
 
@@ -25,17 +26,23 @@ import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.transientstore.SimpleTransientStore;
 import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * {@link XMap} descriptor for representing the Configuration of a {@link TransientStore}
  *
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
  */
 @XObject("store")
 public class TransientStoreConfig implements Descriptor {
+
+    public static final int DEFAULT_TARGET_MAX_SIZE_MB = -1;
+
+    public static final int DEFAULT_ABSOLUTE_MAX_SIZE_MB = -1;
+
+    public static final int DEFAULT_FIRST_LEVEL_TTL = 60 * 2;
+
+    public static final int DEFAULT_SECOND_LEVEL_TTL = 10;
 
     @XNode("@name")
     public String name;
@@ -45,23 +52,20 @@ public class TransientStoreConfig implements Descriptor {
 
     // target size that ideally should never be exceeded
     @XNode("targetMaxSizeMB")
-    protected int targetMaxSizeMB = -1;
+    protected Integer targetMaxSizeMB;
 
     // size that must never be exceeded
     @XNode("absoluteMaxSizeMB")
-    protected int absoluteMaxSizeMB = -1;
+    protected Integer absoluteMaxSizeMB;
 
     @XNode("firstLevelTTL")
-    protected int firstLevelTTL = 60 * 2;
+    protected Integer firstLevelTTL;
 
     @XNode("secondLevelTTL")
-    protected int secondLevelTTL = 10;
-
-    @XNode("minimalRetention")
-    protected int minimalRetention = 10;
+    protected Integer secondLevelTTL;
 
     @XNode("@class")
-    public Class<? extends TransientStoreProvider> implClass = SimpleTransientStore.class;
+    public Class<? extends TransientStoreProvider> implClass;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class, nullByDefault = true)
     protected Map<String, String> properties  = new HashMap<>();
@@ -85,9 +89,28 @@ public class TransientStoreConfig implements Descriptor {
         absoluteMaxSizeMB = other.absoluteMaxSizeMB;
         firstLevelTTL = other.firstLevelTTL;
         secondLevelTTL = other.secondLevelTTL;
-        minimalRetention = other.minimalRetention;
         implClass = other.implClass;
         properties.putAll(other.properties);
+    }
+
+    @Override
+    public TransientStoreConfig merge(Descriptor o) {
+        TransientStoreConfig other = (TransientStoreConfig) o;
+        TransientStoreConfig merged = new TransientStoreConfig();
+        merged.name = other.name;
+        merged.path = defaultValue(other.path, path);
+        merged.targetMaxSizeMB = defaultValue(other.targetMaxSizeMB, targetMaxSizeMB);
+        merged.absoluteMaxSizeMB = defaultValue(other.absoluteMaxSizeMB, absoluteMaxSizeMB);
+        merged.firstLevelTTL = defaultValue(other.firstLevelTTL, firstLevelTTL);
+        merged.secondLevelTTL = defaultValue(other.secondLevelTTL, secondLevelTTL);
+        merged.implClass = defaultValue(other.implClass, implClass);
+        merged.properties.putAll(properties);
+        merged.properties.putAll(other.properties);
+        return merged;
+    }
+
+    protected static <T> T defaultValue(T value, T defaultValue) {
+        return value == null ? defaultValue : value;
     }
 
     @Override
@@ -100,35 +123,43 @@ public class TransientStoreConfig implements Descriptor {
     }
 
     public int getTargetMaxSizeMB() {
-        return targetMaxSizeMB;
+        return targetMaxSizeMB == null ? DEFAULT_TARGET_MAX_SIZE_MB : targetMaxSizeMB.intValue();
     }
 
+    /** @deprecated since 10.10, unused */
+    @Deprecated
     public void setTargetMaxSizeMB(int targetMaxSizeMB) {
-        this.targetMaxSizeMB = targetMaxSizeMB;
+        this.targetMaxSizeMB = Integer.valueOf(targetMaxSizeMB);
     }
 
     public int getAbsoluteMaxSizeMB() {
-        return absoluteMaxSizeMB;
+        return absoluteMaxSizeMB == null ? DEFAULT_ABSOLUTE_MAX_SIZE_MB : absoluteMaxSizeMB.intValue();
     }
 
+    /** @deprecated since 10.10, unused */
+    @Deprecated
     public void setAbsoluteMaxSizeMB(int absoluteMaxSizeMB) {
-        this.absoluteMaxSizeMB = absoluteMaxSizeMB;
+        this.absoluteMaxSizeMB = Integer.valueOf(absoluteMaxSizeMB);
     }
 
     public int getFirstLevelTTL() {
-        return firstLevelTTL;
+        return firstLevelTTL == null ? DEFAULT_FIRST_LEVEL_TTL : firstLevelTTL.intValue();
     }
 
+    /** @deprecated since 10.10, unused */
+    @Deprecated
     public void setFirstLevelTTL(int firstLevelTTL) {
-        this.firstLevelTTL = firstLevelTTL;
+        this.firstLevelTTL = Integer.valueOf(firstLevelTTL);
     }
 
     public int getSecondLevelTTL() {
-        return secondLevelTTL;
+        return secondLevelTTL == null ? DEFAULT_SECOND_LEVEL_TTL : secondLevelTTL.intValue();
     }
 
+    /** @deprecated since 10.10, unused */
+    @Deprecated
     public void setSecondLevelTTL(int secondLevelTTL) {
-        this.secondLevelTTL = secondLevelTTL;
+        this.secondLevelTTL = Integer.valueOf(secondLevelTTL);
     }
 
     /**
@@ -147,6 +178,15 @@ public class TransientStoreConfig implements Descriptor {
      */
     public Map<String, String> getProperties() {
         return properties;
+    }
+
+    /**
+     * Returns the implementation class, or {@code null} if not defined.
+     *
+     * @since 10.10
+     */
+    public Class<? extends TransientStoreProvider> getKlass() {
+        return implClass;
     }
 
 }

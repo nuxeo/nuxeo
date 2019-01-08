@@ -68,6 +68,14 @@
     <queuing class="org.nuxeo.ecm.core.redis.contribs.RedisWorkQueuing"/>
   </extension>
 </#if>
+
+<#if "${nuxeo.transientstore.provider}" == "redis">
+  <require>org.nuxeo.ecm.core.transient.store.config</require>
+  <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
+    <store name="default" class="org.nuxeo.ecm.core.redis.contribs.RedisTransientStore"/>
+  </extension>
+</#if>
+
 </#if>
 
 </component>

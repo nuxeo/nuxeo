@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.transientstore.TransientStorageComponent.DEFAULT_STORE_NAME;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -52,6 +51,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreBulkFeature.class)
 public class TestMakeBlob {
+
+    protected static final String TEST_ACTION_NAME = "testmakeblob";
+
     @Test
     public void testSimple() throws IOException {
         final String command = "cmd1";
@@ -91,7 +93,7 @@ public class TestMakeBlob {
 
         // check the output blob
         String blobPath = codec.decode(output.getData()).getDataAsString();
-        Blob blob = comp.getBlob(blobPath, DEFAULT_STORE_NAME);
+        Blob blob = comp.getBlob(blobPath, TEST_ACTION_NAME);
         assertBlobEquals("abcdef", blob);
 
         comp.destroy();
@@ -166,9 +168,9 @@ public class TestMakeBlob {
 
         // check the output blob
         String blobPath = codec.decode(output1.getData()).getDataAsString();
-        assertBlobEquals("abcdef", comp.getBlob(blobPath, DEFAULT_STORE_NAME));
+        assertBlobEquals("abcdef", comp.getBlob(blobPath, TEST_ACTION_NAME));
         blobPath = codec.decode(output2.getData()).getDataAsString();
-        assertBlobEquals("mnopqr", comp.getBlob(blobPath, DEFAULT_STORE_NAME));
+        assertBlobEquals("mnopqr", comp.getBlob(blobPath, TEST_ACTION_NAME));
 
         comp.destroy();
     }
@@ -183,6 +185,7 @@ public class TestMakeBlob {
         BulkStatus status = new BulkStatus(commandId);
         status.setState(BulkStatus.State.RUNNING);
         status.setTotal(count);
+        status.setAction(TEST_ACTION_NAME);
         BulkServiceImpl service = (BulkServiceImpl) Framework.getService(BulkService.class);
         service.setStatus(status);
     }
