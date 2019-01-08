@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class TokenRequest extends OAuth2Request {
 
+    protected static final String BASIC_AUTHENTICATION_HEADER_PREFIX = "basic ";
+
     protected String grantType;
 
     protected String code;
@@ -49,6 +51,24 @@ public class TokenRequest extends OAuth2Request {
         clientSecret = request.getParameter(CLIENT_SECRET_PARAM);
         refreshToken = request.getParameter(REFRESH_TOKEN_PARAM);
         codeVerifier = request.getParameter(CODE_VERIFIER_PARAM);
+
+        checkAuthorization(request);
+    }
+
+    protected void checkAuthorization(HttpServletRequest request) {
+        final String authorization = request.getHeader("Authorization");
+        if (authorization != null && authorization.toLowerCase().startsWith(BASIC_AUTHENTICATION_HEADER_PREFIX)) {
+            // Authorization: Basic base64credentials
+            String base64Credentials = authorization.substring(BASIC_AUTHENTICATION_HEADER_PREFIX.length()).trim();
+            byte[] decodedCredentials = java.util.Base64.getDecoder().decode(base64Credentials);
+            String credentials = new String(decodedCredentials, java.nio.charset.StandardCharsets.UTF_8);
+            // credentials = client_id:secret
+            String[] values = credentials.split(":", 2);
+            if (values.length == 2) {
+                clientId = values[0];
+                clientSecret = values[1];
+            }
+        }
     }
 
     public String getGrantType() {
