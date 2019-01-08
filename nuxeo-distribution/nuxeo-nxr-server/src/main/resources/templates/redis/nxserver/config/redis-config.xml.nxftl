@@ -58,9 +58,9 @@
 </#if>
 
 <#if "${nuxeo.lock.manager}" == "redis">
-  <extension target="org.nuxeo.ecm.core.storage.lock.LockManagerService" point="lockmanager">
-    <lockmanager name="default" class="org.nuxeo.ecm.core.redis.contribs.RedisLockManager" />
-  </extension>
+  <extension target="org.nuxeo.ecm.core.storage.lock.LockManagerService" point="lockmanager">
+    <lockmanager name="default" class="org.nuxeo.ecm.core.redis.contribs.RedisLockManager" />
+  </extension>
 </#if>
 
 <#if "${nuxeo.work.queuing}" == "redis">
