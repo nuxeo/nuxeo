@@ -45,6 +45,7 @@ pipeline {
       steps {
         container('maven-nuxeo') {
           dir('charts/junits') {
+            sh "make mongodb"
             sh "make helm"
             sh "jx preview --app $APP_NAME --namespace=${NAMESPACE} --dir ../.."
           }
@@ -79,6 +80,7 @@ pipeline {
       steps {
         container('maven-nuxeo') {
          dir('charts/junits') {
+            sh "make postgresql"
             sh "make helm"
             sh "jx preview --app $APP_NAME --namespace=${NAMESPACE} --dir ../.."
           }
