@@ -61,10 +61,18 @@ public class Batch {
 
     protected Map<String, Object> properties;
 
+    /**
+     * @deprecated since 10.10, use the signature with the transient store
+     */
+    @Deprecated
     public Batch(String key) {
         this(key, new HashMap<>());
     }
 
+    /**
+     * @deprecated since 10.10, use the signature with the transient store
+     */
+    @Deprecated
     public Batch(String key, Map<String, Serializable> fileEntries) {
         this(key, fileEntries, null);
     }
@@ -76,7 +84,9 @@ public class Batch {
      * @param fileEntries the batch file entries
      * @param handlerName the batch hrovider name
      * @since 10.1
+     * @deprecated since 10.10, use the signature with the transient store
      */
+    @Deprecated
     public Batch(String key, Map<String, Serializable> fileEntries, String handlerName) {
         this(key, fileEntries, handlerName, null);
     }
@@ -168,7 +178,7 @@ public class Batch {
         }
         boolean chunked = Boolean.parseBoolean((String) fileEntryParams.get(CHUNKED_PARAM_NAME));
         if (chunked) {
-            return new BatchFileEntry(fileEntryKey, fileEntryParams);
+            return new BatchFileEntry(transientStore, fileEntryKey, fileEntryParams);
         } else {
             Blob blob = null;
             if (fetchBlobs) {
@@ -180,7 +190,7 @@ public class Batch {
                     blob = fileEntryBlobs.get(0);
                 }
             }
-            return new BatchFileEntry(fileEntryKey, blob);
+            return new BatchFileEntry(transientStore, fileEntryKey, blob);
         }
     }
 
@@ -237,7 +247,7 @@ public class Batch {
         String fileEntryKey = key + "_" + index;
         BatchFileEntry fileEntry = getFileEntry(index);
         if (fileEntry == null) {
-            fileEntry = new BatchFileEntry(fileEntryKey, chunkCount, fileName, mimeType, fileSize);
+            fileEntry = new BatchFileEntry(transientStore, fileEntryKey, chunkCount, fileName, mimeType, fileSize);
             transientStore.putParameters(fileEntryKey, fileEntry.getParams());
             transientStore.putParameter(key, index, fileEntryKey);
         }

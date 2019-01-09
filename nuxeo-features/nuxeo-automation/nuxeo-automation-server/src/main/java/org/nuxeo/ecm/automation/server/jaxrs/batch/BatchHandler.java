@@ -22,6 +22,7 @@ package org.nuxeo.ecm.automation.server.jaxrs.batch;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
+import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 
 /**
  * Batch Handler encapsulates functionality to handle Batch Upload behaviours.
@@ -73,5 +74,12 @@ public interface BatchHandler {
     default boolean completeUpload(String batchId, String fileIdx, BatchFileInfo fileInfo) {
         return true;
     }
+
+    /**
+     * Gets the transient store used by this batch handler.
+     *
+     * @since 10.10
+     */
+    TransientStore getTransientStore();
 
 }

@@ -43,7 +43,7 @@ public class DefaultBatchHandler extends AbstractBatchHandler {
         }
 
         // create the batch
-        return new Batch(batchId, parameters, getName());
+        return new Batch(batchId, parameters, getName(), getTransientStore());
     }
 
     @Override
