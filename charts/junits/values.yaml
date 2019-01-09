@@ -6,4 +6,10 @@ postgresql:
   initdbScripts:
     db-init.sql: |
       CREATE ROLE nuxeo WITH PASSWORD 'nuxeo' LOGIN;
-      CREATE DATABASE vctests ENCODING 'UTF8' OWNER nuxeo;  
+      CREATE DATABASE vctests ENCODING 'UTF8' OWNER nuxeo;
+redis:
+  deploy: false
+mongodb:
+  deploy: false
+postgresql:
+  deploy: false

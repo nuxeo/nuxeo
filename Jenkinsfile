@@ -7,14 +7,23 @@ pipeline {
     APP_NAME = 'nuxeo'
     CHARTMUSEUM_CREDS = credentials('jenkins-x-chartmuseum')
     NAMESPACE = "$ORG-$BRANCH_NAME-$BUILD_NUMBER"
+    PREVIEW_VERSION = "0.0.0-SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER"
   }
   stages {
     stage('Core junits on H2') {
       when {
         branch 'master'
       }
+      environment {
+        APP_NAME = 'redis'     
+      }
       steps {
         container('maven-nuxeo') {
+          dir('charts/junits') {
+            sh "make redis"
+            sh "make helm"
+            sh "jx preview --app $APP_NAME --namespace=${NAMESPACE} --dir ../.."
+          }
           sh "git checkout master"
           sh "git config --global credential.helper store"
           sh "jx step git credentials"
@@ -40,12 +49,12 @@ pipeline {
     stage('Core junits on Mongo') {
       environment {
         APP_NAME = 'mongodb'
-        PREVIEW_VERSION = "0.0.0-SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER"
       }
       steps {
         container('maven-nuxeo') {
           dir('charts/junits') {
             sh "make mongodb"
+            sh "make redis"
             sh "make helm"
             sh "jx preview --app $APP_NAME --namespace=${NAMESPACE} --dir ../.."
           }
@@ -75,12 +84,12 @@ pipeline {
     stage('Core junits on Postgres') {
       environment {
         APP_NAME = "postgresql"
-        PREVIEW_VERSION = "0.0.0-SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER"
       }
       steps {
         container('maven-nuxeo') {
          dir('charts/junits') {
             sh "make postgresql"
+            sh "make redis"
             sh "make helm"
             sh "jx preview --app $APP_NAME --namespace=${NAMESPACE} --dir ../.."
           }
