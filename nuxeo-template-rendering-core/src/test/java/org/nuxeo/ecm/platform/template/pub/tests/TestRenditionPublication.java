@@ -179,7 +179,8 @@ public class TestRenditionPublication {
     @Test
     public void verifyRenditionBinding() throws Exception {
 
-        DocumentModel templateBasedDoc = createTemplateBasedDoc(createTemplateDoc());
+        DocumentModel templateDoc = createTemplateDoc();
+        DocumentModel templateBasedDoc = createTemplateBasedDoc(templateDoc);
         TemplateBasedDocument templateBased = templateBasedDoc.getAdapter(TemplateBasedDocument.class);
         assertNotNull(templateBased);
 
@@ -193,6 +194,14 @@ public class TestRenditionPublication {
         defs = renditionService.getAvailableRenditionDefinitions(templateBasedDoc);
         // blob, + delivery rendition binding + export renditions => 5 rendition
         assertEquals(5, defs.size());
+
+        // Test that removing a template will not get available definitions to fail
+        session.removeDocument(templateDoc.getRef());
+        session.save();
+
+        defs = renditionService.getAvailableRenditionDefinitions(templateBasedDoc);
+        assertEquals(4, defs.size());
+
 
     }
 
