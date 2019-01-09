@@ -74,7 +74,8 @@ public abstract class AbstractBatchHandler implements BatchHandler {
         transientStoreName = properties.get(PROP_TRANSIENT_STORE_NAME);
     }
 
-    protected TransientStore getTransientStore() {
+    @Override
+    public TransientStore getTransientStore() {
         return Framework.getService(TransientStoreService.class).getStore(transientStoreName);
     }
 
@@ -111,7 +112,8 @@ public abstract class AbstractBatchHandler implements BatchHandler {
         log.debug("Initializing batch with id: " + batchId);
         transientStore.setCompleted(batchId, false);
         transientStore.putParameter(batchId, BATCH_HANDLER_NAME, getName());
-        return new Batch(batchId);
+        Map<String, Serializable> parameters = new HashMap<>();
+        return new Batch(batchId, parameters, getName(), transientStore);
     }
 
     protected String generateBatchId() {

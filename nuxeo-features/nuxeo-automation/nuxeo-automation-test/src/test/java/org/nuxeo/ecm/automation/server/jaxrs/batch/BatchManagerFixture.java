@@ -66,6 +66,11 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 @Deploy("org.nuxeo.ecm.automation.server")
 public class BatchManagerFixture {
 
+    protected TransientStore getTransientStore() {
+        BatchManager bm = Framework.getService(BatchManager.class);
+        return bm.getHandler(BatchManagerComponent.DEFAULT_BATCH_HANDLER).getTransientStore();
+    }
+
     @Test
     public void testServiceRegistred() {
         BatchManager bm = Framework.getService(BatchManager.class);
@@ -74,8 +79,7 @@ public class BatchManagerFixture {
 
     @Test
     public void testTransientStoreRegistered() {
-        BatchManager bm = Framework.getService(BatchManager.class);
-        assertNotNull(bm.getTransientStore());
+        assertNotNull(getTransientStore());
     }
 
     @Test
@@ -89,7 +93,7 @@ public class BatchManagerFixture {
         assertEquals(batchId, batch.getKey());
 
         // Check TransientStore storage size
-        TransientStore ts = bm.getTransientStore();
+        TransientStore ts = getTransientStore();
         TransientStoreProvider tsm = (TransientStoreProvider) ts;
         assertEquals(0, tsm.getStorageSize());
     }
@@ -165,7 +169,7 @@ public class BatchManagerFixture {
         assertEquals(blob2, fileEntry2.getBlob());
 
         // Check TransientStore storage size
-        TransientStore ts = bm.getTransientStore();
+        TransientStore ts = getTransientStore();
         TransientStoreProvider tsm = (TransientStoreProvider) ts;
         assertEquals(40, tsm.getStorageSize());
     }
@@ -219,7 +223,7 @@ public class BatchManagerFixture {
 
         String chunkEntryKey1 = batchId + "_0_0";
         assertTrue(chunkEntryKeys.contains(chunkEntryKey1));
-        TransientStore ts = bm.getTransientStore();
+        TransientStore ts = getTransientStore();
         TransientStoreProvider tsm = (TransientStoreProvider) ts;
         List<Blob> chunkEntryBlobs = ts.getBlobs(chunkEntryKey1);
         assertEquals(1, chunkEntryBlobs.size());
@@ -275,7 +279,7 @@ public class BatchManagerFixture {
         Assert.assertEquals("Chunk 1 Chunk 2 ", blobs.get(10).getString());
 
         // Batch data
-        TransientStore ts = bm.getTransientStore();
+        TransientStore ts = getTransientStore();
         TransientStoreProvider tsm = (TransientStoreProvider) ts;
         assertTrue(ts.exists(batchId));
         assertTrue(ts.exists(batchId + "_5"));
@@ -354,7 +358,7 @@ public class BatchManagerFixture {
         }
 
         // Check storage size
-        TransientStore ts = bm.getTransientStore();
+        TransientStore ts = getTransientStore();
         TransientStoreProvider tsm = (TransientStoreProvider) ts;
         assertTrue(tsm.getStorageSize() > 12 * nbBatches);
 
@@ -407,7 +411,7 @@ public class BatchManagerFixture {
         }
 
         // Check storage size
-        TransientStore ts = bm.getTransientStore();
+        TransientStore ts = getTransientStore();
         TransientStoreProvider tsm = (TransientStoreProvider) ts;
         assertTrue(tsm.getStorageSize() > 12 * nbFiles);
 
@@ -456,7 +460,7 @@ public class BatchManagerFixture {
         assertEquals(nbChunks, nbOccurrences);
 
         // Check storage size
-        TransientStore ts = bm.getTransientStore();
+        TransientStore ts = getTransientStore();
         TransientStoreProvider tsm = (TransientStoreProvider) ts;
         assertTrue(tsm.getStorageSize() > 17 * nbChunks);
 

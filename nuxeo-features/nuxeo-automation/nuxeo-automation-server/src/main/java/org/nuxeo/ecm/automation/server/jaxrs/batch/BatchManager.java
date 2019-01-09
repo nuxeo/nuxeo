@@ -38,10 +38,12 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 public interface BatchManager {
 
     /**
-     * Returns the {@link TransientStore} backing the batches.
+     * Returns the {@link TransientStore} backing the batches of the default handler.
      *
      * @since 7.4
+     * @deprecated since 10.10, each batch handler has its own transient store
      */
+    @Deprecated
     TransientStore getTransientStore();
 
     /**
