@@ -19,10 +19,14 @@
 package org.nuxeo.ecm.core.test;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -35,15 +39,22 @@ import com.dumbster.smtp.SimpleSmtpServer;
  */
 public class FakeSmtpMailServerFeature implements RunnerFeature {
 
-    public static final int SERVER_PORT = 2525;
+    private static final Logger log = LogManager.getLogger(FakeSmtpMailServerFeature.class);
+
+    protected static final int RETRIES = 1000;
 
     public static final String SERVER_HOST = "127.0.0.1";
+
+    public static int SERVER_PORT;
 
     public static SimpleSmtpServer server;
 
     @Override
     public void beforeSetup(FeaturesRunner runner) throws Exception {
+        SERVER_PORT = findFreePort();
+
         server = SimpleSmtpServer.start(SERVER_PORT);
+        log.debug("FakeSmtpMailServer started on port: {}", SERVER_PORT);
         if (Framework.isInitialized()) {
             File file = new File(Environment.getDefault().getConfig(), "mail.properties");
             List<String> mailProperties = new ArrayList<>();
@@ -54,6 +65,18 @@ public class FakeSmtpMailServerFeature implements RunnerFeature {
             Framework.getProperties().put("mail.transport.host", SERVER_HOST);
             Framework.getProperties().put("mail.transport.port", String.valueOf(SERVER_PORT));
         }
+    }
+
+    protected int findFreePort() {
+        for (int i = 0; i < RETRIES; i++) {
+            try (ServerSocket socket = new ServerSocket(0)) {
+                socket.setReuseAddress(true);
+                return socket.getLocalPort();
+            } catch (IOException e) {
+                log.trace("Failed to allocate port", e);
+            }
+        }
+        throw new RuntimeException("Unable to find free port after " + RETRIES + " retries");
     }
 
     @Override
