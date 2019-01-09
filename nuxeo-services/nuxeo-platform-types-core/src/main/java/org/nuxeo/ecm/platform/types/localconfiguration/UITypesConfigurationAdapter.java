@@ -140,6 +140,10 @@ public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITy
         // merging, if needed
         documentRef = other.getDocumentRef();
 
+        if (allowedTypes.isEmpty()) {
+            allowedTypes = Collections.unmodifiableList(new ArrayList<>(other.getAllowedTypes()));
+        }
+
         List<String> deniedTypes = new ArrayList<>(this.deniedTypes);
         deniedTypes.addAll(other.getDeniedTypes());
         this.deniedTypes = Collections.unmodifiableList(deniedTypes);
