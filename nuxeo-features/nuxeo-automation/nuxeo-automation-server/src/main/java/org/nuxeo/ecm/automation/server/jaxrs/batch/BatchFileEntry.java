@@ -55,6 +55,8 @@ public class BatchFileEntry {
 
     protected static final Log log = LogFactory.getLog(BatchFileEntry.class);
 
+    protected TransientStore transientStore;
+
     protected String key;
 
     protected Map<String, Serializable> params;
@@ -65,9 +67,19 @@ public class BatchFileEntry {
 
     /**
      * Returns a file entry that holds the given blob, not chunked.
+     *
+     * @deprecated since 10.10, use the signature with the transient store
      */
+    @Deprecated
     public BatchFileEntry(String key, Blob blob) {
-        this(key, false);
+        this(null, key, blob);
+    }
+
+    /**
+     * Returns a file entry that holds the given blob, not chunked.
+     */
+    public BatchFileEntry(TransientStore transientStore, String key, Blob blob) {
+        this(transientStore, key, false);
         this.blob = blob;
     }
 
@@ -75,9 +87,22 @@ public class BatchFileEntry {
      * Returns a file entry that references the file chunks.
      *
      * @see BatchChunkEntry
+     * @deprecated since 10.10, use the signature with the transient store
      */
-    public BatchFileEntry(String key, int chunkCount, String fileName, String mimeType, long fileSize) {
-        this(key, true);
+    @Deprecated
+    public BatchFileEntry(String key, int chunkCount, String fileName, String mimeType,
+            long fileSize) {
+        this(null, key, chunkCount, fileName, mimeType, fileSize);
+    }
+
+    /**
+     * Returns a file entry that references the file chunks.
+     *
+     * @see BatchChunkEntry
+     */
+    public BatchFileEntry(TransientStore transientStore, String key, int chunkCount, String fileName, String mimeType,
+            long fileSize) {
+        this(transientStore, key, true);
         params.put("chunkCount", String.valueOf(chunkCount));
         if (!StringUtils.isEmpty(fileName)) {
             params.put("fileName", fileName);
@@ -90,15 +115,36 @@ public class BatchFileEntry {
 
     /**
      * Returns a file entry that holds the given parameters.
+     *
+     * @deprecated since 10.10, use the signature with the transient store
      */
+    @Deprecated
     public BatchFileEntry(String key, Map<String, Serializable> params) {
+        this(null, key, params);
+    }
+
+    /**
+     * Returns a file entry that holds the given parameters.
+     */
+    public BatchFileEntry(TransientStore transientStore, String key, Map<String, Serializable> params) {
+        if (transientStore == null) {
+            transientStore = Framework.getService(BatchManager.class).getTransientStore();
+        }
+        this.transientStore = transientStore;
         this.key = key;
         this.params = params;
     }
 
+    /**
+     * @deprecated since 10.10, use the signature with the transient store
+     */
+    @Deprecated
     protected BatchFileEntry(String key, boolean chunked) {
-        this.key = key;
-        params = new HashMap<>();
+        this(null, key, chunked);
+    }
+
+    protected BatchFileEntry(TransientStore transientStore, String key, boolean chunked) {
+        this(transientStore, key, new HashMap<>());
         params.put(Batch.CHUNKED_PARAM_NAME, String.valueOf(chunked));
     }
 
@@ -216,17 +262,16 @@ public class BatchFileEntry {
                 // Temporary file made from concatenated chunks
                 tmpChunkedFile = chunkedBlob.getFile();
                 BatchManager bm = Framework.getService(BatchManager.class);
-                TransientStore ts = bm.getTransientStore();
                 // Sort chunk indexes and concatenate them to build the entire blob
                 List<Integer> sortedChunkIndexes = getOrderedChunkIndexes();
                 for (int index : sortedChunkIndexes) {
-                    Blob chunk = getChunk(ts, chunks.get(index));
+                    Blob chunk = getChunk(transientStore, chunks.get(index));
                     if (chunk != null) {
                         transferTo(chunk, tmpChunkedFile);
                     }
                 }
                 // Store tmpChunkedFile as a parameter for later deletion
-                ts.putParameter(key, "tmpChunkedFilePath", tmpChunkedFile.getAbsolutePath());
+                transientStore.putParameter(key, "tmpChunkedFilePath", tmpChunkedFile.getAbsolutePath());
                 chunkedBlob.setMimeType(getMimeType());
                 chunkedBlob.setFilename(getFileName());
                 return chunkedBlob;
@@ -280,16 +325,15 @@ public class BatchFileEntry {
 
         String chunkEntryKey = key + "_" + index;
         BatchManager bm = Framework.getService(BatchManager.class);
-        TransientStore ts = bm.getTransientStore();
-        ts.putBlobs(chunkEntryKey, Collections.singletonList(blob));
-        ts.putParameter(key, String.valueOf(index), chunkEntryKey);
+        transientStore.putBlobs(chunkEntryKey, Collections.singletonList(blob));
+        transientStore.putParameter(key, String.valueOf(index), chunkEntryKey);
 
         return chunkEntryKey;
     }
 
     public void beforeRemove() {
         BatchManager bm = Framework.getService(BatchManager.class);
-        String tmpChunkedFilePath = (String) bm.getTransientStore().getParameter(key, "tmpChunkedFilePath");
+        String tmpChunkedFilePath = (String) transientStore.getParameter(key, "tmpChunkedFilePath");
         if (tmpChunkedFilePath != null) {
             File tmpChunkedFile = new File(tmpChunkedFilePath);
             if (tmpChunkedFile.exists()) {

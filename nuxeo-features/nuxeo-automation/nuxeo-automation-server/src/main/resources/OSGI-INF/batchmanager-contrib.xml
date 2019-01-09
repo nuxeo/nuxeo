@@ -9,7 +9,7 @@
     <batchHandler>
       <name>default</name>
       <class>org.nuxeo.ecm.automation.server.jaxrs.batch.handler.impl.DefaultBatchHandler</class>
-      <property name="transientStore">default</property>
+      <property name="transientStore">BatchManagerCache</property>
     </batchHandler>
   </extension>
 

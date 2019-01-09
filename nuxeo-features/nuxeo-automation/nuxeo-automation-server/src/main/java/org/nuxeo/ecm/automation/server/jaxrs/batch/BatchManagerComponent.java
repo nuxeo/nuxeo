@@ -65,6 +65,8 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
     protected static final Log log = LogFactory.getLog(BatchManagerComponent.class);
 
+    /** @deprecated since 10.10, each batch handler has its own transient store */
+    @Deprecated
     protected static final String TRANSIENT_STORE_NAME = "BatchManagerCache";
 
     public static final String CLIENT_BATCH_ID_FLAG = "allowClientGeneratedBatchId";
@@ -128,9 +130,9 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
     }
 
     @Override
+    @Deprecated
     public TransientStore getTransientStore() {
-        TransientStoreService tss = Framework.getService(TransientStoreService.class);
-        return tss.getStore(TRANSIENT_STORE_NAME);
+        return getHandler(DEFAULT_BATCH_HANDLER).getTransientStore();
     }
 
     @Override
