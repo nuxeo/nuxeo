@@ -36,7 +36,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Batch Object to encapsulate all data related to a batch, especially the temporary files used for Blobs.
@@ -61,26 +60,6 @@ public class Batch {
 
     protected Map<String, Object> properties;
 
-    public Batch(String key) {
-        this(key, new HashMap<>());
-    }
-
-    public Batch(String key, Map<String, Serializable> fileEntries) {
-        this(key, fileEntries, null);
-    }
-
-    /**
-     * Constructs a batch.
-     *
-     * @param key the batch key
-     * @param fileEntries the batch file entries
-     * @param handlerName the batch hrovider name
-     * @since 10.1
-     */
-    public Batch(String key, Map<String, Serializable> fileEntries, String handlerName) {
-        this(key, fileEntries, handlerName, null);
-    }
-
     /**
      * Constructs a batch.
      *
@@ -94,9 +73,6 @@ public class Batch {
         this.key = key;
         this.fileEntries = fileEntries;
         this.handlerName = handlerName;
-        if (transientStore == null) {
-            transientStore = Framework.getService(BatchManager.class).getTransientStore();
-        }
         this.transientStore = transientStore;
         this.properties = new HashMap<>();
     }
@@ -168,7 +144,7 @@ public class Batch {
         }
         boolean chunked = Boolean.parseBoolean((String) fileEntryParams.get(CHUNKED_PARAM_NAME));
         if (chunked) {
-            return new BatchFileEntry(fileEntryKey, fileEntryParams);
+            return new BatchFileEntry(transientStore, fileEntryKey, fileEntryParams);
         } else {
             Blob blob = null;
             if (fetchBlobs) {
@@ -180,7 +156,7 @@ public class Batch {
                     blob = fileEntryBlobs.get(0);
                 }
             }
-            return new BatchFileEntry(fileEntryKey, blob);
+            return new BatchFileEntry(transientStore, fileEntryKey, blob);
         }
     }
 
@@ -237,7 +213,7 @@ public class Batch {
         String fileEntryKey = key + "_" + index;
         BatchFileEntry fileEntry = getFileEntry(index);
         if (fileEntry == null) {
-            fileEntry = new BatchFileEntry(fileEntryKey, chunkCount, fileName, mimeType, fileSize);
+            fileEntry = new BatchFileEntry(transientStore, fileEntryKey, chunkCount, fileName, mimeType, fileSize);
             transientStore.putParameters(fileEntryKey, fileEntry.getParams());
             transientStore.putParameter(key, index, fileEntryKey);
         }
