@@ -225,24 +225,17 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
         // trigger = new SimpleTrigger(schedule.getId(), "nuxeo");
 
         try {
-            scheduler.scheduleJob(job, trigger);
-            jobKeys.put(schedule.getId(), job.getKey());
-        } catch (ObjectAlreadyExistsException e) {
-            log.trace("Overriding scheduler with id: " + schedule.getId());
-            // when jobs are persisted in a database, the job should already
-            // be there
-            // remove existing job and re-schedule
-            boolean unregistred = unregisterSchedule(schedule.getId());
-            if (unregistred) {
-                try {
-                    scheduler.scheduleJob(job, trigger);
-                } catch (SchedulerException e1) {
-                    log.error(
-                            String.format("failed to schedule job with id '%s': %s", schedule.getId(), e.getMessage()),
-                            e);
+            try {
+                schedule(schedule.getId(), job, trigger);
+            } catch (ObjectAlreadyExistsException e) {
+                // when jobs are persisted in a database, the job should already be there
+                // remove existing job and re-schedule
+                log.trace("Overriding scheduler with id: " + schedule.getId());
+                boolean unregistered = unschedule(schedule.getId(), job.getKey());
+                if (unregistered) {
+                    schedule(schedule.getId(), job, trigger);
                 }
             }
-
         } catch (SchedulerException e) {
             log.error(String.format("failed to schedule job with id '%s': %s", schedule.getId(), e.getMessage()), e);
         }
@@ -259,13 +252,28 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
         return unschedule(id);
     }
 
-    protected boolean unschedule(String jobId) {
-        try {
-            return scheduler.deleteJob(jobKeys.get(jobId));
-        } catch (SchedulerException e) {
-            log.error(String.format("failed to unschedule job with '%s': %s", jobId, e.getMessage()), e);
+    protected void schedule(String id, JobDetail job, Trigger trigger) throws SchedulerException {
+        scheduler.scheduleJob(job, trigger);
+        // record the jobKey only if scheduleJob didn't throw
+        jobKeys.put(id, job.getKey());
+    }
+
+    protected boolean unschedule(String id) {
+        return unschedule(id, jobKeys.remove(id));
+    }
+
+    protected boolean unschedule(String id, JobKey jobKey) {
+        if (jobKey == null) {
+            // shouldn't happen but let's be robust
+            log.warn("Unscheduling null jobKey for id: " + id);
+            return false;
         }
-        return false;
+        try {
+            return scheduler.deleteJob(jobKey);
+        } catch (SchedulerException e) {
+            log.error(String.format("failed to unschedule job with '%s': %s", id, e.getMessage()), e);
+            return true; // didn't exist so consider it removed (maybe concurrency)
+        }
     }
 
     @Override
