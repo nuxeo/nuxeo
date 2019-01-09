@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -45,8 +44,8 @@ import org.nuxeo.ecm.platform.types.SubType;
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITypesConfiguration> implements
-        UITypesConfiguration {
+public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITypesConfiguration>
+        implements UITypesConfiguration {
 
     private static final Log log = LogFactory.getLog(UITypesConfigurationAdapter.class);
 
@@ -141,7 +140,7 @@ public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITy
         // merging, if needed
         documentRef = other.getDocumentRef();
 
-        List<String> deniedTypes = new ArrayList<String>(this.deniedTypes);
+        List<String> deniedTypes = new ArrayList<>(this.deniedTypes);
         deniedTypes.addAll(other.getDeniedTypes());
         this.deniedTypes = Collections.unmodifiableList(deniedTypes);
 
@@ -165,13 +164,9 @@ public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITy
             return allowedSubTypes;
         }
 
-        Map<String, SubType> filteredAllowedSubTypes = new HashMap<String, SubType>(allowedSubTypes);
-        for (Iterator<String> it = filteredAllowedSubTypes.keySet().iterator(); it.hasNext();) {
-            String subTypeName = it.next();
-            if (deniedTypes.contains(subTypeName) || !allowedTypes.isEmpty() && !allowedTypes.contains(subTypeName)) {
-                it.remove();
-            }
-        }
+        Map<String, SubType> filteredAllowedSubTypes = new HashMap<>(allowedSubTypes);
+        filteredAllowedSubTypes.keySet().removeIf(subTypeName -> deniedTypes.contains(subTypeName)
+                || !allowedTypes.isEmpty() && !allowedTypes.contains(subTypeName));
         return filteredAllowedSubTypes;
     }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -118,11 +117,10 @@ public class TestLocalConfiguration {
     }
 
     @Test
-    public void shouldNotAllowAnyType() throws Exception {
+    public void shouldNotAllowAnyType() {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         setDenyAllTypes(workspace, true);
 
-        LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
         UITypesConfiguration configuration = localConfigurationService.getConfiguration(UITypesConfiguration.class,
                 UI_TYPES_CONFIGURATION_FACET, workspace);
         assertTrue(configuration.denyAllTypes());
@@ -290,7 +288,7 @@ public class TestLocalConfiguration {
     }
 
     protected List<String> convertToTypesNames(Collection<Type> types) {
-        List<String> typesList = new ArrayList<String>();
+        List<String> typesList = new ArrayList<>();
         for (Type type : types) {
             typesList.add(type.getId());
         }
