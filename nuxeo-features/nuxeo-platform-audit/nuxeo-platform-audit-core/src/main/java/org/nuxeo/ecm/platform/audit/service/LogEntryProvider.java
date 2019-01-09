@@ -89,11 +89,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
         Object entry = entries.get(0);
         if (entry instanceof LogEntry) {
             for (Object logEntry : entries) {
-                try {
-                    doPublish((LogEntry) logEntry);
-                } catch (RuntimeException e) {
-                    log.warn("unable to read log entry: "+((LogEntry) logEntry), e);
-                }
+                doPublish((LogEntry) logEntry);
             }
         }
         return entries;
