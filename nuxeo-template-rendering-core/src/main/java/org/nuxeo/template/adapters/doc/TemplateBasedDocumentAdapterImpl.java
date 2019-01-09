@@ -25,6 +25,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.DocumentException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -33,6 +35,7 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.blob.ConvertBlob;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -56,6 +59,8 @@ import org.nuxeo.template.api.descriptor.OutputFormatDescriptor;
  */
 public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument implements Serializable,
         TemplateBasedDocument {
+
+    private static Log log = LogFactory.getLog(TemplateBasedDocumentAdapterImpl.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -144,6 +149,10 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         try {
             return getSession().getDocument(tRef);
         } catch (DocumentSecurityException e) {
+            return null;
+        } catch (DocumentNotFoundException e) {
+            log.warn(String.format("The document %s references the template %s that does not exist anymore",
+                    adaptedDoc.getId(), templateName));
             return null;
         }
     }
