@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.video.Stream;
 import org.nuxeo.ecm.platform.video.Video;
@@ -155,7 +156,10 @@ public class TestVideoImporterAndListeners {
         assertNotNull(session);
         assertNotNull(fileManagerService);
 
-        DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, "/", true, "sample.mpg");
+        FileImporterContext context = FileImporterContext.builder(session, blob, "/")
+                                                         .overwrite(true)
+                                                         .build();
+        DocumentModel docModel = fileManagerService.createOrUpdateDocument(context);
         assertNotNull(docModel);
 
         txFeature.nextTransaction();
@@ -262,7 +266,10 @@ public class TestVideoImporterAndListeners {
         assertNotNull(session);
         assertNotNull(fileManagerService);
 
-        DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, rootPath, true, "sample.mpg");
+        FileImporterContext context = FileImporterContext.builder(session, blob, rootPath)
+                                                         .overwrite(true)
+                                                         .build();
+        DocumentModel docModel = fileManagerService.createOrUpdateDocument(context);
 
         txFeature.nextTransaction();
         docModel = session.getDocument(docModel.getRef());
