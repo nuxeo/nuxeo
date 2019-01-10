@@ -28,6 +28,7 @@ import static org.junit.Assume.assumeFalse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.time.Instant;
@@ -54,6 +55,9 @@ import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
 import org.nuxeo.ecm.blob.AbstractTestCloudBinaryManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.blob.BlobInfo;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -245,6 +249,22 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
         Set<String> res = listAllObjects();
         assertTrue(res.contains(name1));
         assertTrue(res.contains(name2));
+    }
+
+    @Test
+    public void testRemoteURI() throws Exception {
+        Blob blob = Blobs.createBlob(CONTENT);
+        Binary binary = binaryManager.getBinary(blob);
+        BlobInfo blobInfo = new BlobInfo();;
+        blobInfo.digest = binary.getDigest();
+        blobInfo.length = Long.valueOf(blob.getLength());
+        blobInfo.filename = "caf\u00e9 corner.txt";
+        blobInfo.mimeType = "text/plain";
+        ManagedBlob mb = new SimpleManagedBlob(blobInfo );
+        URI uri = binaryManager.getRemoteUri(binary.getDigest(), mb, null);
+        String string = uri.toASCIIString();
+        // %-escaped version
+        assertTrue(string, string.contains("filename*%3DUTF-8%27%27caf%C3%A9%20corner.txt"));
     }
 
 }
