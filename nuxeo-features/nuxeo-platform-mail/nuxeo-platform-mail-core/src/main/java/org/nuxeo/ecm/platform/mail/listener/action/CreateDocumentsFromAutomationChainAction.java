@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.platform.mail.listener.action;
 
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.ATTACHMENTS_KEY;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CONTENT_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PARENT_PATH_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SUBJECT_KEY;
 
@@ -42,7 +43,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
-import org.nuxeo.ecm.platform.mail.listener.action.AbstractMailAction;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -101,6 +101,7 @@ public class CreateDocumentsFromAutomationChainAction extends AbstractMailAction
             List<FileBlob> attachments = (List<FileBlob>) context.get(ATTACHMENTS_KEY);
             if (attachments == null) {
                 automationCtx.put(ATTACHMENTS_KEY, Collections.EMPTY_LIST);
+                automationCtx.put(CONTENT_KEY, Collections.EMPTY_MAP);
             }
 
             try {

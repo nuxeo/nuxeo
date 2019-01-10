@@ -88,6 +88,10 @@ public final class MailCoreConstants {
 
     public static final String ATTACHMENTS_KEY = "attachments";
 
+    public static final String CONTENT_KEY = "blobContent";
+
+    public static final String CONTENT_ID = "cid:";
+
     public static final String TEXT_KEY = "text";
 
     public static final String MESSAGE_ID_KEY = "messageId";
