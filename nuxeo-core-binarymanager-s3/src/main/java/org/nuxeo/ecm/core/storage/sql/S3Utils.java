@@ -30,6 +30,7 @@ import org.nuxeo.runtime.aws.NuxeoAWSCredentialsProvider;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
@@ -167,14 +168,19 @@ public class S3Utils {
      *
      * @param accessKeyId the AWS access key id
      * @param secretKey the secret key
-     * @param sessionToken the session token
+     * @param sessionToken the session token (optional)
      * @since 10.10
      */
     public static AWSCredentialsProvider getAWSCredentialsProvider(String accessKeyId, String secretKey,
             String sessionToken) {
         if (isNotBlank(accessKeyId) && isNotBlank(secretKey)) {
             // explicit values from service-specific Nuxeo configuration
-            return new AWSStaticCredentialsProvider(new BasicSessionCredentials(accessKeyId, secretKey, sessionToken));
+            if (isNotBlank(sessionToken)) {
+                return new AWSStaticCredentialsProvider(
+                        new BasicSessionCredentials(accessKeyId, secretKey, sessionToken));
+            } else {
+                return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKeyId, secretKey));
+            }
         }
         return NuxeoAWSCredentialsProvider.getInstance();
     }
