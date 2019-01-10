@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -2103,6 +2104,36 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node = session.saveDocument(node);
         GraphNode graphNode = node.getAdapter(GraphNode.class);
         assertTrue(graphNode.getTaskButtons().get(0).getValidate());
+    }
+
+    /**
+     * @since 10.10
+     */
+    @Test
+    public void testGlobalVariableSecurity() {
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
+        routeDoc.addFacet("FacetRoute1");
+        routeDoc = session.saveDocument(routeDoc);
+        DocumentModel nodeDoc = createNode(routeDoc, "node2", session);
+        nodeDoc.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode2");
+        nodeDoc.addFacet("FacetNode2");
+        nodeDoc.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        // task properties
+        nodeDoc.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        nodeDoc.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
+        session.saveDocument(nodeDoc);
+        GraphNode node = nodeDoc.getAdapter(GraphNode.class);
+        Map<String, Serializable> m = new HashMap<String, Serializable>();
+        m.put("notAllowed", "truc");
+        Map<String, Object> vars = new HashMap<String, Object>();
+        vars.put(Constants.VAR_WORKFLOW, m);
+        vars.put(Constants.VAR_WORKFLOW_NODE, m);
+        try {
+            node.setAllVariables(vars, false);
+            fail("Global workflow variable assignement must be forbidden.");
+        } catch (DocumentRouteException e) {
+            // Expected
+        }
     }
 
 }
