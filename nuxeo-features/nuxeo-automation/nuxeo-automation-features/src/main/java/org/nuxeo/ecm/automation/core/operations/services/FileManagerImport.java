@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 
 /**
@@ -73,8 +74,12 @@ public class FileManagerImport {
     @OperationMethod
     public DocumentModel run(Blob blob) throws OperationException, IOException {
         DocumentModel currentDocument = getCurrentDocument();
-        return fileManager.createDocumentFromBlob(session, blob, currentDocument.getPathAsString(), overwite,
-                blob.getFilename(), noMimeTypeCheck);
+        String path = currentDocument.getPathAsString();
+        FileImporterContext fileCreationContext = FileImporterContext.builder(session, blob, path)
+                                                                     .overwrite(overwite)
+                                                                     .mimeTypeCheck(!noMimeTypeCheck)
+                                                                     .build();
+        return fileManager.createOrUpdateDocument(fileCreationContext);
     }
 
     @OperationMethod

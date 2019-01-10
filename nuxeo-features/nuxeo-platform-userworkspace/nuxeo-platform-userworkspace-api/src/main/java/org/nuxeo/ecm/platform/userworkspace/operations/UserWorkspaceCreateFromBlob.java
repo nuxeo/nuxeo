@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 
@@ -70,9 +71,9 @@ public class UserWorkspaceCreateFromBlob {
     @OperationMethod
     public DocumentModel run(Blob blob) throws OperationException, IOException {
         DocumentModel userws = userWorkspace.getCurrentUserPersonalWorkspace(session, getCurrentDocument());
-        DocumentModel doc = fileManager.createDocumentFromBlob(session, blob, userws.getPathAsString(), false,
-                blob.getFilename());
-        return doc;
+        FileImporterContext fileImporterContext = FileImporterContext.builder(session, blob, userws.getPathAsString())
+                                                                     .build();
+        return fileManager.createOrUpdateDocument(fileImporterContext);
     }
 
     @OperationMethod

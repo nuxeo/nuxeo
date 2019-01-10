@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.content.template.service.ACEDescriptor;
 import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -150,7 +151,10 @@ public class ImportBasedFactory extends BaseContentFactory {
         } else {
             Blob fb = Blobs.createBlob(file);
             fb.setFilename(file.getName());
-            getFileManagerService().createDocumentFromBlob(session, fb, parentPath, overwrite, fb.getFilename());
+            FileImporterContext context = FileImporterContext.builder(session, fb, parentPath)
+                                                             .overwrite(overwrite)
+                                                             .build();
+            getFileManagerService().createOrUpdateDocument(context);
         }
     }
 

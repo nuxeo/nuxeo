@@ -29,6 +29,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
@@ -118,9 +119,19 @@ public interface FileImporter extends Serializable, Comparable<FileImporter> {
      * @param path the path of current document
      * @param overwrite a boolean deciding whether to create or update if we find a document with the same fileName
      * @param filename the filename of the File
+     * @deprecated since 10.10. Use {@link #createOrUpdate(FileImporterContext)} instead.
      */
+    @Deprecated
     DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite, String filename,
             TypeManager typeService) throws IOException;
+
+    /**
+     * Returns a created or updated document based on the given {@code context}.
+     *
+     * @see FileImporterContext
+     * @since 10.10
+     */
+    DocumentModel createOrUpdate(FileImporterContext fileImporterContext) throws IOException;
 
     boolean isEnabled();
 
@@ -137,8 +148,8 @@ public interface FileImporter extends Serializable, Comparable<FileImporter> {
     void setOrder(Integer order);
 
     /**
-     * Returns {@code true} if {@link #create(CoreSession, Blob, String, boolean, String, TypeManager)} creates more
-     * than one document for the given blob, {@code false} otherwise.
+     * Returns {@code true} if {@link #createOrUpdate(FileImporterContext)} creates more than one document for the given
+     * blob, {@code false} otherwise.
      *
      * @since 10.3
      */

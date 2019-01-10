@@ -49,7 +49,9 @@ public interface FileManager {
      * @param overwrite whether to overwrite an existing file with the same title or not
      * @param fullName the fullname that contains the filename
      * @return the created Document
+     * @deprecated since 10.10. Use {@link #createOrUpdateDocument(FileImporterContext)} instead.
      */
+    @Deprecated
     DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
             String fullName) throws IOException;
 
@@ -63,7 +65,9 @@ public interface FileManager {
      * @param noMimeTypeCheck true if the blob's mime-type doesn't have to be checked against fullName
      * @return the created Document
      * @since 8.10
+     * @deprecated since 10.10. Use {@link #createOrUpdateDocument(FileImporterContext)} instead.
      */
+    @Deprecated
     DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
             String fullName, boolean noMimeTypeCheck) throws IOException;
 
@@ -79,9 +83,20 @@ public interface FileManager {
      *            when selecting the importer
      * @return the created Document
      * @since 10.3
+     * @deprecated since 10.10. Use {@link #createOrUpdateDocument(FileImporterContext)} instead.
      */
+    @Deprecated
     DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
             String fullName, boolean noMimeTypeCheck, boolean excludeOneToMany) throws IOException;
+
+    /**
+     * Returns a created or updated document based on the given {@code context}.
+     *
+     * @return the created or updated document
+     * @see FileImporterContext
+     * @since 10.10
+     */
+    DocumentModel createOrUpdateDocument(FileImporterContext context) throws IOException;
 
     /**
      * Just applies the same actions as creation but does not changes the doc type.
@@ -90,7 +105,9 @@ public interface FileManager {
      * @param path the path to the file to update
      * @param fullName the full name that contains the filename
      * @return the updated Document
+     * @deprecated since 10.10. Not used.
      */
+    @Deprecated
     DocumentModel updateDocumentFromBlob(CoreSession documentManager, Blob input, String path, String fullName);
 
     /**
