@@ -20,7 +20,6 @@ package org.nuxeo.runtime.server.tomcat;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.util.Map;
 import java.util.Map.Entry;
 
