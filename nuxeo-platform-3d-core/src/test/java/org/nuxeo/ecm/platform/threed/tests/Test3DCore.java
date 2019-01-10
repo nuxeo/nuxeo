@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -93,7 +94,10 @@ public class Test3DCore {
         }
         assertNotNull(file);
         Blob blob = new FileBlob(file);
-        DocumentModel doc = fileManager.createDocumentFromBlob(session, blob, "/", true, path);
+        FileImporterContext context = FileImporterContext.builder(session, blob, "/")
+                                                         .overwrite(true)
+                                                         .build();
+        DocumentModel doc = fileManager.createOrUpdateDocument(context);
         assertNotNull(doc);
         assertEquals(doc.getType(), THREED_TYPE);
         assertTrue(doc.hasFacet(THREED_FACET));
