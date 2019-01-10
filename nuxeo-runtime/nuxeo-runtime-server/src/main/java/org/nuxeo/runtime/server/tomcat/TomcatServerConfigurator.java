@@ -131,7 +131,6 @@ public class TomcatServerConfigurator implements ServerConfigurator {
         for (FilterMappingDescriptor fmd : descriptor.getFilterMappings()) {
             FilterMap filterMap = new FilterMap();
             filterMap.setFilterName(name);
-            filterMap.addServletName("*");
             filterMap.addURLPatternDecoded(fmd.getUrlPattern());
             for (String dispatch : fmd.getDispatchers()) {
                 filterMap.setDispatcher(dispatch);
