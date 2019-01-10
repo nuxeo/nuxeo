@@ -28,8 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -85,7 +85,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     public static final int MAX = 15;
 
-    private static final Log log = LogFactory.getLog(FileManagerService.class);
+    private static final Logger log = LogManager.getLogger(FileManagerService.class);
 
     private final Map<String, FileImporter> fileImporters;
 
@@ -234,7 +234,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         docModel = documentManager.createDocument(docModel);
         documentManager.save();
 
-        log.debug("Created container: " + docModel.getName() + " with type " + containerTypeName);
+        log.debug("Created container: {} with type {}", docModel::getName, () -> containerTypeName);
         return docModel;
     }
 
@@ -291,7 +291,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             documentManager.saveDocument(doc);
             documentManager.save();
 
-            log.debug("Updated the document: " + doc.getName());
+            log.debug("Updated the document: {}", doc::getName);
         }
         return doc;
     }
@@ -334,8 +334,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                         try {
                             defaultVersioningOption = VersioningOption.valueOf(defver.toUpperCase(Locale.ENGLISH));
                         } catch (IllegalArgumentException e) {
-                            log.warn(String.format("Illegal versioning option: %s, using %s instead", defver,
-                                    DEF_VERSIONING_OPTION));
+                            log.warn("Illegal versioning option: {}, using {} instead", defver, DEF_VERSIONING_OPTION);
                             defaultVersioningOption = DEF_VERSIONING_OPTION;
                         }
                     }
@@ -346,7 +345,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                 }
             }
         } else {
-            log.warn(String.format("Unknown contribution %s: ignored", extension.getExtensionPoint()));
+            log.warn("Unknown contribution {}: ignored", extension::getExtensionPoint);
         }
     }
 
@@ -372,7 +371,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             defaultVersioningOption = DEF_VERSIONING_OPTION;
             versioningAfterAdd = DEF_VERSIONING_AFTER_ADD;
         } else {
-            log.warn(String.format("Unknown contribution %s: ignored", extension.getExtensionPoint()));
+            log.warn("Unknown contribution {}: ignored", extension::getExtensionPoint);
         }
     }
 
@@ -402,7 +401,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
         String className = pluginExtension.getClassName();
         if (fileImporters.containsKey(name)) {
-            log.info("Overriding file importer plugin " + name);
+            log.info("Overriding file importer plugin {}", name);
             FileImporter oldPlugin = fileImporters.get(name);
             FileImporter newPlugin;
             try {
@@ -417,7 +416,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                 fillImporterWithDescriptor(newPlugin, pluginExtension);
             }
             fileImporters.put(name, newPlugin);
-            log.info("Registered file importer " + name);
+            log.info("Registered file importer {}", name);
         } else if (className != null) {
             FileImporter plugin;
             try {
@@ -427,10 +426,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             }
             fillImporterWithDescriptor(plugin, pluginExtension);
             fileImporters.put(name, plugin);
-            log.info("Registered file importer " + name);
+            log.info("Registered file importer {}", name);
         } else {
-            log.info(
-                    "Unable to register file importer " + name + ", className is null or plugin is not yet registered");
+            log.info("Unable to register file importer {}, className is null or plugin is not yet registered", name);
         }
     }
 
@@ -469,7 +467,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     private void unregisterFileImporter(FileImporterDescriptor pluginExtension) {
         String name = pluginExtension.getName();
         fileImporters.remove(name);
-        log.info("unregistered file importer: " + name);
+        log.info("unregistered file importer: {}", name);
     }
 
     private void registerFolderImporter(FolderImporterDescriptor folderImporterDescriptor, Extension extension) {
@@ -486,7 +484,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         folderImporter.setName(name);
         folderImporter.setFileManagerService(this);
         folderImporters.add(folderImporter);
-        log.info("registered folder importer: " + name);
+        log.info("registered folder importer: {}", name);
     }
 
     private void unregisterFolderImporter(FolderImporterDescriptor folderImporterDescriptor) {
@@ -500,7 +498,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         if (folderImporterToRemove != null) {
             folderImporters.remove(folderImporterToRemove);
         }
-        log.info("unregistered folder importer: " + name);
+        log.info("unregistered folder importer: {}", name);
     }
 
     private void registerCreationContainerListProvider(CreationContainerListProviderDescriptor ccListProviderDescriptor,
@@ -524,7 +522,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         }
         // add the new provider at the beginning of the list
         creationContainerListProviders.add(0, provider);
-        log.info("registered creationContaineterList provider: " + name);
+        log.info("registered creationContaineterList provider: {}", name);
     }
 
     private void unregisterCreationContainerListProvider(
@@ -540,7 +538,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         if (providerToRemove != null) {
             creationContainerListProviders.remove(providerToRemove);
         }
-        log.info("unregistered creationContaineterList provider: " + name);
+        log.info("unregistered creationContaineterList provider: {}", name);
     }
 
     @Override
