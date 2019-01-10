@@ -66,6 +66,7 @@ import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -699,8 +700,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         final String file = modelToImport.getFile();
         DocumentModel doc;
         try {
-            doc = getFileManager().createDocumentFromBlob(session, blob,
-                    persister.getParentFolderForDocumentRouteModels(session).getPathAsString(), true, file);
+            FileImporterContext context = FileImporterContext.builder(session, blob,
+                    persister.getParentFolderForDocumentRouteModels(session).getPathAsString())
+                                                             .overwrite(true)
+                                                             .fileName(file)
+                                                             .build();
+            doc = getFileManager().createOrUpdateDocument(context);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }

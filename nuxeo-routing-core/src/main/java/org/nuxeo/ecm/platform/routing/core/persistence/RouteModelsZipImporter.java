@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.zip.ZipFile;
 
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,8 +35,8 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.service.extension.ExportedZipImporter;
-import org.nuxeo.ecm.platform.types.TypeManager;
 
 /**
  * Imports a route document from a zip archive using the IO core service . Existing route model with the same path as
@@ -50,9 +49,8 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public DocumentModel create(CoreSession session, Blob content, String path, boolean overwrite, String filename,
-            TypeManager typeService) throws IOException {
-        try (CloseableFile source = content.getCloseableFile()) {
+    public DocumentModel createOrUpdate(FileImporterContext context) throws IOException {
+        try (CloseableFile source = context.getBlob().getCloseableFile()) {
             ZipFile zip = getArchiveFileIfValid(source.getFile());
             if (zip == null) {
                 return null;
@@ -62,11 +60,13 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
             boolean overWrite = false;
             DocumentReader reader = new NuxeoArchiveReader(source.getFile());
             ExportedDocument root = reader.read();
-            PathRef rootRef = new PathRef(path, root.getPath().toString());
+            String parentPath = context.getParentPath();
+            PathRef rootRef = new PathRef(parentPath, root.getPath().toString());
             ACP currentRouteModelACP = null;
+            CoreSession session = context.getSession();
             if (session.exists(rootRef)) {
                 DocumentModel target = session.getDocument(rootRef);
-                if (target.getPath().removeLastSegments(1).equals(new Path(path))) {
+                if (target.getPath().removeLastSegments(1).equals(new Path(parentPath))) {
                     overWrite = true;
                     // clean up existing route before import
                     DocumentModel routeModel = session.getDocument(rootRef);
@@ -75,16 +75,16 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
                 }
             }
 
-            DocumentWriter writer = new DocumentModelWriter(session, path, 10);
+            DocumentWriter writer = new DocumentModelWriter(session, parentPath, 10);
             reader.close();
             reader = new NuxeoArchiveReader(source.getFile());
 
             DocumentRef resultingRef;
-            if (overwrite && overWrite) {
+            if (context.isOverwrite() && overWrite) {
                 resultingRef = rootRef;
             } else {
                 String rootName = root.getPath().lastSegment();
-                resultingRef = new PathRef(path, rootName);
+                resultingRef = new PathRef(parentPath, rootName);
             }
 
             try {
@@ -98,10 +98,11 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
             }
 
             DocumentModel newRouteModel = session.getDocument(resultingRef);
-            if (currentRouteModelACP != null && overwrite && overWrite) {
+            if (currentRouteModelACP != null && context.isOverwrite() && overWrite) {
                 newRouteModel.setACP(currentRouteModelACP, true);
             }
             return session.saveDocument(newRouteModel);
         }
     }
+
 }
