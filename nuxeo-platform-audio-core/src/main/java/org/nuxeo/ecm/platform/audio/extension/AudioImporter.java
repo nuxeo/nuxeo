@@ -19,13 +19,16 @@
 package org.nuxeo.ecm.platform.audio.extension;
 
 import java.io.IOException;
+import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.Type;
@@ -50,27 +53,30 @@ public class AudioImporter extends AbstractFileImporter {
     public static final String AUDIO_TYPE = "Audio";
 
     @Override
-    public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
-            String fullname, TypeManager typeService) throws IOException {
+    public DocumentModel createOrUpdate(FileImporterContext context) throws IOException {
+        CoreSession session = context.getSession();
+        Blob blob = context.getBlob();
 
-        String filename = FileManagerUtils.fetchFileName(fullname);
-        content.setFilename(filename);
+        String filename = FileManagerUtils.fetchFileName(
+                StringUtils.defaultIfBlank(context.getFileName(), blob.getFilename()));
+        blob.setFilename(filename);
 
         String title = FileManagerUtils.fetchTitle(filename);
 
         // Check to see if an existing Document with the same title exists.
-        DocumentModel docModel = FileManagerUtils.getExistingDocByTitle(documentManager, path, title);
+        String parentPath = context.getParentPath();
+        DocumentModel docModel = FileManagerUtils.getExistingDocByTitle(session, parentPath, title);
 
         // if overwrite flag is true and the file already exists, overwrite it
-        if (overwrite && (docModel != null)) {
+        if (context.isOverwrite() && (docModel != null)) {
 
             // update known attributes, format is: schema, attribute, value
-            docModel.setProperty("file", "content", content);
-            docModel.setProperty("dublincore", "title", title);
+            docModel.setPropertyValue("file:content", (Serializable) blob);
+            docModel.setPropertyValue("dc:title", title);
 
             // now save the uploaded file as another new version
             checkIn(docModel);
-            docModel = documentManager.saveDocument(docModel);
+            docModel = session.saveDocument(docModel);
 
         } else {
             PathSegmentService pss = Framework.getService(PathSegmentService.class);
@@ -80,19 +86,19 @@ public class AudioImporter extends AbstractFileImporter {
                 docType = AUDIO_TYPE;
             }
 
-            docModel = documentManager.createDocumentModel(docType);
+            docModel = session.createDocumentModel(docType);
             // update known attributes, format is: schema, attribute, value
-            docModel.setProperty("dublincore", "title", title);
-            docModel.setProperty("file", "content", content);
+            docModel.setPropertyValue("file:content", (Serializable) blob);
+            docModel.setPropertyValue("dc:title", title);
 
             // updating icon
-            Type type = typeService.getType(docType);
+            Type type = Framework.getService(TypeManager.class).getType(docType);
             if (type != null) {
                 String iconPath = type.getIcon();
                 docModel.setProperty("common", "icon", iconPath);
             }
-            docModel.setPathInfo(path, pss.generatePathSegment(docModel));
-            docModel = documentManager.createDocument(docModel);
+            docModel.setPathInfo(parentPath, pss.generatePathSegment(docModel));
+            docModel = session.createDocument(docModel);
         }
         return docModel;
     }

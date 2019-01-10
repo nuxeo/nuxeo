@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -123,8 +124,10 @@ public class TestAudioImporter {
         assertNotNull(session);
         assertNotNull(fileManagerService);
 
-        DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, rootPath, true,
-                "test-data/sample.wav");
+        FileImporterContext context = FileImporterContext.builder(session, blob, rootPath)
+                                                         .overwrite(true)
+                                                         .build();
+        DocumentModel docModel = fileManagerService.createOrUpdateDocument(context);
 
         assertNotNull(docModel);
         DocumentRef ref = docModel.getRef();
