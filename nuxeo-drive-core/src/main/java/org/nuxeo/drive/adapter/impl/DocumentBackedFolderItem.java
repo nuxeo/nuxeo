@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -456,8 +457,11 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     public FileItem createFile(Blob blob, boolean overwrite) {
         String fileName = blob.getFilename();
         try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            DocumentModel file = getFileManager().createDocumentFromBlob(session, blob, docPath, overwrite, fileName,
-                    false, true);
+            FileImporterContext context = FileImporterContext.builder(session, blob, docPath)
+                                                             .overwrite(overwrite)
+                                                             .excludeOneToMany(true)
+                                                             .build();
+            DocumentModel file = getFileManager().createOrUpdateDocument(context);
             if (file == null) {
                 throw new NuxeoException(String.format(
                         "Cannot create file '%s' as a child of doc %s. Probably because there are no file importers registered, please check the contributions to the <extension target=\"org.nuxeo.ecm.platform.filemanager.service.FileManagerService\" point=\"plugins\"> extension point.",

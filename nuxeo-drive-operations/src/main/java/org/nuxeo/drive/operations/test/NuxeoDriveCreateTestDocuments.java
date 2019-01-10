@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -66,7 +67,9 @@ public class NuxeoDriveCreateTestDocuments {
             String name = String.format(namePattern, i);
             Blob content = new StringBlob(String.format(contentPattern, i));
             content.setFilename(name);
-            fileManager.createDocumentFromBlob(session, content, parent.getPathAsString(), false, name);
+            FileImporterContext context = FileImporterContext.builder(session, content, parent.getPathAsString())
+                                                             .build();
+            fileManager.createOrUpdateDocument(context);
             if (delay > 0) {
                 Thread.sleep(delay);
             }
