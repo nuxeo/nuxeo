@@ -764,7 +764,16 @@ public class NuxeoAuthenticationFilter implements Filter {
         // already in the request params
         if (isStartPageValid(requestPage)) {
             if (!requestPageInParams) {
-                session.setAttribute(START_PAGE_SAVE_KEY, requestPage);
+                String uri = URIUtils.getURIPath(requestPage);
+                // strip force anonymous login parameter if it exists
+                if (requestPage.contains("?")) {
+                    Map<String, String> params = URIUtils.getRequestParameters(requestPage);
+                    params.remove(FORCE_ANONYMOUS_LOGIN);
+                    if (!params.isEmpty()) {
+                        uri += '?' + URIUtils.getURIQuery(params);
+                    }
+                }
+                session.setAttribute(START_PAGE_SAVE_KEY, uri);
             }
             return true;
         }
