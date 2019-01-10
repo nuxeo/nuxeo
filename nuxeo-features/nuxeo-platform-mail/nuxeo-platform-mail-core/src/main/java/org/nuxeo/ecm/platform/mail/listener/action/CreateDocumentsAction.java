@@ -117,14 +117,9 @@ public class CreateDocumentsAction extends AbstractMailAction {
             documentModel.setPropertyValue("files:files", files);
         }
         documentModel.setPropertyValue(CC_RECIPIENTS_PROPERTY_NAME, ccRecipients);
-        
+
+        documentModel.setPropertyValue(HTML_TEXT_PROPERTY_NAME, text);
         if (text != null && !text.isEmpty()) {
-            if (contentKeys != null && !contentKeys.isEmpty()) {
-                for (Map.Entry<String, String> content: contentKeys.entrySet()) {
-                    text = text.replaceAll(CONTENT_ID + content.getKey(), content.getValue());
-                }
-            }
-            documentModel.setPropertyValue(HTML_TEXT_PROPERTY_NAME, text);
             Blob sb = Blobs.createBlob(text, "text/html");
             BlobHolder simpleBlobHolder = new SimpleBlobHolder(sb);
             ConversionService conversionService = Framework.getService(ConversionService.class);
@@ -140,7 +135,8 @@ public class CreateDocumentsAction extends AbstractMailAction {
             documentModel.setPropertyValue(TEXT_PROPERTY_NAME, simpleText);
         }
 
-        UnrestrictedCreateDocument unrestrictedCreateDocument = new UnrestrictedCreateDocument(documentModel, session);
+        UnrestrictedCreateDocument unrestrictedCreateDocument = new UnrestrictedCreateDocument(documentModel, session,
+                contentKeys);
         unrestrictedCreateDocument.runUnrestricted();
 
         return true;
@@ -151,14 +147,36 @@ public class CreateDocumentsAction extends AbstractMailAction {
 
         private DocumentModel document;
 
-        protected UnrestrictedCreateDocument(DocumentModel document, CoreSession session) {
+        private Map<String, String> fileNames;
+
+        protected UnrestrictedCreateDocument(DocumentModel document, CoreSession session, Map<String, String> names) {
             super(session);
             this.document = document;
+            this.fileNames = names;
         }
 
         @Override
         public void run() {
             document = session.createDocument(document);
+
+            // Replace the content references with links to the file blobs
+            List<Map<String, Serializable>> files =
+                    (List<Map<String, Serializable>>) document.getPropertyValue("files:files");
+            if (files != null && !files.isEmpty() && !fileNames.isEmpty()) {
+                String html = (String) document.getPropertyValue(HTML_TEXT_PROPERTY_NAME);
+                if (html != null && !html.isEmpty()) {
+                    for (int i = 0; i < files.size(); i++) {
+                        Blob blob = (Blob) files.get(i).get("file");
+                        String key = fileNames.get(blob.getFilename());
+                        if (key != null) {
+                            html = html.replace(CONTENT_ID + key,
+                                    String.format("/nuxeo/nxfile/default/%s/files:files/%s/file/%s", document.getId(),
+                                            i, blob.getFilename()));
+                        }
+                    }
+                    document.setPropertyValue(HTML_TEXT_PROPERTY_NAME, html);
+                }
+            }
             document = session.saveDocument(document);
             session.save();
         }

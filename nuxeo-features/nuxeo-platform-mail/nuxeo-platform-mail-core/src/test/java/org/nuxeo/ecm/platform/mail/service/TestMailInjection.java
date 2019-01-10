@@ -121,7 +121,7 @@ public class TestMailInjection {
         assertEquals(1, children.size());
         DocumentModel mail = children.get(0);
         String html = (String) mail.getPropertyValue(HTML_TEXT_PROPERTY_NAME);
-        assertTrue(html.contains("<img src=\"bmkkflcpoiogbdgk.png"));
+        assertTrue(html.contains(String.format("/nuxeo/nxfile/default/%s/files:files/0/file/bmkkflcpoiogbdgk.png", mail.getId())));
         Blob imageBlob = (Blob) mail.getPropertyValue("files/0/file");
         assertEquals("bmkkflcpoiogbdgk.png", imageBlob.getFilename());
 
@@ -130,8 +130,8 @@ public class TestMailInjection {
         assertEquals(1, children.size());
         mail = children.get(0);
         html = (String) mail.getPropertyValue(HTML_TEXT_PROPERTY_NAME);
-        assertTrue(html.contains("background.gif"));
-        assertTrue(html.contains("logo.gif"));
+        assertTrue(html.contains(String.format("/nuxeo/nxfile/default/%s/files:files/0/file/logo.gif", mail.getId())));
+        assertTrue(html.contains(String.format("/nuxeo/nxfile/default/%s/files:files/1/file/background.gif", mail.getId())));
     }
 
     private void injectEmail(String filePath, String parentPath) throws Exception {
