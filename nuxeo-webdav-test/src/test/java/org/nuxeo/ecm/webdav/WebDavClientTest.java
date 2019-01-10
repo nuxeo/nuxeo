@@ -432,6 +432,7 @@ public class WebDavClientTest extends AbstractServerTest {
         assertEquals(HttpStatus.SC_CREATED, status);
         PathRef newRef = new PathRef("/workspaces/workspace/" + newName);
         session.save(); // process invalidations
+        transactionalFeature.nextTransaction(); // needed by DBS
         assertFalse(session.exists(ref)); // not here anymore, was renamed
         assertTrue(session.exists(newRef));
         doc = session.getDocument(newRef);
