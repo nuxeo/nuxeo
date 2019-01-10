@@ -74,6 +74,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode {
 
+    public static final String ENFORCE_GLOBAL_WF_VAR_ASSIGN_CHECK = "nuxeo.routing.enforceGlobalVariablesAssignementCheck";
+
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(GraphNodeImpl.class);
@@ -341,13 +343,15 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         final SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         if (map.get(Constants.VAR_WORKFLOW) != null) {
             final Schema transientSchema = schemaManager.getSchema(transientSchemaName);
+            boolean isEnforce = Boolean.TRUE.equals(Boolean.valueOf(Framework.getProperty(ENFORCE_GLOBAL_WF_VAR_ASSIGN_CHECK)));
             for (Entry<String, Serializable> es : ((Map<String, Serializable>) map.get(Constants.VAR_WORKFLOW)).entrySet()) {
                 String key = es.getKey();
                 Serializable value = es.getValue();
                 if (graphVariables.containsKey(key)) {
                     Serializable oldValue = graphVariables.get(key);
                     if (!equality(value, oldValue)) {
-                        if (!allowGlobalVariablesAssignement && transientSchema != null && !transientSchema.hasField(key)) {
+                        if (!allowGlobalVariablesAssignement
+                                && (isEnforce && (transientSchema == null || !transientSchema.hasField(key)))) {
                             throw new DocumentRouteException(String.format(
                                     "You don't have the permission to set the workflow variable %s", key));
                         }
