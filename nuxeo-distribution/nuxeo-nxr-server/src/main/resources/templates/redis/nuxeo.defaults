@@ -31,4 +31,5 @@ nuxeo.pubsub.provider=redis
 nuxeo.keyvalue.provider=redis
 nuxeo.work.queuing=redis
 nuxeo.lock.manager=redis
-nuxeo.transientstore.provider=redis
+# by default use the KeyValueBlobTransientStore from the common template
+#nuxeo.transientstore.provider=redis
