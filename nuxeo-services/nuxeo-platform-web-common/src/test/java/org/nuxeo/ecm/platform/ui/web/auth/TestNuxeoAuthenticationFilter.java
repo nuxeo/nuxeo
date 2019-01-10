@@ -43,6 +43,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginForm.DUMMY_AUTH_
 import static org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginSSO.DUMMY_SSO_TICKET;
 import static org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginToken.DUMMY_AUTH_TOKEN_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.CALLBACK_URL_PARAMETER;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS_LOGIN;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
@@ -515,6 +516,76 @@ public class TestNuxeoAuthenticationFilter {
         // redirecting to /login
         verify(response).setStatus(SC_UNAUTHORIZED);
         verify(response).addHeader(eq("Location"), eq("http://localhost:8080/nuxeo/" + LOGIN_PAGE));
+    }
+
+    /**
+     * Basic anonymous login.
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-loginmodule.xml")
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-anonymous.xml")
+    public void testAuthPluginAnonymous() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession session = mock(HttpSession.class);
+        Map<String, Object> sessionAttributes = mockSessionAttributes(session);
+        when(request.getSession(anyBoolean())).thenReturn(session);
+        mockRequestURI(request, "/my/page", "", "");
+
+        filter.doFilter(request, response, chain);
+
+        // chain called as anonymous
+        assertTrue(chain.called);
+        assertEquals(DUMMY_ANONYMOUS_LOGIN, chain.principal.getName());
+
+        // login success event
+        checkEvents(EVENT_LOGIN_SUCCESS);
+
+        // anonymous auth cached in session
+        checkCachedUser(sessionAttributes, DUMMY_ANONYMOUS_LOGIN);
+    }
+
+    /**
+     * Forced authentication for anonymous user. Results in redirect to login page.
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-loginmodule.xml")
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-anonymous.xml")
+    public void testAuthForceAnonymousLogin() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession session = mock(HttpSession.class);
+        Map<String, Object> sessionAttributes = mockSessionAttributes(session);
+        when(request.getSession(anyBoolean())).thenReturn(session);
+        // mystart/ is defined as a start url in the XML config
+        mockRequestURI(request, "/mystart/foo", "", FORCE_ANONYMOUS_LOGIN + "=true");
+        when(request.getParameter(eq(FORCE_ANONYMOUS_LOGIN))).thenReturn("true");
+        // record output
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        @SuppressWarnings("resource")
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(out, UTF_8), true);
+        when(response.getWriter()).thenReturn(writer);
+
+        filter.doFilter(request, response, chain);
+
+        // chain not called, as we redirect instead
+        assertFalse(chain.called);
+
+        // no auth
+        checkNoCachedUser(sessionAttributes);
+
+        // no login event
+        checkNoEvents();
+
+        // a redirect is done through an HTML page containing JavaScript code
+        verify(response).setContentType(eq("text/html;charset=UTF-8"));
+        // check that the redirect is to our dummy login page (defined in the auth plugin)
+        writer.flush();
+        String entity = out.toString(UTF_8);
+
+        // forceAnonymousLogin is removed
+        assertTrue(entity, entity.contains(
+                "window.location = 'http://localhost:8080/nuxeo/dummy_login.jsp?requestedUrl=mystart%2Ffoo';"));
     }
 
     /**
