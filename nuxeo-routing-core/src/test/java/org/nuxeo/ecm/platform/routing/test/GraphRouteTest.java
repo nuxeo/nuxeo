@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -59,10 +60,12 @@ import org.nuxeo.ecm.platform.routing.api.operation.BulkRestartWorkflow;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.TaskInfo;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNodeImpl;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -2034,6 +2037,51 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             assertFalse(adminSession.hasPermission(user1, docs.get(0).getRef(), "Write"));
             assertFalse(adminSession.hasPermission(user1, docs.get(1).getRef(), "Write"));
         }
+    }
+
+    /**
+     * @since 10.10
+     */
+    @Test
+    public void testGlobalVariableSecurityEnabled() {
+        Framework.getProperties().setProperty(GraphNodeImpl.ENFORCE_GLOBAL_WF_VAR_ASSIGN_CHECK, "true");
+        try {
+            testGlobalVariableSecurity();
+            fail("Global workflow variable assignement must be forbidden.");
+        } catch (DocumentRouteException e) {
+            // Expected
+        } finally {
+            Framework.getProperties().remove(GraphNodeImpl.ENFORCE_GLOBAL_WF_VAR_ASSIGN_CHECK);
+        }
+    }
+
+    /**
+     * @since 10.10
+     */
+    @Test
+    public void testGlobalVariableSecurityDisabled() {
+        testGlobalVariableSecurity();
+    }
+
+    private void testGlobalVariableSecurity() {
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
+        routeDoc.addFacet("FacetRoute1");
+        routeDoc = session.saveDocument(routeDoc);
+        DocumentModel nodeDoc = createNode(routeDoc, "node2", session);
+        nodeDoc.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode2");
+        nodeDoc.addFacet("FacetNode2");
+        nodeDoc.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        // task properties
+        nodeDoc.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        nodeDoc.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
+        session.saveDocument(nodeDoc);
+        GraphNode node = nodeDoc.getAdapter(GraphNode.class);
+        Map<String, Serializable> m = new HashMap<String, Serializable>();
+        m.put("notAllowed", "truc");
+        Map<String, Object> vars = new HashMap<String, Object>();
+        vars.put(Constants.VAR_WORKFLOW, m);
+        vars.put(Constants.VAR_WORKFLOW_NODE, m);
+        node.setAllVariables(vars, false);
     }
 
 }
