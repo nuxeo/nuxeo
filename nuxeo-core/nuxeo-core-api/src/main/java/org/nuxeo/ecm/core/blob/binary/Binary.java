@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.runtime.api.Framework;
@@ -38,6 +40,8 @@ import org.nuxeo.runtime.api.Framework;
 public class Binary implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Logger log = LogManager.getLogger(Binary.class);
 
     protected final String digest;
 
@@ -125,7 +129,12 @@ public class Binary implements Serializable {
     protected File recomputeFile() {
         BlobManager bm = Framework.getService(BlobManager.class);
         BlobProvider bp = bm.getBlobProvider(blobProviderId);
-        return bp.getBinaryManager().getBinary(digest).file;
+        Binary binary = bp.getBinaryManager().getBinary(digest);
+        if (binary == null) {
+            log.warn("Cannot fetch binary with digest " + digest);
+            return null;
+        }
+        return binary.file;
     }
 
 }
