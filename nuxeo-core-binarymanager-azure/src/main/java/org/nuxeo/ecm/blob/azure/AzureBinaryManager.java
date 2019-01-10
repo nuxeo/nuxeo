@@ -35,6 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
@@ -134,6 +135,11 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
         } catch (URISyntaxException | InvalidKeyException | StorageException e) {
             throw new IOException(e);
         }
+    }
+
+    protected String getContentDispositionHeader(Blob blob, HttpServletRequest servletRequest) {
+        // Azure will do the %-encoding itself, pass it a String directly
+        return "attachment; filename*=UTF-8''" + blob.getFilename();
     }
 
     protected void removeBinary(String digest) {
