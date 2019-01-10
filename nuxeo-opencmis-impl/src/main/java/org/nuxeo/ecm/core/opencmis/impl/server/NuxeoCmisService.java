@@ -153,15 +153,16 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.server.versioning.CMISVersioningFilter;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
-import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
+import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
@@ -537,7 +538,8 @@ public class NuxeoCmisService extends AbstractCmisService
         }
 
         try {
-            return fileManager.createDocumentFromBlob(coreSession, blob, path, false, name);
+            FileImporterContext context = FileImporterContext.builder(coreSession, blob, path).fileName(name).build();
+            return fileManager.createOrUpdateDocument(context);
         } catch (IOException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
@@ -950,7 +952,8 @@ public class NuxeoCmisService extends AbstractCmisService
 
         Calendar modificationDate = rendition.getModificationDate();
         GregorianCalendar lastModified = (modificationDate instanceof GregorianCalendar)
-                ? (GregorianCalendar) modificationDate : null;
+                ? (GregorianCalendar) modificationDate
+                : null;
         HttpServletRequest request = (HttpServletRequest) getCallContext().get(CallContext.HTTP_SERVLET_REQUEST);
         return NuxeoContentStream.create(doc, null, blob, "cmisRendition",
                 Collections.singletonMap("rendition", renditionName), lastModified, request);
@@ -1385,8 +1388,8 @@ public class NuxeoCmisService extends AbstractCmisService
         if (reader == null) {
             throw new CmisRuntimeException("Cannot find audit service");
         }
-        List<LogEntry> entries = reader.getLogEntriesAfter(minId, pageSize, repositoryId,
-                DOCUMENT_CREATED, DOCUMENT_UPDATED, DOCUMENT_REMOVED);
+        List<LogEntry> entries = reader.getLogEntriesAfter(minId, pageSize, repositoryId, DOCUMENT_CREATED,
+                DOCUMENT_UPDATED, DOCUMENT_REMOVED);
         List<ObjectData> ods = new ArrayList<>();
         for (LogEntry entry : entries) {
             ObjectData od = getLogEntryObjectData(entry);
@@ -1713,11 +1716,10 @@ public class NuxeoCmisService extends AbstractCmisService
             return null;
         }
 
-        String query = String.format(
-                "SELECT * FROM %s WHERE " // Folder/Document
-                        + "%s = '%s' AND " // ecm:parentId = 'folderId'
-                        + "%s <> '%s' AND " // ecm:mixinType <> 'HiddenInNavigation'
-                        + "%s = 0", // ecm:isTrashed = 0
+        String query = String.format("SELECT * FROM %s WHERE " // Folder/Document
+                + "%s = '%s' AND " // ecm:parentId = 'folderId'
+                + "%s <> '%s' AND " // ecm:mixinType <> 'HiddenInNavigation'
+                + "%s = 0", // ecm:isTrashed = 0
                 folderOnly ? "Folder" : "Document", //
                 NXQL.ECM_PARENTID, folderId, //
                 NXQL.ECM_MIXINTYPE, FacetNames.HIDDEN_IN_NAVIGATION, //
