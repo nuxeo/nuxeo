@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ImportBasedFactory extends BaseContentFactory {
 
-    private static final Log log = LogFactory.getLog(ImportBasedFactory.class);
+    private static final Logger log = LogManager.getLogger(ImportBasedFactory.class);
 
     public static final String IMPORT_FILE_PATH_OPTION = "path";
 
@@ -91,7 +91,7 @@ public class ImportBasedFactory extends BaseContentFactory {
             String resourcePath = s[1];
             PathOptions option = valueOf(resourceType);
             if (option == null) {
-                log.error("Unsupported resource type: " + resourceType);
+                log.error("Unsupported resource type: {}", resourceType);
                 return null;
             } else {
                 return option.getFile(resourcePath);
@@ -111,7 +111,7 @@ public class ImportBasedFactory extends BaseContentFactory {
                 importedFile = file;
                 return true;
             } else {
-                log.warn("Following file does not exist: " + file.getAbsolutePath());
+                log.warn("Following file does not exist: {}", file::getAbsolutePath);
             }
         }
         return false;
