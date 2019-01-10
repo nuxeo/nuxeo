@@ -276,7 +276,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                     if (part instanceof MimePart) {
                         String contentId = ((MimePart) part).getContentID();
                         if (contentId != null) {
-                            contentKeys.put(contentId.replaceAll("<", "").replaceAll(">", ""), filename);
+                            contentKeys.put(filename, contentId.replace("<", "").replace(">", ""));
                         }
                     }
                     blobs.add(blob);
