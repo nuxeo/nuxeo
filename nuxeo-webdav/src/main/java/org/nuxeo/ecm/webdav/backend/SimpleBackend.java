@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.webdav.EscapeUtils;
 import org.nuxeo.ecm.webdav.resource.ExistingResource;
@@ -132,7 +133,11 @@ public class SimpleBackend extends AbstractCoreBackend {
         try {
             // this cannot be done before the update anymore
             // doc.putContextData(SOURCE_EDIT_KEYWORD, "webdav");
-            doc = fileManager.createDocumentFromBlob(getSession(), content, parentPath, true, name); // overwrite=true
+            FileImporterContext context = FileImporterContext.builder(session, content, parentPath)
+                                                             .overwrite(true)
+                                                             .fileName(name)
+                                                             .build();
+            doc = fileManager.createOrUpdateDocument(context);
         } catch (IOException e) {
             throw new NuxeoException("Error while updating document", e);
         }
@@ -338,8 +343,7 @@ public class SimpleBackend extends AbstractCoreBackend {
     }
 
     @Override
-    public DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name)
-            {
+    public DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name) {
         cleanTrashPath(targetParentRef, name);
         source.setPropertyValue("dc:title", name);
         BlobHolder blobHolder = source.getAdapter(BlobHolder.class);
@@ -404,8 +408,9 @@ public class SimpleBackend extends AbstractCoreBackend {
                 file = getSession().createDocument(file);
             } else {
                 // use the FileManager to create the file
-                FileManager fileManager = Framework.getService(FileManager.class);
-                file = fileManager.createDocumentFromBlob(getSession(), content, parent.getPathAsString(), false, name);
+                FileImporterContext context = FileImporterContext.builder(getSession(), content,
+                        parent.getPathAsString()).fileName(name).build();
+                file = Framework.getService(FileManager.class).createOrUpdateDocument(context);
             }
             return file;
         } catch (IOException e) {
