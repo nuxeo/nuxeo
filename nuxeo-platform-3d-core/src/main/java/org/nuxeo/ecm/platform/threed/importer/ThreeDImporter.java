@@ -31,41 +31,44 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
-import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
 
 public class ThreeDImporter extends AbstractFileImporter {
     public static final String MIMETYPE_ZIP = "application/zip";
 
-    public DocumentModel create(CoreSession session, Blob content, String path, boolean overwrite, String fullname,
-            TypeManager typeService) throws IOException {
-
-        boolean isThreeD = SUPPORTED_EXTENSIONS.contains(FileUtils.getFileExtension(content.getFilename()));
-        boolean isZipThreeD = MIMETYPE_ZIP.equals(content.getMimeType());
+    @Override
+    public DocumentModel createOrUpdate(FileImporterContext context) throws IOException {
+        CoreSession session = context.getSession();
+        Blob blob = context.getBlob();
+        boolean isThreeD = SUPPORTED_EXTENSIONS.contains(FileUtils.getFileExtension(blob.getFilename()));
+        boolean isZipThreeD = MIMETYPE_ZIP.equals(blob.getMimeType());
         String title = null;
         if (isZipThreeD) {
-            title = getModelFilename(content);
+            title = getModelFilename(blob);
             isZipThreeD = title != null;
         }
 
         if (!(isThreeD || isZipThreeD)) {
             return null;
         }
+
+        String path = context.getParentPath();
         DocumentModel container = session.getDocument(new PathRef(path));
         String docType = getDocType(container);
         if (docType == null) {
             docType = getDefaultDocType();
         }
         if (isThreeD) {
-            title = FileManagerUtils.fetchTitle(content.getFilename());
+            title = FileManagerUtils.fetchTitle(blob.getFilename());
         }
         DocumentModel doc = session.createDocumentModel(docType);
         doc.setPropertyValue("dc:title", title);
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         doc.setPathInfo(path, pss.generatePathSegment(doc));
-        updateDocument(doc, content);
+        updateDocument(doc, blob);
         doc = session.createDocument(doc);
         session.save();
         return doc;
