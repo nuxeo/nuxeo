@@ -849,9 +849,10 @@ class Release(object):
         """ Check the parameters: if the branch to release has been previously created (the next snapshot is then set to
         'done'), then the current branch is expected to equal to the current version minus '-SNAPSHOT'."""
         if self.next_snapshot == 'done' and self.branch != self.snapshot.partition("-SNAPSHOT")[0]:
-            raise ExitException(1, "When releasing from an already created release branch (command 'branch'), the"
-                                " branch to release (option '-b') must equal to the current version minus '-SNAPSHOT':"
-                                " %s != %s" % (self.branch, self.snapshot.partition("-SNAPSHOT")[0]))
+            log("[WARN] The following sentence is not accurate when releasing a package.", sys.stderr)
+            log("[WARN] When releasing from an already created release branch (command 'branch'), the"
+                " branch to release (option '-b') must equal to the current version minus '-SNAPSHOT':"
+                " %s != %s" % (self.branch, self.snapshot.partition("-SNAPSHOT")[0]), sys.stderr)
 
     def check(self):
         """ Check the release is feasible"""
