@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.mail.listener.action;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.ATTACHMENTS_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CC_RECIPIENTS_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CC_RECIPIENTS_PROPERTY_NAME;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CONTENT_ID;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CONTENT_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.HTML_TEXT_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MAIL_MESSAGE_TYPE;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MESSAGE_ID_KEY;
@@ -88,6 +90,7 @@ public class CreateDocumentsAction extends AbstractMailAction {
         ArrayList<String> recipients = (ArrayList<String>) context.get(RECIPIENTS_KEY);
         ArrayList<String> ccRecipients = (ArrayList<String>) context.get(CC_RECIPIENTS_KEY);
         List<FileBlob> attachments = (List<FileBlob>) context.get(ATTACHMENTS_KEY);
+        Map<String, String> contentKeys = (Map<String, String>) context.get(CONTENT_KEY);
         String text = (String) context.get(TEXT_KEY);
         String messageId = (String) context.get(MESSAGE_ID_KEY);
 
@@ -114,9 +117,14 @@ public class CreateDocumentsAction extends AbstractMailAction {
             documentModel.setPropertyValue("files:files", files);
         }
         documentModel.setPropertyValue(CC_RECIPIENTS_PROPERTY_NAME, ccRecipients);
-
-        documentModel.setPropertyValue(HTML_TEXT_PROPERTY_NAME, text);
+        
         if (text != null && !text.isEmpty()) {
+            if (contentKeys != null && !contentKeys.isEmpty()) {
+                for (Map.Entry<String, String> content: contentKeys.entrySet()) {
+                    text = text.replaceAll(CONTENT_ID + content.getKey(), content.getValue());
+                }
+            }
+            documentModel.setPropertyValue(HTML_TEXT_PROPERTY_NAME, text);
             Blob sb = Blobs.createBlob(text, "text/html");
             BlobHolder simpleBlobHolder = new SimpleBlobHolder(sb);
             ConversionService conversionService = Framework.getService(ConversionService.class);

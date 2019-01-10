@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.mail.listener.action;
 
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.ATTACHMENTS_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CC_RECIPIENTS_KEY;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CONTENT_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MIMETYPE_SERVICE_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.RECIPIENTS_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SENDER_EMAIL_KEY;
@@ -36,9 +37,12 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.Address;
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -47,6 +51,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimePart;
 import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.io.IOUtils;
@@ -145,7 +150,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             // Recipients
             try {
                 Address[] to = message.getRecipients(Message.RecipientType.TO);
-                Collection<String> recipients = new ArrayList<String>();
+                Collection<String> recipients = new ArrayList<>();
                 if (to != null) {
                     for (Address addr : to) {
                         if (addr instanceof InternetAddress) {
@@ -171,7 +176,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
 
             try {
                 Address[] toCC = message.getRecipients(Message.RecipientType.CC);
-                Collection<String> ccRecipients = new ArrayList<String>();
+                Collection<String> ccRecipients = new ArrayList<>();
                 if (toCC != null) {
                     for (Address addr : toCC) {
                         if (addr instanceof InternetAddress) {
@@ -196,8 +201,9 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
 
             MimetypeRegistry mimeService = (MimetypeRegistry) context.getInitialContext().get(MIMETYPE_SERVICE_KEY);
 
-            List<Blob> blobs = new ArrayList<Blob>();
+            List<Blob> blobs = new ArrayList<>();
             context.put(ATTACHMENTS_KEY, blobs);
+            context.put(CONTENT_KEY, new HashMap<String, String>());
 
             // String[] cte = message.getHeader("Content-Transfer-Encoding");
 
@@ -237,9 +243,10 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             ExecutionContext context) throws MessagingException, IOException {
         String filename = getFilename(part, defaultFilename);
         List<Blob> blobs = (List<Blob>) context.get(ATTACHMENTS_KEY);
+        Map<String, String> contentKeys = (Map<String, String>) context.get(CONTENT_KEY);
 
         if (part.isMimeType("multipart/alternative")) {
-            bodyContent += getText(part);
+            bodyContent += getText(part, defaultFilename, mimeService, context);
         } else {
             if (!part.isMimeType("multipart/*")) {
                 String disp = part.getDisposition();
@@ -266,7 +273,12 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                     blob.setMimeType(mime);
 
                     blob.setFilename(filename);
-
+                    if (part instanceof MimePart) {
+                        String contentId = ((MimePart) part).getContentID();
+                        if (contentId != null) {
+                            contentKeys.put(contentId.replaceAll("<", "").replaceAll(">", ""), filename);
+                        }
+                    }
                     blobs.add(blob);
                 }
             }
@@ -284,13 +296,13 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                 getAttachmentParts((Part) part.getContent(), defaultFilename, mimeService, context);
             }
         }
-
     }
 
     /**
      * Return the primary text content of the message.
      */
-    private String getText(Part p) throws MessagingException, IOException {
+    private String getText(Part p, String defaultFilename, MimetypeRegistry mimeService, ExecutionContext context)
+            throws MessagingException, IOException {
         if (p.isMimeType("text/*")) {
             return decodeMailBody(p);
         }
@@ -303,26 +315,32 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
                 Part bp = mp.getBodyPart(i);
                 if (bp.isMimeType("text/plain")) {
                     if (text == null) {
-                        text = getText(bp);
+                        text = getText(bp, defaultFilename, mimeService, context);
                     }
                     continue;
                 } else if (bp.isMimeType("text/html")) {
-                    String s = getText(bp);
+                    String s = getText(bp, defaultFilename, mimeService, context);
                     if (s != null) {
                         return s;
                     }
                 } else {
-                    return getText(bp);
+                    return getText(bp, defaultFilename, mimeService, context);
                 }
             }
             return text;
         } else if (p.isMimeType("multipart/*")) {
             Multipart mp = (Multipart) p.getContent();
+            String s = null;
             for (int i = 0; i < mp.getCount(); i++) {
-                String s = getText(mp.getBodyPart(i));
-                if (s != null) {
-                    return s;
+                BodyPart bodyPart = mp.getBodyPart(i);
+                if (Part.INLINE.equals(bodyPart.getDisposition())) {
+                    getAttachmentParts(bodyPart, defaultFilename, mimeService, context);
+                } else {
+                    s = getText(bodyPart, defaultFilename, mimeService, context);
                 }
+            }
+            if (s != null) {
+                return s;
             }
         }
 

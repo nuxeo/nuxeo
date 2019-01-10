@@ -24,6 +24,7 @@ package org.nuxeo.ecm.platform.mail.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.HTML_TEXT_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PARENT_PATH_KEY;
 
 import java.io.FileInputStream;
@@ -38,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -106,6 +108,30 @@ public class TestMailInjection {
         assertNotNull(children);
         assertTrue(!children.isEmpty());
         assertEquals(2, children.size());
+    }
+
+    @Test
+    public void testMailImageCheck() throws Exception {
+        assertNotNull(session.getDocument(new PathRef("/mailFolder1")));
+        assertNotNull(session.getDocument(new PathRef("/mailFolder2")));
+        injectEmail("data/test_image.eml", mailFolder1.getPathAsString());
+        DocumentModelList children = session.getChildren(mailFolder1.getRef());
+        assertNotNull(children);
+        assertTrue(!children.isEmpty());
+        assertEquals(1, children.size());
+        DocumentModel mail = children.get(0);
+        String html = (String) mail.getPropertyValue(HTML_TEXT_PROPERTY_NAME);
+        assertTrue(html.contains("<img src=\"bmkkflcpoiogbdgk.png"));
+        Blob imageBlob = (Blob) mail.getPropertyValue("files/0/file");
+        assertEquals("bmkkflcpoiogbdgk.png", imageBlob.getFilename());
+
+        injectEmail("data/test_sample_message.eml", mailFolder2.getPathAsString());
+        children = session.getChildren(mailFolder2.getRef());
+        assertEquals(1, children.size());
+        mail = children.get(0);
+        html = (String) mail.getPropertyValue(HTML_TEXT_PROPERTY_NAME);
+        assertTrue(html.contains("background.gif"));
+        assertTrue(html.contains("logo.gif"));
     }
 
     private void injectEmail(String filePath, String parentPath) throws Exception {
