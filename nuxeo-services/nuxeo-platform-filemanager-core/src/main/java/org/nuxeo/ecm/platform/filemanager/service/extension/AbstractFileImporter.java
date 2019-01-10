@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -37,6 +38,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.Type;
@@ -134,7 +136,7 @@ public abstract class AbstractFileImporter implements FileImporter {
     /**
      * Default document type to use when the plugin XML configuration does not specify one.
      * <p>
-     * To implement when the default {@link #create} method is used.
+     * To implement when the default {@link #createOrUpdate(FileImporterContext)} method is used.
      */
     protected String getDefaultDocType() {
         throw new UnsupportedOperationException();
@@ -143,7 +145,7 @@ public abstract class AbstractFileImporter implements FileImporter {
     /**
      * Whether document overwrite is detected by checking title or filename.
      * <p>
-     * To implement when the default {@link #create} method is used.
+     * To implement when the default {@link #createOrUpdate(FileImporterContext)} method is used.
      */
     protected boolean isOverwriteByTitle() {
         throw new UnsupportedOperationException();
@@ -191,16 +193,29 @@ public abstract class AbstractFileImporter implements FileImporter {
     @Override
     public DocumentModel create(CoreSession session, Blob content, String path, boolean overwrite, String fullname,
             TypeManager typeService) throws IOException {
-        path = getNearestContainerPath(session, path);
+        FileImporterContext context = FileImporterContext.builder(session, content, path)
+                                                         .overwrite(overwrite)
+                                                         .fileName(fullname)
+                                                         .build();
+        return createOrUpdate(context);
+    }
+
+    @Override
+    public DocumentModel createOrUpdate(FileImporterContext context) throws IOException {
+        CoreSession session = context.getSession();
+        String path = getNearestContainerPath(session, context.getParentPath());
         DocumentModel container = session.getDocument(new PathRef(path));
         String targetDocType = getDocType(container); // from override or descriptor
         if (targetDocType == null) {
             targetDocType = getDefaultDocType();
         }
-        doSecurityCheck(session, path, targetDocType, typeService);
-        String filename = FileManagerUtils.fetchFileName(fullname);
+        doSecurityCheck(session, path, targetDocType);
+
+        Blob blob = context.getBlob();
+        String filename = FileManagerUtils.fetchFileName(
+                StringUtils.defaultIfBlank(context.getFileName(), blob.getFilename()));
         String title = FileManagerUtils.fetchTitle(filename);
-        content.setFilename(filename);
+        blob.setFilename(filename);
         // look for an existing document with same title or filename
         DocumentModel doc;
         if (isOverwriteByTitle()) {
@@ -208,7 +223,7 @@ public abstract class AbstractFileImporter implements FileImporter {
         } else {
             doc = FileManagerUtils.getExistingDocByFileName(session, path, filename);
         }
-        if (overwrite && doc != null) {
+        if (context.isOverwrite() && doc != null) {
             Blob previousBlob = getBlob(doc);
             // check that previous blob allows overwrite
             if (previousBlob != null) {
@@ -218,7 +233,7 @@ public abstract class AbstractFileImporter implements FileImporter {
                 }
             }
             // update data
-            boolean isDocumentUpdated = updateDocumentIfPossible(doc, content);
+            boolean isDocumentUpdated = updateDocumentIfPossible(doc, blob);
             if (!isDocumentUpdated) {
                 return null;
             }
@@ -237,7 +252,7 @@ public abstract class AbstractFileImporter implements FileImporter {
             PathSegmentService pss = Framework.getService(PathSegmentService.class);
             doc.setPathInfo(path, pss.generatePathSegment(doc));
             // update data
-            updateDocument(doc, content);
+            updateDocument(doc, blob);
             // create
             doc.putContextData(CoreSession.SOURCE, "fileimporter-" + getName());
             doc = session.createDocument(doc);
@@ -342,6 +357,13 @@ public abstract class AbstractFileImporter implements FileImporter {
         if (fileManagerService.doVersioningAfterAdd()) {
             checkIn(doc);
         }
+    }
+
+    /**
+     * @since 10.10
+     */
+    protected void doSecurityCheck(CoreSession documentManager, String path, String typeName) {
+        doSecurityCheck(documentManager, path, typeName, Framework.getService(TypeManager.class));
     }
 
     protected void doSecurityCheck(CoreSession documentManager, String path, String typeName, TypeManager typeService) {

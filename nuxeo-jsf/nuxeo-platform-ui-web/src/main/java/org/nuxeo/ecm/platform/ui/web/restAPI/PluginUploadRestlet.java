@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.ui.web.util.FileUploadHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -102,8 +103,9 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements Serializabl
 
     protected String addBinaryFileFromPlugin(Blob blob, DocumentModel folder) throws IOException {
         FileManager fileManager = Framework.getService(FileManager.class);
-        DocumentModel doc = fileManager.createDocumentFromBlob(folder.getCoreSession(), blob, folder.getPathAsString(),
-                true, blob.getFilename());
+        FileImporterContext context = FileImporterContext.builder(folder.getCoreSession(), blob,
+                folder.getPathAsString()).overwrite(true).build();
+        DocumentModel doc = fileManager.createOrUpdateDocument(context);
         return doc.getName();
     }
 

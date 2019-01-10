@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.service.extension.ExportedZipImporter;
 import org.nuxeo.runtime.api.Framework;
@@ -142,7 +143,10 @@ public class TestExportedZipImporterPlugin {
         createTestDocumentsAndArchive();
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = Blobs.createBlob(archiveFile);
-        fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "toto.zip");
+        FileImporterContext context = FileImporterContext.builder(coreSession, blob, destWS.getPathAsString())
+                                                         .overwrite(true)
+                                                         .build();
+        fm.createOrUpdateDocument(context);
         DocumentModelList children = coreSession.getChildren(destWS.getRef());
         assertTrue(children.size() > 0);
         DocumentModel importedWS = children.get(0);
@@ -174,7 +178,10 @@ public class TestExportedZipImporterPlugin {
 
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = Blobs.createBlob(archiveFile);
-        fm.createDocumentFromBlob(coreSession, blob, wsRoot.getPathAsString(), true, "toto.zip");
+        FileImporterContext context = FileImporterContext.builder(coreSession, blob, wsRoot.getPathAsString())
+                                                         .overwrite(true)
+                                                         .build();
+        fm.createOrUpdateDocument(context);
         sourceWS = coreSession.getChild(wsRoot.getRef(), "sourceWS");
         assertNotNull(sourceWS);
         assertEquals("Source Workspace", sourceWS.getTitle());

@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -70,7 +71,11 @@ public class TestPictureImport {
         URL resource = getClass().getClassLoader().getResource("images/smart-glasses.svg");
         Blob blob = new URLBlob(resource, "image/svg+xml");
 
-        DocumentModel doc = fileManager.createDocumentFromBlob(session, blob, "/", true, "smart-glasses.svg");
+        FileImporterContext context = FileImporterContext.builder(session, blob, "/")
+                                                         .overwrite(true)
+                                                         .fileName("smart-glasses.svg")
+                                                         .build();
+        DocumentModel doc = fileManager.createOrUpdateDocument(context);
         assertNotNull(doc);
         assertEquals("Picture", doc.getType());
     }

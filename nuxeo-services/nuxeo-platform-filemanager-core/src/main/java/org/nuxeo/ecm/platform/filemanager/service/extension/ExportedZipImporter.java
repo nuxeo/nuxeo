@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
-import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 
 /**
  * Simple Plugin that imports IO Zip archive into Nuxeo using the IO core service.
@@ -85,9 +85,10 @@ public class ExportedZipImporter extends AbstractFileImporter {
     }
 
     @Override
-    public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
-            String filename, TypeManager typeService) throws IOException {
-        try (CloseableFile source = content.getCloseableFile()) {
+    public DocumentModel createOrUpdate(FileImporterContext context) throws IOException {
+        CoreSession session = context.getSession();
+        Blob blob = context.getBlob();
+        try (CloseableFile source = blob.getCloseableFile()) {
             ZipFile zip = getArchiveFileIfValid(source.getFile());
             if (zip == null) {
                 return null;
@@ -99,23 +100,24 @@ public class ExportedZipImporter extends AbstractFileImporter {
             ExportedDocument root = reader.read();
             IdRef rootRef = new IdRef(root.getId());
 
-            if (documentManager.exists(rootRef)) {
-                DocumentModel target = documentManager.getDocument(rootRef);
-                if (target.getPath().removeLastSegments(1).equals(new Path(path))) {
+            String parentPath = context.getParentPath();
+            if (session.exists(rootRef)) {
+                DocumentModel target = session.getDocument(rootRef);
+                if (target.getPath().removeLastSegments(1).equals(new Path(parentPath))) {
                     importWithIds = true;
                 }
             }
 
-            DocumentWriter writer = new DocumentModelWriter(documentManager, path, 10);
+            DocumentWriter writer = new DocumentModelWriter(session, parentPath, 10);
             reader.close();
             reader = new NuxeoArchiveReader(source.getFile());
 
             DocumentRef resultingRef;
-            if (overwrite && importWithIds) {
+            if (context.isOverwrite() && importWithIds) {
                 resultingRef = rootRef;
             } else {
                 String rootName = root.getPath().lastSegment();
-                resultingRef = new PathRef(path, rootName);
+                resultingRef = new PathRef(parentPath, rootName);
             }
 
             try {
@@ -129,7 +131,8 @@ public class ExportedZipImporter extends AbstractFileImporter {
                 reader.close();
                 writer.close();
             }
-            return documentManager.getDocument(resultingRef);
+            return session.getDocument(resultingRef);
         }
     }
+
 }

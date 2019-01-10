@@ -37,7 +37,6 @@ import java.util.zip.ZipFile;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
@@ -58,7 +57,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 
 public class CSVZipImporter extends AbstractFileImporter {
 
@@ -97,20 +96,22 @@ public class CSVZipImporter extends AbstractFileImporter {
     }
 
     @Override
-    public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
-            String filename, TypeManager typeService) throws IOException {
-        ZipFile zip = null;
-        try (CloseableFile source = content.getCloseableFile()) {
+    public DocumentModel createOrUpdate(FileImporterContext context) throws IOException {
+        CoreSession session = context.getSession();
+        Blob blob = context.getBlob();
+        ZipFile zip;
+        try (CloseableFile source = blob.getCloseableFile()) {
             zip = getArchiveFileIfValid(source.getFile());
             if (zip == null) {
                 return null;
             }
 
-            DocumentModel container = documentManager.getDocument(new PathRef(path));
+            String parentPath = context.getParentPath();
+            DocumentModel container = session.getDocument(new PathRef(parentPath));
 
             ZipEntry index = zip.getEntry(MARKER);
             try (Reader reader = new InputStreamReader(zip.getInputStream(index));
-                    CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader());) {
+                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader());) {
 
                 Map<String, Integer> header = csvParser.getHeaderMap();
                 for (CSVRecord csvRecord : csvParser) {
@@ -133,9 +134,9 @@ public class CSVZipImporter extends AbstractFileImporter {
                     DocumentModel targetDoc = null;
                     if (id != null) {
                         // update ?
-                        String targetPath = new Path(path).append(id).toString();
-                        if (documentManager.exists(new PathRef(targetPath))) {
-                            targetDoc = documentManager.getDocument(new PathRef(targetPath));
+                        String targetPath = new Path(parentPath).append(id).toString();
+                        if (session.exists(new PathRef(targetPath))) {
+                            targetDoc = session.getDocument(new PathRef(targetPath));
                             updateDoc = true;
                         }
                     }
@@ -150,7 +151,7 @@ public class CSVZipImporter extends AbstractFileImporter {
                         if (id == null) {
                             id = IdUtils.generateStringId();
                         }
-                        targetDoc = documentManager.createDocumentModel(path, id, type);
+                        targetDoc = session.createDocumentModel(parentPath, id, type);
                     }
 
                     // update doc properties
@@ -197,15 +198,13 @@ public class CSVZipImporter extends AbstractFileImporter {
                         }
                     }
                     if (updateDoc) {
-                        documentManager.saveDocument(targetDoc);
+                        session.saveDocument(targetDoc);
                     } else {
-                        documentManager.createDocument(targetDoc);
+                        session.createDocument(targetDoc);
                     }
                 }
             }
             return container;
-        } finally {
-            IOUtils.closeQuietly(zip);
         }
     }
 
