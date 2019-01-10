@@ -61,6 +61,7 @@ import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -175,8 +176,10 @@ public class FileManageActionsBean implements FileManageActions {
         String path = currentDocument.getPathAsString();
         DocumentModel createdDoc = null;
         try {
-            createdDoc = getFileManagerService().createDocumentFromBlob(documentManager, blob, path, true,
-                    blob.getFilename());
+            FileImporterContext context = FileImporterContext.builder(documentManager, blob, path)
+                                                             .overwrite(true)
+                                                             .build();
+            createdDoc = getFileManagerService().createOrUpdateDocument(context);
         } catch (IOException e) {
             throw new NuxeoException("Can not write blob for" + blob.getFilename(), e);
         }
@@ -236,15 +239,18 @@ public class FileManageActionsBean implements FileManageActions {
 
     @Override
     @WebRemote
-    public String addBinaryFileFromPlugin(Blob blob, String fullName, DocumentModel targetContainer)
-            {
+    public String addBinaryFileFromPlugin(Blob blob, String fullName, DocumentModel targetContainer) {
         return createDocumentFromBlob(blob, fullName, targetContainer.getPathAsString());
     }
 
     protected String createDocumentFromBlob(Blob blob, String fullName, String path) {
         DocumentModel createdDoc;
         try {
-            createdDoc = getFileManagerService().createDocumentFromBlob(documentManager, blob, path, true, fullName);
+            FileImporterContext context = FileImporterContext.builder(documentManager, blob, path)
+                                                             .overwrite(true)
+                                                             .fileName(fullName)
+                                                             .build();
+            createdDoc = getFileManagerService().createOrUpdateDocument(context);
         } catch (NuxeoException | IOException t) {
             Throwable unwrappedError = ExceptionHelper.unwrapException(t);
             if (ExceptionHelper.isSecurityError(unwrappedError)) {
@@ -277,8 +283,7 @@ public class FileManageActionsBean implements FileManageActions {
      *             array
      */
     @Deprecated
-    public String addBinaryFileFromPlugin(byte[] content, String mimetype, String fullName, String morePath)
-            {
+    public String addBinaryFileFromPlugin(byte[] content, String mimetype, String fullName, String morePath) {
         Blob blob = Blobs.createBlob(content);
         return addBinaryFileFromPlugin(blob, fullName, morePath);
     }
@@ -551,8 +556,7 @@ public class FileManageActionsBean implements FileManageActions {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void validateMultipleUploadForDocument(DocumentModel current) throws FileNotFoundException,
-            IOException {
+    public void validateMultipleUploadForDocument(DocumentModel current) throws FileNotFoundException, IOException {
         if (!current.hasSchema(FILES_SCHEMA)) {
             return;
         }

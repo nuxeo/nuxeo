@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.service.extension.CreationContainerListProvider;
 import org.nuxeo.ecm.platform.filemanager.service.extension.CreationContainerListProviderDescriptor;
@@ -253,20 +254,32 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     @Override
     public DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
             String fullName, boolean noMimeTypeCheck, boolean excludeOneToMany) throws IOException {
+        FileImporterContext context = FileImporterContext.builder(documentManager, input, path)
+                                                         .overwrite(overwrite)
+                                                         .fileName(fullName)
+                                                         .mimeTypeCheck(!noMimeTypeCheck)
+                                                         .excludeOneToMany(excludeOneToMany)
+                                                         .build();
+        return createOrUpdateDocument(context);
+    }
+
+    @Override
+    public DocumentModel createOrUpdateDocument(FileImporterContext context) throws IOException {
+        Blob blob = context.getBlob();
 
         // check mime type to be able to select the best importer plugin
-        if (!noMimeTypeCheck) {
-            input = checkMimeType(input, fullName);
+        if (context.isMimeTypeCheck()) {
+            String fileName = StringUtils.defaultIfBlank(context.getFileName(), blob.getFilename());
+            blob = checkMimeType(blob, fileName);
         }
 
         List<FileImporter> importers = new ArrayList<>(fileImporters.values());
         Collections.sort(importers);
-        String mimeType = input.getMimeType();
+        String mimeType = blob.getMimeType();
         String normalizedMimeType = getMimeService().getMimetypeEntryByMimeType(mimeType).getNormalized();
         for (FileImporter importer : importers) {
-            if (isImporterAvailable(importer, normalizedMimeType, mimeType, excludeOneToMany)) {
-                DocumentModel doc = importer.create(documentManager, input, path, overwrite, fullName,
-                        getTypeService());
+            if (isImporterAvailable(importer, normalizedMimeType, mimeType, context.isExcludeOneToMany())) {
+                DocumentModel doc = importer.createOrUpdate(context);
                 if (doc != null) {
                     return doc;
                 }

@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.service.extension.CSVZipImporter;
 import org.nuxeo.runtime.api.Framework;
@@ -91,7 +92,10 @@ public class TestCSVImporter {
         File archive = getArchiveFile();
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = Blobs.createBlob(archive);
-        fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "toto");
+        FileImporterContext context = FileImporterContext.builder(coreSession, blob, destWS.getPathAsString())
+                                                         .overwrite(true)
+                                                         .build();
+        fm.createOrUpdateDocument(context);
         DocumentModelList children = coreSession.getChildren(destWS.getRef());
         assertSame(2, children.size());
 

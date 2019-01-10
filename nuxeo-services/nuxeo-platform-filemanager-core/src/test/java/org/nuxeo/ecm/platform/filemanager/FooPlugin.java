@@ -21,18 +21,18 @@
 
 package org.nuxeo.ecm.platform.filemanager;
 
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
+import java.io.IOException;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
-import org.nuxeo.ecm.platform.types.TypeManager;
 
 public class FooPlugin extends AbstractFileImporter {
 
     private static final long serialVersionUID = 1L;
 
-    public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
-            String filename, TypeManager typService) {
+    @Override
+    public DocumentModel createOrUpdate(FileImporterContext context) throws IOException {
         return null;
     }
 
