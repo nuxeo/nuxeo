@@ -20,6 +20,7 @@ package org.nuxeo.runtime.server.tomcat;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -29,6 +30,7 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
@@ -88,8 +90,10 @@ public class TomcatServerConfigurator implements ServerConfigurator {
         }
         try {
             tomcat.stop();
+            File workDirectory = Paths.get(tomcat.getServer().getCatalinaHome().getAbsolutePath(), "work").toFile();
+            FileUtils.deleteDirectory(workDirectory);
             tomcat.destroy();
-        } catch (LifecycleException e) {
+        } catch (LifecycleException | IOException e) {
             throw new RuntimeServiceException(e);
         }
     }
