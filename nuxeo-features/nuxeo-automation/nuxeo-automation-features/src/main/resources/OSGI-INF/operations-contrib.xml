@@ -93,6 +93,8 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.FileManagerImport" />
 
+    <operation  class="org.nuxeo.ecm.automation.core.operations.services.FileManagerImportWithProperties" />
+
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.BlobHolderAttach" />
 
@@ -215,10 +217,8 @@
       </operation>
     </chain>
     <chain id="FileManager.ImportWithMetaData">
-      <operation id="FileManager.Import">
-         <param type="boolean" name="overwite">true</param>
-      </operation>
-      <operation id="Document.Update">
+      <operation id="FileManager.ImportWithProperties">
+        <param type="boolean" name="overwrite">true</param>
         <param type="properties" name="properties">expr:Context.get("docMetaData")</param>
       </operation>
     </chain>

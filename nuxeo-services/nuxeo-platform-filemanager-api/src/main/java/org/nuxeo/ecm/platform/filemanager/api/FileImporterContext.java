@@ -43,6 +43,8 @@ public class FileImporterContext {
 
     protected boolean excludeOneToMany;
 
+    protected boolean persistDocument;
+
     public static Builder builder(CoreSession session, Blob blob, String parentPath) {
         return new Builder(session, blob, parentPath);
     }
@@ -55,6 +57,7 @@ public class FileImporterContext {
         mimeTypeCheck = builder.mimeTypeCheck;
         excludeOneToMany = builder.excludeOneToMany;
         fileName = builder.fileName;
+        persistDocument = builder.persistDocument;
     }
 
     public CoreSession getSession() {
@@ -85,6 +88,10 @@ public class FileImporterContext {
         return excludeOneToMany;
     }
 
+    public boolean isPersistDocument() {
+        return persistDocument;
+    }
+
     public static class Builder {
 
         protected final CoreSession session;
@@ -100,6 +107,8 @@ public class FileImporterContext {
         protected boolean mimeTypeCheck = true;
 
         protected boolean excludeOneToMany;
+
+        protected boolean persistDocument = true;
 
         public Builder(CoreSession session, Blob blob, String parentPath) {
             this.session = session;
@@ -143,6 +152,18 @@ public class FileImporterContext {
          */
         public Builder excludeOneToMany(boolean excludeOneToMany) {
             this.excludeOneToMany = excludeOneToMany;
+            return this;
+        }
+
+        /**
+         * Whether to persist the created or updated document.
+         * <p>
+         * If the document is not persisted, it's the caller's responsibility to persist it.
+         * <p>
+         * Defaults to {@code true}.
+         */
+        public Builder persistDocument(boolean persistDocument) {
+            this.persistDocument = persistDocument;
             return this;
         }
 

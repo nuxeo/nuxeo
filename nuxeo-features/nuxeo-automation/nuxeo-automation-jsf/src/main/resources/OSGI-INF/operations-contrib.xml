@@ -89,12 +89,9 @@
     </chain>
 
     <chain id="FileManager.ImportWithMetaDataInSeam">
-      <operation id="FileManager.Import">
-        <param type="boolean" name="overwite">true</param>
-      </operation>
-      <operation id="Document.Update">
-        <param type="properties" name="properties">expr:Context.get("docMetaData")
-        </param>
+      <operation id="FileManager.ImportWithProperties">
+        <param type="boolean" name="overwrite">true</param>
+        <param type="properties" name="properties">expr:Context.get("docMetaData")</param>
       </operation>
       <operation id="Seam.RunOperation">
         <param type="string" name="id">Seam.Refresh</param>

@@ -91,6 +91,12 @@ public interface FileManager {
 
     /**
      * Returns a created or updated document based on the given {@code context}.
+     * <p>
+     * The document may not be persisted according to {@link FileImporterContext#isPersistDocument()}. That's the
+     * caller's responsibility to actually persist the document.
+     * <p>
+     * Note that file importers may not use {@link FileImporterContext#isPersistDocument()} and always persist the
+     * document.
      *
      * @return the created or updated document
      * @see FileImporterContext
