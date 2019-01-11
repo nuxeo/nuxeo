@@ -33,6 +33,7 @@ nuxeo.pubsub.provider=
 nuxeo.keyvalue.provider=
 nuxeo.work.queuing=
 nuxeo.lock.manager=
+nuxeo.transientstore.provider=
 
 # MongoDB
 nuxeo.mongodb.server=
