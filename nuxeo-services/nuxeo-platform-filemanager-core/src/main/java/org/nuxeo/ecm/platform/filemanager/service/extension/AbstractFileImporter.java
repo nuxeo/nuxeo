@@ -241,9 +241,12 @@ public abstract class AbstractFileImporter implements FileImporter {
                 // skip the update event if configured to do so
                 doc.putContextData(DISABLE_AUDIT_LOGGER, true);
             }
-            // save
-            doc.putContextData(CoreSession.SOURCE, "fileimporter-" + getName());
-            doc = doc.getCoreSession().saveDocument(doc);
+            if (context.isPersistDocument()) {
+                // save
+                doc.putContextData(CoreSession.SOURCE, "fileimporter-" + getName());
+                doc = doc.getCoreSession().saveDocument(doc);
+                session.save();
+            }
         } else {
             // create document model
             doc = session.createDocumentModel(targetDocType);
@@ -253,11 +256,13 @@ public abstract class AbstractFileImporter implements FileImporter {
             doc.setPathInfo(path, pss.generatePathSegment(doc));
             // update data
             updateDocument(doc, blob);
-            // create
-            doc.putContextData(CoreSession.SOURCE, "fileimporter-" + getName());
-            doc = session.createDocument(doc);
+            if (context.isPersistDocument()) {
+                // create
+                doc.putContextData(CoreSession.SOURCE, "fileimporter-" + getName());
+                doc = session.createDocument(doc);
+                session.save();
+            }
         }
-        session.save();
         return doc;
     }
 

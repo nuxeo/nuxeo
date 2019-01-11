@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.filemanager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -55,6 +56,7 @@ import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -73,6 +75,9 @@ public class TestFileManagerService {
 
     @Inject
     protected FileManager fileManager;
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     @Before
     public void setUp() throws Exception {
@@ -548,6 +553,35 @@ public class TestFileManagerService {
         assertEquals("File", doc.getType());
         blob = (Blob) doc.getPropertyValue("file:content");
         assertEquals("testCSVArchive.zip", blob.getFilename());
+    }
+
+    @Test
+    public void testPersistDocument() throws IOException {
+        File file = getTestFile("test-data/hello.doc");
+        Blob input = Blobs.createBlob(file, "application/msword");
+
+        // do not persis the document, expecting just a dirty document model w/o an uuid
+        FileImporterContext context = FileImporterContext.builder(coreSession, input, workspace.getPathAsString())
+                                                         .overwrite(true)
+                                                         .persistDocument(false)
+                                                         .build();
+        DocumentModel doc = fileManager.createOrUpdateDocument(context);
+        assertNull(doc.getId());
+        assertTrue(doc.isDirty());
+
+        // persist the document
+        doc = coreSession.createDocument(doc);
+        txFeature.nextTransaction();
+
+        String docId = doc.getId();
+        assertNotNull(docId);
+        assertFalse(doc.isDirty());
+
+        // update with same file w/o persisting the document
+        doc = fileManager.createOrUpdateDocument(context);
+        String newDocId = doc.getId();
+        assertTrue(doc.isDirty());
+        assertEquals(docId, newDocId);
     }
 
     private Object getMimeType(DocumentModel doc) {
