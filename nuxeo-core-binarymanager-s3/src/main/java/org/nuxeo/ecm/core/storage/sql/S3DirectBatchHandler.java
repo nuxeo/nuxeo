@@ -57,6 +57,7 @@ import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
 import com.amazonaws.services.securitytoken.model.Credentials;
+import com.amazonaws.services.securitytoken.model.GetFederationTokenRequest;
 
 /**
  * Batch Handler allowing direct S3 upload.
@@ -137,9 +138,6 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
             throw new NuxeoException("Missing configuration property: " + BUCKET_NAME_PROPERTY);
         }
         roleArn = properties.get(ROLE_ARN_PROPERTY);
-        if (isBlank(roleArn)) {
-            throw new NuxeoException("Missing configuration property: " + ROLE_ARN_PROPERTY);
-        }
         bucketPrefix = defaultString(properties.get(BUCKET_PREFIX_PROPERTY));
         accelerateModeEnabled = Boolean.parseBoolean(properties.get(ACCELERATE_MODE_ENABLED_PROPERTY));
         String awsSecretKeyId = properties.get(AWS_ID_PROPERTY);
@@ -192,7 +190,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
             request.setDurationSeconds(expiration);
         }
 
-        Credentials credentials = assumeRole(request);
+        Credentials credentials = getTempCredentials(batchId);
 
         Map<String, Object> properties = batch.getProperties();
         properties.put(INFO_AWS_SECRET_KEY_ID, credentials.getAccessKeyId());
@@ -207,8 +205,24 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         return batch;
     }
 
-    protected Credentials assumeRole(AssumeRoleRequest request) {
-        return stsClient.assumeRole(request).getCredentials();
+    protected Credentials getTempCredentials(String batchId) {
+        if (isBlank(roleArn)) {
+            String name = batchId.substring(0, Math.min(32, batchId.length()));
+            GetFederationTokenRequest request = new GetFederationTokenRequest().withPolicy(policy)
+                                                                               .withName(name);
+            if (expiration > 0) {
+                request.setDurationSeconds(expiration);
+            }
+            return stsClient.getFederationToken(request).getCredentials();
+        } else {
+            AssumeRoleRequest request = new AssumeRoleRequest().withRoleArn(roleArn)
+                                                               .withPolicy(policy)
+                                                               .withRoleSessionName(batchId);
+            if (expiration > 0) {
+                request.setDurationSeconds(expiration);
+            }
+            return stsClient.assumeRole(request).getCredentials();
+        }
     }
 
     @Override
