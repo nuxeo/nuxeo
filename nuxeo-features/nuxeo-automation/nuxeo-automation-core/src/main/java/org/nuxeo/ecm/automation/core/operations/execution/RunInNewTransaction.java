@@ -88,7 +88,7 @@ public class RunInNewTransaction {
                             throw new NuxeoException(e);
                         } else {
                             // just log, no rethrow
-                            log.error("Error while executing operation " + chainId, e);
+                            log.warn("Error while executing operation " + chainId, e);
                         }
                     }
                 }

@@ -22,8 +22,6 @@ package org.nuxeo.ftest.cap;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.RestHelper;
@@ -34,8 +32,6 @@ import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBas
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.functionaltests.pages.profile.OwnUserChangePasswordFormPage;
 import org.nuxeo.functionaltests.pages.profile.ProfilePage;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.openqa.selenium.By;
 
 import static org.junit.Assert.assertEquals;
@@ -45,8 +41,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * Create a user in Nuxeo DM.
  */
-@RunWith(FeaturesRunner.class)
-@Features({ FakeSmtpMailServerFeature.class })
 public class ITUsersTest extends AbstractTest {
 
     @After

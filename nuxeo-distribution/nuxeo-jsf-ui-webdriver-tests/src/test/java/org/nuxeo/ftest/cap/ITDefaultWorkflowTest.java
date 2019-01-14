@@ -32,8 +32,6 @@ import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -41,8 +39,6 @@ import org.nuxeo.functionaltests.pages.UserHomePage;
 import org.nuxeo.functionaltests.pages.WorkflowHomePage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -51,8 +47,6 @@ import org.openqa.selenium.WebElement;
  * @since 5.7
  */
 
-@RunWith(FeaturesRunner.class)
-@Features({ FakeSmtpMailServerFeature.class })
 public class ITDefaultWorkflowTest extends AbstractTest {
 
     private static final String USER_LINNET = "linnet_workflow";

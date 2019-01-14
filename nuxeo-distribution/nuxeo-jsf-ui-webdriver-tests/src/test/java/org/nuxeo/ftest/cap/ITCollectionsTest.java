@@ -34,8 +34,6 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Constants;
 import org.nuxeo.functionaltests.RestHelper;
@@ -51,8 +49,6 @@ import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -61,8 +57,6 @@ import org.openqa.selenium.WebElement;
  *
  * @since 5.9.3
  */
-@RunWith(FeaturesRunner.class)
-@Features({ FakeSmtpMailServerFeature.class })
 public class ITCollectionsTest extends AbstractTest {
 
     public final static String TEST_FILE_NAME = "test1";
