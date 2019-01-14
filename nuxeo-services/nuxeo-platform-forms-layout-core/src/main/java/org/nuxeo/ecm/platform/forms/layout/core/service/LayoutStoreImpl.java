@@ -500,7 +500,8 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
                 Class<?> converterClass;
                 try {
                     converterClass = LayoutStoreImpl.class.getClassLoader().loadClass(desc.getConverterClassName());
-                    LayoutDefinitionConverter converter = (LayoutDefinitionConverter) converterClass.newInstance();
+                    LayoutDefinitionConverter converter = (LayoutDefinitionConverter) converterClass.getDeclaredConstructor()
+                                                                                                    .newInstance();
                     res.add(converter);
                     orderedConverterNames.add(desc.getName());
                 } catch (ReflectiveOperationException e) {
@@ -528,7 +529,8 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
                 Class<?> converterClass;
                 try {
                     converterClass = LayoutStoreImpl.class.getClassLoader().loadClass(desc.getConverterClassName());
-                    WidgetDefinitionConverter converter = (WidgetDefinitionConverter) converterClass.newInstance();
+                    WidgetDefinitionConverter converter = (WidgetDefinitionConverter) converterClass.getDeclaredConstructor()
+                                                                                                    .newInstance();
                     res.add(converter);
                     orderedConverterNames.add(desc.getName());
                 } catch (ReflectiveOperationException e) {

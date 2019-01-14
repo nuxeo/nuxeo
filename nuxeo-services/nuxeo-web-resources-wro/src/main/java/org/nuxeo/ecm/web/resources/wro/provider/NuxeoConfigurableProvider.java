@@ -66,7 +66,7 @@ public class NuxeoConfigurableProvider extends ConfigurableProviderSupport {
             }
             ResourcePreProcessor proc;
             try {
-                proc = (ResourcePreProcessor) klass.newInstance();
+                proc = (ResourcePreProcessor) klass.getDeclaredConstructor().newInstance();
                 map.put(p.getName(), proc);
             } catch (ReflectiveOperationException e) {
                 log.error("Caught error when instanciating resource pre processor", e);
@@ -89,7 +89,7 @@ public class NuxeoConfigurableProvider extends ConfigurableProviderSupport {
             }
             ResourcePostProcessor proc;
             try {
-                proc = (ResourcePostProcessor) klass.newInstance();
+                proc = (ResourcePostProcessor) klass.getDeclaredConstructor().newInstance();
                 map.put(p.getName(), proc);
             } catch (ReflectiveOperationException e) {
                 log.error("Caught error when instanciating resource post processor", e);

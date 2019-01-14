@@ -60,7 +60,7 @@ public class PipeContribTest {
         Assert.assertEquals(2, desc2.getParameters().size());
 
         // check that priority was overridden
-        Assert.assertEquals(new Integer(10), desc2.getPriority());
+        Assert.assertEquals(Integer.valueOf(10), desc2.getPriority());
 
 
         UnboundEventContext ctx = new UnboundEventContext(new UserPrincipal("titi", null, false, false), null);

@@ -55,7 +55,7 @@ public class FilterDescriptor {
     }
 
     public Filter getFilter() throws ReflectiveOperationException, BundleNotFoundException {
-        return (Filter) getClassRef().get().newInstance();
+        return (Filter) getClassRef().get().getDeclaredConstructor().newInstance();
     }
 
     public HashMap<String, String> getInitParams() {

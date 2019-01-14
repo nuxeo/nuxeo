@@ -119,7 +119,7 @@ public class PluggableRestletService extends DefaultComponent {
             }
             Restlet restlet;
             try {
-                restlet = theClass.newInstance();
+                restlet = theClass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 log.error("Error while creating Restlet instance for name " + name, e);
                 return null;

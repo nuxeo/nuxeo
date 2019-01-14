@@ -249,6 +249,7 @@ public class RelationService extends DefaultComponent implements RelationManager
                 // Thread context loader is not working in isolated EARs
                 ResourceAdapter adapter = (ResourceAdapter) RelationService.class.getClassLoader()
                                                                                  .loadClass(adapterClassName)
+                                                                                 .getDeclaredConstructor()
                                                                                  .newInstance();
                 adapter.setNamespace(namespace);
                 return adapter;
@@ -284,7 +285,7 @@ public class RelationService extends DefaultComponent implements RelationManager
         if (Graph.class.isAssignableFrom(klass)) {
             // instance
             try {
-                graph = (Graph) klass.newInstance();
+                graph = (Graph) klass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
@@ -293,7 +294,7 @@ public class RelationService extends DefaultComponent implements RelationManager
             // factory
             GraphFactory factory;
             try {
-                factory = (GraphFactory) klass.newInstance();
+                factory = (GraphFactory) klass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
@@ -325,7 +326,7 @@ public class RelationService extends DefaultComponent implements RelationManager
     protected Graph newGraph(String className) {
         try {
             Class<?> klass = getClass().getClassLoader().loadClass(className);
-            return (Graph) klass.newInstance();
+            return (Graph) klass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
@@ -336,7 +337,7 @@ public class RelationService extends DefaultComponent implements RelationManager
         Class<?> klass = graphTypes.get(type);
         if (Graph.class.isAssignableFrom(klass)) {
             try {
-                return (Graph) klass.newInstance();
+                return (Graph) klass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }

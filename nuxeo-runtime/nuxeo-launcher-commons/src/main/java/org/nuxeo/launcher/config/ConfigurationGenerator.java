@@ -1871,8 +1871,8 @@ public class ConfigurationGenerator {
         }
         URLClassLoader ucl = new URLClassLoader(urlsList.toArray(new URL[0]));
         try {
-            return (Driver) Class.forName(classname, true, ucl).newInstance();
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            return (Driver) Class.forName(classname, true, ucl).getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
             throw new DatabaseDriverException(e);
         }
     }

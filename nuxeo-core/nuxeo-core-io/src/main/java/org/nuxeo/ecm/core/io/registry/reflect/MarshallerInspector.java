@@ -371,14 +371,14 @@ public class MarshallerInspector implements Comparable<MarshallerInspector> {
      */
     public Object getNewInstance(RenderingContext ctx, boolean singleton) {
         try {
-            Object instance = clazz.newInstance();
+            Object instance = clazz.getDeclaredConstructor().newInstance();
             if (!singleton) {
                 // inject services right now - do not for the singleton
                 injectServices(instance);
             }
             injectCtx(instance, ctx, singleton);
             return instance;
-        } catch (IllegalArgumentException | IllegalAccessException | InstantiationException e) {
+        } catch (ReflectiveOperationException e) {
             throw new NuxeoException("unable to create a marshaller instance for clazz " + clazz.getName(), e);
         }
     }

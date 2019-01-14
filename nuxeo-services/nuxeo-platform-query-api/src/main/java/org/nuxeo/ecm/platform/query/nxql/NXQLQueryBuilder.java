@@ -139,7 +139,7 @@ public class NXQLQueryBuilder {
             Class<? extends Escaper> escaperClass = whereClause.getEscaperClass();
             if (escaperClass != null) {
                 try {
-                    escaper = escaperClass.newInstance();
+                    escaper = escaperClass.getDeclaredConstructor().newInstance();
                 } catch (ReflectiveOperationException e) {
                     throw new NuxeoException(e);
                 }

@@ -429,12 +429,10 @@ public class PooledDataSourceFactory implements ObjectFactory {
             try {
                 @SuppressWarnings("unchecked")
                 Class<Driver> driverClass = (Class<Driver>) Class.forName(driver);
-                this.driver = driverClass.newInstance();
+                this.driver = driverClass.getDeclaredConstructor().newInstance();
             } catch (ClassNotFoundException e) {
                 throw new InvalidPropertyException("Unable to load driver class: " + driver, e);
-            } catch (InstantiationException e) {
-                throw new InvalidPropertyException("Unable to instantiate driver class: " + driver, e);
-            } catch (IllegalAccessException e) {
+            } catch (ReflectiveOperationException e) {
                 throw new InvalidPropertyException("Unable to instantiate driver class: " + driver, e);
             } catch (ClassCastException e) {
                 throw new InvalidPropertyException("Class is not a " + Driver.class.getName() + ": " + driver, e);
@@ -482,12 +480,10 @@ public class PooledDataSourceFactory implements ObjectFactory {
             try {
                 @SuppressWarnings("unchecked")
                 Class<ExceptionSorter> clazz = (Class<ExceptionSorter>) Class.forName(className);
-                exceptionSorter = clazz.newInstance();
+                exceptionSorter = clazz.getDeclaredConstructor().newInstance();
             } catch (ClassNotFoundException e) {
                 throw new InvalidPropertyException("Unable to load class: " + className, e);
-            } catch (IllegalAccessException e) {
-                throw new InvalidPropertyException("Unable to instantiate class: " + className, e);
-            } catch (InstantiationException e) {
+            } catch (ReflectiveOperationException e) {
                 throw new InvalidPropertyException("Unable to instantiate class: " + className, e);
             } catch (ClassCastException e) {
                 throw new InvalidPropertyException("Class is not a " + ExceptionSorter.class.getName() + ": " + driver, e);

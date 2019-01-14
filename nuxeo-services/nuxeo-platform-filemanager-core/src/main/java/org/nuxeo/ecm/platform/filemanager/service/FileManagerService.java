@@ -411,7 +411,11 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             FileImporter oldPlugin = fileImporters.get(name);
             FileImporter newPlugin;
             try {
-                newPlugin = className != null ? (FileImporter) extension.getContext().loadClass(className).newInstance()
+                newPlugin = className != null
+                        ? (FileImporter) extension.getContext()
+                                                  .loadClass(className)
+                                                  .getDeclaredConstructor()
+                                                  .newInstance()
                         : oldPlugin;
             } catch (ReflectiveOperationException e) {
                 throw new NuxeoException(e);
@@ -426,7 +430,10 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         } else if (className != null) {
             FileImporter plugin;
             try {
-                plugin = (FileImporter) extension.getContext().loadClass(className).newInstance();
+                plugin = (FileImporter) extension.getContext()
+                                                 .loadClass(className)
+                                                 .getDeclaredConstructor()
+                                                 .newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new NuxeoException(e);
             }
@@ -483,7 +490,10 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
         FolderImporter folderImporter;
         try {
-            folderImporter = (FolderImporter) extension.getContext().loadClass(className).newInstance();
+            folderImporter = (FolderImporter) extension.getContext()
+                                                       .loadClass(className)
+                                                       .getDeclaredConstructor()
+                                                       .newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
         }
@@ -516,7 +526,10 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
         CreationContainerListProvider provider;
         try {
-            provider = (CreationContainerListProvider) extension.getContext().loadClass(className).newInstance();
+            provider = (CreationContainerListProvider) extension.getContext()
+                                                                .loadClass(className)
+                                                                .getDeclaredConstructor()
+                                                                .newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
         }

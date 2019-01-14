@@ -53,19 +53,19 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.automation.features:test-platform-functions.xml")
 public class PlatformFunctionTest {
 
-    List<String> listOfString = Arrays.asList(new String[] { "value list 1", "value list 2" });
+    List<String> listOfString = Arrays.asList("value list 1", "value list 2");
 
-    List<Integer> listOfInteger = Arrays.asList(new Integer[] { new Integer(-1), new Integer(-2) });
+    List<Integer> listOfInteger = Arrays.asList(Integer.valueOf(-1), Integer.valueOf(-2));
 
     String[] arrayOfString = new String[] { "value list 1", "value list 2" };
 
-    Integer[] arrayOfInteger = new Integer[] { new Integer(10), new Integer(11), };
+    Integer[] arrayOfInteger = new Integer[] { Integer.valueOf(10), Integer.valueOf(11), };
 
-    List<Object> listOfObjects = new ArrayList<Object>();
+    List<Object> listOfObjects = new ArrayList<>();
 
-    Integer intValue1 = new Integer(1);
+    Integer intValue1 = Integer.valueOf(1);
 
-    Integer intValue2 = new Integer(2);
+    Integer intValue2 = Integer.valueOf(2);
 
     String stringValue1 = "value 1";
 
@@ -94,9 +94,9 @@ public class PlatformFunctionTest {
     public void shouldConcatenateWithIntegerScalar() {
         List<Integer> result = pf.concatenateValuesAsNewList(listOfInteger, intValue1);
         assertEquals(3, result.size());
-        assertEquals(new Integer(-1), result.get(0));
-        assertEquals(new Integer(-2), result.get(1));
-        assertEquals(new Integer(1), result.get(2));
+        assertEquals(Integer.valueOf(-1), result.get(0));
+        assertEquals(Integer.valueOf(-2), result.get(1));
+        assertEquals(Integer.valueOf(1), result.get(2));
     }
 
     @Test
@@ -114,11 +114,11 @@ public class PlatformFunctionTest {
     public void shouldConcatenateListInteger() {
         List<Integer> result = pf.concatenateValuesAsNewList(listOfInteger, arrayOfInteger, intValue1);
         assertEquals(5, result.size());
-        assertEquals(new Integer(-1), result.get(0));
-        assertEquals(new Integer(-2), result.get(1));
-        assertEquals(new Integer(10), result.get(2));
-        assertEquals(new Integer(11), result.get(3));
-        assertEquals(new Integer(1), result.get(4));
+        assertEquals(Integer.valueOf(-1), result.get(0));
+        assertEquals(Integer.valueOf(-2), result.get(1));
+        assertEquals(Integer.valueOf(10), result.get(2));
+        assertEquals(Integer.valueOf(11), result.get(3));
+        assertEquals(Integer.valueOf(1), result.get(4));
     }
 
     @Test

@@ -156,7 +156,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         } else if (ROOT_SECTION_FINDER_FACTORY_EP.equals(extensionPoint)) {
             RootSectionFinderFactoryDescriptor desc = (RootSectionFinderFactoryDescriptor) contribution;
             try {
-                rootSectionFinderFactory = desc.getFactory().newInstance();
+                rootSectionFinderFactory = desc.getFactory().getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException t) {
                 log.error("Unable to load custom RootSectionFinderFactory", t);
             }
@@ -247,7 +247,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
 
         PublishedDocumentFactory factory;
         try {
-            factory = factoryDesc.getKlass().newInstance();
+            factory = factoryDesc.getKlass().getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException("Error while creating factory " + factoryDesc.getName(), e);
         }
@@ -264,7 +264,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
                 throw new NuxeoException("Unable to find validatorsRule" + validatorsRuleName);
             }
             try {
-                validatorsRule = validatorsRuleDesc.getKlass().newInstance();
+                validatorsRule = validatorsRuleDesc.getKlass().getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new NuxeoException("Error while creating validatorsRule " + validatorsRuleName, e);
             }
@@ -305,7 +305,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
             Map<String, String> parameters, PublishedDocumentFactory factory, String configName, String treeTitle) {
         PublicationTree treeImpl;
         try {
-            treeImpl = treeDescriptor.getKlass().newInstance();
+            treeImpl = treeDescriptor.getKlass().getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException("Error while creating tree implementation", e);
         }

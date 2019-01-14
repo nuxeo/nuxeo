@@ -66,7 +66,7 @@ public class XAnnotatedList extends XAnnotatedMember {
     @SuppressWarnings("unchecked")
     @Override
     protected Object getValue(Context ctx, Element base) {
-        List<Object> values = new ArrayList<Object>();
+        List<Object> values = new ArrayList<>();
         if (xao != null) {
             DOMHelper.visitNodes(ctx, this, base, path, elementListVisitor, values);
         } else {
@@ -93,12 +93,10 @@ public class XAnnotatedList extends XAnnotatedMember {
                 }
             } else {
                 try {
-                    Collection col = (Collection) type.newInstance();
+                    Collection col = (Collection) type.getDeclaredConstructor().newInstance();
                     col.addAll(values);
                     return col;
-                } catch (InstantiationException e) {
-                    throw new IllegalArgumentException(e);
-                } catch (IllegalAccessException e) {
+                } catch (ReflectiveOperationException e) {
                     throw new IllegalArgumentException(e);
                 }
             }
@@ -111,7 +109,7 @@ public class XAnnotatedList extends XAnnotatedMember {
     public void toXML(Object instance, Element parent) {
         Object v = accessor.getValue(instance);
         if (v != null) {
-            Object[] objects = null;
+            Object[] objects;
             if (v instanceof Object[]) {
                 objects = (Object[]) v;
             } else if (v instanceof List) {

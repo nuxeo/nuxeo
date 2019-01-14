@@ -86,7 +86,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
     protected Object createInstance() {
         Object object;
         try {
-            object = ri.getContext().loadClass(ri.getImplementation()).newInstance();
+            object = ri.getContext().loadClass(ri.getImplementation()).getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeServiceException(e);
         }

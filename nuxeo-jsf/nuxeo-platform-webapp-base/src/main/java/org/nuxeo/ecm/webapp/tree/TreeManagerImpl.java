@@ -177,7 +177,10 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         } else {
             // custom filter
             try {
-                Object instance = TreeManagerImpl.class.getClassLoader().loadClass(filterClass).newInstance();
+                Object instance = TreeManagerImpl.class.getClassLoader()
+                                                       .loadClass(filterClass)
+                                                       .getDeclaredConstructor()
+                                                       .newInstance();
                 if (instance instanceof Filter) {
                     filter = (Filter) instance;
                 } else {
@@ -205,7 +208,10 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
             return null;
         }
         try {
-            Object instance = TreeManagerImpl.class.getClassLoader().loadClass(leafFilterClass).newInstance();
+            Object instance = TreeManagerImpl.class.getClassLoader()
+                                                   .loadClass(leafFilterClass)
+                                                   .getDeclaredConstructor()
+                                                   .newInstance();
             if (instance instanceof Filter) {
                 return (Filter) instance;
             } else {
@@ -232,7 +238,10 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         } else {
             // custom sorter
             try {
-                Object instance = TreeManagerImpl.class.getClassLoader().loadClass(sorterClass).newInstance();
+                Object instance = TreeManagerImpl.class.getClassLoader()
+                                                       .loadClass(sorterClass)
+                                                       .getDeclaredConstructor()
+                                                       .newInstance();
                 if (instance instanceof Sorter) {
                     sorter = (Sorter) instance;
                 } else {

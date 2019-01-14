@@ -100,7 +100,7 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
             ResourceFactory factory;
             Class<? extends ResourceFactory> factoryClass = descriptor.getFactoryClass();
             try {
-                factory = factoryClass.newInstance();
+                factory = factoryClass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new ManagementRuntimeException("Cannot create factory " + factoryClass, e);
             }

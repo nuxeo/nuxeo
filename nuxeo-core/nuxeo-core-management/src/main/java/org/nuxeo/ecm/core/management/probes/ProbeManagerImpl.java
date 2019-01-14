@@ -153,7 +153,7 @@ public class ProbeManagerImpl implements ProbeManager {
         Class<? extends Probe> probeClass = descriptor.getProbeClass();
         Probe probe;
         try {
-            probe = probeClass.newInstance();
+            probe = probeClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new ManagementRuntimeException("Cannot create management probe for " + descriptor);
         }

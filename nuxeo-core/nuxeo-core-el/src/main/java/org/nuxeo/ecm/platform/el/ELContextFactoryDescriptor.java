@@ -35,7 +35,7 @@ public class ELContextFactoryDescriptor {
 
     protected ELContextFactory newInstance() {
         try {
-            return klass.newInstance();
+            return klass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
         }

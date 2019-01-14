@@ -62,8 +62,8 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     }
 
     protected Map<String, ExtendedInfo> createExtendedInfos() {
-        Map<String, ExtendedInfo> infos = new HashMap<String, ExtendedInfo>();
-        ExtendedInfo info = ExtendedInfoImpl.createExtendedInfo(new Long(1));
+        Map<String, ExtendedInfo> infos = new HashMap<>();
+        ExtendedInfo info = ExtendedInfoImpl.createExtendedInfo(Long.valueOf(1));
         infos.put("id", info);
         return infos;
     }
@@ -98,7 +98,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     }
 
     protected List<LogEntry> doEncapsulate(LogEntry entry) {
-        List<LogEntry> entries = new ArrayList<LogEntry>(1);
+        List<LogEntry> entries = new ArrayList<>(1);
         entries.add(entry);
         return entries;
     }
@@ -118,7 +118,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         List<LogEntry> entries = providerUnderTest.nativeQueryLogs(
                 "log.id = " + entry.getId() + " and log.extendedInfos['id'] is not null", 1, 10);
         assertEquals(1, entries.size());
-        assertEquals(new Long(1L), entries.get(0).getExtendedInfos().get("id").getValue(Long.class));
+        assertEquals(Long.valueOf(1L), entries.get(0).getExtendedInfos().get("id").getValue(Long.class));
     }
 
     @Test
@@ -164,7 +164,6 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         assertEquals("repository2", fetchedEntry2.getRepositoryId());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testByFilter() throws Exception {
         LogEntry one = doCreateEntryAndPersist("id");
@@ -172,7 +171,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         @SuppressWarnings("unused")
         LogEntry two = doCreateEntryAndPersist("id");
 
-        Map<String, FilterMapEntry> filters = new HashMap<String, FilterMapEntry>();
+        Map<String, FilterMapEntry> filters = new HashMap<>();
         FilterMapEntry filterOne = new FilterMapEntry();
         filterOne.setQueryParameterName("yop");
         filterOne.setColumnName("eventDate");
@@ -254,7 +253,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         LogEntry one = doCreateEntryAndPersist("one");
         String eventId = one.getEventId();
         Long count = providerUnderTest.countEventsById(eventId);
-        assertEquals(new Long(1), count);
+        assertEquals(Long.valueOf(1), count);
     }
 
     @Test
@@ -275,7 +274,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         String name = (String) entry[0];
         Long count = (Long) entry[1];
         assertEquals("TestLogEntryProvider", name);
-        assertEquals(new Long(3L), count);
+        assertEquals(Long.valueOf(3L), count);
     }
 
     @Test

@@ -121,7 +121,7 @@ public class DBSCachingRepository implements DBSRepository {
                     "Unable to get cluster invalidator class from descriptor whereas clustering is enabled");
         }
         try {
-            return klass.newInstance();
+            return klass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
         }

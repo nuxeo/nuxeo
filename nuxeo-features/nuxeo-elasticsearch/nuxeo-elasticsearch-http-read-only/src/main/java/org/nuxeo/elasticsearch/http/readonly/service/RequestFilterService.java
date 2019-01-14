@@ -61,12 +61,12 @@ public class RequestFilterService extends DefaultComponent {
 
     }
 
-    public SearchRequestFilter getRequestFilters(String indices) throws InstantiationException, IllegalAccessException {
-        Class clazz = requestFilters.get(indices);
+    public SearchRequestFilter getRequestFilters(String indices) throws ReflectiveOperationException {
+        Class<?> clazz = requestFilters.get(indices);
         if (clazz == null) {
             return null;
         }
-        return (SearchRequestFilter) clazz.newInstance();
+        return (SearchRequestFilter) clazz.getDeclaredConstructor().newInstance();
     }
 
     @Override

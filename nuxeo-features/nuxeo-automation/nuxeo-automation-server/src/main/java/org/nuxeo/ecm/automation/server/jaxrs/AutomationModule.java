@@ -58,16 +58,16 @@ public class AutomationModule extends WebEngineModule {
 
         for (Class<? extends MessageBodyReader<?>> readerKlass : as.getReaders()) {
             try {
-                result.add(readerKlass.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
+                result.add(readerKlass.getDeclaredConstructor().newInstance());
+            } catch (ReflectiveOperationException e) {
                 log.error("Unable to instanciate MessageBodyReader : " + readerKlass, e);
             }
         }
 
         for (Class<? extends MessageBodyWriter<?>> writerKlass : as.getWriters()) {
             try {
-                result.add(writerKlass.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
+                result.add(writerKlass.getDeclaredConstructor().newInstance());
+            } catch (ReflectiveOperationException e) {
                 log.error("Unable to instanciate MessageBodyWriter : " + writerKlass, e);
             }
         }

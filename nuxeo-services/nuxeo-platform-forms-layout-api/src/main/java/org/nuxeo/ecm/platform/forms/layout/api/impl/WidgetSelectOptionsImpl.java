@@ -145,7 +145,7 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
         builder.append(ordering).append(";");
         builder.append(caseSensitive).append(";");
 
-        Integer intValue = new Integer(builder.toString().hashCode());
+        Integer intValue = Integer.valueOf(builder.toString().hashCode());
         return intValue.toString();
     }
 

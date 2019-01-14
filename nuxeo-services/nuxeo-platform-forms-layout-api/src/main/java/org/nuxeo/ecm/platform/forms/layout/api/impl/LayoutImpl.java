@@ -134,7 +134,7 @@ public class LayoutImpl implements Layout {
         builder.append(definitionId).append(";");
         builder.append(mode).append(";");
 
-        Integer intValue = new Integer(builder.toString().hashCode());
+        Integer intValue = Integer.valueOf(builder.toString().hashCode());
         return intValue.toString();
     }
 

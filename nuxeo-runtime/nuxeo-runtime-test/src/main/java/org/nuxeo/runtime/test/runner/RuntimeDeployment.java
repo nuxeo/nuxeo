@@ -148,7 +148,7 @@ public class RuntimeDeployment {
         Set<TargetExtensions> pairs = partialBundles.computeIfAbsent(config.bundle(), key -> new HashSet<>());
         Arrays.stream(config.extensions()).map(c -> {
             try {
-                return c.newInstance();
+                return c.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new IllegalStateException(e);
             }

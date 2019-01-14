@@ -40,7 +40,7 @@ public class MetadataUtilsDescriptor {
 
     public MetadataUtils getNewInstance() {
         try {
-            return adapterClass.newInstance();
+            return adapterClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

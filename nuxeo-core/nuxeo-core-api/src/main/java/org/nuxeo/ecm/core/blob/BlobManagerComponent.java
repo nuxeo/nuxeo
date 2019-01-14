@@ -171,11 +171,11 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
                 if (BlobProvider.class.isAssignableFrom(klass)) {
                     @SuppressWarnings("unchecked")
                     Class<? extends BlobProvider> blobProviderClass = (Class<? extends BlobProvider>) klass;
-                    blobProvider = blobProviderClass.newInstance();
+                    blobProvider = blobProviderClass.getDeclaredConstructor().newInstance();
                 } else if (BinaryManager.class.isAssignableFrom(klass)) {
                     @SuppressWarnings("unchecked")
                     Class<? extends BinaryManager> binaryManagerClass = (Class<? extends BinaryManager>) klass;
-                    BinaryManager binaryManager = binaryManagerClass.newInstance();
+                    BinaryManager binaryManager = binaryManagerClass.getDeclaredConstructor().newInstance();
                     blobProvider = new BinaryBlobProvider(binaryManager);
                 } else {
                     throw new RuntimeException("Unknown class for blob provider: " + klass);

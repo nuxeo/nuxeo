@@ -220,7 +220,7 @@ public class OperationTypeImpl implements OperationType {
     public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException {
         Object obj;
         try {
-            obj = type.newInstance();
+            obj = type.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new OperationException(e);
         }

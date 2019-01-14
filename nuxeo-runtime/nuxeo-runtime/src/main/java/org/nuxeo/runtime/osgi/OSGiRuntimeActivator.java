@@ -143,11 +143,11 @@ public class OSGiRuntimeActivator implements BundleActivator {
     }
 
     public Object newInstance(String ref) throws ReflectiveOperationException {
-        return loadClass(ref).newInstance();
+        return loadClass(ref).getDeclaredConstructor().newInstance();
     }
 
     public Object newInstance(String bundleName, String className) throws ReflectiveOperationException {
-        return loadClass(bundleName, className).newInstance();
+        return loadClass(bundleName, className).getDeclaredConstructor().newInstance();
     }
 
     /**

@@ -151,8 +151,8 @@ public class ElasticSearchComponent extends DefaultComponent
         case EP_DOC_WRITER:
             ElasticSearchDocWriterDescriptor writerDescriptor = (ElasticSearchDocWriterDescriptor) contribution;
             try {
-                jsonESDocumentWriter = writerDescriptor.getKlass().newInstance();
-            } catch (IllegalAccessException | InstantiationException e) {
+                jsonESDocumentWriter = writerDescriptor.getKlass().getDeclaredConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
                 log.error("Cannot instantiate jsonESDocumentWriter from " + writerDescriptor.getKlass());
                 throw new NuxeoException(e);
             }

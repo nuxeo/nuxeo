@@ -52,10 +52,10 @@ public class WebDriverFeature implements RunnerFeature {
         // test here if the driver factory is specified by environment
         String fcName = System.getProperty(DriverFactory.class.getName());
         if (fcName != null) {
-            factory = (DriverFactory) Class.forName(fcName).newInstance();
+            factory = (DriverFactory) Class.forName(fcName).getDeclaredConstructor().newInstance();
         } else {
             if (browser.factory() != DriverFactory.class) {
-                factory = browser.factory().newInstance();
+                factory = browser.factory().getDeclaredConstructor().newInstance();
             } else {
                 factory = browser.type().getDriverFactory();
             }

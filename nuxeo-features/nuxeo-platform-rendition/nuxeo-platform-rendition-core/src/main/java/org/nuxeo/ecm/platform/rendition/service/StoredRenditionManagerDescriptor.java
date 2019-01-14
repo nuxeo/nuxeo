@@ -36,7 +36,7 @@ public class StoredRenditionManagerDescriptor {
     protected synchronized StoredRenditionManager getStoredRenditionManager() {
         if (instance == null) {
             try {
-                instance = clazz.newInstance();
+                instance = clazz.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException("Cannot create StoredRenditionManager", e);
             }

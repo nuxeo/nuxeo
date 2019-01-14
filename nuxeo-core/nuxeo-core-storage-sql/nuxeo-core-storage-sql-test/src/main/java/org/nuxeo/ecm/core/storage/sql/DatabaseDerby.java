@@ -61,7 +61,7 @@ public class DatabaseDerby extends DatabaseHelper {
         System.setProperty("derby.stream.error.file", new File(LOG).getAbsolutePath());
         // newInstance needed after a previous shutdown
         try {
-            Class.forName(DRIVER).newInstance();
+            Class.forName(DRIVER).getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

@@ -143,7 +143,7 @@ public class CoreFeature implements RunnerFeature {
             repositoryConfig = Defaults.of(RepositoryConfig.class);
         }
         try {
-            repositoryInit = repositoryConfig.init().newInstance();
+            repositoryInit = repositoryConfig.init().getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
         }

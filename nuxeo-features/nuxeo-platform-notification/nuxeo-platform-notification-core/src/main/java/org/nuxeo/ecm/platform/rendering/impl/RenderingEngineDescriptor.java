@@ -54,8 +54,8 @@ public class RenderingEngineDescriptor {
         return klass;
     }
 
-    public RenderingEngine newInstance() throws InstantiationException, IllegalAccessException {
-        return klass.newInstance();
+    public RenderingEngine newInstance() throws ReflectiveOperationException {
+        return klass.getDeclaredConstructor().newInstance();
     }
 
     @Override

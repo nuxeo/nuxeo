@@ -44,7 +44,7 @@ public class ThreadSafeRestletFilter extends Filter {
         if (getNext() != null) {
             try {
                 // get a new instance of the restlet each time it is called.
-                Restlet next = getNext().getClass().newInstance();
+                Restlet next = getNext().getClass().getDeclaredConstructor().newInstance();
                 next.handle(request, response);
             } catch (ReflectiveOperationException e) {
                 log.error("Restlet handling error", e);

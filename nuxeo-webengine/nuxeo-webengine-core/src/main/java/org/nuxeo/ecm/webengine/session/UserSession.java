@@ -131,7 +131,7 @@ public final class UserSession extends HashMap<String, Object> {
         }
         // component not found
         try {
-            comp = type.newInstance();
+            comp = type.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new SessionException("Failed to instantiate component: " + type, e);
         }

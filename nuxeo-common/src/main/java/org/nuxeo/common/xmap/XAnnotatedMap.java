@@ -60,10 +60,8 @@ public class XAnnotatedMap extends XAnnotatedList {
     protected Object getValue(Context ctx, Element base) {
         Map<String, Object> values;
         try {
-            values = (Map) type.newInstance();
-        } catch (InstantiationException e) {
-            throw new IllegalArgumentException(e);
-        } catch (IllegalAccessException e) {
+            values = (Map) type.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
             throw new IllegalArgumentException(e);
         }
         if (xao != null) {
@@ -86,7 +84,8 @@ public class XAnnotatedMap extends XAnnotatedList {
     @Override
     public void toXML(Object instance, Element parent) {
         Object v = accessor.getValue(instance);
-        if (v != null && v instanceof Map<?, ?>) {
+        if (v instanceof Map<?, ?>) {
+            @SuppressWarnings("unchecked")
             Map<String, ?> map = (Map<String, ?>) v;
             if (xao == null) {
                 for (Map.Entry<String, ?> entry : map.entrySet()) {

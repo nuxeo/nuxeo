@@ -93,6 +93,7 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
                 // Thread context loader is not working in isolated EARs
                 codec = (DocumentViewCodec) DocumentViewCodecManager.class.getClassLoader()
                                                                           .loadClass(className)
+                                                                          .getDeclaredConstructor()
                                                                           .newInstance();
             } catch (ReflectiveOperationException e) {
                 String msg = String.format("Caught error when instantiating codec '%s' with " + "class '%s' ",

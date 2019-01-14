@@ -43,7 +43,7 @@ public class NewMethod implements TemplateMethodModelEx {
             String className = (String) arguments.get(0);
             klass = Class.forName(className);
             if (size == 1) {
-                return klass.newInstance();
+                return klass.getDeclaredConstructor().newInstance();
             }
         } catch (ReflectiveOperationException e) {
             throw new TemplateModelException("Failed to isntantiate the object", e);

@@ -60,7 +60,7 @@ public class GroupComputerDescriptor implements Serializable {
         if (groupComputer == null) {
             if (computerClass != null) {
                 try {
-                    groupComputer = computerClass.newInstance();
+                    groupComputer = computerClass.getDeclaredConstructor().newInstance();
                 } catch (ReflectiveOperationException e) {
                     throw new NuxeoException(e);
                 }

@@ -63,7 +63,7 @@ public class ThumbnailFactoryDescriptor implements Serializable {
 
     public ThumbnailFactory getFactory() {
         try {
-            return (ThumbnailFactory) factoryClass.newInstance();
+            return factoryClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
         }

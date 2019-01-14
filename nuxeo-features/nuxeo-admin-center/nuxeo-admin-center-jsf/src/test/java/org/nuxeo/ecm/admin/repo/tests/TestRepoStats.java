@@ -72,11 +72,11 @@ public class TestRepoStats {
         // System.out.println(stat1.toString());
 
         assertEquals(5, stat1.getTotalNbDocs());
-        assertEquals(new Long(1), stat1.getDocTypeCount("Root"));
-        assertEquals(new Long(1), stat1.getDocTypeCount("WorkspaceRoot"));
-        assertEquals(new Long(1), stat1.getDocTypeCount("TemplateRoot"));
-        assertEquals(new Long(1), stat1.getDocTypeCount("SectionRoot"));
-        assertEquals(new Long(1), stat1.getDocTypeCount("Domain"));
+        assertEquals(Long.valueOf(1), stat1.getDocTypeCount("Root"));
+        assertEquals(Long.valueOf(1), stat1.getDocTypeCount("WorkspaceRoot"));
+        assertEquals(Long.valueOf(1), stat1.getDocTypeCount("TemplateRoot"));
+        assertEquals(Long.valueOf(1), stat1.getDocTypeCount("SectionRoot"));
+        assertEquals(Long.valueOf(1), stat1.getDocTypeCount("Domain"));
         assertEquals(0, stat1.getTotalBlobNumber());
         assertEquals(0, stat1.getVersions());
 
@@ -99,7 +99,7 @@ public class TestRepoStats {
         assertEquals(1, stat2.getTotalBlobNumber());
         assertEquals(5, stat2.getTotalBlobSize());
         assertEquals(5, stat2.getMaxBlobSize());
-        assertEquals(new Long(1), stat2.getDocTypeCount("File"));
+        assertEquals(Long.valueOf(1), stat2.getDocTypeCount("File"));
 
         // Add a version
 
@@ -123,7 +123,7 @@ public class TestRepoStats {
         assertEquals(2, stat3.getTotalBlobNumber());
         assertEquals(10, stat3.getTotalBlobSize());
         assertEquals(5, stat3.getMaxBlobSize());
-        assertEquals(new Long(2), stat3.getDocTypeCount("File"));
+        assertEquals(Long.valueOf(2), stat3.getDocTypeCount("File"));
 
         // modify blob
         blob = Blobs.createBlob("123456789");

@@ -38,7 +38,7 @@ public abstract class AbstractTestBulkActionValidation<T extends BulkActionValid
 
     protected void assertInvalidCommand(BulkCommand command, String errorMessage) {
         try {
-            T actionValidation = actionValidationClass.newInstance();
+            T actionValidation = actionValidationClass.getDeclaredConstructor().newInstance();
             actionValidation.validate(command);
             fail("command " + command + " should have been invalid");
         } catch (ReflectiveOperationException e) {

@@ -275,13 +275,11 @@ public class BundleImpl implements Bundle {
                 return activator;
             }
             try {
-                activator = (BundleActivator) loadClass(className).newInstance();
+                activator = (BundleActivator) loadClass(className).getDeclaredConstructor().newInstance();
             } catch (ClassNotFoundException e) {
                 throw new BundleException("Activator not found: " + className, e);
-            } catch (InstantiationException e) {
+            } catch (ReflectiveOperationException e) {
                 throw new BundleException("Activator not instantiable: " + className, e);
-            } catch (IllegalAccessException e) {
-                throw new BundleException("Activator not accessible: " + className, e);
             }
         }
         return activator;

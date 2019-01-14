@@ -58,10 +58,10 @@ class FeaturesLoader {
 
         protected RunnerFeature feature;
 
-        Holder(Class<? extends RunnerFeature> aType) throws InstantiationException, IllegalAccessException {
+        Holder(Class<? extends RunnerFeature> aType) throws ReflectiveOperationException {
             type = aType;
             testClass = new TestClass(aType);
-            feature = aType.newInstance();
+            feature = aType.getDeclaredConstructor().newInstance();
         }
 
         @Override

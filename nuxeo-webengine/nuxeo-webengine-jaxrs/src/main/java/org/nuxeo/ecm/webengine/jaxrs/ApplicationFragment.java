@@ -75,7 +75,7 @@ public class ApplicationFragment extends Application {
 
     protected synchronized void createApp() {
         try {
-            Object obj = bundle.loadClass(appClass).newInstance();
+            Object obj = bundle.loadClass(appClass).getDeclaredConstructor().newInstance();
             if (obj instanceof ApplicationFactory) {
                 app = ((ApplicationFactory) obj).getApplication(bundle, attrs);
             } else if (obj instanceof Application) {

@@ -620,7 +620,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             // things may have changed since last query
             currentEntryIndex = 0;
         } else {
-            currentEntryIndex = (new Long(getPageSize() - 1)).intValue();
+            currentEntryIndex = (Long.valueOf(getPageSize() - 1)).intValue();
         }
     }
 

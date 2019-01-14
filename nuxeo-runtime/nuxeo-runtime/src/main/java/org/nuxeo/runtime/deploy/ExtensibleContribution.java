@@ -105,7 +105,7 @@ public abstract class ExtensibleContribution extends Contribution {
     public ExtensibleContribution clone() {
         ExtensibleContribution clone;
         try {
-            clone = getClass().newInstance();
+            clone = getClass().getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Failed to instantiate the contribution class. "
                     + "Contribution classes must have a trivial constructor", e);

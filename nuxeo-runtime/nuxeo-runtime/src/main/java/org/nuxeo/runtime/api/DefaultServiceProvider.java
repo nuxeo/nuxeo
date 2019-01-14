@@ -88,7 +88,7 @@ public class DefaultServiceProvider implements ServiceProvider {
         public Object getService() {
             if (service == null) {
                 try {
-                    service = type.newInstance();
+                    service = type.getDeclaredConstructor().newInstance();
                 } catch (ReflectiveOperationException e) {
                     throw new RuntimeException(e);
                 }

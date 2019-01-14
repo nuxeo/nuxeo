@@ -52,7 +52,7 @@ public class BlobDispatcherDescriptor {
             }
             BlobDispatcher blobDispatcher;
             try {
-                blobDispatcher = klass.newInstance();
+                blobDispatcher = klass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new NuxeoException(e);
             }

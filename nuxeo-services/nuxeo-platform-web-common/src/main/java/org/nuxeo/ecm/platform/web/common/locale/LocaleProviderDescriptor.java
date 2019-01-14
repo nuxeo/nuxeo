@@ -33,7 +33,7 @@ public class LocaleProviderDescriptor {
 
     public LocaleProvider newProvider() {
         try {
-            return clazz.newInstance();
+            return clazz.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Cannot create locale provider", e);
         }

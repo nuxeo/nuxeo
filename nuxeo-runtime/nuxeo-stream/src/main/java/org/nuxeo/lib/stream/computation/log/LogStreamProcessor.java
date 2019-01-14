@@ -143,7 +143,7 @@ public class LogStreamProcessor implements StreamProcessor {
                     topology.getDescendantComputationNames(root).stream().mapToLong(watermarks::get).min().orElse(0));
         }
         // return the minimum wm for all trees that are not 0
-        long ret = watermarkTrees.values().stream().filter(wm -> wm > 1).mapToLong(Long::new).min().orElse(0);
+        long ret = watermarkTrees.values().stream().filter(wm -> wm > 1).mapToLong(Long::valueOf).min().orElse(0);
         if (log.isTraceEnabled()) {
             log.trace("lowWatermark: " + ret);
             watermarkTrees.forEach((k, v) -> log.trace("tree " + k + ": " + v));

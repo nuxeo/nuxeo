@@ -72,8 +72,8 @@ public class RenditionDefinitionProviderDescriptor {
     public RenditionDefinitionProvider getProvider() {
         if (provider == null && providerClass != null) {
             try {
-                provider = providerClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                provider = providerClass.getDeclaredConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
                 log.error(String.format("Unable to instantiate RenditionDefinitionProvider for '%s'", getName()), e);
             }
         }

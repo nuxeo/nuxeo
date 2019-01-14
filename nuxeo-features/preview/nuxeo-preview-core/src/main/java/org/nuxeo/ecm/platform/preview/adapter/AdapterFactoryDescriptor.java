@@ -73,7 +73,7 @@ public class AdapterFactoryDescriptor implements Serializable {
 
     public PreviewAdapterFactory getNewInstance() {
         try {
-            return (PreviewAdapterFactory) adapterClass.newInstance();
+            return (PreviewAdapterFactory) adapterClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

@@ -556,13 +556,13 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             for (NegotiatorDescriptor nd : nds) {
                 Class<Negotiator> ndc = nd.getNegotiatorClass();
                 try {
-                    Negotiator neg = ndc.newInstance();
+                    Negotiator neg = ndc.getDeclaredConstructor().newInstance();
                     neg.setProperties(nd.getProperties());
                     res = neg.getResult(target, context);
                     if (res != null) {
                         break;
                     }
-                } catch (IllegalAccessException | InstantiationException e) {
+                } catch (ReflectiveOperationException e) {
                     throw new RuntimeException(e);
                 }
             }

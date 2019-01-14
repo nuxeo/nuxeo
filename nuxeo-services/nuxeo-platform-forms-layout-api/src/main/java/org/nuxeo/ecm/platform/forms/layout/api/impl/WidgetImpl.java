@@ -154,7 +154,7 @@ public class WidgetImpl implements Widget {
         builder.append(mode).append(";");
         builder.append(level).append(";");
 
-        Integer intValue = new Integer(builder.toString().hashCode());
+        Integer intValue = Integer.valueOf(builder.toString().hashCode());
         return intValue.toString();
     }
 

@@ -145,7 +145,7 @@ public class LayoutFunctions {
         }
         builder.append(";");
 
-        Integer intValue = new Integer(builder.toString().hashCode());
+        Integer intValue = Integer.valueOf(builder.toString().hashCode());
         return intValue.toString();
     }
 
@@ -179,7 +179,7 @@ public class LayoutFunctions {
         }
         builder.append(";");
 
-        Integer intValue = new Integer(builder.toString().hashCode());
+        Integer intValue = Integer.valueOf(builder.toString().hashCode());
         return intValue.toString();
 
     }
@@ -270,7 +270,7 @@ public class LayoutFunctions {
         }
         builder.append(";");
 
-        Integer intValue = new Integer(builder.toString().hashCode());
+        Integer intValue = Integer.valueOf(builder.toString().hashCode());
         return intValue.toString();
     }
 

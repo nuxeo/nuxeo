@@ -213,17 +213,6 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
         return url;
     }
 
-    // TODO implement this method if you want packages to be supported by this loader
-    @Override
-    protected Package getPackage(String name) {
-        return super.getPackage(name);
-    }
-
-    @Override
-    protected Package[] getPackages() {
-        return super.getPackages();
-    }
-
     protected String getId() {
         return "" + this + "[" + this.getClass().getClassLoader() + "]";
     }

@@ -45,7 +45,7 @@ public class TestTokenService {
 
         assertNotNull(tokenStore.getRequestToken(rToken.getToken()));
 
-        rToken = tokenStore.addVerifierToRequestToken(rToken.getToken(), new Long(0));
+        rToken = tokenStore.addVerifierToRequestToken(rToken.getToken(), Long.valueOf(0));
 
         assertNotNull(rToken.getVerifier());
 

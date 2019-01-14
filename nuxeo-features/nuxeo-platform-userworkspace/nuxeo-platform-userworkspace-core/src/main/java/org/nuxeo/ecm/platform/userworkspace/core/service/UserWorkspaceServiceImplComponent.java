@@ -79,7 +79,7 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
                 throw new NuxeoException("No class specified for the userWorkspace");
             }
             try {
-                userWorkspaceService = (UserWorkspaceService) klass.newInstance();
+                userWorkspaceService = (UserWorkspaceService) klass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new NuxeoException("Failed to instantiate class " + klass, e);
             }

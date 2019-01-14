@@ -254,7 +254,10 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
     protected void registerVersioningService(VersioningServiceDescriptor contrib) {
         String klass = contrib.className;
         try {
-            VersioningService vs = (VersioningService) context.getRuntimeContext().loadClass(klass).newInstance();
+            VersioningService vs = (VersioningService) context.getRuntimeContext()
+                                                              .loadClass(klass)
+                                                              .getDeclaredConstructor()
+                                                              .newInstance();
             versioningServices.put(contrib, vs);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Failed to instantiate: " + klass, e);

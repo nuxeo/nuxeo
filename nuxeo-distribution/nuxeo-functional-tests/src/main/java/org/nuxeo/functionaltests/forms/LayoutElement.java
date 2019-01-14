@@ -81,7 +81,7 @@ public class LayoutElement implements LayoutFragment {
                 Constructor<T> constructor = pageClassToProxy.getConstructor(WebDriver.class, String.class);
                 return constructor.newInstance(driver, getSubElementId(id));
             } catch (NoSuchMethodException e) {
-                return pageClassToProxy.newInstance();
+                return pageClassToProxy.getDeclaredConstructor().newInstance();
             }
         } catch (RuntimeException e) {
             throw e;

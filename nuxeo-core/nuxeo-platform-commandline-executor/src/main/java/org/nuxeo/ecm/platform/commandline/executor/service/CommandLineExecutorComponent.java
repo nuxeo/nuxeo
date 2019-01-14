@@ -144,7 +144,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
             CommandTesterDescriptor desc = (CommandTesterDescriptor) contribution;
             CommandTester tester;
             try {
-                tester = (CommandTester) desc.getTesterClass().newInstance();
+                tester = (CommandTester) desc.getTesterClass().getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }

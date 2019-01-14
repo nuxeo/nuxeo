@@ -99,7 +99,7 @@ public class InvokableIteratorMethod extends InvokableMethod {
         if (!(input instanceof Iterable)) {
             throw new IllegalStateException("An iterable method was called in a non iterable context");
         }
-        OutputCollector list = collector.newInstance();
+        OutputCollector list = collector.getDeclaredConstructor().newInstance();
         Iterable<?> iterable = (Iterable<?>) input;
         Iterator<?> it = iterable.iterator();
         while (it.hasNext()) {

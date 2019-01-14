@@ -67,7 +67,7 @@ public class ContributionPersistenceComponent extends DefaultComponent implement
         // of possible problems caused by class loaders in real OSGI frameworks.
         ContributionStorageDescriptor c = (ContributionStorageDescriptor) contribution;
         try {
-            storage = (ContributionStorage) c.clazz.newInstance();
+            storage = (ContributionStorage) c.clazz.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeServiceException(e);
         }

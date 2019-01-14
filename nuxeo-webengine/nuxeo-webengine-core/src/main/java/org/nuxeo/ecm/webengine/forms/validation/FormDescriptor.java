@@ -65,7 +65,7 @@ public class FormDescriptor {
         }
         org.nuxeo.ecm.webengine.forms.validation.annotations.FormValidator fv = type.getAnnotation(org.nuxeo.ecm.webengine.forms.validation.annotations.FormValidator.class);
         if (fv != null) {
-            validator = fv.value().newInstance();
+            validator = fv.value().getDeclaredConstructor().newInstance();
         }
     }
 
@@ -127,7 +127,7 @@ public class FormDescriptor {
             // custom validator
             org.nuxeo.ecm.webengine.forms.validation.annotations.FieldValidator custom = m.getAnnotation(org.nuxeo.ecm.webengine.forms.validation.annotations.FieldValidator.class);
             if (custom != null) {
-                validator.add((FieldValidator) custom.value().newInstance());
+                validator.add((FieldValidator) custom.value().getDeclaredConstructor().newInstance());
             }
             // type convertor
             Class<?> rtype = m.getReturnType();

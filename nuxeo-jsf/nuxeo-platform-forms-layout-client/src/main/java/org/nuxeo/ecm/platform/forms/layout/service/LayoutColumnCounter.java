@@ -46,16 +46,16 @@ public class LayoutColumnCounter {
 
     public void increment() {
         if (index == null) {
-            index = new Integer(0);
+            index = Integer.valueOf(0);
         }
-        this.index = new Integer(index.intValue() + 1);
+        this.index = Integer.valueOf(index.intValue() + 1);
     }
 
     public void decrement() {
         if (index == null) {
-            index = new Integer(0);
+            index = Integer.valueOf(0);
         }
-        this.index = new Integer(index.intValue() - 1);
+        this.index = Integer.valueOf(index.intValue() - 1);
     }
 
 }

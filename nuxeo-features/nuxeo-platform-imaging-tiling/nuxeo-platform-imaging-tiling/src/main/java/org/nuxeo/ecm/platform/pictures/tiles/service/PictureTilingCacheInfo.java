@@ -185,7 +185,7 @@ public class PictureTilingCacheInfo {
                     }
 
                     if (shrinkedWidth > 0) {
-                        return shrinkedImages.get(new Integer(shrinkedWidth));
+                        return shrinkedImages.get(Integer.valueOf(shrinkedWidth));
                     } else {
                         String shrinkedImagePath = new Path(workingDir).append(
                                 "reduced-" + neededWidth + "x" + neededHeight + ".jpg").toString();
@@ -193,11 +193,11 @@ public class PictureTilingCacheInfo {
                             ImageInfo shrinked = ImageResizer.resize(originalPictureInfos.getFilePath(),
                                     shrinkedImagePath, neededWidth, neededHeight, -1);
 
-                            shrinkedImagesWidths.add(new Integer(shrinked.getWidth()));
+                            shrinkedImagesWidths.add(Integer.valueOf(shrinked.getWidth()));
                             Collections.sort(shrinkedImagesWidths);
                             Collections.reverse(shrinkedImagesWidths);
 
-                            shrinkedImages.put(new Integer(shrinked.getWidth()), shrinked);
+                            shrinkedImages.put(Integer.valueOf(shrinked.getWidth()), shrinked);
 
                             return shrinked;
                         } catch (CommandNotAvailable | CommandException e) {

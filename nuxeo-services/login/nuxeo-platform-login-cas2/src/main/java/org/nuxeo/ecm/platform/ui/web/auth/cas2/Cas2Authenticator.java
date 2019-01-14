@@ -358,21 +358,9 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthen
         ProxyTicketValidator proxyValidator;
         try {
             proxyValidator = (ProxyTicketValidator) Framework.getRuntime().getContext().loadClass(
-                    proxyValidatorClassName).newInstance();
-        } catch (InstantiationException e) {
-            log.error(
-                    "checkProxyCasTicket during the ProxyTicketValidator initialization with InstantiationException:",
-                    e);
-            return null;
-        } catch (IllegalAccessException e) {
-            log.error(
-                    "checkProxyCasTicket during the ProxyTicketValidator initialization with IllegalAccessException:",
-                    e);
-            return null;
-        } catch (ClassNotFoundException e) {
-            log.error(
-                    "checkProxyCasTicket during the ProxyTicketValidator initialization with ClassNotFoundException:",
-                    e);
+                    proxyValidatorClassName).getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            log.error("checkProxyCasTicket during the ProxyTicketValidator initialization", e);
             return null;
         }
 
@@ -402,16 +390,13 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthen
     protected String checkCasTicket(String ticket, HttpServletRequest httpRequest) {
         ServiceTicketValidator ticketValidator;
         try {
-            ticketValidator = (ServiceTicketValidator) Framework.getRuntime().getContext().loadClass(
-                    ticketValidatorClassName).newInstance();
-        } catch (InstantiationException e) {
-            log.error("checkCasTicket during the ServiceTicketValidator initialization with InstantiationException:", e);
-            return null;
-        } catch (IllegalAccessException e) {
-            log.error("checkCasTicket during the ServiceTicketValidator initialization with IllegalAccessException:", e);
-            return null;
-        } catch (ClassNotFoundException e) {
-            log.error("checkCasTicket during the ServiceTicketValidator initialization with ClassNotFoundException:", e);
+            ticketValidator = (ServiceTicketValidator) Framework.getRuntime()
+                                                                .getContext()
+                                                                .loadClass(ticketValidatorClassName)
+                                                                .getDeclaredConstructor()
+                                                                .newInstance();
+        } catch (ReflectiveOperationException e) {
+            log.error("checkCasTicket during the ServiceTicketValidator initialization", e);
             return null;
         }
 

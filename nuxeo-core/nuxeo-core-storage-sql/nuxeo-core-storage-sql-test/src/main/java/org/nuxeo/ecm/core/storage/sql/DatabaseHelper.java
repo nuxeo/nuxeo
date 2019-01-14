@@ -114,7 +114,7 @@ public abstract class DatabaseHelper {
      */
     public static void setDatabaseForTests(String className) {
         try {
-            DATABASE = (DatabaseHelper) Class.forName(className).newInstance();
+            DATABASE = (DatabaseHelper) Class.forName(className).getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError("Database class not found: " + className);
         }

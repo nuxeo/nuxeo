@@ -57,7 +57,7 @@ public class DocumentAdapterDescriptor {
     @XNode("@factory")
     void setFactory(Class<DocumentAdapterFactory> factoryClass) throws ReflectiveOperationException {
         try {
-            factory = factoryClass.newInstance();
+            factory = factoryClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             log.error("ERROR instantiating document adapter factory class!");
             throw e;

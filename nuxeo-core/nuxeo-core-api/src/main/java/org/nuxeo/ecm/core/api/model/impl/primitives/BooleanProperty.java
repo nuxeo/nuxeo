@@ -74,22 +74,22 @@ public class BooleanProperty extends ScalarProperty {
         }
         byte n = (byte) (v ? 1 : 0);
         if (toType == Integer.class) {
-            return (T) new Integer(n);
+            return (T) Integer.valueOf(n);
         }
         if (toType == Long.class) {
-            return (T) new Long(n);
+            return (T) Long.valueOf(n);
         }
         if (toType == Double.class) {
-            return (T) new Double(n);
+            return (T) Double.valueOf(n);
         }
         if (toType == Float.class) {
-            return (T) new Float(n);
+            return (T) Float.valueOf(n);
         }
         if (toType == Short.class) {
-            return (T) new Short(n);
+            return (T) Short.valueOf(n);
         }
         if (toType == Byte.class) {
-            return (T) new Byte(n);
+            return (T) Byte.valueOf(n);
         }
         throw new PropertyConversionException(value.getClass(), toType);
     }
