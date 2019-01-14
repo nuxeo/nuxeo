@@ -34,11 +34,16 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -289,6 +294,52 @@ public class TestKeyValueBlobTransientStore {
         assertFalse(ts.exists("foo"));
         assertFalse(ts.exists("bar"));
         assertEquals(0, tsp.getStorageSize());
+    }
+
+    @Test
+    public void testGetParametersWithConcurrentRemove() throws Exception {
+        String key = "foo";
+        String param = "bar";
+        String value = "gee";
+        final int COUNT = 10_000;
+        CyclicBarrier barrier = new CyclicBarrier(2);
+        Runnable synchronizer = () -> {
+            try {
+                barrier.await(1, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            } catch (BrokenBarrierException | TimeoutException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        Runnable remover = () -> {
+            synchronizer.run();
+            for (int i = 0; i < COUNT; i++ ) {
+                ts.remove(key);
+            }
+        };
+        MutableObject<RuntimeException> exc = new MutableObject<>();
+        Runnable getter = () -> {
+            synchronizer.run();
+            for (int i = 0; i < COUNT; i++ ) {
+                ts.putParameter(key, param, value);
+                try {
+                    ts.getParameters(key);
+                } catch (NullPointerException e) {
+                    exc.setValue(e);
+                }
+            };
+        };
+        Thread t1 = new Thread(remover);
+        Thread t2 = new Thread(getter);
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+        if (exc.getValue() != null) {
+            throw exc.getValue();
+        }
     }
 
 }
