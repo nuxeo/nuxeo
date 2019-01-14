@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.transientstore.keyvalueblob;
 
-import static java.util.function.Function.identity;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import java.io.ByteArrayInputStream;
@@ -33,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -383,7 +381,14 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
             }
         }
         // get values
-        return parameters.stream().collect(Collectors.toMap(identity(), p -> getParameter(key, p)));
+        Map<String, Serializable> map = new HashMap<>();
+        for (String p : parameters) {
+            Serializable value = getParameter(key, p);
+            if (value != null) {
+                map.put(p, value);
+            }
+        }
+        return map;
     }
 
     protected void removeParameters(String key) {
