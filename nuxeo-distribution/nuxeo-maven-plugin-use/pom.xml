@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>10.10-SNAPSHOT</version>
+    <version>11.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -18,6 +18,16 @@
       <artifactId>nuxeo-nxr-server</artifactId>
       <type>zip</type>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -25,7 +35,7 @@
       <plugin>
         <groupId>org.nuxeo</groupId>
         <artifactId>nuxeo-maven-plugin</artifactId>
-        <version>10.10-SNAPSHOT</version>
+        <version>11.1-SNAPSHOT</version> <!-- TODO change that -->
       </plugin>
     </plugins>
     <!--<pluginManagement>-->
@@ -33,7 +43,7 @@
         <!--<plugin>-->
           <!--<groupId>org.nuxeo</groupId>-->
           <!--<artifactId>nuxeo-maven-plugin</artifactId>-->
-          <!--<version>10.10-SNAPSHOT</version>-->
+          <!--<version>11.1-SNAPSHOT</version>-->
         <!--</plugin>-->
       <!--</plugins>-->
     <!--</pluginManagement>-->

@@ -6643,6 +6643,11 @@
           <artifactId>maven-plugin-plugin</artifactId>
           <version>3.6.0</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>nuxeo-maven-plugin</artifactId>
+          <version>${project.version}</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
