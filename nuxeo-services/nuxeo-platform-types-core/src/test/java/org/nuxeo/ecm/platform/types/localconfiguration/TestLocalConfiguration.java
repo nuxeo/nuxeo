@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -70,7 +71,8 @@ public class TestLocalConfiguration {
 
     public static final DocumentRef PARENT_WORKSPACE_REF = new PathRef("/default-domain/workspaces/workspace");
 
-    public static final DocumentRef CHILD_WORKSPACE_REF = new PathRef("/default-domain/workspaces/workspace/workspace2");
+    public static final DocumentRef CHILD_WORKSPACE_REF = new PathRef(
+            "/default-domain/workspaces/workspace/workspace2");
 
     public static final String WORKSPACE_TYPE = "Workspace";
 
@@ -137,6 +139,25 @@ public class TestLocalConfiguration {
         assertFalse(typeManager.canCreate(FILE_TYPE, workspace.getType(), workspace));
         assertFalse(typeManager.canCreate(NOTE_TYPE, workspace.getType(), workspace));
         assertFalse(typeManager.canCreate(SECTION_TYPE, workspace.getType(), workspace));
+    }
+
+    /*
+     * An empty allowed types list doesn't define no type is allowed, this is purpose of denyAllTypes, it means local
+     * configuration is enabled but doesn't override its parent.
+     */
+    @Test
+    public void shouldInheritAllowTypeFromParentIfEmpty() {
+        DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
+        setAllowedTypes(workspace, "File");
+
+        DocumentModel folder = session.createDocumentModel(PARENT_WORKSPACE_REF.toString(), "folder", "Folder");
+        folder.addFacet("UITypesLocalConfiguration");
+        folder = session.createDocument(folder);
+        setAllowedTypes(folder); // nothing
+
+        UITypesConfiguration configuration = localConfigurationService.getConfiguration(UITypesConfiguration.class,
+                UI_TYPES_CONFIGURATION_FACET, folder);
+        assertEquals(Collections.singletonList("File"), configuration.getAllowedTypes());
     }
 
     protected void setDenyAllTypes(DocumentModel doc, boolean denyAllTypes) {
