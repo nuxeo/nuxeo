@@ -929,8 +929,11 @@ public class DialectOracle extends Dialect {
 
     @Override
     public boolean isConcurrentUpdateException(Throwable t) {
-        while (t.getCause() != null) {
-            t = t.getCause();
+        // recent versions of the Oracle JDBC driver throw a SQLException
+        // whose cause, an OracleDatabaseException, is not itself a SQLException
+        Throwable cause;
+        while ((cause = t.getCause()) != null && cause instanceof SQLException) {
+            t = cause;
         }
         switch (getOracleErrorCode(t)) {
         case 1: // ORA-00001: unique constraint violated
