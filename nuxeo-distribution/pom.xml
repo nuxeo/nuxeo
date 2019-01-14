@@ -27,6 +27,8 @@
     <module>nuxeo-nxr-jsf-ui</module>
     <module>nuxeo-marketplace-jsf-ui</module>
     <module>nuxeo-server-tomcat</module>
+
+    <module>nuxeo-maven-plugin</module>
     <!-- Functional Tests -->
     <module>nuxeo-server-tests</module>
     <module>nuxeo-server-hotreload-tests</module>

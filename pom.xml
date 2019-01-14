@@ -6146,7 +6146,7 @@
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
                 <banSnapshots>true</banSnapshots>
-                <unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin</unCheckedPluginList>
+                <unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin,org.nuxeo:nuxeo-maven-plugin</unCheckedPluginList>
               </requirePluginVersions>
               <bannedPlugins>
                 <excludes>
@@ -6637,6 +6637,11 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
           <version>1.5.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <version>3.6.0</version>
         </plugin>
       </plugins>
     </pluginManagement>

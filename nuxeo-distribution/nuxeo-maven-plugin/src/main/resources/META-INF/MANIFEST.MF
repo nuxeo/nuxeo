@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo Maven Plugin
+Bundle-Vendor: Nuxeo
+Bundle-SymbolicName: org.nuxeo.maven.plugin;singleton:=true
