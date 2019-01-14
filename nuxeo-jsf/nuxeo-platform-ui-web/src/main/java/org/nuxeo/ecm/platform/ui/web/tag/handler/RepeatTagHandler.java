@@ -174,7 +174,7 @@ public class RepeatTagHandler extends TagHandler {
         }
         builder.append(";");
 
-        Integer intValue = new Integer(builder.toString().hashCode());
+        Integer intValue = Integer.valueOf(builder.toString().hashCode());
         return intValue.toString();
     }
 

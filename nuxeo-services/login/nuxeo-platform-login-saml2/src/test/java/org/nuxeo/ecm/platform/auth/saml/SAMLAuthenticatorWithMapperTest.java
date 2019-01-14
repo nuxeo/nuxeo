@@ -91,8 +91,8 @@ public class SAMLAuthenticatorWithMapperTest {
     
     private Map<String, String> getParamMap(boolean createIfNeeded, boolean update) {
     	Map<String, String> resultMap = new HashMap<String, String>();
-    	resultMap.put("userResolverCreateIfNeeded", new Boolean(createIfNeeded).toString());
-    	resultMap.put("userResolverUpdate", new Boolean(update).toString());
+    	resultMap.put("userResolverCreateIfNeeded", Boolean.valueOf(createIfNeeded).toString());
+    	resultMap.put("userResolverUpdate", Boolean.valueOf(update).toString());
     	
     	return resultMap;
     }

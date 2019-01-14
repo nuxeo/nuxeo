@@ -81,7 +81,7 @@ public class ExceptionHandlingComponent extends DefaultComponent implements Exce
 
     protected <T> T newInstance(Class<T> klass) {
         try {
-            return klass.newInstance();
+            return klass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

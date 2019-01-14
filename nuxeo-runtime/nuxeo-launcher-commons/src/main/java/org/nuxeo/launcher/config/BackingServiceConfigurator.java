@@ -143,7 +143,7 @@ public class BackingServiceConfigurator {
                     Optional<URLClassLoader> ucl = getClassLoaderForTemplate(templateDir, classPath);
                     if (ucl.isPresent()) {
                         Class<?> klass = Class.forName(checkClass, true, ucl.get());
-                        checkers.add((BackingChecker) klass.newInstance());
+                        checkers.add((BackingChecker) klass.getDeclaredConstructor().newInstance());
                     }
 
                 } catch (IOException e) {

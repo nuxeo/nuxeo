@@ -46,7 +46,7 @@ public class UIDSequencerProviderDescriptor {
     public UIDSequencer getSequencer() throws Exception {
 
         if (sequencerClass != null) {
-            return sequencerClass.newInstance();
+            return sequencerClass.getDeclaredConstructor().newInstance();
         }
 
         return null;

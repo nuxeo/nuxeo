@@ -60,7 +60,7 @@ public class ConverterDescriptor implements Serializable {
     protected String destinationMimeType;
 
     @XNode("@class")
-    protected Class className;
+    protected Class<?> className;
 
     @XNode("@type")
     protected String converterType = CUSTOM_CONVERTER_TYPE;
@@ -106,7 +106,7 @@ public class ConverterDescriptor implements Serializable {
                 converterType = CHAINED_CONVERTER_TYPE;
             } else {
                 try {
-                    instance = (Converter) className.newInstance();
+                    instance = (Converter) className.getDeclaredConstructor().newInstance();
                 } catch (ReflectiveOperationException e) {
                     throw new RuntimeException(e);
                 }

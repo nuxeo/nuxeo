@@ -71,7 +71,7 @@ public class DownloadFile {
             // Operation was probably triggered by a POST
             // so we need to de-activate the ResponseWrapper that would
             // rewrite the URL
-            request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, new Boolean(true));
+            request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
             // send the redirect
             externalContext.redirect(url);
             // mark all JSF processing as completed

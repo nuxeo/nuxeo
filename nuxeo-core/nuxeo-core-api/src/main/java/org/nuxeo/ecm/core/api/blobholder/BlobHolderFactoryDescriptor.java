@@ -62,7 +62,7 @@ public class BlobHolderFactoryDescriptor implements Serializable {
 
     public BlobHolderFactory getFactory() {
         try {
-            return (BlobHolderFactory) adapterClass.newInstance();
+            return (BlobHolderFactory) adapterClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
         }

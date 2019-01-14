@@ -68,7 +68,7 @@ public class LoginPluginRegistry extends DefaultComponent {
 
     private void registerCBFactory(CallbackFactoryDescriptor cbfExtension) {
         try {
-            callbackFactory = (CallbackFactory) cbfExtension.getClassName().newInstance();
+            callbackFactory = (CallbackFactory) cbfExtension.getClassName().getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             log.error("Unable to create Factory", e);
         }
@@ -100,8 +100,8 @@ public class LoginPluginRegistry extends DefaultComponent {
         } else {
             LoginPlugin newLoginPlugin;
             try {
-                newLoginPlugin = className.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                newLoginPlugin = className.getDeclaredConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
                 log.error("Unable to create LoginPlugin for class " + className.getName() + ":" + e.getMessage(), e);
                 return;
             }

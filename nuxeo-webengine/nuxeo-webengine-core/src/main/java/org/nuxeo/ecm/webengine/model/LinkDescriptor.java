@@ -106,7 +106,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
         try {
             if (handler == null) {
                 if (handlerClass != null) {
-                    Object obj = resource.getModule().loadClass(handlerClass).newInstance();
+                    Object obj = resource.getModule().loadClass(handlerClass).getDeclaredConstructor().newInstance();
                     if (obj instanceof LinkHandlerFactory) {
                         handler = ((LinkHandlerFactory) obj).getHandler(this, resource);
                     } else {

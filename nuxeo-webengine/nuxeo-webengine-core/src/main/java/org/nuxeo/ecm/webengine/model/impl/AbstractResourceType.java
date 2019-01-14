@@ -170,7 +170,7 @@ public abstract class AbstractResourceType implements ResourceType {
                 Class<?> gc = ag.type();
                 if (gc != null) {
                     try {
-                        guard = (Guard) gc.newInstance();
+                        guard = (Guard) gc.getDeclaredConstructor().newInstance();
                     } catch (ReflectiveOperationException e) {
                         throw new NuxeoException(
                                 "Failed to instantiate guard handler: " + gc.getName() + " on WebObject " + c.getName(),

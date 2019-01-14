@@ -57,7 +57,7 @@ public class ExternalBlobAdapterDescriptor {
 
     public ExternalBlobAdapter getAdapter() {
         try {
-            return adapter.newInstance();
+            return adapter.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

@@ -101,7 +101,7 @@ public class ServletDescriptor {
     }
 
     public HttpServlet getServlet() throws ReflectiveOperationException, BundleNotFoundException {
-        return (HttpServlet) getClassRef().get().newInstance();
+        return (HttpServlet) getClassRef().get().getDeclaredConstructor().newInstance();
     }
 
     public String getName() {

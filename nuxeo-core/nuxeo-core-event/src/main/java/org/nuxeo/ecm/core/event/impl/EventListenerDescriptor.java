@@ -148,10 +148,10 @@ public class EventListenerDescriptor {
                     throw new RuntimeException(e);
                 }
                 if (EventListener.class.isAssignableFrom(klass)) {
-                    inLineListener = (EventListener) klass.newInstance();
+                    inLineListener = (EventListener) klass.getDeclaredConstructor().newInstance();
                     isPostCommit = false;
                 } else if (PostCommitEventListener.class.isAssignableFrom(klass)) {
-                    postCommitEventListener = (PostCommitEventListener) klass.newInstance();
+                    postCommitEventListener = (PostCommitEventListener) klass.getDeclaredConstructor().newInstance();
                     isPostCommit = true;
                 } else {
                     throw new IllegalArgumentException(

@@ -98,7 +98,7 @@ public class ReloadServiceInvoker {
         getOSGIBundleName = reloadServiceClass.getDeclaredMethod("getOSGIBundleName", File.class);
         // instantiate the DevReloadBridge
         Class<?> devReloadBridgeClass = cl.loadClass("org.nuxeo.runtime.reload.DevReloadBridge");
-        devReloadBridge = devReloadBridgeClass.newInstance();
+        devReloadBridge = devReloadBridgeClass.getDeclaredConstructor().newInstance();
         reloadBundles = devReloadBridgeClass.getDeclaredMethod("reloadBundles", List.class, List.class);
     }
 

@@ -149,8 +149,7 @@ public class RepositoryImpl implements Repository {
             backendClass = JDBCBackend.class;
         }
         try {
-            RepositoryBackend backend = backendClass.newInstance();
-            return backend;
+            return backendClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
         }
@@ -162,7 +161,7 @@ public class RepositoryImpl implements Repository {
             if (cachingMapperClass == null) {
                 return mapper;
             }
-            CachingMapper cachingMapper = cachingMapperClass.newInstance();
+            CachingMapper cachingMapper = cachingMapperClass.getDeclaredConstructor().newInstance();
             cachingMapper.initialize(getName(), model, mapper, invalidationsPropagator,
                     repositoryDescriptor.cachingMapperProperties);
             return cachingMapper;
@@ -312,7 +311,7 @@ public class RepositoryImpl implements Repository {
             klass = JDBCClusterInvalidator.class;
         }
         try {
-            return klass.newInstance();
+            return klass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
         }

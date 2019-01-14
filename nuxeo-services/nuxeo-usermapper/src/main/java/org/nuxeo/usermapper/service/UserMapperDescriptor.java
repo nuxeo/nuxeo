@@ -72,7 +72,7 @@ public class UserMapperDescriptor implements Serializable {
             if (mapperClass == null) {
                 throw new NuxeoException("Java Mapper must provide an implementation class ");
             }
-            mapper = mapperClass.newInstance();
+            mapper = mapperClass.getDeclaredConstructor().newInstance();
             break;
         case groovy:
             mapper = new GroovyUserMapper(mapperScript, wrapperScript);

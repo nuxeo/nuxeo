@@ -313,7 +313,7 @@ public class IOManagerImpl implements IOManager {
         Object factoryObj;
         try {
             Class<?> clazz = Class.forName(docWriterFactoryName);
-            factoryObj = clazz.newInstance();
+            factoryObj = clazz.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException("cannot instantiate factory " + docWriterFactoryName, e);
         }
@@ -337,7 +337,7 @@ public class IOManagerImpl implements IOManager {
         Object factoryObj;
         try {
             Class<?> clazz = Class.forName(docReaderFactoryName);
-            factoryObj = clazz.newInstance();
+            factoryObj = clazz.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException("cannot instantiate factory " + docReaderFactoryName, e);
         }

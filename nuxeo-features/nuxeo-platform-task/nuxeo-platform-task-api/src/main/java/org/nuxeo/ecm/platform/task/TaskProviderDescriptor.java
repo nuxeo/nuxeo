@@ -42,7 +42,7 @@ public class TaskProviderDescriptor {
 
     public TaskProvider getNewInstance() {
         try {
-            return taskProvider.newInstance();
+            return taskProvider.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

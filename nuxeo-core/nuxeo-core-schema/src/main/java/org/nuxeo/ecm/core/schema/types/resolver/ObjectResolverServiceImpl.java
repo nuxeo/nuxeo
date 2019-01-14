@@ -69,8 +69,8 @@ public class ObjectResolverServiceImpl extends DefaultComponent implements Objec
         }
         ObjectResolver resolver = null;
         try {
-            resolver = resolverClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            resolver = resolverClass.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
             log.warn(String.format("Unable to instanciate %s - missing public constructor with no param",
                     resolverClass.getCanonicalName()));
             return null;

@@ -200,7 +200,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
                     name));
         }
         try {
-            ret = klass.newInstance();
+            ret = klass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(String.format(
                     "Cannot create an instance of class %s for page provider definition" + " with name '%s'",

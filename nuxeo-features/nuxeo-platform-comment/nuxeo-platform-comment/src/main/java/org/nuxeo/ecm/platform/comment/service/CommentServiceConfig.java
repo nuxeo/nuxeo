@@ -53,7 +53,7 @@ public class CommentServiceConfig {
     public CommentConverter getCommentConverter() {
         try {
             Class<?> commentConverterClass = Class.forName(commentConverterClassName);
-            return (CommentConverter) commentConverterClass.newInstance();
+            return (CommentConverter) commentConverterClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("failed to create comment converter", e);
         }

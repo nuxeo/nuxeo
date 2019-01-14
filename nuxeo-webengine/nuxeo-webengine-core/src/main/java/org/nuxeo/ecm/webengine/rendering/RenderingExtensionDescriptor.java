@@ -37,7 +37,7 @@ public class RenderingExtensionDescriptor {
     public Class<?> klass;
 
     public Object newInstance() throws ReflectiveOperationException {
-        Object obj = klass.newInstance();
+        Object obj = klass.getDeclaredConstructor().newInstance();
         if (obj instanceof RenderingExtensionFactory) {
             obj = ((RenderingExtensionFactory) obj).createTemplate();
         }

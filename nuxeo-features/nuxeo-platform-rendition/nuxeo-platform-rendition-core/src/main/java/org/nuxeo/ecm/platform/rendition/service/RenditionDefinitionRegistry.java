@@ -105,7 +105,7 @@ public class RenditionDefinitionRegistry extends ContributionFragmentRegistry<Re
             definition.setProvider(new DefaultAutomationRenditionProvider());
         } else {
             try {
-                RenditionProvider provider = definition.getProviderClass().newInstance();
+                RenditionProvider provider = definition.getProviderClass().getDeclaredConstructor().newInstance();
                 definition.setProvider(provider);
             } catch (Exception e) {
                 log.error("Unable to create RenditionProvider", e);

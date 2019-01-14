@@ -171,6 +171,7 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
             try {
                 generator = (UIDGenerator) extension.getContext()
                                                     .loadClass(generatorDescriptor.getClassName())
+                                                    .getDeclaredConstructor()
                                                     .newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);

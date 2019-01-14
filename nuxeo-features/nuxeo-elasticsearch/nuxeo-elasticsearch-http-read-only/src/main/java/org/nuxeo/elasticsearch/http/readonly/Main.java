@@ -134,7 +134,7 @@ public class Main extends ModuleRoot {
             req.init(getContext().getCoreSession(), indices, types, rawQuery, payload);
             log.debug(req);
             return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Error when trying to get Search Request Filter for indice " + indices, e);
             return null;
         }

@@ -147,7 +147,8 @@ public class GuardDescriptor {
                         String value = node.getTextContent().trim();
                         try {
                             Class<?> factory = Class.forName(type);
-                            Guard guard = ((GuardFactory) factory.newInstance()).newGuard(value);
+                            Guard guard = ((GuardFactory) factory.getDeclaredConstructor().newInstance()).newGuard(
+                                    value);
                             guards.put(id, guard);
                         } catch (ReflectiveOperationException e) {
                             log.error(e, e); // TODO should throw a DeployException

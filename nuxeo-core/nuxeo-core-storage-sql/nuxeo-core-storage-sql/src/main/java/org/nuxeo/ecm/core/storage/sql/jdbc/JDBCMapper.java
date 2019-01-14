@@ -667,7 +667,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         for (Class<? extends QueryMaker> klass : queryMakerService.getQueryMakers()) {
             QueryMaker queryMaker;
             try {
-                queryMaker = klass.newInstance();
+                queryMaker = klass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new NuxeoException(e);
             }

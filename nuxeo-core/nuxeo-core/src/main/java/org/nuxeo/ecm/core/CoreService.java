@@ -97,7 +97,10 @@ public class CoreService extends DefaultComponent {
     protected void registerVersionRemovalPolicy(CoreServicePolicyDescriptor contrib) {
         String klass = contrib.getKlass();
         try {
-            VersionRemovalPolicy policy = (VersionRemovalPolicy) context.getRuntimeContext().loadClass(klass).newInstance();
+            VersionRemovalPolicy policy = (VersionRemovalPolicy) context.getRuntimeContext()
+                                                                        .loadClass(klass)
+                                                                        .getDeclaredConstructor()
+                                                                        .newInstance();
             versionRemovalPolicies.put(contrib, policy);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Failed to instantiate " + VERSION_REMOVAL_POLICY_XP + ": " + klass, e);
@@ -111,8 +114,10 @@ public class CoreService extends DefaultComponent {
     protected void registerOrphanVersionRemovalFilter(CoreServiceOrphanVersionRemovalFilterDescriptor contrib) {
         String klass = contrib.getKlass();
         try {
-            OrphanVersionRemovalFilter filter = (OrphanVersionRemovalFilter) context.getRuntimeContext().loadClass(
-                    klass).newInstance();
+            OrphanVersionRemovalFilter filter = (OrphanVersionRemovalFilter) context.getRuntimeContext()
+                                                                                    .loadClass(klass)
+                                                                                    .getDeclaredConstructor()
+                                                                                    .newInstance();
             orphanVersionRemovalFilters.put(contrib, filter);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Failed to instantiate " + ORPHAN_VERSION_REMOVAL_FILTER_XP + ": " + klass, e);

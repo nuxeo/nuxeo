@@ -180,8 +180,8 @@ public class TestContentViewState {
         } else {
             assertNull(state.getPageProviderName());
         }
-        assertEquals(new Long(0), state.getCurrentPage());
-        assertEquals(new Long(2), state.getPageSize());
+        assertEquals(Long.valueOf(0), state.getCurrentPage());
+        assertEquals(Long.valueOf(2), state.getPageSize());
 
         Object[] queryParams = state.getQueryParameters();
         assertNotNull(queryParams);
@@ -230,8 +230,8 @@ public class TestContentViewState {
         ContentViewState state = new ContentViewStateImpl();
         state.setContentViewName("CURRENT_DOCUMENT_CHILDREN");
         state.setPageProviderName("CURRENT_DOCUMENT_CHILDREN");
-        state.setCurrentPage(new Long(0));
-        state.setPageSize(new Long(2));
+        state.setCurrentPage(Long.valueOf(0));
+        state.setPageSize(Long.valueOf(2));
         Object[] queryParams = new Object[] { "test_parent_id", booleanParam, null, listParam };
         state.setQueryParameters(queryParams);
         state.setResultColumns(Collections.singletonList("column_1"));
@@ -244,12 +244,12 @@ public class TestContentViewState {
         ContentView contentView = service.restoreContentView(state);
         assertNotNull(contentView);
         assertEquals("CURRENT_DOCUMENT_CHILDREN", contentView.getName());
-        assertEquals(new Long(2), contentView.getCurrentPageSize());
+        assertEquals(Long.valueOf(2), contentView.getCurrentPageSize());
 
         PageProvider<?> pp = contentView.getCurrentPageProvider();
         assertNotNull(pp);
         assertNull(pp.getSearchDocumentModel());
-        assertEquals(new Long(0), new Long(pp.getCurrentPageIndex()));
+        assertEquals(Long.valueOf(0), Long.valueOf(pp.getCurrentPageIndex()));
 
         queryParams = pp.getParameters();
         assertNotNull(queryParams);
@@ -389,8 +389,8 @@ public class TestContentViewState {
         assertNotNull(state);
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", state.getContentViewName());
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", state.getPageProviderName());
-        assertEquals(new Long(0), state.getCurrentPage());
-        assertEquals(new Long(2), state.getPageSize());
+        assertEquals(Long.valueOf(0), state.getCurrentPage());
+        assertEquals(Long.valueOf(2), state.getPageSize());
 
         Object[] queryParams = state.getQueryParameters();
         if (withQueryParams) {
@@ -429,8 +429,8 @@ public class TestContentViewState {
         // build state
         ContentViewState state = new ContentViewStateImpl();
         state.setContentViewName("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
-        state.setCurrentPage(new Long(0));
-        state.setPageSize(new Long(2));
+        state.setCurrentPage(Long.valueOf(0));
+        state.setPageSize(Long.valueOf(2));
         state.setResultColumns(Collections.singletonList("column_1"));
         state.setResultLayout(new ContentViewLayoutImpl("document_listing", "label.document_listing.layout", true,
                 "/icons/myicon.png", true));
@@ -443,7 +443,7 @@ public class TestContentViewState {
         assertNotNull(contentView);
 
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", contentView.getName());
-        assertEquals(new Long(2), contentView.getCurrentPageSize());
+        assertEquals(Long.valueOf(2), contentView.getCurrentPageSize());
 
         PageProvider<?> pp = contentView.getCurrentPageProvider();
         assertNotNull(pp);
@@ -452,7 +452,7 @@ public class TestContentViewState {
         assertNotNull(searchDoc);
         assertEquals("search keywords", searchDoc.getPropertyValue("dc:title"));
         assertNull(searchDoc.getPropertyValue("dc:description"));
-        assertEquals(new Long(0), new Long(pp.getCurrentPageIndex()));
+        assertEquals(Long.valueOf(0), Long.valueOf(pp.getCurrentPageIndex()));
 
         Object[] queryParams = pp.getParameters();
         assertNotNull(queryParams);
@@ -492,8 +492,8 @@ public class TestContentViewState {
         ContentViewState state = new ContentViewStateImpl();
         state.setContentViewName("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         // set current page to the first one
-        state.setCurrentPage(new Long(1));
-        state.setPageSize(new Long(2));
+        state.setCurrentPage(Long.valueOf(1));
+        state.setPageSize(Long.valueOf(2));
         state.setResultColumns(Collections.singletonList("column_1"));
         state.setResultLayout(new ContentViewLayoutImpl("document_listing", "label.document_listing.layout", true,
                 "/icons/myicon.png", true));
@@ -506,7 +506,7 @@ public class TestContentViewState {
         assertNotNull(contentView);
 
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", contentView.getName());
-        assertEquals(new Long(2), contentView.getCurrentPageSize());
+        assertEquals(Long.valueOf(2), contentView.getCurrentPageSize());
 
         PageProvider<?> pp = contentView.getCurrentPageProvider();
         assertNotNull(pp);
@@ -515,7 +515,7 @@ public class TestContentViewState {
         assertNotNull(searchDoc);
         assertEquals("search keywords", searchDoc.getPropertyValue("dc:title"));
         assertNull(searchDoc.getPropertyValue("dc:description"));
-        assertEquals(new Long(1), new Long(pp.getCurrentPageIndex()));
+        assertEquals(Long.valueOf(1), Long.valueOf(pp.getCurrentPageIndex()));
     }
 
     @Test

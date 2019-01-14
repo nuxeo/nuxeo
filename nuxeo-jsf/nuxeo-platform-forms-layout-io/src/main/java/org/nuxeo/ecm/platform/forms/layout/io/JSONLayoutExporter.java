@@ -1307,7 +1307,7 @@ public class JSONLayoutExporter {
             String ordering = selectOption.optString("ordering", null);
             Boolean caseSensitive = null;
             if (selectOption.has("caseSensitive")) {
-                caseSensitive = new Boolean(selectOption.getBoolean("caseSensitive"));
+                caseSensitive = Boolean.valueOf(selectOption.getBoolean("caseSensitive"));
             }
             WidgetSelectOptionsImpl res = new WidgetSelectOptionsImpl(value, var, itemLabel, itemValue, itemDisabled,
                     itemRendered, ordering, caseSensitive);

@@ -121,12 +121,12 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
     public int getColumns() {
         if (columns == null) {
             // compute it
-            columns = new Integer(0);
+            columns = Integer.valueOf(0);
             LayoutRowDefinition[] rows = getRows();
             for (LayoutRowDefinition def : rows) {
                 int current = def.getWidgetReferences().length;
                 if (current > columns.intValue()) {
-                    columns = new Integer(current);
+                    columns = Integer.valueOf(current);
                 }
             }
         }

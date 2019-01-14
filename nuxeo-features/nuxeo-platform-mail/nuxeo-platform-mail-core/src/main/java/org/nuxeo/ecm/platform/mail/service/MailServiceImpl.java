@@ -212,7 +212,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
             Class<? extends PropertiesFetcher> clazz = fetchers.get(fetcherName);
             SessionFactoryDescriptor descriptor = sessionFactories.get(name);
             try {
-                fetcher = clazz.newInstance();
+                fetcher = clazz.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }

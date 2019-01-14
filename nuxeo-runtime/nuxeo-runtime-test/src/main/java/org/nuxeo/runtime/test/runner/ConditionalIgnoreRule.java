@@ -150,8 +150,8 @@ public class ConditionalIgnoreRule implements TestRule, MethodRule {
             Class<? extends Condition> conditionType) throws Error {
         Condition condition;
         try {
-            condition = conditionType.newInstance();
-        } catch (InstantiationException | IllegalAccessException cause) {
+            condition = conditionType.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException cause) {
             throw new Error("Cannot instantiate condition of type " + conditionType, cause);
         }
         injectCondition(type, method, target, condition);

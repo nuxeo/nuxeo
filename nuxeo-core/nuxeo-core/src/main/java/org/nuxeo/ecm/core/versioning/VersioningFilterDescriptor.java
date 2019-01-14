@@ -65,8 +65,8 @@ public class VersioningFilterDescriptor implements Serializable {
         VersioningPolicyFilter filter = null;
         if (className != null) {
             try {
-                filter = className.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                filter = className.getDeclaredConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
                 log.error("Class " + className + " could not be instantiated", e);
             }
         } else {

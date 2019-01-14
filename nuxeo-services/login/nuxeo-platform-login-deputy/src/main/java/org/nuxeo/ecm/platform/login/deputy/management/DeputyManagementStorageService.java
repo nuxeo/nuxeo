@@ -200,7 +200,7 @@ public class DeputyManagementStorageService implements DeputyManager {
         try {
             DocumentModel entry = newEntry(username, deputy);
             Calendar cal = Calendar.getInstance();
-            entry.setProperty(directorySchema, DIR_COL_VALIDATE_DATE, new Boolean(false));
+            entry.setProperty(directorySchema, DIR_COL_VALIDATE_DATE, Boolean.FALSE);
             entry.setProperty(directorySchema, DIR_COL_START_VALIDITY, cal);
             entry.setProperty(directorySchema, DIR_COL_END_VALIDITY, cal);
             return entry;
@@ -228,7 +228,7 @@ public class DeputyManagementStorageService implements DeputyManager {
 
         try {
             DocumentModel entry = newEntry(username, deputy);
-            entry.setProperty(directorySchema, DIR_COL_VALIDATE_DATE, new Boolean(true));
+            entry.setProperty(directorySchema, DIR_COL_VALIDATE_DATE, Boolean.TRUE);
             entry.setProperty(directorySchema, DIR_COL_START_VALIDITY, start);
             entry.setProperty(directorySchema, DIR_COL_END_VALIDITY, end);
             return entry;

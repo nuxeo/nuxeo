@@ -3090,13 +3090,13 @@ public class TestSQLRepositoryAPI {
         assertTrue(p.isPhantom());
         assertNull(p.getValue());
         p.setValue(12);
-        assertEquals(new Long(12), p.getValue());
+        assertEquals(Long.valueOf(12), p.getValue());
         session.saveDocument(doc);
 
         dp = doc.getPart("myschema");
         p = dp.get("long");
         assertFalse(p.isPhantom());
-        assertEquals(new Long(12), p.getValue());
+        assertEquals(Long.valueOf(12), p.getValue());
         p.setValue(null);
         assertFalse(p.isPhantom());
         assertNull(p.getValue());
@@ -3107,7 +3107,7 @@ public class TestSQLRepositoryAPI {
         p = dp.get("long");
         // assertTrue(p.isPhantom());
         assertNull(p.getValue());
-        p.setValue(new Long(13));
+        p.setValue(Long.valueOf(13));
         p.remove();
         assertTrue(p.isRemoved());
         assertNull(p.getValue());

@@ -43,7 +43,7 @@ public class ContentViewCache implements Serializable {
     /**
      * Default cache size, set to 5 instances per content view
      */
-    public static final Integer DEFAULT_CACHE_SIZE = new Integer(5);
+    public static final Integer DEFAULT_CACHE_SIZE = Integer.valueOf(5);
 
     protected final Map<String, String> namedCacheKeys = new HashMap<String, String>();
 

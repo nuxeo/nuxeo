@@ -163,7 +163,7 @@ public class AutomationComponent extends DefaultComponent {
             TypeAdapterContribution tac = (TypeAdapterContribution) contribution;
             TypeAdapter adapter;
             try {
-                adapter = tac.clazz.newInstance();
+                adapter = tac.clazz.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }

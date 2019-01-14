@@ -274,12 +274,12 @@ public class NuxeoConnectionManagerConfiguration {
 
     @XNode("@testOnBorrow")
     public void setTestOnBorrow(Class<? extends Validation> typeof) throws ReflectiveOperationException {
-        testOnBorrow = typeof.newInstance();
+        testOnBorrow = typeof.getDeclaredConstructor().newInstance();
     }
 
     @XNode("@testOnReturn")
     public void setTestOnReturn(Class<? extends Validation> typeof) throws ReflectiveOperationException {
-        testOnReturn = typeof.newInstance();
+        testOnReturn = typeof.getDeclaredConstructor().newInstance();
     }
 
     @XNode("@maxActive")

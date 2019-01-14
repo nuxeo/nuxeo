@@ -104,7 +104,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
         OAuth2ServiceProviderRegistry oauth2ProviderRegistry = getOAuth2ServiceProviderRegistry();
         RedirectUriResolver redirectUriResolver;
         try {
-            redirectUriResolver = provider.getRedirectUriResolver().newInstance();
+            redirectUriResolver = provider.getRedirectUriResolver().getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

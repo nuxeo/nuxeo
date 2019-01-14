@@ -191,11 +191,11 @@ public class ITSearchTabTest extends AbstractTest {
         // Test aggregates
         Map<String, Integer> coverageAgg = searchLayoutSubPage.getAvailableCoverageAggregate();
         assertEquals(1, coverageAgg.size());
-        assertEquals(new Integer(1), coverageAgg.get(FULL_PATH_COVERAGE));
+        assertEquals(Integer.valueOf(1), coverageAgg.get(FULL_PATH_COVERAGE));
         Map<String, Integer> subjectsAgg = searchLayoutSubPage.getAvailableSubjectsAggregate();
         assertEquals(3, subjectsAgg.size());
         for (String subject : FULL_PATH_SUBJECTS) {
-            assertEquals(new Integer(1), subjectsAgg.get(subject));
+            assertEquals(Integer.valueOf(1), subjectsAgg.get(subject));
         }
         // Select and unselect France
         searchPage = searchLayoutSubPage.selectCoverageAggregate(FULL_PATH_COVERAGE);

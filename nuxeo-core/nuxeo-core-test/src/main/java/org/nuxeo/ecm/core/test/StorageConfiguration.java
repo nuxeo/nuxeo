@@ -167,7 +167,7 @@ public class StorageConfiguration {
         // Get DBSHelper by reflection
         String className = String.format("org.nuxeo.ecm.core.storage.%s.DBSHelperImpl", coreType);
         try {
-            dbsHelper = (DBSHelper) Class.forName(className).newInstance();
+            dbsHelper = (DBSHelper) Class.forName(className).getDeclaredConstructor().newInstance();
             dbsHelper.init();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException("DBSHelperImpl not found: " + className, e);

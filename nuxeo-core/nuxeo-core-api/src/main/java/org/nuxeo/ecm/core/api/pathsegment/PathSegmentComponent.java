@@ -125,7 +125,7 @@ public class PathSegmentComponent extends DefaultComponent implements PathSegmen
         }
         if (service == null || klass != service.getClass()) {
             try {
-                service = klass.newInstance();
+                service = klass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new NuxeoException(e);
             }

@@ -71,7 +71,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
         for (SecurityPolicyDescriptor descriptor : orderedDescriptors) {
             if (descriptor.isEnabled()) {
                 try {
-                    Object policy = descriptor.getPolicy().newInstance();
+                    Object policy = descriptor.getPolicy().getDeclaredConstructor().newInstance();
                     if (policy instanceof SecurityPolicy) {
                         policies.add((SecurityPolicy) policy);
                         policyNames.add(descriptor.getName());

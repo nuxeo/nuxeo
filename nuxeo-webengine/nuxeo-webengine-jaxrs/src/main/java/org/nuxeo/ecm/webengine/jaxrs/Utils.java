@@ -110,7 +110,7 @@ public class Utils {
         Class<?>[] classes = loadClasses(classRefs, sep);
         T[] ar = (T[]) Array.newInstance(componentType, classes.length);
         for (int i = 0; i < classes.length; i++) {
-            ar[i] = (T) classes[i].newInstance();
+            ar[i] = (T) classes[i].getDeclaredConstructor().newInstance();
         }
         return ar;
     }
@@ -199,7 +199,7 @@ public class Utils {
      */
     public static Object newInstance(String bundleId, String className) throws ReflectiveOperationException,
             BundleNotFoundException {
-        return loadClass(bundleId, className).newInstance();
+        return loadClass(bundleId, className).getDeclaredConstructor().newInstance();
     }
 
     /**
@@ -212,7 +212,7 @@ public class Utils {
      * @see {@link #loadClass(String, String)}
      */
     public static Object newInstance(String classRef) throws ReflectiveOperationException, BundleNotFoundException {
-        return loadClass(classRef).newInstance();
+        return loadClass(classRef).getDeclaredConstructor().newInstance();
     }
 
     public static class ClassRef {
@@ -234,7 +234,7 @@ public class Utils {
         }
 
         public Object newInstance() throws ReflectiveOperationException {
-            return clazz.newInstance();
+            return clazz.getDeclaredConstructor().newInstance();
         }
 
         @Override

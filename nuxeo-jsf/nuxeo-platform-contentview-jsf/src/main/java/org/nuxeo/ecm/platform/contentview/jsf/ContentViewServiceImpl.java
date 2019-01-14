@@ -382,7 +382,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         if (pp != null) {
             state.setPageProviderName(pp.getName());
             state.setSearchDocumentModel(pp.getSearchDocumentModel());
-            state.setCurrentPage(new Long(pp.getCurrentPageIndex()));
+            state.setCurrentPage(Long.valueOf(pp.getCurrentPageIndex()));
             state.setQueryParameters(pp.getParameters());
             state.setSortInfos(pp.getSortInfos());
         } else {

@@ -70,22 +70,22 @@ public class DoubleProperty extends ScalarProperty {
         }
         Double v = (Double) value;
         if (toType == Integer.class) {
-            return (T) new Integer(v.intValue());
+            return (T) Integer.valueOf(v.intValue());
         }
         if (toType == String.class) {
             return (T) v.toString();
         }
         if (toType == Long.class) {
-            return (T) new Long(v.longValue());
+            return (T) Long.valueOf(v.longValue());
         }
         if (toType == Float.class) {
-            return (T) new Float(v.floatValue());
+            return (T) Float.valueOf(v.floatValue());
         }
         if (toType == Short.class) {
-            return (T) new Short(v.shortValue());
+            return (T) Short.valueOf(v.shortValue());
         }
         if (toType == Byte.class) {
-            return (T) new Byte(v.byteValue());
+            return (T) Byte.valueOf(v.byteValue());
         }
         throw new PropertyConversionException(value.getClass(), toType);
     }

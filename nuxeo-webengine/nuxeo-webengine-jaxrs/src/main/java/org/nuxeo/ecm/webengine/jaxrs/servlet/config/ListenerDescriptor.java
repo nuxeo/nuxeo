@@ -45,7 +45,7 @@ public class ListenerDescriptor {
     }
 
     public ServletContextListener getListener() throws ReflectiveOperationException, BundleNotFoundException {
-        return (ServletContextListener) getClassRef().get().newInstance();
+        return (ServletContextListener) getClassRef().get().getDeclaredConstructor().newInstance();
     }
 
     @Override

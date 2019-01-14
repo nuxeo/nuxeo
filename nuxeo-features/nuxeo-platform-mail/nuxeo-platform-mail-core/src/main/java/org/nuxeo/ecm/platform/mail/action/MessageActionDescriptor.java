@@ -63,11 +63,9 @@ public class MessageActionDescriptor {
             if (action == null || chain != null) {
                 return new CreateDocumentsFromAutomationChainAction(chain);
             }
-            return action.newInstance();
-        } catch (InstantiationException e) {
+            return action.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Could not get MessageAction new Instance", e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
         }
     }
 

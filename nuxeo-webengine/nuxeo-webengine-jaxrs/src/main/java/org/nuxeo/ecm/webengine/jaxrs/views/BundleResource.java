@@ -98,7 +98,7 @@ public class BundleResource {
 
     public <T extends BundleResource> T getResource(Class<T> clazz) {
         try {
-            T res = clazz.newInstance();
+            T res = clazz.getDeclaredConstructor().newInstance();
             res.setContext(context);
             return res;
         } catch (ReflectiveOperationException e) {

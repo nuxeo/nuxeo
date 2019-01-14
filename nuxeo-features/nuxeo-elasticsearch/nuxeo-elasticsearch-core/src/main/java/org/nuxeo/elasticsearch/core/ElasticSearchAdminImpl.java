@@ -145,7 +145,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         log.info("Connecting to Elasticsearch");
         ESClient ret;
         try {
-            ESClientFactory clientFactory = clientConfig.getKlass().newInstance();
+            ESClientFactory clientFactory = clientConfig.getKlass().getDeclaredConstructor().newInstance();
             ret = clientFactory.create(node, clientConfig);
         } catch (ReflectiveOperationException e) {
             log.error("Cannot instantiate Elasticsearch Client from class: " + clientConfig.getKlass());

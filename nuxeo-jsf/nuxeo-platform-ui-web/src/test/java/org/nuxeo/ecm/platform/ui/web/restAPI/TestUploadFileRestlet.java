@@ -135,7 +135,7 @@ public class TestUploadFileRestlet implements LiveEditConstants {
         doc = session.getDocument(doc.getRef());
         assertEquals("The major version shouldn't have been incremented", major,
                 doc.getPropertyValue("uid:major_version"));
-        assertEquals("The minor version should have been incremented", new Long(minor + 1),
+        assertEquals("The minor version should have been incremented", Long.valueOf(minor + 1),
                 doc.getPropertyValue("uid:minor_version"));
 
     }

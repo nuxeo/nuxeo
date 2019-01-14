@@ -98,7 +98,7 @@ public class UserService extends DefaultComponent {
         }
         if (klass != null) {
             try {
-                userManager = (UserManager) klass.newInstance();
+                userManager = (UserManager) klass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new NuxeoException(e);
             }

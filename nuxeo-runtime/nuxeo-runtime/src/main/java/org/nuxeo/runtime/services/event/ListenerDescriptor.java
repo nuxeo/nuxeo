@@ -44,7 +44,7 @@ public class ListenerDescriptor {
     @XNode("@class")
     public void setListener(Class<EventListener> listenerClass) {
         try {
-            listener = listenerClass.newInstance();
+            listener = listenerClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             log.error(e);
             listener = NULL_LISTENER;

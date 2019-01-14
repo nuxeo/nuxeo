@@ -132,14 +132,10 @@ public class PluggableAuthenticationService extends DefaultComponent {
             // create the new instance
             AuthenticationPluginDescriptor actualDescriptor = authenticatorsDescriptors.get(descriptor.getName());
             try {
-                NuxeoAuthenticationPlugin authPlugin = actualDescriptor.getClassName().newInstance();
+                NuxeoAuthenticationPlugin authPlugin = actualDescriptor.getClassName().getDeclaredConstructor().newInstance();
                 authPlugin.initPlugin(actualDescriptor.getParameters());
                 authenticators.put(actualDescriptor.getName(), authPlugin);
-            } catch (InstantiationException e) {
-                log.error(
-                        "Unable to create AuthPlugin for : " + actualDescriptor.getName() + "Error : " + e.getMessage(),
-                        e);
-            } catch (IllegalAccessException e) {
+            } catch (ReflectiveOperationException e) {
                 log.error(
                         "Unable to create AuthPlugin for : " + actualDescriptor.getName() + "Error : " + e.getMessage(),
                         e);
@@ -161,10 +157,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
             // create the new instance
             try {
-                propagator = propagationContrib.getClassName().newInstance();
-            } catch (InstantiationException e) {
-                log.error("Unable to create propagator", e);
-            } catch (IllegalAccessException e) {
+                propagator = propagationContrib.getClassName().getDeclaredConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
                 log.error("Unable to create propagator", e);
             }
         } else if (extensionPoint.equals(EP_CBFACTORY)) {
@@ -172,17 +166,17 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
             // create the new instance
             try {
-                cbhFactory = cbhfContrib.getClassName().newInstance();
-            } catch (InstantiationException e) {
-                log.error("Unable to create callback handler factory", e);
-            } catch (IllegalAccessException e) {
+                cbhFactory = cbhfContrib.getClassName().getDeclaredConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
                 log.error("Unable to create callback handler factory", e);
             }
         } else if (extensionPoint.equals(EP_SESSIONMANAGER)) {
             SessionManagerDescriptor smContrib = (SessionManagerDescriptor) contribution;
             if (smContrib.enabled) {
                 try {
-                    NuxeoAuthenticationSessionManager sm = smContrib.getClassName().newInstance();
+                    NuxeoAuthenticationSessionManager sm = smContrib.getClassName()
+                                                                    .getDeclaredConstructor()
+                                                                    .newInstance();
                     sessionManagers.put(smContrib.getName(), sm);
                 } catch (ReflectiveOperationException e) {
                     log.error("Unable to create session manager", e);

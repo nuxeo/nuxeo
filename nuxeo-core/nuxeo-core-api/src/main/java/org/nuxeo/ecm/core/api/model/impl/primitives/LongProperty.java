@@ -71,22 +71,22 @@ public class LongProperty extends ScalarProperty {
         }
         Long v = (Long) value;
         if (toType == Integer.class) {
-            return (T) new Integer(v.intValue());
+            return (T) Integer.valueOf(v.intValue());
         }
         if (toType == String.class) {
             return (T) v.toString();
         }
         if (toType == Double.class) {
-            return (T) new Double(v.doubleValue());
+            return (T) Double.valueOf(v.doubleValue());
         }
         if (toType == Float.class) {
-            return (T) new Float(v.floatValue());
+            return (T) Float.valueOf(v.floatValue());
         }
         if (toType == Short.class) {
-            return (T) new Short(v.shortValue());
+            return (T) Short.valueOf(v.shortValue());
         }
         if (toType == Byte.class) {
-            return (T) new Byte(v.byteValue());
+            return (T) Byte.valueOf(v.byteValue());
         }
         throw new PropertyConversionException(value.getClass(), toType);
     }

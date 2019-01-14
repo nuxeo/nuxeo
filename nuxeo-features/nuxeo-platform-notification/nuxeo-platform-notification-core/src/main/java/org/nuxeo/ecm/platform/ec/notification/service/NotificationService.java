@@ -165,7 +165,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
                 NotificationListenerHookDescriptor desc = (NotificationListenerHookDescriptor) contrib;
                 Class<? extends NotificationListenerHook> clazz = desc.hookListener;
                 try {
-                    NotificationListenerHook hookListener = clazz.newInstance();
+                    NotificationListenerHook hookListener = clazz.getDeclaredConstructor().newInstance();
                     registerHookListener(desc.name, hookListener);
                 } catch (ReflectiveOperationException e) {
                     log.error(e);

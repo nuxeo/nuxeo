@@ -33,8 +33,8 @@ public class ContextHelperDescriptor {
     protected ContextHelper contextHelper;
 
     @XNode("@class")
-    public void setClass(Class<? extends ContextHelper> aType) throws InstantiationException, IllegalAccessException {
-        contextHelper = aType.newInstance();
+    public void setClass(Class<? extends ContextHelper> aType) throws ReflectiveOperationException {
+        contextHelper = aType.getDeclaredConstructor().newInstance();
     }
 
     @XNode("@enabled")

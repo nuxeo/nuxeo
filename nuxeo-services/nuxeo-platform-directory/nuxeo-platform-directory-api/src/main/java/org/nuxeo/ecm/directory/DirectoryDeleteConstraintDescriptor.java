@@ -56,14 +56,12 @@ public class DirectoryDeleteConstraintDescriptor implements Serializable {
 
     public DirectoryDeleteConstraint getDeleteConstraint() {
         try {
-            DirectoryDeleteConstraint instance = klass.newInstance();
+            DirectoryDeleteConstraint instance = klass.getDeclaredConstructor().newInstance();
             if (properties != null) {
                 instance.setProperties(properties);
             }
             return instance;
-        } catch (InstantiationException e) {
-            throw new DirectoryException(e);
-        } catch (IllegalAccessException e) {
+        } catch (ReflectiveOperationException e) {
             throw new DirectoryException(e);
         }
     }

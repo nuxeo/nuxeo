@@ -58,7 +58,7 @@ public class LoginModuleWrapper implements LoginModule {
         if (delegate == null) {
             try {
                 Class<?> clazz = (Class<?>) options.get(DELEGATE_CLASS_KEY);
-                delegate = (LoginModule) clazz.newInstance();
+                delegate = (LoginModule) clazz.getDeclaredConstructor().newInstance();
             } catch (NullPointerException e) {
                 throw new RuntimeException("Should be a bug: No DELEGATE_CLASS_KEY found in login module options", e);
             } catch (ReflectiveOperationException e) {

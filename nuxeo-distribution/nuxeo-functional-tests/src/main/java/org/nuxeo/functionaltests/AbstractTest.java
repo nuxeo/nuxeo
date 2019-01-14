@@ -438,7 +438,7 @@ public abstract class AbstractTest {
                 Constructor<T> constructor = pageClassToProxy.getConstructor(WebDriver.class);
                 return constructor.newInstance(driver);
             } catch (NoSuchMethodException e) {
-                return pageClassToProxy.newInstance();
+                return pageClassToProxy.getDeclaredConstructor().newInstance();
             }
         } catch (RuntimeException e) {
             throw e;
@@ -453,7 +453,7 @@ public abstract class AbstractTest {
                 Constructor<T> constructor = webFragmentClass.getConstructor(WebDriver.class, WebElement.class);
                 return constructor.newInstance(driver, element);
             } catch (NoSuchMethodException e) {
-                return webFragmentClass.newInstance();
+                return webFragmentClass.getDeclaredConstructor().newInstance();
             }
         } catch (RuntimeException e) {
             throw e;

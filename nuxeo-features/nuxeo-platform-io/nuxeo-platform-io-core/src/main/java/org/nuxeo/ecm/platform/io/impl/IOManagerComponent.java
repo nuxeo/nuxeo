@@ -62,7 +62,10 @@ public class IOManagerComponent extends DefaultComponent {
             IOResourceAdapter adapter;
             try {
                 // Thread context loader is not working in isolated EARs
-                adapter = (IOResourceAdapter) IOManagerComponent.class.getClassLoader().loadClass(className).newInstance();
+                adapter = (IOResourceAdapter) IOManagerComponent.class.getClassLoader()
+                                                                      .loadClass(className)
+                                                                      .getDeclaredConstructor()
+                                                                      .newInstance();
             } catch (ReflectiveOperationException e) {
                 log.error("Caught error when instantiating adapter", e);
                 return;

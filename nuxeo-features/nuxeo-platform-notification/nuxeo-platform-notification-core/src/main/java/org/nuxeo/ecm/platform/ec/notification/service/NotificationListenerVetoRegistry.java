@@ -60,7 +60,7 @@ public class NotificationListenerVetoRegistry extends ContributionFragmentRegist
             contributionRemoved(id, contrib);
         } else {
             try {
-                vetos.put(id, contrib.getNotificationVeto().newInstance());
+                vetos.put(id, contrib.getNotificationVeto().getDeclaredConstructor().newInstance());
             } catch (ReflectiveOperationException e) {
                 log.error(e);
             }
