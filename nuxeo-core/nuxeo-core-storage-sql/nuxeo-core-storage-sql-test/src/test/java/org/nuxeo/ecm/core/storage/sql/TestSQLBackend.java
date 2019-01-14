@@ -413,6 +413,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     // more than 1000 children without path optimizations (for Oracle, NXP-20211)
     @Test
+    @Ignore("NXP-25039 makes other tests fail")
     public void testRecursiveRemovalBigWithoutPathOptimizations() throws Exception {
         repository.close();
         // open a repository without path optimization
@@ -3493,6 +3494,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
      * Tests that invalidations don't grow indefinitely (and consume memory).
      */
     @Test
+    @Ignore("slow")
     public void testCacheInvalidationsUnlimitedGrowth() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
