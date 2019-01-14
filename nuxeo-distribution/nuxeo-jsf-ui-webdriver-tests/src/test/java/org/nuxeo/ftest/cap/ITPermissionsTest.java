@@ -40,22 +40,16 @@ import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @since 8.3
  */
-@RunWith(FeaturesRunner.class)
-@Features({ FakeSmtpMailServerFeature.class })
 public class ITPermissionsTest extends AbstractTest {
 
     @Before
