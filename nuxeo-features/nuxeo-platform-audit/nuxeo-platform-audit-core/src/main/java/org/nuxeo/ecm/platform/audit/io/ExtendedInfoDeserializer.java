@@ -69,7 +69,7 @@ public class ExtendedInfoDeserializer extends JsonDeserializer<ExtendedInfo> {
             value = node.numberValue();
             if (value instanceof Integer) {
                 // convert it to long, it is the original type and json can't differentiate int and long
-                value = Integer.valueOf((Integer) value).longValue();
+                value = Long.valueOf((Integer) value);
             }
             break;
         case BINARY:
