@@ -337,19 +337,19 @@ public class DialectOracle extends Dialect {
         if (expected == Types.CLOB && actual == Types.OTHER && actualName.equals("NCLOB")) {
             return true;
         }
-        if (expected == Types.BIT && actual == Types.DECIMAL && actualSize == 1) {
+        if (expected == Types.BIT && (actual == Types.DECIMAL || actual == Types.NUMERIC) && actualSize == 1) {
             return true;
         }
-        if (expected == Types.TINYINT && actual == Types.DECIMAL && actualSize == 3) {
+        if (expected == Types.TINYINT && (actual == Types.DECIMAL || actual == Types.NUMERIC) && actualSize == 3) {
             return true;
         }
-        if (expected == Types.INTEGER && actual == Types.DECIMAL && actualSize == 10) {
+        if (expected == Types.INTEGER && (actual == Types.DECIMAL || actual == Types.NUMERIC) && actualSize == 10) {
             return true;
         }
-        if (expected == Types.BIGINT && actual == Types.DECIMAL && actualSize == 19) {
+        if (expected == Types.BIGINT && (actual == Types.DECIMAL || actual == Types.NUMERIC) && actualSize == 19) {
             return true;
         }
-        if (expected == Types.BIGINT && actual == Types.DECIMAL && actualSize == 38) {
+        if (expected == Types.BIGINT && (actual == Types.DECIMAL || actual == Types.NUMERIC) && actualSize == 38) {
             return true;
         }
         // CLOB vs VARCHAR compatibility
