@@ -130,9 +130,9 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
             log.trace("Update both synchronized documents and unsynchronize a root");
             doc1.setPropertyValue("file:content", new StringBlob("The content of file 1, updated."));
-            session.saveDocument(doc1);
+            doc1 = session.saveDocument(doc1);
             doc2.setPropertyValue("file:content", new StringBlob("The content of file 2, updated."));
-            session.saveDocument(doc2);
+            doc2 = session.saveDocument(doc2);
             nuxeoDriveManager.unregisterSynchronizationRoot(session.getPrincipal(), folder2, session);
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -215,7 +215,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
             log.trace("Remove file from a document, mapped to a fake deletion from the client's point of view");
             doc1.setPropertyValue("file:content", null);
-            session.saveDocument(doc1);
+            doc1 = session.saveDocument(doc1);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -255,9 +255,9 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             docToVersion.setPropertyValue("file:content", new StringBlob("The content of file to version."));
             docToVersion = session.createDocument(docToVersion);
             docToVersion.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
-            session.saveDocument(docToVersion);
+            docToVersion = session.saveDocument(docToVersion);
             docToVersion.setPropertyValue("file:content", new StringBlob("Updated content of the versioned file."));
-            session.saveDocument(docToVersion);
+            docToVersion = session.saveDocument(docToVersion);
             List<DocumentModel> versions = session.getVersions(docToVersion.getRef());
             assertEquals(1, versions.size());
             DocumentModel version = versions.get(0);
@@ -803,7 +803,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
             // Update folder1 title
             folder1.setPropertyValue("dc:title", "folder1 updated");
-            session.saveDocument(folder1);
+            folder1 = session.saveDocument(folder1);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -826,7 +826,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
             // Update folder1 title
             folder1.setPropertyValue("dc:title", "folder1 updated twice");
-            session.saveDocument(folder1);
+            folder1 = session.saveDocument(folder1);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -942,7 +942,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
             log.trace("Update doc1 member of the 'Locally Edited' collection");
             doc1.setPropertyValue("file:content", new StringBlob("Updated file content."));
-            session.saveDocument(doc1);
+            doc1 = session.saveDocument(doc1);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -1462,7 +1462,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
             // Update an existing proxy
             doc1.setPropertyValue("file:content", new StringBlob("The updated content of file 1."));
-            session.saveDocument(doc1);
+            doc1 = session.saveDocument(doc1);
             session.publishDocument(doc1, section);
         } finally {
             commitAndWaitForAsyncCompletion();
