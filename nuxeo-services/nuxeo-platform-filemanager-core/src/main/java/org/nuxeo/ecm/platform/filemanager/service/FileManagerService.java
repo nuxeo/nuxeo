@@ -248,17 +248,10 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     @Override
     public DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
             String fullName, boolean noMimeTypeCheck) throws IOException {
-        return createDocumentFromBlob(documentManager, input, path, overwrite, fullName, noMimeTypeCheck, false);
-    }
-
-    @Override
-    public DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
-            String fullName, boolean noMimeTypeCheck, boolean excludeOneToMany) throws IOException {
         FileImporterContext context = FileImporterContext.builder(documentManager, input, path)
                                                          .overwrite(overwrite)
                                                          .fileName(fullName)
                                                          .mimeTypeCheck(!noMimeTypeCheck)
-                                                         .excludeOneToMany(excludeOneToMany)
                                                          .build();
         return createOrUpdateDocument(context);
     }
