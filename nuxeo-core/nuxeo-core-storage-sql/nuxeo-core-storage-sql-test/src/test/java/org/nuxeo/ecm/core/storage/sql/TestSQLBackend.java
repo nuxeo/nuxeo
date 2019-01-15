@@ -104,21 +104,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     private static final int THREADS = 5;
 
-    protected boolean pathOptimizationsEnabled;
-
-    @Override
-    public void setUp() throws Exception {
-        pathOptimizationsEnabled = true; // changed in a few tests
-        super.setUp();
-    }
-
-    @Override
-    protected RepositoryDescriptor newDescriptor(String name, long clusteringDelay) {
-        RepositoryDescriptor descriptor = super.newDescriptor(name, clusteringDelay);
-        descriptor.setPathOptimizationsEnabled(pathOptimizationsEnabled);
-        return descriptor;
-    }
-
     protected boolean useArrayColumns() {
         return false;
     }
@@ -409,18 +394,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         for (Serializable id : ids) {
             assertNull(id.toString(), session.getNodeById(id));
         }
-    }
-
-    // more than 1000 children without path optimizations (for Oracle, NXP-20211)
-    @Test
-    @Ignore("NXP-25039 makes other tests fail")
-    public void testRecursiveRemovalBigWithoutPathOptimizations() throws Exception {
-        repository.close();
-        // open a repository without path optimization
-        pathOptimizationsEnabled = false;
-        repository = newRepository(-1);
-
-        testRecursiveRemovalBig();
     }
 
     // more than 1000 children
@@ -4311,41 +4284,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         List<Node> nodes = session.getNodesByIds(Arrays.asList(last1.getId(), last2.getId()));
         assertEquals("/r1/node0/node1/node2/node3/node4" + "/node5/node6/node7/node8/node9", nodes.get(0).getPath());
         assertEquals("/r2/node0/node1/node2/node3/node4" + "/node5/node6/node7/node8/node9", nodes.get(1).getPath());
-    }
-
-    @Test
-    public void testPathOptimizationsActivation() throws Exception {
-        repository.close();
-        // open a repository without path optimization
-        pathOptimizationsEnabled = false;
-        repository = newRepository(-1);
-        Session session = repository.getConnection();
-        PartialList<Serializable> res;
-        Node root = session.getRootNode();
-        List<Serializable> ids = new ArrayList<>();
-        Node node = session.addChildNode(root, "r1", null, "TestDoc", false);
-        for (int i = 0; i < 4; i++) {
-            node = session.addChildNode(node, "node" + i, null, "TestDoc", false);
-        }
-        ids.add(node.getId()); // keep the latest
-        session.save();
-        List<Node> nodes = session.getNodesByIds(ids);
-        assertEquals(1, nodes.size());
-        String sql = "SELECT * FROM TestDoc WHERE ecm:path STARTSWITH '/r1'";
-        res = session.query(sql, QueryFilter.EMPTY, false);
-        assertEquals(4, res.size());
-
-        // reopen repository with path optimization to populate the ancestors table
-        repository.close();
-
-        pathOptimizationsEnabled = true;
-        repository = newRepository(-1);
-        session = repository.getConnection();
-        // this query will use nx_ancestors to bulk load the path
-        nodes = session.getNodesByIds(ids);
-        assertEquals(1, nodes.size());
-        res = session.query(sql, QueryFilter.EMPTY, false);
-        assertEquals(4, res.size());
     }
 
     @Test
