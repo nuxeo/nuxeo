@@ -37,7 +37,7 @@ import java.time.format.DateTimeFormatterBuilder;
 
 /**
  * Serializer class for extended info to a JSON object
- * 
+ *
  * @since 9.3
  */
 public class ExtendedInfoSerializer extends JsonSerializer<ExtendedInfo> {
@@ -57,22 +57,30 @@ public class ExtendedInfoSerializer extends JsonSerializer<ExtendedInfo> {
             Serializable value = ((ExtendedInfoImpl.BlobInfo) info).getBlobValue();
             jg.writeObject(Base64.encodeBase64(SerializationUtils.serialize(value)));
         } else if (info instanceof ExtendedInfoImpl.StringInfo) {
-            String stringValue = ((ExtendedInfoImpl.StringInfo) info).getStringValue().trim();
-            if ((stringValue.startsWith("{") && stringValue.endsWith("}"))
-                    || (stringValue.startsWith("[") && stringValue.endsWith("]"))) {
-                try {
-                    mapper.readTree(stringValue);
-                    jg.writeRawValue(stringValue);
-                } catch (IOException e) {
-                    // If the value represents an invalid JSON, send a null value to ES to prevent potential
-                    // mapping exceptions
-                    jg.writeObject(null);
-                }
+            writeString(jg, mapper, ((ExtendedInfoImpl.StringInfo) info).getStringValue().trim());
+        } else { // ESExtendedInfo or MongoDBExtendedInfo
+            Serializable value = info.getSerializableValue();
+            if (value instanceof String) {
+                writeString(jg, mapper, (String) value);
             } else {
-                jg.writeString(stringValue);
+                jg.writeObject(value);
+            }
+        }
+    }
+
+    private void writeString(JsonGenerator jg, ObjectMapper mapper, String stringValue) throws IOException {
+        if ((stringValue.startsWith("{") && stringValue.endsWith("}"))
+                || (stringValue.startsWith("[") && stringValue.endsWith("]"))) {
+            try {
+                mapper.readTree(stringValue);
+                jg.writeRawValue(stringValue);
+            } catch (IOException e) {
+                // If the value represents an invalid JSON, send a null value to ES to prevent potential
+                // mapping exceptions
+                jg.writeObject(null);
             }
         } else {
-            jg.writeObject(info.getSerializableValue());
+            jg.writeString(stringValue);
         }
     }
 
