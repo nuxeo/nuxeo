@@ -18,15 +18,22 @@
  */
 package org.nuxeo.ecm.platform.tag;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import javax.inject.Inject;
 
 import org.junit.AssumptionViolatedException;
+import org.junit.Test;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
@@ -59,6 +66,9 @@ public class TestBridgeTagService extends AbstractTestTagService {
             ((TestBridgeTagService) test).tagService = new BridgeTagService(first, second);
         }
     }
+
+    @Inject
+    protected EventService eventService;
 
     @Override
     protected void createTags() {
@@ -104,6 +114,29 @@ public class TestBridgeTagService extends AbstractTestTagService {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         coreFeature.getStorageConfiguration().waitForFulltextIndexing();
+    }
+
+    @Test
+    public void testUntagOnDeletedDocument() {
+
+        DocumentModel file1 = session.createDocumentModel("/", "file1", "File");
+        file1 = session.createDocument(file1);
+        DocumentModel file2 = session.createDocumentModel("/", "file2", "File");
+        file2 = session.createDocument(file2);
+
+        // Delete docs
+        session.removeDocument(file1.getRef());
+        session.removeDocument(file2.getRef());
+
+        // remove tags
+        tagService.removeTags(session, file1.getId());
+        tagService.removeTags(session, file2.getId());
+
+        Set<String> tags = tagService.getTags(session, file1.getId());
+        assertEquals(Collections.emptySet(), tags);
+        tags = tagService.getTags(session, file2.getId());
+        assertEquals(Collections.emptySet(), tags);
+
     }
 
     @Override
