@@ -21,7 +21,22 @@
         <option>20</option>
       </pageSizeOptions>
     </coreQueryPageProvider>
-    
+
+    <genericPageProvider name="CURRENT_DOCUMENT_CHILDREN_SEARCH_DOCUMENT_TRACK"
+                         class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <trackUsage>true</trackUsage>
+      <whereClause docType="Document">
+        <predicate parameter="ecm:parentId" operator="=">
+          <field schema="ecm" name="uuid" />
+        </predicate>
+        <fixedPart>
+          ecm:isVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isTrashed = 0
+        </fixedPart>
+      </whereClause>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </genericPageProvider>
+
   </extension>
   
 </component>

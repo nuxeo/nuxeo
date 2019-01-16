@@ -33,12 +33,13 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
+import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -57,6 +58,9 @@ public class TestPageProviderTrackingWithMongoDB {
     @Inject
     protected PageProviderService pps;
 
+    @Inject
+    protected AuditReader reader;
+
     @Test
     public void shouldLogPageProviderCallsInAudit() throws Exception {
 
@@ -67,7 +71,6 @@ public class TestPageProviderTrackingWithMongoDB {
                 session.getRootDocument().getId());
         assertNotNull(pp);
 
-        AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> trail = reader.queryLogs(new String[] { "search" }, null);
 
         assertEquals(0, trail.size());
@@ -100,6 +103,51 @@ public class TestPageProviderTrackingWithMongoDB {
         trail = reader.queryLogs(new String[] { "search" }, null);
         assertEquals(2, trail.size());
 
+    }
+
+    @Test
+    public void shouldLogPageProviderCallsAndSearchDocumentModelInAudit() throws Exception {
+
+        Map<String, Serializable> props = new HashMap<>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+
+        DocumentModel rootDoc = session.getRootDocument();
+        PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN_SEARCH_DOCUMENT_TRACK", rootDoc, null,
+                Long.valueOf(2), Long.valueOf(0), props);
+        assertNotNull(pp);
+
+        List<LogEntry> trail = reader.queryLogs(new String[] { "search" }, null);
+
+        assertEquals(0, trail.size());
+
+        pp.getCurrentPage();
+
+        LogEntryGen.flushAndSync();
+        trail = reader.queryLogs(new String[] { "search" }, null);
+        assertEquals(1, trail.size());
+
+        LogEntry entry = trail.get(0);
+        assertEquals(session.getPrincipal().getName(), entry.getPrincipalName());
+        assertEquals("search", entry.getEventId());
+
+        Map<String, ExtendedInfo> extended = entry.getExtendedInfos();
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_SEARCH_DOCUMENT_TRACK",
+                extended.get("pageProviderName").getSerializableValue());
+        assertEquals(0L, extended.get("pageIndex").getSerializableValue());
+        assertEquals(0L, extended.get("resultsCountInPage").getSerializableValue());
+
+        ExtendedInfo extSearchDoc = extended.get("searchDocumentModel");
+        // TODO standardize audit backends - ES has a real object for searchDocumentModel
+        assertTrue("searchDocumentModel should be a String", extSearchDoc.getSerializableValue() instanceof String);
+        String searchDoc = (String) extSearchDoc.getSerializableValue();
+        assertTrue(searchDoc.contains(String.format("\"uid\":\"%s\"", rootDoc.getId())));
+
+        pp.refresh(); // clear cache
+        pp.getCurrentPage();
+
+        LogEntryGen.flushAndSync();
+        trail = reader.queryLogs(new String[] { "search" }, null);
+        assertEquals(2, trail.size());
     }
 
 }
