@@ -40,6 +40,8 @@ import org.osgi.framework.Bundle;
  */
 @TransactionalConfig(autoStart = false)
 @Features(TransactionalFeature.class)
+@Deploy("org.nuxeo.runtime.cluster")
+@Deploy("org.nuxeo.runtime.pubsub")
 @Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.runtime.migration")
 @Deploy("org.nuxeo.ecm.core.api")

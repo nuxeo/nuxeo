@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.cluster.ClusterService" version="1.0">
+
+  <documentation>
+    The Cluster service allows registration of the cluster node id and
+    other cluster-related parameters.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.runtime.cluster.ClusterService" />
+  </service>
+
+  <implementation class="org.nuxeo.runtime.cluster.ClusterServiceImpl" />
+
+  <extension-point name="configuration">
+    <documentation>
+      Defines the cluster configuration:
+      <code>
+        <clusterNode id="123" enabled="true"/>
+      </code>
+    </documentation>
+
+    <object class="org.nuxeo.runtime.cluster.ClusterNodeDescriptor" />
+  </extension-point>
+
+</component>

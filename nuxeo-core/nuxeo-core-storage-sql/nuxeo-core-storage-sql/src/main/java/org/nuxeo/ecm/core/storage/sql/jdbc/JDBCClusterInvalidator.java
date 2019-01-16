@@ -86,6 +86,12 @@ public class JDBCClusterInvalidator implements ClusterInvalidator {
         }
     }
 
+    @Override
+    public boolean requiresClusterSQL() {
+        // we need specific tables to be set up
+        return true;
+    }
+
     // TODO should be called by RepositoryManagement
     protected void processClusterInvalidationsNext() {
         clusterNodeLastInvalidationTimeMillis = System.currentTimeMillis() - clusteringDelay - 1;

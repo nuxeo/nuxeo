@@ -117,26 +117,8 @@ public class DBSRepositoryDescriptor implements Cloneable {
     public Integer cacheConcurrencyLevel;
 
     /** @since 8.10 */
-    @XNode("clustering@id")
-    public String clusterNodeId;
-
-    /** @since 8.10 */
-    @XNode("clustering@enabled")
-    private Boolean clusteringEnabled;
-
-    /** @since 8.10 */
     @XNode("clustering/invalidatorClass")
     public Class<? extends DBSClusterInvalidator> clusterInvalidatorClass;
-
-    /** @since 8.10 */
-    public boolean isClusteringEnabled() {
-        return defaultFalse(clusteringEnabled);
-    }
-
-    /** @since 8.10 */
-    protected void setClusteringEnabled(boolean enabled) {
-        clusteringEnabled = Boolean.valueOf(enabled);
-    }
 
     /** @since 9.1 */
     @XNode("changeTokenEnabled")
@@ -188,12 +170,6 @@ public class DBSRepositoryDescriptor implements Cloneable {
         }
         if (other.cacheConcurrencyLevel != null) {
             cacheConcurrencyLevel = other.cacheConcurrencyLevel;
-        }
-        if (other.clusterNodeId != null) {
-            clusterNodeId = other.clusterNodeId;
-        }
-        if (other.clusteringEnabled != null) {
-            clusteringEnabled = other.clusteringEnabled;
         }
         if (other.clusterInvalidatorClass != null) {
             clusterInvalidatorClass = other.clusterInvalidatorClass;

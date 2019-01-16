@@ -31,6 +31,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
 
+@Deploy("org.nuxeo.runtime.cluster")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Features(RuntimeFeature.class)
 public class CacheFeature implements RunnerFeature {

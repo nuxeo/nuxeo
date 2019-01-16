@@ -75,13 +75,6 @@ public class ConditionalIgnoreRule implements TestRule, MethodRule {
         boolean shouldIgnore();
     }
 
-    public static final class NXP10926H2Upgrade implements Condition {
-        @Override
-        public boolean shouldIgnore() {
-            return false;
-        }
-    }
-
     public static final class IgnoreIsolated implements Condition {
         boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(
                 getClass().getClassLoader().getClass().getName());

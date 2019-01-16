@@ -61,9 +61,11 @@ import com.codahale.metrics.SharedMetricRegistries;
  * @since 10.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TestCachedDirectoryClustered.ClusterFeature.class, DirectoryFeature.class })
+@Features(DirectoryFeature.class)
+@Deploy("org.nuxeo.runtime.cluster")
 @Deploy("org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml")
 @Deploy("org.nuxeo.ecm.directory.tests:test-directories-bundle.xml")
+@Deploy("org.nuxeo.ecm.directory.tests:test-cluster.xml")
 @Deploy("org.nuxeo.ecm.core.cache")
 public class TestCachedDirectoryClustered {
 
@@ -71,33 +73,10 @@ public class TestCachedDirectoryClustered {
 
     protected static final String SCHEMA = "user";
 
+    // from XML file
     protected static final String NODE1 = "123";
 
     protected static final String NODE2 = "456";
-
-    /** Needed so that the cache service uses an invalidator. */
-    public static class ClusterFeature implements RunnerFeature {
-
-        @Override
-        public void start(FeaturesRunner runner) {
-            Framework.addListener(new RuntimeServiceListener() {
-
-                @Override
-                public void handleEvent(RuntimeServiceEvent event) {
-                    if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_START) {
-                        return;
-                    }
-                    Framework.removeListener(this);
-                    setClusterId();
-                }
-            });
-        }
-
-        public static void setClusterId() {
-            Framework.getProperties().put(CacheServiceImpl.CLUSTERING_ENABLED_PROP, "true");
-            Framework.getProperties().put(CacheServiceImpl.NODE_ID_PROP, NODE1);
-        }
-    }
 
     protected static List<CacheInvalidation> RECEIVED_INVALIDATIONS = new CopyOnWriteArrayList<>();
 

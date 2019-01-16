@@ -36,10 +36,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueServiceImpl;
 import org.nuxeo.runtime.kv.KeyValueStore;
@@ -94,13 +94,11 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
 
     public static final String MIGRATION_INVAL_PUBSUB_TOPIC = "migrationinval";
 
-    public static final String CLUSTERING_ENABLED_PROP = "repository.clustering.enabled";
-
-    public static final String NODE_ID_PROP = "repository.clustering.id";
-
     protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
 
     protected MigrationThreadPoolExecutor executor;
+
+    protected String nodeId;
 
     protected MigrationInvalidator invalidator;
 
@@ -325,17 +323,10 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
     @Override
     public void start(ComponentContext context) {
         super.start(context);
-        if (Framework.isBooleanPropertyTrue(CLUSTERING_ENABLED_PROP)) {
-            // register migration invalidator
-            String nodeId = Framework.getProperty(NODE_ID_PROP);
-            if (StringUtils.isBlank(nodeId)) {
-                nodeId = String.valueOf(RANDOM.nextLong());
-                log.warn("Missing cluster node id configuration, please define it explicitly "
-                        + "(usually through repository.clustering.id). Using random cluster node id instead: "
-                        + nodeId);
-            } else {
-                nodeId = nodeId.trim();
-            }
+        ClusterService clusterService = Framework.getService(ClusterService.class);
+        if (clusterService.isEnabled()) {
+            // register invalidator
+            nodeId = clusterService.getNodeId();
             invalidator = new MigrationInvalidator();
             invalidator.initialize(MIGRATION_INVAL_PUBSUB_TOPIC, nodeId);
             log.info("Registered migration invalidator for node: {}", nodeId);
@@ -516,10 +507,9 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
      */
     protected void atomic(String id, Consumer<KeyValueStore> consumer) {
         KeyValueStore kv = getKeyValueStore();
-        String nodeid = Framework.getProperty(NODE_ID_PROP);
         for (int i = 0; i < 5; i++) {
             // the value of the lock is useful for debugging
-            String value = Instant.now() + " node=" + nodeid;
+            String value = Instant.now() + " node=" + nodeId;
             if (kv.compareAndSet(id + LOCK, null, value, WRITE_LOCK_TTL)) {
                 try {
                     consumer.accept(kv);

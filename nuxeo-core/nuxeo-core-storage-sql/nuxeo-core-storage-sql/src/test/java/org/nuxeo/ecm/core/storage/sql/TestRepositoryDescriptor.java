@@ -59,7 +59,6 @@ public class TestRepositoryDescriptor {
     @Test
     public void testBasic() throws Exception {
         assertEquals("foo", desc.name);
-        assertTrue(desc.getClusteringEnabled());
         assertEquals(1234, desc.getClusteringDelay());
     }
 
@@ -148,7 +147,6 @@ public class TestRepositoryDescriptor {
     public void testMerge() throws Exception {
         RepositoryDescriptor desc2 = (RepositoryDescriptor) xmap.load(getResource("test-repository-descriptor2.xml"));
         desc.merge(desc2);
-        assertFalse(desc.getClusteringEnabled());
         assertEquals(Arrays.asList("file1", "file2", "file3"), desc.sqlInitFiles);
         assertTrue(desc.getPathOptimizationsEnabled());
         assertEquals(2, desc.getPathOptimizationsVersion());

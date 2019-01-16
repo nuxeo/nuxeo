@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterService;
 
 /**
  * A Dialect encapsulates knowledge about database-specific behavior.
@@ -271,7 +272,9 @@ public abstract class Dialect {
             fulltextSearchDisabled = fulltextDescriptor.getFulltextSearchDisabled();
             aclOptimizationsEnabled = repositoryDescriptor.getAclOptimizationsEnabled();
             readAclMaxSize = repositoryDescriptor.getReadAclMaxSize();
-            clusteringEnabled = repositoryDescriptor.getClusteringEnabled();
+            if (Framework.isInitialized()) {
+                clusteringEnabled = Framework.getService(ClusterService.class).isEnabled();
+            }
             softDeleteEnabled = repositoryDescriptor.getSoftDeleteEnabled();
             proxiesEnabled = repositoryDescriptor.getProxiesEnabled();
         }

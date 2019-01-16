@@ -1,0 +1,10 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="cluster-config">
+
+  <extension target="org.nuxeo.runtime.cluster.ClusterService" point="configuration">
+    <clusterNode id="${nuxeo.cluster.nodeid}" enabled="${nuxeo.cluster.enabled}" />
+  </extension>
+
+</component>
+</#escape>

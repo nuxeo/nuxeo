@@ -28,15 +28,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -57,8 +56,6 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
      */
     public static final String XP_CACHES = "caches";
 
-    protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
-
     /**
      * @since 8.2
      */
@@ -66,20 +63,6 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     /** @since 9.3 */
     public static final String CACHE_INVAL_PUBSUB_TOPIC = "cacheinval";
-
-    /**
-     * Framework property defining whether clustering is enabled.
-     *
-     * @since 9.3
-     */
-    public static final String CLUSTERING_ENABLED_PROP = "repository.clustering.enabled";
-
-    /**
-     * Framework property containing the node id.
-     *
-     * @since 9.3
-     */
-    public static final String NODE_ID_PROP = "repository.clustering.id";
 
     // allows us to start caches registered programmatically through registerCache(name)
     protected boolean started;
@@ -205,17 +188,10 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     @Override
     public void start(ComponentContext context) {
         super.start(context);
-        if (Framework.isBooleanPropertyTrue(CLUSTERING_ENABLED_PROP)) {
+        ClusterService clusterService = Framework.getService(ClusterService.class);
+        if (clusterService.isEnabled()) {
             // register cache invalidator
-            String nodeId = Framework.getProperty(NODE_ID_PROP);
-            if (StringUtils.isBlank(nodeId)) {
-                nodeId = String.valueOf(RANDOM.nextLong());
-                log.warn("Missing cluster node id configuration, please define it explicitly "
-                        + "(usually through repository.clustering.id). Using random cluster node id instead: {}",
-                        nodeId);
-            } else {
-                nodeId = nodeId.trim();
-            }
+            String nodeId = clusterService.getNodeId();
             invalidator = new CachePubSubInvalidator();
             invalidator.initialize(CACHE_INVAL_PUBSUB_TOPIC, nodeId);
             log.info("Registered cache invalidator for node: {}", nodeId);

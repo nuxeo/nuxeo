@@ -32,7 +32,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -1616,147 +1615,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
-    // @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "windows doesn't
-    // have enough time granularity for such a test")
-    public void testClustering() throws Exception {
-        if (!DatabaseHelper.DATABASE.supportsClustering()) {
-            System.out.println("Skipping clustering test for unsupported database: "
-                    + DatabaseHelper.DATABASE.getClass().getName());
-            return;
-        }
-
-        repository.close();
-        // get two clustered repositories
-        long DELAY = 500; // ms
-        repository = newRepository(DELAY);
-        RepositoryImpl repository2 = newRepository(DELAY);
-
-        ClusterTestJob r1 = new ClusterTestJob(repository, repository2);
-        ClusterTestJob r2 = new ClusterTestJob(repository, repository2);
-        LockStepJob.run(r1, r2);
-
-        clearAndClose(repository2);
-    }
-
-    protected static class ClusterTestJob extends LockStepJob {
-
-        protected Repository repository1;
-
-        protected Repository repository2;
-
-        private static final long DELAY = 500; // ms
-
-        public ClusterTestJob(Repository repository1, Repository repository2) {
-            this.repository1 = repository1;
-            this.repository2 = repository2;
-        }
-
-        @Override
-        public void job() throws Exception {
-            Session session1 = null;
-            Session session2 = null;
-            Node folder1 = null;
-            Node folder2 = null;
-            SimpleProperty title1 = null;
-            SimpleProperty title2 = null;
-            if (thread(1)) {
-                // session1 creates root node and does a save
-                // which resets invalidation timeout
-                session1 = repository1.getConnection();
-            }
-            if (thread(2)) {
-                session2 = repository2.getConnection();
-                session2.save(); // save resets invalidations timeout
-            }
-            if (thread(1)) {
-                // in session1, create base folder
-                Node root1 = session1.getRootNode();
-                folder1 = session1.addChildNode(root1, "foo", null, "TestDoc", false);
-                title1 = folder1.getSimpleProperty("tst:title");
-                session1.save();
-            }
-            if (thread(2)) {
-                // in session2, retrieve folder and check children
-                Node root2 = session2.getRootNode();
-                folder2 = session2.getChildNode(root2, "foo", false);
-                assertNotNull(folder2);
-                title2 = folder2.getSimpleProperty("tst:title");
-                session2.getChildren(folder2, null, false);
-            }
-            if (thread(1)) {
-                // in session1, add document
-                session1.addChildNode(folder1, "gee", null, "TestDoc", false);
-                session1.save();
-            }
-            if (thread(2)) {
-                // in session2, try to get document
-                // immediate check, invalidation delay means not done yet
-                session2.save();
-                Node doc2 = session2.getChildNode(folder2, "gee", false);
-                // assertNull(doc2); // could fail if machine very slow
-                Thread.sleep(DELAY + 1); // wait invalidation delay
-                session2.save(); // process invalidations
-                                 // (non-transactional)
-                doc2 = session2.getChildNode(folder2, "gee", false);
-                assertNotNull(doc2);
-            }
-            if (thread(1)) {
-                // in session1 change title
-                title1.setValue("yo");
-            }
-            if (thread(2)) {
-                assertNull(title2.getString());
-            }
-            if (thread(1)) {
-                // save session1 (queues its invalidations to others)
-                session1.save();
-            }
-            if (thread(2)) {
-                // session2 has not saved (committed) yet, so still
-                // unmodified
-                assertNull(title2.getString());
-                // immediate check, invalidation delay means not done yet
-                session2.save();
-                // assertNull(title2.getString()); // could fail if machine
-                // very
-                // slow
-                Thread.sleep(DELAY + 1); // wait invalidation delay
-                session2.save();
-                // after commit, invalidations have been processed
-                assertEquals("yo", title2.getString());
-            }
-            if (thread(1)) {
-                // written properties aren't shared
-                title1.setValue("mama");
-            }
-            if (thread(2)) {
-                title2.setValue("glop");
-            }
-            if (thread(1)) {
-                session1.save();
-                assertEquals("mama", title1.getString());
-            }
-            if (thread(2)) {
-                assertEquals("glop", title2.getString());
-                session2.save(); // and notifies invalidations
-            }
-            if (thread(1)) {
-                // in non-transaction mode, session1 has not processed
-                // its invalidations yet, call save() to process them
-                // artificially
-                Thread.sleep(DELAY + 1); // wait invalidation delay
-                session1.save();
-                // session2 save wins
-                assertEquals("glop", title1.getString());
-            }
-            if (thread(2)) {
-                assertEquals("glop", title2.getString());
-            }
-        }
-
-    }
-
-    @Test
     public void testRollback() throws Exception {
         if (!DatabaseHelper.DATABASE.supportsXA()) {
             return;
@@ -3274,31 +3132,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testLockingParallel() throws Throwable {
-        Serializable nodeId = createNode();
+        Serializable nodeId = createNode(repository);
         runParallelLocking(nodeId, repository, repository);
     }
 
-    @Test
-    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.NXP10926H2Upgrade.class)
-    public void testLockingParallelClustered() throws Throwable {
-        if (!DatabaseHelper.DATABASE.supportsClustering()) {
-            System.out.println("Skipping clustered locking test for unsupported database: "
-                    + DatabaseHelper.DATABASE.getClass().getName());
-            return;
-        }
-
-        Serializable nodeId = createNode();
-
-        // get two clustered repositories
-        repository.close();
-        long DELAY = 50; // ms
-        repository = newRepository(DELAY);
-        Repository repository2 = newRepository(DELAY);
-
-        runParallelLocking(nodeId, repository, repository2);
-    }
-
-    protected Serializable createNode() throws Exception {
+    protected static Serializable createNode(Repository repository) throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
@@ -3512,46 +3350,20 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testCacheInvalidationsPropagatorLeak() throws Exception {
-        assertEquals(0, getInvalidationsPropagatorSize());
+        List<InvalidationsQueue> queues = repository.invalidationsPropagator.queues;
+        assertEquals(0, queues.size());
         Session session = repository.getConnection();
-        assertEquals(1, getInvalidationsPropagatorSize());
+        assertEquals(1, queues.size());
         session.close();
-        assertEquals(0, getInvalidationsPropagatorSize());
+        assertEquals(0, queues.size());
         Session s1 = repository.getConnection();
         Session s2 = repository.getConnection();
         Session s3 = repository.getConnection();
-        assertEquals(3, getInvalidationsPropagatorSize());
+        assertEquals(3, queues.size());
         s1.close();
         s2.close();
         s3.close();
-        assertEquals(0, getInvalidationsPropagatorSize());
-    }
-
-    @Test
-    public void testClusterInvalidationsPropagatorLeak() throws Exception {
-        if (!DatabaseHelper.DATABASE.supportsClustering()) {
-            System.out.println("Skipping clustering test for unsupported database: "
-                    + DatabaseHelper.DATABASE.getClass().getName());
-            return;
-        }
-
-        repository.close();
-        // get a clustered repository
-        long DELAY = 500; // ms
-        repository = newRepository(DELAY);
-
-        assertEquals(0, getInvalidationsPropagatorSize());
-        Session session = repository.getConnection();
-        assertEquals(1, getInvalidationsPropagatorSize());
-        session.close();
-        assertEquals(0, getInvalidationsPropagatorSize());
-    }
-
-    protected int getInvalidationsPropagatorSize() throws Exception {
-        Field propagatorField = RepositoryImpl.class.getDeclaredField("invalidationsPropagator");
-        propagatorField.setAccessible(true);
-        InvalidationsPropagator propagator = (InvalidationsPropagator) propagatorField.get(repository);
-        return propagator.queues.size();
+        assertEquals(0, queues.size());
     }
 
     protected List<Serializable> makeComplexDoc(Session session) {

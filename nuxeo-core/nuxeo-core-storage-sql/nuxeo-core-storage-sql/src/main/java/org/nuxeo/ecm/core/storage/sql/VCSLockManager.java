@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterService;
 
 /**
  * Manager of locks that serializes access to them.
@@ -65,11 +66,6 @@ public class VCSLockManager implements LockManager {
      * saves, and we don't do prefetch.
      */
     protected Mapper mapper;
-
-    /**
-     * If clustering is enabled then we have to wrap test/set and test/remove in a transaction.
-     */
-    protected final boolean clusteringEnabled;
 
     /**
      * Lock serializing access to the mapper.
@@ -127,9 +123,9 @@ public class VCSLockManager implements LockManager {
      */
     public VCSLockManager(RepositoryImpl repository) {
         this.repository = repository;
-        clusteringEnabled = repository.getRepositoryDescriptor().getClusteringEnabled();
         serializationLock = new ReentrantLock();
-        caching = !clusteringEnabled;
+        // we can cache things locally if there are no outside invalidations (due to clustering)
+        caching = !Framework.getService(ClusterService.class).isEnabled();
         lockCache = caching ? new LRUCache<Serializable, Lock>(CACHE_SIZE) : null;
     }
 
