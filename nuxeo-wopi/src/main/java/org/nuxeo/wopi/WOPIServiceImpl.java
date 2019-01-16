@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -53,6 +52,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -76,12 +76,6 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     public static final String WOPI_PROPERTY_NAMESPACE = "org.nuxeo.wopi";
 
     public static final String SUPPORTED_APP_NAMES_PROPERTY_KEY = "supportedAppNames";
-
-    protected static final String CLUSTERING_ENABLED_PROP = "repository.clustering.enabled";
-
-    protected static final String NODE_ID_PROP = "repository.clustering.id";
-
-    protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
 
     protected static final String WOPI_DISCOVERY_INVAL_PUBSUB_TOPIC = "wopiDiscoveryInval";
 
@@ -109,18 +103,10 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     }
 
     protected void registerInvalidator() {
-        if (Framework.isBooleanPropertyTrue(CLUSTERING_ENABLED_PROP)) {
+        ClusterService clusterService = Framework.getService(ClusterService.class);
+        if (clusterService.isEnabled()) {
             // register WOPI discovery invalidator
-            String nodeId = Framework.getProperty(NODE_ID_PROP);
-            if (StringUtils.isBlank(nodeId)) {
-                nodeId = String.valueOf(RANDOM.nextLong());
-                log.warn(
-                        "Missing cluster node id configuration, please define it explicitly "
-                                + "(usually through repository.clustering.id). Using random cluster node id instead: {}",
-                        nodeId);
-            } else {
-                nodeId = nodeId.trim();
-            }
+            String nodeId = clusterService.getNodeId();
             invalidator = new WOPIDiscoveryInvalidator();
             invalidator.initialize(WOPI_DISCOVERY_INVAL_PUBSUB_TOPIC, nodeId);
             log.info("Registered WOPI discovery invalidator for node: {}", nodeId);
