@@ -47,6 +47,7 @@ import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterService;
 
 /**
  * Implementation of {@link FileSystemChangeFinder} using the {@link AuditReader}.
@@ -265,6 +266,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
      * Returns the longest clustering delay among the given repositories for which clustering is enabled.
      */
     protected long getClusteringDelay(Set<String> repositoryNames) {
+        if (!Framework.getService(ClusterService.class).isEnabled()) {
+            return -1;
+        }
         long clusteringDelay = -1;
         SQLRepositoryService repositoryService = Framework.getService(SQLRepositoryService.class);
         for (String repositoryName : repositoryNames) {
@@ -273,9 +277,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 // Not a VCS repository`
                 continue;
             }
-            if (repositoryDescriptor.getClusteringEnabled()) {
-                clusteringDelay = Math.max(clusteringDelay, repositoryDescriptor.getClusteringDelay());
-            }
+            clusteringDelay = Math.max(clusteringDelay, repositoryDescriptor.getClusteringDelay());
         }
         return clusteringDelay;
     }
