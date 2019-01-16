@@ -25,19 +25,17 @@ import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_FACET;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_SCHEMA;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_TYPE;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.InputStream;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
@@ -56,6 +54,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.threed.core")
 @Deploy("org.nuxeo.ecm.platform.threed.api")
 public class Test3DCore {
+
+    protected static final String[] TEST_FILE_NAMES = { "suzanne.dae", "suzanne.x3d" };
 
     @Inject
     private CoreSession session;
@@ -83,26 +83,20 @@ public class Test3DCore {
     @Test
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testThreeDImporter() throws IOException {
-        String path = "test-data/suzanne.dae";
-        URL url = this.getClass().getClassLoader().getResource(path);
-        File file = null;
-        try {
-            assert url != null;
-            file = new File(url.toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+        for (String testFileName : TEST_FILE_NAMES) {
+            try (InputStream is = Test3DCore.class.getResourceAsStream("/test-data/" + testFileName)) {
+                assertNotNull("Failed to load resource: test-data/" + testFileName, is);
+                Blob blob = Blobs.createBlob(is);
+                blob.setFilename(testFileName);
+                FileImporterContext context = FileImporterContext.builder(session, blob, "/").overwrite(true).build();
+                DocumentModel doc = fileManager.createOrUpdateDocument(context);
+                assertNotNull(doc);
+                assertEquals(THREED_TYPE, doc.getType());
+                assertTrue(doc.hasFacet(THREED_FACET));
+                assertEquals(blob.getFilename(), doc.getName());
+                assertEquals(blob, doc.getPropertyValue("file:content"));
+            }
         }
-        assertNotNull(file);
-        Blob blob = new FileBlob(file);
-        FileImporterContext context = FileImporterContext.builder(session, blob, "/")
-                                                         .overwrite(true)
-                                                         .build();
-        DocumentModel doc = fileManager.createOrUpdateDocument(context);
-        assertNotNull(doc);
-        assertEquals(doc.getType(), THREED_TYPE);
-        assertTrue(doc.hasFacet(THREED_FACET));
-        assertEquals(blob.getFilename(), doc.getName());
-        assertEquals(blob, doc.getPropertyValue("file:content"));
     }
 
 }

@@ -13,7 +13,7 @@
       <!-- .obj -->
       <filter>text/wavefront-obj</filter>
       <!-- .x3d -->
-      <filter>model/x3d+xml</filter>
+      <filter>model/x3d\+xml</filter>
       <!-- .stl -->
       <filter>application/sla</filter>
       <!-- .gltf -->
