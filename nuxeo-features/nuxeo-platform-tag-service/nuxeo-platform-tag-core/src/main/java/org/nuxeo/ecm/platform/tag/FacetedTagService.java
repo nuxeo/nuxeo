@@ -39,6 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -106,7 +107,11 @@ public class FacetedTagService extends AbstractTagService {
 
     @Override
     public void doUntag(CoreSession session, String docId, String label) {
-        DocumentModel docModel = session.getDocument(new IdRef(docId));
+        DocumentRef docRef = new IdRef(docId);
+        if (!session.exists(docRef)) {
+            return;
+        }
+        DocumentModel docModel = session.getDocument(docRef);
         if (docModel.isProxy()) {
             throw new NuxeoException("Removing tags is not allowed on proxies");
         }
@@ -152,7 +157,11 @@ public class FacetedTagService extends AbstractTagService {
 
     @Override
     public Set<String> doGetTags(CoreSession session, String docId) {
-        DocumentModel docModel = session.getDocument(new IdRef(docId));
+        DocumentRef docRef = new IdRef(docId);
+        if (!session.exists(docRef)) {
+            return Collections.emptySet();
+        }
+        DocumentModel docModel = session.getDocument(docRef);
         List<Map<String, Serializable>> tags = getTags(docModel);
         return tags.stream().map(t -> (String) t.get(LABEL_PROPERTY)).collect(Collectors.toSet());
     }
