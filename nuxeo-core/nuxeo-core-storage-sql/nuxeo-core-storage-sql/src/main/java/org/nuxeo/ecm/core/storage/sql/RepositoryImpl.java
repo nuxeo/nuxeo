@@ -20,10 +20,8 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.security.SecureRandom;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.naming.Reference;
@@ -32,7 +30,6 @@ import javax.resource.cci.ConnectionSpec;
 import javax.resource.cci.RecordFactory;
 import javax.resource.cci.ResourceAdapterMetaData;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -43,6 +40,7 @@ import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCClusterInvalidator;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
@@ -60,8 +58,6 @@ public class RepositoryImpl implements Repository {
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(RepositoryImpl.class);
-
-    private static final Random RANDOM = new SecureRandom();
 
     protected final RepositoryDescriptor repositoryDescriptor;
 
@@ -83,7 +79,12 @@ public class RepositoryImpl implements Repository {
     protected boolean selfRegisteredLockManager = false;
 
     /** Propagator of invalidations to all mappers' caches. */
-    protected final InvalidationsPropagator invalidationsPropagator;
+    // public for tests
+    public final InvalidationsPropagator invalidationsPropagator;
+
+    protected ClusterInvalidator clusterInvalidator;
+
+    public boolean requiresClusterSQL;
 
     private Model model;
 
@@ -252,13 +253,10 @@ public class RepositoryImpl implements Repository {
     protected void initRepository() {
         log.debug("Initializing");
         backend = createBackend();
+        prepareClusterInvalidator(); // sets requiresClusterSQL used by backend init
         model = backend.initialize(this);
         initLockManager();
-
-        // create the cluster invalidator
-        if (repositoryDescriptor.getClusteringEnabled()) {
-            initClusterInvalidator();
-        }
+        initClusterInvalidator();
 
         // log once which mapper cache is being used
         Class<? extends CachingMapper> cachingMapperClass = getCachingMapperClass();
@@ -301,19 +299,11 @@ public class RepositoryImpl implements Repository {
         log.info("Repository " + getName() + " using lock manager " + lockManager);
     }
 
-    protected void initClusterInvalidator() {
-        String nodeId = repositoryDescriptor.getClusterNodeId();
-        if (StringUtils.isBlank(nodeId)) {
-            // need a smallish int because of SQL Server legacy node ids
-            nodeId = String.valueOf(RANDOM.nextInt(32768));
-            log.warn("Missing cluster node id configuration, please define it explicitly (usually through repository.clustering.id). "
-                    + "Using random cluster node id instead: " + nodeId);
-        } else {
-            nodeId = nodeId.trim();
+    protected void prepareClusterInvalidator() {
+        if (Framework.getService(ClusterService.class).isEnabled()) {
+            clusterInvalidator = createClusterInvalidator();
+            requiresClusterSQL = clusterInvalidator.requiresClusterSQL();
         }
-        ClusterInvalidator clusterInvalidator = createClusterInvalidator();
-        clusterInvalidator.initialize(nodeId, this);
-        backend.setClusterInvalidator(clusterInvalidator);
     }
 
     protected ClusterInvalidator createClusterInvalidator() {
@@ -325,6 +315,14 @@ public class RepositoryImpl implements Repository {
             return klass.newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
+        }
+    }
+
+    protected void initClusterInvalidator() {
+        if (clusterInvalidator != null) {
+            String nodeId = Framework.getService(ClusterService.class).getNodeId();
+            clusterInvalidator.initialize(nodeId, this);
+            backend.setClusterInvalidator(clusterInvalidator);
         }
     }
 

@@ -51,4 +51,13 @@ public interface ClusterInvalidator {
      */
     void sendInvalidations(Invalidations invalidations);
 
+    /**
+     * Checks if this invalidator requires specific database-level structures.
+     *
+     * @since 11.1
+     */
+    default boolean requiresClusterSQL() {
+        return false;
+    }
+
 }

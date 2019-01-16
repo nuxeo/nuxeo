@@ -233,24 +233,6 @@ public class RepositoryDescriptor {
     @XNode("idType")
     public String idType; // "varchar", "uuid", "sequence"
 
-    @XNode("clustering@id")
-    private String clusterNodeId;
-
-    public String getClusterNodeId() {
-        return clusterNodeId;
-    }
-
-    @XNode("clustering@enabled")
-    private Boolean clusteringEnabled;
-
-    public boolean getClusteringEnabled() {
-        return defaultFalse(clusteringEnabled);
-    }
-
-    protected void setClusteringEnabled(boolean enabled) {
-        clusteringEnabled = Boolean.valueOf(enabled);
-    }
-
     @XNode("clustering@delay")
     private Long clusteringDelay;
 
@@ -437,8 +419,6 @@ public class RepositoryDescriptor {
         childNameUniqueConstraintEnabled = other.childNameUniqueConstraintEnabled;
         collectionUniqueConstraintEnabled = other.collectionUniqueConstraintEnabled;
         idType = other.idType;
-        clusterNodeId = other.clusterNodeId;
-        clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
         fulltextAnalyzer = other.fulltextAnalyzer;
         fulltextCatalog = other.fulltextCatalog;
@@ -497,12 +477,6 @@ public class RepositoryDescriptor {
         }
         if (other.idType != null) {
             idType = other.idType;
-        }
-        if (other.clusterNodeId != null) {
-            clusterNodeId = other.clusterNodeId;
-        }
-        if (other.clusteringEnabled != null) {
-            clusteringEnabled = other.clusteringEnabled;
         }
         if (other.clusteringDelay != null) {
             clusteringDelay = other.clusteringDelay;

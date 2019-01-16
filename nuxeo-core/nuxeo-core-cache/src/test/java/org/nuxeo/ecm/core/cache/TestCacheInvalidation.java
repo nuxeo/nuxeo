@@ -35,47 +35,22 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.cache.CacheServiceImpl.AbstractCachePubSubInvalidator;
 import org.nuxeo.ecm.core.cache.CacheServiceImpl.CacheInvalidation;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features({ TestCacheInvalidation.ClusterFeature.class, CacheFeature.class })
+@Features(CacheFeature.class)
+@Deploy("org.nuxeo.runtime.cluster")
 @Deploy("org.nuxeo.runtime.pubsub")
 @Deploy("org.nuxeo.ecm.core.cache:inmemory-cache-config.xml")
+@Deploy("org.nuxeo.ecm.core.cache:test-cluster.xml")
 public class TestCacheInvalidation {
 
+    // from XML file
     protected static final String NODE1 = "123";
 
     protected static final String NODE2 = "456";
-
-    /** Needed so that the cache service uses an invalidator. */
-    public static class ClusterFeature implements RunnerFeature {
-
-        @Override
-        public void start(FeaturesRunner runner) {
-            Framework.addListener(new RuntimeServiceListener() {
-
-                @Override
-                public void handleEvent(RuntimeServiceEvent event) {
-                    if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_START) {
-                        return;
-                    }
-                    Framework.removeListener(this);
-                    setClusterId();
-                }
-            });
-        }
-
-        public static void setClusterId() {
-            Framework.getProperties().put(CacheServiceImpl.CLUSTERING_ENABLED_PROP, "true");
-            Framework.getProperties().put(CacheServiceImpl.NODE_ID_PROP, NODE1);
-        }
-    }
 
     public static List<CacheInvalidation> RECEIVED_INVALIDATIONS = new CopyOnWriteArrayList<>();
 

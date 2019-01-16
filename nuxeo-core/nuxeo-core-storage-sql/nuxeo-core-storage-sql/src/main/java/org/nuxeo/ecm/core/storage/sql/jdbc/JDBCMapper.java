@@ -123,8 +123,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     private final RepositoryImpl repository;
 
-    protected boolean clusteringEnabled;
-
     protected static final String NOSCROLL_ID = "noscroll";
 
     /**
@@ -141,7 +139,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         super(model, sqlInfo, clusterInvalidator, repository.getInvalidationsPropagator());
         this.pathResolver = pathResolver;
         this.repository = repository;
-        clusteringEnabled = clusterInvalidator != null;
         queryMakerService = Framework.getService(QueryMakerService.class);
 
         tableUpgrader = new TableUpgrader(this);
@@ -446,7 +443,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             } catch (ConcurrentUpdateException cue) {
                 cue.addInfo(
                         "Duplicate cluster node with id: " + nodeId
-                                + " (a crashed node must be cleaned up, or the repository.clustering.id configuration fixed)");
+                                + " (a crashed node must be cleaned up, or the cluster configuration fixed)");
                 throw cue;
             }
             throw new NuxeoException(e);

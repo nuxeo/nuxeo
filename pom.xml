@@ -427,6 +427,11 @@
         <artifactId>nuxeo-stream</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-cluster</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
 
 
       <dependency>

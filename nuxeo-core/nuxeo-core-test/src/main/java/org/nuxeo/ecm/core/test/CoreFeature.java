@@ -78,6 +78,7 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.runtime.metrics")
 @Deploy("org.nuxeo.runtime.reload")
 @Deploy("org.nuxeo.runtime.kv")
+@Deploy("org.nuxeo.runtime.cluster")
 @Deploy("org.nuxeo.runtime.pubsub")
 @Deploy("org.nuxeo.runtime.mongodb")
 @Deploy("org.nuxeo.runtime.migration")

@@ -84,7 +84,6 @@ public abstract class SQLBackendTestCase {
         }
         RepositoryDescriptor descriptor = DatabaseHelper.DATABASE.getRepositoryDescriptor();
         descriptor.name = name;
-        descriptor.setClusteringEnabled(clusteringDelay != -1);
         descriptor.setClusteringDelay(clusteringDelay);
         FieldDescriptor schemaField1 = new FieldDescriptor();
         schemaField1.field = "tst:bignote";

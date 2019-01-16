@@ -103,7 +103,7 @@ public class JDBCBackend implements RepositoryBackend {
 
         // Model and SQLInfo
         model = new Model(modelSetup);
-        sqlInfo = new SQLInfo(model, dialect);
+        sqlInfo = new SQLInfo(model, dialect, repository.requiresClusterSQL);
 
         // DDL mode
         String ddlMode = repositoryDescriptor.getDDLMode();

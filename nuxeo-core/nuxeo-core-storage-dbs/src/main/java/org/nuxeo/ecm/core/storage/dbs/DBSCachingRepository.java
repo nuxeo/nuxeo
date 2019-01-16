@@ -23,19 +23,16 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 
 import java.io.Serializable;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Lock;
@@ -50,6 +47,8 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.MetricRegistry;
@@ -67,8 +66,6 @@ import com.google.common.collect.Ordering;
 public class DBSCachingRepository implements DBSRepository {
 
     private static final Log log = LogFactory.getLog(DBSCachingRepository.class);
-
-    private static final Random RANDOM = new SecureRandom();
 
     private final DBSRepository repository;
 
@@ -94,9 +91,7 @@ public class DBSCachingRepository implements DBSRepository {
             log.info(String.format("DBS cache activated on '%s' repository", repository.getName()));
         }
         invalidations = new DBSInvalidations();
-        if (descriptor.isClusteringEnabled()) {
-            initClusterInvalidator(descriptor);
-        }
+        initClusterInvalidator(descriptor);
     }
 
     protected <T> Cache<String, T> newCache(DBSRepositoryDescriptor descriptor) {
@@ -112,16 +107,11 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     protected void initClusterInvalidator(DBSRepositoryDescriptor descriptor) {
-        String nodeId = descriptor.clusterNodeId;
-        if (StringUtils.isBlank(nodeId)) {
-            nodeId = String.valueOf(RANDOM.nextInt(Integer.MAX_VALUE));
-            log.warn("Missing cluster node id configuration, please define it explicitly "
-                    + "(usually through repository.clustering.id). Using random cluster node id instead: " + nodeId);
-        } else {
-            nodeId = nodeId.trim();
+        ClusterService clusterService = Framework.getService(ClusterService.class);
+        if (clusterService.isEnabled()) {
+            clusterInvalidator = createClusterInvalidator(descriptor);
+            clusterInvalidator.initialize(clusterService.getNodeId(), getName());
         }
-        clusterInvalidator = createClusterInvalidator(descriptor);
-        clusterInvalidator.initialize(nodeId, getName());
     }
 
     protected DBSClusterInvalidator createClusterInvalidator(DBSRepositoryDescriptor descriptor) {

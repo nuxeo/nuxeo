@@ -33,6 +33,7 @@ import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.stream.StreamService;
 
@@ -45,8 +46,6 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
     private static final Log log = LogFactory.getLog(StreamPubSubProvider.class);
 
     public static final String GROUP_PREFIX = "pub-sub-node-";
-
-    protected static final String NODE_ID_PROP = "repository.clustering.id";
 
     protected static final String LOG_CONFIG_OPT = "logConfig";
 
@@ -70,6 +69,8 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
 
     protected Codec<Record> codec;
 
+    protected String nodeId;
+
     @Override
     public void initialize(Map<String, String> options, Map<String, List<BiConsumer<String, byte[]>>> subscribers) {
         log.debug("Initializing ");
@@ -83,6 +84,7 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
         CodecService codecService = Framework.getService(CodecService.class);
         codec = codecService.getCodec(codecName, Record.class);
         appender = Framework.getService(StreamService.class).getLogManager(logConfig).getAppender(logName, codec);
+        nodeId = Framework.getService(ClusterService.class).getNodeId();
         startConsumerThread();
         log.debug("Initialized");
     }
@@ -116,7 +118,7 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
         @Override
         public void run() {
             // using different group name enable fan out
-            String group = GROUP_PREFIX + getNodeId();
+            String group = GROUP_PREFIX + nodeId;
             log.debug("Starting subscriber thread with group: " + group);
             try (LogTailer<Record> tailer = Framework.getService(StreamService.class)
                                                      .getLogManager(logConfig)
@@ -142,11 +144,4 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
         }
     }
 
-    protected String getNodeId() {
-        String nodeId = Framework.getProperty(NODE_ID_PROP);
-        if (StringUtils.isBlank(nodeId)) {
-            return String.valueOf(RANDOM.nextLong());
-        }
-        return nodeId.trim();
-    }
 }

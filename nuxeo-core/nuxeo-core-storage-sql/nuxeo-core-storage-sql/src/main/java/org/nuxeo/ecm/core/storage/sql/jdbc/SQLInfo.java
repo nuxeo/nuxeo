@@ -139,7 +139,7 @@ public class SQLInfo {
      * @param model the model
      * @param dialect the SQL dialect
      */
-    public SQLInfo(Model model, Dialect dialect) {
+    public SQLInfo(Model model, Dialect dialect, boolean requiresClusterSQL) {
         this.model = model;
         this.dialect = dialect;
         RepositoryDescriptor repositoryDescriptor = model.getRepositoryDescriptor();
@@ -170,7 +170,7 @@ public class SQLInfo {
         getBinariesSql = new ArrayList<>(1);
         getBinariesColumns = new ArrayList<>(1);
 
-        initSQL();
+        initSQL(requiresClusterSQL);
         initSelections();
 
         try {
@@ -641,10 +641,10 @@ public class SQLInfo {
     /**
      * Creates all the sql from the models.
      */
-    protected void initSQL() {
+    protected void initSQL(boolean requiresClusterSQL) {
 
         // structural tables
-        if (model.getRepositoryDescriptor().getClusteringEnabled()) {
+        if (requiresClusterSQL) {
             if (!dialect.isClusteringSupported()) {
                 throw new NuxeoException("Clustering not supported for " + dialect.getClass().getSimpleName());
             }
