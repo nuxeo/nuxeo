@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.elasticsearch.audit:test-pageprovider-track-contrib.xml")
 public class TestPageProviderTracking {
 
-    protected @Inject CoreSession session;
+    @Inject
+    protected CoreSession session;
 
     @Inject
     protected ElasticSearchAdmin esa;
@@ -78,9 +79,10 @@ public class TestPageProviderTracking {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldLogPageProviderCallsInAudit() throws Exception {
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
         PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN_TRACK", null, 10L, 0L, props,
