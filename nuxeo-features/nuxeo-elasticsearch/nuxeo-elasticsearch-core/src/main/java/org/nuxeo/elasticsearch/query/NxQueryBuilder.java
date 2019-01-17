@@ -41,6 +41,7 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -99,6 +100,8 @@ public class NxQueryBuilder {
     private List<String> highlightFields;
 
     private EsFetcher.HitDocConsumer hitDocConsumer;
+
+    protected boolean useUnrestrictedSession;
 
     public NxQueryBuilder(CoreSession coreSession) {
         session = coreSession;
@@ -179,6 +182,14 @@ public class NxQueryBuilder {
      */
     public NxQueryBuilder hitDocConsumer(EsFetcher.HitDocConsumer consumer) {
         hitDocConsumer = consumer;
+        return this;
+    }
+
+    /**
+     * @since 11.1
+     */
+    public NxQueryBuilder useUnrestrictedSession(boolean useUnrestrictedSession) {
+        this.useUnrestrictedSession = useUnrestrictedSession;
         return this;
     }
 
@@ -398,7 +409,7 @@ public class NxQueryBuilder {
 
     protected QueryBuilder addSecurityFilter(QueryBuilder query) {
         NuxeoPrincipal principal = session.getPrincipal();
-        if (principal == null || principal.isAdministrator()) {
+        if (principal == null || principal.isAdministrator() || useUnrestrictedSession) {
             return query;
         }
         String[] principals = SecurityService.getPrincipalsToCheck(principal);
@@ -446,6 +457,15 @@ public class NxQueryBuilder {
      * @since 6.0
      */
     public Fetcher getFetcher(SearchResponse response, Map<String, String> repoNames) {
+        if (useUnrestrictedSession) {
+            return CoreInstance.doPrivileged(session, s -> {
+                return getFetcher(s, response, repoNames);
+            });
+        }
+        return getFetcher(session, response, repoNames);
+    }
+
+    protected Fetcher getFetcher(CoreSession session, SearchResponse response, Map<String, String> repoNames) {
         if (isFetchFromElasticsearch()) {
             return new EsFetcher(session, response, repoNames, hitDocConsumer);
         }
