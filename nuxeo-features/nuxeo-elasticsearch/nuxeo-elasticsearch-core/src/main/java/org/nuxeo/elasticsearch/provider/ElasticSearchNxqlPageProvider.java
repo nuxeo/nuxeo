@@ -106,6 +106,8 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
             if (searchOnAllRepositories()) {
                 nxQuery.searchOnAllRepositories();
             }
+            nxQuery.useUnrestrictedSession(useUnrestrictedSession());
+
             EsResult ret = ess.queryAndAggregate(nxQuery);
             DocumentModelList dmList = ret.getDocuments();
             currentAggregates = new HashMap<>(ret.getAggregates().size());

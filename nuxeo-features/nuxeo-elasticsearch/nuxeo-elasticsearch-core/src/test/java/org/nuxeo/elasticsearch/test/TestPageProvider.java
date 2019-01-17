@@ -41,6 +41,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -733,6 +734,34 @@ public class TestPageProvider {
         pp.nextPage();
         Assert.assertFalse(pp.isNextPageAvailable());
         Assert.assertFalse(pp.isLastPageAvailable());
+    }
+
+
+    @Test
+    public void ICanUseANxqlPageProviderWithUnrestrictedSession() throws Exception {
+
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("UNRESTRICTED_PP");
+
+        HashMap<String, Serializable> props = new HashMap<>();
+        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) bobSession);
+            ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("UNRESTRICTED_PP",
+                    ppdef, null, null, null, 0L, props);
+
+            startTransaction();
+            for (int i = 0; i < 10; i++) {
+                DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
+                session.createDocument(doc);
+            }
+
+            TransactionHelper.commitOrRollbackTransaction();
+            waitForCompletion();
+
+            startTransaction();
+            List<DocumentModel> docs = pp.getCurrentPage();
+            assertEquals(10, docs.size());
+        }
     }
 
     protected void assertEqualsEvenUnderWindows(String expected, String actual) {
