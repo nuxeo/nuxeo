@@ -324,6 +324,15 @@
       <pageSize>50</pageSize>
     </genericPageProvider>
 
+    <genericPageProvider name="UNRESTRICTED_PP" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <pattern>
+        SELECT * FROM Document
+      </pattern>
+      <sort ascending="true" column="dc:title" />
+      <pageSize>50</pageSize>
+    </genericPageProvider>
+
   </extension>
 
 
