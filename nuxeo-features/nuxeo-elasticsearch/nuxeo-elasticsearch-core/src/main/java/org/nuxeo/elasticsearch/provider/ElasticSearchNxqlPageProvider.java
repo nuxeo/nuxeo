@@ -103,6 +103,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
             if (searchOnAllRepositories()) {
                 nxQuery.searchOnAllRepositories();
             }
+            nxQuery.useUnrestrictedSession(useUnrestrictedSession());
 
             List<String> highlightFields = getHighlights();
             if (highlightFields != null && !highlightFields.isEmpty()) {
