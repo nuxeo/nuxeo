@@ -3755,4 +3755,27 @@ public class TestSQLRepositoryQuery {
         assertEquals(NB_TRHEADS, total);
     }
 
+    @Test
+    public void testQueryDefaultValue() {
+        // create a document with no metadata
+        DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
+        session.createDocument(doc);
+        session.save();
+        // try to query default values
+        DocumentModelList dml = session.query("SELECT * FROM MyDocType WHERE my:testDefault = 'the default value'");
+        assertEquals(1, dml.size());
+    }
+
+    @Test
+    public void testQueryDefaultValueInComplex() {
+        // create a document with no metadata
+        DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
+        session.createDocument(doc);
+        session.save();
+        // try to query default values
+        DocumentModelList dml = session.query(
+                "SELECT * FROM MyDocType WHERE my:complex/testDefault = 'the default value'");
+        assertEquals(1, dml.size());
+    }
+
 }

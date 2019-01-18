@@ -33,9 +33,17 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="complex">
+    <xs:sequence>
+      <xs:element name="string" type="xs:string"/>
+      <xs:element name="testDefault" type="xs:string" default="the default value"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:element name="participants" type="nxs:theList"/>
   <xs:element name="attachments" type="nxs:attachments"/>
   <xs:element name="strings" type="nxs:list"/>
+  <xs:element name="complex" type="nxs:complex"/>
 
   <xs:element name="testDefault" type="xs:string" default="the default value"/>
 

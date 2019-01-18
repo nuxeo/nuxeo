@@ -290,6 +290,15 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
+    @Override
+    public boolean hasDefaultValue() {
+        if (isComplex()) {
+            return getChildren().stream().anyMatch(Property::hasDefaultValue);
+        } else {
+            return getField().getDefaultValue() != null;
+        }
+    }
+
     /**
      * This method is public because of DataModelImpl which use it.
      * <p>
