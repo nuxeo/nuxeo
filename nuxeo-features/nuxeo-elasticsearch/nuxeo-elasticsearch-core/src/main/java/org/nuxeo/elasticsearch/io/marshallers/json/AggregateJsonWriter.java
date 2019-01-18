@@ -29,6 +29,7 @@ import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_PREFIX;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_PRIMARYTYPE;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_TAG;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_VERSIONLABEL;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_ISPROXY;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -55,6 +56,7 @@ import org.nuxeo.ecm.core.schema.types.ListTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
@@ -86,6 +88,7 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
         SYSTEM_SCHEMA.addField(ECM_PRIMARYTYPE, StringType.INSTANCE, null, 0, null);
         SYSTEM_SCHEMA.addField(ECM_LIFECYCLESTATE, StringType.INSTANCE, null, 0, null);
         SYSTEM_SCHEMA.addField(ECM_VERSIONLABEL, StringType.INSTANCE, null, 0, null);
+        SYSTEM_SCHEMA.addField(ECM_ISPROXY, BooleanType.INSTANCE, null, 0, null);
     }
 
     /**
