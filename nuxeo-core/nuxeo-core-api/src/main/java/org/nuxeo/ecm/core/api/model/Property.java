@@ -313,6 +313,14 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     boolean isContainer();
 
     /**
+     * Whether or not this property has a default value. For complex property, this method will lookup in its children.
+     *
+     * @return true if property has a default value
+     * @since 11.1
+     */
+    boolean hasDefaultValue();
+
+    /**
      * Gets the property name.
      *
      * @return the property name
