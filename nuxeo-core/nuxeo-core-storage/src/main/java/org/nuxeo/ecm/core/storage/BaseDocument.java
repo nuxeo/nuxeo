@@ -819,8 +819,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         for (Property property : complexProperty) {
             // write dirty properties, but also phantoms with non-null default values
             // this is critical for DeltaLong updates to work, they need a non-null initial value
-            if (writeAll || property.isDirty()
-                    || (property.isPhantom() && property.getField().getDefaultValue() != null)) {
+            if (writeAll || property.isDirty() || property.isPhantom() && property.hasDefaultValue()) {
                 // do the write
             } else {
                 continue;

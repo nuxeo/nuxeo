@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.core.api.model.impl;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -45,7 +46,7 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
     protected boolean clearComplexPropertyBeforeSet;
 
     public DocumentPartImpl(Schema schema) {
-        super(null);
+        super(null, IS_PHANTOM); // always phantom - will be removed by setValue (createDoc) or init (readDoc)
         this.schema = schema;
         // we pre-read this flag only once to avoid looking up and calling the SchemaManager many times
         clearComplexPropertyBeforeSet = Framework.getService(SchemaManager.class).getClearComplexPropertyBeforeSet();
@@ -53,6 +54,23 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
 
     @Override
     public void internalSetValue(Serializable value) throws PropertyException {
+    }
+
+    // even when DocumentPart is phantom we want want to retrieve its children content
+    @Override
+    public Serializable getValue() throws PropertyException {
+        return internalGetValue();
+    }
+
+    // even when DocumentPart is phantom we want want to retrieve its children content
+    @Override
+    public Serializable getValueForWrite() throws PropertyException {
+        // noinspection CollectionDeclaredAsConcreteClass
+        HashMap<String, Serializable> map = new HashMap<>();
+        for (Property property : getChildren()) {
+            map.put(property.getName(), property.getValueForWrite());
+        }
+        return map;
     }
 
     @Override
