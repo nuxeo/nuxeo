@@ -109,7 +109,7 @@ function doPreviewPopup(docid) {
 }
 
 function doDownload(docid) {
-  Seam.Component.getInstance("popupHelper").downloadDocument(docid, 'file:content', 'file:content/filename', navigationCB);
+  Seam.Component.getInstance("popupHelper").downloadDocument(docid, 'file:content', 'file:content/name', navigationCB);
 }
 
 function doWorkflow(docid) {
