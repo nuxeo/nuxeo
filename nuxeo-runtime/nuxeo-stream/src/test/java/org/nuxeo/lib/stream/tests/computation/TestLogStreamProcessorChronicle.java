@@ -23,7 +23,9 @@ import static org.nuxeo.lib.stream.tests.TestLibChronicle.IS_WIN;
 import java.io.File;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
@@ -59,5 +61,12 @@ public class TestLogStreamProcessorChronicle extends TestStreamProcessor {
     @Override
     public StreamProcessor getStreamProcessor(LogManager logManager) {
         return new LogStreamProcessor(logManager);
+    }
+
+    @Test
+    @Override
+    @Ignore("NXP-26337 for 10.10 release")
+    public void testComplexTopoManyRecords() throws Exception {
+        super.testComplexTopoManyRecords();
     }
 }
