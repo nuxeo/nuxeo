@@ -61,6 +61,7 @@ import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestContro
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.thetransactioncompany.cors.CORSConfiguration;
 import com.thetransactioncompany.cors.CORSFilter;
@@ -221,9 +222,13 @@ public class NuxeoCorsCsrfFilter implements Filter {
         }
 
         boolean allow;
+        boolean readOnly = false;
         if (isSafeMethod(method)) {
             // safe method according to RFC 7231 4.2.1
             log.debug("Safe method: allow");
+            if (Framework.isBooleanPropertyTrue("nuxeo.get.readonly")) { // XXX temporary
+                readOnly = true;
+            }
             allow = true;
         } else if (sourceAndTargetMatch(sourceURI, targetURI)) {
             // source and target match, or not provided
@@ -251,11 +256,16 @@ public class NuxeoCorsCsrfFilter implements Filter {
         }
 
         if (allow) {
-            if (corsFilter == null) {
-                chain.doFilter(request, response);
-            } else {
-                request = maybeIgnoreWhitelistedOrigin(request);
-                corsFilter.doFilter(request, response, chain);
+            TransactionHelper.setTransactionReadOnly(readOnly);
+            try {
+                if (corsFilter == null) {
+                    chain.doFilter(request, response);
+                } else {
+                    request = maybeIgnoreWhitelistedOrigin(request);
+                    corsFilter.doFilter(request, response, chain);
+                }
+            } finally {
+                TransactionHelper.setTransactionReadOnly(false);
             }
             return;
         }

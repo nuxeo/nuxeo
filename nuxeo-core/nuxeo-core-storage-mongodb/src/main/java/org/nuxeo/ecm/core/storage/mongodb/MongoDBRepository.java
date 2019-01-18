@@ -84,6 +84,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.mongodb.Block;
 import com.mongodb.QueryOperators;
@@ -279,6 +280,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public String generateNewId() {
         if (idType == IdType.sequence || DEBUG_UUIDS) {
+            TransactionHelper.checkTransactionNotReadOnly();
             Long id = getNextSequenceId();
             if (DEBUG_UUIDS) {
                 return "UUID_" + id;

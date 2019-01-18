@@ -101,6 +101,7 @@ import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
@@ -1491,6 +1492,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModel saveDocument(DocumentModel docModel) {
+        TransactionHelper.checkTransactionNotReadOnly(); // fail early, don't wait for save
         if (docModel.getRef() == null) {
             throw new IllegalArgumentException(String.format(
                     "cannot save document '%s' with null reference: " + "document has probably not yet been created "

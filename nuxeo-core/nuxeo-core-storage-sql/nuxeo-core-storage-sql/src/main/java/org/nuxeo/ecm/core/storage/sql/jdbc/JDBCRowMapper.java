@@ -68,6 +68,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * A {@link JDBCRowMapper} maps {@link Row}s to and from a JDBC database.
@@ -429,6 +430,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     @Override
     public void write(RowBatch batch) {
+        TransactionHelper.checkTransactionNotReadOnly();
         // do deletes first to avoid violating constraint of unique child name in parent
         // when replacing a complex list element
         if (!batch.deletes.isEmpty()) {
@@ -959,6 +961,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     @Override
     public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow) {
+        TransactionHelper.checkTransactionNotReadOnly();
         // assert !model.separateMainTable; // other case not implemented
         Invalidations invalidations = new Invalidations();
         try {
@@ -1245,6 +1248,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     @Override
     public void remove(Serializable rootId, List<NodeInfo> nodeInfos) {
+        TransactionHelper.checkTransactionNotReadOnly();
         if (sqlInfo.softDeleteEnabled) {
             deleteRowsSoft(nodeInfos);
         } else {

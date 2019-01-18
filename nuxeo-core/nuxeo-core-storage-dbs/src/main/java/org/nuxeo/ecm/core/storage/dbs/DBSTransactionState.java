@@ -89,6 +89,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Transactional state for a session.
@@ -711,6 +712,7 @@ public class DBSTransactionState {
         for (String id : ids) {
             transientStates.remove(id);
         }
+        TransactionHelper.checkTransactionNotReadOnly();
         repository.deleteStates(ids);
     }
 
@@ -743,7 +745,10 @@ public class DBSTransactionState {
             state.put(KEY_CHANGE_TOKEN, INITIAL_CHANGE_TOKEN);
             statesToCreate.add(state);
         }
+        boolean checkedTransactionNotReadOnly = false;
         if (!statesToCreate.isEmpty()) {
+            checkedTransactionNotReadOnly = true;
+            TransactionHelper.checkTransactionNotReadOnly();
             repository.createStates(statesToCreate);
         }
         for (DBSDocumentState docState : transientStates.values()) {
@@ -774,6 +779,10 @@ public class DBSTransactionState {
                         }
                     } else {
                         changeTokenUpdater = null;
+                    }
+                    if (!checkedTransactionNotReadOnly) {
+                        checkedTransactionNotReadOnly = true;
+                        TransactionHelper.checkTransactionNotReadOnly();
                     }
                     repository.updateState(id, diff, changeTokenUpdater);
                 } finally {
@@ -1168,6 +1177,7 @@ public class DBSTransactionState {
         // do async fulltext indexing only if high-level sessions are available
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         if (repositoryManager != null && !works.isEmpty()) {
+            TransactionHelper.checkTransactionNotReadOnly();
             WorkManager workManager = Framework.getService(WorkManager.class);
             for (Work work : works) {
                 // schedule work post-commit

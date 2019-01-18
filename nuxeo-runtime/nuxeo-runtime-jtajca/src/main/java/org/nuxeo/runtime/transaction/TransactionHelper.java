@@ -19,6 +19,8 @@
 
 package org.nuxeo.runtime.transaction;
 
+import static java.lang.Boolean.TRUE;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,6 +62,8 @@ public class TransactionHelper {
             throw new ExceptionInInitializerError(e);
         }
     }
+
+    private static final ThreadLocal<Boolean> READ_ONLY = new ThreadLocal<>();
 
     private TransactionHelper() {
         // utility class
@@ -221,6 +225,43 @@ public class TransactionHelper {
     public static void checkTransactionTimeout() throws TransactionRuntimeException {
         if (isTransactionTimedOut()) {
             throw new TransactionRuntimeException("Transaction has timed out");
+        }
+    }
+
+    /**
+     * Checks if the current User Transaction is marked read-only.
+     *
+     * @return {@code true} if the transaction is read-only
+     * @since 11.1
+     */
+    public static boolean isTransactionReadOnly() {
+        return TRUE.equals(READ_ONLY.get());
+    }
+
+    /**
+     * Sets the current User Transaction read-only state.
+     *
+     * @param readOnly {@code true} to set the transaction read-only
+     * @since 11.1
+     */
+    public static void setTransactionReadOnly(boolean readOnly) {
+        if (readOnly) {
+            READ_ONLY.set(TRUE);
+        } else {
+            READ_ONLY.remove();
+        }
+    }
+
+    /**
+     * Checks if that the current User Transaction is not read-only, and fail if that's not the case.
+     * <p>
+     * Depending on the implementation and configuration, failure may cause a stack trace or a hard exception.
+     *
+     * @since 11.1
+     */
+    public static void checkTransactionNotReadOnly() {
+        if (isTransactionReadOnly()) {
+            throw new TransactionRuntimeException("Transaction is read-only");
         }
     }
 

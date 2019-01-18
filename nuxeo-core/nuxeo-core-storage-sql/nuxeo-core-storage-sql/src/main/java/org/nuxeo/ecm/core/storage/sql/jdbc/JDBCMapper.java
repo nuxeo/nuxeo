@@ -88,6 +88,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectOracle;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.ListCollector;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * A {@link JDBCMapper} maps objects to and from a JDBC database. It is specific to a given database connection, as it
@@ -161,6 +162,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void createDatabase(String ddlMode) {
+        TransactionHelper.checkTransactionNotReadOnly();
         // some databases (SQL Server) can't create tables/indexes/etc in a transaction, so suspend it
         try {
             if (!connection.getAutoCommit()) {
@@ -426,6 +428,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void createClusterNode(Serializable nodeId) {
+        TransactionHelper.checkTransactionNotReadOnly();
         Calendar now = Calendar.getInstance();
         String sql = sqlInfo.getCreateClusterNodeSql();
         List<Column> columns = sqlInfo.getCreateClusterNodeColumns();
@@ -452,6 +455,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void removeClusterNode(Serializable nodeId) {
+        TransactionHelper.checkTransactionNotReadOnly();
         // delete from cluster_nodes
         String sql = sqlInfo.getDeleteClusterNodeSql();
         Column column = sqlInfo.getDeleteClusterNodeColumn();
@@ -486,6 +490,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations) {
+        TransactionHelper.checkTransactionNotReadOnly();
         String sql = dialect.getClusterInsertInvalidations();
         List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -628,6 +633,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void setRootId(Serializable repositoryId, Serializable id) {
+        TransactionHelper.checkTransactionNotReadOnly();
         String sql = sqlInfo.getInsertRootIdSql();
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             List<Column> columns = sqlInfo.getInsertRootIdColumns();
@@ -1184,6 +1190,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void updateReadAcls() {
+        TransactionHelper.checkTransactionNotReadOnly();
         if (!dialect.supportsReadAcl()) {
             return;
         }
@@ -1208,6 +1215,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void rebuildReadAcls() {
+        TransactionHelper.checkTransactionNotReadOnly();
         if (!dialect.supportsReadAcl()) {
             return;
         }
@@ -1244,6 +1252,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public Lock setLock(final Serializable id, final Lock lock) {
+        TransactionHelper.checkTransactionNotReadOnly();
         if (log.isDebugEnabled()) {
             log.debug("setLock " + id + " owner=" + lock.getOwner());
         }
@@ -1259,6 +1268,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public Lock removeLock(final Serializable id, final String owner, final boolean force) {
+        TransactionHelper.checkTransactionNotReadOnly();
         if (log.isDebugEnabled()) {
             log.debug("removeLock " + id + " owner=" + owner + " force=" + force);
         }
