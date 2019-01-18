@@ -226,8 +226,9 @@ public class DocumentModelFactory {
         // check only the loaded ones to find the dirty ones
         WriteContext writeContext = doc.getWriteContext();
         for (DataModel dm : docModel.getDataModelsCollection()) { // only loaded
-            if (dm.isDirty()) {
-                DocumentPart part = ((DataModelImpl) dm).getDocumentPart();
+            DocumentPart part = ((DataModelImpl) dm).getDocumentPart();
+            // check if we have dirty properties or default values to write
+            if (dm.isDirty() || part.isPhantom() && part.hasDefaultValue()) {
                 changed = doc.writeDocumentPart(part, writeContext) || changed;
             }
         }
