@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-9 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -226,7 +225,7 @@ public class TestSQLRepositoryQuery {
      *        \- testfile4 (UUID_8)
      * </pre>
      */
-    protected void createDocs() throws Exception {
+    protected void createDocs() {
         DocumentModel folder1 = session.createDocumentModel("/", "testfolder1", "Folder");
         folder1.setPropertyValue("dc:title", "testfolder1_Title");
         folder1 = session.createDocument(folder1);
@@ -285,7 +284,7 @@ public class TestSQLRepositoryQuery {
      * <p>
      * DBS: version (UUID_9), proxy (UUID_10)
      */
-    protected DocumentModel publishDoc() throws Exception {
+    protected DocumentModel publishDoc() {
         DocumentModel doc = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
         DocumentModel sec = session.getDocument(new PathRef("/testfolder1"));
         DocumentModel proxy = session.publishDocument(doc, sec);
@@ -297,7 +296,7 @@ public class TestSQLRepositoryQuery {
 
     // from TestAPI
     @Test
-    public void testQueryBasic() throws Exception {
+    public void testQueryBasic() {
         DocumentModelList dml;
         createDocs();
 
@@ -387,7 +386,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryBasic2() throws Exception {
+    public void testQueryBasic2() {
         // ?
         assumeTrue(!coreFeature.getStorageConfiguration().isVCSDerby());
 
@@ -414,7 +413,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryWithType() throws Exception {
+    public void testQueryWithType() {
         DocumentModelList dml;
         createDocs();
 
@@ -434,7 +433,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryMultiple() throws Exception {
+    public void testQueryMultiple() {
         DocumentModelList dml;
         createDocs();
 
@@ -478,7 +477,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryMultipleNew() throws Exception {
+    public void testQueryMultipleNew() {
         DocumentModelList dml;
         createDocs();
 
@@ -535,7 +534,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryNegativeMultiple() throws Exception {
+    public void testQueryNegativeMultiple() {
         DocumentModelList dml;
         createDocs();
         dml = session.query("SELECT * FROM Document WHERE dc:contributors <> 'pete' AND ecm:isVersion = 0");
@@ -554,7 +553,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryAfterEdit() throws Exception {
+    public void testQueryAfterEdit() {
         DocumentModel root = session.getRootDocument();
 
         String fname1 = "file1";
@@ -605,7 +604,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testOrderBy() throws Exception {
+    public void testOrderBy() {
         String sql;
         DocumentModelList dml;
         createDocs();
@@ -629,7 +628,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testOrderBySeveralColumns() throws Exception {
+    public void testOrderBySeveralColumns() {
         String sql;
         DocumentModelList dml;
         createDocs();
@@ -652,7 +651,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testOrderBySameColumns() throws Exception {
+    public void testOrderBySameColumns() {
         // SQL Server cannot ORDER BY foo, foo
         assumeTrue("SQL Server cannot ORDER BY foo, foo", !coreFeature.getStorageConfiguration().isVCSSQLServer());
 
@@ -676,7 +675,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testOrderByPath() throws Exception {
+    public void testOrderByPath() {
         String sql;
         DocumentModelList dml;
         createDocs();
@@ -708,7 +707,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testOrderByPos() throws Exception {
+    public void testOrderByPos() {
         DocumentModelList dml;
 
         DocumentModel ofolder = session.createDocumentModel("/", "ofolder", "OrderedFolder");
@@ -757,11 +756,11 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testBatching() throws Exception {
+    public void testBatching() {
         doBatching(true);
     }
 
-    public void doBatching(boolean checkNames) throws Exception {
+    public void doBatching(boolean checkNames) {
         DocumentModelList dml;
         createDocs();
 
@@ -826,7 +825,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryLimits() throws Exception {
+    public void testQueryLimits() {
         DocumentModelList dml;
         createDocs();
 
@@ -918,7 +917,8 @@ public class TestSQLRepositoryQuery {
         properties.setProperty(AbstractSession.LIMIT_RESULTS_PROPERTY, "true");
         properties.setProperty(AbstractSession.MAX_RESULTS_PROPERTY, "5");
         // need to open a new session to refresh properties
-        try (CloseableCoreSession admSession = CoreInstance.openCoreSession(session.getRepositoryName(), "Administrator")) {
+        try (CloseableCoreSession admSession = CoreInstance.openCoreSession(session.getRepositoryName(),
+                "Administrator")) {
             dml = admSession.query(sql, null, 5, 0, true);
             assertEquals(5, dml.size());
             assertTrue(dml.totalSize() < 0);
@@ -929,7 +929,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryConstantsLeft() throws Exception {
+    public void testQueryConstantsLeft() {
         assumeTrue("DBS MongoDB cannot query const = const", !isDBSMongoDB());
         assumeTrue("DBS MarkLogic cannot query const = const", !isDBSMarkLogic());
 
@@ -948,7 +948,7 @@ public class TestSQLRepositoryQuery {
 
     // from TestSQLWithPath
     @Test
-    public void testEcmPathEqual() throws Exception {
+    public void testEcmPathEqual() {
         String sql;
         DocumentModelList dml;
         createDocs();
@@ -968,7 +968,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testStartsWith() throws Exception {
+    public void testStartsWith() {
         String sql;
         DocumentModelList dml;
         createDocs();
@@ -1000,7 +1000,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testStartsWithMove() throws Exception {
+    public void testStartsWithMove() {
         String sql;
         DocumentModelList dml;
         createDocs();
@@ -1023,7 +1023,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testStartsWithCopy() throws Exception {
+    public void testStartsWithCopy() {
         String sql;
         DocumentModelList dml;
         createDocs();
@@ -1046,7 +1046,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testAncestorId() throws Exception {
+    public void testAncestorId() {
         DocumentModelList dml;
         createDocs();
 
@@ -1080,7 +1080,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testStartsWithNonPath() throws Exception {
+    public void testStartsWithNonPath() {
         String sql;
         createDocs();
 
@@ -1113,7 +1113,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testReindexEditedDocument() throws Exception {
+    public void testReindexEditedDocument() {
         String sql = "SELECT * FROM document WHERE dc:title LIKE 'testfile1_Ti%'";
         DocumentModelList dml;
         createDocs();
@@ -1154,7 +1154,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testTimestamp() throws Exception {
+    public void testTimestamp() {
         String sql;
         DocumentModelList dml;
         createDocs();
@@ -1170,7 +1170,7 @@ public class TestSQLRepositoryQuery {
 
     // old-style date comparisons (actually using timestamps)
     @Test
-    public void testDateOld() throws Exception {
+    public void testDateOld() {
         String sql;
         DocumentModelList dml;
         createDocs();
@@ -1220,7 +1220,7 @@ public class TestSQLRepositoryQuery {
 
     // new-style date comparisons (casting to native DATE type)
     @Test
-    public void testDateNew() throws Exception {
+    public void testDateNew() {
         assumeFalse("MongoDB does not support NXQL DATE casts", isDBSMongoDB());
         assumeFalse("MarkLogic does not support NXQL DATE casts", isDBSMarkLogic());
 
@@ -1281,7 +1281,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testDateBad() throws Exception {
+    public void testDateBad() {
         String sql;
         createDocs();
 
@@ -1316,7 +1316,7 @@ public class TestSQLRepositoryQuery {
 
     // other tests
     @Test
-    public void testBoolean() throws Exception {
+    public void testBoolean() {
         String sql;
         DocumentModelList dml;
         createDocs();
@@ -1353,7 +1353,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryWithSecurity() throws Exception {
+    public void testQueryWithSecurity() {
         createDocs();
         DocumentModel root = session.getRootDocument();
         ACP acp = new ACPImpl();
@@ -1379,7 +1379,7 @@ public class TestSQLRepositoryQuery {
 
     // same with queryAndFetch
     @Test
-    public void testQueryWithSecurity2() throws Exception {
+    public void testQueryWithSecurity2() {
         createDocs();
         DocumentModel root = session.getRootDocument();
         ACP acp = new ACPImpl();
@@ -1405,7 +1405,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testWithoutSecurityManager() throws Exception {
+    public void testWithoutSecurityManager() {
         createDocs();
         DocumentModelList dml;
 
@@ -1426,24 +1426,25 @@ public class TestSQLRepositoryQuery {
     @Test
     // NoFileSecurityPolicy
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy-contrib.xml")
-    public void testSecurityManagerBasic() throws Exception {
+    public void testSecurityManagerBasic() {
         doTestSecurityManager();
     }
 
     @Test
     // NoFile2SecurityPolicy
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy2-contrib.xml")
-    public void testSecurityManagerWithTransformer() throws Exception {
+    public void testSecurityManagerWithTransformer() {
         doTestSecurityManager();
     }
 
-    public void doTestSecurityManager() throws Exception {
+    public void doTestSecurityManager() {
         createDocs();
         DocumentModelList dml;
 
         // needs a user who is not really an administrator
         // otherwise security policies are bypassed
-        try (CloseableCoreSession admSession = CoreInstance.openCoreSession(session.getRepositoryName(), "Administrator")) {
+        try (CloseableCoreSession admSession = CoreInstance.openCoreSession(session.getRepositoryName(),
+                "Administrator")) {
             dml = admSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0");
             assertEquals(4, dml.size());
             assertEquals(4, dml.totalSize());
@@ -1501,7 +1502,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryACL() throws Exception {
+    public void testQueryACL() {
         createDocs();
         DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
         ACP acp = new ACPImpl();
@@ -1542,10 +1543,12 @@ public class TestSQLRepositoryQuery {
         checkQueryACL(1, queryBase + "ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/permission = 'Browse'");
 
         // cannot correlate with notlocal ACL
-        checkQueryACL(0, queryBase + "ecm:acl/*1/name = 'notlocal' AND ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/permission = 'Browse'");
+        checkQueryACL(0, queryBase
+                + "ecm:acl/*1/name = 'notlocal' AND ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/permission = 'Browse'");
 
         // bob with Browse in local ACL
-        checkQueryACL(1, queryBase + "ecm:acl/*1/name = 'local' AND ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/permission = 'Browse'");
+        checkQueryACL(1, queryBase
+                + "ecm:acl/*1/name = 'local' AND ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/permission = 'Browse'");
 
         // bob with Browse granted
         checkQueryACL(1, queryBase
@@ -1613,7 +1616,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryACLReturnedValue() throws Exception {
+    public void testQueryACLReturnedValue() {
         createDocs();
         DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
         ACP acp = new ACPImpl();
@@ -1690,7 +1693,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryWithDateBasedACLs() throws Exception {
+    public void testQueryWithDateBasedACLs() {
         createDocs();
 
         DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
@@ -1718,7 +1721,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryWithProxies() throws Exception {
+    public void testQueryWithProxies() {
         createDocs();
         String noteVersionId = session.getLastDocumentVersionRef(new PathRef("/testfolder1/testfile3")).toString();
         DocumentModel proxy = publishDoc();
@@ -1733,7 +1736,6 @@ public class TestSQLRepositoryQuery {
         assertNotSame(proxyId, versionId);
 
         DocumentModelList dml;
-        Filter filter;
 
         // queries must return proxies *and versions*
         dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title'");
@@ -1785,7 +1787,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryPaging() throws Exception {
+    public void testQueryPaging() {
         createDocs();
         DocumentModelList whole = session.query("SELECT * FROM Document ORDER BY dc:modified, ecm:uuid");
         assertTrue(whole.size() >= 2);
@@ -1800,7 +1802,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryProjectionPaging() throws Exception {
+    public void testQueryProjectionPaging() {
         createDocs();
         PartialList<Map<String, Serializable>> whole = session.queryProjection(
                 "SELECT * FROM Document ORDER BY dc:modified, ecm:uuid", 5, 0, true);
@@ -1818,7 +1820,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryPrimaryTypeOptimization() throws Exception {
+    public void testQueryPrimaryTypeOptimization() {
         // check these queries in the logs
 
         // Folder
@@ -1845,7 +1847,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryMixinTypeNotPerDocument() throws Exception {
+    public void testQueryMixinTypeNotPerDocument() {
         createDocs();
         DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         file1.addFacet("NotPerDocFacet");
@@ -1866,7 +1868,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQuerySpecialFields() throws Exception {
+    public void testQuerySpecialFields() {
         // ecm:isProxy and ecm:isVersion are already tested in
         // testQueryWithProxies
 
@@ -1979,7 +1981,7 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM Document WHERE ecm:lockOwner <> '_'");
         if (notMatchesNull()) {
             // check that we find the doc in the list
-            assertTrue(dml.stream().map(doc -> doc.getId()).collect(Collectors.toSet()).contains(file1.getId()));
+            assertTrue(dml.stream().map(DocumentModel::getId).collect(Collectors.toSet()).contains(file1.getId()));
         } else {
             assertIdSet(dml, file1.getId());
         }
@@ -1994,7 +1996,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQuerySpecialFieldsVersioning() throws Exception {
+    public void testQuerySpecialFieldsVersioning() {
         createDocs();
         String noteVersionId = session.getLastDocumentVersionRef(new PathRef("/testfolder1/testfile3")).toString();
         DocumentModel doc = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
@@ -2109,7 +2111,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testEmptyLifecycle() throws Exception {
+    public void testEmptyLifecycle() {
         DocumentModelList dml;
         createDocs();
         String sql = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'approved' AND ecm:isVersion = 0";
@@ -2128,7 +2130,7 @@ public class TestSQLRepositoryQuery {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-property-override.xml")
-    public void testIsTrashedWithProperty() throws Exception {
+    public void testIsTrashedWithProperty() {
         String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 0";
         String sqlTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 1";
         doTestTrashed(sqlNotTrashed, sqlTrashed);
@@ -2136,7 +2138,7 @@ public class TestSQLRepositoryQuery {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-lifecycle-override.xml")
-    public void testIsTrashedWithLifeCycle() throws Exception {
+    public void testIsTrashedWithLifeCycle() {
         String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 0";
         String sqlTrashed = "SELECT * FROM Document WHERE ecm:isTrashed = 1";
         doTestTrashed(sqlNotTrashed, sqlTrashed);
@@ -2144,13 +2146,13 @@ public class TestSQLRepositoryQuery {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-service-lifecycle-override.xml")
-    public void testLifeCycleStateDeletedForTrash() throws Exception {
+    public void testLifeCycleStateDeletedForTrash() {
         String sqlNotTrashed = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'deleted'";
         String sqlTrashed = "SELECT * FROM Document WHERE ecm:currentLifeCycleState = 'deleted'";
         doTestTrashed(sqlNotTrashed, sqlTrashed);
     }
 
-    protected void doTestTrashed(String sqlNotTrashed, String sqlTrashed) throws Exception {
+    protected void doTestTrashed(String sqlNotTrashed, String sqlTrashed) {
         DocumentModelList dml;
         createDocs();
 
@@ -2170,7 +2172,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testOrderByAndDistinct() throws Exception {
+    public void testOrderByAndDistinct() {
         createDocs();
 
         String query;
@@ -2196,7 +2198,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryIterable() throws Exception {
+    public void testQueryIterable() {
         createDocs();
 
         IterableQueryResult res = session.queryAndFetch("SELECT * FROM File", "NXQL");
@@ -2255,7 +2257,7 @@ public class TestSQLRepositoryQuery {
     @Test
     // NoFile2SecurityPolicy
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/security-policy2-contrib.xml")
-    public void testQueryIterableWithTransformer() throws Exception {
+    public void testQueryIterableWithTransformer() {
         createDocs();
         IterableQueryResult res;
 
@@ -2265,7 +2267,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryComplexTypeFiles() throws Exception {
+    public void testQueryComplexTypeFiles() {
         DocumentModel doc = session.createDocumentModel("/", "myfile", "File");
         List<Object> files = new LinkedList<>();
         Map<String, Object> f = new HashMap<>();
@@ -2284,7 +2286,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testSelectColumns() throws Exception {
+    public void testSelectColumns() {
         String query;
         IterableQueryResult res;
         Iterator<Map<String, Serializable>> it;
@@ -2335,7 +2337,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testSelectColumnsSameName() throws Exception {
+    public void testSelectColumnsSameName() {
         String query;
         IterableQueryResult res;
         Map<String, Serializable> map;
@@ -2378,17 +2380,17 @@ public class TestSQLRepositoryQuery {
      * @since 9.3
      */
     @Test(expected = QueryParseException.class)
-    public void testUnsupportedColumnMappings() throws Exception {
-        //ecm:majorVersion is NOT supported
+    public void testUnsupportedColumnMappings() {
+        // ecm:majorVersion is NOT supported
         String query = "SELECT ecm:majorVersion FROM File";
-        IterableQueryResult res = session.queryAndFetch(query, "NXQL");
+        session.queryAndFetch(query, "NXQL");
     }
 
     /**
      * @since 9.3
      */
     @Test
-    public void testSelectColumnMappings() throws Exception {
+    public void testSelectColumnMappings() {
         String query;
         IterableQueryResult res;
         Map<String, Serializable> map;
@@ -2438,7 +2440,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryDistinctId() throws Exception {
+    public void testQueryDistinctId() {
         DocumentModelList dml;
         createDocs();
 
@@ -2447,7 +2449,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryAndFetchDistinctId() throws Exception {
+    public void testQueryAndFetchDistinctId() {
         makeComplexDoc();
 
         String query = "SELECT DISTINCT ecm:uuid FROM TestDoc WHERE tst:friends/*/firstname = 'John'";
@@ -2457,7 +2459,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryProjectionDistinctId() throws Exception {
+    public void testQueryProjectionDistinctId() {
         makeComplexDoc();
 
         String query = "SELECT DISTINCT ecm:uuid FROM TestDoc WHERE tst:friends/*/firstname = 'John'";
@@ -2466,7 +2468,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testSelectColumnsDistinct() throws Exception {
+    public void testSelectColumnsDistinct() {
         assumeTrue("DBS does not support DISTINCT in queries", supportsDistinct());
 
         String query;
@@ -2494,7 +2496,7 @@ public class TestSQLRepositoryQuery {
 
     // ----- timestamp tests -----
 
-    protected Date setupDocTest() throws Exception {
+    protected Date setupDocTest() {
         Date currentDate = new Date();
         DocumentModel testDocument = session.createDocumentModel("/", "testfolder1", "Folder");
         testDocument.setPropertyValue("dc:title", "test");
@@ -2516,7 +2518,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testEqualsTimeWithMilliseconds() throws Exception {
+    public void testEqualsTimeWithMilliseconds() {
         Date currentDate = setupDocTest();
         String testQuery = String.format(
                 "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified = %s" + " AND ecm:isProxy = 0",
@@ -2526,7 +2528,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testLTTimeWithMilliseconds() throws Exception {
+    public void testLTTimeWithMilliseconds() {
         Date currentDate = setupDocTest();
         // add a second to be sure that the document is found
         currentDate = addSecond(currentDate);
@@ -2538,7 +2540,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryIsNull() throws Exception {
+    public void testQueryIsNull() {
         DocumentModelList dml;
         createDocs();
 
@@ -2565,7 +2567,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testMultilineQuery() throws Exception {
+    public void testMultilineQuery() {
         DocumentModelList dml;
         createDocs();
 
@@ -2582,7 +2584,7 @@ public class TestSQLRepositoryQuery {
      * Make sure that even when we use a sequence, the id is a String, for compat with the rest of the framework.
      */
     @Test
-    public void testIdType() throws Exception {
+    public void testIdType() {
         createDocs();
         IterableQueryResult res = session.queryAndFetch("SELECT ecm:uuid, ecm:parentId FROM File", NXQL.NXQL);
         assertEquals(3, res.size());
@@ -2670,7 +2672,7 @@ public class TestSQLRepositoryQuery {
     protected static String SELECT_TITLE_WHERE = "SELECT tst:title" + FROM_WHERE;
 
     @Test
-    public void testQueryComplexWhere() throws Exception {
+    public void testQueryComplexWhere() {
         DocumentModel doc = makeComplexDoc();
         String docId = doc.getId();
 
@@ -2779,7 +2781,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryComplexCorrelation() throws Exception {
+    public void testQueryComplexCorrelation() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "TestDoc");
         doc.setPropertyValue("tst:title", "title");
         Map<String, Object> friend0 = new HashMap<>();
@@ -2836,7 +2838,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryComplexPrefix() throws Exception {
+    public void testQueryComplexPrefix() {
         DocumentModel doc = makeComplexDoc();
         String docId = doc.getId();
 
@@ -2871,7 +2873,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryComplexReturned() throws Exception {
+    public void testQueryComplexReturned() {
         DocumentModel doc = makeComplexDoc();
         String docId = doc.getId();
 
@@ -2921,7 +2923,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryComplexListElement() throws Exception {
+    public void testQueryComplexListElement() {
         DocumentModel doc = makeComplexDoc();
         String docId = doc.getId();
 
@@ -3030,7 +3032,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryComplexOrderBy() throws Exception {
+    public void testQueryComplexOrderBy() {
         DocumentModel doc = makeComplexDoc();
         String docId = doc.getId();
 
@@ -3092,7 +3094,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryComplexTwoWildcards() throws Exception {
+    public void testQueryComplexTwoWildcards() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File2");
         Map<String, Serializable> map1 = new HashMap<>();
         map1.put("name", "bob");
@@ -3112,7 +3114,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryComplexBoolean() throws Exception {
+    public void testQueryComplexBoolean() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File2");
         Map<String, Serializable> map1 = new HashMap<>();
         map1.put("name", "bob");
@@ -3130,7 +3132,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryDistinct() throws Exception {
+    public void testQueryDistinct() {
         assumeTrue("DBS does not support DISTINCT in queries", supportsDistinct());
 
         makeComplexDoc();
@@ -3175,7 +3177,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryComplexOrderByProxies() throws Exception {
+    public void testQueryComplexOrderByProxies() {
         DocumentModel doc = makeComplexDoc();
         String docId = doc.getId();
 
@@ -3188,7 +3190,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryComplexOr() throws Exception {
+    public void testQueryComplexOr() {
         // doc1 tst:title = 'hello world'
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "TestDoc");
         doc1.setPropertyValue("tst:title", "hello world");
@@ -3268,7 +3270,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryLikeWildcard() throws Exception {
+    public void testQueryLikeWildcard() {
         DocumentModelList dml;
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc.setPropertyValue("dc:title", "foo");
@@ -3360,7 +3362,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryIdNotFromUuid() throws Exception {
+    public void testQueryIdNotFromUuid() {
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         doc1 = session.createDocument(doc1);
 
@@ -3376,7 +3378,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryIdNotFromUuidWithMissingDoc() throws Exception {
+    public void testQueryIdNotFromUuidWithMissingDoc() {
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         doc1 = session.createDocument(doc1);
 
@@ -3405,7 +3407,7 @@ public class TestSQLRepositoryQuery {
 
     // SELECT dc:subjects/* ... must not return NULLs (due to LEFT JOIN) if there is no match
     @Test
-    public void testQueryIdListNotFromUuidButFromArray() throws Exception {
+    public void testQueryIdListNotFromUuidButFromArray() {
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         doc1 = session.createDocument(doc1);
         // don't set any dc:subjects at all
@@ -3431,7 +3433,7 @@ public class TestSQLRepositoryQuery {
 
     // SELECT dc:subjects/* ... cannot compute total size on DBS due to manual projection
     @Test
-    public void testQueryIdListFromArrayTotalSize() throws Exception {
+    public void testQueryIdListFromArrayTotalSize() {
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         doc1.setPropertyValue("dc:subjects", (Serializable) Arrays.asList("a", "b", "c"));
         doc1 = session.createDocument(doc1);
@@ -3482,7 +3484,7 @@ public class TestSQLRepositoryQuery {
 
     // SELECT dc:subjects/*1 ... WHERE dc:subjects/*1 ... may return NULLs
     @Test
-    public void testQueryIdListNotFromUuidButFromArrayMentionedInWhereClause() throws Exception {
+    public void testQueryIdListNotFromUuidButFromArrayMentionedInWhereClause() {
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         doc1 = session.createDocument(doc1);
         // don't set any dc:subjects at all
@@ -3515,7 +3517,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testQueryIdListNotFromUuid() throws Exception {
+    public void testQueryIdListNotFromUuid() {
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         doc1 = session.createDocument(doc1);
         DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
@@ -3553,7 +3555,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testScrollApi() throws Exception {
+    public void testScrollApi() {
         final int nbDocs = 127;
         final int batchSize = 13;
         DocumentModel doc;
@@ -3600,7 +3602,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testScrollApiDoesNotRequiresAdminRights() throws Exception {
+    public void testScrollApiDoesNotRequiresAdminRights() {
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         session.createDocument(doc1);
         session.save();
@@ -3634,7 +3636,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testScrollBadUsageInvalidScrollId() throws Exception {
+    public void testScrollBadUsageInvalidScrollId() {
         exception.expect(NuxeoException.class);
         exception.expectMessage("Unknown or timed out scrollId");
         ScrollResult ret = session.scroll("foo");
@@ -3778,7 +3780,7 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testScrollCheckUserPermission() throws Exception {
+    public void testScrollCheckUserPermission() {
         assumeTrue("Backend must support true scrolling", supportsScroll());
 
         createDocs();

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.core.api.model;
 
 import java.io.Serializable;
@@ -99,16 +96,16 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * <p>
  * Dirty flags are used to keep track of the dirty state of a property. The following flags are supported:
  * <ul>
- * <li> <code>IS_PHANTOM</code> - whether the property is existing in the storage (was explicitly set by the user) or it
+ * <li><code>IS_PHANTOM</code> - whether the property is existing in the storage (was explicitly set by the user) or it
  * was dynamically generated using the default value by the implementation to fulfill schema definition. This applies to
  * all property types
- * <li> <code>IS_MODIFIED</code> - whether the property value was modified. This applies to all property types.
- * <li> <code>IS_NEW</code> - whether the property is a new property that was added to a parent list property This
+ * <li><code>IS_MODIFIED</code> - whether the property value was modified. This applies to all property types.
+ * <li><code>IS_NEW</code> - whether the property is a new property that was added to a parent list property This
  * applies only to properties that are children of a list property.
- * <li> <code>IS_REMOVED</code> - whether a property was removed. A removed property will be removed from the storage and
+ * <li><code>IS_REMOVED</code> - whether a property was removed. A removed property will be removed from the storage and
  * the next time you access the property it will be a <code>phantom</code> one. This applies only to properties that are
  * children of a complex property.
- * <li> <code>IS_MOVED</code> - whether the property was moved on another position inside the container list. This
+ * <li><code>IS_MOVED</code> - whether the property was moved on another position inside the container list. This
  * applies only to properties that are children of a list property.
  * </ul>
  * <p>
@@ -360,8 +357,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * <p>
      * The field is the object defining the property. You can see the field as a java class and the property as a class
      * instance
-     *
-     * @return
      */
     Field getField();
 
@@ -405,8 +400,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * For complex or list properties the value will be set recursively (as a map or list value).
      *
      * @param value the value to set
-     * @throws {@link InvalidPropertyValueException} if the given value type is not compatible with the expected value
-     *         type
+     * @throws InvalidPropertyValueException if the given value type is not compatible with the expected value type
      */
     void setValue(Object value) throws PropertyException;
 
@@ -464,8 +458,8 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @param name the child property name (the full name including the prefix if any)
      * @return the child property if any null if no child property with that name is found or if the property is a
      *         scalar
-     * @throws {@link UnsupportedOperationException} if the property is a scalar property (doesn't have children)
-     * @throws {@link PropertyNotFoundException} if the child property is not found in the type definition
+     * @throws UnsupportedOperationException if the property is a scalar property (doesn't have children)
+     * @throws PropertyNotFoundException if the child property is not found in the type definition
      */
     Property get(String name) throws PropertyNotFoundException;
 
@@ -477,11 +471,10 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * Relative paths are not resolved. THis method is intended to lookup direct chilren. For path lookups, use
      * {@link Property#resolvePath(String)} instead.
      *
-     * @param index
      * @return the child property if any null if no child property with that name is found or if the property is a
      *         scalar
-     * @throws {@link UnsupportedOperationException} if the property is a scalar property (doesn't have children)
-     * @throws {@link PropertyNotFoundException} if the child property is not found in the type definition
+     * @throws UnsupportedOperationException if the property is a scalar property (doesn't have children)
+     * @throws PropertyNotFoundException if the child property is not found in the type definition
      */
     Property get(int index) throws PropertyNotFoundException;
 
@@ -493,10 +486,9 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * This method will mark the child value as dirty for existing values and in the case of map properties it will mark
      * phantom properties as new properties.
      *
-     * @param index
      * @param value the new value
-     * @throws {@link UnsupportedOperationException} if the property is a scalar property (doesn't have children)
-     * @throws {@link PropertyNotFoundException} if the child property is not found in the type definition
+     * @throws UnsupportedOperationException if the property is a scalar property (doesn't have children)
+     * @throws PropertyNotFoundException if the child property is not found in the type definition
      */
     void setValue(int index, Object value) throws PropertyException;
 
@@ -526,7 +518,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * <p>
      * The created property will be marked as {@link Property#isNew()}.
      *
-     * @param value
      * @return the added property
      */
     Property addValue(Object value) throws PropertyException;
@@ -537,7 +528,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * <p>
      * The created property will be marked as {@link Property#isNew()}.
      *
-     * @param value
      * @param index the position to insert the value
      * @return the added property
      */
@@ -549,7 +539,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * This method is useful to construct lists.
      *
      * @return the created property
-     * @throws PropertyException
      */
     Property addEmpty() throws PropertyException;
 
@@ -615,7 +604,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @param type the class of the value
      * @param path the java path of the property value
      * @return the value
-     * @throws PropertyException
      */
     <T> T getValue(Class<T> type, String path) throws PropertyException;
 
@@ -626,7 +614,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @param path the property path
      * @param value the value
-     * @throws PropertyException
      */
     void setValue(String path, Object value) throws PropertyException;
 
@@ -703,9 +690,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     /**
      * Compare the two properties by content.
      *
-     * @param property
      * @return true If the properties have a similar content, otherwise false
-     * @throws PropertyException
      */
     boolean isSameAs(Property property) throws PropertyException;
 
