@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,8 +84,6 @@ public abstract class AbstractProperty implements Property {
      * <p>
      * This applies only for nodes that physically store a value (that means non container nodes). Container nodes does
      * nothing.
-     *
-     * @param value
      */
     public abstract void internalSetValue(Serializable value) throws PropertyException;
 
@@ -464,8 +462,9 @@ public abstract class AbstractProperty implements Property {
                 if (deprecatedFallback == null) {
                     msg.append("Return value from deprecated property");
                 } else {
-                    msg.append("Return value from '").append(deprecatedFallback.getXPath()).append(
-                            "' if not null, from deprecated property otherwise");
+                    msg.append("Return value from '")
+                       .append(deprecatedFallback.getXPath())
+                       .append("' if not null, from deprecated property otherwise");
                 }
                 if (log.isTraceEnabled()) {
                     log.warn(msg, new NuxeoException());

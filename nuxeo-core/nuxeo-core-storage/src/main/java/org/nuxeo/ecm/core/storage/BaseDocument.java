@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,16 +122,16 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     public static final String LOCK_CREATED_PROP = "ecm:lockCreated";
 
     public static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<>(Arrays.asList( //
-                                                                                          FULLTEXT_JOBID_PROP, //
-                                                                                          FULLTEXT_BINARYTEXT_PROP, //
-                                                                                          IS_TRASHED_PROP, //
-                                                                                          MISC_LIFECYCLE_STATE_PROP, //
-                                                                                          LOCK_OWNER_PROP, //
-                                                                                          LOCK_CREATED_PROP, //
-                                                                                          DC_ISSUED, //
-                                                                                          RELATED_TEXT_RESOURCES, //
-                                                                                          RELATED_TEXT_ID, //
-                                                                                          RELATED_TEXT //
+            FULLTEXT_JOBID_PROP, //
+            FULLTEXT_BINARYTEXT_PROP, //
+            IS_TRASHED_PROP, //
+            MISC_LIFECYCLE_STATE_PROP, //
+            LOCK_OWNER_PROP, //
+            LOCK_CREATED_PROP, //
+            DC_ISSUED, //
+            RELATED_TEXT_RESOURCES, //
+            RELATED_TEXT_ID, //
+            RELATED_TEXT //
     ));
 
     protected final static Pattern NON_CANONICAL_INDEX = Pattern.compile("[^/\\[\\]]+" // name
@@ -712,8 +712,8 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                     // TODO property.init(null) if null children in DBS
                     List<Object> list = new ArrayList<>(childStates.size());
                     for (T childState : childStates) {
-                        ComplexProperty p = (ComplexProperty) complexProperty.getRoot().createProperty(property,
-                                listField, 0);
+                        ComplexProperty p = (ComplexProperty) complexProperty.getRoot()
+                                                                             .createProperty(property, listField, 0);
                         readComplexProperty(childState, p);
                         list.add(p.getValue());
                     }

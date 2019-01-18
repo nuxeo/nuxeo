@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,6 +177,7 @@ public class DocumentModelFactory {
     /**
      * Creates a data model from a document and a schema. If the document is null, just creates empty data models.
      */
+    @SuppressWarnings("deprecation")
     public static DataModel createDataModel(Document doc, Schema schema) {
         DocumentPart part = new DocumentPartImpl(schema);
         if (doc != null) {
@@ -188,6 +189,7 @@ public class DocumentModelFactory {
     /**
      * Writes a document model to a document. Returns the re-read document model.
      */
+    @SuppressWarnings("deprecation")
     public static DocumentModel writeDocumentModel(DocumentModel docModel, Document doc) {
         if (!(docModel instanceof DocumentModelImpl)) {
             throw new NuxeoException("Must be a DocumentModelImpl: " + docModel);
@@ -271,8 +273,10 @@ public class DocumentModelFactory {
                 schemas = docSchemas.toArray(new String[0]);
             }
             TypeProvider typeProvider = Framework.getService(SchemaManager.class);
+            @SuppressWarnings("deprecation")
             DocumentPart[] parts = new DocumentPart[schemas.length];
             for (int i = 0; i < schemas.length; i++) {
+                @SuppressWarnings("deprecation")
                 DocumentPart part = new DocumentPartImpl(typeProvider.getSchema(schemas[i]));
                 doc.readDocumentPart(part);
                 parts[i] = part;
@@ -292,11 +296,9 @@ public class DocumentModelFactory {
     public static DocumentModel createDocumentModel(String type, String id) {
         SchemaManager sm = Framework.getService(SchemaManager.class);
         DocumentType docType = sm.getDocumentType(type);
-        DocumentModel doc = new DocumentModelImpl(null, docType.getName(), id, null, null, new IdRef(id), null, null,
-                null, null, null);
-        for (Schema schema : docType.getSchemas()) {
-            ((DocumentModelImpl) doc).addDataModel(createDataModel(null, schema));
-        }
+        DocumentModelImpl doc = new DocumentModelImpl(null, docType.getName(), id, null, null, new IdRef(id), null,
+                null, null, null, null);
+        docType.getSchemas().forEach(schema -> doc.addDataModel(createDataModel(null, schema)));
         return doc;
     }
 
