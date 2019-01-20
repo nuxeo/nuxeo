@@ -100,6 +100,7 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.ecm.core.storage.dbs")
 @Deploy("org.nuxeo.ecm.core.storage.mem")
 @Deploy("org.nuxeo.ecm.core.storage.mongodb")
+@Deploy("org.nuxeo.ecm.core.storage.pgjson")
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.el")
 @RepositoryConfig(cleanup = Granularity.METHOD)

@@ -18,13 +18,16 @@
  */
 package org.nuxeo.ecm.core.storage;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.storage.State.NOP;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import org.junit.Test;
@@ -100,6 +103,15 @@ public class TestStateHelper {
         assertNotEqualsStrict(Long.valueOf(123456), Long.valueOf(789123));
         assertNotEqualsStrict("foo", Long.valueOf(123456));
 
+        // Calendar
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = (Calendar) cal1.clone();
+        cal2.setFirstDayOfWeek(Calendar.WEDNESDAY);
+        assertEquals(cal1.getTimeInMillis(), cal2.getTimeInMillis());
+        assertNotEquals(cal1, cal2); // cals differ
+        // but still equals for the helper
+        assertEqualsStrict(cal1, cal2);
+
         // mixed
         assertNotEqualsStrict("foo", new State());
         assertNotEqualsStrict("foo", new ArrayList<Serializable>());
@@ -143,6 +155,15 @@ public class TestStateHelper {
 
     @Test
     public void testEqualsLoose() {
+        // Calendar
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = (Calendar) cal1.clone();
+        cal2.setFirstDayOfWeek(Calendar.WEDNESDAY);
+        assertEquals(cal1.getTimeInMillis(), cal2.getTimeInMillis());
+        assertNotEquals(cal1, cal2); // cals differ
+        // but still equals for the helper
+        assertEqualsLoose(cal1, cal2);
+
         // Arrays
         assertEqualsLoose(null, new String[0]);
         assertEqualsLoose(new String[0], null);

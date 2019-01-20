@@ -21,7 +21,10 @@ package org.nuxeo.ecm.core.test;
 import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.dbs.DBSHelper;
+import org.nuxeo.ecm.core.storage.pgjson.PGJSONRepository;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDB2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
@@ -65,6 +69,8 @@ public class StorageConfiguration {
 
     public static final String CORE_MONGODB = "mongodb";
 
+    public static final String CORE_PGJSON = "pgjson";
+
     public static final String CORE_MARKLOGIC = "marklogic";
 
     public static final String DEFAULT_CORE = CORE_VCS;
@@ -76,6 +82,18 @@ public class StorageConfiguration {
     public static final String DEFAULT_MONGODB_SERVER = "localhost:27017";
 
     public static final String DEFAULT_MONGODB_DBNAME = "unittests";
+
+    public static final String PGJSON_URL_PROPERTY = "nuxeo.test.pgjson.url";
+
+    public static final String PGJSON_USER_PROPERTY = "nuxeo.test.pgjson.user";
+
+    public static final String PGJSON_PASSWORD_PROPERTY = "nuxeo.test.pgjson.password";
+
+    public static final String DEFAULT_PGJSON_URL = "jdbc:postgresql://localhost:5432/nuxeojunittests";
+
+    public static final String DEFAULT_PGJSON_USER = "nuxeo";
+
+    public static final String DEFAULT_PGJSON_PASSWORD = "nuxeo";
 
     private static final String CHANGE_TOKEN_ENABLED_PROPERTY = "nuxeo.test.changetoken.enabled";
 
@@ -132,6 +150,10 @@ public class StorageConfiguration {
             isDBS = true;
             initMongoDB();
             break;
+        case CORE_PGJSON:
+            isDBS = true;
+            initPGJSON();
+            break;
         default:
             isDBS = true;
             initExternal();
@@ -162,6 +184,19 @@ public class StorageConfiguration {
         try (MongoClient mongoClient = MongoDBConnectionHelper.newMongoClient(mongoDBServer)) {
             MongoDatabase database = mongoClient.getDatabase(mongoDBDbName);
             database.drop();
+        }
+    }
+
+    protected void initPGJSON() {
+        String url = defaultProperty(PGJSON_URL_PROPERTY, DEFAULT_PGJSON_URL);
+        String user = defaultProperty(PGJSON_USER_PROPERTY, DEFAULT_PGJSON_USER);
+        String password = defaultProperty(PGJSON_PASSWORD_PROPERTY, DEFAULT_PGJSON_PASSWORD);
+        // TODO move to PGJSONRepository or related connection helper
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+                Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS " + PGJSONRepository.TABLE_NAME);
+        } catch (SQLException e) {
+            throw new NuxeoException();
         }
     }
 
@@ -218,6 +253,10 @@ public class StorageConfiguration {
 
     public boolean isDBSMongoDB() {
         return isDBS && CORE_MONGODB.equals(coreType);
+    }
+
+    public boolean isDBSPGJSON() {
+        return isDBS && CORE_PGJSON.equals(coreType);
     }
 
     public boolean isDBSExternal() {
@@ -317,6 +356,8 @@ public class StorageConfiguration {
                 contribPath = "OSGI-INF/test-storage-repo-mem-contrib.xml";
             } else if (isDBSMongoDB()) {
                 contribPath = "OSGI-INF/test-storage-repo-mongodb-contrib.xml";
+            } else if (isDBSPGJSON()) {
+                contribPath = "OSGI-INF/test-storage-repo-pgjson-contrib.xml";
             } else if (isDBSExternal()) {
                 bundleName = String.format("org.nuxeo.ecm.core.storage.%s.test", coreType);
                 contribPath = "OSGI-INF/test-storage-repo-contrib.xml";

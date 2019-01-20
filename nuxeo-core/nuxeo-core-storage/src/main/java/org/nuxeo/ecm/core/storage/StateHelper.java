@@ -80,6 +80,8 @@ public class StateHelper {
             ListDiff lda = (ListDiff) a;
             ListDiff ldb = (ListDiff) b;
             return lda.isArray == ldb.isArray && equalsStrict(lda.diff, ldb.diff) && equalsStrict(lda.rpush, ldb.rpush);
+        } else if (a instanceof Calendar && b instanceof Calendar) {
+            return equalsCalendar((Calendar) a, (Calendar) b);
         } else if (isScalar(a) && isScalar(b)) {
             return a.equals(b);
         } else {
@@ -172,6 +174,8 @@ public class StateHelper {
             ListDiff lda = (ListDiff) a;
             ListDiff ldb = (ListDiff) b;
             return lda.isArray == ldb.isArray && equalsLoose(lda.diff, ldb.diff) && equalsLoose(lda.rpush, ldb.rpush);
+        } else if (a instanceof Calendar && b instanceof Calendar) {
+            return equalsCalendar((Calendar) a, (Calendar) b);
         } else if (isScalar(a) && isScalar(b)) {
             return a.equals(b); // NOSONAR
         } else {
@@ -262,6 +266,15 @@ public class StateHelper {
             }
         }
         return true;
+    }
+
+    /**
+     * Compares two {@link Calendar}s.
+     *
+     * @since 11.1
+     */
+    public static boolean equalsCalendar(Calendar a, Calendar b) {
+        return a.getTimeInMillis() == b.getTimeInMillis();
     }
 
     /**

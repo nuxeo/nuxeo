@@ -149,6 +149,10 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-mongodb</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-pgjson</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>javax.servlet</groupId>

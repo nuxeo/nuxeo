@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.test.repository">
+
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+    <datasource name="jdbc/repositories" driverClassName="org.postgresql.Driver"
+        maxPoolSize="30" minPoolSize="5" blockingTimeoutMillis="10000">
+      <property name="url">${nuxeo.test.pgjson.url}</property>
+      <property name="username">${nuxeo.test.pgjson.user}</property>
+      <property name="password">${nuxeo.test.pgjson.password}</property>
+    </datasource>
+    <!-- datasource based on the repository name -->
+    <link name="jdbc/repository_test" global="jdbc/repositories"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.storage.pgjson.PGJSONRepositoryService" point="repository">
+    <repository name="test" label="PGJSON Repository">
+      <changeTokenEnabled>${nuxeo.test.changetoken.enabled}</changeTokenEnabled>
+      <fulltext disabled="${nuxeo.test.fulltext.disabled}" searchDisabled="${nuxeo.test.fulltext.search.disabled}">
+        <index> <!-- name="default" implied -->
+          <!-- all props implied -->
+        </index>
+        <index name="title">
+          <field>dc:title</field>
+        </index>
+      </fulltext>
+    </repository>
+  </extension>
+
+</component>
