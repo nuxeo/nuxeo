@@ -21,6 +21,7 @@ package org.nuxeo.drive.seam;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -74,7 +75,9 @@ import org.nuxeo.runtime.api.Framework;
 @Name("nuxeoDriveActions")
 @Scope(ScopeType.PAGE)
 @Install(precedence = Install.FRAMEWORK)
-public class NuxeoDriveActions extends InputController {
+public class NuxeoDriveActions extends InputController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Logger log = LogManager.getLogger(NuxeoDriveActions.class);
 
