@@ -33,7 +33,7 @@
   <extension-point
     name="htmlConversionBlacklistedMimeTypes">
     <documentation>
-      @since 10.10
+      @since 10.10-HF01-SNAPSHOT
 
       Allows to contribute the list of blacklisted mime types for HTML
       conversion.
