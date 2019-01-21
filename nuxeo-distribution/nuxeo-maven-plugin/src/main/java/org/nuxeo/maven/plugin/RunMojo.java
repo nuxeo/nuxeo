@@ -1,5 +1,6 @@
 package org.nuxeo.maven.plugin;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -34,6 +36,10 @@ public class RunMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
     private MavenProject project;
 
+
+    @Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
+    private File classesDirectory;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         logLogo();
@@ -48,20 +54,36 @@ public class RunMojo extends AbstractMojo {
 
     protected URL[] getClassPathUrls() throws MojoExecutionException {
         try {
-            return getDependencies().toArray(new URL[0]);
+            List<URL> urls = new ArrayList<>();
+            addResources(urls);
+            addProjectClasses(urls);
+            addDependencies(urls);
+            return urls.toArray(new URL[0]);
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to build classpath", e);
         }
     }
 
-    protected List<URL> getDependencies() throws MalformedURLException {
-        List<URL> urls = new ArrayList<>();
+    protected void addResources(List<URL> urls) throws IOException {
+//        if (this.addResources) {
+            for (Resource resource : this.project.getResources()) {
+                File directory = new File(resource.getDirectory());
+                urls.add(directory.toURI().toURL());
+//                FileUtils.removeDuplicatesFromOutputDirectory(this.classesDirectory,
+//                        directory);
+            }
+//        }
+    }
+    private void addProjectClasses(List<URL> urls) throws MalformedURLException {
+        urls.add(this.classesDirectory.toURI().toURL());
+    }
+
+    protected void addDependencies(List<URL> urls) throws MalformedURLException {
         for (Artifact artifact : project.getArtifacts()) {
             if (artifact.getFile() != null) {
                 urls.add(artifact.getFile().toURI().toURL());
             }
         }
-        return urls;
     }
 
     protected void join(ThreadGroup threadGroup) {
