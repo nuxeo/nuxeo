@@ -72,6 +72,7 @@
     <nuxeo.dm.version>11.1-SNAPSHOT</nuxeo.dm.version>
     <nuxeo.webengine.version>11.1-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.features.version>11.1-SNAPSHOT</nuxeo.features.version>
+    <nuxeo.maven.plugin.version>11.1-SNAPSHOT</nuxeo.maven.plugin.version>
 
     <nuxeo.addons.version>11.1-SNAPSHOT</nuxeo.addons.version>
     <nuxeo.opencmis.version>11.1-SNAPSHOT</nuxeo.opencmis.version>
@@ -6646,7 +6647,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>nuxeo-maven-plugin</artifactId>
-          <version>${project.version}</version>
+          <version>${nuxeo.maven.plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
