@@ -19,6 +19,7 @@
 
 package org.nuxeo.wopi.jaxrs;
 
+import static org.nuxeo.wopi.Constants.WOPI_BASE_URL_PROPERTY;
 import static org.nuxeo.wopi.Headers.PROOF;
 import static org.nuxeo.wopi.Headers.PROOF_OLD;
 import static org.nuxeo.wopi.Headers.TIMESTAMP;
@@ -92,8 +93,10 @@ public class WOPIRoot extends ModuleRoot {
         String oldProofKeyHeader = Helpers.getHeader(httpHeaders, PROOF_OLD);
         String timestampHeader = Helpers.getHeader(httpHeaders, TIMESTAMP);
         String accessToken = request.getParameter(Constants.ACCESS_TOKEN_PARAMETER);
-        String url = String.format("%s%s?%s", VirtualHostHelper.getServerURL(request),
-                request.getRequestURI().substring(1), request.getQueryString());
+        String wopiBaseURL = Framework.getProperty(WOPI_BASE_URL_PROPERTY, VirtualHostHelper.getBaseURL(request));
+        // remove /nuxeo/ from the request URI
+        String requestURI = request.getRequestURI().substring(request.getContextPath().length() + 1);
+        String url = String.format("%s%s?%s", wopiBaseURL, requestURI, request.getQueryString());
         if (!Framework.getService(WOPIService.class)
                       .verifyProofKey(proofKeyHeader, oldProofKeyHeader, url, accessToken, timestampHeader)) {
             throw new InternalServerErrorException();
