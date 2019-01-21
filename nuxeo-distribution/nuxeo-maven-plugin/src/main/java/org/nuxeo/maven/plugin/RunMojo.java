@@ -128,7 +128,7 @@ public class RunMojo extends AbstractMojo {
                 synchronized (this.monitor) {
                     this.exception = this.exception != null ? this.exception : ex;
                 }
-                getLog().warn(ex);
+                getLog().warn("An error occured in main Thread", ex);
             }
         }
 
