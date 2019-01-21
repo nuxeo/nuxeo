@@ -25,11 +25,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
+import freemarker.template.TemplateException;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
@@ -223,7 +228,29 @@ public class DefaultRuntimeContext implements RuntimeContext {
         try (InputStream stream = ref.getStream()) {
             source = IOUtils.toString(stream, UTF_8);
         }
-        String expanded = Framework.expandVars(source);
+        String expanded;
+        if ("true".equals(System.getProperty("nuxeo.use.nxftl.in.jar")) && ref.asURL().toString().endsWith("nxftl")) {
+            // retrieve default from JAR
+            Properties vars = new Properties();
+            URL url = getLocalResource("nuxeo.default");
+            if (url != null) {
+                try (InputStream in = url.openStream()) {
+                    Properties p = new Properties();
+                    p.load(in);
+                    vars.putAll(p);
+                } catch (IOException e) {
+                    throw new RuntimeServiceException("Error during nuxeo.default read from jar", e);
+                }
+            }
+            try {
+                vars.putAll(runtime.getProperties());
+                expanded = new TextTemplate(vars).processFreemarker(source);
+            } catch (TemplateException e) {
+                throw new IOException("Unable to process freemarker on "+ ref.getId(), e);
+            }
+        } else {
+            expanded = Framework.expandVars(source);
+        }
         try (InputStream in = new ByteArrayInputStream(expanded.getBytes())) {
             return createRegistrationInfo(in);
         }

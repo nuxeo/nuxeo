@@ -29,6 +29,7 @@ public class NuxeoRunner implements Runnable {
         Thread thread = Thread.currentThread();
         ClassLoader classLoader = thread.getContextClassLoader();
         try {
+            System.setProperty("nuxeo.use.nxftl.in.jar", "true");
             File workingDir = Files.createTempDirectory(Paths.get("target"), "nxrunner-").toFile();
             Class<?> loaderClass = classLoader.loadClass(FrameworkLoader.class.getName());
             Method initialize = loaderClass.getDeclaredMethod("initialize", ClassLoader.class, File.class, List.class,
