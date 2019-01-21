@@ -9,7 +9,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/datasource-component.xml, OSGI-INF/datasource-component.xml.nxftl
+Nuxeo-Component: OSGI-INF/datasource-component.xml, NUXEO-INF/datasource-contrib.xml.nxftl
 Import-Package: javax.annotation;version="1.0",
  javax.naming,
  javax.naming.spi,
