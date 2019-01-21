@@ -1,0 +1,58 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.datasource.server.contrib">
+
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+<#if nuxeo.db.xaMode == "false">
+    <datasource name="${nuxeo.db.commonds}" driverClassName="${nuxeo.db.driver}"
+      url="${nuxeo.db.jdbc.url}" username="${nuxeo.db.user}" password="${nuxeo.db.password}"
+      maxPoolSize="${nuxeo.db["max-pool-size"]}"
+      minPoolSize="${nuxeo.db["min-pool-size"]}"
+      blockingTimeoutMillis="${nuxeo.db["blocking-timeout-millis"]}"
+      idleTimeoutMinutes="${nuxeo.db["idle-timeout-minutes"]}"
+      activeTimeoutMinutes="${nuxeo.db["active-timeout-minutes"]}"
+      sqlExceptionSorter="${nuxeo.db["sql-exception-sorter"]}"
+      validationQuery="${nuxeo.db.validationQuery}"
+      accessToUnderlyingConnectionAllowed="true" />
+<#else>
+    <datasource name="${nuxeo.db.commonds}" xaDataSource="${nuxeo.db.xadatasource}"
+      maxPoolSize="${nuxeo.db["max-pool-size"]}"
+      minPoolSize="${nuxeo.db["min-pool-size"]}"
+      blockingTimeoutMillis="${nuxeo.db["blocking-timeout-millis"]}"
+      idleTimeoutMinutes="${nuxeo.db["idle-timeout-minutes"]}"
+      activeTimeoutMinutes="${nuxeo.db["active-timeout-minutes"]}"
+      sqlExceptionSorter="${nuxeo.db["sql-exception-sorter"]}"
+      validationQuery="${nuxeo.db.validationQuery}"
+      accessToUnderlyingConnectionAllowed="true" >
+      <#if "${nuxeo.db.type}" == "postgresql">
+        <property name="ServerName">${nuxeo.db.host}</property>
+        <property name="PortNumber">${nuxeo.db.port}</property>
+        <property name="DatabaseName">${nuxeo.db.name}</property>
+        <property name="User">${nuxeo.db.user}</property>
+        <property name="Password">${nuxeo.db.password}</property>
+      <#elseif "${nuxeo.db.type}" == "oracle">
+        <property name="URL">${nuxeo.db.jdbc.url}</property>
+        <property name="User">${nuxeo.db.user}</property>
+        <property name="Password">${nuxeo.db.password}</property>
+      <#elseif "${nuxeo.db.type}" == "mssql">
+        <property name="ServerName">${nuxeo.db.host}</property>
+        <property name="PortNumber">${nuxeo.db.port}</property>
+        <property name="DatabaseName">${nuxeo.db.name}</property>
+        <property name="User">${nuxeo.db.user}</property>
+        <property name="Password">${nuxeo.db.password}</property>
+        <property name="UseCursors">true</property>
+      <#elseif "${nuxeo.db.type}" == "mysql">
+        <property name="URL">${nuxeo.db.jdbc.url}</property>
+        <property name="User">${nuxeo.db.user}</property>
+        <property name="Password">${nuxeo.db.password}</property>
+      <#else>
+        <property name="URL">${nuxeo.db.jdbc.url}</property>
+        <property name="User">${nuxeo.db.user}</property>
+        <property name="Password">${nuxeo.db.password}</property>
+      </#if>
+    </datasource>
+</#if>
+
+  </extension>
+</component>
+</#escape>
