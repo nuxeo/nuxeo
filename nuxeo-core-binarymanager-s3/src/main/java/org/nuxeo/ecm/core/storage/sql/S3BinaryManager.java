@@ -517,8 +517,9 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         } catch (AmazonServiceException e) {
             throw new NuxeoException("Source blob does not exists: s3://" + sourceBucketName + "/" + sourceKey, e);
         }
+        long length = sourceMetadata.getContentLength();
         try {
-            if (sourceMetadata.getContentLength() > NON_MULTIPART_COPY_MAX_SIZE) {
+            if (length > NON_MULTIPART_COPY_MAX_SIZE) {
                 S3Utils.copyFileMultipart(amazonS3, sourceMetadata, sourceBucketName, sourceKey, bucketName, key, true);
             } else {
                 S3Utils.copyFile(amazonS3, sourceMetadata, sourceBucketName, sourceKey, bucketName, key, true);
@@ -529,7 +530,10 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             }
             return digest;
         } catch (AmazonServiceException e) {
-            log.warn("direct S3 copy not supported, please check your keys and policies", e);
+            String message = "S3 copy not supported from s3://" + sourceBucketName + "/" + sourceKey + " to s3://"
+                    + bucketName + "/" + key + " (" + length + " bytes)";
+            log.warn(message + ", falling back to regular copy: " + e.getMessage());
+            log.debug(message, e);
             return null;
         }
     }

@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,13 +38,20 @@ import java.util.Set;
 
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.blob.BlobInfo;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.ecm.blob.AbstractTestCloudBinaryManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mockito.MockitoFeature;
+import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
@@ -67,8 +75,14 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
  * ***** NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!! *****
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, MockitoFeature.class })
 public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
+
+    @Mock
+    @RuntimeService
+    protected BlobManager blobManager;
+
+    protected S3BinaryManager binaryManager2;
 
     @BeforeClass
     public static void beforeClass() {
@@ -102,6 +116,13 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         }
         boolean disabled = bucketName.equals("CHANGETHIS");
         assumeTrue("No AWS credentials configured", !disabled);
+    }
+
+    @Before
+    public void doBefore() throws IOException {
+        binaryManager2 = getBinaryManager2();
+        when(blobManager.getBlobProvider("repo")).thenReturn(binaryManager);
+        when(blobManager.getBlobProvider("repo2")).thenReturn(binaryManager2);
     }
 
     @After
@@ -185,6 +206,39 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         assertTrue("IOException should occured as content is corrupted", exceptionOccured);
     }
 
+    @Test
+    public void testCopy() throws IOException {
+        // put blob in first binary manager
+        Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
+        binary = binaryManager.getBinary(CONTENT_MD5);
+        try (InputStream stream = binary.getStream()) {
+            assertNotNull(stream);
+            assertEquals(CONTENT, toString(stream));
+        }
+        // check it's not visible in second binary manager
+        Binary binary2 = binaryManager2.getBinary(CONTENT_MD5);
+        try (InputStream stream2 = binary2.getStream()) {
+            assertNull(stream2);
+        }
+        // do copy into second binary manager
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = CONTENT_MD5;
+        Blob blob = binaryManager.readBlob(blobInfo);
+        binaryManager2.writeBlob(blob);
+        // check it's now been copied into second binary manager
+        binary2 = binaryManager2.getBinary(CONTENT_MD5);
+        try (InputStream stream2 = binary2.getStream()) {
+            assertNotNull(stream2);
+            assertEquals(CONTENT, toString(stream2));
+        }
+        // and it's still in the first binary manager
+        binary = binaryManager.getBinary(CONTENT_MD5);
+        try (InputStream stream = binary.getStream()) {
+            assertNotNull(stream);
+            assertEquals(CONTENT, toString(stream));
+        }
+    }
+
     @Override
     @Test
     public void testBinaryManagerGC() throws Exception {
@@ -226,4 +280,15 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         binaryManager.initialize("repo", PROPERTIES);
         return binaryManager;
     }
+
+    /** Other binary manager storing in a subfolder of the main one. */
+    protected S3BinaryManager getBinaryManager2() throws IOException {
+        Map<String, String> properties2 = new HashMap<>(PROPERTIES);
+        String prefix = properties2.get(S3BinaryManager.BUCKET_PREFIX_PROPERTY);
+        properties2.put(S3BinaryManager.BUCKET_PREFIX_PROPERTY, prefix + "transient/");
+        S3BinaryManager binaryManager2 = new S3BinaryManager();
+        binaryManager2.initialize("repo2", properties2);
+        return binaryManager2;
+    }
+
 }
