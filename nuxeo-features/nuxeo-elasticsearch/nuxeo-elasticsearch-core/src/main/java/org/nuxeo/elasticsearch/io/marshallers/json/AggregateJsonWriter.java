@@ -84,6 +84,7 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
         SYSTEM_SCHEMA.addField("ecm:primaryType", StringType.INSTANCE, null, 0, null);
         SYSTEM_SCHEMA.addField("ecm:currentLifeCycleState", StringType.INSTANCE, null, 0, null);
         SYSTEM_SCHEMA.addField("ecm:versionLabel", StringType.INSTANCE, null, 0, null);
+        SYSTEM_SCHEMA.addField("ecm:isProxy", BooleanType.INSTANCE, null, 0, null);
         SYSTEM_SCHEMA.addField("ecm:isTrashed", BooleanType.INSTANCE, null, 0, null);
     }
 
