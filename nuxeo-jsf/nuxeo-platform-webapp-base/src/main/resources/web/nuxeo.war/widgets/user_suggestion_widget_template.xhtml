@@ -91,9 +91,9 @@
         <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
           value="#{select2Actions.resolveMultipleUserReference(currentValue, widgetProperty_prefixed, widgetProperty_firstLabelField, widgetProperty_secondLabelField, widgetProperty_thirdLabelField,  widgetProperty_hideFirstLabel,  widgetProperty_hideSecondLabel, widgetProperty_hideThirdLabel, widgetProperty_displayEmailInSuggestion, widgetProperty_hideIcon)}" />
         <ui:insert name="inside_input_widget" />
-        <a4j:ajax
-          render="#{widgetProperty_ajaxReRender}"
-          rendered="#{not empty widgetProperty_ajaxReRender}" />
+        <c:if test="#{not empty widgetProperty_ajaxReRender}">
+          <a4j:ajax render="#{widgetProperty_ajaxReRender}" />
+        </c:if>
       </nxu:valueHolder>
 
       <c:if test="#{not empty widgetProperty_ajaxReRender}">
