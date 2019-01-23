@@ -569,14 +569,6 @@ public class MemRepository extends DBSRepositoryBase {
         return new Lock(oldOwner, oldCreated);
     }
 
-    @Override
-    public void closeLockManager() {
-    }
-
-    @Override
-    public void clearLockManagerCaches() {
-    }
-
     protected List<List<String>> binaryPaths;
 
     @Override

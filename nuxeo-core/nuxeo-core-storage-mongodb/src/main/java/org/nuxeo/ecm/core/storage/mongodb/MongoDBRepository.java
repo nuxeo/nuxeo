@@ -833,13 +833,4 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
     }
 
-    @Override
-    public void closeLockManager() {
-
-    }
-
-    @Override
-    public void clearLockManagerCaches() {
-    }
-
 }

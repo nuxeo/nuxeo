@@ -129,14 +129,6 @@ public class RedisLockManager implements LockManager {
     }
 
     @Override
-    public void closeLockManager() {
-    }
-
-    @Override
-    public void clearLockManagerCaches() {
-    }
-
-    @Override
     public String toString() {
         return getClass().getSimpleName() + '(' + repositoryName + ')';
     }
