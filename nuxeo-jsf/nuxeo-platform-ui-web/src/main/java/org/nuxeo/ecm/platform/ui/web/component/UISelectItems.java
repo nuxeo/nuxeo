@@ -150,7 +150,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems implement
     }
 
     public boolean isItemEscaped() {
-        return Boolean.TRUE.equals(getStateHelper().eval(PropertyKeys.itemEscaped, Boolean.FALSE));
+        return Boolean.TRUE.equals(getStateHelper().eval(PropertyKeys.itemEscaped, Boolean.TRUE));
     }
 
     @SuppressWarnings("boxing")
