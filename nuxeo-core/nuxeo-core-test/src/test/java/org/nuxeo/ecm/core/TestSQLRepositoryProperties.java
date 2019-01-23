@@ -74,6 +74,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
+import org.nuxeo.ecm.core.storage.dbs.DBSConnection;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepository;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -1262,7 +1263,9 @@ public class TestSQLRepositoryProperties {
     protected void changeDoc(String id, StateDiff diff) throws Exception {
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
         Repository repository = repositoryService.getRepository(session.getRepositoryName());
-        ((DBSRepository) repository).updateState(id, diff, null);
+        try (DBSConnection connection = ((DBSRepository) repository).getConnection()) {
+            connection.updateState(id, diff, null);
+        }
     }
 
     @Test

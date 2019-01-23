@@ -18,35 +18,17 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.PartialList;
-import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
-import org.nuxeo.ecm.core.storage.State.StateDiff;
-import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -55,8 +37,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Ordering;
 
 /**
  * The DBS Cache layer used to cache some method call of real repository
@@ -128,23 +108,6 @@ public class DBSCachingRepository implements DBSRepository {
 
     }
 
-    public void begin() {
-        repository.begin();
-        processReceivedInvalidations();
-    }
-
-    @Override
-    public void commit() {
-        repository.commit();
-        sendInvalidationsToOther();
-        processReceivedInvalidations();
-    }
-
-    @Override
-    public void rollback() {
-        repository.rollback();
-    }
-
     @Override
     public void shutdown() {
         repository.shutdown();
@@ -165,137 +128,16 @@ public class DBSCachingRepository implements DBSRepository {
 
     }
 
+    @SuppressWarnings("resource") // connection closed by DBSCachingConnection.close
     @Override
-    public State readState(String id) {
-        State state = cache.getIfPresent(id);
-        if (state == null) {
-            state = repository.readState(id);
-            if (state != null) {
-                putInCache(state);
-            }
-        }
-        return state;
+    public DBSConnection getConnection() {
+        DBSConnection connection = repository.getConnection();
+        return new DBSCachingConnection(connection , this);
     }
 
     @Override
-    public State readPartialState(String id, Collection<String> keys) {
-        // bypass caches, as the goal of this method is to not trash caches for one-shot reads
-        return repository.readPartialState(id, keys);
-    }
-
-    @Override
-    public List<State> readStates(List<String> ids) {
-        ImmutableMap<String, State> statesMap = cache.getAllPresent(ids);
-        List<String> idsToRetrieve = new ArrayList<>(ids);
-        idsToRetrieve.removeAll(statesMap.keySet());
-        // Read missing states from repository
-        List<State> states = repository.readStates(idsToRetrieve);
-        // Cache them
-        states.forEach(this::putInCache);
-        // Add previous cached one
-        states.addAll(statesMap.values());
-        // Sort them
-        states.sort(Comparator.comparing(state -> state.get(KEY_ID).toString(), Ordering.explicit(ids)));
-        return states;
-    }
-
-    @Override
-    public void createState(State state) {
-        repository.createState(state);
-        // don't cache new state, it is inefficient on mass import
-    }
-
-    @Override
-    public void createStates(List<State> states) {
-        repository.createStates(states);
-        // don't cache new states, it is inefficient on mass import
-    }
-
-    @Override
-    public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
-        repository.updateState(id, diff, changeTokenUpdater);
-        invalidate(id);
-    }
-
-    @Override
-    public void deleteStates(Set<String> ids) {
-        repository.deleteStates(ids);
-        invalidateAll(ids);
-    }
-
-    @Override
-    public State readChildState(String parentId, String name, Set<String> ignored) {
-        processReceivedInvalidations();
-
-        String childCacheKey = computeChildCacheKey(parentId, name);
-        String stateId = childCache.getIfPresent(childCacheKey);
-        if (stateId != null) {
-            State state = cache.getIfPresent(stateId);
-            if (state != null) {
-                // As we don't have invalidation for childCache we need to check if retrieved state is the right one
-                // and not a previous document which was moved or renamed
-                if (parentId.equals(state.get(KEY_PARENT_ID)) && name.equals(state.get(KEY_NAME))) {
-                    return state;
-                } else {
-                    // We can invalidate the entry in cache as the document seemed to be moved or renamed
-                    childCache.invalidate(childCacheKey);
-                }
-            }
-        }
-        State state = repository.readChildState(parentId, name, ignored);
-        putInCache(state);
-        return state;
-    }
-
-    private void putInCache(State state) {
-        if (state != null) {
-            String stateId = state.get(KEY_ID).toString();
-            cache.put(stateId, state);
-            Object stateParentId = state.get(KEY_PARENT_ID);
-            if (stateParentId != null) {
-                childCache.put(computeChildCacheKey(stateParentId.toString(), state.get(KEY_NAME).toString()), stateId);
-            }
-        }
-    }
-
-    private String computeChildCacheKey(String parentId, String name) {
-        return parentId + '_' + name;
-    }
-
-    private void invalidate(String id) {
-        invalidateAll(Collections.singleton(id));
-    }
-
-    private void invalidateAll(Collection<String> ids) {
-        cache.invalidateAll(ids);
-        if (clusterInvalidator != null) {
-            synchronized (invalidations) {
-                invalidations.addAll(ids);
-            }
-        }
-    }
-
-    protected void sendInvalidationsToOther() {
-        synchronized (invalidations) {
-            if (!invalidations.isEmpty()) {
-                if (clusterInvalidator != null) {
-                    clusterInvalidator.sendInvalidations(invalidations);
-                }
-                invalidations.clear();
-            }
-        }
-    }
-
-    protected void processReceivedInvalidations() {
-        if (clusterInvalidator != null) {
-            DBSInvalidations invalidations = clusterInvalidator.receiveInvalidations();
-            if (invalidations.all) {
-                cache.invalidateAll();
-                childCache.invalidateAll();
-            } else if (invalidations.ids != null) {
-                cache.invalidateAll(invalidations.ids);
-            }
-        }
+    public boolean supportsTransactions() {
+        return repository.supportsTransactions();
     }
 
     @Override
@@ -324,64 +166,8 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     @Override
-    public String getRootId() {
-        return repository.getRootId();
-    }
-
-    @Override
-    public String generateNewId() {
-        return repository.generateNewId();
-    }
-
-    @Override
-    public boolean hasChild(String parentId, String name, Set<String> ignored) {
-        return repository.hasChild(parentId, name, ignored);
-    }
-
-    @Override
-    public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
-        return repository.queryKeyValue(key, value, ignored);
-    }
-
-    @Override
-    public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
-        return repository.queryKeyValue(key1, value1, key2, value2, ignored);
-    }
-
-    @Override
-    public Stream<State> getDescendants(String id, Set<String> keys) {
-        return repository.getDescendants(id, keys);
-    }
-
-    @Override
-    public Stream<State> getDescendants(String id, Set<String> keys, int limit) {
-        return repository.getDescendants(id, keys, limit);
-    }
-
-    @Override
-    public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
-        return repository.queryKeyValuePresence(key, value, ignored);
-    }
-
-    @Override
-    public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
-            OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
-        return repository.queryAndFetch(evaluator, orderByClause, distinctDocuments, limit, offset, countUpTo);
-    }
-
-    @Override
     public LockManager getLockManager() {
         return repository.getLockManager();
-    }
-
-    @Override
-    public ScrollResult<String> scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
-        return repository.scroll(evaluator, batchSize, keepAliveSeconds);
-    }
-
-    @Override
-    public ScrollResult<String> scroll(String scrollId) {
-        return repository.scroll(scrollId);
     }
 
     @Override
@@ -415,7 +201,7 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     @Override
-    public Session getSession() {
+    public Session<?> getSession() {
         if (repository instanceof DBSRepositoryBase) {
             return ((DBSRepositoryBase) repository).getSession(this);
         }

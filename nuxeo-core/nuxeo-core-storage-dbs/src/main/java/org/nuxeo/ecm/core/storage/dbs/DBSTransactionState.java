@@ -68,19 +68,25 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.BatchFinderWork;
 import org.nuxeo.ecm.core.BatchProcessorWork;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.core.storage.FulltextExtractorWork;
+import org.nuxeo.ecm.core.storage.QueryOptimizer;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
@@ -95,14 +101,17 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * Until {@code save()} is called, data lives in the transient map.
  * <p>
- * Upon save, data is written to the repository, even though it has not yet been committed (this means that other
- * sessions can read uncommitted data). It's also kept in an undo log in order for rollback to be possible.
+ * Upon save, data is written to the repository connection.
  * <p>
- * On commit, the undo log is forgotten. On rollback, the undo log is replayed.
+ * If the connection is transactional, usual behavior occurs.
+ * <p>
+ * If the connection is not transactional, then at this means that other sessions can read uncommitted data. To allow
+ * rollback, save data is also kept in an undo log in order for rollback to be possible. On commit, the undo log is
+ * forgotten. On rollback, the undo log is replayed.
  *
  * @since 5.9.4
  */
-public class DBSTransactionState {
+public class DBSTransactionState implements LockManager {
 
     private static final Log log = LogFactory.getLog(DBSTransactionState.class);
 
@@ -120,9 +129,11 @@ public class DBSTransactionState {
 
     public static final String READ_ACL_ASYNC_THRESHOLD_DEFAULT = "500";
 
+    protected final DBSSession session;
+
     protected final DBSRepository repository;
 
-    protected final DBSSession session;
+    protected final DBSConnection connection;
 
     /** Retrieved and created document state. */
     protected Map<String, DBSDocumentState> transientStates = new HashMap<>();
@@ -150,11 +161,21 @@ public class DBSTransactionState {
 
     protected final Set<String> browsePermissions;
 
-    public DBSTransactionState(DBSRepository repository, DBSSession session) {
+    public DBSTransactionState(DBSRepository repository, DBSConnection connection, DBSSession session) {
         this.repository = repository;
+        this.connection = connection;
         this.session = session;
         SecurityService securityService = Framework.getService(SecurityService.class);
         browsePermissions = new HashSet<>(Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
+    }
+
+    public void close() {
+        connection.close();
+    }
+
+    /** @since 11.1 */
+    public String getRootId() {
+        return connection.getRootId();
     }
 
     /**
@@ -184,7 +205,7 @@ public class DBSTransactionState {
             return docState;
         }
         // fetch from repository
-        State state = repository.readState(id);
+        State state = connection.readState(id);
         return newTransientState(state);
     }
 
@@ -201,7 +222,7 @@ public class DBSTransactionState {
             return docState.getState();
         }
         // fetch from repository
-        return repository.readState(id);
+        return connection.readState(id);
     }
 
     /**
@@ -221,7 +242,7 @@ public class DBSTransactionState {
             idsToFetch.add(id);
         }
         if (!idsToFetch.isEmpty()) {
-            List<State> states = repository.readStates(idsToFetch);
+            List<State> states = connection.readStates(idsToFetch);
             for (State state : states) {
                 newTransientState(state);
             }
@@ -254,7 +275,7 @@ public class DBSTransactionState {
             return docState;
         }
         // fetch from repository
-        State state = repository.readChildState(parentId, name, Collections.emptySet());
+        State state = connection.readChildState(parentId, name, Collections.emptySet());
         if (state == null) {
             return null;
         }
@@ -280,7 +301,7 @@ public class DBSTransactionState {
             return true;
         }
         // check repository
-        return repository.hasChild(parentId, name, Collections.emptySet());
+        return connection.hasChild(parentId, name, Collections.emptySet());
     }
 
     public List<DBSDocumentState> getChildrenStates(String parentId) {
@@ -295,7 +316,7 @@ public class DBSTransactionState {
             seen.add(docState.getId());
         }
         // fetch from repository
-        List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId, seen);
+        List<State> states = connection.queryKeyValue(KEY_PARENT_ID, parentId, seen);
         for (State state : states) {
             String id = (String) state.get(KEY_ID);
             if (transientStates.containsKey(id)) {
@@ -322,7 +343,7 @@ public class DBSTransactionState {
             children.add(id);
         }
         // fetch from repository
-        List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId, seen);
+        List<State> states = connection.queryKeyValue(KEY_PARENT_ID, parentId, seen);
         for (State state : states) {
             String id = (String) state.get(KEY_ID);
             if (transientStates.containsKey(id)) {
@@ -345,13 +366,13 @@ public class DBSTransactionState {
             return true;
         }
         // check repository
-        return repository.queryKeyValuePresence(KEY_PARENT_ID, parentId, Collections.emptySet());
+        return connection.queryKeyValuePresence(KEY_PARENT_ID, parentId, Collections.emptySet());
     }
 
     public DBSDocumentState createChild(String id, String parentId, String name, Long pos, String typeName) {
         // id may be not-null for import
         if (id == null) {
-            id = repository.generateNewId();
+            id = connection.generateNewId();
         }
         transientCreated.add(id);
         DBSDocumentState docState = new DBSDocumentState();
@@ -362,7 +383,7 @@ public class DBSTransactionState {
         docState.put(KEY_NAME, name);
         docState.put(KEY_POS, pos);
         docState.put(KEY_PRIMARY_TYPE, typeName);
-        if (session.changeTokenEnabled) {
+        if (repository.isChangeTokenEnabled()) {
             docState.put(KEY_SYS_CHANGE_TOKEN, INITIAL_SYS_CHANGE_TOKEN);
         }
         // update read acls for new doc
@@ -397,7 +418,7 @@ public class DBSTransactionState {
      */
     public DBSDocumentState copy(String id) {
         DBSDocumentState copyState = new DBSDocumentState(getStateForRead(id));
-        String copyId = repository.generateNewId();
+        String copyId = connection.generateNewId();
         copyState.put(KEY_ID, copyId);
         copyState.put(KEY_PROXY_IDS, null); // no proxies to this new doc
         // other fields updated by the caller
@@ -475,6 +496,7 @@ public class DBSTransactionState {
             String nxql = String.format("SELECT ecm:uuid FROM Document WHERE ecm:parentId = '%s'", id);
             NuxeoPrincipal principal = new SystemPrincipal(null);
             QueryFilter queryFilter = new QueryFilter(principal, null, null, null, Collections.emptyList(), limit, 0);
+            // TODO do the query with this.queryAndFetch instead of going back to the session
             PartialList<Map<String, Serializable>> pl = session.queryProjection(nxql, NXQL.NXQL, queryFilter, false, 0,
                     new Object[0]);
             for (Map<String, Serializable> map : pl) {
@@ -582,7 +604,7 @@ public class DBSTransactionState {
     protected void updateDocumentReadAclsNoCache(String id) {
         // no transient for state read, and we don't want to trash caches
         // fetch from repository only the properties needed for Read ACL computation and recursion
-        State state = repository.readPartialState(id, READ_ACL_RECURSION_KEYS);
+        State state = connection.readPartialState(id, READ_ACL_RECURSION_KEYS);
         State oldState = new State(1);
         oldState.put(KEY_READ_ACL, state.get(KEY_READ_ACL));
         // compute new value
@@ -591,7 +613,7 @@ public class DBSTransactionState {
         StateDiff diff = StateHelper.diff(oldState, newState);
         if (!diff.isEmpty()) {
             // no transient for state write, we write directly and just invalidate caches
-            repository.updateState(id, diff, null);
+            connection.updateState(id, diff, null);
         }
     }
 
@@ -641,7 +663,7 @@ public class DBSTransactionState {
     }
 
     protected Stream<State> getDescendants(String id, Set<String> keys, int limit) {
-        return repository.getDescendants(id, keys, limit);
+        return connection.getDescendants(id, keys, limit);
     }
 
     public List<DBSDocumentState> getKeyValuedStates(String key, Object value) {
@@ -656,7 +678,7 @@ public class DBSTransactionState {
             seen.add(docState.getId());
         }
         // fetch from repository
-        List<State> states = repository.queryKeyValue(key, value, seen);
+        List<State> states = connection.queryKeyValue(key, value, seen);
         for (State state : states) {
             docStates.add(newTransientState(state));
         }
@@ -675,11 +697,42 @@ public class DBSTransactionState {
             docStates.add(docState);
         }
         // fetch from repository
-        List<State> states = repository.queryKeyValue(key1, value1, key2, value2, seen);
+        List<State> states = connection.queryKeyValue(key1, value1, key2, value2, seen);
         for (State state : states) {
             docStates.add(newTransientState(state));
         }
         return docStates;
+    }
+
+    /** @since 11.1 */
+    public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
+            boolean distinctDocuments, int limit, int offset, int countUpTo) {
+        return connection.queryAndFetch(evaluator, orderByClause, distinctDocuments, limit, offset, countUpTo);
+    }
+
+    /** @since 11.1 */
+    public ScrollResult<String> scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
+        return connection.scroll(evaluator, batchSize, keepAliveSeconds);
+    }
+
+    /** @since 11.1 */
+    public ScrollResult<String> scroll(String scrollId) {
+        return connection.scroll(scrollId);
+    }
+
+    @Override
+    public Lock getLock(String id) {
+        return connection.getLock(id);
+    }
+
+    @Override
+    public Lock setLock(String id, Lock lock) {
+        return connection.setLock(id, lock);
+    }
+
+    @Override
+    public Lock removeLock(String id, String owner) {
+        return connection.removeLock(id, owner);
     }
 
     /**
@@ -711,7 +764,7 @@ public class DBSTransactionState {
         for (String id : ids) {
             transientStates.remove(id);
         }
-        repository.deleteStates(ids);
+        connection.deleteStates(ids);
     }
 
     public void markUserChange(String id) {
@@ -744,7 +797,7 @@ public class DBSTransactionState {
             statesToCreate.add(state);
         }
         if (!statesToCreate.isEmpty()) {
-            repository.createStates(statesToCreate);
+            connection.createStates(statesToCreate);
         }
         for (DBSDocumentState docState : transientStates.values()) {
             String id = docState.getId();
@@ -761,7 +814,7 @@ public class DBSTransactionState {
                         // else there's already a create or an update in the undo log so original info is enough
                     }
                     ChangeTokenUpdater changeTokenUpdater;
-                    if (session.changeTokenEnabled) {
+                    if (repository.isChangeTokenEnabled()) {
                         // increment system change token
                         Long base = (Long) docState.get(KEY_SYS_CHANGE_TOKEN);
                         docState.put(KEY_SYS_CHANGE_TOKEN, DeltaLong.valueOf(base, 1));
@@ -775,7 +828,7 @@ public class DBSTransactionState {
                     } else {
                         changeTokenUpdater = null;
                     }
-                    repository.updateState(id, diff, changeTokenUpdater);
+                    connection.updateState(id, diff, changeTokenUpdater);
                 } finally {
                     docState.setNotDirty();
                 }
@@ -840,14 +893,14 @@ public class DBSTransactionState {
             } else {
                 boolean recreate = state.remove(KEY_UNDOLOG_CREATE) != null;
                 if (recreate) {
-                    repository.createState(state);
+                    connection.createState(state);
                 } else {
                     // undo update
-                    State currentState = repository.readState(id);
+                    State currentState = connection.readState(id);
                     if (currentState != null) {
                         StateDiff diff = StateHelper.diff(currentState, state);
                         if (!diff.isEmpty()) {
-                            repository.updateState(id, diff, null);
+                            connection.updateState(id, diff, null);
                         }
                     }
                     // else we expected to read a current state but it was concurrently deleted...
@@ -856,7 +909,7 @@ public class DBSTransactionState {
             }
         }
         if (!deletes.isEmpty()) {
-            repository.deleteStates(deletes);
+            connection.deleteStates(deletes);
         }
     }
 
@@ -963,8 +1016,15 @@ public class DBSTransactionState {
      * @since 7.4
      */
     public void begin() {
-        undoLog = new HashMap<>();
-        repository.begin();
+        if (!repository.supportsTransactions()) {
+            if (undoLog != null) {
+                throw new NuxeoException("Transaction already started");
+            }
+            undoLog = new HashMap<>();
+        } else {
+
+        }
+        connection.begin();
     }
 
     /**
@@ -972,19 +1032,14 @@ public class DBSTransactionState {
      */
     public void commit() {
         save();
-        commitSave();
-        repository.commit();
-    }
-
-    /**
-     * Commits the saved state to the database.
-     */
-    protected void commitSave() {
         // clear transient, this means that after this references to states will be stale
         // TODO mark states as invalid
         clearTransient();
         // the transaction ended, the proxied DBSSession will disappear and cannot be reused anyway
-        undoLog = null;
+        if (undoLog != null) {
+            undoLog = null;
+        }
+        connection.commit();
     }
 
     /**
@@ -992,10 +1047,12 @@ public class DBSTransactionState {
      */
     public void rollback() {
         clearTransient();
-        applyUndoLog();
-        // the transaction ended, the proxied DBSSession will disappear and cannot be reused anyway
-        undoLog = null;
-        repository.rollback();
+        if (undoLog != null) {
+            applyUndoLog();
+            // the transaction ended, the proxied DBSSession will disappear and cannot be reused anyway
+            undoLog = null;
+        }
+        connection.rollback();
     }
 
     protected void clearTransient() {
