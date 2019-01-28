@@ -29,8 +29,8 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.platform.web.common.RequestCleanupHandler;
+import org.nuxeo.ecm.platform.web.common.RequestContext;
 import org.nuxeo.runtime.api.Framework;
 
 public abstract class EasyShareUnrestrictedRunner {
