@@ -21,7 +21,6 @@ package org.nuxeo.lib.stream.tools.command;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -75,7 +74,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
 
     @Override
     public void init(ComputationContext context) {
-        info(String.format("Tracking %s, count: %d, interval: %dms", Arrays.toString(logNames.toArray()), count,
+        log.info(String.format("Tracking %s, count: %d, interval: %dms", Arrays.toString(logNames.toArray()), count,
                 intervalMs));
         logGroups = new ArrayList<>();
         logNames.forEach(name -> {
@@ -89,56 +88,68 @@ public class LatencyTrackerComputation extends AbstractComputation {
     @Override
     public void processTimer(ComputationContext context, String key, long timestamp) {
         if (remaining == 0) {
-            debug("Exiting after " + count + " captures");
+            if (verbose) {
+                log.info("Exiting after " + count + " captures");
+            }
             context.askForTermination();
             return;
         }
-        debug(String.format("Tracking latency %d/%d", count - remaining, count));
+        if (verbose) {
+            log.info(String.format("Tracking latency %d/%d", count - remaining, count));
+        }
+        List<LogPartitionGroup> toRemove = new ArrayList<>();
         for (LogPartitionGroup logGroup : logGroups) {
-            List<Latency> latencies = getLatenciesForPartition(logGroup, codec);
-            if (latencies.isEmpty()) {
-                continue;
-            }
-            for (int partition = 0; partition < latencies.size(); partition++) {
-                Latency latency = latencies.get(partition);
-                if (latency.lower() <= 0) {
-                    // lower is the watermark timestamp for the latest processed record, without this info we cannot do
-                    // anything
+            try {
+                List<Latency> latencies = manager.getLatencyPerPartition(logGroup.name, logGroup.group, codec,
+                        (rec -> Watermark.ofValue(rec.getWatermark()).getTimestamp()), (Record::getKey));
+                if (!latencies.isEmpty()) {
+                    processLatencies(context, logGroup, latencies);
+                }
+            } catch (Exception e) {
+                if (e.getCause() instanceof ClassNotFoundException || e.getCause() instanceof ClassCastException
+                        || e instanceof IllegalStateException) {
+                    log.warn("log does not contains computation Record, removing partition: " + logGroup);
+                    toRemove.add(logGroup);
                     continue;
                 }
-                // upper is the time when the latency has been measured it is used as the watermark
-                long recordWatermark = Watermark.ofTimestamp(latency.upper()).getValue();
-                String recordKey = encodeKey(logGroup, partition);
-                byte[] recordValue = encodeLatency(latency);
-                Record record = new Record(recordKey, recordValue, recordWatermark);
-                if (verbose) {
-                    debug("out: " + record);
-                }
-                context.produceRecord(OUTPUT_STREAM, record);
-                context.setSourceLowWatermark(recordWatermark);
+                throw e;
             }
         }
         context.askForCheckpoint();
         context.setTimer("tracker", System.currentTimeMillis() + intervalMs);
         remaining--;
+        if (!toRemove.isEmpty()) {
+            logGroups.removeAll(toRemove);
+            if (logGroups.isEmpty()) {
+                log.error("Exiting because all logs have been skipped");
+                context.askForTermination();
+            }
+        }
+    }
+
+    protected void processLatencies(ComputationContext context, LogPartitionGroup logGroup, List<Latency> latencies) {
+        for (int partition = 0; partition < latencies.size(); partition++) {
+            Latency latency = latencies.get(partition);
+            if (latency.lower() <= 0) {
+                // lower is the watermark timestamp for the latest processed record, without this info we cannot do
+                // anything
+                continue;
+            }
+            // upper is the time when the latency has been measured it is used as the watermark
+            long recordWatermark = Watermark.ofTimestamp(latency.upper()).getValue();
+            String recordKey = encodeKey(logGroup, partition);
+            byte[] recordValue = encodeLatency(latency);
+            Record record = new Record(recordKey, recordValue, recordWatermark);
+            if (verbose) {
+                log.info("out: " + record);
+            }
+            context.produceRecord(OUTPUT_STREAM, record);
+            context.setSourceLowWatermark(recordWatermark);
+        }
     }
 
     protected byte[] encodeLatency(Latency latency) {
         return latency.asJson().getBytes(StandardCharsets.UTF_8);
-    }
-
-    @SuppressWarnings("squid:S1193")
-    protected List<Latency> getLatenciesForPartition(LogPartitionGroup logGroup, Codec<Record> codec) {
-        try {
-            return manager.getLatencyPerPartition(logGroup.name, logGroup.group, codec,
-                    (rec -> Watermark.ofValue(rec.getWatermark()).getTimestamp()), (Record::getKey));
-        } catch (Exception e) {
-            if (e.getCause() instanceof ClassNotFoundException || e instanceof IllegalStateException) {
-                error("log does not contains Record, remove partition: " + logGroup);
-                return Collections.emptyList();
-            }
-            throw e;
-        }
     }
 
     public static String encodeKey(LogPartitionGroup logGroup, int partition) {
@@ -152,25 +163,12 @@ public class LatencyTrackerComputation extends AbstractComputation {
 
     @Override
     public void destroy() {
-        info("Good bye");
+        log.info("Good bye");
     }
 
     @Override
     public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-        error("Receiving a record is not expected!: " + record);
+        log.error("Receiving a record is not expected: " + record);
     }
 
-    protected void debug(String msg) {
-        if (verbose) {
-            log.info(msg);
-        }
-    }
-
-    protected void info(String msg) {
-        log.info(msg);
-    }
-
-    protected void error(String msg) {
-        log.error(msg);
-    }
 }

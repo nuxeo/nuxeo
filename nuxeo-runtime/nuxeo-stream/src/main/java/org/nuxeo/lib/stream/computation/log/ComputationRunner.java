@@ -152,9 +152,9 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         boolean interrupted = false;
         computation = supplier.get();
         log.debug(metadata.name() + ": Init");
-        computation.init(context);
-        log.debug(metadata.name() + ": Start");
         try {
+            computation.init(context);
+            log.debug(metadata.name() + ": Start");
             processLoop();
         } catch (InterruptedException e) {
             interrupted = true; // Thread.currentThread().interrupt() in finally
