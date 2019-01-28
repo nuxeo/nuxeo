@@ -18,6 +18,7 @@
  */
 package org.nuxeo.lib.stream.tests.tools;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -34,6 +35,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.nuxeo.lib.stream.codec.AvroBinaryCodec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogAppender;
@@ -42,6 +44,7 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.RebalanceException;
+import org.nuxeo.lib.stream.tests.KeyValueMessage;
 import org.nuxeo.lib.stream.tools.Main;
 
 /**
@@ -52,6 +55,8 @@ public abstract class TestTools {
     protected static final int NB_RECORD = 10;
 
     protected static final String LOG_NAME = "myLog";
+
+    protected static final String LOG_NAME_2 = "myLog2";
 
     protected static final int LOG_SIZE = 1;
 
@@ -72,7 +77,7 @@ public abstract class TestTools {
             for (int i = 0; i < NB_RECORD; i++) {
                 String key = "key" + i;
                 String value = "Some value for " + i;
-                Record record = Record.of(key, value.getBytes(StandardCharsets.UTF_8));
+                Record record = Record.of(key, value.getBytes(UTF_8));
                 appender.append(i % LOG_SIZE, record);
                 if (i == NB_RECORD / 2) {
                     targetRecord = record;
@@ -88,6 +93,15 @@ public abstract class TestTools {
                 tailer.commit();
             }
             try (LogTailer<Record> tailer = manager.createTailer("anotherGroup", LOG_NAME)) {
+                tailer.read(DEF_TIMEOUT);
+                tailer.commit();
+            }
+            // Create another log with non computation record and different encoding
+            manager.createIfNotExists(LOG_NAME_2, LOG_SIZE);
+            LogAppender appender2 = manager.getAppender(LOG_NAME_2,
+                    new AvroBinaryCodec(KeyValueMessage.class));
+            appender2.append(0, KeyValueMessage.of("foo", "bar".getBytes(UTF_8)));
+            try (LogTailer<Record> tailer = manager.createTailer("someGroup", LOG_NAME_2)) {
                 tailer.read(DEF_TIMEOUT);
                 tailer.commit();
             }
@@ -200,6 +214,13 @@ public abstract class TestTools {
         // run(String.format("tracker %s --verbose -l ALL -o %s-out -i 2 -c 3", getManagerOptions(), LOG_NAME));
         run(String.format("tracker %s --verbose -l %s -o %s-latencies -i 2 -c 3", getManagerOptions(), LOG_NAME,
                 LOG_NAME));
+    }
+
+    @Test
+    public void testMonitor() {
+        // Use UDP, so it works without having a carbon server
+        run(String.format("monitor %s --verbose -l %s,%s -h localhost -p 9999 --udp -i 2 -c 2", getManagerOptions(),
+                LOG_NAME, LOG_NAME_2));
     }
 
     @Test
