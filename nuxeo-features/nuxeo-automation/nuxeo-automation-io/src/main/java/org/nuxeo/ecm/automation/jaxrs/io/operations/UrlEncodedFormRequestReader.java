@@ -36,7 +36,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.platform.web.common.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 import com.fasterxml.jackson.core.JsonFactory;

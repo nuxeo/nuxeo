@@ -40,9 +40,9 @@ import javax.ws.rs.core.Context;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.RequestContext;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.jaxrs.ApplicationFactory;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.scan.Scanner;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
 import org.nuxeo.ecm.webengine.model.Module;

@@ -26,8 +26,8 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.platform.web.common.RequestContext;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;

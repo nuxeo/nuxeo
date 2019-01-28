@@ -23,7 +23,7 @@ import javax.servlet.http.HttpSession;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.platform.web.common.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.impl.PerRequestCoreProvider;
 
 /**

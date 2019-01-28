@@ -16,7 +16,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.jaxrs.context;
+package org.nuxeo.ecm.platform.web.common;
 
 import java.security.Principal;
 import java.util.ArrayList;

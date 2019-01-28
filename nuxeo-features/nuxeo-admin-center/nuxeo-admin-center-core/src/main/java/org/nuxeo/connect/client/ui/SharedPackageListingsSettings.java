@@ -18,7 +18,7 @@
  */
 package org.nuxeo.connect.client.ui;
 
-import static org.nuxeo.ecm.webengine.jaxrs.context.RequestContext.getActiveContext;
+import static org.nuxeo.ecm.platform.web.common.RequestContext.getActiveContext;
 
 import java.io.Serializable;
 import java.util.HashMap;

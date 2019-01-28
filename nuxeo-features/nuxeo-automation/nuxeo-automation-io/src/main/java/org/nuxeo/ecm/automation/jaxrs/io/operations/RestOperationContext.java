@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.platform.web.common.RequestCleanupHandler;
+import org.nuxeo.ecm.platform.web.common.RequestContext;
 
 /**
  * A custom operation context to be used in REST calls on server side. This implementation is delegating the post

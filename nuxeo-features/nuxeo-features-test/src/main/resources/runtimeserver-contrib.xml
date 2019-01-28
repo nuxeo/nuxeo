@@ -89,7 +89,7 @@
 
     <filter context="/">
       <filter-name>RequestContextFilter</filter-name>
-      <filter-class>org.nuxeo.ecm.webengine.jaxrs.context.RequestContextFilter</filter-class>
+      <filter-class>org.nuxeo.ecm.platform.web.common.RequestContextFilter</filter-class>
       <display-name>RequestContextFilter</display-name>
       <filter-mapping>
         <url-pattern>/*</url-pattern>

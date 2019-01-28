@@ -1,4 +1,4 @@
-/* 
+/*
  * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,15 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.jaxrs.context;
+package org.nuxeo.ecm.platform.web.common;
 
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.nuxeo.ecm.webengine.jaxrs.HttpFilter;
 
 /**
  * Manage the context of the current HTTP request and made it available through a thread local variable to web
@@ -36,23 +34,17 @@ import org.nuxeo.ecm.webengine.jaxrs.HttpFilter;
  */
 public class RequestContextFilter extends HttpFilter {
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-    }
+    private static final long serialVersionUID = 1L;
 
     @Override
-    public void run(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+    public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         RequestContext ctx = new RequestContext(request, response);
         try {
             chain.doFilter(request, response);
         } finally {
             ctx.dispose();
         }
-    }
-
-    @Override
-    public void destroy() {
     }
 
 }

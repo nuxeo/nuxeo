@@ -1,4 +1,4 @@
-/* 
+/*
  * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.webengine.jaxrs.context;
+package org.nuxeo.ecm.platform.web.common;
 
 import javax.servlet.http.HttpServletRequest;
 
