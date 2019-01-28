@@ -75,6 +75,27 @@ public interface DownloadService {
 
     String TRANSIENT_STORE_STORE_NAME = "download";
 
+    /**
+     * The extended info containing the rendition name.
+     *
+     * @since 11.1
+     */
+    String EXTENDED_INFO_RENDITION = "rendition";
+
+    /**
+     * Internal request attribute recording the reason to use for the download.
+     *
+     * @since 11.1
+     */
+    String REQUEST_ATTR_DOWNLOAD_REASON = "nuxeo.download.reason";
+
+    /**
+     * Internal request attribute recording the rendition triggering the download.
+     *
+     * @since 11.1
+     */
+    String REQUEST_ATTR_DOWNLOAD_RENDITION = "nuxeo.download.rendition";
+
     public static class ByteRange {
 
         private final long start;
