@@ -296,8 +296,15 @@ public class LogEntryProvider implements BaseLogEntryProvider {
                     .append(leftName)
                     .append(" ")
                     .append(toString(predicate.operator))
-                    .append(" :")
-                    .append(leftName);
+                    .append(" ");
+            if (predicate.operator == Operator.IN) {
+                queryStr.append("("); // parentheses needed in old HQL for IN
+            }
+            queryStr.append(":");
+            queryStr.append(leftName);
+            if (predicate.operator == Operator.IN) {
+                queryStr.append(")");
+            }
         }
 
         // add order clauses
