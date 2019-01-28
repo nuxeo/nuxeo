@@ -78,32 +78,19 @@ public class LatencyMonitorComputation extends LatencyTrackerComputation {
     }
 
     @Override
-    public void processTimer(ComputationContext context, String key, long timestamp) {
-        if (remaining == 0) {
-            debug("Exiting after " + count + " captures");
-            context.askForTermination();
-            return;
+    protected void processLatencies(ComputationContext context, LogPartitionGroup logGroup, List<Latency> latencies) {
+        Latency groupLatency = Latency.of(latencies);
+        publishMetrics(groupLatency, String.format("%s%s.%s.all.", basePrefix, logGroup.group, logGroup.name));
+        for (int partition = 0; partition < latencies.size(); partition++) {
+            publishMetrics(latencies.get(partition),
+                    String.format("%s%s.%s.p%02d.", basePrefix, logGroup.group, logGroup.name, partition));
         }
-        debug(String.format("Monitor latency %d/%d", count - remaining, count));
-        for (LogPartitionGroup logGroup : logGroups) {
-            List<Latency> latencies = getLatenciesForPartition(logGroup, codec);
-            if (latencies.isEmpty()) {
-                continue;
-            }
-            Latency groupLatency = Latency.of(latencies);
-            publishMetrics(groupLatency, String.format("%s%s.%s.all.", basePrefix, logGroup.group, logGroup.name));
-            for (int partition = 0; partition < latencies.size(); partition++) {
-                publishMetrics(latencies.get(partition),
-                        String.format("%s%s.%s.p%02d.", basePrefix, logGroup.group, logGroup.name, partition));
-            }
-        }
-        context.askForCheckpoint();
-        context.setTimer("monitor", System.currentTimeMillis() + intervalMs);
-        remaining--;
     }
 
-    private void publishMetrics(Latency latency, String prefix) {
-        debug(latency.toString());
+    protected void publishMetrics(Latency latency, String prefix) {
+        if (verbose) {
+            log.info(latency.toString());
+        }
         // upper is the time when the latency has been measured
         long metricTime = latency.upper() / 1000;
         try {
