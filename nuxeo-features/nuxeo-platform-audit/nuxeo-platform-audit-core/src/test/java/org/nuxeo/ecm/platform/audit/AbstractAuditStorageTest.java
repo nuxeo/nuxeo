@@ -157,4 +157,14 @@ public abstract class AbstractAuditStorageTest {
                 Predicates.startsWith(LOG_DOC_PATH, startsWith)));
         assertEquals(eventsCount, logs.size());
     }
+
+    @Test
+    public void testIn() throws Exception {
+        setUpTestData();
+        AuditQueryBuilder builder = (AuditQueryBuilder) new AuditQueryBuilder().predicates(
+                Predicates.in(LOG_EVENT_ID, Arrays.asList(ID_FOR_AUDIT_STORAGE_TESTS, "no-such-event-id")));
+        List<LogEntry> list = auditBackend.queryLogs(builder);
+        assertEquals(NUM_OF_EVENTS, list.size());
+    }
+
 }
