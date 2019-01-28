@@ -20,6 +20,10 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.rendition;
 
+import static org.nuxeo.ecm.core.io.download.DownloadService.REQUEST_ATTR_DOWNLOAD_REASON;
+import static org.nuxeo.ecm.core.io.download.DownloadService.REQUEST_ATTR_DOWNLOAD_RENDITION;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
@@ -38,6 +42,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "rendition")
 public class RenditionObject extends DefaultObject {
+
+    @Context
+    protected HttpServletRequest servletRequest;
 
     protected String renditionName;
 
@@ -74,6 +81,8 @@ public class RenditionObject extends DefaultObject {
             throw new WebResourceNotFoundException(
                     String.format("No Blob was found for rendition '%s'", renditionName));
         }
+        servletRequest.setAttribute(REQUEST_ATTR_DOWNLOAD_REASON, "rendition");
+        servletRequest.setAttribute(REQUEST_ATTR_DOWNLOAD_RENDITION, renditionName);
         return blob;
     }
 }
