@@ -452,6 +452,16 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline,
             Consumer<ByteRange> blobTransferer) throws IOException {
         Objects.requireNonNull(blob);
+        // check reason and rendition from request attributes
+        String requestReason = (String) request.getAttribute(REQUEST_ATTR_DOWNLOAD_REASON);
+        if (requestReason != null) {
+            reason = requestReason;
+        }
+        String requestRendition = (String) request.getAttribute(REQUEST_ATTR_DOWNLOAD_RENDITION);
+        if (requestRendition != null) {
+            extendedInfos = extendedInfos == null ? new HashMap<>() : new HashMap<>(extendedInfos);
+            extendedInfos.put(EXTENDED_INFO_RENDITION, requestRendition);
+        }
         // check blob permissions
         if (!checkPermission(doc, xpath, blob, reason, extendedInfos)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Permission denied");
@@ -687,7 +697,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         context.put("Blob", blob);
         context.put("Reason", reason);
         context.put("Infos", ei);
-        context.put("Rendition", ei.get("rendition"));
+        context.put("Rendition", ei.get(EXTENDED_INFO_RENDITION));
         context.put("CurrentUser", currentUser);
         for (DownloadPermissionDescriptor descriptor : descriptors) {
             ScriptEngine engine = scriptEngineManager.getEngineByName(descriptor.getScriptLanguage());

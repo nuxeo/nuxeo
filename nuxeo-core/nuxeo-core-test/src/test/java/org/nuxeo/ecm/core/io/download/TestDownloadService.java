@@ -34,6 +34,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.nuxeo.ecm.core.io.download.DownloadService.EXTENDED_INFO_RENDITION;
+import static org.nuxeo.ecm.core.io.download.DownloadService.REQUEST_ATTR_DOWNLOAD_REASON;
+import static org.nuxeo.ecm.core.io.download.DownloadService.REQUEST_ATTR_DOWNLOAD_RENDITION;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -229,6 +232,16 @@ public class TestDownloadService {
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-permission.xml")
     public void testDownloadPermission() throws Exception {
+        doTestDownloadPermission(false);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-permission.xml")
+    public void testDownloadPermissionWithReasonInRequestAttribute() throws Exception {
+        doTestDownloadPermission(true);
+    }
+
+    protected void doTestDownloadPermission(boolean useRequestAttribute) throws Exception {
         // blob to download
         String blobValue = "Hello World";
         Blob blob = Blobs.createBlob(blobValue);
@@ -257,8 +270,19 @@ public class TestDownloadService {
         when(doc.getPropertyValue("dc:format")).thenReturn("pdf");
 
         // extended infos with rendition
-        String reason = "rendition";
-        Map<String, Serializable> extendedInfos = Collections.singletonMap("rendition", "myrendition");
+        String reason;
+        Map<String, Serializable> extendedInfos;
+        if (!useRequestAttribute) {
+            // reason/rendition passed explicitly to downloadBlob method
+            reason = "rendition";
+            extendedInfos = Collections.singletonMap(EXTENDED_INFO_RENDITION, "myrendition");
+        } else {
+            // reason/rendition passed in request attribute
+            reason = null;
+            extendedInfos = null;
+            when(request.getAttribute(REQUEST_ATTR_DOWNLOAD_REASON)).thenReturn("rendition");
+            when(request.getAttribute(REQUEST_ATTR_DOWNLOAD_RENDITION)).thenReturn("myrendition");
+        }
 
         // principal
         NuxeoPrincipal principal = new UserPrincipal("bob", Collections.singletonList("members"), false, false);
