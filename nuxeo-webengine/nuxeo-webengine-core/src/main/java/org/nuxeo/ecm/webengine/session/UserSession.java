@@ -30,8 +30,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.platform.web.common.RequestCleanupHandler;
+import org.nuxeo.ecm.platform.web.common.RequestContext;
 
 /**
  * Used to store user session. This object is cached in a the HTTP session Principal, subject and credentials are

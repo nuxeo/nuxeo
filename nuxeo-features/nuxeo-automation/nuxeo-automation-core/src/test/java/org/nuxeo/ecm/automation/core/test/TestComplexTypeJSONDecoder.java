@@ -51,7 +51,7 @@ import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.platform.web.common.RequestContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;

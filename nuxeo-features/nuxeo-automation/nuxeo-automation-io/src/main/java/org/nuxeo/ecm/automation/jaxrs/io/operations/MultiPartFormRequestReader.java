@@ -53,7 +53,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.platform.web.common.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 

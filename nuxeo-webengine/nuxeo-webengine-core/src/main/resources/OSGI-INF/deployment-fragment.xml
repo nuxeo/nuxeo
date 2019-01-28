@@ -73,7 +73,7 @@
       <display-name>RequestContextFilter</display-name>
       <filter-name>RequestContextFilter</filter-name>
       <filter-class>
-        org.nuxeo.ecm.webengine.jaxrs.context.RequestContextFilter
+        org.nuxeo.ecm.platform.web.common.RequestContextFilter
       </filter-class>
     </filter>
     <filter-mapping>
