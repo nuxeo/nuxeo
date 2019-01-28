@@ -17,6 +17,7 @@
       <sourceMimeType>application/rtf</sourceMimeType>
       <sourceMimeType>text/csv</sourceMimeType>
       <sourceMimeType>text/tsv</sourceMimeType>
+      <sourceMimeType>text/partial</sourceMimeType>
 
       <!-- Microsoft office documents -->
       <sourceMimeType>application/msword</sourceMimeType>
