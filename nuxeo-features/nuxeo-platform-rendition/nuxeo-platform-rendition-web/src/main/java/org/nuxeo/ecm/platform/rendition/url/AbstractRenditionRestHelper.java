@@ -18,6 +18,8 @@
 
 package org.nuxeo.ecm.platform.rendition.url;
 
+import static org.nuxeo.ecm.core.io.download.DownloadService.EXTENDED_INFO_RENDITION;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
@@ -114,7 +116,7 @@ public abstract class AbstractRenditionRestHelper implements Serializable {
                     request.setAttribute("inline", "true");
                 }
                 ComponentUtils.download(doc, null, rendered, rendered.getFilename(), "rendition",
-                        Collections.singletonMap("rendition", renditionName));
+                        Collections.singletonMap(EXTENDED_INFO_RENDITION, renditionName));
             } else {
                 HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
                 response.sendError(404, "Unable to find rendition " + renditionName);
