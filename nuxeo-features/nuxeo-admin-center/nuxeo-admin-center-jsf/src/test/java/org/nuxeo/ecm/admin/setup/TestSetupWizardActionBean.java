@@ -29,7 +29,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -100,7 +104,24 @@ public class TestSetupWizardActionBean {
         // WARN [ConfigurationGenerator] Parameter mail.transport.username is deprecated ...
         // WARN [ConfigurationGenerator] Missing value for nuxeo.db.type, using default
         capturedLog.assertHasEvent();
-        assertEquals(6, capturedLog.getCaughtEvents().size());
+
+        String[] expectedFixedEvents = {
+            "Unknown server.",
+            "Server will be considered as not configurable.",
+            "Parameter mail.transport.username is deprecated - please use mail.transport.user instead",
+            "Parameter mail.transport.username is deprecated - please use mail.transport.user instead",
+            "Missing value for nuxeo.db.type, using default"
+        };
+        List<String> expectedFixedIntersect = Arrays.asList(expectedFixedEvents).stream()
+                                                                                .filter(capturedLog.getCaughtEventMessages()::contains)
+                                                                                .collect(Collectors.toList());
+        assertEquals("Unexpected number of fixed error messages", expectedFixedEvents.length, expectedFixedIntersect.size());
+
+        Pattern expectedEventRegexPattern = Pattern.compile("Template 'oldchange' not found with relative or absolute path (.*). Check your nuxeo.templates parameter, and nuxeo.template.includes for included files.");
+        capturedLog.getCaughtEventMessages().stream()
+                                            .filter(expectedEventRegexPattern.asPredicate())
+                                            .findFirst()
+                                            .orElseThrow(() -> new AssertionError("Variable error message not found"));
     }
 
     @After
