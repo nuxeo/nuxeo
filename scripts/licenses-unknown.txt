@@ -37,7 +37,6 @@
      (CDDL 1.0 + GPL 2) jsr181-api (javax.jws:jsr181-api:1.0-MR1 - no url defined)
      (CDDL 1.1 + GPL 2 CPE) jstl (javax.servlet:jstl:1.1.2 - no url defined)
      (LGPL 3) jxl (net.sourceforge.jexcelapi:jxl:2.6.12-NX1 - no url defined)
-     (AL 2.0) marklogic-xcc (com.marklogic:marklogic-xcc:8.0.5 - no url defined)
      (AL 2.0) not-yet-commons-ssl (org.apache.commons:not-yet-commons-ssl:0.3.7 - no url defined)
      (AL 2.0) org.apache.tools.ant (org.apache.ant:ant:1.7.0 - http://ant.apache.org/ant/)
      (AL 2.0) org.osgi.compendium (org.osgi:org.osgi.compendium:4.2.0 - no url defined)

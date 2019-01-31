@@ -130,10 +130,6 @@ public class TestSQLRepositoryProperties {
         doc = session.createDocument(doc);
     }
 
-    protected boolean isDBSMarkLogic() {
-        return coreFeature.getStorageConfiguration().isDBSMarkLogic();
-    }
-
     protected CloseableCoreSession openSessionAs(String username) {
         return CoreInstance.openCoreSession(session.getRepositoryName(), username);
     }
@@ -277,7 +273,6 @@ public class TestSQLRepositoryProperties {
 
     @Test
     public void testArrayWithNullFirst() {
-        assumeTrue("MarkLogic repository doesn't handle null values", !isDBSMarkLogic());
         assertNull(doc.getPropertyValue("tp:stringArray"));
         String[] values = { null, "bar" };
         doc.setPropertyValue("tp:stringArray", values);
@@ -291,7 +286,6 @@ public class TestSQLRepositoryProperties {
 
     @Test
     public void testListWithNullFirst() {
-        assumeTrue("MarkLogic repository doesn't handle null values", !isDBSMarkLogic());
         doc = session.createDocumentModel("/", "doc2", "MyDocType");
         doc = session.createDocument(doc);
         // this tests on a property that is internally a list, not an array (yes we still have those!)

@@ -47,7 +47,6 @@ The `vcstests.xml` inherits the properties initialization from `nuxeo-ftest.xml`
 - `nuxeo.db.host` => `nuxeo.test.vcs.server`
 - `nuxeo.db.port` => `nuxeo.test.vcs.port`
 - `nuxeo.mongodb.server` => `nuxeo.test.mongodb.server`
-- `nuxeo.marklogic.host` => `nuxeo.test.marklogic.host`
 
 See https://github.com/nuxeo/tools-nuxeo-ftest#java-parameters for the conventions implemented in `org.nuxeo:nuxeo-ftest`. Roughly here is the logic:
 

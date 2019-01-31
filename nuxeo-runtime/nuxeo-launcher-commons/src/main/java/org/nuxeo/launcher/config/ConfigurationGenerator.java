@@ -23,6 +23,7 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -54,6 +55,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -167,7 +169,7 @@ public class ConfigurationGenerator {
     public static final List<String> DB_LIST = asList("default", "mongodb", "postgresql", "oracle", "mysql", "mariadb",
             "mssql", "db2");
 
-    public static final List<String> DB_SECONDARY_LIST = asList("none", "marklogic");
+    public static final List<String> DB_SECONDARY_LIST = singletonList("none");
 
     public static final List<String> DB_EXCLUDE_CHECK_LIST = asList("default", "none", "mongodb");
 

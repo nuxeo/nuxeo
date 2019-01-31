@@ -237,13 +237,6 @@
 </suppress>
 <suppress>
    <notes><![CDATA[
-   file name: marklogic-xcc-8.0.5.jar (MarkLogic not included in Nuxeo)
-   ]]></notes>
-   <gav regex="true">^com\.marklogic:marklogic-xcc:.*$</gav>
-   <cpe>cpe:/a:marklogic:marklogic</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
    file name: quartz-mongodb-2.0.0-NX2.jar (MongoDB not included in Nuxeo)
    ]]></notes>
    <gav regex="true">^com\.novemberain:quartz-mongodb:.*$</gav>

@@ -147,9 +147,9 @@ and browse the child Maven modules of \$PARENT_MODULES directories.\n
 \t-e\tFail on error (default is false).
 \t-q\tQuiet mode (default is verbose).
 \t--\tOptional separator between the options and the instructions which may start with a dash.
-\tPARENT_MODULES Environment variable. Defaults to 'addons addons-core' if not set.
+\tPARENT_MODULES Environment variable. Defaults to 'addons' if not set.
 \tLIST_<parent module> Environment variable that can be set to restrict the children modules to a fixed list. \
-For instance: LIST_ADDONS_CORE=\"nuxeo-core-storage-marklogic\" or LIST_ADDONS=\"nuxeo-shell nuxeo-quota\"."
+For instance: LIST_ADDONS=\"nuxeo-shell nuxeo-quota\"."
       return
       ;;
     esac
@@ -158,7 +158,7 @@ For instance: LIST_ADDONS_CORE=\"nuxeo-core-storage-marklogic\" or LIST_ADDONS=\
   [ "$1" = "--" ] && shift
   local git_args=$@
 
-  local parent_modules=${PARENT_MODULES:-"addons addons-core"}
+  local parent_modules=${PARENT_MODULES:-"addons"}
 
   function git_command {
     if [ -e .git ]; then
@@ -212,7 +212,7 @@ shr() {
     case "$opt" in
     q) quiet=true
       ;;
-    a) parent_modules=${PARENT_MODULES:-"addons addons-core"}
+    a) parent_modules=${PARENT_MODULES:-"addons"}
       ;;
     e) failonerror=true
       ;;
@@ -224,9 +224,9 @@ Recursively executes the given Shell command on the current and its direct child
 \t-e\tFail on error (default is false).
 \t-q\tQuiet mode (default is verbose).
 \t--\tOptional separator between the options and the instructions which may start with a dash.
-\tPARENT_MODULES Environment variable. Defaults to 'addons addons-core' if not set.
+\tPARENT_MODULES Environment variable. Defaults to 'addons' if not set.
 \tLIST_<parent module> Environment variable that can be set to restrict the children modules to a fixed list. \
-For instance: LIST_ADDONS_CORE=\"nuxeo-core-storage-marklogic\" or LIST_ADDONS=\"nuxeo-shell nuxeo-quota\"."
+For instance:  LIST_ADDONS=\"nuxeo-shell nuxeo-quota\"."
       return
       ;;
     esac

@@ -65,8 +65,6 @@ public class StorageConfiguration {
 
     public static final String CORE_MONGODB = "mongodb";
 
-    public static final String CORE_MARKLOGIC = "marklogic";
-
     public static final String DEFAULT_CORE = CORE_VCS;
 
     private static final String MONGODB_SERVER_PROPERTY = "nuxeo.test.mongodb.server";
@@ -222,10 +220,6 @@ public class StorageConfiguration {
 
     public boolean isDBSExternal() {
         return dbsHelper != null;
-    }
-
-    public boolean isDBSMarkLogic() {
-        return isDBS && CORE_MARKLOGIC.equals(coreType);
     }
 
     public String getRepositoryName() {

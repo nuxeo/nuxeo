@@ -115,7 +115,7 @@ class Repository(object):
         if not self.modules and self.is_nuxeoecm:
             self.modules = self.retrieve_modules(self.basedir)
         # First level
-        addons = ["addons", "addons-core"]
+        addons = ["addons"]
         for module in self.modules:
             function(module)
             # Second level - addons
