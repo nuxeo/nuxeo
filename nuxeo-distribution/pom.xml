@@ -68,13 +68,6 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.nuxeo</groupId>
-        <artifactId>nuxeo-addons-core-parent</artifactId>
-        <version>${nuxeo.addons.core.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-nxr-server</artifactId>
         <version>${nuxeo.distribution.version}</version>

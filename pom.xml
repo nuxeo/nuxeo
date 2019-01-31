@@ -116,7 +116,6 @@
     <nuxeo.dm.version>11.1-SNAPSHOT</nuxeo.dm.version>
     <nuxeo.webengine.version>11.1-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.features.version>11.1-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.addons.core.version>11.1-SNAPSHOT</nuxeo.addons.core.version>
 
     <nuxeo.connect.client.version>1.7.6-SNAPSHOT</nuxeo.connect.client.version>
     <!-- nuxeo-distribution-tools is still used as a dependency -->
@@ -4826,12 +4825,6 @@
       </dependency>
 
       <dependency>
-        <groupId>com.marklogic</groupId>
-        <artifactId>marklogic-xcc</artifactId>
-        <version>8.0.5</version>
-      </dependency>
-
-      <dependency>
         <groupId>com.duosecurity</groupId>
         <artifactId>com-duosecurity-java-client</artifactId>
         <version>1.0.0</version>
@@ -5125,11 +5118,6 @@
             <nuxeo.test.core>${nuxeo.test.core}</nuxeo.test.core>
             <nuxeo.test.mongodb.server>${nuxeo.test.mongodb.server}</nuxeo.test.mongodb.server>
             <nuxeo.test.mongodb.dbname>${nuxeo.test.mongodb.dbname}</nuxeo.test.mongodb.dbname>
-            <nuxeo.test.marklogic.host>${nuxeo.test.marklogic.host}</nuxeo.test.marklogic.host>
-            <nuxeo.test.marklogic.port>${nuxeo.test.marklogic.port}</nuxeo.test.marklogic.port>
-            <nuxeo.test.marklogic.dbname>${nuxeo.test.marklogic.dbname}</nuxeo.test.marklogic.dbname>
-            <nuxeo.test.marklogic.user>${nuxeo.test.marklogic.user}</nuxeo.test.marklogic.user>
-            <nuxeo.test.marklogic.password>${nuxeo.test.marklogic.password}</nuxeo.test.marklogic.password>
           </systemPropertyVariables>
           <includes>
             <include>**/Test*.java</include>
@@ -6846,14 +6834,6 @@
       </properties>
     </profile>
     <profile>
-      <id>marklogic</id>
-      <properties>
-        <nuxeo.test.core>marklogic</nuxeo.test.core>
-        <nuxeo.marklogic.host.default>localhost</nuxeo.marklogic.host.default>
-        <nuxeo.marklogic.port.default>8010</nuxeo.marklogic.port.default>
-      </properties>
-    </profile>
-    <profile>
       <id>kafka</id>
       <build>
         <plugins>
@@ -6917,7 +6897,6 @@
     <profile>
       <id>addons</id>
       <modules>
-        <module>addons-core</module>
         <module>addons</module>
       </modules>
     </profile>

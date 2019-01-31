@@ -220,42 +220,6 @@
     </dependency>
   </dependencies>
 
-  <profiles>
-    <profile>
-      <!-- This profile is used to load dependency mangement for external connectors -->
-      <id>addons</id>
-      <dependencyManagement>
-        <dependencies>
-          <dependency>
-            <groupId>org.nuxeo</groupId>
-            <artifactId>nuxeo-addons-core-parent</artifactId>
-            <version>${nuxeo.addons.core.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-          </dependency>
-        </dependencies>
-      </dependencyManagement>
-    </profile>
-    <profile>
-      <!-- This profile is used to build and load marklogic connector as backend for whole Platform tests -->
-      <!-- See StorageConfiguration#initExternal for instantiation by reflection -->
-      <id>marklogic</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.nuxeo.ecm.core</groupId>
-          <artifactId>nuxeo-core-storage-marklogic</artifactId>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.nuxeo.ecm.core</groupId>
-          <artifactId>nuxeo-core-storage-marklogic</artifactId>
-          <type>test-jar</type>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
-
   <build>
     <plugins>
       <plugin>
