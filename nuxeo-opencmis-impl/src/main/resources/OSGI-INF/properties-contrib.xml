@@ -12,7 +12,7 @@
           the CMIS specification and use customized CMISQL. It allows multiple CONTAINS in CMISQL, contrary to the
           specification 1.1, section 2.1.14.2.4.4, where at most one CONTAINS() function must be included in a single
           query statement. Currently, JOIN predicate is not supported in such mode. This relax mode must NOT be used
-          with DBS (Document-Based Storage), like MongoDB or MarkLogic.
+          with DBS (Document-Based Storage), like MongoDB.
         </li>
         <li>
           "org.nuxeo.cmis.errorOnCancelCheckOutOfDraftVersion":
