@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<document xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ecm__id xsi:type="xs:string">1b783a64-8789-4b8f-8fbc-4d25f5f6d4f4</ecm__id>
-  <ecm__primaryType xsi:type="xs:string">Workspace</ecm__primaryType>
-  <ecm__name xsi:type="xs:string">Bench_Gatling</ecm__name>
-  <dc__description xsi:type="xs:string">Gatling bench folder</dc__description>
-</document>
