@@ -478,6 +478,16 @@
       </component-class>
     </component>
 
+    <!-- User and Group -->
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.directory.UIUserAndGroupSelectItems
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.directory.UIUserAndGroupSelectItems
+      </component-class>
+    </component>
+
     <!-- chain selects -->
     <component>
       <component-type>nxdirectory.chainSelectListbox</component-type>
