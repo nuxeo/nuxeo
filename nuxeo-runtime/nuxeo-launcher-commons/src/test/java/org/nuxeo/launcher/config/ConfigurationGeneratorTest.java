@@ -36,13 +36,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -529,9 +525,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testCheckEncoding() throws Exception {
-        Path tempFile = Files.createTempFile("", "",
-                PosixFilePermissions.asFileAttribute(new HashSet<>(Arrays.asList(PosixFilePermission.OWNER_EXECUTE,
-                        PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE))));
+        Path tempFile = Files.createTempFile("", "");
         // Test UTF8
         Files.write(tempFile, "nuxéo".getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
         try {

@@ -5,8 +5,8 @@
     <!-- ================================= -->
     <!-- Preserve messages in a local file -->
     <!-- ================================= -->
-    <RollingFile name="FILE" fileName="${sys:nuxeo.log.dir}/server.log"
-                 filePattern="${sys:nuxeo.log.dir}/server-%d{yyyy-MM-dd}.log.gz" append="true">
+    <RollingFile name="FILE" fileName="server.log"
+                 filePattern="server-%d{yyyy-MM-dd}.log.gz" append="true">
       <PatternLayout pattern="%d{ISO8601} %-5p [%t] [%c] %m%n" />
       <CronTriggeringPolicy schedule="0 0 0 * * ?" evaluateOnStartup="true" /> <!-- Rollover at midnight every day -->
       <DefaultRolloverStrategy />
@@ -15,8 +15,8 @@
     <!-- ============================= -->
     <!-- Gather errors in a local file -->
     <!-- ============================= -->
-    <RollingFile name="ERROR-FILE" fileName="${sys:nuxeo.log.dir}/nuxeo-error.log"
-                 filePattern="${sys:nuxeo.log.dir}/nuxeo-error-%d{yyyy-MM-dd}.log.gz" append="true">
+    <RollingFile name="ERROR-FILE" fileName="nuxeo-error.log"
+                 filePattern="nuxeo-error-%d{yyyy-MM-dd}.log.gz" append="true">
       <PatternLayout pattern="%d{ISO8601} %-5p [%t] [%c] %m%n" />
       <CronTriggeringPolicy schedule="0 0 0 * * ?" evaluateOnStartup="true" /> <!-- Rollover at midnight every day -->
       <DefaultRolloverStrategy />
@@ -25,8 +25,8 @@
     <!-- ============================= -->
     <!-- Gather stderr in a local file -->
     <!-- ============================= -->
-    <RollingFile name="STDERR-FILE" fileName="${sys:nuxeo.log.dir}/stderr.log"
-                 filePattern="${sys:nuxeo.log.dir}/stderr-%d{yyyy-MM-dd}.log.gz" append="true">
+    <RollingFile name="STDERR-FILE" fileName="stderr.log"
+                 filePattern="stderr-%d{yyyy-MM-dd}.log.gz" append="true">
       <PatternLayout pattern="%d{ISO8601} %-5p [%t] [%c] %m%n" />
       <CronTriggeringPolicy schedule="0 0 0 * * ?" evaluateOnStartup="true" /> <!-- Rollover at midnight every day -->
       <DefaultRolloverStrategy />
@@ -40,11 +40,11 @@
       <PatternLayout pattern="%d{ISO8601} %-5p [%c{1}] %m%n" />
     </Console>
 
-    <File name="CLASSLOADER" fileName="${sys:nuxeo.log.dir}/classloader.log" append="false">
+    <File name="CLASSLOADER" fileName="classloader.log" append="false">
       <PatternLayout pattern="%d{ISO8601} %-5p [%t] [%c] %m%n" />
     </File>
 
-    <File name="TOMCAT" fileName="${sys:nuxeo.log.dir}/tomcat.log" append="false">
+    <File name="TOMCAT" fileName="tomcat.log" append="false">
       <PatternLayout pattern="%d{ISO8601} %-5p [%t] [%c] %m%n" />
     </File>
   </Appenders>

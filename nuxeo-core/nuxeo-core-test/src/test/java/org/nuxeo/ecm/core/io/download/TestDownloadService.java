@@ -81,6 +81,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -449,7 +450,8 @@ public class TestDownloadService {
     }
 
     @Test
-    public void testTransientCleanup() throws IOException {
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
+    public void testTransientCleanup() throws IOException, InterruptedException {
         // transfert temporary file into a blob
         Path path = Files.createTempFile("pfouh", "pfouh");
         FileBlob blob = new FileBlob("pfouh");

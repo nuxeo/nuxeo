@@ -121,8 +121,9 @@ public class BackingServiceConfigurator {
             int delay = Integer.parseInt(
                     userConfig.getProperty(PARAM_RETRY_POLICY_DELAY_IN_MS, PARAM_POLICY_DEFAULT_DELAY_IN_MS));
 
-            retryPolicy = retryPolicy.retryOn(ConfigurationException.class).withMaxRetries(maxRetries).withDelay(delay,
-                    TimeUnit.MILLISECONDS);
+            retryPolicy = retryPolicy.retryOn(ConfigurationException.class)
+                                     .withMaxRetries(maxRetries)
+                                     .withDelay(delay, TimeUnit.MILLISECONDS);
         }
         return retryPolicy;
     }
@@ -166,7 +167,8 @@ public class BackingServiceConfigurator {
     String getClasspathForTemplate(String template) {
         String classPath = configurationGenerator.getUserConfig().getProperty(template + PARAM_CHECK_CLASSPATH_SUFFIX);
         TextTemplate templateParser = new TextTemplate(configurationGenerator.getUserConfig());
-        return templateParser.processText(classPath);
+        String result = templateParser.processText(classPath);
+        return result == null ? null : result.replace("/", File.separator);
     }
 
     /**
@@ -174,20 +176,15 @@ public class BackingServiceConfigurator {
      *
      * @since 9.2
      */
-    protected Optional<URLClassLoader> getClassLoaderForTemplate(File templateDir, String classPath)
+    protected Optional<URLClassLoader> getClassLoaderForTemplate(File templateDir, String classPathEntry)
             throws ConfigurationException, IOException {
-        if (StringUtils.isBlank(classPath)) {
+        if (StringUtils.isBlank(classPathEntry)) {
             return Optional.empty();
         }
 
-        String[] classpathEntries = classPath.split(":");
-
         List<URL> urlsList = new ArrayList<>();
 
-        List<File> files = new ArrayList<>();
-        for (String entry : classpathEntries) {
-            files.addAll(getJarsFromClasspathEntry(templateDir.toPath(), entry));
-        }
+        Collection<File> files = getJarsFromClasspathEntry(templateDir.toPath(), classPathEntry);
 
         if (!files.isEmpty()) {
             for (File file : files) {
@@ -231,6 +228,8 @@ public class BackingServiceConfigurator {
         }
 
         String dirName = path.substring(0, slashIndex);
+        // ugly trick mandatory to let the PathMatcher match on windows
+        path = path.replaceAll("\\\\", "\\\\\\\\");
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + path);
 
         File parentDir = new File(dirName);

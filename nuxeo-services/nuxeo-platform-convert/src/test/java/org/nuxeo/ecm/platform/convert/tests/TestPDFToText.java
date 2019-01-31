@@ -56,7 +56,8 @@ public class TestPDFToText extends BaseConverterTest {
         assertNotNull(blob);
         assertEquals("text/plain", blob.getMimeType());
         assertTrue(blob.getLength() > 0);
-        assertEquals("Hello from a PDF Document!\n\n\f", blob.getString());
+        String newline = System.getProperty("line.separator");
+        assertEquals("Hello from a PDF Document!" + newline + newline + "\f", blob.getString());
     }
 
 }

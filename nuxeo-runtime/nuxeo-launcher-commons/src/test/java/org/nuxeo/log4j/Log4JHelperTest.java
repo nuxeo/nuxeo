@@ -54,11 +54,11 @@ public class Log4JHelperTest {
         List<String> fileAppenderNames = Log4JHelper.getFileAppendersFileNames(log4jFile);
         fileAppenderNames.sort(naturalOrder());
         assertEquals(5, fileAppenderNames.size());
-        assertEquals("${sys:nuxeo.log.dir}/classloader.log", fileAppenderNames.get(0));
-        assertEquals("${sys:nuxeo.log.dir}/nuxeo-error.log", fileAppenderNames.get(1));
-        assertEquals("${sys:nuxeo.log.dir}/server.log", fileAppenderNames.get(2));
-        assertEquals("${sys:nuxeo.log.dir}/stderr.log", fileAppenderNames.get(3));
-        assertEquals("${sys:nuxeo.log.dir}/tomcat.log", fileAppenderNames.get(4));
+        assertEquals("classloader.log", fileAppenderNames.get(0));
+        assertEquals("nuxeo-error.log", fileAppenderNames.get(1));
+        assertEquals("server.log", fileAppenderNames.get(2));
+        assertEquals("stderr.log", fileAppenderNames.get(3));
+        assertEquals("tomcat.log", fileAppenderNames.get(4));
     }
 
 }
