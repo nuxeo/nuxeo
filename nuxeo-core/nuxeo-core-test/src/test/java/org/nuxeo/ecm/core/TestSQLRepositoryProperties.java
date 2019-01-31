@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,10 @@
  */
 package org.nuxeo.ecm.core;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -113,7 +115,7 @@ public class TestSQLRepositoryProperties {
     DocumentModel doc;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // set container to temp directory here in case that depends on the OS
         // or machine configuration and add funny characters to avoid problems
         // due to xml parsing
@@ -168,7 +170,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testUnknownProperty() throws Exception {
+    public void testUnknownProperty() {
         try {
             doc.getPropertyValue("nosuchprop");
             fail("Should throw PropertyNotFoundException");
@@ -221,12 +223,12 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testStringArray() throws Exception {
+    public void testStringArray() {
         assertNull(doc.getPropertyValue("tp:stringArray"));
         String[] values = { "foo", "bar" };
         doc.setPropertyValue("tp:stringArray", values);
         doc = session.saveDocument(doc);
-        assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("tp:stringArray")));
+        assertArrayEquals(values, (Object[]) doc.getPropertyValue("tp:stringArray"));
         // set back to null
         doc.setPropertyValue("tp:stringArray", null);
         doc = session.saveDocument(doc);
@@ -238,14 +240,14 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testDateArray() throws Exception {
+    public void testDateArray() {
         assertNull(doc.getPropertyValue("tp:dateArray"));
         Calendar cal = Calendar.getInstance();
         cal.set(2008, 6, 10);
         Calendar[] values = { cal };
         doc.setPropertyValue("tp:dateArray", values);
         doc = session.saveDocument(doc);
-        assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("tp:dateArray")));
+        assertArrayEquals(values, (Object[]) doc.getPropertyValue("tp:dateArray"));
         // set back to null
         doc.setPropertyValue("tp:dateArray", null);
         doc = session.saveDocument(doc);
@@ -257,12 +259,12 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testIntArray() throws Exception {
+    public void testIntArray() {
         assertNull(doc.getPropertyValue("tp:intArray"));
         Long[] values = { 1L, 2L, 3L };
         doc.setPropertyValue("tp:intArray", values);
         doc = session.saveDocument(doc);
-        assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("tp:intArray")));
+        assertArrayEquals(values, (Object[]) doc.getPropertyValue("tp:intArray"));
         // set back to null
         doc.setPropertyValue("tp:intArray", null);
         doc = session.saveDocument(doc);
@@ -274,7 +276,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testArrayWithNullFirst() throws Exception {
+    public void testArrayWithNullFirst() {
         assumeTrue("MarkLogic repository doesn't handle null values", !isDBSMarkLogic());
         assertNull(doc.getPropertyValue("tp:stringArray"));
         String[] values = { null, "bar" };
@@ -284,11 +286,11 @@ public class TestSQLRepositoryProperties {
         nextTransaction();
         session = coreFeature.reopenCoreSession();
         doc = session.getDocument(doc.getRef());
-        assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("tp:stringArray")));
+        assertArrayEquals(values, (Object[]) doc.getPropertyValue("tp:stringArray"));
     }
 
     @Test
-    public void testListWithNullFirst() throws Exception {
+    public void testListWithNullFirst() {
         assumeTrue("MarkLogic repository doesn't handle null values", !isDBSMarkLogic());
         doc = session.createDocumentModel("/", "doc2", "MyDocType");
         doc = session.createDocument(doc);
@@ -305,7 +307,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testComplexList() throws Exception {
+    public void testComplexList() {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:complexList") instanceof List);
         assertEquals(0, ((List) doc.getPropertyValue("tp:complexList")).size());
@@ -327,7 +329,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testComplexListChange() throws Exception {
+    public void testComplexListChange() {
         ArrayList<Map<String, Serializable>> values = new ArrayList<>();
         Map<String, Serializable> item1 = new HashMap<>();
         Map<String, Serializable> item2 = new HashMap<>();
@@ -410,7 +412,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testComplexListChangeAfterClear() throws Exception {
+    public void testComplexListChangeAfterClear() {
         // complex list with one element
         doc.setPropertyValue("tp:complexList", (Serializable) Arrays.asList(Collections.singletonMap("string", "foo")));
         doc = session.saveDocument(doc);
@@ -421,14 +423,14 @@ public class TestSQLRepositoryProperties {
         doc = session.saveDocument(doc);
         // don't save the session here
         // re-add one element (-> delete + insert in database)
-        doc.setPropertyValue("tp:complexList", (Serializable) Arrays.asList(Collections.singletonMap("string", "bar")));
+        doc.setPropertyValue("tp:complexList", (Serializable) Collections.singletonList(Collections.singletonMap("string", "bar")));
         doc = session.saveDocument(doc);
         session.save(); // save succeeds, no unique constraint problem
     }
 
     // DBS-only test for in-db data corruption(?) (NXP-21278)
     @Test
-    public void testComplexListElementNullInStorage() throws Exception {
+    public void testComplexListElementNullInStorage() {
         assumeTrue(coreFeature.getStorageConfiguration().isDBS());
 
         doc.setPropertyValue("tp:complexList",
@@ -459,7 +461,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testComplexListPropertyRemove() throws Exception {
+    public void testComplexListPropertyRemove() {
         List<Map<String, Serializable>> values = Arrays.asList( //
                 Collections.singletonMap("string", "foo"), //
                 Collections.singletonMap("string", "bar"), //
@@ -500,7 +502,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testComplexListPartialUpdate() throws Exception {
+    public void testComplexListPartialUpdate() {
         List<Map<String, Serializable>> list = Arrays.asList(Collections.singletonMap("string", "foo"));
         doc.setPropertyValue("tp:complexList", (Serializable) list);
         doc = session.saveDocument(doc);
@@ -527,9 +529,9 @@ public class TestSQLRepositoryProperties {
 
     // NXP-912
     @Test
-    public void testNewBlob() throws Exception {
+    public void testNewBlob() {
         // simple
-        Object value = null;
+        Object value;
         Field field = schemaManager.getField("tp:fileList");
         Type type = field.getType();
         Type itemType = ((ListType) type).getFieldType();
@@ -550,7 +552,7 @@ public class TestSQLRepositoryProperties {
 
     // NXP-2468
     @Test
-    public void testBlobListValue() throws Exception {
+    public void testBlobListValue() {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:fileList") instanceof List);
         assertEquals(0, ((List) doc.getPropertyValue("tp:fileList")).size());
@@ -570,7 +572,7 @@ public class TestSQLRepositoryProperties {
 
     // NXP-2301
     @Test
-    public void testSubBlobValue() throws Exception {
+    public void testSubBlobValue() {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:fileComplexList") instanceof List);
         assertEquals(0, ((List) doc.getPropertyValue("tp:fileComplexList")).size());
@@ -592,12 +594,12 @@ public class TestSQLRepositoryProperties {
         assertEquals("My filename", actualItem.get("filename"));
         assertTrue(actualItem.get("blob") instanceof Blob);
 
-        Object actualBlob = doc.getProperty("tp:fileComplexList/0/blob").getValue(Blob.class);
-        assertTrue(actualBlob instanceof Blob);
+        Blob actualBlob = doc.getProperty("tp:fileComplexList/0/blob").getValue(Blob.class);
+        assertNotNull(actualBlob);
     }
 
     @Test
-    public void testComplexParallelFetch() throws Exception {
+    public void testComplexParallelFetch() {
         DocumentModel doc2 = session.createDocumentModel("/", "doc2", "TestDocument2");
         doc2.setPropertyValue("dc:title", "doc2");
         doc2 = session.createDocument(doc2);
@@ -624,7 +626,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testComplex2() throws Exception {
+    public void testComplex2() {
         doc = session.createDocumentModel("/", "doc2", "TestDocument2");
         doc = session.createDocument(doc);
         session.save();
@@ -640,7 +642,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testComplexNotDirtyOnRead() throws Exception {
+    public void testComplexNotDirtyOnRead() {
         doc = session.createDocumentModel("/", "doc2", "TestDocument2");
         doc = session.createDocument(doc);
         session.save();
@@ -658,7 +660,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testComplexNotDirtyOnVersionRead() throws Exception {
+    public void testComplexNotDirtyOnVersionRead() {
         doc = session.createDocumentModel("/", "doc2", "TestDocument2");
         doc = session.createDocument(doc);
         DocumentRef verRef = doc.checkIn(null, null);
@@ -679,7 +681,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testComplexPropertyChain() throws Exception {
+    public void testComplexPropertyChain() {
         Property p = doc.getProperty("tp:complexChain");
         assertTrue(p.getValue() instanceof Map);
         assertEquals(2, ((Map) p.getValue()).size());
@@ -700,7 +702,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testComplexPropertySubValue() throws Exception {
+    public void testComplexPropertySubValue() {
         doc.setPropertyValue("tp:complex/string", "test");
         doc = session.saveDocument(doc);
         assertEquals("test", doc.getPropertyValue("tp:complex/string"));
@@ -737,7 +739,7 @@ public class TestSQLRepositoryProperties {
     // NXP-2318: i don't get what's supposed to be answered to these questions
     @Test
     @Ignore
-    public void testArrayOrListProperties() throws Exception {
+    public void testArrayOrListProperties() {
         Property prop = doc.getProperty("tp:stringArray");
         assertFalse(prop.isContainer());
         assertFalse(prop.isList());
@@ -884,7 +886,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testSaveComplexTwice() throws Exception {
+    public void testSaveComplexTwice() {
         testComplexList();
         doc.setPropertyValue("tp:stringArray", new String[] {}); // dirty dp
         doc = session.saveDocument(doc); // rewrites complex list again
@@ -893,7 +895,7 @@ public class TestSQLRepositoryProperties {
 
     // not many tests, logs have to be looked at to confirm behavior
     @Test
-    public void testUpdateMinimalChanges() throws Exception {
+    public void testUpdateMinimalChanges() {
         // populate some properties
         testStringArray();
         testDateArray();
@@ -911,7 +913,7 @@ public class TestSQLRepositoryProperties {
 
     // toplevel complex list
     @Test
-    public void testXPath1() throws Exception {
+    public void testXPath1() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         List<Object> files = new ArrayList<>(2);
         Map<String, Object> f = new HashMap<>();
@@ -925,7 +927,7 @@ public class TestSQLRepositoryProperties {
 
     // other complex list
     @Test
-    public void testXPath2() throws Exception {
+    public void testXPath2() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "ComplexDoc");
         HashMap<String, Object> attachedFile = new HashMap<>();
         List<Map<String, Object>> vignettes = new ArrayList<>();
@@ -944,7 +946,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testCanonicalizeXPath() throws Exception {
+    public void testCanonicalizeXPath() {
         assertEquals("foo", canonXPath("foo"));
         assertEquals("foo", canonXPath("/foo"));
         assertEquals("foo", canonXPath("//foo"));
@@ -961,7 +963,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testRestriction() throws Exception {
+    public void testRestriction() {
         doc = session.createDocumentModel("/", "doc2", "Restriction");
         doc.setPropertyValue("restr:shortstring", "foo");
         doc = session.createDocument(doc);
@@ -971,7 +973,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testPropertyIsSameAsBlob() throws Exception {
+    public void testPropertyIsSameAsBlob() {
         doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         DocumentPart part = doc.getPart("file");
@@ -1009,7 +1011,7 @@ public class TestSQLRepositoryProperties {
         // same
         assertEquals(doc2.getPropertyValue("file:content"), doc3.getPropertyValue("file:content"));
         // different
-        assertFalse(doc2.getPropertyValue("file:content").equals(doc4.getPropertyValue("file:content")));
+        assertNotEquals(doc2.getPropertyValue("file:content"), doc4.getPropertyValue("file:content"));
 
         // compare a StringBlob and a StorageBlob
         assertEquals(blob2, doc3.getPropertyValue("file:content"));
@@ -1024,14 +1026,14 @@ public class TestSQLRepositoryProperties {
         assertEquals(blob3, blob2);
 
         // compare a StringBlob with a different StringBlob
-        assertFalse(blob2.equals(blob4));
-        assertFalse(blob4.equals(blob2));
-        assertFalse(blob3.equals(blob4));
-        assertFalse(blob4.equals(blob3));
+        assertNotEquals(blob2, blob4);
+        assertNotEquals(blob4, blob2);
+        assertNotEquals(blob3, blob4);
+        assertNotEquals(blob4, blob3);
     }
 
     @Test
-    public void testPropertyDelta() throws Exception {
+    public void testPropertyDelta() {
         int base = 100;
         int delta = 123;
         doc = session.createDocumentModel("/", "doc", "MyDocType");
@@ -1088,7 +1090,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testPropertyDeltaTwice() throws Exception {
+    public void testPropertyDeltaTwice() {
         int base = 100;
         int delta = 123;
         doc = session.createDocumentModel("/", "doc", "MyDocType");
@@ -1116,7 +1118,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testPropertyDeltaWithoutSave() throws Exception {
+    public void testPropertyDeltaWithoutSave() {
         doc = session.createDocumentModel("/", "doc", "MyDocType");
         doc.setPropertyValue("my:integer", Long.valueOf(100));
         doc = session.createDocument(doc);
@@ -1139,7 +1141,7 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
-    public void testPropertyDeltaAfterNull() throws Exception {
+    public void testPropertyDeltaAfterNull() {
         doc = session.createDocumentModel("/", "doc", "MyDocType");
         doc.setPropertyValue("my:integer", Long.valueOf(0));
         doc = session.createDocument(doc);
@@ -1169,7 +1171,7 @@ public class TestSQLRepositoryProperties {
      * Checks that writing several documents using batching with some of them having Delta and some not doesn't fail.
      */
     @Test
-    public void testPropertyDeltaBatching() throws Exception {
+    public void testPropertyDeltaBatching() {
         int n = 10;
         int base = 100;
         for (int i = 0; i < n; i++) {
@@ -1221,7 +1223,7 @@ public class TestSQLRepositoryProperties {
      * Checks that even on document creation using a Delta doesn't fail.
      */
     @Test
-    public void testPropertyDeltaOnCreate() throws Exception {
+    public void testPropertyDeltaOnCreate() {
         doc = session.createDocumentModel("/", "doc", "MyDocType");
         doc.setPropertyValue("my:integer", DeltaLong.valueOf(Long.valueOf(100), 123));
         doc = session.createDocument(doc);
@@ -1234,7 +1236,7 @@ public class TestSQLRepositoryProperties {
 
     // DBS-only test for in-db data migration
     @Test
-    public void testMigrationListVsString() throws Exception {
+    public void testMigrationListVsString() {
         assumeTrue(coreFeature.getStorageConfiguration().isDBS());
 
         // create a doc
@@ -1259,7 +1261,7 @@ public class TestSQLRepositoryProperties {
     }
 
     // change data in the database to make it like we just migrated the fields from different types
-    protected void changeDoc(String id, StateDiff diff) throws Exception {
+    protected void changeDoc(String id, StateDiff diff) {
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
         Repository repository = repositoryService.getRepository(session.getRepositoryName());
         ((DBSRepository) repository).updateState(id, diff, null);
