@@ -29,6 +29,7 @@ import static org.nuxeo.ecm.core.model.DocumentModelResolver.STORE_ID_ONLY;
 import static org.nuxeo.ecm.core.model.DocumentModelResolver.STORE_PATH_ONLY;
 import static org.nuxeo.ecm.core.model.DocumentModelResolver.STORE_REPO_AND_ID;
 import static org.nuxeo.ecm.core.model.DocumentModelResolver.STORE_REPO_AND_PATH;
+import static org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver.VALIDATION_PARAMETER_KEY;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -251,6 +252,15 @@ public class TestDocumentModelResolver {
         dmrr.configure(parameters);
         assertFalse(dmrr.validate(repoAndPathRef));
         assertFalse(dmrr.validate(pathOnlyRef));
+    }
+
+    @Test
+    public void testValidateInvalidValueWhenDisablingValidation() {
+        DocumentModelResolver dmrr = new DocumentModelResolver();
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put(VALIDATION_PARAMETER_KEY, Boolean.FALSE.toString());
+        dmrr.configure(parameters);
+        assertTrue(dmrr.validate("invalid ID or REF"));
     }
 
     @Test
