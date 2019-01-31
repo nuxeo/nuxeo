@@ -454,8 +454,6 @@
             <property name="itemCount">(#{item.docCount})</property>
             <property name="layout">pageDirection</property>
             <property name="notDisplayDefaultOption">true</property>
-            <property name="itemLabel">#{nxu:userDisplayName(itemEntry.user.username, itemEntry.user.firstName, itemEntry.user.lastName)}</property>
-            <property name="directoryName">#{userManager.userDirectoryName}</property>
             <property name="moreLessLimit">6</property>
             <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
           </defaultValues>
@@ -480,7 +478,7 @@
         </properties>
       </configuration>
       <handler-class>
-        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxDirectoryAggregateWidgetTypeHandler
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyCheckboxUserAndGroupAggregateWidgetTypeHandler
       </handler-class>
     </widgetType>
 
@@ -516,8 +514,6 @@
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="notDisplayDefaultOption">true</property>
-            <property name="itemLabel">#{nxu:userDisplayName(itemEntry.user.username, itemEntry.user.firstName, itemEntry.user.lastName)}</property>
-            <property name="directoryName">#{userManager.userDirectoryName}</property>
             <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
           </defaultValues>
           <layouts mode="edit">
@@ -544,7 +540,7 @@
         </properties>
       </configuration>
       <handler-class>
-        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyListboxDirectoryAggregateWidgetTypeHandler
+        org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectManyListboxUserAndGroupAggregateWidgetTypeHandler
       </handler-class>
     </widgetType>
 
