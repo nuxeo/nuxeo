@@ -94,7 +94,7 @@ public class BackingServiceConfiguratorTest extends AbstractConfigurationTest {
     @Test
     public void canUseParametersInClasspath() throws Exception {
         configGenerator.setProperty("backing.check.classpath","${nuxeo.home}/nxserver/bundles/versioned-*.jar");
-        assertThat(bsc.getClasspathForTemplate("backing")).isEqualTo(bundles.getAbsolutePath() + "/versioned-*.jar");
+        assertThat(bsc.getClasspathForTemplate("backing")).isEqualTo(bundles.getAbsolutePath() + File.separator + "versioned-*.jar");
     }
 
     @Test
