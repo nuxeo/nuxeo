@@ -40,6 +40,7 @@
   <xs:element name="fileField" type="nxs:content" />
 
   <xs:element name="stringArrayField" type="nxs:stringArrayType" />
+  <xs:element name="selectMultiUserField" type="nxs:stringArrayType" />
   <xs:element name="selectMultiVocabularyField" type="nxs:stringArrayType" />
   <xs:element name="selectMultiVocabularyLocalizedField" type="nxs:stringArrayType" />
   <xs:element name="selectMultiVocabularyL10NField" type="nxs:stringArrayType" />
