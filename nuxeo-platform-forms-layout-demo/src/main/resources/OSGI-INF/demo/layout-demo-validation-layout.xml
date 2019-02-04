@@ -225,7 +225,7 @@
                     </labels>
                     <translated>false</translated>
                     <fields>
-                      <field>myString</field>
+                      <field></field>
                     </fields>
                   </widget>
                 </subWidgets>
