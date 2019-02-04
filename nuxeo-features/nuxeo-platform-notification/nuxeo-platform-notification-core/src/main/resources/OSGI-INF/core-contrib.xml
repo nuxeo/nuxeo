@@ -11,6 +11,9 @@
     <facet name="Notifiable">
       <schema name="notification" />
     </facet>
+    <proxies>
+      <schema name="notification" />
+    </proxies>
   </extension>
 
 
