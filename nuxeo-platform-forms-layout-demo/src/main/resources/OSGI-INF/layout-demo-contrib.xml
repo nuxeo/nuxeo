@@ -732,6 +732,36 @@
       </layouts>
     </widgetType>
 
+    <widgetType name="selectManyListboxUseryAggregate">
+      <label>Multiple user aggregate listbox</label>
+      <viewId>selectManyListboxUserAggregateWidget</viewId>
+      <category>aggregate</category>
+      <preview enabled="true" hideViewMode="true">
+        <fields>
+          <field>lds:selectMultiUserFieldd</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectManyListboxUserAggregate" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-listbox-user-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxUseryAggregate">
+      <label>Multiple user aggregate checkbox</label>
+      <viewId>selectManyCheckboxUserAggregateWidget</viewId>
+      <category>aggregate</category>
+      <preview enabled="true" hideViewMode="true">
+        <fields>
+          <field>lds:selectMultiUserFieldd</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectManyCheckboxUserAggregate" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-checkbox-user-widget.xml" />
+      </layouts>
+    </widgetType>
+
   </extension>
 
 </component>
