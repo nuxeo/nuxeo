@@ -32,6 +32,7 @@ import redis.clients.jedis.Protocol;
 @Features({ RuntimeFeature.class })
 @Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.runtime.redis")
+@Deploy("org.nuxeo.runtime.cluster")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.core.redis")
 @Deploy("org.nuxeo.ecm.core.redis.tests:redis-contribs.xml")
