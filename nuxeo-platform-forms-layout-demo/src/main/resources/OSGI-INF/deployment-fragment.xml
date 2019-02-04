@@ -317,6 +317,20 @@
       </to-view-id>
       <redirect />
     </navigation-case>
+    <navigation-case>
+      <from-outcome>selectManyCheckboxUserAggregateWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/selectManyCheckboxUserAggregate.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>selectManyListboxUserAggregateWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/selectManyListboxUserAggregate.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
 
   </extension>
 
