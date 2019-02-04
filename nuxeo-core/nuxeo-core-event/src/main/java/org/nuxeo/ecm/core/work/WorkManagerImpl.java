@@ -104,6 +104,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
      */
     public static final String SHUTDOWN_DELAY_MS_KEY = "nuxeo.work.shutdown.delay.ms";
 
+    /**
+     * @since 11.1
+     */
+    public static final String WORKMANAGER_PROCESSING_DISABLE = "nuxeo.work.processing.disable";
+
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
     // used synchronized
@@ -210,7 +215,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             throw new IllegalArgumentException("cannot activate all queues");
         }
         queuing.setActive(config.id, config.isProcessingEnabled());
-        log.info("Activated work queue {}, {}",  config.id, config);
+        log.info("Activated work queue {}, {}", config.id, config);
         // Enable metrics
         if (config.isProcessingEnabled()) {
             activateQueueMetrics(config.id);
@@ -274,6 +279,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public boolean isProcessingEnabled() {
+        if (Boolean.parseBoolean(Framework.getProperty(WORKMANAGER_PROCESSING_DISABLE, "false"))) {
+            return false;
+        }
         for (Descriptor d : getDescriptors(QUEUES_EP)) {
             if (queuing.getQueue(d.getId()).active) {
                 return true;
@@ -284,6 +292,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public boolean isProcessingEnabled(String queueId) {
+        if (Boolean.parseBoolean(Framework.getProperty(WORKMANAGER_PROCESSING_DISABLE, "false"))) {
+            return false;
+        }
         if (queueId == null) {
             return isProcessingEnabled();
         }
@@ -375,6 +386,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
                 @Override
                 public void afterStart(ComponentManager mgr, boolean isResume) {
+                    if (Boolean.parseBoolean(Framework.getProperty(WORKMANAGER_PROCESSING_DISABLE, "false"))) {
+                        log.warn("WorkManager processing has been disabled on this node");
+                        return;
+                    }
                     List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
                     for (WorkQueueDescriptor descriptor : descriptors) {
                         activateQueue(descriptor);

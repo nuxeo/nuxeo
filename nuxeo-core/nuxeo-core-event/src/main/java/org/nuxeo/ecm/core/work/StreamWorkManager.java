@@ -222,6 +222,10 @@ public class StreamWorkManager extends WorkManagerImpl {
 
         @Override
         public void afterStart(ComponentManager mgr, boolean isResume) {
+            if (Boolean.parseBoolean(Framework.getProperty(WORKMANAGER_PROCESSING_DISABLE, "false"))) {
+                log.warn("WorkManager processing has been disabled on this node");
+                return;
+            }
             streamProcessor.start();
             for (Descriptor d : getDescriptors(QUEUES_EP)) {
                 activateQueueMetrics(d.getId());
