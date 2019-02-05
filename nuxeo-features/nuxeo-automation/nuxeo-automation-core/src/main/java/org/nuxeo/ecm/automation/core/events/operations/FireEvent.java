@@ -18,17 +18,22 @@
  */
 package org.nuxeo.ecm.automation.core.events.operations;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
@@ -52,6 +57,10 @@ public class FireEvent {
     @Param(name = "name")
     protected String name;
 
+    /** @since 11.1 */
+    @Param(name = "properties", required = false)
+    protected Properties properties = new Properties();
+
     @OperationMethod
     public void run() {
         CoreSession session = ctx.getCoreSession();
@@ -73,14 +82,19 @@ public class FireEvent {
     protected void sendDocumentEvent(DocumentModel input) {
         CoreSession session = ctx.getCoreSession();
         EventContextImpl evctx = new DocumentEventContext(session, session.getPrincipal(), input);
-        Event event = evctx.newEvent(name);
-        service.fireEvent(event);
+        sendEvent(evctx);
     }
 
     protected void sendUnknownEvent(Object input) {
         CoreSession session = ctx.getCoreSession();
         EventContextImpl evctx = new EventContextImpl(session, session.getPrincipal(), input);
-        Event event = evctx.newEvent(name);
+        sendEvent(evctx);
+    }
+
+    protected void sendEvent(EventContext eventContext) {
+        Event event = eventContext.newEvent(name);
+        event.getContext().setProperties(
+                properties.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
         service.fireEvent(event);
     }
 
