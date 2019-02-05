@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.platform.rendition.Renderable;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -93,6 +94,7 @@ public class TestRenditionProvider {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void testPdfRendition() throws Exception {
         DocumentModel file = createBlobDoc("File", session);
         Renderable renderable = file.getAdapter(Renderable.class);
@@ -118,6 +120,7 @@ public class TestRenditionProvider {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void testPdfRenditionStoredFromNote() throws Exception {
         DocumentModel note = createBlobDoc("Note", session);
         Renderable renderable = note.getAdapter(Renderable.class);

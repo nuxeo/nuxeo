@@ -87,6 +87,7 @@ import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.lazy.AbstractRenditionBuilderWork;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -195,6 +196,7 @@ public class TestRenditionService {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void doPDFRendition() {
         DocumentModel file = createBlobFile();
 
@@ -231,6 +233,7 @@ public class TestRenditionService {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void doRenditionVersioning() {
         DocumentModel file = createBlobFile();
 
@@ -625,6 +628,7 @@ public class TestRenditionService {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void testRenderAProxyDocument() throws IOException {
         DocumentModel file = createBlobFile();
         DocumentRef fileRef = file.getRef();
@@ -673,6 +677,7 @@ public class TestRenditionService {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void shouldNotCreateANewVersionForACheckedInDocument() {
         DocumentModel file = createBlobFile();
 
@@ -742,6 +747,7 @@ public class TestRenditionService {
 
     @Test
     @SuppressWarnings("unchecked")
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void shouldRemoveFilesBlobsOnARendition() {
         DocumentModel fileDocument = createBlobFile();
 
@@ -1181,6 +1187,7 @@ public class TestRenditionService {
      * @since 10.3
      */
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void shouldNonAdminPublishRendition() {
         DocumentModel file = createBlobFile();
         DocumentModel section = session.createDocumentModel("/", "section", "Section");
