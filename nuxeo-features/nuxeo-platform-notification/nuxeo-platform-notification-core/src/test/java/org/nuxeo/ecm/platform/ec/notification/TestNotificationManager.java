@@ -143,8 +143,7 @@ public class TestNotificationManager {
             TransactionHelper.startTransaction();
         }
 
-        // check that notification was removed from version (which allows to
-        // subscribe to proxy)
+        // check that notification was removed from version (which allows to subscribe to proxy)
         List<DocumentModel> subscribedDocuments = notificationManager.getSubscribedDocuments(prefixedPrincipalName,
                 repositoryName);
         assertEquals(Collections.singletonList(file), subscribedDocuments);
@@ -166,8 +165,7 @@ public class TestNotificationManager {
                 publishedDocument);
         assertEquals(1, subscriptions.size());
 
-        // Republish the document : create a new version, publish and test
-        // subscriptions
+        // Republish the document : create a new version, publish and test subscriptions
         file.setPropertyValue("dc:title", "Updated file");
         file = session.saveDocument(file);
 
