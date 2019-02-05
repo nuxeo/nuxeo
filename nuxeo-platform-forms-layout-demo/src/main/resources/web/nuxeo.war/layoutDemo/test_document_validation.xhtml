@@ -19,6 +19,11 @@
 
       <ui:include src="/incl/message_banner.xhtml" />
 
+      <table class="dataOutput">
+        <tbody>
+          <tr>
+            <td>
+
       <h:form id="validateForm">
 
         <nxl:layout value="#{layoutValidationDocument}"
@@ -39,7 +44,7 @@
             styleClass="button"
             action="#{layoutDemoActions.validateDocument}"
             id="validateButton">
-            <f:ajax execute="@form" render="@form" />
+            <f:ajax execute="@form" render="@form viewMode" />
           </h:commandButton>
           <a4j:status>
             <f:facet name="start">
@@ -55,6 +60,20 @@
         </p>
 
       </h:form>
+
+            </td>
+            <td>
+
+      <a4j:outputPanel id="viewMode">
+        <nxl:layout value="#{layoutValidationDocument}"
+          mode="view"
+          name="layout_demo_validation_sample" />
+      </a4j:outputPanel>
+
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
       <ui:include src="show_source_template.xhtml">
         <ui:param name="sourcePath" value="layoutDemo/sources/OSGI-INF/demo/layout-demo-validation-layout.xml" />
