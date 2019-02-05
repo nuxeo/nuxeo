@@ -20,15 +20,15 @@
 
 package org.nuxeo.ecm.platform.convert.tests;
 
-import org.junit.Test;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
 /**
  * @since 5.2
@@ -56,7 +56,7 @@ public class TestPDFToText extends BaseConverterTest {
         assertNotNull(blob);
         assertEquals("text/plain", blob.getMimeType());
         assertTrue(blob.getLength() > 0);
-        String newline = System.getProperty("line.separator");
+        String newline = System.lineSeparator();
         assertEquals("Hello from a PDF Document!" + newline + newline + "\f", blob.getString());
     }
 

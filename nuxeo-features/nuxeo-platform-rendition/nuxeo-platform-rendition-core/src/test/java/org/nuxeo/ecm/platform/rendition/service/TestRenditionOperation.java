@@ -57,6 +57,7 @@ import org.nuxeo.ecm.platform.rendition.operation.GetRendition;
 import org.nuxeo.ecm.platform.rendition.operation.PublishRendition;
 import org.nuxeo.ecm.platform.rendition.operation.UnpublishAll;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -67,6 +68,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(RenditionFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
+@ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
 public class TestRenditionOperation {
 
     @Inject

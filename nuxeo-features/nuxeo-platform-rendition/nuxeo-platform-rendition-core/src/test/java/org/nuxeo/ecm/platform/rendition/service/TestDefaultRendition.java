@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendition.Renderable;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -170,6 +171,7 @@ public class TestDefaultRendition {
      * @since 10.3
      */
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
     public void testDefaultRenditionOverride() throws Exception {
         DocumentModel folder = session.createDocumentModel("/", "dummy-folder", "Folder");
         folder = session.createDocument(folder);
