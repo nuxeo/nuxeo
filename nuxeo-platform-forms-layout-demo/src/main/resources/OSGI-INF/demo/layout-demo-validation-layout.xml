@@ -167,7 +167,7 @@
             </labels>
             <properties mode="any">
               <property name="listTemplateItem">
-                #{nxd:propertyDefaultValue('lds:listOfLists/stringListItem')}
+                #{nxd:propertyDefaultValue('vs:listOfLists/stringListItem')}
               </property>
             </properties>
             <properties widgetMode="any">
@@ -204,7 +204,7 @@
               <field>bProp</field>
             </fields>
             <properties widgetMode="edit">
-              <property name="listTemplateItem">#{nxd:propertyDefaultValue('cc:aProp/bProp')}</property>
+              <property name="listTemplateItem">#{nxd:propertyDefaultValue('vs:aProp/bProp')}</property>
             </properties>
             <subWidgets>
               <widget name="cProp" type="list">
@@ -216,7 +216,7 @@
                   <field>cProp</field>
                 </fields>
                 <properties widgetMode="edit">
-                  <property name="listTemplateItem">#{nxd:propertyDefaultValue('cc:aProp/bProp/cProp')}</property>
+                  <property name="listTemplateItem">#{nxd:propertyDefaultValue('vs:aProp/bProp/cProp')}</property>
                 </properties>
                 <subWidgets>
                   <widget name="subStringProp" type="text">
@@ -225,7 +225,7 @@
                     </labels>
                     <translated>false</translated>
                     <fields>
-                      <field></field>
+                      <field>myString</field>
                     </fields>
                   </widget>
                 </subWidgets>
