@@ -219,6 +219,9 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
     }
 
     protected List<DocumentModel> getChildSyncRoots(DocumentModel doc, CoreSession session) {
+        if (doc.getParentRef() == null) {
+            return new ArrayList<>();
+        }
         String nxql = "SELECT * FROM Document WHERE ecm:mixinType = '" + NuxeoDriveManagerImpl.NUXEO_DRIVE_FACET
                 + "' AND ecm:isTrashed = 0 AND ecm:isVersion = 0 AND ecm:path STARTSWITH "
                 + NXQL.escapeString(doc.getPathAsString());
