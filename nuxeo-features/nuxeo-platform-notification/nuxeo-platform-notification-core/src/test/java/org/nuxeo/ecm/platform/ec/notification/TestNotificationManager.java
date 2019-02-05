@@ -135,42 +135,52 @@ public class TestNotificationManager {
             TransactionHelper.startTransaction();
         }
 
-
         // publish it
         DocumentModel publishedDocument = session.publishDocument(file, section);
+        assertEquals("0.1", publishedDocument.getVersionLabel());
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
         }
-
 
         // check that notification was removed from version (which allows to subscribe to proxy)
         List<DocumentModel> subscribedDocuments = notificationManager.getSubscribedDocuments(prefixedPrincipalName,
                 repositoryName);
         assertEquals(Collections.singletonList(file), subscribedDocuments);
 
-        // add subscriptions to proxy
-        notificationManager.addSubscription(prefixedPrincipalName, "notification1", publishedDocument, FALSE, principal,
-                "notification1");
+        // add subscriptions to proxy on a different notification to ensure it's
+        // not inherited from source doc or version
+        notificationManager.addSubscription(prefixedPrincipalName, "notification2", publishedDocument, FALSE, principal,
+                "notification2");
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
         }
-
 
         // check that we now have published document but not the version
         subscribedDocuments = notificationManager.getSubscribedDocuments(prefixedPrincipalName, repositoryName);
         subscribedDocuments.sort(Comparator.comparing(DocumentModel::getPathAsString));
         assertEquals(Arrays.asList(file, publishedDocument), subscribedDocuments);
+        List<String> subscriptions = notificationManager.getSubscriptionsForUserOnDocument(prefixedPrincipalName,
+                publishedDocument);
+        assertEquals(1, subscriptions.size());
+
+        // Republish the document : create a new version, publish and test subscriptions
+        file.setPropertyValue("dc:title", "Updated file");
+        file = session.saveDocument(file);
+
+        publishedDocument = session.publishDocument(file, section);
+        assertEquals("0.2", publishedDocument.getVersionLabel());
+        subscriptions = notificationManager.getSubscriptionsForUserOnDocument(prefixedPrincipalName, publishedDocument);
+        assertEquals(1, subscriptions.size());
 
         // Remove subscriptions
         notificationManager.removeSubscription(prefixedPrincipalName, "notification1", file);
-        notificationManager.removeSubscription(prefixedPrincipalName, "notification1", publishedDocument);
+        notificationManager.removeSubscription(prefixedPrincipalName, "notification2", publishedDocument);
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
         }
-
 
         assertTrue(notificationManager.getSubscribedDocuments(prefixedPrincipalName, repositoryName).isEmpty());
     }
