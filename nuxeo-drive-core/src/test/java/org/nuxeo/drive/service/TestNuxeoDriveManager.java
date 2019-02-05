@@ -67,6 +67,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 /**
  * Tests for {@link NuxeoDriveManager}
@@ -74,7 +75,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @author <a href="mailto:ogrise@nuxeo.com">Olivier Grisel</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(NuxeoDriveFeature.class)
+@Features({NuxeoDriveFeature.class, LogCaptureFeature.class})
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 public class TestNuxeoDriveManager {
 
@@ -106,6 +107,9 @@ public class TestNuxeoDriveManager {
 
     @Inject
     TransactionalFeature txFeature;
+
+    @Inject
+    protected LogCaptureFeature.Result capturedLog;
 
     protected CoreSession user1Session;
 
@@ -618,6 +622,15 @@ public class TestNuxeoDriveManager {
 
         // Check the version is filtered among the synchronization roots
         assertFalse(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), version));
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR")
+    public void testGetSyncRootsWithPlacelessDocument() {
+        DocumentModel placelessDoc = session.createDocument(user1Session.createDocumentModel(null, "file_1", "File"));
+        setPermissions(placelessDoc, new ACE("user2", SecurityConstants.READ));
+        // Testing if an error is logged because the listener fails without throwing an exception to the caller
+        assertTrue(capturedLog.getCaughtEvents().isEmpty());
     }
 
     protected DocumentModel doc(String path) {
