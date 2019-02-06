@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -57,8 +59,7 @@ public class BulkActionObject extends DefaultObject {
     @Path("{actionId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response executeBulkAction(@PathParam("actionId") String actionId, String actionParams)
-            throws IOException {
+    public Response executeBulkAction(@PathParam("actionId") String actionId, String actionParams) throws IOException {
 
         BulkAdminService admin = Framework.getService(BulkAdminService.class);
         if (!admin.getActions().contains(actionId)) {
@@ -70,11 +71,11 @@ public class BulkActionObject extends DefaultObject {
 
         String repository = getContext().getCoreSession().getRepositoryName();
         String username = getContext().getPrincipal().getName();
+        Map<String, Serializable> params = BulkParameters.paramsToMap(actionParams);
 
-        BulkCommand command = new BulkCommand.Builder(actionId, query).repository(repository)
-                                                                      .user(username)
-                                                                      .params(BulkParameters.paramsToMap(actionParams))
-                                                                      .build();
+        BulkCommand command = new BulkCommand.Builder(actionId, query, username).repository(repository)
+                                                                                .params(params)
+                                                                                .build();
 
         BulkService service = Framework.getService(BulkService.class);
         String commandId = service.submit(command);

@@ -106,8 +106,6 @@ public class BulkRunAction {
             throw new OperationException("Query and ProviderName cannot be both null");
         }
 
-        String userName = session.getPrincipal().getName();
-
         PageProviderDefinition def = query != null ? PageProviderHelper.getQueryPageProviderDefinition(query)
                 : PageProviderHelper.getPageProviderDefinition(providerName);
 
@@ -123,7 +121,7 @@ public class BulkRunAction {
             throw new OperationException("Query parameters could not be parsed");
         }
 
-        BulkCommand.Builder builder = new BulkCommand.Builder(action, query).user(userName);
+        BulkCommand.Builder builder = new BulkCommand.Builder(action, query, session.getPrincipal().getName());
         try {
             builder.params(BulkParameters.paramsToMap(parametersAsJson));
         } catch (IOException e) {

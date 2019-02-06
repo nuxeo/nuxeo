@@ -23,9 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_TOTAL;
 import static org.nuxeo.ecm.core.bulk.action.SetSystemPropertiesAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
+import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_TOTAL;
 import static org.nuxeo.ecm.core.trash.PropertyTrashService.SYSPROP_IS_TRASHED;
 
 import java.time.Duration;
@@ -70,8 +70,8 @@ public class TestSetSystemPropertiesAction {
         String nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", model.getId());
 
         String commandId = service.submit(
-                new BulkCommand.Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
-                                                          .user(session.getPrincipal().getName())
+                new BulkCommand.Builder(ACTION_NAME, nxql, session.getPrincipal().getName()).repository(
+                        session.getRepositoryName())
                                                           .param(SYSPROP_IS_TRASHED, Boolean.TRUE)
                                                           .build());
 
@@ -112,8 +112,8 @@ public class TestSetSystemPropertiesAction {
         );
 
         String commandId = service.submit(
-                new BulkCommand.Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
-                                                          .user(session.getPrincipal().getName())
+                new BulkCommand.Builder(ACTION_NAME, nxql, session.getPrincipal().getName()).repository(
+                        session.getRepositoryName())
                                                           .param(SYSPROP_IS_TRASHED, Boolean.TRUE)
                                                           .build());
 

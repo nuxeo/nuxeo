@@ -35,12 +35,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreBulkFeature.class)
 public class TestBulkCommandAvro {
 
+    public static final String QUERY = "SELECT * FROM Document";
+
     @Rule
     public final CodecTestRule<BulkCommand> codecRule = new CodecTestRule<>("avro", BulkCommand.class);
 
     @Test
     public void testCommandWithoutParameters() {
-        BulkCommand command = new BulkCommand.Builder("action", "SELECT * FROM Document").build();
+        BulkCommand command = new BulkCommand.Builder("action", QUERY, "username").build();
         BulkCommand actualCommand = codecRule.encodeDecode(command);
 
         assertEquals(command, actualCommand);
@@ -48,13 +50,12 @@ public class TestBulkCommandAvro {
 
     @Test
     public void testCommandWithSimpleParameters() {
-        BulkCommand command = new BulkCommand.Builder("action", "SELECT * FROM Document").user("username")
-                                                                                         .repository("default")
-                                                                                         .param("key1", "value1")
-                                                                                         .param("key2", "value2")
-                                                                                         .bucket(150)
-                                                                                         .batch(15)
-                                                                                         .build();
+        BulkCommand command = new BulkCommand.Builder("action", QUERY, "username").repository("default")
+                                                                                  .param("key1", "value1")
+                                                                                  .param("key2", "value2")
+                                                                                  .bucket(150)
+                                                                                  .batch(15)
+                                                                                  .build();
         BulkCommand actualCommand = codecRule.encodeDecode(command);
 
         assertEquals(command, actualCommand);

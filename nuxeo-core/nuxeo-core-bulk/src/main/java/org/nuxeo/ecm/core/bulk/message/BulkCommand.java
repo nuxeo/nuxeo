@@ -47,7 +47,6 @@ public class BulkCommand implements Serializable {
 
     protected String query;
 
-    @Nullable
     protected String username;
 
     @Nullable
@@ -159,7 +158,32 @@ public class BulkCommand implements Serializable {
          *
          * @param action the registered bulk action name
          * @param nxqlQuery the query that represent the document set to apply the action
+         * @param user the user with whose rights the computation will be executed
+         * @since 11.1
          */
+        public Builder(String action, String nxqlQuery, String username) {
+            if (isEmpty(action)) {
+                throw new IllegalArgumentException("Action cannot be empty");
+            }
+            this.action = action;
+            if (isEmpty(nxqlQuery)) {
+                throw new IllegalArgumentException("Query cannot be empty");
+            }
+            this.query = nxqlQuery;
+            if (isEmpty(username)) {
+                throw new IllegalArgumentException("Username cannot be empty");
+            }
+            this.username = username;
+        }
+
+        /**
+         * BulkCommand builder
+         *
+         * @param action the registered bulk action name
+         * @param nxqlQuery the query that represent the document set to apply the action
+         * @deprecated since 11.1, use {@link #Builder(String, String, String)} constructor with username instead
+         */
+        @Deprecated
         public Builder(String action, String nxqlQuery) {
             if (isEmpty(action)) {
                 throw new IllegalArgumentException("Action cannot be empty");
@@ -181,7 +205,10 @@ public class BulkCommand implements Serializable {
 
         /**
          * User running the bulk action
+         *
+         * @deprecated since 11.1, use {@link #Builder(String, String, String)} constructor with username instead
          */
+        @Deprecated
         public Builder user(String name) {
             this.username = name;
             return this;

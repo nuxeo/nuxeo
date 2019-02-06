@@ -61,13 +61,12 @@ public class BulkCommandJsonReader extends EntityJsonReader<BulkCommand> {
         }
         int batchSize = Integer.parseInt(getter.apply(COMMAND_BATCH_SIZE));
         int bucketSize = Integer.parseInt(getter.apply(COMMAND_BUCKET_SIZE));
-        return new BulkCommand.Builder(getter.apply(COMMAND_ACTION),
-                getter.apply(COMMAND_QUERY)).user(getter.apply(COMMAND_USERNAME))
-                                            .repository(getter.apply(COMMAND_REPOSITORY))
-                                            .bucket(bucketSize)
-                                            .batch(batchSize)
-                                            .params(params)
-                                            .build();
+        return new BulkCommand.Builder(getter.apply(COMMAND_ACTION), getter.apply(COMMAND_QUERY),
+                getter.apply(COMMAND_USERNAME)).repository(getter.apply(COMMAND_REPOSITORY))
+                                               .bucket(bucketSize)
+                                               .batch(batchSize)
+                                               .params(params)
+                                               .build();
     }
 
 }
