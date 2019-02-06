@@ -45,6 +45,7 @@ import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
 import javax.faces.event.FacesEvent;
 import javax.faces.event.PhaseId;
+import javax.validation.ValidationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1244,7 +1245,12 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
     private void executeValidate(FacesContext context) {
         try {
             pushComponentToEL(context, this);
-            processFacetsAndChildren(context, PhaseId.PROCESS_VALIDATIONS);
+            ValidationException validationException = null;
+            try {
+                processFacetsAndChildren(context, PhaseId.PROCESS_VALIDATIONS);
+            } catch (ValidationException e) {
+                validationException = e;
+            }
             // process updates right away so that list can perform its global validation
             processFacetsAndChildren(context, PhaseId.UPDATE_MODEL_VALUES);
             popComponentFromEL(context);

@@ -102,7 +102,7 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
                     String msg = v.getMessage(locale);
                     throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
                 } else {
-                    Set<FacesMessage> messages = new LinkedHashSet<FacesMessage>(violations.size());
+                    Set<FacesMessage> messages = new LinkedHashSet<>(violations.size());
                     for (ConstraintViolation v : violations) {
                         String msg = v.getMessage(locale);
                         messages.add(new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
@@ -233,9 +233,13 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
             ProtectedEditableModel parentModel = model.getParent();
             Map<String, ValueExpression> vars = null;
             ValueExpression listVe;
+            XPathAndField parentField = null;
             if (parentModel != null) {
                 // move one level up to resolve parent list binding
                 listVe = parentModel.getBinding();
+//                ValueExpressionAnalyzer expressionAnalyzer = new ValueExpressionAnalyzer(listVe);
+//                ValueReference listRef = expressionAnalyzer.getReference(context.getELContext(), null);
+//                parentField = resolveField(context, listRef, listVe, true);
                 if (subResolution) {
                     // push model to the context for nested use cases
                     vars = new HashMap<>();
@@ -252,7 +256,9 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
                 log.error("cannot resolve ref " + listVe);
             }
             if (isResolvable(listRef, listVe)) {
-                XPathAndField parentField = resolveField(context, listRef, listVe, true);
+                if (parentField == null) {
+                    parentField = resolveField(context, listRef, listVe, true);
+                }
                 if (parentField != null) {
                     log.error("resolved parent field " + parentField);
                     if (parentModel != null) {
