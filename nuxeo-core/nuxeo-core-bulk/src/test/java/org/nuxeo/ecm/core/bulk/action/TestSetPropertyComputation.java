@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.SetPropertyComputation;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
-import org.nuxeo.ecm.core.bulk.message.BulkCommand.Builder;
 
 /**
  * @since 10.3
@@ -83,7 +82,7 @@ public class TestSetPropertyComputation {
     protected void testParamParsing(String param, Collection<Serializable> values, boolean audit,
             VersioningOption versioning) {
         for (Serializable value : values) {
-            BulkCommand command = new Builder(ACTION_NAME, "useless").param(param, value).build();
+            BulkCommand command = new BulkCommand.Builder(ACTION_NAME, "query", "user").param(param, value).build();
             SetPropertyComputation computation = new TestableSetPropertyComputation(command);
             computation.startBucket(null);
             assertEquals(audit, computation.disableAudit);

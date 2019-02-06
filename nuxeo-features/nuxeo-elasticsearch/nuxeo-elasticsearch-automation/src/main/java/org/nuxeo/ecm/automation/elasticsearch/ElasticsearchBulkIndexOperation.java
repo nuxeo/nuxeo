@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.automation.elasticsearch;
 
+import static org.nuxeo.elasticsearch.bulk.IndexAction.ACTION_NAME;
 import static org.nuxeo.elasticsearch.bulk.IndexAction.INDEX_UPDATE_ALIAS_PARAM;
 
 import java.io.IOException;
@@ -38,7 +39,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.bulk.IndexAction;
 
 /**
  * Run Elasticsearch indexing operation using the Bulk Service
@@ -76,9 +76,8 @@ public class ElasticsearchBulkIndexOperation {
     protected String submitBulkCommand(String nxql, boolean syncAlias) {
         String username = session.getPrincipal().getName();
         return bulkService.submit(
-                new BulkCommand.Builder(IndexAction.ACTION_NAME, nxql).param(INDEX_UPDATE_ALIAS_PARAM, syncAlias)
-                                                                      .user(username)
-                                                                      .build());
+                new BulkCommand.Builder(ACTION_NAME, nxql, username).param(INDEX_UPDATE_ALIAS_PARAM, syncAlias)
+                                                                    .build());
     }
 
     protected void checkAccess() {

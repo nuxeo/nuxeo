@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
-import org.nuxeo.ecm.core.bulk.message.BulkCommand.Builder;
 
 /**
  * @since 10.3
@@ -91,7 +90,7 @@ public class TestCSVProjectionComputation {
     protected void testParamParsing(String param, List<Serializable> values, List<Object> expected) {
         for (int i = 0; i < values.size(); i++) {
             Serializable value = values.get(i);
-            BulkCommand command = new Builder(ACTION_NAME, "useless").param(param, value).build();
+            BulkCommand command = new BulkCommand.Builder(ACTION_NAME, "query", "user").param(param, value).build();
             CSVProjectionComputation computation = new TestableComputation(command);
             computation.startBucket(null);
             assertEquals("failed for '" + value + "'", expected.get(i), computation.renderingCtx.getParameter(param));

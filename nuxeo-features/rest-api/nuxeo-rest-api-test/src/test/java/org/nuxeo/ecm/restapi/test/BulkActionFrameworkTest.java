@@ -20,6 +20,7 @@ package org.nuxeo.ecm.restapi.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.bulk.action.SetPropertiesAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 
 import java.time.Duration;
@@ -32,7 +33,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
-import org.nuxeo.ecm.core.bulk.action.SetPropertiesAction;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -56,11 +56,12 @@ public class BulkActionFrameworkTest extends BaseTest {
     @Test
     public void testGetBulkStatus() throws Exception {
         // submit a bulk command to get its status
-        BulkCommand command = new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME,
-                "SELECT * FROM Document WHERE ecm:isVersion = 0").user(session.getPrincipal().getName())
-                                                                 .repository(session.getRepositoryName())
-                                                                 .param("dc:description", "new description")
-                                                                 .build();
+        String query = "SELECT * FROM Document WHERE ecm:isVersion = 0";
+        String user = session.getPrincipal().getName();
+        BulkCommand command = new BulkCommand.Builder(ACTION_NAME, query, user).repository(session.getRepositoryName())
+                                                                               .param("dc:description",
+                                                                                       "new description")
+                                                                               .build();
         String commandId = bulkService.submit(command);
         assertTrue("Bulk action didn't finish", bulkService.await(commandId, Duration.ofSeconds(10)));
 

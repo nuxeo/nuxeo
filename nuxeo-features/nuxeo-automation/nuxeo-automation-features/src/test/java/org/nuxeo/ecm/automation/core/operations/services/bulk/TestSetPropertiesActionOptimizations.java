@@ -150,8 +150,8 @@ public class TestSetPropertiesActionOptimizations {
     protected BulkCommand.Builder createBuilder() {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * FROM Note where ecm:parentId='%s'", model.getId());
-        return new BulkCommand.Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
-                                                         .user(session.getPrincipal().getName())
+        String user = session.getPrincipal().getName();
+        return new BulkCommand.Builder(ACTION_NAME, nxql, user).repository(session.getRepositoryName())
                                                          .param("dc:title", UUID.randomUUID().toString());
     }
 

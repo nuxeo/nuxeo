@@ -345,10 +345,10 @@ public class TestCSVExportAction {
     protected Builder createBuilder(boolean sorted, boolean zipped) {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", model.getId());
-        return new BulkCommand.Builder(CSVExportAction.ACTION_NAME, nxql).repository(session.getRepositoryName())
-                                                                         .user(session.getPrincipal().getName())
-                                                                         .param(SORT_PARAMETER, sorted)
-                                                                         .param(ZIP_PARAMETER, zipped);
+        String user = session.getPrincipal().getName();
+        return new BulkCommand.Builder(CSVExportAction.ACTION_NAME, nxql, user).repository(session.getRepositoryName())
+                                                                               .param(SORT_PARAMETER, sorted)
+                                                                               .param(ZIP_PARAMETER, zipped);
     }
 
     protected Builder createBuilder() {

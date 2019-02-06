@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch.test.bulk;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.elasticsearch.bulk.IndexAction.ACTION_NAME;
 import static org.nuxeo.elasticsearch.bulk.IndexAction.INDEX_UPDATE_ALIAS_PARAM;
 import static org.nuxeo.elasticsearch.bulk.IndexAction.REFRESH_INDEX_PARAM;
 
@@ -36,13 +37,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand.Builder;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
-import org.nuxeo.elasticsearch.bulk.IndexAction;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -90,9 +91,13 @@ public class TestBulkIndex {
     @Test
     public void testIndexAction() throws InterruptedException {
         esa.initIndexes(true);
-        String commandId = bulkService.submit(
-                new BulkCommand.Builder(IndexAction.ACTION_NAME, "SELECT * FROM Document").param(REFRESH_INDEX_PARAM,
-                        true).param(INDEX_UPDATE_ALIAS_PARAM, true).batch(2).bucket(2).build());
+        BulkCommand command = new Builder(ACTION_NAME, "SELECT * FROM Document", "Administrator")
+                .param(REFRESH_INDEX_PARAM, true)
+                .param(INDEX_UPDATE_ALIAS_PARAM, true)
+                .batch(2)
+                .bucket(2)
+                .build();
+        String commandId = bulkService.submit(command);
         assertTrue("command timeout", bulkService.await(commandId, Duration.ofSeconds(60)));
         BulkStatus status = bulkService.getStatus(commandId);
         assertEquals(BulkStatus.State.COMPLETED, status.getState());

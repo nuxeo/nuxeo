@@ -70,8 +70,8 @@ public class TestTrashAction {
 
         try (CapturingEventListener listener = new CapturingEventListener(DOCUMENT_TRASHED)) {
             String commandId = service.submit(
-                    new BulkCommand.Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
-                                                              .user(session.getPrincipal().getName())
+                    new BulkCommand.Builder(ACTION_NAME, nxql, session.getPrincipal().getName()).repository(
+                            session.getRepositoryName())
                                                               .param("value", Boolean.TRUE)
                                                               .build());
 

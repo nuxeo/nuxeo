@@ -49,6 +49,6 @@ public abstract class AbstractTestBulkActionValidation<T extends BulkActionValid
     }
 
     protected BulkCommand.Builder createBuilder(String actionName, String query, String repository, String user) {
-        return new BulkCommand.Builder(actionName, query).repository(repository).user(user);
+        return new BulkCommand.Builder(actionName, query, user).repository(repository);
     }
 }

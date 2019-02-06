@@ -21,10 +21,10 @@ package org.nuxeo.ecm.core.bulk;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.bulk.action.RemoveProxyAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_NON_PROXY;
 import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_PROXY;
 import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_TOTAL;
-import static org.nuxeo.ecm.core.bulk.action.RemoveProxyAction.ACTION_NAME;
 
 import java.time.Duration;
 
@@ -70,9 +70,8 @@ public class TestRemoveProxyAction {
         assertEquals(CREATED_NON_PROXY, session.query(nxql + " and ecm:isProxy=0").size());
 
         String commandId = service.submit(
-                new BulkCommand.Builder(ACTION_NAME, nxql).repository(session.getRepositoryName())
-                                                          .user(session.getPrincipal().getName())
-                                                          .build());
+                new BulkCommand.Builder(ACTION_NAME, nxql, session.getPrincipal().getName()).repository(
+                        session.getRepositoryName()).build());
 
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(60)));
 

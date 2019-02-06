@@ -27,6 +27,7 @@ import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_PARAMS;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_QUERY;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_REPOSITORY;
 import static org.nuxeo.ecm.core.bulk.io.BulkConstants.COMMAND_USERNAME;
+import static org.nuxeo.ecm.core.bulk.io.TestBulkCommandAvro.QUERY;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_NAME;
 
 import java.util.HashMap;
@@ -50,16 +51,15 @@ public class TestBulkCommandJsonWriter extends AbstractJsonWriterTest.Local<Bulk
 
     @Test
     public void testDefault() throws Exception {
-        BulkCommand command = new BulkCommand.Builder("myAction",
-                "SELECT * FROM Document").user("myUser")
-                                         .repository("myRepository")
-                                         .bucket(20)
-                                         .batch(10)
-                                         .param("actionParam", "mySpecificParameter")
-                                         .param("boolean", false)
-                                         .param("long", 1200)
-                                         .param("complex", new HashMap<>(singletonMap("key", "value")))
-                                         .build();
+        BulkCommand command = new BulkCommand.Builder("myAction", QUERY, "myUser")
+                         .repository("myRepository")
+                         .bucket(20)
+                         .batch(10)
+                         .param("actionParam", "mySpecificParameter")
+                         .param("boolean", false)
+                         .param("long", 1200)
+                         .param("complex", new HashMap<>(singletonMap("key", "value")))
+                         .build();
         JsonAssert json = jsonAssert(command);
         json.properties(8);
         json.has(ENTITY_FIELD_NAME).isEquals(COMMAND_ENTITY_TYPE);
