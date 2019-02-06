@@ -732,13 +732,13 @@
       </layouts>
     </widgetType>
 
-    <widgetType name="selectManyListboxUseryAggregate">
+    <widgetType name="selectManyListboxUserAggregate">
       <label>Multiple user aggregate listbox</label>
       <viewId>selectManyListboxUserAggregateWidget</viewId>
       <category>aggregate</category>
       <preview enabled="true" hideViewMode="true">
         <fields>
-          <field>lds:selectMultiUserFieldd</field>
+          <field>lds:selectMultiUserField</field>
         </fields>
       </preview>
       <layouts>
@@ -747,13 +747,13 @@
       </layouts>
     </widgetType>
 
-    <widgetType name="selectManyCheckboxUseryAggregate">
+    <widgetType name="selectManyCheckboxUserAggregate">
       <label>Multiple user aggregate checkbox</label>
       <viewId>selectManyCheckboxUserAggregateWidget</viewId>
       <category>aggregate</category>
       <preview enabled="true" hideViewMode="true">
         <fields>
-          <field>lds:selectMultiUserFieldd</field>
+          <field>lds:selectMultiUserField</field>
         </fields>
       </preview>
       <layouts>
