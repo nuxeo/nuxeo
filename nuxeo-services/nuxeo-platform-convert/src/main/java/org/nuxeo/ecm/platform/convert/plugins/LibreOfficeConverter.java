@@ -80,9 +80,10 @@ public class LibreOfficeConverter extends CommandLineConverter {
         }
     }
 
-    private void deleteTempDirectory(String tempPath) {
+    private void deleteTempDirectory(String tempFileURI) {
         try {
-            URI uri = new URI(tempPath);
+            // tempFileURI is an URI (file:///tmp/foo)
+            URI uri = new URI(tempFileURI);
             File file = new File(uri);
             if (!Files.exists(file.toPath())) {
                 return;
