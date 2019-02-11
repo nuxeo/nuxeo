@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.convert.tests.text2pdf.converter">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl" point="converter">
+
+    <converter name="text2pdfForTest" class="org.nuxeo.ecm.platform.convert.tests.LibreOfficeConverterForTest">
+      <destinationMimeType>application/pdf</destinationMimeType>
+
+      <sourceMimeType>text/plain</sourceMimeType>
+
+      <parameters>
+        <parameter name="CommandLineName">soffice</parameter>
+        <parameter name="format">pdf</parameter>
+      </parameters>
+    </converter>
+
+  </extension>
+
+</component>
