@@ -33,6 +33,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.avro.reflect.Nullable;
+
+import io.opencensus.trace.BlankSpan;
+import io.opencensus.trace.Tracing;
+
 /**
  * Basic data object that contains: key, watermark, flag and data.
  *
@@ -44,28 +49,26 @@ public class Record implements Externalizable {
     protected static final byte[] NO_DATA = new byte[0];
 
     // Externalizable do rely on serialVersionUID
-    static final long serialVersionUID = 2017_05_29L;
+    static final long serialVersionUID = 2020_05_23L;
 
-    /** @deprecated 10.2 use {@link #getWatermark()} or {@link #setWatermark(long)} instead */
-    @Deprecated
-    public long watermark;
+    protected long watermark;
 
-    /** @deprecated 10.2 use {@link #getKey()} or {@link #setKey(String)} instead */
-    @Deprecated
-    public String key;
+    protected String key;
 
-    /** @deprecated 10.2 use {@link #getData()} or {@link #setData(byte[])} instead */
-    @Deprecated
-    // We can not use null because Nullable on byte[] requires avro 1.7.6 cf AVRO-1401
-    public byte[] data = NO_DATA;
+    @Nullable
+    protected byte[] data;
 
-    /** @deprecated 10.2 use {@link #getFlags()} or {@link #setFlags(EnumSet)} instead */
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated
     // The enumSet representation of the flags is transient because serializer don't handle this type
-    public transient EnumSet<Flag> flags;
+    protected transient EnumSet<Flag> flags;
 
     protected byte flagsAsByte;
+
+    /** @since 11.1 used for tracing context propagation */
+    @Nullable
+    protected byte[] traceContext;
+
+    @Nullable
+    protected String appenderThread;
 
     public Record() {
         // Empty constructor required for deserialization
@@ -90,6 +93,12 @@ public class Record implements Externalizable {
         this.watermark = watermark;
         setData(data);
         setFlags(flags);
+        if (!(Tracing.getTracer().getCurrentSpan() instanceof BlankSpan)) {
+            traceContext = Tracing.getPropagationComponent()
+                                  .getBinaryFormat()
+                                  .toByteArray(Tracing.getTracer().getCurrentSpan().getContext());
+            appenderThread = Thread.currentThread().getName();
+        }
     }
 
     /**
@@ -128,15 +137,14 @@ public class Record implements Externalizable {
     }
 
     public byte[] getData() {
+        if (data == null) {
+            return NO_DATA;
+        }
         return data;
     }
 
     public void setData(byte[] data) {
-        if (data != null) {
-            this.data = data;
-        } else {
-            this.data = NO_DATA;
-        }
+       this.data = data;
     }
 
     @Override
@@ -183,7 +191,7 @@ public class Record implements Externalizable {
         this.key = (String) in.readObject();
         int dataLength = in.readInt();
         if (dataLength == 0) {
-            this.data = NO_DATA;
+            this.data = null;
         } else {
             this.data = new byte[dataLength];
             // not using in.readFully because it is not impl by Chronicle WireObjectInput
@@ -259,4 +267,13 @@ public class Record implements Externalizable {
 
         public static final EnumSet<Flag> ALL_OPTS = EnumSet.allOf(Flag.class);
     }
+
+    public byte[] getTraceContext() {
+        return traceContext;
+    }
+
+    public String getAppenderThread() {
+        return appenderThread;
+    }
+
 }

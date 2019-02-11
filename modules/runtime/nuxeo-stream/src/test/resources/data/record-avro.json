@@ -1,6 +1,1 @@
-{
-  "watermark": 200246664151826432,
-  "key": "key",
-  "data": "value",
-  "flagsAsByte": 18
-}
+{"watermark":208438433348190208,"key":"key","data":{"bytes":"value"},"flagsAsByte":-125,"traceContext":null,"appenderThread":null}

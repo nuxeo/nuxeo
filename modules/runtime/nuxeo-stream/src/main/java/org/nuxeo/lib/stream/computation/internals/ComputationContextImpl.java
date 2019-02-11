@@ -18,6 +18,8 @@
  */
 package org.nuxeo.lib.stream.computation.internals;
 
+import io.opencensus.trace.Tracing;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -119,6 +121,7 @@ public class ComputationContextImpl implements ComputationContext {
     }
 
     public void produceRecordImmediate(String streamName, String key, byte[] data) {
+        Tracing.getTracer().getCurrentSpan().addAnnotation("Produce record immediate " + key);
         produceRecordImmediate(streamName, Record.of(key, data));
     }
 

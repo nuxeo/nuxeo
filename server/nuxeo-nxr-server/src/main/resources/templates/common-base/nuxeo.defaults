@@ -261,3 +261,21 @@ metrics.datadog.port=8125
 metrics.prometheus.enabled=false
 metrics.prometheus.port=9090
 
+## Open tracing
+tracing.attributes.max=128
+tracing.annotations.max=128
+tracing.sampler.probability=0.1
+
+## Jaeger reporter
+tracing.jaeger.enabled=false
+tracing.jaeger.url=
+tracing.jaeger.timeout=10s
+
+# Zipkin reporter
+tracing.zipkin.enabled=false
+tracing.zipkin.url=
+tracing.zipkin.timeout=10s
+
+# ZPage reporter
+tracing.zpage.enabled=false
+tracing.zpage.port=8887

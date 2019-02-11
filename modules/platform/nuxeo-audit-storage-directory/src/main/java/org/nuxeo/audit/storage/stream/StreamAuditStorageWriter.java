@@ -94,7 +94,7 @@ public class StreamAuditStorageWriter implements StreamProcessorTopology {
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-            jsonEntries.add(new String(record.data, UTF_8));
+            jsonEntries.add(new String(record.getData(), UTF_8));
             if (jsonEntries.size() >= batchSize) {
                 writeJsonEntriesToAudit(context);
             }
