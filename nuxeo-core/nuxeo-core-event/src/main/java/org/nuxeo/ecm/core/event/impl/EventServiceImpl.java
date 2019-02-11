@@ -39,6 +39,7 @@ import javax.transaction.SystemException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.logging.SequenceTracer;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
@@ -57,6 +58,11 @@ import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import io.opencensus.trace.AttributeValue;
+import io.opencensus.trace.Span;
+import io.opencensus.trace.Tracer;
+import io.opencensus.trace.Tracing;
 
 /**
  * Implementation of the event service.
@@ -231,15 +237,17 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
         String ename = event.getName();
         EventStats stats = Framework.getService(EventStats.class);
+        Tracer tracer = Tracing.getTracer();
         for (EventListenerDescriptor desc : listenerDescriptors.getEnabledInlineListenersDescriptors()) {
             if (!desc.acceptEvent(ename)) {
                 continue;
             }
+            SequenceTracer.start("Fire sync event " + event.getName());
             try {
                 long t0 = System.currentTimeMillis();
-                SequenceTracer.start("Fire sync event " + event.getName());
                 desc.asEventListener().handleEvent(event);
                 long elapsed = System.currentTimeMillis() - t0;
+                traceAddAnnotation(event, tracer, elapsed, desc.getName());
                 SequenceTracer.stop("done in " + elapsed + " ms");
                 if (stats != null) {
                     stats.logSyncExec(desc, elapsed);
@@ -266,6 +274,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                     message += "continuing to run other listeners";
                 }
                 // log
+                tracer.getCurrentSpan().addAnnotation("fireEvent." + event.getName() + ": " + message);
                 if (e instanceof RecoverableClientException) {
                     log.info(message + "\n" + e.getMessage());
                     log.debug(message, e);
@@ -299,6 +308,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             if (event.isImmediate()) {
                 EventBundleImpl b = new EventBundleImpl();
                 b.push(shallowEvent);
+                tracer.getCurrentSpan().addAnnotation("Event fire immediate bundle " + event.getName());
                 fireEventBundle(b);
             } else {
                 recordEvent(shallowEvent);
@@ -306,46 +316,75 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         }
     }
 
+    protected void traceAddAnnotation(Event event, Tracer tracer, long elapsed, String listener) {
+        Map<String, AttributeValue> attributes = new HashMap<>();
+        attributes.put("event", AttributeValue.stringAttributeValue(event.getName()));
+        attributes.put("listener", AttributeValue.stringAttributeValue(listener));
+        attributes.put("duration_ms", AttributeValue.longAttributeValue(elapsed));
+        EventContext eventContext = event.getContext();
+        if (eventContext instanceof DocumentEventContext) {
+            DocumentEventContext docContext = ((DocumentEventContext) eventContext);
+            if (docContext.getSourceDocument() != null) {
+                Path docPath = docContext.getSourceDocument().getPath();
+                if (docPath != null) {
+                    attributes.put("doc", AttributeValue.stringAttributeValue(docPath.toString()));
+                }
+                String id = docContext.getSourceDocument().getId();
+                if (id != null) {
+                    attributes.put("doc_id",
+                            AttributeValue.stringAttributeValue(docContext.getSourceDocument().getId()));
+                }
+            }
+        }
+        tracer.getCurrentSpan().addAnnotation("Event fired", attributes);
+    }
+
     @Override
     public void fireEventBundle(EventBundle event) {
-        List<EventListenerDescriptor> postCommitSync = listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors();
-        List<EventListenerDescriptor> postCommitAsync = listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors();
+        Span span = Tracing.getTracer().getCurrentSpan();
+        span.addAnnotation("event.fireEventBundle start");
+        try {
+            List<EventListenerDescriptor> postCommitSync = listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors();
+            List<EventListenerDescriptor> postCommitAsync = listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors();
 
-        if (bulkModeEnabled) {
-            // run all listeners synchronously in one transaction
-            List<EventListenerDescriptor> listeners = new ArrayList<>();
-            if (!blockSyncPostCommitProcessing) {
-                listeners = postCommitSync;
+            if (bulkModeEnabled) {
+                // run all listeners synchronously in one transaction
+                List<EventListenerDescriptor> listeners = new ArrayList<>();
+                if (!blockSyncPostCommitProcessing) {
+                    listeners = postCommitSync;
+                }
+                if (!blockAsyncProcessing) {
+                    listeners.addAll(postCommitAsync);
+                }
+                if (!listeners.isEmpty()) {
+                    postCommitExec.runBulk(listeners, event);
+                }
+                return;
             }
-            if (!blockAsyncProcessing) {
-                listeners.addAll(postCommitAsync);
-            }
-            if (!listeners.isEmpty()) {
-                postCommitExec.runBulk(listeners, event);
-            }
-            return;
-        }
 
-        // run sync listeners
-        if (blockSyncPostCommitProcessing) {
-            log.debug("Dropping PostCommit handler execution");
-        } else {
-            if (!postCommitSync.isEmpty()) {
-                postCommitExec.run(postCommitSync, event);
+            // run sync listeners
+            if (blockSyncPostCommitProcessing) {
+                log.debug("Dropping PostCommit handler execution");
+            } else {
+                if (!postCommitSync.isEmpty()) {
+                    postCommitExec.run(postCommitSync, event);
+                }
             }
-        }
 
-        if (blockAsyncProcessing) {
-            log.debug("Dopping bundle");
-            return;
-        }
+            if (blockAsyncProcessing) {
+                log.debug("Dopping bundle");
+                return;
+            }
 
-        // fire async listeners
-        if (pipeDispatcher == null) {
-            asyncExec.run(postCommitAsync, event);
-        } else {
-            // rather than sending to the WorkManager: send to the Pipe
-            pipeDispatcher.sendEventBundle(event);
+            // fire async listeners
+            if (pipeDispatcher == null) {
+                asyncExec.run(postCommitAsync, event);
+            } else {
+                // rather than sending to the WorkManager: send to the Pipe
+                pipeDispatcher.sendEventBundle(event);
+            }
+        } finally {
+            span.addAnnotation("event.fireEventBundle return");
         }
     }
 
@@ -487,17 +526,23 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     @Override
     public void beforeCompletion() {
+        Span span = Tracing.getTracer().getCurrentSpan();
+        span.addAnnotation("before completion");
     }
 
     @Override
     public void afterCompletion(int status) {
+        Span span = Tracing.getTracer().getCurrentSpan();
         if (status == Status.STATUS_COMMITTED) {
+            span.addAnnotation("after completion committed");
             handleTxCommited();
         } else if (status == Status.STATUS_ROLLEDBACK) {
+            span.addAnnotation("after completion rollbacked");
             handleTxRollbacked();
         } else {
             log.error("Unexpected afterCompletion status: " + status);
         }
+        span.addAnnotation("after completion done");
     }
 
     protected void handleTxRollbacked() {

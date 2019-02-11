@@ -83,6 +83,14 @@
       <groupId>org.coursera</groupId>
       <artifactId>metrics-datadog</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.opencensus</groupId>
+      <artifactId>opencensus-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opencensus</groupId>
+      <artifactId>opencensus-impl</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

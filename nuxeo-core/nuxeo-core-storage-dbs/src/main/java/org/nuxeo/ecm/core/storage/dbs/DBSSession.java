@@ -156,6 +156,10 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 
+import io.opencensus.trace.AttributeValue;
+import io.opencensus.trace.Span;
+import io.opencensus.trace.Tracing;
+
 /**
  * Implementation of a {@link Session} for Document-Based Storage.
  *
@@ -1595,6 +1599,7 @@ public class DBSSession implements Session<QueryFilter> {
     @SuppressWarnings("resource") // Time.Context closed by stop()
     protected PartialList<String> doQuery(String query, String queryType, QueryFilter queryFilter, int countUpTo) {
         final Timer.Context timerContext = queryTimer.time();
+        int match = 0;
         try {
             Mutable<String> idKeyHolder = new MutableObject<>();
             PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, false, countUpTo,
@@ -1605,9 +1610,12 @@ public class DBSSession implements Session<QueryFilter> {
                 String id = (String) map.get(idKey);
                 ids.add(id);
             }
+            match = ids.size();
             return new PartialList<>(ids, pl.totalSize());
         } finally {
             long duration = timerContext.stop();
+
+
             if (LOG_MIN_DURATION_NS >= 0 && duration > LOG_MIN_DURATION_NS) {
                 String msg = String.format("duration_ms:\t%.2f\t%s %s\tquery\t%s", duration / 1000000.0, queryFilter,
                         countUpToAsString(countUpTo), query);

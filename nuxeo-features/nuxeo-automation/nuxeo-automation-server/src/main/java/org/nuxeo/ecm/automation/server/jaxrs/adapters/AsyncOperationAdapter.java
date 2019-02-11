@@ -18,8 +18,15 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.adapters;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +36,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -73,6 +79,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import io.opencensus.common.Scope;
+import io.opencensus.trace.Link;
+import io.opencensus.trace.Span;
+import io.opencensus.trace.SpanContext;
+import io.opencensus.trace.Status;
+import io.opencensus.trace.Tracing;
 
 /**
  * Adapter that allows asynchronous execution of operations.
@@ -170,18 +183,23 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         NuxeoPrincipal principal = session.getPrincipal();
 
         // TODO NXP-26303: use thread pool
+        SpanContext traceContext = Tracing.getTracer().getCurrentSpan().getContext();
         new Thread(() -> {
-            TransactionHelper.runInTransaction(() -> {
-                LoginComponent.pushPrincipal(principal);
-                try (var s = CoreInstance.openCoreSession(repoName, principal)){
-                    opCtx.setCoreSession(s);
-                    service.run(opCtx, opId, xreq.getParams());
-                } catch (OperationException e) {
-                    setError(executionId, e.getMessage());
-                } finally {
-                    LoginComponent.popPrincipal();
-                }
-            });
+            Span span = Tracing.getTracer().spanBuilderWithRemoteParent("asyncOp." + opId, traceContext).startSpan();
+            span.addLink(Link.fromSpanContext(traceContext, Link.Type.PARENT_LINKED_SPAN));
+            try(Scope scope = Tracing.getTracer().withSpan(span)) {
+                TransactionHelper.runInTransaction(() -> {
+                    LoginComponent.pushPrincipal(principal);
+                    try (var s = CoreInstance.openCoreSession(repoName, principal)){
+                        opCtx.setCoreSession(s);
+                        service.run(opCtx, opId, xreq.getParams());
+                    } catch (OperationException e) {
+                        setError(executionId, e.getMessage());
+                    } finally {
+                        LoginComponent.popPrincipal();
+                    }
+	         });
+             }
         }, String.format("Nuxeo-AsyncOperation-%s", executionId)).start();
 
         try {

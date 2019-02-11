@@ -57,6 +57,7 @@ public class Log4jWebFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
         try {
+
             putProperty(request, "RemoteAddr");
             putProperty(request, "PathInfo");
             putProperty(request, "RequestURL");

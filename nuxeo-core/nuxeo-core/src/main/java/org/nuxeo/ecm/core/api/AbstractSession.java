@@ -64,6 +64,7 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -111,6 +112,10 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
+
+import io.opencensus.trace.AttributeValue;
+import io.opencensus.trace.Span;
+import io.opencensus.trace.Tracing;
 
 /**
  * Abstract implementation of the client interface.
@@ -1160,6 +1165,27 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public DocumentModelList query(String query, String queryType, Filter filter, long limit, long offset,
             long countUpTo) {
+        Span span = Tracing.getTracer().getCurrentSpan();
+        Map<String, AttributeValue> attributes = new HashMap<>();
+        attributes.put("nxql", AttributeValue.stringAttributeValue(query));
+        if (filter != null) {
+            attributes.put("filter", AttributeValue.stringAttributeValue(filter.toString()));
+        }
+        attributes.put("limit", AttributeValue.longAttributeValue(limit));
+        attributes.put("offset", AttributeValue.longAttributeValue(offset));
+        attributes.put("countUpTo", AttributeValue.longAttributeValue(countUpTo));
+        span.addAnnotation("query", attributes);
+
+        DocumentModelList ret = tracedQuery(query, queryType, filter, limit, offset, countUpTo);
+
+        attributes.clear();
+        attributes.put("match", AttributeValue.longAttributeValue(ret.totalSize()));
+        span.addAnnotation("query.done", attributes);
+        return ret;
+    }
+
+    protected DocumentModelList tracedQuery(String query, String queryType, Filter filter, long limit, long offset,
+            long countUpTo) {
         SecurityService securityService = getSecurityService();
         NuxeoPrincipal principal = getPrincipal();
         try {
@@ -1239,6 +1265,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType, boolean distinctDocuments,
             Object... params) {
+        Span span = Tracing.getTracer().getCurrentSpan();
+        Map<String, AttributeValue> attributes = new HashMap<>();
+        attributes.put("nxql", AttributeValue.stringAttributeValue(query));
+        span.addAnnotation("queryAndFetch", attributes);
         try {
             SecurityService securityService = getSecurityService();
             NuxeoPrincipal principal = getPrincipal();
@@ -1247,7 +1277,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             Collection<Transformer> transformers = getPoliciesQueryTransformers(queryType);
 
             QueryFilter queryFilter = new QueryFilter(principal, principals, permissions, null, transformers, 0, 0);
-            return getSession().queryAndFetch(query, queryType, queryFilter, distinctDocuments, params);
+            IterableQueryResult result = getSession().queryAndFetch(query, queryType, queryFilter, distinctDocuments,
+                    params);
+
+            attributes.clear();
+            attributes.put("match", AttributeValue.longAttributeValue(result.size()));
+            span.addAnnotation("queryAndFetch.done", attributes);
+            return result;
         } catch (QueryParseException e) {
             e.addInfo("Failed to execute query: " + queryType + ": " + query);
             throw e;
@@ -1303,7 +1339,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public ScrollResult<String> scroll(String query, int batchSize, int keepAliveSeconds) {
+        Map<String, AttributeValue> attributes = new HashMap<>();
+        Span span = Tracing.getTracer().getCurrentSpan();
+        attributes.put("nxql", AttributeValue.stringAttributeValue(query));
+        attributes.put("batchSize", AttributeValue.longAttributeValue(batchSize));
+        attributes.put("keepAliveSeconds", AttributeValue.longAttributeValue(keepAliveSeconds));
         if (isAdministrator()) {
+            span.addAnnotation("scroll", attributes);
             return getSession().scroll(query, batchSize, keepAliveSeconds);
         }
         SecurityService securityService = getSecurityService();
@@ -1313,11 +1355,16 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         String[] permissions = securityService.getPermissionsToCheck(permission);
         Collection<Transformer> transformers = getPoliciesQueryTransformers(NXQL.NXQL);
         QueryFilter queryFilter = new QueryFilter(principal, principals, permissions, null, transformers, 0, 0);
+
+        attributes.put("queryFilter", AttributeValue.stringAttributeValue(queryFilter.toString()));
+        span.addAnnotation("scroll", attributes);
         return getSession().scroll(query, queryFilter, batchSize, keepAliveSeconds);
     }
 
     @Override
     public ScrollResult<String> scroll(String scrollId) {
+        Span span = Tracing.getTracer().getCurrentSpan();
+        span.addAnnotation("scroll next");
         return getSession().scroll(scrollId);
     }
 
@@ -1481,6 +1528,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public void save() {
+        Span span = Tracing.getTracer().getCurrentSpan();
+        span.addAnnotation("session.save");
         try {
             final Map<String, Serializable> options = new HashMap<>();
             getSession().save();
@@ -1488,6 +1537,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         } catch (ConcurrentUpdateException e) {
             e.addInfo("Failed to save session");
             throw e;
+        } finally {
+            span.addAnnotation("session.save.done");
         }
     }
 

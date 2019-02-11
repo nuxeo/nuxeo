@@ -19,7 +19,7 @@
 package org.nuxeo.lib.stream.computation;
 
 import static java.lang.Math.min;
-
+import org.apache.avro.reflect.Nullable;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -32,6 +32,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import io.opencensus.trace.Tracing;
 
 /**
  * Basic data object that contains: key, watermark, flag and data.
@@ -67,6 +69,12 @@ public class Record implements Externalizable {
 
     protected byte flagsAsByte;
 
+    /** @since 10.2 used for tracing context propagation */
+    protected byte[] traceContext = NO_DATA;
+
+    @Nullable
+    protected String appenderThread;
+
     public Record() {
         // Empty constructor required for deserialization
     }
@@ -90,6 +98,10 @@ public class Record implements Externalizable {
         this.watermark = watermark;
         setData(data);
         setFlags(flags);
+        traceContext = Tracing.getPropagationComponent()
+                              .getBinaryFormat()
+                              .toByteArray(Tracing.getTracer().getCurrentSpan().getContext());
+        appenderThread = Thread.currentThread().getName();
     }
 
     /**
@@ -259,4 +271,13 @@ public class Record implements Externalizable {
 
         public static final EnumSet<Flag> ALL_OPTS = EnumSet.allOf(Flag.class);
     }
+
+    public byte[] getTraceContext() {
+        return traceContext;
+    }
+
+    public String getAppenderThread() {
+        return appenderThread;
+    }
+
 }

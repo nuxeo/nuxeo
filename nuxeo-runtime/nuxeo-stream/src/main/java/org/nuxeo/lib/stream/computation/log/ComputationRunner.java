@@ -19,7 +19,9 @@
 package org.nuxeo.lib.stream.computation.log;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,17 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
+
+import io.opencensus.common.Scope;
+import io.opencensus.trace.AttributeValue;
+import io.opencensus.trace.BlankSpan;
+import io.opencensus.trace.Link;
+import io.opencensus.trace.Span;
+import io.opencensus.trace.SpanContext;
+import io.opencensus.trace.Tracer;
+import io.opencensus.trace.Tracing;
+import io.opencensus.trace.propagation.BinaryFormat;
+import io.opencensus.trace.propagation.SpanContextParseException;
 
 import net.jodah.failsafe.Failsafe;
 
@@ -129,6 +142,8 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     // @since 11.1
     protected boolean recordActivity;
+
+    protected SpanContext lastSpanContext;
 
     @SuppressWarnings("unchecked")
     public ComputationRunner(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
@@ -284,7 +299,6 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             return false;
         }
         long now = System.currentTimeMillis();
-        final boolean[] timerUpdate = { false };
         // filter and order timers
         LinkedHashMap<String, Long> sortedTimer = timers.entrySet()
                                                         .stream()
@@ -293,22 +307,48 @@ public class ComputationRunner implements Runnable, RebalanceListener {
                                                         .collect(
                                                                 Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                                                                         (e1, e2) -> e1, LinkedHashMap::new));
-        sortedTimer.forEach((key, value) -> {
-            context.removeTimer(key);
-            processTimerWithRetry(key, value);
-            timerUpdate[0] = true;
-        });
-        if (timerUpdate[0]) {
-            checkSourceLowWatermark();
-            lastTimerExecution = now;
-            setThreadName("timer");
-            checkpointIfNecessary();
-            if (context.requireTerminate()) {
-                stop = true;
-            }
-            return true;
+        if (sortedTimer.isEmpty()) {
+            return false;
         }
-        return false;
+        return processTimerWithTracing(now, sortedTimer);
+    }
+
+    protected boolean processTimerWithTracing(long now, LinkedHashMap<String, Long> sortedTimer) {
+        Tracer tracer = Tracing.getTracer();
+        Span span;
+        if (lastSpanContext != null) {
+            span = tracer.spanBuilderWithRemoteParent("comp." + computation.metadata().name() + ".timer",
+                    lastSpanContext).startSpan();
+            span.addLink(Link.fromSpanContext(lastSpanContext, Link.Type.PARENT_LINKED_SPAN));
+            HashMap<String, AttributeValue> map = new HashMap<>();
+            map.put("comp.thread", AttributeValue.stringAttributeValue(Thread.currentThread().getName()));
+            map.put("record.last_offset", AttributeValue.stringAttributeValue(context.getLastOffset().toString()));
+            span.putAttributes(map);
+            lastSpanContext = null;
+        } else {
+            span = BlankSpan.INSTANCE;
+        }
+        try (Scope scope = Tracing.getTracer().withSpan(span)) {
+            final boolean[] timerUpdate = { false };
+            sortedTimer.forEach((key, value) -> {
+                context.removeTimer(key);
+                processTimerWithRetry(key, value);
+                timerUpdate[0] = true;
+            });
+            if (timerUpdate[0]) {
+                checkSourceLowWatermark();
+                lastTimerExecution = now;
+                setThreadName("timer");
+                checkpointIfNecessary();
+                if (context.requireTerminate()) {
+                    stop = true;
+                }
+                return true;
+            }
+            return false;
+        } finally {
+            span.end();
+        }
     }
 
     protected void processTimerWithRetry(String key, Long value) {
@@ -355,14 +395,53 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             lowWatermark.mark(record.getWatermark());
             context.setLastOffset(logRecord.offset());
             String from = metadata.reverseMap(stream);
+            processRecordWithTracing(from, record);
+            return true;
+        }
+        return false;
+    }
+
+    protected void processRecordWithTracing(String from, Record record) {
+        Span span = getSpanFromRecord(record);
+        try (Scope scope = Tracing.getTracer().withSpan(span)) {
             processRecordWithRetry(from, record);
             checkRecordFlags(record);
             checkSourceLowWatermark();
             setThreadName("record");
             checkpointIfNecessary();
-            return true;
+        } finally {
+            span.end();
         }
-        return false;
+    }
+
+    protected Span getSpanFromRecord(Record record) {
+        byte[] traceContext = record.getTraceContext();
+        if (traceContext == null || traceContext.length == 0) {
+            return BlankSpan.INSTANCE;
+        }
+        Tracer tracer = Tracing.getTracer();
+        BinaryFormat binaryFormat = Tracing.getPropagationComponent().getBinaryFormat();
+        try {
+            // Build a span that has a follows from relationship with the parent span to denote an async processing
+            lastSpanContext = binaryFormat.fromByteArray(traceContext);
+            Span span = tracer.spanBuilderWithRemoteParent("comp." + computation.metadata().name(), lastSpanContext)
+                              .startSpan();
+            span.addLink(Link.fromSpanContext(lastSpanContext, Link.Type.PARENT_LINKED_SPAN));
+
+            HashMap<String, AttributeValue> map = new HashMap<>();
+            map.put("comp.thread", AttributeValue.stringAttributeValue(Thread.currentThread().getName()));
+            map.put("record.key", AttributeValue.stringAttributeValue(record.getKey()));
+            map.put("record.offset", AttributeValue.stringAttributeValue(context.getLastOffset().toString()));
+            map.put("record.watermark",
+                    AttributeValue.stringAttributeValue(Watermark.ofValue(record.getWatermark()).toString()));
+            map.put("record.submit_thread", AttributeValue.stringAttributeValue(record.getAppenderThread()));
+            map.put("record.data.length", AttributeValue.longAttributeValue(record.getData().length));
+            span.putAttributes(map);
+            return span;
+        } catch (SpanContextParseException e) {
+            log.warn("Invalid span context " + traceContext.length);
+        }
+        return BlankSpan.INSTANCE;
     }
 
     protected void processRecordWithRetry(String from, Record record) {
@@ -470,15 +549,23 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     protected void saveOffsets() {
         if (tailer != null) {
             tailer.commit();
+            Span span = Tracing.getTracer().getCurrentSpan();
+            span.addAnnotation("Checkpoint positions" + Instant.now().toString());
         }
     }
 
     protected void sendRecords() {
+        boolean firstRecord = true;
         for (String stream : metadata.outputStreams()) {
             for (Record record : context.getRecords(stream)) {
                 if (record.getWatermark() == 0) {
                     // use low watermark when not set
                     record.setWatermark(lowWatermark.getLow().getValue());
+                }
+                if (firstRecord) {
+                    Span span = Tracing.getTracer().getCurrentSpan();
+                    span.addAnnotation("Sending records " + Instant.now().toString());
+                    firstRecord = false;
                 }
                 streamManager.append(stream, record);
                 outRecords++;

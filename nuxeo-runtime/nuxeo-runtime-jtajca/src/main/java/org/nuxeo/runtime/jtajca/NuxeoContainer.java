@@ -20,6 +20,7 @@
 package org.nuxeo.runtime.jtajca;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,6 +59,7 @@ import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionImpl;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
+import org.apache.geronimo.transaction.manager.XidImpl;
 import org.apache.xbean.naming.reference.SimpleReference;
 import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.common.utils.ExceptionUtils;
@@ -69,6 +71,14 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
+
+import io.opencensus.common.Scope;
+import io.opencensus.trace.AttributeValue;
+import io.opencensus.trace.BlankSpan;
+import io.opencensus.trace.Span;
+import io.opencensus.trace.Status;
+import io.opencensus.trace.Tracer;
+import io.opencensus.trace.Tracing;
 
 /**
  * Internal helper for the Nuxeo-defined transaction manager and connection manager.
@@ -115,6 +125,8 @@ public class NuxeoContainer {
             MetricRegistry.name("nuxeo", "transactions", "duration"));
 
     protected static final ConcurrentHashMap<Transaction, Timer.Context> timers = new ConcurrentHashMap<>();
+
+    protected static final ConcurrentHashMap<Transaction, Scope> scopes = new ConcurrentHashMap<>();
 
     private NuxeoContainer() {
     }
@@ -518,6 +530,18 @@ public class NuxeoContainer {
         public void begin() throws NotSupportedException, SystemException {
             SequenceTracer.start("tx begin", "#DarkSalmon");
             transactionManager.begin();
+            Tracer tracer = Tracing.getTracer();
+            Span span = tracer.getCurrentSpan();
+            if (span instanceof BlankSpan) {
+                // transaction without trace context
+                span = tracer.spanBuilder("root.transaction").startSpan();
+                Scope scope = tracer.withSpan(span);
+                scopes.put(transactionManager.getTransaction(), scope);
+            }
+            HashMap<String, AttributeValue> map = new HashMap<>();
+            map.put("tx.thread", AttributeValue.stringAttributeValue(Thread.currentThread().getName()));
+            map.put("tx.id", AttributeValue.stringAttributeValue(getTransactionId()));
+            span.addAnnotation("tx.begin", map);
             timers.put(transactionManager.getTransaction(), transactionTimer.time());
             concurrentCount.inc();
             if (concurrentCount.getCount() > concurrentMaxCount.getCount()) {
@@ -525,10 +549,29 @@ public class NuxeoContainer {
             }
         }
 
+        protected String getTransactionId() {
+            return transactionKeyAsString(((TransactionManagerImpl) transactionManager).getTransactionKey());
+        }
+
+        protected static String transactionKeyAsString(Object key) {
+            if (key instanceof XidImpl) {
+                byte[] globalId = ((XidImpl) key).getGlobalTransactionId();
+                StringBuilder buffer = new StringBuilder();
+                for (byte aGlobalId : globalId) {
+                    buffer.append(Integer.toHexString(aGlobalId));
+                }
+                return buffer.toString().replaceAll("0*$", "");
+            }
+            return key.toString();
+        }
+
         @Override
         public void commit() throws HeuristicMixedException, HeuristicRollbackException, IllegalStateException,
                 RollbackException, SecurityException, SystemException {
-            SequenceTracer.start("tx commiting", "#de6238");
+            Scope scope = scopes.remove(transactionManager.getTransaction());
+            Span span = Tracing.getTracer().getCurrentSpan();
+            span.addAnnotation("tx.committing");
+            SequenceTracer.start("tx committing", "#de6238");
             Transaction transaction = transactionManager.getTransaction();
             if (transaction == null) {
                 throw new IllegalStateException("No transaction associated with current thread");
@@ -540,12 +583,24 @@ public class NuxeoContainer {
                 long elapsed = timerContext.stop();
                 SequenceTracer.stop("tx commited");
                 SequenceTracer.stop("tx end " + elapsed / 1000000 + " ms");
+
+                HashMap<String, AttributeValue> map = new HashMap<>();
+                map.put("tx.duration_ms", AttributeValue.longAttributeValue(elapsed / 1000_000));
+                span.addAnnotation("tx.commited", map);
             }
             concurrentCount.dec();
+            span.setStatus(Status.OK);
+            if (scope != null) {
+                span.end();
+                scope.close();
+            }
         }
 
         @Override
         public void rollback() throws IllegalStateException, SecurityException, SystemException {
+            Scope scope = scopes.remove(transactionManager.getTransaction());
+            Span span = Tracing.getTracer().getCurrentSpan();
+            span.addAnnotation("tx.rollbacking");
             SequenceTracer.mark("tx rollbacking");
             Transaction transaction = transactionManager.getTransaction();
             if (transaction == null) {
@@ -560,6 +615,12 @@ public class NuxeoContainer {
                 SequenceTracer.destroy("tx rollbacked " + elapsed / 1000000 + " ms");
             }
             rollbackCount.inc();
+            span.addAnnotation("tx.rollbacked");
+            span.setStatus(Status.UNKNOWN);
+            if (scope != null) {
+                span.end();
+                scope.close();
+            }
         }
     }
 

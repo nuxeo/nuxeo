@@ -16,6 +16,19 @@
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
+    <filter>
+      <display-name>Tracing Web Filter</display-name>
+      <filter-name>TracingWebFilter</filter-name>
+      <filter-class>org.nuxeo.ecm.core.management.jtajca.internal.TracingWebFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>TracingWebFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
   </extension>
 
 </fragment>
