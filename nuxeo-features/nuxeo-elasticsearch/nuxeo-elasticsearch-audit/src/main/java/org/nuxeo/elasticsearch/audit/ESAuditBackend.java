@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -307,6 +308,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 String leftName = getFieldName.apply(predicate.lvalue);
                 Operator operator = predicate.operator;
                 Object rightValue = Literals.valueOf(predicate.rvalue);
+                if (rightValue instanceof ZonedDateTime) {
+                    // The ZonedDateTime representation is not compatible with Elasticsearch query
+                    rightValue = ((ZonedDateTime) rightValue).toOffsetDateTime();
+                }
                 if (Operator.EQ.equals(operator)) {
                     boolQuery.must(QueryBuilders.termQuery(leftName, rightValue));
                 } else if (Operator.NOTEQ.equals(operator)) {
