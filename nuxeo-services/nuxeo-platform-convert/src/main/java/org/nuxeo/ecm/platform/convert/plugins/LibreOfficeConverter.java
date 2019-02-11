@@ -19,11 +19,13 @@
 
 package org.nuxeo.ecm.platform.convert.plugins;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -78,15 +80,16 @@ public class LibreOfficeConverter extends CommandLineConverter {
         }
     }
 
-    private void deleteTempDirectory(String tempPath) {
-        Path path = Paths.get(tempPath);
-        if (!Files.exists(path)) {
-            return;
-        }
-
+    private void deleteTempDirectory(String tempFileURI) {
         try {
-            FileUtils.deleteDirectory(path.toFile());
-        } catch (IOException e) {
+            // tempFileURI is an URI (file:///tmp/foo)
+            URI uri = new URI(tempFileURI);
+            File file = new File(uri);
+            if (!Files.exists(file.toPath())) {
+                return;
+            }
+            FileUtils.deleteDirectory(file);
+        } catch (IOException | URISyntaxException e) {
             log.error(e);
             log.debug(e, e);
         }
