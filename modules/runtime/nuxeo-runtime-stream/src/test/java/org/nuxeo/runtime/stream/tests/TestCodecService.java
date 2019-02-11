@@ -60,11 +60,11 @@ public class TestCodecService {
         Codec<Record> codec = service.getCodec("java", Record.class);
         checkCodec(record, codec, 90);
         codec = service.getCodec("avro", Record.class);
-        checkCodec(record, codec, 30);
+        checkCodec(record, codec, 33);
         codec = service.getCodec("avroBinary", Record.class);
-        checkCodec(record, codec, 20);
+        checkCodec(record, codec, 23);
         codec = service.getCodec("avroJson", Record.class);
-        checkCodec(record, codec, 75);
+        checkCodec(record, codec, 127);
 
         codec = service.getCodec("java", Record.class);
         checkCodec(record, codec, 90);

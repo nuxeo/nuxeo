@@ -41,6 +41,9 @@ import org.nuxeo.ecm.core.io.registry.context.WrappedContext;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
+import io.opencensus.trace.Span;
+import io.opencensus.trace.Tracing;
+
 /**
  * Base class to write Nuxeo Json entity. This class write the json object, the json "entity-type" property and enable
  * all activated enrichers registered in the {@link MarshallerRegistry} and compatible with the marshalled Java type.
@@ -72,6 +75,8 @@ public abstract class ExtensibleEntityJsonWriter<EntityType> extends AbstractJso
 
     @Override
     public void write(EntityType entity, JsonGenerator jg) throws IOException {
+        Span span = Tracing.getTracer().getCurrentSpan();
+        span.addAnnotation("json#write " + entityType);
         jg.writeStartObject();
         List<Object> entityList = new ArrayList<>();
         entityList.add(this.entityType);
@@ -85,6 +90,7 @@ public abstract class ExtensibleEntityJsonWriter<EntityType> extends AbstractJso
                 boolean hasEnrichers = false;
                 Enriched<EntityType> enriched = null;
                 for (String enricherName : enrichers) {
+                    span.addAnnotation("json#write " + entityType + ".enricher." + enricherName);
                     try (Closeable resource = wrappedCtx.with(ENTITY_ENRICHER_NAME, enricherName).open()) {
                         @SuppressWarnings("rawtypes")
                         Collection<Writer<Enriched>> writers = registry.getAllWriters(ctx, Enriched.class,
@@ -110,6 +116,7 @@ public abstract class ExtensibleEntityJsonWriter<EntityType> extends AbstractJso
         }
         extend(entity, jg);
         jg.writeEndObject();
+        span.addAnnotation("json#write " + entityType + ".done");
     }
 
     /**

@@ -81,7 +81,14 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-stream</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>io.opencensus</groupId>
+      <artifactId>opencensus-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opencensus</groupId>
+      <artifactId>opencensus-impl</artifactId>
+    </dependency>
     <!-- only for tests -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

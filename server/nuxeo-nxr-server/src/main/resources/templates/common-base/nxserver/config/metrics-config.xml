@@ -61,6 +61,30 @@
       class="org.nuxeo.runtime.metrics.reporter.PrometheusReporter">
       <option name="port">${metrics.prometheus.port}</option>
     </reporter>
+
+    <reporter enabled="${tracing.jaeger.enabled}" name="jaeger"
+      class="org.nuxeo.runtime.metrics.reporter.JaegerReporter">
+      <option name="url">${tracing.jaeger.url}</option>
+      <option name="timeout">${tracing.jaeger.timeout}</option>
+      <option name="maxAttributes">${tracing.attributes.max}</option>
+      <option name="maxAnnotations">${tracing.annotations.max}</option>
+      <option name="samplerProbability">${tracing.sampler.probability}</option>
+    </reporter>
+
+    <reporter enabled="${tracing.zipkin.enabled}" name="zipkin"
+      class="org.nuxeo.runtime.metrics.reporter.ZipkinReporter">
+      <option name="url">${tracing.zipkin.url}</option>
+      <option name="timeout">${tracing.zipkin.timeout}</option>
+      <option name="maxAttributes">${tracing.attributes.max}</option>
+      <option name="maxAnnotations">${tracing.annotations.max}</option>
+      <option name="samplerProbability">${tracing.sampler.probability}</option>
+    </reporter>
+
+    <reporter enabled="${tracing.zpage.enabled}" name="zpage"
+      class="org.nuxeo.runtime.metrics.reporter.ZPageReporter">
+      <option name="port">${tracing.zpage.port}</option>
+    </reporter>
+
   </extension>
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">

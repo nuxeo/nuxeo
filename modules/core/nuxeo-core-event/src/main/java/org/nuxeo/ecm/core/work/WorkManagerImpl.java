@@ -83,6 +83,10 @@ import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
 
+import io.opencensus.common.Scope;
+import io.opencensus.trace.Tracer;
+import io.opencensus.trace.Tracing;
+
 /**
  * The implementation of a {@link WorkManager}. This delegates the queuing implementation to a {@link WorkQueuing}
  * implementation.
@@ -919,22 +923,27 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         if (!isStarted()) {
             return true;
         }
-        SequenceTracer.start("awaitCompletion on " + (queueId == null ? "all queues" : queueId));
-        long durationInMs = TimeUnit.MILLISECONDS.convert(duration, unit);
-        long deadline = getTimestampAfter(durationInMs);
-        int pause = (int) Math.min(durationInMs, 500L);
-        log.debug("awaitForCompletion {} ms", durationInMs);
-        do {
-            if (noScheduledOrRunningWork(queueId)) {
-                completionSynchronizer.signalCompletedWork();
-                SequenceTracer.stop("done");
-                return true;
-            }
-            completionSynchronizer.waitForCompletedWork(pause);
-        } while (System.currentTimeMillis() < deadline);
-        log.info("awaitCompletion timeout after {} ms", durationInMs);
-        SequenceTracer.destroy("timeout after " + durationInMs + " ms");
-        return false;
+        Tracer tracer = Tracing.getTracer();
+        try (Scope scope = tracer.spanBuilder("workmanager.awaitCompletion").startScopedSpan()) {
+            SequenceTracer.start("awaitCompletion on " + (queueId == null ? "all queues" : queueId));
+            long durationInMs = TimeUnit.MILLISECONDS.convert(duration, unit);
+            long deadline = getTimestampAfter(durationInMs);
+            int pause = (int) Math.min(durationInMs, 500L);
+            log.debug("awaitForCompletion {} ms", durationInMs);
+            do {
+                if (noScheduledOrRunningWork(queueId)) {
+                    completionSynchronizer.signalCompletedWork();
+                    SequenceTracer.stop("done");
+                    tracer.getCurrentSpan().setStatus(io.opencensus.trace.Status.OK);
+                    return true;
+                }
+                completionSynchronizer.waitForCompletedWork(pause);
+            } while (System.currentTimeMillis() < deadline);
+            log.info("awaitCompletion timeout after {} ms", durationInMs);
+            SequenceTracer.destroy("timeout after " + durationInMs + " ms");
+            tracer.getCurrentSpan().setStatus(io.opencensus.trace.Status.DEADLINE_EXCEEDED);
+            return false;
+        }
     }
 
     protected long getTimestampAfter(long durationInMs) {

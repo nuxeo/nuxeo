@@ -60,6 +60,17 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
+import io.opencensus.common.Scope;
+import io.opencensus.trace.AttributeValue;
+import io.opencensus.trace.BlankSpan;
+import io.opencensus.trace.Link;
+import io.opencensus.trace.Span;
+import io.opencensus.trace.SpanContext;
+import io.opencensus.trace.Status;
+import io.opencensus.trace.Tracer;
+import io.opencensus.trace.Tracing;
+import io.opencensus.trace.propagation.BinaryFormat;
+import io.opencensus.trace.propagation.SpanContextParseException;
 
 /**
  * A base implementation for a {@link Work} instance, dealing with most of the details around state change.
@@ -159,6 +170,8 @@ public abstract class AbstractWork implements Work {
         SharedMetricRegistries.getOrCreate(MetricsService.class.getName()).counter(GLOBAL_DLQ_COUNT_REGISTRY_NAME);
     }
 
+    protected byte[] traceContext;
+
     /**
      * Constructs a {@link Work} instance with a unique id.
      */
@@ -167,7 +180,6 @@ public abstract class AbstractWork implements Work {
         // - several calls in the time granularity of nanoTime()
         // - several concurrent calls on different servers
         this(System.nanoTime() + "." + (RANDOM.nextInt() & 0x7fffffff));
-        callerThread = SequenceTracer.getThreadName();
     }
 
     public AbstractWork(String id) {
@@ -175,6 +187,9 @@ public abstract class AbstractWork implements Work {
         progress = PROGRESS_INDETERMINATE;
         schedulingTime = System.currentTimeMillis();
         callerThread = SequenceTracer.getThreadName();
+        traceContext = Tracing.getPropagationComponent()
+                              .getBinaryFormat()
+                              .toByteArray(Tracing.getTracer().getCurrentSpan().getContext());
     }
 
     @Override
@@ -353,35 +368,77 @@ public abstract class AbstractWork implements Work {
             suspended();
             return;
         }
-        if (SequenceTracer.isEnabled()) {
-            SequenceTracer.startFrom(callerThread, "Work " + getTitleOr("unknown"), " #7acde9");
-        }
-        RuntimeException suppressed = null;
-        int retryCount = getRetryCount(); // may be 0
-        for (int i = 0; i <= retryCount; i++) {
-            if (i > 0) {
-                log.debug("Retrying work due to concurrent update (" + i + "): " + this);
-                log.trace("Concurrent update", suppressed);
+        Span span = getSpanFromContext(traceContext);
+        try (Scope scope = Tracing.getTracer().withSpan(span)) {
+            if (SequenceTracer.isEnabled()) {
+                SequenceTracer.startFrom(callerThread, "Work " + getTitleOr("unknown"), " #7acde9");
             }
-            if (ExceptionUtils.hasInterruptedCause(suppressed)) {
-                // if we're here suppressed != null so we destroy SequenceTracer
-                log.debug("No need to retry the work with id=" + getId() + ", work manager is shutting down");
-                break;
-            }
-            try {
-                runWorkWithTransaction();
-                SequenceTracer.stop("Work done " + (completionTime - startTime) + " ms");
-                return;
-            } catch (RuntimeException e) {
-                if (suppressed == null) {
-                    suppressed = e;
-                } else {
-                    suppressed.addSuppressed(e);
+            RuntimeException suppressed = null;
+            int retryCount = getRetryCount(); // may be 0
+            for (int i = 0; i <= retryCount; i++) {
+                if (i > 0) {
+                    span.addAnnotation("AbstractWork#run Retrying " + i);
+                    log.debug("Retrying work due to concurrent update (" + i + "): " + this);
+                    log.trace("Concurrent update", suppressed);
+                }
+                if (ExceptionUtils.hasInterruptedCause(suppressed)) {
+                    // if we're here suppressed != null so we destroy SequenceTracer
+                    log.debug("No need to retry the work with id=" + getId() + ", work manager is shutting down");
+                    break;
+                }
+                try {
+                    runWorkWithTransaction();
+                    span.setStatus(Status.OK);
+                    SequenceTracer.stop("Work done " + (completionTime - startTime) + " ms");
+                    return;
+                } catch (RuntimeException e) {
+                    span.addAnnotation("AbstractSession#run Failure: " + e.getMessage());
+                    span.setStatus(Status.UNKNOWN);
+                    if (suppressed == null) {
+                        suppressed = e;
+                    } else {
+                        suppressed.addSuppressed(e);
+                    }
                 }
             }
+            workFailed(suppressed);
+        } finally {
+            span.end();
         }
+    }
 
-        workFailed(suppressed);
+    protected Span getSpanFromContext(byte[] traceContext) {
+        if (traceContext == null || traceContext.length == 0) {
+            return BlankSpan.INSTANCE;
+        }
+        Tracer tracer = Tracing.getTracer();
+        BinaryFormat binaryFormat = Tracing.getPropagationComponent().getBinaryFormat();
+        try {
+            // followsFrom relationship
+            SpanContext spanContext = binaryFormat.fromByteArray(traceContext);
+            Span span = tracer.spanBuilderWithRemoteParent("work/" + getClass().getSimpleName(), spanContext)
+                              .startSpan();
+            span.addLink(Link.fromSpanContext(spanContext, Link.Type.PARENT_LINKED_SPAN));
+            HashMap<String, AttributeValue> map = new HashMap<>();
+            map.put("tx.thread", AttributeValue.stringAttributeValue(Thread.currentThread().getName()));
+            map.put("work.id", AttributeValue.stringAttributeValue(getId()));
+            map.put("work.category", AttributeValue.stringAttributeValue(getCategory()));
+            map.put("work.title", AttributeValue.stringAttributeValue(getTitle()));
+            map.put("work.parent_path", AttributeValue.stringAttributeValue(getSchedulePath().getParentPath()));
+            map.put("work.caller_thread", AttributeValue.stringAttributeValue(callerThread));
+            map.put("work.to_string", AttributeValue.stringAttributeValue(toString()));
+            if (docId != null) {
+                map.put("work.doc_id", AttributeValue.stringAttributeValue(docId));
+            }
+            if (docIds != null && !docIds.isEmpty()) {
+                map.put("work.doc_count", AttributeValue.longAttributeValue(docIds.size()));
+            }
+            span.putAttributes(map);
+            return span;
+        } catch (SpanContextParseException e) {
+            log.warn("No span context " + traceContext.length);
+            return BlankSpan.INSTANCE;
+        }
     }
 
     /**
@@ -411,14 +468,12 @@ public abstract class AbstractWork implements Work {
      * @param exception the exception that occurred
      */
     public void workFailed(RuntimeException exception) {
-
         EventService service = Framework.getService(EventService.class);
         EventContext eventContext = new EventContextImpl(null, session != null ? session.getPrincipal() : null);
         eventContext.setProperties(buildWorkFailureEventProps(exception));
         Event event = new EventImpl(WORK_FAILED_EVENT, eventContext);
         event.setIsCommitEvent(true);
         service.fireEvent(event);
-
         if (exception != null) {
             appendWorkToDeadLetterQueue();
             String msg = "Work failed after " + getRetryCount() + " " + (getRetryCount() == 1 ? "retry" : "retries") + ", class="
