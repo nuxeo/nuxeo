@@ -29,9 +29,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.web.component.SelectItemFactory;
-import org.nuxeo.ecm.platform.usermanager.UserConfig;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.ui.web.component.VariableManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -39,9 +40,20 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class UserAndGroupSelectItemFactory extends SelectItemFactory {
 
+    @Override
+    protected abstract String getVar();
+
     protected abstract String retrieveSelectEntryId();
 
-    public abstract SelectItem createSelectItem(String label);
+    protected abstract SelectItem createSelectItem(String label);
+
+    protected abstract String getItemLabel();
+
+    protected abstract String getDirectoryName();
+
+    protected abstract String getGroupDirectoryName();
+
+    protected abstract String getGroupItemLabel();
 
     @Override
     public SelectItem createSelectItem(Object value) {
@@ -57,7 +69,6 @@ public abstract class UserAndGroupSelectItemFactory extends SelectItemFactory {
             }
         } else if (value instanceof String) {
             Object varValue = saveRequestMapVarValue();
-
             try {
                 item = getSelectItem(value);
             } finally {
@@ -68,53 +79,65 @@ public abstract class UserAndGroupSelectItemFactory extends SelectItemFactory {
     }
 
     protected SelectItem getSelectItem(Object value) {
-        DocumentModel entry;
         String entryId = retrieveEntryIdFrom(value);
-        UserManager userManager = Framework.getService(UserManager.class);
-        String label;
+
+        DocumentModel entry = null;
+        boolean isGroup = false;
+        boolean isUser = false;
         if (entryId.startsWith(NuxeoGroup.PREFIX)) {
             entryId = entryId.substring(NuxeoGroup.PREFIX.length());
-            String groupLabelField = userManager.getGroupLabelField();
-            entry = userManager.getGroupModel(entryId);
-            if (entry == null) {
-                label = entryId;
-            } else {
-                label = entry.getProperty(groupLabelField).getValue(String.class);
-            }
-        } else {
-            if (entryId.startsWith(NuxeoPrincipal.PREFIX)) {
-                entryId = entryId.substring(NuxeoPrincipal.PREFIX.length());
-            }
-            entry = userManager.getUserModel(entryId);
-            if (entry == null) {
-                label = entryId;
-            } else {
-                String id = (String) entry.getProperty(UserConfig.SCHEMA_NAME, UserConfig.USERNAME_COLUMN);
-                String first = (String) entry.getProperty(UserConfig.SCHEMA_NAME, UserConfig.FIRSTNAME_COLUMN);
-                String last = (String) entry.getProperty(UserConfig.SCHEMA_NAME, UserConfig.LASTNAME_COLUMN);
-                if (first == null || first.length() == 0) {
-                    if (last == null || last.length() == 0) {
-                        label = id;
-                    } else {
-                        label = last;
-                    }
-                } else {
-                    if (last == null || last.length() == 0) {
-                        label = first;
-                    } else {
-                        label = first + ' ' + last;
-                    }
-                }
-            }
+            isGroup = true;
+        } else if (entryId.startsWith(NuxeoPrincipal.PREFIX)) {
+            entryId = entryId.substring(NuxeoPrincipal.PREFIX.length());
+            isUser = true;
         }
-        putIteratorToRequestParam(value);
+        boolean unprefixed = !isGroup && !isUser;
 
-        if (StringUtils.isBlank(label) && entry != null) {
-            label = entry.toString();
+        DirectoryService dirService = Framework.getService(DirectoryService.class);
+        if (isGroup || unprefixed) {
+            try (Session groupDir = dirService.open(getGroupDirectoryName(), null)) {
+                entry = groupDir.getEntry(entryId);
+            }
         }
-        SelectItem item = createSelectItem(label);
-        removeIteratorFromRequestParam();
-        return item;
+        if (isUser || (unprefixed && entry == null)) {
+            try (Session userDir = dirService.open(getDirectoryName(), null)) {
+                entry = userDir.getEntry(entryId);
+            }
+        }
+
+        String var = getVar();
+        String varId = var + "Id";
+        Object varIdExisting = VariableManager.saveRequestMapVarValue(varId);
+        String varEntry = var + "Entry";
+        Object varEntryExisting = VariableManager.saveRequestMapVarValue(varEntry);
+        try {
+            VariableManager.putVariableToRequestParam(var, value);
+            VariableManager.putVariableToRequestParam(varId, entryId);
+            VariableManager.putVariableToRequestParam(varEntry, entry);
+
+            String label = "";
+            if (isGroup || unprefixed) {
+                label = getGroupItemLabel();
+            }
+            if (isUser || (unprefixed && StringUtils.isBlank(label))) {
+                label = getItemLabel();
+            }
+
+            if (StringUtils.isBlank(label) && entry != null) {
+                label = entry.toString();
+            }
+            // additional label info (like aggregate count information)
+            SelectItem item = createSelectItem(label);
+
+            VariableManager.removeVariableFromRequestParam(var);
+            VariableManager.removeVariableFromRequestParam(varId);
+            VariableManager.removeVariableFromRequestParam(varEntry);
+
+            return item;
+        } finally {
+            VariableManager.restoreRequestMapVarValue(varId, varIdExisting);
+            VariableManager.restoreRequestMapVarValue(varEntry, varEntryExisting);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -122,7 +145,7 @@ public abstract class UserAndGroupSelectItemFactory extends SelectItemFactory {
         Object varValue = saveRequestMapVarValue();
         try {
             // build select items
-            List<SelectItem> items = new ArrayList<SelectItem>();
+            List<SelectItem> items = new ArrayList<>();
             if (value instanceof Collection) {
                 Collection<Object> collection = (Collection<Object>) value;
                 for (Object entry : collection) {
