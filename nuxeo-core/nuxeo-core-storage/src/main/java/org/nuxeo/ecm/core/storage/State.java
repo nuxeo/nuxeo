@@ -243,6 +243,19 @@ public class State implements StateAccessor, Serializable {
     }
 
     /**
+     * Gets any value. Useful when the size is known to be 1.
+     *
+     * @since 11.1
+     */
+    public Serializable getAny() {
+        if (map != null) {
+            return map.values().iterator().next();
+        } else {
+            return values.get(0);
+        }
+    }
+
+    /**
      * Sets a key/value.
      */
     public void put(String key, Serializable value) {

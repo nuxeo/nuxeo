@@ -18,18 +18,20 @@
  */
 package org.nuxeo.ecm.core.storage.pgjson;
 
+import java.io.Serializable;
+
 /**
- * The database-level column types, including per-type parameters like length.
+ * A database column and its type, together with the DBS key it corresponds to.
  *
  * @since 11.1
  */
 public class PGColumn {
 
-    protected final String key;
+    public final String key;
 
-    protected final String name;
+    public final String name;
 
-    protected final PGType type;
+    public final PGType type;
 
     public PGColumn(String key, String name, PGType type) {
         this.key = key;
@@ -40,6 +42,19 @@ public class PGColumn {
     @Override
     public String toString() {
         return getClass().getSimpleName() + '(' + key + ',' + name + ',' + type + ')';
+    }
+
+    /** A column and an associated value. */
+    public static class PGColumnAndValue {
+
+        public final PGColumn column;
+
+        public final Serializable value;
+
+        public PGColumnAndValue(PGColumn column, Serializable value) {
+            this.column = column;
+            this.value = value;
+        }
     }
 
 }

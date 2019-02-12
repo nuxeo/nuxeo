@@ -20,15 +20,21 @@ package org.nuxeo.ecm.core.storage.pgjson;
 
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.pgjson.PGJSONRepository.COL_ID;
-import static org.nuxeo.ecm.core.storage.pgjson.PGJSONRepository.COL_JSON;
+import static org.nuxeo.ecm.core.storage.pgjson.PGJSONRepository.COL_LOCK_CREATED;
+import static org.nuxeo.ecm.core.storage.pgjson.PGJSONRepository.COL_LOCK_OWNER;
 import static org.nuxeo.ecm.core.storage.pgjson.PGJSONRepository.COL_PARENT_ID;
+import static org.nuxeo.ecm.core.storage.pgjson.PGJSONRepository.PSEUDO_KEY_JSON;
+import static org.nuxeo.ecm.core.storage.pgjson.PGType.TYPE_BOOLEAN;
 import static org.nuxeo.ecm.core.storage.pgjson.PGType.TYPE_JSON;
+import static org.nuxeo.ecm.core.storage.pgjson.PGType.TYPE_STRING;
+import static org.nuxeo.ecm.core.storage.pgjson.PGType.TYPE_TIMESTAMP;
 
 import java.io.Serializable;
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -51,15 +57,15 @@ import java.util.UUID;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
-import org.nuxeo.ecm.core.api.model.Delta;
+import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -68,7 +74,6 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.State;
-import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSConnection;
 import org.nuxeo.ecm.core.storage.dbs.DBSConnectionBase;
@@ -76,6 +81,8 @@ import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase.IdType;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
+import org.nuxeo.ecm.core.storage.pgjson.PGJSONConverter.UpdateBuilder;
+import org.nuxeo.ecm.core.storage.pgjson.PGType.PGTypeAndValue;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -93,28 +100,40 @@ public class PGJSONConnection extends DBSConnectionBase {
 
     public static final String TABLE_NAME = "documents";
 
-    protected final Map<String, Type> allTypes;
-
     protected final PGJSONConverter converter;
 
     protected final List<PGColumn> allColumns;
 
+    protected final Map<String, PGColumn> keyToColumn;
+
     protected final PGColumn idColumn;
 
-    protected final PGColumn jsonDocColumn;
+    protected final PGColumn parentIdColumn;
 
-    protected final Map<String, PGColumn> keyToColumn;
+    protected final PGColumn nameColumn;
+
+    protected final PGColumn ancestorIdsColumn;
+
+    protected final PGColumn lockOwnerColumn;
+
+    protected final PGColumn lockCreatedColumn;
+
+    protected final PGColumn jsonDocColumn;
 
     protected final Connection connection;
 
     public PGJSONConnection(PGJSONRepository repository) {
         super(repository);
-        allTypes = repository.getAllTypes();
         converter = repository.getConverter();
         allColumns = repository.getAllColumns();
-        idColumn = repository.getIdColumn(); // TODO get from keyToColumn
-        jsonDocColumn = repository.getJsonDocColumn(); // TODO get from keyToColumn
         keyToColumn = repository.getKeyToColumn();
+        idColumn = keyToColumn.get(KEY_ID);
+        parentIdColumn = keyToColumn.get(KEY_PARENT_ID);
+        nameColumn = keyToColumn.get(KEY_NAME);
+        ancestorIdsColumn = keyToColumn.get(KEY_ANCESTOR_IDS);
+        lockOwnerColumn = keyToColumn.get(KEY_LOCK_OWNER);
+        lockCreatedColumn = keyToColumn.get(KEY_LOCK_CREATED);
+        jsonDocColumn = keyToColumn.get(PSEUDO_KEY_JSON);
 
         // we want a non-transactional connection
         connection = TransactionHelper.runWithoutTransaction(() -> {
@@ -238,7 +257,7 @@ public class PGJSONConnection extends DBSConnectionBase {
                 return;
             }
             createTable();
-            String indexSQL = "";
+            // ========= TODO various indexes =========
 
         } catch (SQLException e) {
             throw new NuxeoException(e);
@@ -269,6 +288,10 @@ public class PGJSONConnection extends DBSConnectionBase {
                 buf.append('(');
                 buf.append(COL_ID);
                 buf.append(") ON DELETE CASCADE");
+            } else if (col.type == TYPE_JSON || col.type.isArray()) {
+                // we need a default to be able to concatenate easily
+                // empty jsonb and empty array happen to have the same syntax {}
+                buf.append(" DEFAULT '{}'");
             }
         }
         buf.append(')');
@@ -279,97 +302,20 @@ public class PGJSONConnection extends DBSConnectionBase {
         }
     }
 
+    protected void setValue(PreparedStatement ps, int i, PGTypeAndValue tv) throws SQLException {
+        setValue(ps, i, tv.type, tv.value);
+    }
+
     protected void setValue(PreparedStatement ps, int i, PGType type, Object value) throws SQLException {
         if (value == null) {
             ps.setNull(i, type.type);
-        } else if (type == PGType.TYPE_STRING) {
-            ps.setString(i, (String) value);
-        } else if (type == PGType.TYPE_LONG) {
-            ps.setLong(i, ((Long) value).longValue());
-        } else if (type == PGType.TYPE_DOUBLE) {
-            ps.setDouble(i, ((Double) value).doubleValue());
-        } else if (type == PGType.TYPE_TIMESTAMP) {
-            long millis = ((Calendar) value).getTimeInMillis();
-            ps.setLong(i, millis);
-        } else if (type == PGType.TYPE_BOOLEAN) {
-            ps.setBoolean(i, ((Boolean) value).booleanValue());
-        } else if (type.isArray()) {
-            Array array = connection.createArrayOf(type.baseType.name, (Object[]) value);
-            ps.setArray(i, array);
-        } else if (type == PGType.TYPE_JSON) {
-            String json = converter.valueToJson(value);
-            ps.setString(i, json);
         } else {
-            throw new UnsupportedOperationException("Unsupported type: " + type);
+            type.setValue(ps, i, value, converter);
         }
     }
 
     protected Serializable getValue(ResultSet rs, int i, PGType type) throws SQLException {
-        if (type == PGType.TYPE_STRING) {
-            return rs.getString(i);
-        } else if (type == PGType.TYPE_LONG) {
-            long l = rs.getLong(i);
-            if (rs.wasNull()) {
-                return null;
-            }
-            return Long.valueOf(l);
-        } else if (type == PGType.TYPE_DOUBLE) {
-            double d = rs.getDouble(i);
-            if (rs.wasNull()) {
-                return null;
-            }
-            return Double.valueOf(d);
-        } else if (type == PGType.TYPE_TIMESTAMP) {
-            long millis = rs.getLong(i);
-            if (rs.wasNull()) {
-                return null;
-            }
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(millis);
-            return cal;
-        } else if (type == PGType.TYPE_BOOLEAN) {
-            boolean b = rs.getBoolean(i);
-            if (rs.wasNull()) {
-                return null;
-            }
-            return Boolean.valueOf(b);
-        } else if (type == PGType.TYPE_STRING_ARRAY) {
-            Array array = rs.getArray(i);
-            if (rs.wasNull()) {
-                return null;
-            }
-            Object[] objectArray = (Object[]) array.getArray();
-            if (objectArray instanceof String[]) {
-                return objectArray;
-            } else {
-                // convert to String[]
-                String[] stringArray = new String[objectArray.length];
-                System.arraycopy(objectArray, 0, stringArray, 0, objectArray.length);
-                return stringArray;
-            }
-        } else if (type == PGType.TYPE_LONG_ARRAY) {
-            Array array = rs.getArray(i);
-            if (rs.wasNull()) {
-                return null;
-            }
-            Object[] objectArray = (Object[]) array.getArray();
-            if (objectArray instanceof Long[]) {
-                return objectArray;
-            } else {
-                // convert to Long[]
-                Long[] longArray = new Long[objectArray.length];
-                System.arraycopy(objectArray, 0, longArray, 0, objectArray.length);
-                return longArray;
-            }
-        } else if (type == PGType.TYPE_JSON) {
-            String json = rs.getString(i);
-            if (rs.wasNull()) {
-                return null;
-            }
-            return converter.jsonToValue(json);
-        } else {
-            throw new UnsupportedOperationException("Unsupported type: " + type);
-        }
+        return type.getValue(rs, i, converter);
     }
 
     @Override
@@ -437,8 +383,7 @@ public class PGJSONConnection extends DBSConnectionBase {
 
     @Override
     public void createState(State state) {
-        List<PGColumn> columns = new ArrayList<>();
-        List<Serializable> values = new ArrayList<>();
+        List<PGTypeAndValue> values = new ArrayList<>();
         State jsonDoc = new State(); // everything not stored in individual columns
 
         StringBuilder buf = new StringBuilder();
@@ -453,29 +398,27 @@ public class PGJSONConnection extends DBSConnectionBase {
                 // collect into JSON doc everything not explicitly in columns
                 jsonDoc.put(key, value);
             } else {
-                if (!columns.isEmpty()) {
+                if (!values.isEmpty()) {
                     buf.append(", ");
                 }
-                columns.add(col);
-                values.add(value);
                 buf.append(col.name);
+                values.add(new PGTypeAndValue(col.type, value));
             }
         }
         if (!jsonDoc.isEmpty()) {
-            if (!columns.isEmpty()) {
+            if (!values.isEmpty()) {
                 buf.append(", ");
             }
-            columns.add(jsonDocColumn);
             buf.append(jsonDocColumn.name);
-            values.add(jsonDoc);
+            values.add(new PGTypeAndValue(TYPE_JSON, jsonDoc));
         }
         buf.append(") VALUES (");
-        for (int i = 0; i < columns.size(); i++) {
-            PGColumn col = columns.get(i);
+        for (int i = 0; i < values.size(); i++) {
             if (i != 0) {
                 buf.append(", ");
             }
-            if (col.type == TYPE_JSON) {
+            PGType type = values.get(i).type;
+            if (type == TYPE_JSON) {
                 buf.append("?::jsonb");
             } else {
                 buf.append('?');
@@ -485,10 +428,8 @@ public class PGJSONConnection extends DBSConnectionBase {
         String sql = buf.toString();
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            for (int i = 0; i < columns.size(); i++) {
-                PGColumn col = columns.get(i);
-                Object value = values.get(i);
-                setValue(ps, i + 1, col.type, value);
+            for (int i = 0; i < values.size(); i++) {
+                setValue(ps, i + 1, values.get(i));
             }
             ps.execute();
         } catch (SQLException e) {
@@ -498,107 +439,66 @@ public class PGJSONConnection extends DBSConnectionBase {
 
     @Override
     public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
-        // TODO changeTokenUpdater
         // TODO optimize later the number of writes
-        List<PGColumn> columns = new ArrayList<>();
-        List<Serializable> values = new ArrayList<>();
+        Map<String, Serializable> conditions;
+        Map<String, Serializable> tokenUpdates;
+        if (changeTokenUpdater != null) {
+            conditions = changeTokenUpdater.getConditions();
+            tokenUpdates = changeTokenUpdater.getUpdates();
+        } else {
+            conditions = Collections.emptyMap();
+            tokenUpdates = Collections.emptyMap();
+        }
 
+        List<PGTypeAndValue> values = new ArrayList<>();
         StringBuilder buf = new StringBuilder();
         buf.append("UPDATE ");
         buf.append(TABLE_NAME);
         buf.append(" SET ");
-        StateDiff jsonDocUpdate = new StateDiff();
-        List<String> jsonDocRemove = new ArrayList<>();
+
+        StateDiff jsonDocDiff = new StateDiff(); // collects everything not in other columns
         for (Entry<String, Serializable> en : diff.entrySet()) {
             String key = en.getKey();
             Serializable value = en.getValue();
             PGColumn col = keyToColumn.get(key);
-            if (col != null) {
-                if (!columns.isEmpty()) {
+            if (col == null) {
+                jsonDocDiff.put(key, value);
+            } else {
+                if (!values.isEmpty()) {
                     buf.append(", ");
                 }
-                if (value instanceof StateDiff) {
-                    throw new UnsupportedOperationException("StateDiff");
-                } else if (value instanceof ListDiff) {
-                    throw new UnsupportedOperationException("ListDiff");
-                } else if (value instanceof State) {
-                    throw new UnsupportedOperationException();
-                } else if (value instanceof Delta) {
-                    buf.append(col.name);
-                    columns.add(col);
-                    buf.append(" = ");
-                    buf.append(col.name);
-                    buf.append(" + ?");
-                    values.add(((Delta) value).getDeltaValue());
-                } else {
-                    buf.append(col.name);
-                    columns.add(col);
-                    buf.append(" = ?");
-                    values.add(value);
-                }
-            } else {
-                // collect into JSON doc everything not explicitly in columns
-                if (value == null) {
-                    jsonDocRemove.add(key);
-                } else {
-                    jsonDocUpdate.put(key, value);
-                }
+                assignValue(buf, values, col, value);
             }
         }
-        if (!jsonDocUpdate.isEmpty() || !jsonDocRemove.isEmpty()) {
-            if (!columns.isEmpty()) {
+        for (Entry<String, Serializable> en : tokenUpdates.entrySet()) {
+            String key = en.getKey();
+            Serializable value = en.getValue();
+            if (!values.isEmpty()) {
                 buf.append(", ");
             }
-            buf.append(COL_JSON);
-            columns.add(jsonDocColumn);
-            buf.append(" = ");
-            buf.append(COL_JSON);
-            if (!jsonDocUpdate.isEmpty()) {
-                // check values supported
-                for (Entry<String, Serializable> en : jsonDocUpdate.entrySet()) {
-                    String key = en.getKey();
-                    Serializable value = en.getValue();
-                    // TODO for now we collect just direct (not diff) updates to first-level keys
-                    if (value instanceof StateDiff) {
-                        throw new UnsupportedOperationException("StateDiff");
-                    } else if (value instanceof ListDiff) {
-                        throw new UnsupportedOperationException("ListDiff");
-                    } else if (value instanceof State) {
-                        // State ok
-                    } else if (value instanceof Delta) {
-                        throw new UnsupportedOperationException("Delta");
-                    } else {
-                        // value ok
-                    }
-                }
-                buf.append(" || ?::jsonb");
-                values.add(jsonDocUpdate);
-            }
-            if (!jsonDocRemove.isEmpty()) {
-                buf.append(" - {"); // PostgreSQL array syntax for list of keys to remove
-                for (int i = 0; i < jsonDocRemove.size(); i++) {
-                    if (i != 0) {
-                        buf.append(',');
-                    }
-                    String key = jsonDocRemove.get(i);
-                    buf.append(key);
-                }
-                buf.append("}::text[]");
-            }
+            assignValue(buf, values, keyToColumn.get(key), value);
         }
+        if (!jsonDocDiff.isEmpty()) {
+            if (!values.isEmpty()) {
+                buf.append(", ");
+            }
+            assignValue(buf, values, jsonDocColumn, jsonDocDiff);
+        }
+
         buf.append(" WHERE ");
-        buf.append(COL_ID);
-        columns.add(idColumn);
-        buf.append(" = ?");
-        values.add(id); // TODO convert for idType
-        // TODO add changeToken from condition
+        assignValue(buf, values, idColumn, id); // equality has same syntax as assignment
+        for (Entry<String, Serializable> en : conditions.entrySet()) {
+            String key = en.getKey();
+            Serializable value = en.getValue();
+            buf.append(" AND ");
+            assignValue(buf, values, keyToColumn.get(key), value);
+        }
+
         String sql = buf.toString();
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            for (int i = 0; i < columns.size(); i++) {
-                PGColumn col = columns.get(i);
-                Object value = values.get(i);
-                setValue(ps, i + 1, col.type, value);
+            for (int i = 0; i < values.size(); i++) {
+                setValue(ps, i + 1, values.get(i));
             }
             int count = ps.executeUpdate();
             if (count != 1) {
@@ -610,18 +510,30 @@ public class PGJSONConnection extends DBSConnectionBase {
         }
     }
 
+    protected void assignValue(StringBuilder buf, List<PGTypeAndValue> values, PGColumn col, Object value) {
+        buf.append(col.name);
+        buf.append(" = ");
+        UpdateBuilder updateBuilder = new UpdateBuilder();
+        String expr = updateBuilder.build(col.name, col.type, value);
+        buf.append(expr);
+        values.addAll(updateBuilder.values);
+    }
+
     @Override
     public void deleteStates(Set<String> ids) {
         if (ids.isEmpty()) {
             return;
         }
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE " + COL_ID + " ";
+        StringBuilder buf = new StringBuilder();
+        buf.append("DELETE FROM ");
+        buf.append(TABLE_NAME);
+        buf.append(" WHERE ");
+        buf.append(COL_ID);
         int size = ids.size();
         if (size == 1) {
-            sql += "= ?";
+            buf.append(" = ?");
         } else {
-            StringBuilder buf = new StringBuilder(3 + 3 * size);
-            buf.append("IN (");
+            buf.append(" IN (");
             for (int i = 0; i < size; i++) {
                 if (i != 0) {
                     buf.append(", ");
@@ -629,12 +541,12 @@ public class PGJSONConnection extends DBSConnectionBase {
                 buf.append('?');
             }
             buf.append(')');
-            sql += buf;
         }
+        String sql = buf.toString();
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             int i = 0;
             for (String id : ids) {
-                ps.setString(++i, id);
+                ps.setString(++i, id); // TODO idType
             }
             int count = ps.executeUpdate();
             if (count != ids.size()) {
@@ -647,9 +559,7 @@ public class PGJSONConnection extends DBSConnectionBase {
 
     @Override
     public State readChildState(String parentId, String name, Set<String> ignored) {
-        PGColumn parentIdCol = keyToColumn.get(KEY_PARENT_ID);
-        PGColumn nameCol = keyToColumn.get(KEY_NAME);
-        List<PGColumn> queryColumns = Arrays.asList(parentIdCol, nameCol);
+        List<PGColumn> queryColumns = Arrays.asList(parentIdColumn, nameColumn);
         List<Serializable> queryValues = Arrays.asList(parentId, name);
         List<State> states = queryKeyValue(queryColumns, queryValues, ignored);
         if (states.isEmpty()) {
@@ -663,9 +573,7 @@ public class PGJSONConnection extends DBSConnectionBase {
 
     @Override
     public boolean hasChild(String parentId, String name, Set<String> ignored) {
-        PGColumn parentIdCol = keyToColumn.get(KEY_PARENT_ID);
-        PGColumn nameCol = keyToColumn.get(KEY_NAME);
-        List<PGColumn> queryColumns = Arrays.asList(parentIdCol, nameCol);
+        List<PGColumn> queryColumns = Arrays.asList(parentIdColumn, nameColumn);
         List<Serializable> queryValues = Arrays.asList(parentId, name);
         return queryKeyValuePresence(queryColumns, queryValues, ignored);
     }
@@ -704,8 +612,7 @@ public class PGJSONConnection extends DBSConnectionBase {
     @Override
     public Stream<State> getDescendants(String id, Set<String> keys, int limit) {
         // TODO limit
-        PGColumn ancestorIdsCol = keyToColumn.get(KEY_ANCESTOR_IDS);
-        List<PGColumn> queryColumns = Arrays.asList(ancestorIdsCol);
+        List<PGColumn> queryColumns = Arrays.asList(ancestorIdsColumn);
         List<Serializable> queryValues = Arrays.asList(id); // TODO convert for idType
         List<PGColumn> returnedColumns = new ArrayList<>();
         for (String key : keys) {
@@ -736,18 +643,64 @@ public class PGJSONConnection extends DBSConnectionBase {
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
-        // TODO Auto-generated method stub
-        return new PartialList<>(Collections.emptyList(), 0);
+        // orderByClause may be null and different from evaluator.getOrderByClause() in case we want to post-filter
+        PGJSONQueryBuilder builder = new PGJSONQueryBuilder((PGJSONRepository) repository, evaluator.pathResolver,
+                evaluator.fulltextSearchDisabled);
+        // TODO limit offset orderByClause countUpTo
+
+        StringBuilder buf = builder.buf;
+        buf.append("SELECT ");
+
+        builder.visitSelectClause(evaluator.getSelectClause());
+        List<PGColumn> returnedColumns = builder.selectColumns;
+
+        buf.append(" FROM ");
+        buf.append(TABLE_NAME);
+        buf.append(" WHERE ");
+
+        builder.visit(evaluator.getExpression());
+
+        String sql = buf.toString();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            for (int i = 0; i < builder.values.size(); i++) {
+                setValue(ps, i + 1, builder.values.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Map<String, Serializable>> list = new ArrayList<>();
+                while (rs.next()) {
+                    Map<String, Serializable> map = new HashMap<>();
+                    int i = 0;
+                    for (PGColumn col : returnedColumns) {
+                        i++;
+                        Serializable value = getValue(rs, i, col.type);
+                        if (value instanceof State) {
+                            // explode value
+                            State jsonDoc = (State) value;
+                            for (Entry<String, Serializable> en : jsonDoc.entrySet()) {
+                                map.put(en.getKey(), en.getValue());
+                            }
+                        } else if (value != null) {
+                            map.put(col.key, value);
+                        }
+                    }
+                    list.add(map);
+                }
+                return new PartialList<>(list, list.size());
+            }
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
     }
 
-    protected List<State> queryKeyValue(List<PGColumn> queryColumns, List<Serializable> queryValues, Set<String> ignored) {
+    protected List<State> queryKeyValue(List<PGColumn> queryColumns, List<Serializable> queryValues,
+            Set<String> ignored) {
         return queryKeyValue(queryColumns, queryValues, ignored, allColumns);
     }
 
     protected List<State> queryKeyValue(List<PGColumn> queryColumns, List<Serializable> queryValues,
             Set<String> ignored, List<PGColumn> returnedColumns) {
         List<State> states = new ArrayList<>();
-        List<PGType> queryColumnTypes = new ArrayList<>();
+        List<PGType> queryTypes = new ArrayList<>();
         StringBuilder buf = new StringBuilder();
         buf.append("SELECT ");
         boolean firstCol = true;
@@ -773,21 +726,20 @@ public class PGJSONConnection extends DBSConnectionBase {
             PGColumn col = queryColumns.get(i);
             buf.append(col.name);
             PGType type = col.type;
-            if (!type.isArray()) {
-                buf.append(" = ?");
-                queryColumnTypes.add(type);
-                // COL_JSON + "->'" + KEY_ANCESTOR_IDS + "' <@ ?::jsonb";
-            } else {
+            if (type.isArray()) {
                 buf.append(" @> ARRAY[?]"); // contains
                 buf.append(getCastForIdArray());
                 // to set the value we must use the base type, not the array type
-                queryColumnTypes.add(type.baseType);
+                queryTypes.add(type.baseType);
+            } else {
+                buf.append(" = ?");
+                queryTypes.add(type);
             }
         }
         String sql = buf.toString();
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            for (int i = 0; i < queryColumnTypes.size(); i++) {
-                PGType type = queryColumnTypes.get(i);
+            for (int i = 0; i < queryTypes.size(); i++) {
+                PGType type = queryTypes.get(i);
                 Serializable value = queryValues.get(i);
                 setValue(ps, i + 1, type, value);
             }
@@ -898,23 +850,152 @@ public class PGJSONConnection extends DBSConnectionBase {
 
     @Override
     public Lock getLock(String id) {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        StringBuilder buf = new StringBuilder();
+        buf.append("SELECT ");
+        buf.append(COL_LOCK_OWNER);
+        buf.append(", ");
+        buf.append(COL_LOCK_CREATED);
+        buf.append(" FROM ");
+        buf.append(TABLE_NAME);
+        buf.append(" WHERE ");
+        buf.append(COL_ID);
+        buf.append(" = ?");
+        String sql = buf.toString();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, id); // TODO idType
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new DocumentNotFoundException(id);
+                }
+                String owner = (String) getValue(rs, 1, TYPE_STRING);
+                Calendar created = (Calendar) getValue(rs, 2, TYPE_TIMESTAMP);
+                return owner == null ? null : new Lock(owner, created);
+            }
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     @Override
     public Lock setLock(String id, Lock lock) {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        List<PGTypeAndValue> values = new ArrayList<>();
+        StringBuilder buf = new StringBuilder();
+        buf.append("UPDATE ");
+        buf.append(TABLE_NAME);
+        buf.append(" SET ");
+        assignValue(buf, values, lockOwnerColumn, lock.getOwner());
+        buf.append(", ");
+        assignValue(buf, values, lockCreatedColumn, lock.getCreated());
+        buf.append(" WHERE ");
+        assignValue(buf, values, idColumn, id); // equality has same syntax as assignment
+        buf.append(" AND ");
+        buf.append(COL_LOCK_OWNER);
+        buf.append(" IS NULL");
+        String sql = buf.toString();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            for (int i = 0; i < values.size(); i++) {
+                setValue(ps, i + 1, values.get(i));
+            }
+            int count = ps.executeUpdate();
+            if (count == 1) {
+                // found a doc and locked it
+                return null;
+            }
+            // doc not found, or lock owner already set
+            // get the old lock
+            Lock old = getLock(id);
+            if (old != null) {
+                return old;
+            }
+            // no lock -- there was a race condition
+            // TODO do better
+            throw new ConcurrentUpdateException("Lock " + id);
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     @Override
     public Lock removeLock(String id, String owner) {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        // we use the following syntax to update values and return the old ones
+        // UPDATE documents newdocs
+        // SET lockowner = NULL, lockcreated = NULL
+        // FROM (SELECT id, lockowner, lockcreated FROM documents WHERE id = '123'
+        // ........ AND (lockowner IS NULL or lockowner = 'bob') FOR UPDATE) olddocs
+        // WHERE newdocs.id = olddocs.id
+        // RETURNING olddocs.lockowner, olddocs.lockcreated;
+        List<PGTypeAndValue> values = new ArrayList<>();
+        StringBuilder buf = new StringBuilder();
+        buf.append("UPDATE ");
+        buf.append(TABLE_NAME);
+        buf.append(" newdocs");
+        buf.append(" SET ");
+        buf.append(COL_LOCK_OWNER);
+        buf.append(" = NULL, ");
+        buf.append(COL_LOCK_CREATED);
+        buf.append(" = NULL");
+        buf.append(" FROM (SELECT ");
+        buf.append(COL_ID);
+        buf.append(", ");
+        buf.append(COL_LOCK_OWNER);
+        buf.append(", ");
+        buf.append(COL_LOCK_CREATED);
+        buf.append(" FROM ");
+        buf.append(TABLE_NAME);
+        buf.append(" WHERE ");
+        assignValue(buf, values, idColumn, id); // equality has same syntax as assignment
+        if (owner != null) {
+            buf.append(" AND (");
+            buf.append(COL_LOCK_OWNER);
+            buf.append(" IS NULL OR ");
+            assignValue(buf, values, lockOwnerColumn, owner); // equality
+            buf.append(')');
+        }
+        buf.append(" FOR UPDATE) olddocs");
+        buf.append(" WHERE newdocs.");
+        buf.append(COL_ID);
+        buf.append(" = olddocs.");
+        buf.append(COL_ID);
+        buf.append(" RETURNING olddocs.");
+        buf.append(COL_LOCK_OWNER);
+        buf.append(", olddocs.");
+        buf.append(COL_LOCK_CREATED);
+        String sql = buf.toString();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            for (int i = 0; i < values.size(); i++) {
+                setValue(ps, i + 1, values.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    // found a doc and removed the lock, return previous lock
+                    String oldOwner = (String) getValue(rs, 1, TYPE_STRING);
+                    Calendar oldCreated = (Calendar) getValue(rs, 2, TYPE_TIMESTAMP);
+                    return oldOwner == null ? null : new Lock(oldOwner, oldCreated);
+                } else {
+                    // doc not found, or lock owner didn't match
+                    // get the old lock
+                    Lock oldLock = getLock(id);
+                    if (oldLock == null) {
+                        // old owner null, should have matched -- there was a race condition
+                        // TODO do better
+                        throw new ConcurrentUpdateException("Unlock " + id);
+                    } else {
+                        String oldOwner = oldLock.getOwner();
+                        Calendar oldCreated = oldLock.getCreated();
+                        if (!LockManager.canLockBeRemoved(oldOwner, owner)) {
+                            // existing mismatched lock, flag failure
+                            return new Lock(oldOwner, oldCreated, true);
+                        }
+                        // old owner should have matched -- there was a race condition
+                        // TODO do better
+                        throw new ConcurrentUpdateException("Unlock " + id);
+
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
     }
 
 }

@@ -61,19 +61,17 @@ import static org.nuxeo.ecm.core.storage.pgjson.PGType.TYPE_STRING;
 import static org.nuxeo.ecm.core.storage.pgjson.PGType.TYPE_STRING_ARRAY;
 import static org.nuxeo.ecm.core.storage.pgjson.PGType.TYPE_TIMESTAMP;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.resource.spi.ConnectionManager;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.model.Repository;
@@ -85,6 +83,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * PostgreSQL+JSON implementation of a {@link Repository}.
@@ -93,15 +92,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PGJSONRepository extends DBSRepositoryBase {
 
-    private static final Logger log = LogManager.getLogger(PGJSONRepository.class);
-
     protected static final int BATCH_SIZE = 100;
 
     public static final String TABLE_NAME = "documents";
 
     protected static final String COL_ID = "id";
-
-    protected static final String COL_JSON = "doc";
 
     protected static final String COL_PARENT_ID = "parentid";
 
@@ -171,7 +166,12 @@ public class PGJSONRepository extends DBSRepositoryBase {
 
     protected static final String COL_FULLTEXT_JOBID = "fulltextjobid";
 
-    protected final Map<String, Type> allTypes;
+    protected static final String COL_JSON = "doc";
+
+    protected static final String PSEUDO_KEY_JSON = "__json__"; // internal
+
+    /** Nuxeo types of non-system properties. */
+    protected final TypesMap typesMap;
 
     protected final PGJSONConverter converter;
 
@@ -189,8 +189,8 @@ public class PGJSONRepository extends DBSRepositoryBase {
 
     public PGJSONRepository(ConnectionManager cm, PGJSONRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
-        allTypes = new TypesFinder().find();
-        converter = new PGJSONConverter(allTypes);
+        typesMap = new TypesMapFinder().find();
+        converter = new PGJSONConverter(typesMap);
         registerColumns();
         dataSourceName = getDataSourceName(descriptor.name);
 
@@ -225,56 +225,100 @@ public class PGJSONRepository extends DBSRepositoryBase {
     }
 
     /**
-     * Finds all the fields for all possible property paths. The property paths are simplified, there's no intermediate
-     * {@code / * / } for complex properties, and no {@code [ ]} for lists.
+     * Recursive type to describe of tree of named {@link Type}s.
+     */
+    public static class TypesMap extends HashMap<String, TypesMap> {
+
+        private static final long serialVersionUID = 1L;
+
+        public static final String ARRAY_ELEM = "0";
+
+        /** Canonical storage name. */
+        public final String name;
+
+        public final Type type;
+
+        public TypesMap() {
+            name = null;
+            type = null;
+        }
+
+        public TypesMap(String name, Type type) {
+            this.name = name;
+            this.type = type;
+        }
+
+        // convenience for tests
+        public TypesMap(String thisName, Type thisType, String name, Type type) {
+            this(thisName, thisType);
+            put(name, type);
+        }
+
+        public TypesMap put(String name, Type type) {
+            TypesMap typesMap = new TypesMap(name, type);
+            put(name, typesMap);
+            return typesMap;
+
+        }
+        /** Gets the type at this path, or {@code null} */
+        public Type get(Collection<String> path) {
+            return get(path.iterator());
+        }
+
+        protected Type get(Iterator<String> it) {
+            if (!it.hasNext()) {
+                return null;
+            }
+            String name = it.next();
+            TypesMap map = get(name);
+            if (map == null) {
+                return null;
+            } else if (!map.isEmpty()) {
+                return map.get(it);
+            } else if (!it.hasNext()) {
+                return map.type;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Finds all the Nuxeo types for all possible property paths. Array elements are under a pseudo key "0".
      * <p>
      * This is needed at read time because at the JSON level we can't distinguish between longs, floats and calendars
      * (milliseconds), which are all represented by JSON numbers.
      */
-    protected static class TypesFinder {
+    protected static class TypesMapFinder {
 
-        protected final Map<String, Type> types = new HashMap<>();
-
-        protected final Deque<String> path = new ArrayDeque<>();
-
-        public Map<String, Type> find() {
+        public TypesMap find() {
+            TypesMap map = new TypesMap();
             SchemaManager schemaManager = Framework.getService(SchemaManager.class);
             for (Schema schema : schemaManager.getSchemas()) {
-                visitComplexType(schema);
+                visitComplexType(map, schema);
             }
-            return types;
+            return map;
         }
 
-        protected void visitComplexType(ComplexType complexType) {
+        protected void visitComplexType(TypesMap map, ComplexType complexType) {
             for (Field field : complexType.getFields()) {
-                visitField(field);
-            }
-        }
-
-        protected void visitField(Field field) {
-            String name = field.getName().getPrefixedName();
-            path.addLast(name);
-            Type type = field.getType();
-            if (type.isSimpleType()) {
-                // scalar
-                String xpath = String.join("/", path);
-                types.put(xpath, type);
-            } else if (type.isComplexType()) {
-                // complex property
-                visitComplexType((ComplexType) type);
-            } else {
-                // array or list
-                Type fieldType = ((ListType) type).getFieldType();
-                if (fieldType.isSimpleType()) {
-                    // array
-                    String xpath = String.join("/", path);
-                    types.put(xpath, fieldType);
-                } else {
-                    // complex list
-                    visitComplexType((ComplexType) fieldType);
+                String name = field.getName().getPrefixedName();
+                visitField(map, name, field.getType());
+                if (complexType instanceof Schema && name.indexOf(':') < 0) {
+                    // add compatibility name with schema-as-prefix
+                    String prefixedName = complexType.getName() + ':' + name;
+                    map.put(prefixedName, map.get(name));
                 }
             }
-            path.removeLast();
+        }
+
+        protected void visitField(TypesMap map, String name, Type type) {
+            TypesMap subMap = map.put(name, type);
+            if (type.isComplexType()) {
+                visitComplexType(subMap, (ComplexType) type);
+            } else if (type.isListType()) {
+                visitField(subMap, TypesMap.ARRAY_ELEM, ((ListType) type).getFieldType());
+            }
         }
     }
 
@@ -329,15 +373,13 @@ public class PGJSONRepository extends DBSRepositoryBase {
         registerColumn(KEY_FULLTEXT_JOBID, COL_FULLTEXT_JOBID, TYPE_STRING);
         registerColumn(KEY_READ_ACL, COL_READ_ACL, TYPE_STRING_ARRAY);
         registerColumn(KEY_ACP, COL_ACP, TYPE_JSON);
-        jsonDocColumn = registerColumn(null, COL_JSON, TYPE_JSON);
+        jsonDocColumn = registerColumn(PSEUDO_KEY_JSON, COL_JSON, TYPE_JSON);
     }
 
     protected PGColumn registerColumn(String key, String name, PGType type) {
         PGColumn col = new PGColumn(key, name, type);
         allColumns.add(col);
-        if (key != null) {
-            keyToColumn.put(key, col);
-        }
+        keyToColumn.put(key, col);
         return col;
     }
 
@@ -345,20 +387,12 @@ public class PGJSONRepository extends DBSRepositoryBase {
         return converter;
     }
 
-    protected Map<String, Type> getAllTypes() {
-        return allTypes;
+    protected TypesMap getTypesMap() {
+        return typesMap;
     }
 
     protected List<PGColumn> getAllColumns() {
         return allColumns;
-    }
-
-    protected PGColumn getIdColumn() {
-        return idColumn;
-    }
-
-    protected PGColumn getJsonDocColumn() {
-        return jsonDocColumn;
     }
 
     protected Map<String, PGColumn> getKeyToColumn() {
@@ -378,23 +412,17 @@ public class PGJSONRepository extends DBSRepositoryBase {
 
     @Override
     public Lock getLock(String id) {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        return TransactionHelper.runWithoutTransaction(() -> super.getLock(id));
     }
 
     @Override
     public Lock setLock(String id, Lock lock) {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        return TransactionHelper.runWithoutTransaction(() -> super.setLock(id, lock));
     }
 
     @Override
     public Lock removeLock(String id, String owner) {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        return TransactionHelper.runWithoutTransaction(() -> super.removeLock(id, owner));
     }
 
 }

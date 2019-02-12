@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.core.storage.pgjson;
 
+import static org.nuxeo.ecm.core.storage.State.NOP;
+import static org.nuxeo.ecm.core.storage.pgjson.PGType.TYPE_JSON;
+
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayDeque;
@@ -30,11 +33,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.storage.State;
+import org.nuxeo.ecm.core.storage.State.ListDiff;
+import org.nuxeo.ecm.core.storage.State.StateDiff;
+import org.nuxeo.ecm.core.storage.pgjson.PGJSONRepository.TypesMap;
+import org.nuxeo.ecm.core.storage.pgjson.PGType.PGTypeAndValue;
 
 /**
  * Converts between PostgreSQL JSON and DBS types (diff, state, list, serializable).
@@ -46,10 +54,10 @@ import org.nuxeo.ecm.core.storage.State;
  */
 public class PGJSONConverter {
 
-    protected final Map<String, Type> types;
+    protected final TypesMap typesMap;
 
-    public PGJSONConverter(Map<String, Type> types) {
-        this.types = types;
+    public PGJSONConverter(TypesMap typesMap) {
+        this.typesMap = typesMap;
     }
 
     // ========== DBS to JSON ==========
@@ -215,7 +223,7 @@ public class PGJSONConverter {
      * Converts a JSON string to a DBS value.
      */
     public Serializable jsonToValue(String json) {
-        return new JSONReader(types, json).readFullValue();
+        return new JSONReader(json).readFullValue();
     }
 
     /**
@@ -224,9 +232,7 @@ public class PGJSONConverter {
      * JSON is parsed according to strict RFC 7159. As an exception, and to conform to PostgreSQL string semantics, the
      * null character (\u0000) is not allowed.
      */
-    public static class JSONReader {
-
-        protected final Map<String, Type> types;
+    public class JSONReader {
 
         protected final String json;
 
@@ -236,8 +242,7 @@ public class PGJSONConverter {
 
         protected int pos;
 
-        public JSONReader(Map<String, Type> types, String json) {
-            this.types = types;
+        public JSONReader(String json) {
             this.json = json;
             this.length = json.length();
         }
@@ -294,6 +299,15 @@ public class PGJSONConverter {
             return json.charAt(pos);
         }
 
+        protected boolean peek(char expected) {
+            if (peek() == expected) {
+                read();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         protected char read() {
             if (pos >= length) {
                 return 0;
@@ -342,8 +356,7 @@ public class PGJSONConverter {
         public State readObject() {
             expect('{');
             space();
-            if (peek() == '}') {
-                read();
+            if (peek('}')) {
                 return null;
             }
             State state = new State();
@@ -352,14 +365,11 @@ public class PGJSONConverter {
                 space();
                 expect(':');
                 space();
-                path.addLast(key);
-                Serializable value = readValue();
-                path.removeLast();
+                Serializable value = readValueForKey(key);
                 state.put(key, value);
 
                 space();
-                if (peek() == '}') {
-                    read();
+                if (peek('}')) {
                     break;
                 }
                 expect(',', '}');
@@ -368,21 +378,26 @@ public class PGJSONConverter {
             return state;
         }
 
+        public Serializable readValueForKey(String key) {
+            path.addLast(key);
+            Serializable value = readValue();
+            path.removeLast();
+            return value;
+        }
+
         protected List<Serializable> readArray() {
             expect('[');
             space();
-            if (peek() == ']') {
-                read();
+            if (peek(']')) {
                 return null;
             }
             List<Serializable> list = new ArrayList<>();
             for (;;) {
-                Serializable value = readValue();
+                Serializable value = readValueForKey(TypesMap.ARRAY_ELEM);
                 list.add(value);
 
                 space();
-                if (peek() == ']') {
-                    read();
+                if (peek(']')) {
                     break;
                 }
                 expect(',', ']');
@@ -447,14 +462,14 @@ public class PGJSONConverter {
             StringBuilder buf = new StringBuilder();
             // number = [ minus ] int [ frac ] [ exp ]
             // minus
-            if (peek() == '-') {
+            if (peek('-')) {
                 // minus
-                buf.append(read());
+                buf.append('-');
             }
             // int = zero / ( digit1-9 *DIGIT )
-            if (peek() == '0') {
+            if (peek('0')) {
                 // zero
-                buf.append(read());
+                buf.append('0');
             } else {
                 // digit1-9
                 digitFrom('1', buf);
@@ -462,9 +477,9 @@ public class PGJSONConverter {
                 digitsOptional(buf);
             }
             // frac = decimal-point 1*DIGIT
-            if (peek() == '.') {
+            if (peek('.')) {
                 // decimal-point
-                buf.append(read());
+                buf.append('.');
                 // DIGIT
                 digitFrom('0', buf);
                 // *DIGIT
@@ -550,18 +565,17 @@ public class PGJSONConverter {
         }
 
         protected Serializable convertNumber(Number num) {
-            String xpath = String.join("/", path);
-            Type type = types.get(xpath);
+            Type type = typesMap.get(path);
             if (type == null) {
                 // TODO don't crash, may be an old value from a previous schema
-                throw exception("No type available for path: " + xpath);
+                throw exception("No type available for path: " + String.join("/", path));
             }
             if (type instanceof LongType) {
                 if (num instanceof Long) {
                     return num;
                 } else {
                     // TODO better behavior
-                    throw exception("Got Double instead of Long for path: " + xpath);
+                    throw exception("Got Double instead of Long for path: " + String.join("/", path));
                 }
             } else if (type instanceof DoubleType) {
                 if (num instanceof Double) {
@@ -576,10 +590,11 @@ public class PGJSONConverter {
                     return cal;
                 } else {
                     // TODO better behavior
-                    throw exception("Got Double instead of Long for Calendar path: " + xpath);
+                    throw exception("Got Double instead of Long for Calendar path: " + String.join("/", path));
                 }
             } else {
-                throw exception("Unknown type " + type.getClass().getSimpleName() + " for Number for path: " + xpath);
+                throw exception("Unknown type " + type.getClass().getSimpleName() + " for Number for path: "
+                        + String.join("/", path));
             }
         }
 
@@ -596,6 +611,134 @@ public class PGJSONConverter {
                 Object[] array = (Object[]) Array.newInstance(first.getClass(), list.size());
                 return list.toArray(array);
             }
+        }
+    }
+
+    /**
+     * A helper to build the PostgreSQL expression to update an existing expression by applying a diff, delta or value
+     * to it.
+     * <p>
+     * Returns a PostgreSQL expression whose free parameters are associated to the typed {@link #values}.
+     */
+    public static class UpdateBuilder {
+
+        public final List<PGTypeAndValue> values = new ArrayList<>();
+
+        /**
+         * Builds the expression as described in the class documentation.
+         *
+         * @param col the column to change
+         * @param value the value to apply
+         * @return the PostgreSQL expression
+         */
+        public String build(String expr, PGType type, Object value) {
+            return build(expr, type, value, false);
+        }
+
+        protected String build(String expr, PGType type, Object value, boolean exprNeedsParens) {
+            if (value instanceof StateDiff) {
+                return buildStateDiff(expr, (StateDiff) value, exprNeedsParens);
+            } else if (value instanceof ListDiff) {
+                return buildListDiff(expr, type, (ListDiff) value, exprNeedsParens);
+            } else if (value instanceof Delta) {
+                return buildDelta(expr, type, (Delta) value);
+            } else {
+                return buildValue(type, value);
+            }
+        }
+
+        protected String buildDelta(String expr, PGType type, Delta delta) {
+            values.add(new PGTypeAndValue(type, delta.getDeltaValue()));
+            return expr + " + ?";
+        }
+
+        protected String buildValue(PGType type, Object value) {
+            values.add(new PGTypeAndValue(type, value));
+            return type == TYPE_JSON ? "?::jsonb" : "?";
+        }
+
+        protected String buildStateDiff(String expr, StateDiff stateDiff, boolean exprNeedsParens) {
+            State set = new State();
+            List<String> unset = new ArrayList<>();
+            String baseExpr = expr;
+            for (Entry<String, Serializable> en : stateDiff.entrySet()) {
+                String key = en.getKey();
+                Serializable value = en.getValue();
+                if (value == null) {
+                    unset.add(key); // postpone unset
+                } else if (value instanceof StateDiff || value instanceof ListDiff) {
+                    String subExpr = baseExpr + "->'" + key + "'";
+                    expr = "jsonb_set(" + expr + ", '{" + key + "}', " + build(subExpr, TYPE_JSON, value, true) + ")";
+                    exprNeedsParens = false;
+                } else {
+                    set.put(key, value); // postpone set
+                }
+            }
+            if (set.isEmpty() && unset.isEmpty()) {
+                return expr;
+            }
+            StringBuilder buf = new StringBuilder();
+            if (exprNeedsParens) {
+                buf.append('(');
+            }
+            buf.append(expr);
+            if (exprNeedsParens) {
+                buf.append(')');
+            }
+            // then set/unset
+            if (!set.isEmpty()) {
+                buf.append(" || ?::jsonb");
+                values.add(new PGTypeAndValue(TYPE_JSON, set));
+            }
+            if (!unset.isEmpty()) {
+                if (unset.size() == 1) {
+                    buf.append(" - '");
+                    buf.append(unset.get(0));
+                    buf.append("'");
+                } else {
+                    buf.append(" - '{");
+                    for (String key : unset) {
+                        buf.append(key);
+                        buf.append(',');
+                    }
+                    buf.setLength(buf.length() - 1); // remove last ,
+                    buf.append("}'::text[]");
+                }
+            }
+            return buf.toString();
+        }
+
+        protected String buildListDiff(String expr, PGType type, ListDiff listDiff, boolean exprNeedsParens) {
+            if (listDiff.diff != null) {
+                String baseExpr = expr;
+                int i = 0;
+                for (Object value : listDiff.diff) {
+                    if (value instanceof StateDiff) {
+                        StateDiff subDiff = (StateDiff) value;
+                        String subExpr = baseExpr + "->" + i;
+                        expr = "jsonb_set(" + expr + ", '{" + i + "}', " + buildStateDiff(subExpr, subDiff, true) + ")";
+                    } else if (value != NOP) {
+                        expr = "jsonb_set(" + expr + ", '{" + i + "}', ?::jsonb)";
+                        values.add(new PGTypeAndValue(TYPE_JSON, value));
+                    }
+                    i++;
+                }
+            }
+            if (listDiff.rpush != null) {
+                if (type == TYPE_JSON) {
+                    for (Object value : listDiff.rpush) {
+                        expr = "jsonb_insert(" + expr + ", '{-1}', ?::jsonb, true)";
+                        values.add(new PGTypeAndValue(TYPE_JSON, value));
+                    }
+                } else if (type.isArray()) { // TYPE_STRING_ARRAY / TYPE_LONG_ARRAY
+                    Object[] array = listDiff.rpush.toArray();
+                    values.add(new PGTypeAndValue(type, array));
+                    expr += " || ?";
+                } else {
+                    throw new UnsupportedOperationException(String.valueOf(type));
+                }
+            }
+            return expr;
         }
     }
 

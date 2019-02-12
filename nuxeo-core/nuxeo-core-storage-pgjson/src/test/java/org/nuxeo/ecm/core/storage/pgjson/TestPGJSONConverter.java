@@ -26,17 +26,17 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
+import org.nuxeo.ecm.core.schema.types.ListTypeImpl;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
+import org.nuxeo.ecm.core.storage.pgjson.PGJSONRepository.TypesMap;
 
 public class TestPGJSONConverter {
 
@@ -144,14 +144,17 @@ public class TestPGJSONConverter {
 
     @Test
     public void testJsonToState() {
-        Map<String, Type> types = new HashMap<>();
+        TypesMap types = new TypesMap();
         types.put("int", LongType.INSTANCE);
         types.put("double", DoubleType.INSTANCE);
         types.put("double2", DoubleType.INSTANCE);
         types.put("doubleint", DoubleType.INSTANCE);
         types.put("date", DateType.INSTANCE);
-        types.put("objint/foo", LongType.INSTANCE);
-        types.put("arrayint", LongType.INSTANCE);
+        ComplexTypeImpl ct = new ComplexTypeImpl(null, null, null);
+        ct.addField("foo", LongType.INSTANCE, null, 0, null);
+        types.put("objint", new TypesMap("objint", ct, "foo", LongType.INSTANCE));
+        ListTypeImpl lt = new ListTypeImpl(null, null, LongType.INSTANCE);
+        types.put("arrayint", new TypesMap("arrayint", lt, "0", LongType.INSTANCE));
         PGJSONConverter converter = new PGJSONConverter(types);
 
         String json = "{\"bar\":   \t     \"bar\"    \r\n, " //
@@ -172,7 +175,7 @@ public class TestPGJSONConverter {
                 + "\"arrayint\": [-123], " //
                 + "\"list\": [{\"a\": true}]" //
                 + "}";
-        State state = converter.jsonToState(json);
+        Object state = converter.jsonToValue(json);
         State expected = new State();
         expected.put("bar", "bar");
         expected.put("esc", "\"\\/\b\f\n\r\t\u00e9\u1234\ufedc");
@@ -219,10 +222,10 @@ public class TestPGJSONConverter {
     }
 
     protected static void assertLong(String value) {
-        Map<String, Type> types = new HashMap<>();
+        TypesMap types = new TypesMap();
         types.put("foo", LongType.INSTANCE);
         PGJSONConverter converter = new PGJSONConverter(types);
-        State state = converter.jsonToState("{\"foo\":" + value + "}");
+        Object state = converter.jsonToValue("{\"foo\":" + value + "}");
         State expected = new State();
         expected.put("foo", Long.valueOf(value));
         assertEquals(expected, state);
@@ -250,10 +253,10 @@ public class TestPGJSONConverter {
     }
 
     protected static void assertDouble(String value) {
-        Map<String, Type> types = new HashMap<>();
+        TypesMap types = new TypesMap();
         types.put("foo", DoubleType.INSTANCE);
         PGJSONConverter converter = new PGJSONConverter(types);
-        State state = converter.jsonToState("{\"foo\":" + value + "}");
+        Object state = converter.jsonToValue("{\"foo\":" + value + "}");
         State expected = new State();
         expected.put("foo", Double.valueOf(value));
         assertEquals(expected, state);
@@ -261,8 +264,8 @@ public class TestPGJSONConverter {
 
     @Test
     public void testJsonParsingErrors() {
-        assertError(" ", "Expected '{' instead of ' ' at pos: 1");
-        assertError("#", "Expected '{' instead of '#' at pos: 1");
+        assertError(" ", "Unexpected ' ' at pos: 1");
+        assertError("#", "Unexpected '#' at pos: 1");
         assertError("{", "Expected '\"' instead of EOF at pos: 1");
         assertError("{,", "Expected '\"' instead of ',' at pos: 2");
         assertError("{\u0000}", "Expected '\"' instead of EOF at pos: 2"); // \u0000 is EOF
@@ -356,11 +359,11 @@ public class TestPGJSONConverter {
     }
 
     protected static void assertError(String badJson, String message, boolean dbl) {
-        Map<String, Type> types = new HashMap<>();
+        TypesMap types = new TypesMap();
         types.put("foo", dbl ? DoubleType.INSTANCE : LongType.INSTANCE);
         PGJSONConverter converter = new PGJSONConverter(types);
         try {
-            converter.jsonToState(badJson);
+            converter.jsonToValue(badJson);
             fail("Parsing should fail for: " + badJson);
         } catch (NuxeoException e) {
             assertEquals(message, e.getMessage());

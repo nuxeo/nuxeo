@@ -2035,6 +2035,12 @@ public class DBSSession implements Session<QueryFilter> {
         case KEY_PROXY_IDS:
         case KEY_READ_ACL:
             return STRING_ARRAY_TYPE;
+        case KEY_ID:
+        case KEY_PARENT_ID:
+        case KEY_NAME:
+        case KEY_PRIMARY_TYPE:
+        case KEY_FULLTEXT_JOBID:
+            return StringType.INSTANCE;
         }
         return null;
     }
