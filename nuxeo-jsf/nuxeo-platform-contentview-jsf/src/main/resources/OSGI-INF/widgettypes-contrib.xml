@@ -452,13 +452,16 @@
             <property name="var">item</property>
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
+            <property name="itemLabel">#{nxu:userDisplayName(itemId, itemEntry.user.firstName, itemEntry.user.lastName)}</property>
+            <property name="directoryName">#{userManager.userDirectoryName}</property>
+            <property name="groupItemLabel">#{nxu:groupDisplayName(itemId, itemEntry.group.grouplabel)}</property>
+            <property name="groupDirectoryName">#{userManager.groupDirectoryName}</property>
             <property name="layout">pageDirection</property>
-            <property name="notDisplayDefaultOption">true</property>
             <property name="moreLessLimit">6</property>
             <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
           </defaultValues>
           <layouts mode="edit">
-            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+            <layout name="selectManyCheckboxUserAggregate_widget_type_properties_edit">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">select_selectOptions</widget>
@@ -513,11 +516,14 @@
             <property name="var">item</property>
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
-            <property name="notDisplayDefaultOption">true</property>
+            <property name="itemLabel">#{nxu:userDisplayName(itemId, itemEntry.user.firstName, itemEntry.user.lastName)}</property>
+            <property name="directoryName">#{userManager.userDirectoryName}</property>
+            <property name="groupItemLabel">#{nxu:groupDisplayName(itemId, itemEntry.group.grouplabel)}</property>
+            <property name="groupDirectoryName">#{userManager.groupDirectoryName}</property>
             <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
           </defaultValues>
           <layouts mode="edit">
-            <layout name="selectManyCheckboxAggregate_widget_type_properties_edit">
+            <layout name="selectManyListboxUserAggregate_widget_type_properties_edit">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">select_selectOptions</widget>
