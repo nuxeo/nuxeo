@@ -60,6 +60,11 @@ public abstract class SelectUserAndGroupAggregateWidgetTypeHandler extends Abstr
     protected Map<String, Serializable> getOptionProperties(FaceletContext ctx, Widget widget,
             WidgetSelectOption selectOption) {
         Map<String, Serializable> props = super.getOptionProperties(ctx, widget, selectOption);
+        for (UIUserAndGroupSelectItems.UserAndGroupPropertyKeys mapping : UIUserAndGroupSelectItems.UserAndGroupPropertyKeys.values()) {
+            if (widget.getProperties().containsKey(mapping.name())) {
+                props.put(mapping.name(), widget.getProperty(mapping.name()));
+            }
+        }
         props.put(SelectPropertyMappings.itemLabelSuffix.name(),
                 widget.getProperty(AggregatePropertyMappings.itemCount.name()));
         return props;
@@ -76,7 +81,7 @@ public abstract class SelectUserAndGroupAggregateWidgetTypeHandler extends Abstr
 
     /**
      * Get tag attributes for a specific mode.
-     * 
+     *
      * @param widget The widget to generate tag attributes for.
      * @param mode The given mode like PLAIN, CSV.
      * @param helper An instance of FaceletHandlerHelper.
@@ -89,7 +94,7 @@ public abstract class SelectUserAndGroupAggregateWidgetTypeHandler extends Abstr
         TagAttributes result;
         if (BuiltinWidgetModes.isLikePlainMode(mode)) {
             // use attributes without id and with
-            List<String> excludedProperties = new ArrayList<String>();
+            List<String> excludedProperties = new ArrayList<>();
             // In case of plain mode css style attributes are to be excluded
             excludedProperties.add("styleClass");
             result = helper.getTagAttributes(widget, excludedProperties, true);

@@ -20,11 +20,13 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.platform.ui.web.component.SelectItemComparator;
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
 
 /**
@@ -35,6 +37,45 @@ import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
 public class UIUserAndGroupSelectItems extends UISelectItems {
 
     public static final String COMPONENT_TYPE = UIUserAndGroupSelectItems.class.getName();
+
+    public enum UserAndGroupPropertyKeys {
+        itemLabel, directoryName, groupItemLabel, groupDirectoryName
+    }
+
+    // setters & getters
+
+    public String getItemLabel() {
+        return (String) getStateHelper().eval(UserAndGroupPropertyKeys.itemLabel);
+    }
+
+    public void setItemLabel(String userLabel) {
+        getStateHelper().put(UserAndGroupPropertyKeys.itemLabel, userLabel);
+    }
+
+    public String getDirectoryName() {
+        return (String) getStateHelper().eval(UserAndGroupPropertyKeys.directoryName);
+    }
+
+    public void setDirectoryName(String directoryName) {
+        getStateHelper().put(UserAndGroupPropertyKeys.directoryName, directoryName);
+    }
+
+    public String getGroupItemLabel() {
+        return (String) getStateHelper().eval(UserAndGroupPropertyKeys.groupItemLabel);
+    }
+
+    public void setGroupItemLabel(String groupLabel) {
+        getStateHelper().put(UserAndGroupPropertyKeys.groupItemLabel, groupLabel);
+
+    }
+
+    public String getGroupDirectoryName() {
+        return (String) getStateHelper().eval(UserAndGroupPropertyKeys.groupDirectoryName);
+    }
+
+    public void setGroupDirectoryName(String directoryName) {
+        getStateHelper().put(UserAndGroupPropertyKeys.groupDirectoryName, directoryName);
+    }
 
     @Override
     public Object getValue() {
@@ -60,10 +101,36 @@ public class UIUserAndGroupSelectItems extends UISelectItems {
                 return UIUserAndGroupSelectItems.this.createSelectItem(label);
             }
 
+            @Override
+            protected String getItemLabel() {
+                return UIUserAndGroupSelectItems.this.getItemLabel();
+            }
+
+            @Override
+            protected String getDirectoryName() {
+                return UIUserAndGroupSelectItems.this.getDirectoryName();
+            }
+
+            @Override
+            protected String getGroupDirectoryName() {
+                 return UIUserAndGroupSelectItems.this.getGroupDirectoryName();
+            }
+
+            @Override
+            protected String getGroupItemLabel() {
+                return UIUserAndGroupSelectItems.this.getGroupItemLabel();
+            }
+
         };
         Object value = getStateHelper().eval(PropertyKeys.value);
 
         List<SelectItem> items = f.createSelectItems(value);
+
+        String ordering = getOrdering();
+        boolean caseSensitive = isCaseSensitive();
+        if (!StringUtils.isBlank(ordering)) {
+            Collections.sort(items, new SelectItemComparator(ordering, Boolean.valueOf(caseSensitive)));
+        }
 
         return items.toArray(new SelectItem[0]);
 
