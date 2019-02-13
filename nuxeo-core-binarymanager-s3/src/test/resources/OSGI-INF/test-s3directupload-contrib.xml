@@ -4,6 +4,7 @@
 
   <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
     <store name="s3TransientStore" class="org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore">
+      <property name="blobProvider">s3TransientStore</property>
       <targetMaxSizeMB>100</targetMaxSizeMB>
       <absoluteMaxSizeMB>-1</absoluteMaxSizeMB>
       <firstLevelTTL>120</firstLevelTTL>
