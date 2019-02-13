@@ -19,6 +19,13 @@
  */
 package org.nuxeo.ecm.platform.pdf.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+
+import javax.inject.Inject;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.junit.After;
@@ -31,24 +38,21 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.platform.pdf.PDFPageNumbering.PAGE_NUMBER_POSITION;
 import org.nuxeo.ecm.platform.pdf.PDFPageNumbering;
+import org.nuxeo.ecm.platform.pdf.PDFPageNumbering.PAGE_NUMBER_POSITION;
 import org.nuxeo.ecm.platform.pdf.operations.PDFAddPageNumbersOperation;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import javax.inject.Inject;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
 @Deploy("org.nuxeo.ecm.platform.pdf")
+@ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26793")
 public class PDFPageNumberingTest {
 
     private FileBlob pdfFileBlob;
@@ -58,7 +62,7 @@ public class PDFPageNumberingTest {
     private DocumentModel testDocsFolder;
 
     private static final int[] indexOfNumberingByPage = new int[] {
-        1665, 1387, 1515, 1592, 1397, 1592, 1387, 1729, 1589, 1444, 1459, 1667, 849 };
+            1665, 1387, 1515, 1592, 1397, 1592, 1387, 1729, 1589, 1444, 1459, 1667, 849 };
 
     @Inject
     CoreSession coreSession;
@@ -96,7 +100,7 @@ public class PDFPageNumberingTest {
             // every numbered page should have the right number
             int currentPageNumber = firstNumber + (page - firstPage);
             assertEquals(indexOfNumberingByPage[page - 1],
-                TestUtils.extractText(resultPDF, page, page).indexOf(Integer.toString(currentPageNumber)));
+                    TestUtils.extractText(resultPDF, page, page).indexOf(Integer.toString(currentPageNumber)));
         }
         resultPDF.close();
     }
@@ -162,12 +166,12 @@ public class PDFPageNumberingTest {
         assertNotNull(ctx);
         ctx.setInput(pdfFileBlob);
         chain.add(PDFAddPageNumbersOperation.ID)
-            .set("startAtPage", 2)
-            .set("startAtNumber", 10)
-            .set("position", "Top left")
-            .set("fontName", PDType1Font.COURIER.getBaseFont())
-            .set("fontSize", 32)
-            .set("hex255Color", "ff00ff");
+        .set("startAtPage", 2)
+        .set("startAtNumber", 10)
+        .set("position", "Top left")
+        .set("fontName", PDType1Font.COURIER.getBaseFont())
+        .set("fontSize", 32)
+        .set("hex255Color", "ff00ff");
         Blob result = (Blob) automationService.run(ctx, chain);
         assertNotNull(result);
         checkPageNumbering(result, 2, 10);

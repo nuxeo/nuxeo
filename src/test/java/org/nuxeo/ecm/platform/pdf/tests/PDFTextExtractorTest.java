@@ -19,7 +19,16 @@
  */
 package org.nuxeo.ecm.platform.pdf.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,24 +38,20 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.pdf.PDFTextExtractor;
 import org.nuxeo.ecm.platform.pdf.operations.PDFExtractTextOperation;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import javax.inject.Inject;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
 @Deploy("org.nuxeo.ecm.platform.pdf")
+@ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26793")
 public class PDFTextExtractorTest {
 
     private FileBlob pdfFileBlob;
@@ -100,26 +105,26 @@ public class PDFTextExtractorTest {
         assertNotNull(ctx);
         ctx.setInput(testDoc);
         chain.add(PDFExtractTextOperation.ID)
-            .set("save", true)
-            .set("targetxpath", "dc:description")
-            .set("patterntofind", "Contract Number: ")
-            .set("removepatternfromresult", false);
+        .set("save", true)
+        .set("targetxpath", "dc:description")
+        .set("patterntofind", "Contract Number: ")
+        .set("removepatternfromresult", false);
         DocumentModel documentModified = (DocumentModel) automationService.run(ctx, chain);
         assertEquals("Contract Number: 123456789", documentModified.getPropertyValue("dc:description"));
         chain = new OperationChain("testChain");
         chain.add(PDFExtractTextOperation.ID)
-            .set("save", true)
-            .set("targetxpath", "dc:description")
-            .set("patterntofind", "Something that is not in the file")
-            .set("removepatternfromresult", false);
+        .set("save", true)
+        .set("targetxpath", "dc:description")
+        .set("patterntofind", "Something that is not in the file")
+        .set("removepatternfromresult", false);
         documentModified = (DocumentModel) automationService.run(ctx, chain);
         assertNull(documentModified.getPropertyValue("dc:description"));
         chain = new OperationChain("testChain");
         chain.add(PDFExtractTextOperation.ID)
-            .set("save", true)
-            .set("targetxpath", "dc:description")
-            .set("patterntofind", "Contract Number: ")
-            .set("removepatternfromresult", true);
+        .set("save", true)
+        .set("targetxpath", "dc:description")
+        .set("patterntofind", "Contract Number: ")
+        .set("removepatternfromresult", true);
         documentModified = (DocumentModel) automationService.run(ctx, chain);
         assertEquals("123456789", documentModified.getPropertyValue("dc:description"));
     }
