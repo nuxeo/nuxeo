@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -67,115 +68,117 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 public class TestImportedModelRendering {
 
-  DocumentModel rootDocument;
+    DocumentModel rootDocument;
 
-  DocumentModel workspace;
+    DocumentModel workspace;
 
-  DocumentModel docToExport;
+    DocumentModel docToExport;
 
-  @Inject
-  protected CoreSession session;
+    @Inject
+    protected CoreSession session;
 
-  @Inject
-  protected ConversionService cs;
+    @Inject
+    protected ConversionService cs;
 
-  @Inject
-  protected CommandLineExecutorService commandLineExecutorService;
+    @Inject
+    protected CommandLineExecutorService commandLineExecutorService;
 
-  @Test
-  public void testNote4Web() throws Exception {
+    @Test
+    public void testNote4Web() throws Exception {
 
-    PathRef ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/");
-    DocumentModel sampleFolder = session.getDocument(ref);
-    assertNotNull(sampleFolder);
+        PathRef ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/");
+        DocumentModel sampleFolder = session.getDocument(ref);
+        assertNotNull(sampleFolder);
 
-    ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/webnote");
-    DocumentModel note4Web = session.getDocument(ref);
+        ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/webnote");
+        DocumentModel note4Web = session.getDocument(ref);
 
-    TemplateBasedDocument note4WebTemplate = note4Web.getAdapter(TemplateBasedDocument.class);
-    assertNotNull(note4WebTemplate);
+        TemplateBasedDocument note4WebTemplate = note4Web.getAdapter(TemplateBasedDocument.class);
+        assertNotNull(note4WebTemplate);
 
-    List<String> templateNames = note4WebTemplate.getTemplateNames();
-    assertEquals(1, templateNames.size());
-    assertEquals("WebTemplate4Note", templateNames.get(0));
+        List<String> templateNames = note4WebTemplate.getTemplateNames();
+        assertEquals(1, templateNames.size());
+        assertEquals("WebTemplate4Note", templateNames.get(0));
 
-    Blob blob = note4WebTemplate.renderWithTemplate("WebTemplate4Note");
-    assertNotNull(blob);
-    String htmlContent = blob.getString();
-    assertTrue(
-        htmlContent.contains("<link class=\"component\" href=\"/nuxeo/site/templates/doc/" + note4Web.getId() + "/"));
-    assertTrue(htmlContent.contains("<title> Note4Web </title>"));
-    assertTrue(htmlContent.contains("<img src=\"/nuxeo/nxfile/test/" + note4Web.getId() + "/blobholder:1/"));
-  }
+        Blob blob = note4WebTemplate.renderWithTemplate("WebTemplate4Note");
+        assertNotNull(blob);
+        String htmlContent = blob.getString();
+        assertTrue(
+                htmlContent.contains(
+                        "<link class=\"component\" href=\"/nuxeo/site/templates/doc/" + note4Web.getId() + "/"));
+        assertTrue(htmlContent.contains("<title> Note4Web </title>"));
+        assertTrue(htmlContent.contains("<img src=\"/nuxeo/nxfile/test/" + note4Web.getId() + "/blobholder:1/"));
+    }
 
-  @Test
-  public void testSampleNote() throws Exception {
+    @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
+    public void testSampleNote() throws Exception {
 
-    PathRef ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/");
-    DocumentModel sampleFolder = session.getDocument(ref);
-    assertNotNull(sampleFolder);
+        PathRef ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/");
+        DocumentModel sampleFolder = session.getDocument(ref);
+        assertNotNull(sampleFolder);
 
-    ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/note");
-    DocumentModel note = session.getDocument(ref);
+        ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/note");
+        DocumentModel note = session.getDocument(ref);
 
-    TemplateBasedDocument noteTemplate = note.getAdapter(TemplateBasedDocument.class);
-    assertNotNull(noteTemplate);
+        TemplateBasedDocument noteTemplate = note.getAdapter(TemplateBasedDocument.class);
+        assertNotNull(noteTemplate);
 
-    List<String> templateNames = noteTemplate.getTemplateNames();
-    assertEquals(1, templateNames.size());
-    assertEquals("Note Wrapper", templateNames.get(0));
+        List<String> templateNames = noteTemplate.getTemplateNames();
+        assertEquals(1, templateNames.size());
+        assertEquals("Note Wrapper", templateNames.get(0));
 
-    Blob blob = noteTemplate.renderWithTemplate("Note Wrapper");
-    assertNotNull(blob);
-    assertTrue(blob.getFilename().endsWith(".pdf"));
+        Blob blob = noteTemplate.renderWithTemplate("Note Wrapper");
+        assertNotNull(blob);
+        assertTrue(blob.getFilename().endsWith(".pdf"));
 
-    BlobHolder textBH = cs.convertToMimeType("text/plain", new SimpleBlobHolder(blob),
-        new HashMap<String, Serializable>());
-    assertNotNull(textBH);
-    String text = textBH.getBlob().getString();
+        BlobHolder textBH = cs.convertToMimeType("text/plain", new SimpleBlobHolder(blob),
+                new HashMap<String, Serializable>());
+        assertNotNull(textBH);
+        String text = textBH.getBlob().getString();
 
-    // check TOC (well, content: spaces vary within the TOC)
-    String checkedText = "1 Overview";
-    assertTrue(String.format("Expecting text '%s' inside '%s'", checkedText, text), text.contains(checkedText));
-    checkedText = "1.1 Introduction";
-    assertTrue(String.format("Expecting text '%s' inside '%s'", checkedText, text), text.contains(checkedText));
+        // check TOC (well, content: spaces vary within the TOC)
+        String checkedText = "1 Overview";
+        assertTrue(String.format("Expecting text '%s' inside '%s'", checkedText, text), text.contains(checkedText));
+        checkedText = "1.1 Introduction";
+        assertTrue(String.format("Expecting text '%s' inside '%s'", checkedText, text), text.contains(checkedText));
 
-    // remove "unbreakable spaces"
-    text = text.replaceAll("\\u00A0", " ");
+        // remove "unbreakable spaces"
+        text = text.replaceAll("\\u00A0", " ");
 
-    // check include
-    checkedText = "This set of plugins provides a way to " + "associate a Nuxeo Document with a Template.";
-    assertTrue(String.format("Expecting text '%s' inside '%s'", checkedText, text), text.contains(checkedText));
-  }
+        // check include
+        checkedText = "This set of plugins provides a way to " + "associate a Nuxeo Document with a Template.";
+        assertTrue(String.format("Expecting text '%s' inside '%s'", checkedText, text), text.contains(checkedText));
+    }
 
-  @Test
-  public void testXLrendering() throws Exception {
+    @Test
+    public void testXLrendering() throws Exception {
 
-    PathRef ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/");
-    DocumentModel sampleFolder = session.getDocument(ref);
-    assertNotNull(sampleFolder);
+        PathRef ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/");
+        DocumentModel sampleFolder = session.getDocument(ref);
+        assertNotNull(sampleFolder);
 
-    ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/note4XL");
-    DocumentModel note = session.getDocument(ref);
+        ref = new PathRef("/default-domain/workspaces/templatesamples/rawsamples/note4XL");
+        DocumentModel note = session.getDocument(ref);
 
-    TemplateBasedDocument noteTemplate = note.getAdapter(TemplateBasedDocument.class);
-    assertNotNull(noteTemplate);
+        TemplateBasedDocument noteTemplate = note.getAdapter(TemplateBasedDocument.class);
+        assertNotNull(noteTemplate);
 
-    List<String> templateNames = noteTemplate.getTemplateNames();
-    assertEquals(1, templateNames.size());
-    assertEquals("XL MetaData render", templateNames.get(0));
+        List<String> templateNames = noteTemplate.getTemplateNames();
+        assertEquals(1, templateNames.size());
+        assertEquals("XL MetaData render", templateNames.get(0));
 
-    Blob blob = noteTemplate.renderWithTemplate("XL MetaData render");
-    assertNotNull(blob);
-    assertTrue(blob.getFilename().endsWith(".xls"));
+        Blob blob = noteTemplate.renderWithTemplate("XL MetaData render");
+        assertNotNull(blob);
+        assertTrue(blob.getFilename().endsWith(".xls"));
 
-    BlobHolder textBH = cs.convert("xl2text", new SimpleBlobHolder(blob), new HashMap<String, Serializable>());
-    assertNotNull(textBH);
-    String text = textBH.getBlob().getString();
+        BlobHolder textBH = cs.convert("xl2text", new SimpleBlobHolder(blob), new HashMap<String, Serializable>());
+        assertNotNull(textBH);
+        String text = textBH.getBlob().getString();
 
-    assertTrue(text.contains("Contributors Administrator"));
-    assertTrue(text.contains("Subjects technology/it human sciences/information"));
-    assertTrue(text.contains("Format Html"));
-  }
+        assertTrue(text.contains("Contributors Administrator"));
+        assertTrue(text.contains("Subjects technology/it human sciences/information"));
+        assertTrue(text.contains("Format Html"));
+    }
 
 }

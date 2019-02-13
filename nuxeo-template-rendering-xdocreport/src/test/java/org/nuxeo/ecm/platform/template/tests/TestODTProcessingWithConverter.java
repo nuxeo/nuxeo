@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.convert.ConvertHelper;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -68,6 +69,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 @Deploy("org.nuxeo.template.manager.api")
 @Deploy("org.nuxeo.template.manager")
 @Deploy("org.nuxeo.template.manager.xdocreport")
+@ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-26757")
 public class TestODTProcessingWithConverter {
 
     @Inject
@@ -118,8 +120,8 @@ public class TestODTProcessingWithConverter {
         imgBlob.setFilename("android.jpg");
         imgBlob.setMimeType("image/jpeg");
 
-        List<Map<String, Serializable>> blobs = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> blob1 = new HashMap<String, Serializable>();
+        List<Map<String, Serializable>> blobs = new ArrayList<>();
+        Map<String, Serializable> blob1 = new HashMap<>();
         blob1.put("file", (Serializable) imgBlob);
         blobs.add(blob1);
 
