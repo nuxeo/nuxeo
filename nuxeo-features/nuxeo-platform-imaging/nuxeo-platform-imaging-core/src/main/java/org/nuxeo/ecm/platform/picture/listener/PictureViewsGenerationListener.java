@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,16 @@
 package org.nuxeo.ecm.platform.picture.listener;
 
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
+import static org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction.ACTION_NAME;
+import static org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction.PARAM_XPATH;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.platform.picture.PictureViewsGenerationWork;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -56,10 +58,12 @@ public class PictureViewsGenerationListener implements EventListener {
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(PICTURE_FACET) && !doc.isProxy()) {
-            PictureViewsGenerationWork work = new PictureViewsGenerationWork(doc.getRepositoryName(), doc.getId(),
-                    "file:content");
-            WorkManager workManager = Framework.getService(WorkManager.class);
-            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
+            String query = "SELECT * FROM Document WHERE ecm:uuid='" + doc.getId() + "'";
+            BulkService service = Framework.getService(BulkService.class);
+            String username = ctx.getPrincipal().getName();
+            service.submit(new BulkCommand.Builder(ACTION_NAME, query, username)
+                    .param(PARAM_XPATH, "file:content")
+                    .build());
         }
     }
 

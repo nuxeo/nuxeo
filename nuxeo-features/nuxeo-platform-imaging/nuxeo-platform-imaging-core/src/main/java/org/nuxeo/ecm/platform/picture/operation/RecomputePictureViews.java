@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,18 @@
  */
 package org.nuxeo.ecm.platform.picture.operation;
 
+import static org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction.ACTION_NAME;
+import static org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction.PARAM_XPATH;
+
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.platform.picture.recompute.ImagingRecomputeWork;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -43,14 +47,20 @@ public class RecomputePictureViews {
     @Context
     protected CoreSession session;
 
+    @Context
+    protected OperationContext ctx;
+
     @Param(name = "query", description = "NXQL query to collect the documents whose picture views to recompute.", values = {
             DEFAULT_QUERY })
     protected String query;
 
     @OperationMethod
     public void run() {
-        ImagingRecomputeWork work = new ImagingRecomputeWork(session.getRepositoryName(), query);
-        Framework.getService(WorkManager.class).schedule(work);
+        BulkService service = Framework.getService(BulkService.class);
+        String username = ctx.getPrincipal().getName();
+        service.submit(new BulkCommand.Builder(ACTION_NAME, query, username)
+                .param(PARAM_XPATH, "file:content")
+                .build());
     }
 
 }
