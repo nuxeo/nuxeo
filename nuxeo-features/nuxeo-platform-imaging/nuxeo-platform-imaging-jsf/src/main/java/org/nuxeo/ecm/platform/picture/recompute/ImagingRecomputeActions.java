@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.picture.recompute;
 
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
+import static org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction.ACTION_NAME;
+import static org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction.PARAM_XPATH;
 
 import java.io.Serializable;
 
@@ -34,7 +36,8 @@ import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -89,15 +92,12 @@ public class ImagingRecomputeActions implements Serializable {
     }
 
     public void launchPictureViewsRecomputation() {
-        WorkManager workManager = Framework.getService(WorkManager.class);
-        if (workManager == null) {
-            throw new RuntimeException("No WorkManager available");
-        }
-
         if (!StringUtils.isBlank(nxqlQuery)) {
-            ImagingRecomputeWork work = new ImagingRecomputeWork(documentManager.getRepositoryName(), nxqlQuery);
-            workManager.schedule(work);
-
+            BulkService service = Framework.getService(BulkService.class);
+            String user = documentManager.getPrincipal().getName();
+            service.submit(new BulkCommand.Builder(ACTION_NAME, nxqlQuery, user)
+                    .param(PARAM_XPATH, "file:content")
+                    .build());
             facesMessages.addFromResourceBundle(StatusMessage.Severity.INFO, "label.imaging.recompute.work.launched");
         }
 
