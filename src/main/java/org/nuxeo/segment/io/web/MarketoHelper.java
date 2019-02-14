@@ -35,12 +35,12 @@ public class MarketoHelper {
     protected static final Log log = LogFactory.getLog(MarketoHelper.class);
 
     protected static String toHexString(byte[] data) {
-        StringBuilder buf = new StringBuilder(2 * data.length);
+        StringBuilder sb = new StringBuilder(2 * data.length);
         for (byte b : data) {
-            buf.append(HEX_DIGITS[(0xF0 & b) >> 4]);
-            buf.append(HEX_DIGITS[0x0F & b]);
+            sb.append(HEX_DIGITS[(0xF0 & b) >> 4]);
+            sb.append(HEX_DIGITS[0x0F & b]);
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     protected static String getSecret() {

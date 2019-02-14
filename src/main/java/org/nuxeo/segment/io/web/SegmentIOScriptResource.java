@@ -61,7 +61,7 @@ public class SegmentIOScriptResource extends ModuleRoot {
         SegmentIO segmentIO = Framework.getService(SegmentIO.class);
 
         SegmentIOUserFilter filters = segmentIO.getUserFilters();
-        StringBuffer json = new StringBuffer("[");
+        StringBuilder json = new StringBuilder("[");
         if (filters != null) {
             if (!filters.isEnableAnonymous()) {
                 String anonymous = filters.getAnonymousUserId();

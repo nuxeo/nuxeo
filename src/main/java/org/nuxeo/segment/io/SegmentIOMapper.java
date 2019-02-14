@@ -83,7 +83,7 @@ public class SegmentIOMapper {
         Map<String, Serializable> mapping = new HashMap<String, Serializable>();
         context.put("mapping", mapping);
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (String key : parameters.keySet()) {
             sb.append("mapping.put(\"");
             sb.append(key);
