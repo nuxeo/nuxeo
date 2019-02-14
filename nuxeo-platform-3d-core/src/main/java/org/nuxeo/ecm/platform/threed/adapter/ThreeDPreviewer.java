@@ -54,7 +54,7 @@ public class ThreeDPreviewer extends AbstractPreviewer implements MimeTypePrevie
     protected List<Blob> buildPreview(TransmissionThreeD transmissionThreeD, DocumentModel dm) {
         List<Blob> blobResults = new ArrayList<>();
         String basePath = VirtualHostHelper.getContextPathProperty();
-        StringBuffer html = new StringBuffer();
+        StringBuilder html = new StringBuilder();
         html.append("<html><head>");
         html.append("<title>" + getPreviewTitle(dm) + "</title>");
         html.append(String.format(
