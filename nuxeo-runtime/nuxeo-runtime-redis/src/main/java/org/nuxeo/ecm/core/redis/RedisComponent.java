@@ -28,7 +28,6 @@ import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StrBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -105,11 +104,11 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         if (loc == null) {
             throw new RuntimeException("Fail to load lua script: " + scriptName);
         }
-        final StrBuilder builder;
+        final StringBuilder builder;
         try (InputStream is = loc.openStream()) {
-            builder = new StrBuilder();
+            builder = new StringBuilder();
             for (String line : IOUtils.readLines(is, UTF_8)) {
-                builder.appendln(line);
+                builder.append(line).append(System.lineSeparator());
             }
         } catch (IOException e) {
             throw new RuntimeException("Fail to load lua script: " + scriptName, e);
