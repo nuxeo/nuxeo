@@ -64,7 +64,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry> i
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("\nquery : " + auditQuery);
         sb.append("\nparams : ");
@@ -104,7 +104,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry> i
     }
 
     protected String getSortPart() {
-        StringBuffer sort = new StringBuffer();
+        StringBuilder sort = new StringBuilder();
         if (getSortInfos() != null && getSortInfos().size() > 0) {
             sort.append(" ORDER BY ");
         }
