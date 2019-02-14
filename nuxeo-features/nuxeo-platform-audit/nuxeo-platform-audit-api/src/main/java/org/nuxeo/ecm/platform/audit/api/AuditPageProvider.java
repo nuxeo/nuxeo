@@ -64,8 +64,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
         buildAuditQuery(true);
         StringBuilder sb = new StringBuilder();
 
-        sb.append("\nquery : " + auditQuery);
-        sb.append("\nparams : ");
+        sb.append("\nquery : ").append(auditQuery).append("\nparams : ");
         List<String> pNames = new ArrayList<>(auditQueryParams.keySet());
         Collections.sort(pNames);
         for (String name : pNames) {
@@ -258,7 +257,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                             while (valueIterator.hasNext()) {
                                 Object v = valueIterator.next();
                                 qParams.put("param" + idxParam, convertParam(v));
-                                baseQuery.append(" :param" + idxParam);
+                                baseQuery.append(" :param").append(idxParam);
                                 idxParam++;
                                 if (valueIterator.hasNext()) {
                                     baseQuery.append(",");
@@ -269,7 +268,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                             for (int i = 0; i < valArray.length; i++) {
                                 Object v = valArray[i];
                                 qParams.put("param" + idxParam, convertParam(v));
-                                baseQuery.append(" :param" + idxParam);
+                                baseQuery.append(" :param").append(idxParam);
                                 idxParam++;
                                 if (i < valArray.length - 1) {
                                     baseQuery.append(",");
@@ -285,23 +284,23 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                         }
                         if (startValue != null && endValue != null) {
                             baseQuery.append(predicate.getOperator());
-                            baseQuery.append(" :param" + idxParam);
+                            baseQuery.append(" :param").append(idxParam);
                             qParams.put("param" + idxParam, startValue);
                             idxParam++;
-                            baseQuery.append(" AND :param" + idxParam);
+                            baseQuery.append(" AND :param").append(idxParam);
                             qParams.put("param" + idxParam, endValue);
                         } else if (startValue == null) {
                             baseQuery.append("<=");
-                            baseQuery.append(" :param" + idxParam);
+                            baseQuery.append(" :param").append(idxParam);
                             qParams.put("param" + idxParam, endValue);
                         } else if (endValue == null) {
                             baseQuery.append(">=");
-                            baseQuery.append(" :param" + idxParam);
+                            baseQuery.append(" :param").append(idxParam);
                             qParams.put("param" + idxParam, startValue);
                         }
                         idxParam++;
                     } else {
-                        baseQuery.append(" :param" + idxParam);
+                        baseQuery.append(" :param").append(idxParam);
                         qParams.put("param" + idxParam, convertParam(val[0]));
                         idxParam++;
                     }

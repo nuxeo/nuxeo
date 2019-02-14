@@ -60,7 +60,7 @@ public class Image2PDFConverter extends CommandLineBasedConverter {
 
     @Override
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
-        throws ConversionException {
+            throws ConversionException {
 
         Map<String, Blob> cmdBlobParams = new HashMap<>();
         cmdBlobParams.put("inputFilePath", blobHolder.getBlob());
@@ -69,7 +69,7 @@ public class Image2PDFConverter extends CommandLineBasedConverter {
 
     @Override
     protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
-        throws ConversionException {
+            throws ConversionException {
 
         Map<String, String> cmdStringParams = new HashMap<>();
 

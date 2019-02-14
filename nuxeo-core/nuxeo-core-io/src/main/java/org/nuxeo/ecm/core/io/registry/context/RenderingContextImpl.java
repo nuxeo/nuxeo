@@ -161,7 +161,7 @@ public class RenderingContextImpl implements RenderingContext {
         }
         StringBuilder sb = new StringBuilder(category);
         for (String subCategory : subCategories) {
-            sb.append(separator + subCategory);
+            sb.append(separator).append(subCategory);
         }
         String paramKey = sb.toString().toLowerCase();
         List<Object> dirty = getParameters(paramKey);

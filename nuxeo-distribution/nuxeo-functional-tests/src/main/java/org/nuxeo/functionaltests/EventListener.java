@@ -46,11 +46,19 @@ public class EventListener {
 
     public void listen() {
         StringBuilder sb = new StringBuilder();
-        sb.append("window." + id + " = 0;");
-        sb.append("var els = document.querySelectorAll('" + selector + "');");
-        sb.append("for (var i=0; i<els.length; i++) {");
-        sb.append("  els[i].addEventListener('" + event + "', function(e) { window." + id + "++; });");
-        sb.append("}");
+        sb.append("window.")
+          .append(id)
+          .append(" = 0;")
+          .append("var els = document.querySelectorAll('")
+          .append(selector)
+          .append("');")
+          .append("for (var i=0; i<els.length; i++) {")
+          .append("  els[i].addEventListener('")
+          .append(event)
+          .append("', function(e) { window.")
+          .append(id)
+          .append("++; });")
+          .append("}");
         js.executeScript(sb.toString());
     }
 

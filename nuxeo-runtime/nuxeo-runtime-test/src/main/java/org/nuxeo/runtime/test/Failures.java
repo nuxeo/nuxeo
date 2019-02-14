@@ -54,11 +54,13 @@ public class Failures {
         int i = 1;
         AssertionFailedError errors = new AssertionFailedError();
         for (Failure failure : failures) {
-            sb.append("* Failure " + i + ": ")
-            .append(failure.getTestHeader())
-            .append("\n")
-            .append(failure.getTrace())
-            .append("\n");
+            sb.append("* Failure ")
+              .append(i)
+              .append(": ")
+              .append(failure.getTestHeader())
+              .append("\n")
+              .append(failure.getTrace())
+              .append("\n");
             errors.addSuppressed(failure.getException());
             i++;
         }
@@ -85,7 +87,7 @@ public class Failures {
         AssertionFailedError errors = new AssertionFailedError(customMessage);
         sb.append(customMessage);
         for (Failure failure : failures) {
-            sb.append("\n* Failure " + i + ": ");
+            sb.append("\n* Failure ").append(i).append(": ");
             String trace = failure.getTrace();
             if (originalMessage != null && originalMessage.equals(failure.getMessage())) {
                 trace = trace.replaceAll(originalMessage, customMessage);

@@ -48,7 +48,7 @@ public class ContributionBuilder extends AbstractContribution {
 
     public ContributionBuilder(String name) {
         super(name);
-        this.extensions = new ArrayList<String>();
+        this.extensions = new ArrayList<>();
     }
 
     @Override
@@ -77,8 +77,13 @@ public class ContributionBuilder extends AbstractContribution {
 
     public void addXmlExtension(String target, String point, String content) {
         StringBuilder sb = new StringBuilder(1024);
-        sb.append("<extension target=\"" + target + "\" point=\"" + point + "\">\n").append(content).append(
-                "\n</extension>");
+        sb.append("<extension target=\"")
+          .append(target)
+          .append("\" point=\"")
+          .append(point)
+          .append("\">\n")
+          .append(content)
+          .append("\n</extension>");
         extensions.add(sb.toString());
     }
 

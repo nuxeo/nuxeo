@@ -776,7 +776,7 @@ public class ConfigurationGenerator {
                 if (line.matches(".*:\\\\.*")) {
                     line = line.replaceAll("\\\\", "/");
                 }
-                sb.append(line).append(System.getProperty("line.separator"));
+                sb.append(line).append(System.lineSeparator());
             }
         } catch (IOException e) {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
@@ -853,7 +853,7 @@ public class ConfigurationGenerator {
                 log.error(String.format(
                         "Template '%s' not found with relative or absolute path (%s). "
                                 + "Check your %s parameter, and %s for included files.",
-                        nextToken, chosenTemplate, PARAM_TEMPLATES_NAME, PARAM_INCLUDED_TEMPLATES));
+                                nextToken, chosenTemplate, PARAM_TEMPLATES_NAME, PARAM_INCLUDED_TEMPLATES));
                 continue;
             }
             File chosenTemplateConf = new File(chosenTemplate, NUXEO_DEFAULT_CONF);
@@ -901,7 +901,7 @@ public class ConfigurationGenerator {
                 // properties.remove(key);
                 if (!hideDeprecationWarnings) {
                     log.warn("Parameter " + key + " is deprecated - please use " + parametersMigration.get(key)
-                            + " instead");
+                    + " instead");
                 }
             }
         }
@@ -1485,9 +1485,9 @@ public class ConfigurationGenerator {
      * @since 5.5
      */
     public static void checkPortAvailable(InetAddress address, int port) throws ConfigurationException {
-        if ((port == 0) || (port == -1)) {
+        if (port == 0 || port == -1) {
             log.warn("Port is set to " + Integer.toString(port)
-                    + " - assuming it is disabled - skipping availability check");
+            + " - assuming it is disabled - skipping availability check");
             return;
         }
         if (port < MIN_PORT || port > MAX_PORT) {
@@ -1682,7 +1682,7 @@ public class ConfigurationGenerator {
         String currentTemplatesStr = userConfig.getProperty(PARAM_TEMPLATES_NAME);
 
         return Stream.of(replaceEnvironmentVariables(currentTemplatesStr).split(TEMPLATE_SEPARATOR))
-                     .collect(Collectors.toList());
+                .collect(Collectors.toList());
 
     }
 
@@ -1767,10 +1767,10 @@ public class ConfigurationGenerator {
                     String key = line.substring(0, equalIdx).trim();
                     if (newParametersToSave.containsKey(key)) {
                         newContent.append(key)
-                                  .append("=")
-                                  .append(newParametersToSave.get(key))
-                                  .append(
-                                          System.getProperty("line.separator"));
+                        .append("=")
+                        .append(newParametersToSave.get(key))
+                        .append(
+                                System.getProperty("line.separator"));
                     } else {
                         newContent.append(line).append(System.getProperty("line.separator"));
                     }
@@ -1783,9 +1783,9 @@ public class ConfigurationGenerator {
                 oldValues.put(key, templateProperties.getProperty(key));
             } else {
                 newContent.append(key)
-                          .append("=")
-                          .append(newParametersToSave.get(key))
-                          .append(System.lineSeparator());
+                .append("=")
+                .append(newParametersToSave.get(key))
+                .append(System.lineSeparator());
             }
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(templateConf))) {
@@ -1922,7 +1922,7 @@ public class ConfigurationGenerator {
             boolean identified = true; // assume the charset is this one, until it is not !
             try (BufferedInputStream input = new BufferedInputStream(new FileInputStream(propsFile))) {
                 byte[] buffer = new byte[512];
-                while ((input.read(buffer) != -1) && (identified)) {
+                while (input.read(buffer) != -1 && identified) {
                     try {
                         decoder.decode(ByteBuffer.wrap(buffer));
                         identified = true;
@@ -2075,9 +2075,9 @@ public class ConfigurationGenerator {
      */
     public List<String> getJavaOpts(Function<String, String> mapper) {
         return Arrays.stream(JAVA_OPTS_PATTERN.split(System.getProperty(JAVA_OPTS_PROP, "")))
-                     .map(option -> StringSubstitutor.replace(option, getUserConfig()))
-                     .map(mapper)
-                     .collect(Collectors.toList());
+                .map(option -> StringSubstitutor.replace(option, getUserConfig()))
+                .map(mapper)
+                .collect(Collectors.toList());
     }
 
     /**

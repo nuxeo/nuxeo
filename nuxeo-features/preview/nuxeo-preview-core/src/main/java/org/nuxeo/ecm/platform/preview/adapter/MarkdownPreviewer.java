@@ -40,7 +40,7 @@ public class MarkdownPreviewer extends AbstractPreviewer implements MimeTypePrev
         String basePath = VirtualHostHelper.getContextPathProperty();
         StringBuilder html = new StringBuilder();
         html.append("<html><head>");
-        html.append("<title>" + getPreviewTitle(dm) + "</title>");
+        html.append("<title>").append(getPreviewTitle(dm)).append("</title>");
         html.append(String.format("<script src=\"%s/bower_components/webcomponentsjs/webcomponents-lite.js\"></script>", basePath));
         html.append(String.format("<link rel=\"import\" href=\"%s/viewers/marked-element.vulcanized.html\">", basePath));
         try {

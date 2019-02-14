@@ -65,33 +65,41 @@ public class ThreadDeadlocksDetector {
             if (mbean.isObjectMonitorUsageSupported()) {
                 monitors = thread.getLockedMonitors();
             }
-            sb.append("\n\"" + thread.getThreadName() + // NOI18N
-                    "\" - Thread t@" + thread.getThreadId() + "\n"); // NOI18N
-            sb.append("   java.lang.Thread.State: " + thread.getThreadState()); // NOI18N
-            sb.append("\n"); // NOI18N
+            sb.append("\n\"")
+              .append(thread.getThreadName())
+              .append("\" - Thread t@")
+              .append(thread.getThreadId())
+              .append("\n")
+              .append("   java.lang.Thread.State: ")
+              .append(thread.getThreadState())
+              .append("\n");
             int index = 0;
             for (StackTraceElement st : thread.getStackTrace()) {
                 LockInfo lock = thread.getLockInfo();
                 String lockOwner = thread.getLockOwnerName();
 
-                sb.append("\tat " + st.toString() + "\n"); // NOI18N
+                sb.append("\tat ").append(st.toString()).append("\n");
                 if (index == 0) {
-                    if ("java.lang.Object".equals(st.getClassName()) && // NOI18N
-                            "wait".equals(st.getMethodName())) { // NOI18N
+                    if ("java.lang.Object".equals(st.getClassName()) &&
+                            "wait".equals(st.getMethodName())) {
                         if (lock != null) {
-                            sb.append("\t- waiting on "); // NOI18N
+                            sb.append("\t- waiting on ");
                             printLock(sb, lock);
-                            sb.append("\n"); // NOI18N
+                            sb.append("\n");
                         }
                     } else if (lock != null) {
                         if (lockOwner == null) {
-                            sb.append("\t- parking to wait for "); // NOI18N
+                            sb.append("\t- parking to wait for ");
                             printLock(sb, lock);
-                            sb.append("\n"); // NOI18N
+                            sb.append("\n");
                         } else {
-                            sb.append("\t- waiting to lock "); // NOI18N
+                            sb.append("\t- waiting to lock ");
                             printLock(sb, lock);
-                            sb.append(" owned by \"" + lockOwner + "\" t@" + thread.getLockOwnerId() + "\n"); // NOI18N
+                            sb.append(" owned by \"")
+                              .append(lockOwner)
+                              .append("\" t@")
+                              .append(thread.getLockOwnerId())
+                              .append("\n");
                         }
                     }
                 }
@@ -105,15 +113,15 @@ public class ThreadDeadlocksDetector {
                 sb.append(jnisb);
             }
             if (mbean.isSynchronizerUsageSupported()) {
-                sb.append("\n   Locked ownable synchronizers:"); // NOI18N
+                sb.append("\n   Locked ownable synchronizers:");
                 LockInfo[] synchronizers = thread.getLockedSynchronizers();
                 if (synchronizers == null || synchronizers.length == 0) {
-                    sb.append("\n\t- None\n"); // NOI18N
+                    sb.append("\n\t- None\n");
                 } else {
                     for (LockInfo li : synchronizers) {
-                        sb.append("\n\t- locked "); // NOI18N
+                        sb.append("\n\t- locked ");
                         printLock(sb, li);
-                        sb.append("\n"); // NOI18N
+                        sb.append("\n");
                     }
                 }
             }
@@ -124,9 +132,9 @@ public class ThreadDeadlocksDetector {
             if (monitors != null) {
                 for (MonitorInfo mi : monitors) {
                     if (mi.getLockedStackDepth() == index) {
-                        sb.append("\t- locked "); // NOI18N
+                        sb.append("\t- locked ");
                         printLock(sb, mi);
-                        sb.append("\n"); // NOI18N
+                        sb.append("\n");
                     }
                 }
             }
@@ -136,8 +144,7 @@ public class ThreadDeadlocksDetector {
         public void printLock(StringBuilder sb, LockInfo lock) {
             String id = Integer.toHexString(lock.getIdentityHashCode());
             String className = lock.getClassName();
-
-            sb.append("<" + id + "> (a " + className + ")"); // NOI18N
+            sb.append("<").append(id).append("> (a ").append(className).append(")");
         }
 
     }
@@ -250,7 +257,7 @@ public class ThreadDeadlocksDetector {
         int nThreads = root.activeCount();
         Thread[] threads = new Thread[2 * nThreads];
         root.enumerate(threads);
-        Map<Long, Thread> map = new HashMap<Long, Thread>(threads.length);
+        Map<Long, Thread> map = new HashMap<>(threads.length);
         for (Thread thread : threads) {
             if (thread == null) {
                 continue;

@@ -72,7 +72,7 @@ public class VirusScannerProcessor extends AbstractLongRunningListener {
                 String key = doc.getRepositoryName() + ":" + doc.getId();
                 Map<String, Blob> blobs = (Map<String, Blob>) data.get(key);
                 if (blobs == null) {
-                    blobs = new HashMap<String, Blob>();
+                    blobs = new HashMap<>();
                 }
                 for (String path : vContext.getBlobPaths()) {
                     blobs.put(path, (Blob) doc.getPropertyValue(path));
@@ -95,7 +95,7 @@ public class VirusScannerProcessor extends AbstractLongRunningListener {
 
         for (String key : data.keySet()) {
             Map<String, Blob> blobs = (Map<String, Blob>) data.get(key);
-            Map<String, ScanResult> results = new HashMap<String, ScanResult>();
+            Map<String, ScanResult> results = new HashMap<>();
 
             for (String path : blobs.keySet()) {
                 try {
@@ -129,7 +129,7 @@ public class VirusScannerProcessor extends AbstractLongRunningListener {
                     for (String path : results.keySet()) {
                         ScanResult res = results.get(path);
                         if (res.isVirusDetected()) {
-                            scanInfo.append("\n virus detected for blob " + path);
+                            scanInfo.append("\n virus detected for blob ").append(path);
                         }
                         if (res.isError()) {
                             failed = true;

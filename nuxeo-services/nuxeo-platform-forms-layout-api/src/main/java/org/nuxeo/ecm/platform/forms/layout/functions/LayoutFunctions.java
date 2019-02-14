@@ -163,7 +163,11 @@ public class LayoutFunctions {
         if (widgets != null) {
             for (WidgetReference widget : widgets) {
                 if (widget != null) {
-                    builder.append(widget.getName() + "(" + widget.getCategory() + ")").append(",");
+                    builder.append(widget.getName())
+                           .append("(")
+                           .append(widget.getCategory())
+                           .append(")")
+                           .append(",");
                 }
             }
         }
@@ -194,7 +198,7 @@ public class LayoutFunctions {
         FieldDefinition[] fieldDefinitions = widgetDef.getFieldDefinitions();
         if (fieldDefinitions != null) {
             for (FieldDefinition fieldDef : fieldDefinitions) {
-                builder.append(fieldDef.getPropertyName() + ",");
+                builder.append(fieldDef.getPropertyName()).append(",");
             }
         }
         builder.append(";");
@@ -224,7 +228,7 @@ public class LayoutFunctions {
         if (subWidgetRefs != null) {
             for (WidgetReference widget : subWidgetRefs) {
                 if (widget != null) {
-                    builder.append(widget.getName() + "(" + widget.getCategory() + ")").append(",");
+                    builder.append(widget.getName()).append("(").append(widget.getCategory()).append(")").append(",");
                 }
             }
         }

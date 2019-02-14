@@ -146,18 +146,18 @@ public class SystemInfoManager implements Serializable {
         StringBuilder sb = new StringBuilder("Nuxeo Server UpTime : ");
         long nbDays = uts / (24 * 3600);
         if (nbDays > 0) {
-            sb.append(nbDays + " days, ");
+            sb.append(nbDays).append(" days, ");
             uts = uts % (24 * 3600);
         }
         long nbHours = uts / 3600;
-        sb.append(nbHours + " h ");
+        sb.append(nbHours).append(" h ");
         uts = uts % 3600;
 
         long nbMin = uts / 60;
-        sb.append(nbMin + " m ");
+        sb.append(nbMin).append(" m ");
         uts = uts % 60;
 
-        sb.append(uts + " s  ");
+        sb.append(uts).append(" s  ");
 
         return sb.toString();
     }

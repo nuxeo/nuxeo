@@ -94,7 +94,7 @@ public class Trace {
     }
 
     protected void printHeading(String heading, BufferedWriter writer) throws IOException {
-        writer.append(LF + LF + "****** " + heading + " ******");
+        writer.append(LF).append(LF).append("****** ").append(heading).append(" ******");
     }
 
     protected void litePrint(BufferedWriter writer) throws IOException {

@@ -151,10 +151,14 @@ public class TestCompareCoreWithES {
             if (nameOrTitle == null || nameOrTitle.isEmpty()) {
                 nameOrTitle = doc.getTitle();
             }
-            sb.append(nameOrTitle);
-            sb.append("[" + doc.getPropertyValue("dc:nature") + "]");
-            sb.append("[" + doc.getPropertyValue("dc:rights") + "]");
-            sb.append(",");
+            sb.append(nameOrTitle)
+              .append("[")
+              .append(doc.getPropertyValue("dc:nature"))
+              .append("]")
+              .append("[")
+              .append(doc.getPropertyValue("dc:rights"))
+              .append("]")
+              .append(",");
         }
         return sb.toString();
     }

@@ -1083,7 +1083,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 HttpServletResponse response = new HttpServletResponseWrapper(httpResponse) {
                     @Override
                     public void sendRedirect(String location) throws IOException {
-                        Map<String, String> parameters =  URIUtils.getRequestParameters(location);
+                        Map<String, String> parameters = URIUtils.getRequestParameters(location);
                         // failed form authentication, fragment is already stored
                         if (parameters.containsKey(LOGIN_MISSING) || parameters.containsKey(LOGIN_FAILED)) {
                             super.sendRedirect(location);
@@ -1091,10 +1091,13 @@ public class NuxeoAuthenticationFilter implements Filter {
                         }
                         HttpServletResponse response = (HttpServletResponse) getResponse();
                         StringBuilder sb = new StringBuilder();
-                        sb.append("<script type=\"text/javascript\">\n");
-                        sb.append("document.cookie = '" + NXAuthConstants.START_PAGE_FRAGMENT_KEY
-                                + "=' + encodeURIComponent(window.location.hash.substring(1) || '') + '; path=/';\n");
-                        sb.append("window.location = '" + location + "';\n");
+                        sb.append("<script type=\"text/javascript\">\n")
+                          .append("document.cookie = '")
+                          .append(NXAuthConstants.START_PAGE_FRAGMENT_KEY)
+                          .append("=' + encodeURIComponent(window.location.hash.substring(1) || '') + '; path=/';\n")
+                          .append("window.location = '")
+                          .append(location)
+                          .append("';\n");
                         sb.append("</script>");
                         String script = sb.toString();
 

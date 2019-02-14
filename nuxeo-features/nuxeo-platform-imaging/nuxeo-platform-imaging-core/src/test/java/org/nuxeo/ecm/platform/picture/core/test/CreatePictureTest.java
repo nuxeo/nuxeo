@@ -79,14 +79,20 @@ public class CreatePictureTest {
         batchManager.addBlob(batchId, "1", source, fileName, mimeType);
 
         StringBuilder fakeJSON = new StringBuilder("{ ");
-        fakeJSON.append(" \"type\" : \"blob\"");
-        fakeJSON.append(", \"length\" : " + source.getLength());
-        fakeJSON.append(", \"mime-type\" : \"" + mimeType + "\"");
-        fakeJSON.append(", \"name\" : \"" + fileName + "\"");
-
-        fakeJSON.append(", \"upload-batch\" : \"" + batchId + "\"");
-        fakeJSON.append(", \"upload-fileId\" : \"1\" ");
-        fakeJSON.append("}");
+        fakeJSON.append(" \"type\" : \"blob\"")
+                .append(", \"length\" : ")
+                .append(source.getLength())
+                .append(", \"mime-type\" : \"")
+                .append(mimeType)
+                .append("\"")
+                .append(", \"name\" : \"")
+                .append(fileName)
+                .append("\"")
+                .append(", \"upload-batch\" : \"")
+                .append(batchId)
+                .append("\"")
+                .append(", \"upload-fileId\" : \"1\" ")
+                .append("}");
 
         DocumentModel root = session.getRootDocument();
 
@@ -101,10 +107,15 @@ public class CreatePictureTest {
 
         for (int i = 1; i < 5; i++) {
             StringBuilder sb = new StringBuilder("{");
-            sb.append("\"description\": \"Desc " + i + "\",");
-            sb.append("\"title\": \"Title" + i + "\",");
-            sb.append("\"maxsize\":" + i * 100);
-            sb.append("}");
+            sb.append("\"description\": \"Desc ")
+              .append(i)
+              .append("\",")
+              .append("\"title\": \"Title")
+              .append(i)
+              .append("\",")
+              .append("\"maxsize\":")
+              .append(i * 100)
+              .append("}");
             templates.put("thumb" + i, sb.toString());
         }
 

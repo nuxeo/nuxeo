@@ -541,7 +541,7 @@ public class State implements StateAccessor, Serializable {
                 if (i > 0) {
                     sb.append(',');
                     if (i > DEBUG_MAX_ARRAY) {
-                        sb.append("...(" + v.length + " items)...");
+                        sb.append("...(").append(v.length).append(" items)...");
                         break;
                     }
                 }
