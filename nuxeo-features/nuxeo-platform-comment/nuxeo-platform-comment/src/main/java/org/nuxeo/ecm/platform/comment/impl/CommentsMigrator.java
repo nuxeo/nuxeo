@@ -19,11 +19,14 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
+import static java.lang.Boolean.TRUE;
 import static java.util.function.Predicate.isEqual;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_RELATION;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_RELATION_TO_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
+import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -122,6 +125,7 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
                 subject, ctxMap);
 
         if (parent != null && comment != null) {
+            comment.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE); // Remove notifications
             comment.setPropertyValue(COMMENT_PARENT_ID, parent.getId());
             session.saveDocument(comment);
         } else if (parent == null && comment == null) {
