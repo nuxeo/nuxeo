@@ -19,10 +19,14 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_ID;
 import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_FACETS;
 import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_RELATIONS;
@@ -43,9 +47,13 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
@@ -59,6 +67,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.platform.notification.api")
+@Deploy("org.nuxeo.ecm.platform.notification.core")
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.tag")
 public class TestTagsMigrator {
@@ -72,6 +82,9 @@ public class TestTagsMigrator {
 
     @Inject
     protected MigrationService migrationService;
+
+    @Inject
+    protected NotificationManager notificationManager;
 
     protected static void sleep(long millis) {
         try {
@@ -170,11 +183,15 @@ public class TestTagsMigrator {
         TagService relationTagService = new RelationTagService();
         TagService facetedTagService = new FacetedTagService();
 
+        NuxeoPrincipal principal = session.getPrincipal();
         // create base docs
         String[] docIds = new String[NDOCS];
         for (int i = 0; i < NDOCS; i++) {
             DocumentModel doc = session.createDocumentModel("/", "doc" + i, "File");
             doc = session.createDocument(doc);
+            notificationManager.addSubscription(principal.getName(), "notification" + i, doc, FALSE, principal,
+                    "notification" + i);
+
             String docId = doc.getId();
             docIds[i] = docId;
             for (int j = 0; j < TAGS_PER_DOC; j++) {
@@ -198,7 +215,13 @@ public class TestTagsMigrator {
         TransactionHelper.startTransaction();
 
         // migrate
-        migrator.run();
+        try (CapturingEventListener listener = new CapturingEventListener(DOCUMENT_UPDATED)) {
+            migrator.run();
+            List<Event> events = listener.getCapturedEvents();
+            for (Event event : events) {
+                assertEquals(TRUE, event.getContext().getProperty(DISABLE_NOTIFICATION_SERVICE));
+            }
+        }
 
         // check resulting tags
         for (int i = 0; i < NDOCS; i++) {
