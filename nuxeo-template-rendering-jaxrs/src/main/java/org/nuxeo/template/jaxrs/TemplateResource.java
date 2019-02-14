@@ -44,6 +44,7 @@ public class TemplateResource extends DefaultObject {
         uuid = null;
     }
 
+    @Override
     protected void initialize(Object... args) {
         if (args != null && args.length > 0) {
             this.uuid = (String) args[0];
@@ -70,9 +71,7 @@ public class TemplateResource extends DefaultObject {
         if (source == null) {
             return getList();
         } else {
-            StringBuffer sb = new StringBuffer();
-            sb.append(source.getId() + " - " + source.getLabel());
-            return sb.toString();
+            return source.getId() + " - " + source.getLabel();
         }
     }
 
@@ -81,10 +80,14 @@ public class TemplateResource extends DefaultObject {
         TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         List<TemplateSourceDocument> sources = tps.getAvailableTemplates(getContext().getCoreSession(), null);
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (TemplateSourceDocument source : sources) {
-            sb.append(source.getId() + " - " + source.getName() + "-" + source.getLabel());
-            sb.append("\n");
+            sb.append(source.getId())
+              .append(" - ")
+              .append(source.getName())
+              .append("-")
+              .append(source.getLabel())
+              .append("\n");
         }
         return sb.toString();
     }

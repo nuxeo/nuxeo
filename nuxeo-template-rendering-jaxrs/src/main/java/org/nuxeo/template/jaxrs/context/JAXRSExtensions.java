@@ -41,7 +41,7 @@ public class JAXRSExtensions {
     }
 
     public String getResourceUrl(String resourceName) {
-        StringBuffer sb = new StringBuffer(getContextPathProperty());
+        StringBuilder sb = new StringBuilder(getContextPathProperty());
         sb.append("/site/templates/doc/");
         sb.append(doc.getId());
         sb.append("/resource/");

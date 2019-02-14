@@ -55,7 +55,7 @@ public class ResourceService extends AbstractResourceService {
         CoreSession session = getCoreSession();
         TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
         List<TemplateSourceDocument> templates = tps.getAvailableTemplates(session, null);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("[");
         for (TemplateSourceDocument t : templates) {

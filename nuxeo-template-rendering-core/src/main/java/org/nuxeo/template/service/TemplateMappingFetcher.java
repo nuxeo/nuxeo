@@ -55,7 +55,7 @@ public class TemplateMappingFetcher extends UnrestrictedSessionRunner {
 
     @Override
     public void run() {
-        StringBuffer sb = new StringBuffer("select * from Document where ");
+        StringBuilder sb = new StringBuilder("select * from Document where ");
         sb.append(TemplateSourceDocumentAdapterImpl.TEMPLATE_FORCED_TYPES_ITEM_PROP);
         sb.append(" <> 'none'");
 

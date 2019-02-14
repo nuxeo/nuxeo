@@ -68,9 +68,7 @@ public class TemplateBasedResource extends DefaultObject {
         if (tmpl == null) {
             return "";
         } else {
-            StringBuffer sb = new StringBuffer();
-            sb.append(tmpl.getAdaptedDoc().getId() + " - " + tmpl.getAdaptedDoc().getTitle());
-            return sb.toString();
+            return tmpl.getAdaptedDoc().getId() + " - " + tmpl.getAdaptedDoc().getTitle();
         }
     }
 

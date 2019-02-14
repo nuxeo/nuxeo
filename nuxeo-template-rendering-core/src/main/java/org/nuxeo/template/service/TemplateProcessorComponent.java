@@ -243,30 +243,28 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     }
 
     protected String buildTemplateSearchQuery(String targetType) {
-        StringBuffer sb = new StringBuffer(
-                "select * from Document where ecm:mixinType = 'Template' AND ecm:isTrashed = 0");
+        String query = "select * from Document where ecm:mixinType = 'Template' AND ecm:isTrashed = 0";
         if (Boolean.parseBoolean(Framework.getProperty(FILTER_VERSIONS_PROPERTY))) {
-            sb.append(" AND ecm:isVersion = 0");
+            query += " AND ecm:isVersion = 0";
         }
         if (targetType != null) {
-            sb.append(" AND tmpl:applicableTypes IN ( 'all', '" + targetType + "')");
+            query += " AND tmpl:applicableTypes IN ( 'all', '" + targetType + "')";
         }
-        return sb.toString();
+        return query;
     }
 
     protected String buildTemplateSearchByNameQuery(String name) {
-        StringBuffer sb = new StringBuffer(
-            "select * from Document where ecm:mixinType = 'Template' AND tmpl:templateName = " + NXQL.escapeString(name));
+        String query = "select * from Document where ecm:mixinType = 'Template' "
+                + "AND tmpl:templateName = " + NXQL.escapeString(name);
         if (Boolean.parseBoolean(Framework.getProperty(FILTER_VERSIONS_PROPERTY))) {
-            sb.append(" AND ecm:isVersion = 0");
+            query += " AND ecm:isVersion = 0";
         }
-        return sb.toString();
+        return query;
     }
 
     @Override
     public List<DocumentModel> getAvailableTemplateDocs(CoreSession session, String targetType) {
-        String query = buildTemplateSearchQuery(targetType);
-        return session.query(query);
+        return session.query(buildTemplateSearchQuery(targetType));
     }
 
     @Override
@@ -288,29 +286,27 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     }
 
     @Override
-    public List<TemplateSourceDocument> getAvailableOfficeTemplates(CoreSession session, String targetType)
-            {
-        String query = buildTemplateSearchQuery(targetType);
-        query = query + " AND tmpl:useAsMainContent=1";
+    public List<TemplateSourceDocument> getAvailableOfficeTemplates(CoreSession session, String targetType) {
+        String query = buildTemplateSearchQuery(targetType) + " AND tmpl:useAsMainContent=1";
         List<DocumentModel> docs = session.query(query);
         return wrap(docs, TemplateSourceDocument.class);
     }
 
     @Override
-    public List<TemplateSourceDocument> getAvailableTemplates(CoreSession session, String targetType)
-            {
+    public List<TemplateSourceDocument> getAvailableTemplates(CoreSession session, String targetType) {
         List<DocumentModel> filtredResult = getAvailableTemplateDocs(session, targetType);
         return wrap(filtredResult, TemplateSourceDocument.class);
     }
 
     @Override
     public List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source) {
-        StringBuffer sb = new StringBuffer(
-                "select * from Document where ecm:isVersion = 0 AND ecm:isProxy = 0 AND ");
-        sb.append(TemplateBindings.BINDING_PROP_NAME + "/*/" + TemplateBinding.TEMPLATE_ID_KEY);
-        sb.append(" = '");
-        sb.append(source.getId());
-        sb.append("'");
+        StringBuilder sb = new StringBuilder()
+                .append("select * from Document where ecm:isVersion = 0 AND ecm:isProxy = 0 AND ")
+                .append(TemplateBindings.BINDING_PROP_NAME + "/*/")
+                .append(TemplateBinding.TEMPLATE_ID_KEY)
+                .append(" = '")
+                .append(source.getId())
+                .append("'");
         DocumentModelList docs = source.getCoreSession().query(sb.toString());
 
         List<TemplateBasedDocument> result = new ArrayList<>();
@@ -390,8 +386,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     }
 
     @Override
-    public DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc, String templateName, boolean save)
-            {
+    public DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc, String templateName, boolean save) {
         DocumentModel docAfterDetach = null;
         TemplateBasedDocument tbd = targetDoc.getAdapter(TemplateBasedDocument.class);
         if (tbd != null) {
