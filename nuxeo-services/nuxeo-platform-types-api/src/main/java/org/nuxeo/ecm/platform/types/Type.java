@@ -290,13 +290,13 @@ public class Type implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder buf = new StringBuilder();
-        buf.append(Type.class.getSimpleName());
-        buf.append(" {");
-        buf.append("id: ");
-        buf.append(id);
-        buf.append('}');
-        return buf.toString();
+        final StringBuilder sb = new StringBuilder();
+        sb.append(Type.class.getSimpleName());
+        sb.append(" {");
+        sb.append("id: ");
+        sb.append(id);
+        sb.append('}');
+        return sb.toString();
     }
 
     public String getIconExpanded() {

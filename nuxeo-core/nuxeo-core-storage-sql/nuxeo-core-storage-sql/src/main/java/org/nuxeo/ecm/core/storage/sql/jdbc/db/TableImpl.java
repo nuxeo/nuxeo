@@ -69,10 +69,10 @@ public class TableImpl implements Table {
         this.key = key; // Model table name
         this.name = name;
         // we use a LinkedHashMap to have deterministic ordering
-        columns = new LinkedHashMap<String, Column>();
-        indexedColumns = new LinkedList<String[]>();
-        indexNames = new HashMap<String[], String>();
-        indexTypes = new HashMap<String[], IndexType>();
+        columns = new LinkedHashMap<>();
+        indexedColumns = new LinkedList<>();
+        indexNames = new HashMap<>();
+        indexTypes = new HashMap<>();
     }
 
     @Override
@@ -183,26 +183,26 @@ public class TableImpl implements Table {
      */
     @Override
     public String getCreateSql() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("CREATE TABLE ");
-        buf.append(getQuotedName());
-        buf.append(" (");
+        StringBuilder sb = new StringBuilder();
+        sb.append("CREATE TABLE ");
+        sb.append(getQuotedName());
+        sb.append(" (");
         String custom = dialect.getCustomColumnDefinition(this);
         if (custom != null) {
-            buf.append(custom);
-            buf.append(", ");
+            sb.append(custom);
+            sb.append(", ");
         }
         for (Iterator<Column> it = columns.values().iterator(); it.hasNext();) {
-            addOneColumn(buf, it.next());
+            addOneColumn(sb, it.next());
             if (it.hasNext()) {
-                buf.append(", ");
+                sb.append(", ");
             }
         }
         // unique
         // check
-        buf.append(')');
-        buf.append(dialect.getTableTypeString(this));
-        return buf.toString();
+        sb.append(')');
+        sb.append(dialect.getTableTypeString(this));
+        return sb.toString();
     }
 
     /**
@@ -213,38 +213,38 @@ public class TableImpl implements Table {
      */
     @Override
     public String getAddColumnSql(Column column) {
-        StringBuilder buf = new StringBuilder();
-        buf.append("ALTER TABLE ");
-        buf.append(getQuotedName());
-        buf.append(' ');
-        buf.append(dialect.getAddColumnString());
-        buf.append(' ');
-        addOneColumn(buf, column);
-        return buf.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("ALTER TABLE ");
+        sb.append(getQuotedName());
+        sb.append(' ');
+        sb.append(dialect.getAddColumnString());
+        sb.append(' ');
+        addOneColumn(sb, column);
+        return sb.toString();
     }
 
     /**
      * Adds to buf the column name and its type and constraints for create / alter.
      */
-    protected void addOneColumn(StringBuilder buf, Column column) {
-        buf.append(column.getQuotedName());
-        buf.append(' ');
-        buf.append(column.getSqlTypeString());
+    protected void addOneColumn(StringBuilder sb, Column column) {
+        sb.append(column.getQuotedName());
+        sb.append(' ');
+        sb.append(column.getSqlTypeString());
         String defaultValue = column.getDefaultValue();
         if (defaultValue != null) {
-            buf.append(" DEFAULT ");
-            buf.append(defaultValue);
+            sb.append(" DEFAULT ");
+            sb.append(defaultValue);
         }
         if (column.isNullable()) {
-            buf.append(dialect.getNullColumnString());
+            sb.append(dialect.getNullColumnString());
         } else {
-            buf.append(" NOT NULL");
+            sb.append(" NOT NULL");
         }
     }
 
     @Override
     public List<String> getPostCreateSqls(Model model) {
-        List<String> sqls = new LinkedList<String>();
+        List<String> sqls = new LinkedList<>();
         List<String> custom = dialect.getCustomPostCreateSqls(this, model);
         sqls.addAll(custom);
         for (Column column : columns.values()) {
@@ -255,23 +255,23 @@ public class TableImpl implements Table {
 
     @Override
     public List<String> getPostAddSqls(Column column, Model model) {
-        List<String> sqls = new LinkedList<String>();
+        List<String> sqls = new LinkedList<>();
         postAddColumn(column, sqls, model);
         return sqls;
     }
 
     protected void postAddColumn(Column column, List<String> sqls, Model model) {
         if (column.isPrimary() && !(column.isIdentity() && dialect.isIdentityAlreadyPrimary())) {
-            StringBuilder buf = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             String constraintName = dialect.openQuote() + dialect.getPrimaryKeyConstraintName(key)
-                    + dialect.closeQuote();
-            buf.append("ALTER TABLE ");
-            buf.append(getQuotedName());
-            buf.append(dialect.getAddPrimaryKeyConstraintString(constraintName));
-            buf.append('(');
-            buf.append(column.getQuotedName());
-            buf.append(')');
-            sqls.add(buf.toString());
+            + dialect.closeQuote();
+            sb.append("ALTER TABLE ");
+            sb.append(getQuotedName());
+            sb.append(dialect.getAddPrimaryKeyConstraintString(constraintName));
+            sb.append('(');
+            sb.append(column.getQuotedName());
+            sb.append(')');
+            sqls.add(sb.toString());
         }
         if (column.isIdentity()) {
             // Oracle needs a sequence + trigger
@@ -283,10 +283,10 @@ public class TableImpl implements Table {
             String constraintName = dialect.openQuote()
                     + dialect.getForeignKeyConstraintName(key, column.getPhysicalName(), ft.getPhysicalName())
                     + dialect.closeQuote();
-            StringBuilder buf = new StringBuilder();
-            buf.append("ALTER TABLE ");
-            buf.append(getQuotedName());
-            buf.append(dialect.getAddForeignKeyConstraintString(constraintName,
+            StringBuilder sb = new StringBuilder();
+            sb.append("ALTER TABLE ");
+            sb.append(getQuotedName());
+            sb.append(dialect.getAddForeignKeyConstraintString(constraintName,
                     new String[] { column.getQuotedName() }, ft.getQuotedName(), new String[] { fc.getQuotedName() },
                     true));
             if (dialect.supportsCircularCascadeDeleteConstraints()
@@ -296,42 +296,42 @@ public class TableImpl implements Table {
                 // recursively for:
                 // - hierarchy.parentid
                 // - proxies.targetid
-                buf.append(" ON DELETE CASCADE");
+                sb.append(" ON DELETE CASCADE");
             }
-            sqls.add(buf.toString());
+            sqls.add(sb.toString());
         }
         // add indexes for this column
         String columnName = column.getKey();
         INDEXES: //
-        for (String[] columnNames : indexedColumns) {
-            List<String> names = new ArrayList<String>(Arrays.asList(columnNames));
-            // check that column is part of this index
-            if (!names.contains(columnName)) {
-                continue;
-            }
-            // check that column is the last one mentioned
-            for (Column c : getColumns()) {
-                String key = c.getKey();
-                names.remove(key);
-                if (names.isEmpty()) {
-                    // last one?
-                    if (!columnName.equals(key)) {
-                        continue INDEXES;
-                    }
-                    break;
+            for (String[] columnNames : indexedColumns) {
+                List<String> names = new ArrayList<>(Arrays.asList(columnNames));
+                // check that column is part of this index
+                if (!names.contains(columnName)) {
+                    continue;
                 }
+                // check that column is the last one mentioned
+                for (Column c : getColumns()) {
+                    String key = c.getKey();
+                    names.remove(key);
+                    if (names.isEmpty()) {
+                        // last one?
+                        if (!columnName.equals(key)) {
+                            continue INDEXES;
+                        }
+                        break;
+                    }
+                }
+                // add this index now, as all columns have been created
+                List<Column> cols = new ArrayList<>(columnNames.length);
+                for (String name : columnNames) {
+                    Column col = getColumn(name);
+                    cols.add(col);
+                }
+                String indexName = indexNames.get(columnNames);
+                IndexType indexType = indexTypes.get(columnNames);
+                String createIndexSql = dialect.getCreateIndexSql(indexName, indexType, this, cols, model);
+                sqls.add(createIndexSql);
             }
-            // add this index now, as all columns have been created
-            List<Column> cols = new ArrayList<Column>(columnNames.length);
-            for (String name : columnNames) {
-                Column col = getColumn(name);
-                cols.add(col);
-            }
-            String indexName = indexNames.get(columnNames);
-            IndexType indexType = indexTypes.get(columnNames);
-            String createIndexSql = dialect.getCreateIndexSql(indexName, indexType, this, cols, model);
-            sqls.add(createIndexSql);
-        }
     }
 
     /**
@@ -343,17 +343,17 @@ public class TableImpl implements Table {
      */
     @Override
     public String getDropSql() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("DROP TABLE ");
+        StringBuilder sb = new StringBuilder();
+        sb.append("DROP TABLE ");
         if (dialect.supportsIfExistsBeforeTableName()) {
-            buf.append("IF EXISTS ");
+            sb.append("IF EXISTS ");
         }
-        buf.append(getQuotedName());
-        buf.append(dialect.getCascadeDropConstraintsString());
+        sb.append(getQuotedName());
+        sb.append(dialect.getCascadeDropConstraintsString());
         if (dialect.supportsIfExistsAfterTableName()) {
-            buf.append(" IF EXISTS");
+            sb.append(" IF EXISTS");
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     @Override

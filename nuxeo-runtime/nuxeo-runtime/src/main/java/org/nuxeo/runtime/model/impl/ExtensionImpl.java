@@ -137,17 +137,17 @@ public class ExtensionImpl implements Extension {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(ExtensionImpl.class.getSimpleName());
-        buf.append(" {");
-        buf.append("target: ");
-        buf.append(target);
-        buf.append(", point:");
-        buf.append(extensionPoint);
-        buf.append(", contributor:");
-        buf.append(component);
-        buf.append('}');
-        return buf.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append(ExtensionImpl.class.getSimpleName());
+        sb.append(" {");
+        sb.append("target: ");
+        sb.append(target);
+        sb.append(", point:");
+        sb.append(extensionPoint);
+        sb.append(", contributor:");
+        sb.append(component);
+        sb.append('}');
+        return sb.toString();
     }
 
     /**

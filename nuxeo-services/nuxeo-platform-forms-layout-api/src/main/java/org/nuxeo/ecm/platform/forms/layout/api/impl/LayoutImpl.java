@@ -246,23 +246,23 @@ public class LayoutImpl implements Layout {
 
     @Override
     public String toString() {
-        final StringBuilder buf = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
-        buf.append("LayoutImpl");
-        buf.append(" {");
-        buf.append(" name=");
-        buf.append(name);
-        buf.append(", id=");
-        buf.append(id);
-        buf.append(", mode=");
-        buf.append(mode);
-        buf.append(", template=");
-        buf.append(template);
-        buf.append(", properties=");
-        buf.append(properties);
-        buf.append('}');
+        sb.append("LayoutImpl");
+        sb.append(" {");
+        sb.append(" name=");
+        sb.append(name);
+        sb.append(", id=");
+        sb.append(id);
+        sb.append(", mode=");
+        sb.append(mode);
+        sb.append(", template=");
+        sb.append(template);
+        sb.append(", properties=");
+        sb.append(properties);
+        sb.append('}');
 
-        return buf.toString();
+        return sb.toString();
     }
 
     public boolean isDynamic() {

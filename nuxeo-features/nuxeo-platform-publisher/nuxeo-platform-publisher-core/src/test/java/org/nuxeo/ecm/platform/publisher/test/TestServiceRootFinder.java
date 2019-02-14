@@ -129,7 +129,7 @@ public class TestServiceRootFinder extends PublisherTestCase {
 
     }
 
-    private void dumpNode(PublicationNode node, StringBuffer sb) throws Exception {
+    private void dumpNode(PublicationNode node, StringBuilder sb) throws Exception {
         sb.append(node.getPath());
         sb.append("\n");
         for (PublicationNode child : node.getChildrenNodes()) {
@@ -208,7 +208,7 @@ public class TestServiceRootFinder extends PublisherTestCase {
         PublicationTree tree = ps.getPublicationTree(treeName, session, null);
         assertNotNull(tree);
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         dumpNode(tree, sb);
         // /default-domain/sections
         // /default-domain/sections/D1_section2
@@ -218,7 +218,7 @@ public class TestServiceRootFinder extends PublisherTestCase {
         tree = ps.getPublicationTree(treeName2, session, null);
         assertNotNull(tree);
 
-        sb = new StringBuffer();
+        sb = new StringBuilder();
         dumpNode(tree, sb);
         // /another-default-domain/sections
         // /another-default-domain/sections/D2_section1
@@ -230,7 +230,7 @@ public class TestServiceRootFinder extends PublisherTestCase {
         tree = ps.getPublicationTree(treeName2, session, null, ws);
         assertNotNull(tree);
 
-        sb = new StringBuffer();
+        sb = new StringBuilder();
         dumpNode(tree, sb);
         // /another-default-domain/sections
         // /another-default-domain/sections/D2_section1/D2_section11

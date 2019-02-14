@@ -77,7 +77,7 @@ public class FilterRule {
 
     public String getCacheKey() {
         if (cacheKey == null) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("grant:");
             sb.append(grant);
             if (permissions != null && permissions.length > 0) {

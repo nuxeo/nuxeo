@@ -230,29 +230,29 @@ public class DocumentHelper {
         }
         ArrayList<String> result = new ArrayList<>();
         char[] chars = value.toCharArray();
-        StringBuilder buf = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         boolean esc = false;
         for (char c : chars) {
             if (c == '\\') {
                 if (esc) {
-                    buf.append('\\');
+                    sb.append('\\');
                     esc = false;
                 } else {
                     esc = true;
                 }
             } else if (c == ',') {
                 if (esc) {
-                    buf.append(',');
+                    sb.append(',');
                     esc = false;
                 } else {
-                    result.add(buf.toString());
-                    buf = new StringBuilder();
+                    result.add(sb.toString());
+                    sb = new StringBuilder();
                 }
             } else {
-                buf.append(c);
+                sb.append(c);
             }
         }
-        result.add(buf.toString());
+        result.add(sb.toString());
         return result.toArray(new String[result.size()]);
     }
 

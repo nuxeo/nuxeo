@@ -79,7 +79,7 @@ public class FulltextQueryAnalyzer {
 
     protected FulltextQuery ft = new FulltextQuery();
 
-    protected List<FulltextQuery> terms = new LinkedList<FulltextQuery>();
+    protected List<FulltextQuery> terms = new LinkedList<>();
 
     protected FulltextQuery analyze(String query) {
         query = query.replaceAll(" +", " ").trim();
@@ -87,7 +87,7 @@ public class FulltextQueryAnalyzer {
             return null;
         }
         ft.op = Op.OR;
-        ft.terms = new LinkedList<FulltextQuery>();
+        ft.terms = new LinkedList<>();
         // current sequence of ANDed terms
         boolean wasOr = false;
         String[] words = split(query);
@@ -198,8 +198,8 @@ public class FulltextQueryAnalyzer {
     // add current ANDed terms to global OR
     protected void endAnd() {
         // put negative words at the end
-        List<FulltextQuery> pos = new LinkedList<FulltextQuery>();
-        List<FulltextQuery> neg = new LinkedList<FulltextQuery>();
+        List<FulltextQuery> pos = new LinkedList<>();
+        List<FulltextQuery> neg = new LinkedList<>();
         for (FulltextQuery term : terms) {
             if (term.op == Op.NOTWORD) {
                 neg.add(term);
@@ -219,33 +219,33 @@ public class FulltextQueryAnalyzer {
                 ft.terms.add(a);
             }
         }
-        terms = new LinkedList<FulltextQuery>();
+        terms = new LinkedList<>();
     }
 
-    public static void translate(FulltextQuery ft, StringBuilder buf, String or, String and, String andNot,
+    public static void translate(FulltextQuery ft, StringBuilder sb, String or, String and, String andNot,
             String wordStart, String wordEnd, Set<Character> wordCharsReserved, String phraseStart, String phraseEnd,
             boolean quotePhraseWords) {
         if (ft.op == Op.AND || ft.op == Op.OR) {
-            buf.append('(');
+            sb.append('(');
             for (int i = 0; i < ft.terms.size(); i++) {
                 FulltextQuery term = ft.terms.get(i);
                 if (i > 0) {
-                    buf.append(' ');
+                    sb.append(' ');
                     if (ft.op == Op.OR) {
-                        buf.append(or);
+                        sb.append(or);
                     } else { // Op.AND
                         if (term.op == Op.NOTWORD) {
-                            buf.append(andNot);
+                            sb.append(andNot);
                         } else {
-                            buf.append(and);
+                            sb.append(and);
                         }
                     }
-                    buf.append(' ');
+                    sb.append(' ');
                 }
-                translate(term, buf, or, and, andNot, wordStart, wordEnd, wordCharsReserved, phraseStart, phraseEnd,
+                translate(term, sb, or, and, andNot, wordStart, wordEnd, wordCharsReserved, phraseStart, phraseEnd,
                         quotePhraseWords);
             }
-            buf.append(')');
+            sb.append(')');
             return;
         } else {
             String word = ft.word;
@@ -254,23 +254,23 @@ public class FulltextQueryAnalyzer {
                     boolean first = true;
                     for (String w : word.split(" ")) {
                         if (!first) {
-                            buf.append(" ");
+                            sb.append(" ");
                         }
                         first = false;
-                        appendWord(w, buf, wordStart, wordEnd, wordCharsReserved);
+                        appendWord(w, sb, wordStart, wordEnd, wordCharsReserved);
                     }
                 } else {
-                    buf.append(phraseStart);
-                    buf.append(word);
-                    buf.append(phraseEnd);
+                    sb.append(phraseStart);
+                    sb.append(word);
+                    sb.append(phraseEnd);
                 }
             } else {
-                appendWord(word, buf, wordStart, wordEnd, wordCharsReserved);
+                appendWord(word, sb, wordStart, wordEnd, wordCharsReserved);
             }
         }
     }
 
-    protected static void appendWord(String word, StringBuilder buf, String start, String end, Set<Character> reserved) {
+    protected static void appendWord(String word, StringBuilder sb, String start, String end, Set<Character> reserved) {
         boolean quote = true;
         if (!reserved.isEmpty()) {
             for (char c : word.toCharArray()) {
@@ -281,11 +281,11 @@ public class FulltextQueryAnalyzer {
             }
         }
         if (quote) {
-            buf.append(start);
+            sb.append(start);
         }
-        buf.append(word);
+        sb.append(word);
         if (quote) {
-            buf.append(end);
+            sb.append(end);
         }
     }
 
@@ -316,9 +316,9 @@ public class FulltextQueryAnalyzer {
      * Translate fulltext into a common pattern used by many servers.
      */
     public static String translateFulltext(FulltextQuery ft, String or, String and, String andNot, String phraseQuote) {
-        StringBuilder buf = new StringBuilder();
-        translate(ft, buf, or, and, andNot, "", "", Collections.<Character> emptySet(), phraseQuote, phraseQuote, false);
-        return buf.toString();
+        StringBuilder sb = new StringBuilder();
+        translate(ft, sb, or, and, andNot, "", "", Collections.<Character> emptySet(), phraseQuote, phraseQuote, false);
+        return sb.toString();
     }
 
     /**
@@ -327,10 +327,10 @@ public class FulltextQueryAnalyzer {
     public static String translateFulltext(FulltextQuery ft, String or, String and, String andNot, String wordStart,
             String wordEnd, Set<Character> wordCharsReserved, String phraseStart, String phraseEnd,
             boolean quotePhraseWords) {
-        StringBuilder buf = new StringBuilder();
-        translate(ft, buf, or, and, andNot, wordStart, wordEnd, wordCharsReserved, phraseStart, phraseEnd,
+        StringBuilder sb = new StringBuilder();
+        translate(ft, sb, or, and, andNot, wordStart, wordEnd, wordCharsReserved, phraseStart, phraseEnd,
                 quotePhraseWords);
-        return buf.toString();
+        return sb.toString();
     }
 
 }

@@ -243,15 +243,15 @@ public class TestSQLRepositoryVersioning {
         }
         // build a debug list of versions and creation times
         // in case of failure
-        StringBuilder buf = new StringBuilder("version time: ");
+        StringBuilder sb = new StringBuilder("version time: ");
         for (VersionModel vm : session.getVersionsForDocument(doc.getRef())) {
-            buf.append(vm.getLabel());
-            buf.append("=");
-            buf.append(vm.getCreated().getTimeInMillis());
-            buf.append(", ");
+            sb.append(vm.getLabel());
+            sb.append("=");
+            sb.append(vm.getCreated().getTimeInMillis());
+            sb.append(", ");
         }
-        buf.setLength(buf.length() - 2);
-        assertEquals(buf.toString(), Arrays.asList(labels), actual);
+        sb.setLength(sb.length() - 2);
+        assertEquals(sb.toString(), Arrays.asList(labels), actual);
         List<DocumentRef> versionsRefs = session.getVersionsRefs(doc.getRef());
         assertEquals(labels.length, versionsRefs.size());
     }

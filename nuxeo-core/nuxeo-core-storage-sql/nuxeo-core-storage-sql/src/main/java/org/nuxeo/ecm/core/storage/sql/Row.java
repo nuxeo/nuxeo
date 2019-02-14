@@ -236,7 +236,7 @@ public final class Row extends RowId implements Serializable, Cloneable {
      * Gets the list of keys. The id is not included.
      */
     public List<String> getKeys() {
-        List<String> list = new ArrayList<String>(size);
+        List<String> list = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             list.add(keys[i]);
         }
@@ -247,7 +247,7 @@ public final class Row extends RowId implements Serializable, Cloneable {
      * Gets the list of values. The id is not included.
      */
     public List<Serializable> getValues() {
-        List<Serializable> list = new ArrayList<Serializable>(size);
+        List<Serializable> list = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             list.add(values[i]);
         }
@@ -256,37 +256,37 @@ public final class Row extends RowId implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(getClass().getSimpleName());
-        buf.append('(');
-        buf.append(tableName);
-        buf.append(", ");
-        buf.append(id);
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append('(');
+        sb.append(tableName);
+        sb.append(", ");
+        sb.append(id);
         if (size != -1) {
             // single row
-            buf.append(", {");
+            sb.append(", {");
             for (int i = 0; i < size; i++) {
                 if (i > 0) {
-                    buf.append(", ");
+                    sb.append(", ");
                 }
-                buf.append(keys[i]);
-                buf.append('=');
-                printValue(values[i], buf);
+                sb.append(keys[i]);
+                sb.append('=');
+                printValue(values[i], sb);
             }
-            buf.append('}');
+            sb.append('}');
         } else {
             // multiple rows
-            buf.append(", [");
+            sb.append(", [");
             for (int i = 0; i < values.length; i++) {
                 if (i > 0) {
-                    buf.append(", ");
+                    sb.append(", ");
                 }
-                printValue(values[i], buf);
+                printValue(values[i], sb);
             }
-            buf.append(']');
+            sb.append(']');
         }
-        buf.append(')');
-        return buf.toString();
+        sb.append(')');
+        return sb.toString();
     }
 
     public static final int MAX_STRING = 100;
@@ -294,17 +294,17 @@ public final class Row extends RowId implements Serializable, Cloneable {
     public static final int MAX_ARRAY = 10;
 
     @SuppressWarnings("boxing")
-    public static void printValue(Serializable value, StringBuilder buf) {
+    public static void printValue(Serializable value, StringBuilder sb) {
         if (value == null) {
-            buf.append("NULL");
+            sb.append("NULL");
         } else if (value instanceof String) {
             String v = (String) value;
             if (v.length() > MAX_STRING) {
                 v = v.substring(0, MAX_STRING) + "...(" + v.length() + " chars)...";
             }
-            buf.append('"');
-            buf.append(v);
-            buf.append('"');
+            sb.append('"');
+            sb.append(v);
+            sb.append('"');
         } else if (value instanceof Calendar) {
             Calendar cal = (Calendar) value;
             char sign;
@@ -315,7 +315,7 @@ public final class Row extends RowId implements Serializable, Cloneable {
             } else {
                 sign = '+';
             }
-            buf.append(String.format("Calendar(%04d-%02d-%02dT%02d:%02d:%02d.%03d%c%02d:%02d)", cal.get(Calendar.YEAR), //
+            sb.append(String.format("Calendar(%04d-%02d-%02dT%02d:%02d:%02d.%03d%c%02d:%02d)", cal.get(Calendar.YEAR), //
                     cal.get(Calendar.MONTH) + 1, //
                     cal.get(Calendar.DAY_OF_MONTH), //
                     cal.get(Calendar.HOUR_OF_DAY), //
@@ -325,22 +325,22 @@ public final class Row extends RowId implements Serializable, Cloneable {
                     sign, offset / 60, offset % 60));
         } else if (value.getClass().isArray()) {
             Serializable[] v = (Serializable[]) value;
-            buf.append('[');
+            sb.append('[');
             for (int i = 0; i < v.length; i++) {
                 if (i > 0) {
-                    buf.append(',');
+                    sb.append(',');
                     if (i > MAX_ARRAY) {
-                        buf.append("...(");
-                        buf.append(v.length);
-                        buf.append(" items)...");
+                        sb.append("...(");
+                        sb.append(v.length);
+                        sb.append(" items)...");
                         break;
                     }
                 }
-                printValue(v[i], buf);
+                printValue(v[i], sb);
             }
-            buf.append(']');
+            sb.append(']');
         } else {
-            buf.append(value.toString());
+            sb.append(value.toString());
         }
     }
 

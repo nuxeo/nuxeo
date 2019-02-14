@@ -83,31 +83,31 @@ public class Select implements Serializable {
     }
 
     public String getStatement() {
-        StringBuilder buf = new StringBuilder(128);
+        StringBuilder sb = new StringBuilder(128);
         if (with != null && with.length() != 0) {
-            buf.append("WITH ");
-            buf.append(with);
-            buf.append(' ');
+            sb.append("WITH ");
+            sb.append(with);
+            sb.append(' ');
         }
-        buf.append("SELECT ");
-        buf.append(what);
-        buf.append(" FROM ");
-        buf.append(from);
+        sb.append("SELECT ");
+        sb.append(what);
+        sb.append(" FROM ");
+        sb.append(from);
         if (where != null && where.length() != 0) {
-            buf.append(" WHERE ");
-            buf.append(where);
+            sb.append(" WHERE ");
+            sb.append(where);
         }
         if (groupBy != null && groupBy.length() != 0) {
-            buf.append(" GROUP BY ");
-            buf.append(groupBy);
+            sb.append(" GROUP BY ");
+            sb.append(groupBy);
         }
         if (orderBy != null && orderBy.length() != 0) {
-            buf.append(" ORDER BY ");
-            buf.append(orderBy);
+            sb.append(" ORDER BY ");
+            sb.append(orderBy);
         }
         // ... "for update" in some cases, see dialect.getForUpdateString and
         // lock modes
-        return buf.toString();
+        return sb.toString();
     }
 
 }

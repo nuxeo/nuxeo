@@ -392,18 +392,18 @@ public class DialectSQLServer extends Dialect {
     @Override
     public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table, List<Column> columns,
             Model model) {
-        StringBuilder buf = new StringBuilder();
-        buf.append(String.format("CREATE FULLTEXT INDEX ON %s (", table.getQuotedName()));
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("CREATE FULLTEXT INDEX ON %s (", table.getQuotedName()));
         Iterator<Column> it = columns.iterator();
         while (it.hasNext()) {
-            buf.append(String.format("%s LANGUAGE %s", it.next().getQuotedName(), getQuotedFulltextAnalyzer()));
+            sb.append(String.format("%s LANGUAGE %s", it.next().getQuotedName(), getQuotedFulltextAnalyzer()));
             if (it.hasNext()) {
-                buf.append(", ");
+                sb.append(", ");
             }
         }
         String fulltextUniqueIndex = "[fulltext_pk]";
-        buf.append(String.format(") KEY INDEX %s ON [%s]", fulltextUniqueIndex, fulltextCatalog));
-        return buf.toString();
+        sb.append(String.format(") KEY INDEX %s ON [%s]", fulltextUniqueIndex, fulltextCatalog));
+        return sb.toString();
     }
 
     @Override

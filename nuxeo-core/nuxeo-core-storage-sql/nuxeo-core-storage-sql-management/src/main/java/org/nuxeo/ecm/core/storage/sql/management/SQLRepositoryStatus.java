@@ -38,14 +38,14 @@ public class SQLRepositoryStatus implements SQLRepositoryStatusMBean {
 
     @Override
     public String listActiveSessions() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("Actives sessions for SQL repositories:<br />");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Actives sessions for SQL repositories:<br />");
         for (RepositoryManagement repository : getRepositories()) {
-            buf.append("<b>").append(repository.getName()).append("</b>: ");
-            buf.append(repository.getActiveSessionsCount());
-            buf.append("<br />");
+            sb.append("<b>").append(repository.getName()).append("</b>: ");
+            sb.append(repository.getActiveSessionsCount());
+            sb.append("<br />");
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     @Override
@@ -59,14 +59,14 @@ public class SQLRepositoryStatus implements SQLRepositoryStatusMBean {
 
     @Override
     public String clearCaches() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("Cleared cached objects for SQL repositories:<br />");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Cleared cached objects for SQL repositories:<br />");
         for (RepositoryManagement repository : getRepositories()) {
-            buf.append("<b>").append(repository.getName()).append("</b>: ");
-            buf.append(repository.clearCaches());
-            buf.append("<br />");
+            sb.append("<b>").append(repository.getName()).append("</b>: ");
+            sb.append(repository.clearCaches());
+            sb.append("<br />");
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     @Override
@@ -80,13 +80,13 @@ public class SQLRepositoryStatus implements SQLRepositoryStatusMBean {
 
     @Override
     public String listRemoteSessions() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("Actives remote session for SQL repositories:<br />");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Actives remote session for SQL repositories:<br />");
         for (RepositoryManagement repository : getRepositories()) {
-            buf.append("<b>").append(repository.getName()).append("</b>");
-            buf.append("<br/>");
+            sb.append("<b>").append(repository.getName()).append("</b>");
+            sb.append("<br/>");
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     @Override

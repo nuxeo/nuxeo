@@ -43,13 +43,13 @@ public class Delete implements Serializable {
     }
 
     public String getStatement() {
-        StringBuilder buf = new StringBuilder(50);
-        buf.append("DELETE FROM ");
-        buf.append(table.getQuotedName());
+        StringBuilder sb = new StringBuilder(50);
+        sb.append("DELETE FROM ");
+        sb.append(table.getQuotedName());
         if (where != null && where.length() != 0) {
-            buf.append(" WHERE ");
-            buf.append(where);
+            sb.append(" WHERE ");
+            sb.append(where);
         }
-        return buf.toString();
+        return sb.toString();
     }
 }

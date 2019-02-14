@@ -255,7 +255,7 @@ public class AutomationMapper implements Bindings {
         }
 
         public String source() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             AutomationService as = Framework.getService(AutomationService.class);
             Map<String, List<String>> opMap = new HashMap<>();
             List<String> flatOps = new ArrayList<>();
@@ -303,13 +303,13 @@ public class AutomationMapper implements Bindings {
             }
         }
 
-        protected void generateFunction(StringBuffer sb, String opId) {
+        protected void generateFunction(StringBuilder sb, String opId) {
             sb.append("\n" + replaceDashByUnderscore(opId) + " = function(input,params) {");
             sb.append("\nreturn automation.executeOperation('" + opId + "', input , params);");
             sb.append("\n};");
         }
 
-        protected void generateFlatFunction(StringBuffer sb, String opId) {
+        protected void generateFlatFunction(StringBuilder sb, String opId) {
             sb.append("\nvar " + replaceDashByUnderscore(opId) + " = function(input,params) {");
             sb.append("\nreturn automation.executeOperation('" + opId + "', input , params);");
             sb.append("\n};");

@@ -53,7 +53,7 @@ public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements Con
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         try {
             Blob blob = blobHolder.getBlob();
@@ -85,7 +85,7 @@ public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements Con
         }
     }
 
-    protected void appendTextFromCell(XSSFCell cell, StringBuffer sb) {
+    protected void appendTextFromCell(XSSFCell cell, StringBuilder sb) {
         String cellValue = null;
         switch (cell.getCellType()) {
         case XSSFCell.CELL_TYPE_NUMERIC:

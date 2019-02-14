@@ -49,7 +49,7 @@ public class Preset {
     }
 
     public String getPkgsAsJsonArray() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < pkgs.length; i++) {
             if (i > 0) {

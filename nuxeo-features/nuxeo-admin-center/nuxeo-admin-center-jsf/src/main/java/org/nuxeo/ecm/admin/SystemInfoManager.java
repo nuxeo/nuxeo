@@ -143,7 +143,7 @@ public class SystemInfoManager implements Serializable {
         long ut = bean.getUptime();
         long uts = ut / 1000;
 
-        StringBuffer sb = new StringBuffer("Nuxeo Server UpTime : ");
+        StringBuilder sb = new StringBuilder("Nuxeo Server UpTime : ");
         long nbDays = uts / (24 * 3600);
         if (nbDays > 0) {
             sb.append(nbDays + " days, ");
@@ -186,7 +186,7 @@ public class SystemInfoManager implements Serializable {
     public List<Repository> listAvailableRepositories() {
         if (repositories == null) {
             RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-            repositories = new ArrayList<Repository>(repositoryManager.getRepositories());
+            repositories = new ArrayList<>(repositoryManager.getRepositories());
             currentRepositoryName = repositoryManager.getDefaultRepositoryName();
         }
         return repositories;

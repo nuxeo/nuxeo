@@ -37,17 +37,17 @@ public class PackageValidationException extends PackageException {
     }
 
     public static String statusToString(ValidationStatus status) {
-        final StringBuilder buf = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
-        buf.append("PackageValidationException");
-        buf.append(" {");
-        buf.append(" errors=");
-        buf.append(status.getErrors());
-        buf.append(", warnings=");
-        buf.append(status.getWarnings());
-        buf.append('}');
+        sb.append("PackageValidationException");
+        sb.append(" {");
+        sb.append(" errors=");
+        sb.append(status.getErrors());
+        sb.append(", warnings=");
+        sb.append(status.getWarnings());
+        sb.append('}');
 
-        return buf.toString();
+        return sb.toString();
     }
 
 }

@@ -58,7 +58,7 @@ public class TemplateParser {
 
     public static Template parse(char[] chars) {
         Template tpl = new Template();
-        StringBuilder buf = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         StringBuilder name = new StringBuilder();
 
         // add the begin part
@@ -76,7 +76,7 @@ public class TemplateParser {
                     if (marker) {
                         name.append(ch);
                     } else {
-                        buf.append(ch);
+                        sb.append(ch);
                     }
                 }
                 break;
@@ -85,14 +85,14 @@ public class TemplateParser {
                     marker = false;
                     i++;
                     // create a new Part:
-                    tpl.addPart(name.toString(), buf.toString());
+                    tpl.addPart(name.toString(), sb.toString());
                     name.setLength(0);
-                    buf.setLength(0);
+                    sb.setLength(0);
                 } else {
                     if (marker) {
                         name.append(ch);
                     } else {
-                        buf.append(ch);
+                        sb.append(ch);
                     }
                 }
                 break;
@@ -100,14 +100,14 @@ public class TemplateParser {
                 if (marker) {
                     name.append(ch);
                 } else {
-                    buf.append(ch);
+                    sb.append(ch);
                 }
                 break;
             }
         }
 
         // create the END part
-        tpl.addPart(Template.END, buf.toString());
+        tpl.addPart(Template.END, sb.toString());
 
         return tpl;
     }

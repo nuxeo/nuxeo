@@ -21,12 +21,14 @@
 
 package org.nuxeo.ecm.platform.url.codec;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -82,7 +84,7 @@ public class TestDocumentPathCodec {
         assertEquals(url, codec.getUrlFromDocumentView(docView));
 
         // check url max size
-        StringBuffer veryLongUrl = new StringBuffer();
+        StringBuilder veryLongUrl = new StringBuilder();
         veryLongUrl.append("nxpath/demo/path/to/my/doc");
         while (veryLongUrl.length() <= DocumentPathCodec.URL_MAX_LENGTH) {
             veryLongUrl.append("/doc");

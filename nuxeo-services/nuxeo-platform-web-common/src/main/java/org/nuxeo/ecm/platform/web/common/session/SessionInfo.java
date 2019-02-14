@@ -91,7 +91,7 @@ public class SessionInfo implements Comparable<SessionInfo> {
     }
 
     protected String formatDuration(long nbs) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         long nbh = nbs / 3600;
         nbs = nbs - nbh * 3600;

@@ -50,7 +50,7 @@ public abstract class AbstractProperty implements Property {
 
     protected final static Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
             + "\\[(-?\\d+)\\]" // index in brackets - could be -1 if element is new to list
-    );
+            );
 
     /**
      * Whether or not this property is read only.
@@ -149,23 +149,23 @@ public abstract class AbstractProperty implements Property {
 
     @Override
     public String getXPath() {
-        StringBuilder buf = new StringBuilder();
-        getXPath(buf);
-        return buf.toString();
+        StringBuilder sb = new StringBuilder();
+        getXPath(sb);
+        return sb.toString();
     }
 
-    protected void getXPath(StringBuilder buf) {
+    protected void getXPath(StringBuilder sb) {
         if (parent != null) {
-            ((AbstractProperty) parent).getXPath(buf);
+            ((AbstractProperty) parent).getXPath(sb);
             if (parent.isList()) {
-                buf.append('/');
+                sb.append('/');
                 int i = ((ListProperty) parent).children.indexOf(this);
-                buf.append(i);
+                sb.append(i);
             } else {
-                if (buf.length() != 0) {
-                    buf.append('/');
+                if (sb.length() != 0) {
+                    sb.append('/');
                 }
-                buf.append(getName());
+                sb.append(getName());
             }
         }
     }
@@ -472,8 +472,8 @@ public abstract class AbstractProperty implements Property {
                     msg.append("Return value from deprecated property");
                 } else {
                     msg.append("Return value from '")
-                       .append(deprecatedFallback.getXPath())
-                       .append("' if not null, from deprecated property otherwise");
+                    .append(deprecatedFallback.getXPath())
+                    .append("' if not null, from deprecated property otherwise");
                 }
                 if (log.isTraceEnabled()) {
                     log.warn(msg, new NuxeoException());
@@ -490,15 +490,15 @@ public abstract class AbstractProperty implements Property {
 
     protected StringBuilder newDeprecatedMessage() {
         StringBuilder builder = new StringBuilder().append("Property '")
-                                                   .append(getXPath())
-                                                   .append("' is marked as deprecated from '")
-                                                   .append(getSchema().getName())
-                                                   .append("' schema");
+                .append(getXPath())
+                .append("' is marked as deprecated from '")
+                .append(getSchema().getName())
+                .append("' schema");
         Property deprecatedParent = getDeprecatedParent();
         if (deprecatedParent != this) {
             builder.append(" because property '")
-                   .append(deprecatedParent.getXPath())
-                   .append("' is marked as deprecated");
+            .append(deprecatedParent.getXPath())
+            .append("' is marked as deprecated");
         }
         return builder.append(", don't use it anymore. ");
     }

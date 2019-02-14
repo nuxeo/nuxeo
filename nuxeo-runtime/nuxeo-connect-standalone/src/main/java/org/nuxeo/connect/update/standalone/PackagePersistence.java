@@ -131,12 +131,12 @@ public class PackagePersistence {
     }
 
     protected void writeStates() throws IOException {
-        StringBuilder buf = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (Entry<String, PackageState> entry : states.entrySet()) {
-            buf.append(entry.getKey()).append('=').append(entry.getValue()).append("\n");
+            sb.append(entry.getKey()).append('=').append(entry.getValue()).append("\n");
         }
         File file = new File(root, ".packages");
-        FileUtils.writeStringToFile(file, buf.toString(), UTF_8);
+        FileUtils.writeStringToFile(file, sb.toString(), UTF_8);
     }
 
     public LocalPackage getPackage(String id) throws PackageException {

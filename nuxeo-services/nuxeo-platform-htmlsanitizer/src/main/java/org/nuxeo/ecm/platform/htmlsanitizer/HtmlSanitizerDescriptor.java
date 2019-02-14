@@ -46,20 +46,20 @@ public class HtmlSanitizerDescriptor {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(getClass().getSimpleName());
-        buf.append('(');
-        buf.append(name);
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append('(');
+        sb.append(name);
         if (!types.isEmpty()) {
-            buf.append(",types=");
-            buf.append(types);
+            sb.append(",types=");
+            sb.append(types);
         }
         if (!fields.isEmpty()) {
-            buf.append(",fields=");
-            buf.append(fields);
+            sb.append(",fields=");
+            sb.append(fields);
         }
-        buf.append(')');
-        return buf.toString();
+        sb.append(')');
+        return sb.toString();
     }
 
 }

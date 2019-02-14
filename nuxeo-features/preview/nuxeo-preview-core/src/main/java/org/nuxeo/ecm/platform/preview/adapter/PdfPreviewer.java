@@ -19,14 +19,14 @@
 
 package org.nuxeo.ecm.platform.preview.adapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @since 8.2
@@ -35,7 +35,7 @@ public class PdfPreviewer extends AbstractPreviewer implements MimeTypePreviewer
 
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         List<Blob> blobResults = new ArrayList<Blob>();
-        StringBuffer htmlPage = new StringBuffer();
+        StringBuilder htmlPage = new StringBuilder();
         String basePath = VirtualHostHelper.getContextPathProperty();
 
         htmlPage.append("<script src=\"" + basePath + "/bower_components/webcomponentsjs/webcomponents-lite.js\"></script>");

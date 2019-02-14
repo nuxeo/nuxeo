@@ -99,8 +99,8 @@ public class DateParser {
         }
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime(date);
-        StringBuilder buf = new StringBuilder(32);
-        return buf.append(cal.get(Calendar.YEAR)).append('-').append(pad(cal.get(Calendar.MONTH) + 1)).append('-').append(
+        StringBuilder sb = new StringBuilder(32);
+        return sb.append(cal.get(Calendar.YEAR)).append('-').append(pad(cal.get(Calendar.MONTH) + 1)).append('-').append(
                 pad(cal.get(Calendar.DATE))).append('T').append(pad(cal.get(Calendar.HOUR_OF_DAY))).append(':').append(
                 pad(cal.get(Calendar.MINUTE))).append(':').append(pad(cal.get(Calendar.SECOND))).append('Z').toString();
     }
@@ -111,8 +111,8 @@ public class DateParser {
         }
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime(date);
-        StringBuilder buf = new StringBuilder(32);
-        return buf.append(cal.get(Calendar.YEAR)).append('-').append(pad(cal.get(Calendar.MONTH) + 1)).append('-').append(
+        StringBuilder sb = new StringBuilder(32);
+        return sb.append(cal.get(Calendar.YEAR)).append('-').append(pad(cal.get(Calendar.MONTH) + 1)).append('-').append(
                 pad(cal.get(Calendar.DATE))).append('T').append(pad(cal.get(Calendar.HOUR_OF_DAY))).append(':').append(
                 pad(cal.get(Calendar.MINUTE))).append(':').append(pad(cal.get(Calendar.SECOND))).append('.').append(
                 pad3(cal.get(Calendar.MILLISECOND))).append('Z').toString();

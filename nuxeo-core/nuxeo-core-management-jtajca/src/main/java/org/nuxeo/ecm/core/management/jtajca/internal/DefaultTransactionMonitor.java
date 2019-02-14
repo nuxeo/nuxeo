@@ -112,11 +112,11 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
     public static String id(Object key) {
         if (key instanceof XidImpl) {
             byte[] globalId = ((XidImpl) key).getGlobalTransactionId();
-            StringBuilder buffer = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             for (byte aGlobalId : globalId) {
-                buffer.append(Integer.toHexString(aGlobalId));
+                sb.append(Integer.toHexString(aGlobalId));
             }
-            return buffer.toString().replaceAll("0*$", "");
+            return sb.toString().replaceAll("0*$", "");
         }
         return key.toString();
     }

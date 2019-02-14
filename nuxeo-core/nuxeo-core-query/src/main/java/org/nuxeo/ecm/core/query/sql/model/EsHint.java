@@ -48,19 +48,19 @@ public class EsHint implements Operand {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("/*+ES: ");
+        StringBuilder sb = new StringBuilder();
+        sb.append("/*+ES: ");
         if (index != null) {
-            buf.append(String.format("INDEX(%s) ", index));
+            sb.append(String.format("INDEX(%s) ", index));
         }
         if (analyzer != null) {
-            buf.append(String.format("ANALYZER(%s) ", analyzer));
+            sb.append(String.format("ANALYZER(%s) ", analyzer));
         }
         if (operator != null) {
-            buf.append(String.format("OPERATOR(%s) ", operator));
+            sb.append(String.format("OPERATOR(%s) ", operator));
         }
-        buf.append("*/");
-        return buf.toString();
+        sb.append("*/");
+        return sb.toString();
     }
 
     @Override

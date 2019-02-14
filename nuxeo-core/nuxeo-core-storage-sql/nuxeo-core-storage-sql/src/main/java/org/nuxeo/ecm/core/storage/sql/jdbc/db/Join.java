@@ -176,25 +176,25 @@ public class Join implements Serializable, Comparable<Join> {
         default:
             throw new AssertionError();
         }
-        StringBuilder buf = new StringBuilder();
-        buf.append("<");
-        buf.append(k);
-        buf.append(" JOIN ");
-        buf.append(table);
+        StringBuilder sb = new StringBuilder();
+        sb.append("<");
+        sb.append(k);
+        sb.append(" JOIN ");
+        sb.append(table);
         if (tableAlias != null) {
-            buf.append(" ");
-            buf.append(tableAlias);
+            sb.append(" ");
+            sb.append(tableAlias);
         }
-        buf.append(" ON ");
-        buf.append(getClause(null));
+        sb.append(" ON ");
+        sb.append(getClause(null));
         if (!whereClauses.isEmpty()) {
-            buf.append(" WHERE ");
-            buf.append(whereClauses);
-            buf.append(" % ");
-            buf.append(whereParams);
+            sb.append(" WHERE ");
+            sb.append(whereClauses);
+            sb.append(" % ");
+            sb.append(whereParams);
         }
-        buf.append(">");
-        return buf.toString();
+        sb.append(">");
+        return sb.toString();
     }
 
 }

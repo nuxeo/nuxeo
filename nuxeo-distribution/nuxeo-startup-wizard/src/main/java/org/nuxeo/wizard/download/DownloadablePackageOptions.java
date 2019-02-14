@@ -191,7 +191,7 @@ public class DownloadablePackageOptions {
         return pkgs;
     }
 
-    protected void asJson(DownloadablePackageOption option, StringBuffer sb) {
+    protected void asJson(DownloadablePackageOption option, StringBuilder sb) {
         sb.append("{");
         sb.append("\"id\":\"" + option.id + "\",");
         sb.append("\"package\":\"" + option.getPackage().getId() + "\",");
@@ -235,7 +235,7 @@ public class DownloadablePackageOptions {
     }
 
     public String asJson() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         asJson(getSelectedRoot(), sb);
         return sb.toString();
     }

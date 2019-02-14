@@ -106,14 +106,14 @@ public class FileSystemStorage implements ContributionStorage {
             }
             if (node != null) {
                 node = node.getFirstChild();
-                StringBuilder buf = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 while (node != null) {
                     if (node.getNodeType() == Node.TEXT_NODE) {
-                        buf.append(node.getNodeValue());
+                        sb.append(node.getNodeValue());
                     }
                     node = node.getNextSibling();
                 }
-                contrib.setDescription(buf.toString().trim());
+                contrib.setDescription(sb.toString().trim());
             } else {
                 contrib.setDescription("");
             }

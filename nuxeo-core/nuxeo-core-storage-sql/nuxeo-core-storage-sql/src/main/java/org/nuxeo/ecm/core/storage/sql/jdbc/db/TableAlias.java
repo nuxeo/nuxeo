@@ -87,13 +87,13 @@ public class TableAlias implements Table {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("Table(");
-        buf.append(table.getPhysicalName());
-        buf.append(" AS ");
-        buf.append(alias);
-        buf.append(')');
-        return buf.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Table(");
+        sb.append(table.getPhysicalName());
+        sb.append(" AS ");
+        sb.append(alias);
+        sb.append(')');
+        return sb.toString();
     }
 
     @Override

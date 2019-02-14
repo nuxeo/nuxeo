@@ -112,7 +112,7 @@ public class DialectMySQL extends Dialect {
             return jdbcInfo("VARCHAR(250) BINARY", Types.VARCHAR);
         case BLOB:
             return jdbcInfo("LONGBLOB", Types.BLOB);
-        // -----
+            // -----
         case NODEID:
         case NODEIDFK:
         case NODEIDFKNP:
@@ -239,40 +239,40 @@ public class DialectMySQL extends Dialect {
         if (ft == null || ft.op == Op.NOTWORD) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        StringBuilder buf = new StringBuilder();
-        translateForMySQL(ft, null, buf);
-        return buf.toString();
+        StringBuilder sb = new StringBuilder();
+        translateForMySQL(ft, null, sb);
+        return sb.toString();
     }
 
-    protected static void translateForMySQL(FulltextQuery ft, Op superOp, StringBuilder buf) {
+    protected static void translateForMySQL(FulltextQuery ft, Op superOp, StringBuilder sb) {
         if (ft.op == Op.AND || ft.op == Op.OR) {
             if (superOp == Op.AND) {
-                buf.append('+');
+                sb.append('+');
             }
-            buf.append('(');
+            sb.append('(');
             for (int i = 0; i < ft.terms.size(); i++) {
                 FulltextQuery term = ft.terms.get(i);
                 if (i != 0) {
-                    buf.append(' ');
+                    sb.append(' ');
                 }
-                translateForMySQL(term, ft.op, buf);
+                translateForMySQL(term, ft.op, sb);
             }
-            buf.append(')');
+            sb.append(')');
         } else {
             if (ft.op == Op.NOTWORD) {
-                buf.append('-');
+                sb.append('-');
             } else { // Op.WORD
                 if (superOp == Op.AND) {
-                    buf.append('+');
+                    sb.append('+');
                 }
             }
             boolean isPhrase = ft.word.contains(" ");
             if (isPhrase) {
-                buf.append('"');
+                sb.append('"');
             }
-            buf.append(ft.word);
+            sb.append(ft.word);
             if (isPhrase) {
-                buf.append('"');
+                sb.append('"');
             }
         }
     }

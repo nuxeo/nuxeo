@@ -239,51 +239,51 @@ public class DeploymentPreprocessor {
 
     protected static void printInfo(FragmentRegistry fragments) {
         List<DependencyTree.Entry<String, FragmentDescriptor>> entries = fragments.getResolvedEntries();
-        StringBuilder buf = new StringBuilder("Preprocessing order: ");
+        StringBuilder sb = new StringBuilder("Preprocessing order: ");
         for (DependencyTree.Entry<String, FragmentDescriptor> entry : entries) {
             FragmentDescriptor fd = entry.get();
             if (fd != null && !fd.isMarker()) {
-                buf.append("\n\t");
-                buf.append(listFragmentDescriptor(entry.get()));
+                sb.append("\n\t");
+                sb.append(listFragmentDescriptor(entry.get()));
             }
         }
-        log.info(buf);
+        log.info(sb);
 
         StringBuilder errors = new StringBuilder();
         List<DependencyTree.Entry<String, FragmentDescriptor>> missing = fragments.getMissingRequirements();
         for (DependencyTree.Entry<String, FragmentDescriptor> entry : missing) {
-            buf = new StringBuilder("Unknown bundle: ");
-            buf.append(entry.getKey());
-            buf.append(" required by: ");
+            sb = new StringBuilder("Unknown bundle: ");
+            sb.append(entry.getKey());
+            sb.append(" required by: ");
             boolean first = true;
             for (DependencyTree.Entry<String, FragmentDescriptor> dep : entry.getDependsOnMe()) {
                 if (!first) {
-                    buf.append(", "); // length 2
+                    sb.append(", "); // length 2
                 }
                 first = false;
-                buf.append(listFragmentDescriptor(dep.get()));
+                sb.append(listFragmentDescriptor(dep.get()));
             }
-            log.error(buf);
-            errors.append(buf);
+            log.error(sb);
+            errors.append(sb);
             errors.append("\n");
         }
         for (DependencyTree.Entry<String, FragmentDescriptor> entry : fragments.getPendingEntries()) {
             if (!entry.isRegistered()) {
                 continue;
             }
-            buf = new StringBuilder("Bundle not preprocessed: ");
-            buf.append(listFragmentDescriptor(entry.get()));
-            buf.append(" waiting for: ");
+            sb = new StringBuilder("Bundle not preprocessed: ");
+            sb.append(listFragmentDescriptor(entry.get()));
+            sb.append(" waiting for: ");
             boolean first = true;
             for (DependencyTree.Entry<String, FragmentDescriptor> dep : entry.getWaitsFor()) {
                 if (!first) {
-                    buf.append(", "); // length 2
+                    sb.append(", "); // length 2
                 }
                 first = false;
-                buf.append(dep.getKey());
+                sb.append(dep.getKey());
             }
-            log.error(buf);
-            errors.append(buf);
+            log.error(sb);
+            errors.append(sb);
             errors.append("\n");
         }
         if (errors.length() != 0) {
@@ -396,7 +396,7 @@ public class DeploymentPreprocessor {
             assert fd != null;
             if (fd.name == null) {
                 log.error("Invalid fragments file: " + file.getName()
-                        + ". Fragments declared in a -fragments.xml file must have names.");
+                + ". Fragments declared in a -fragments.xml file must have names.");
             } else {
                 cd.fragments.add(fd);
                 fd.fileName = fileName;
@@ -408,7 +408,7 @@ public class DeploymentPreprocessor {
     protected void processBundleForCompat(FragmentDescriptor fd, File file) {
         // TODO disable for now the warning
         log.warn("Entering compatibility mode - Please update the deployment-fragment.xml in " + file.getName()
-                + " to use new dependency management");
+        + " to use new dependency management");
         Manifest mf = JarUtils.getManifest(file);
         if (mf != null) {
             fd.name = file.getName();
@@ -487,7 +487,7 @@ public class DeploymentPreprocessor {
         // Require-Bundle)
         String requires = attrs.getValue("Nuxeo-Require");
         if (requires == null) { // if not specific requirement is met use
-                                // Require-Bundle
+            // Require-Bundle
             requires = attrs.getValue("Require-Bundle");
         }
         if (requires != null) {

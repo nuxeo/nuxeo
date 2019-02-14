@@ -193,13 +193,13 @@ public class State implements StateAccessor, Serializable {
      */
     public State(int size, boolean threadSafe) {
         if (threadSafe) {
-            map = new ConcurrentHashMap<String, Serializable>(initialCapacity(size));
+            map = new ConcurrentHashMap<>(initialCapacity(size));
         } else {
             if (size > ARRAY_MAX) {
                 map = new HashMap<>(initialCapacity(size));
             } else {
-                keys = new ArrayList<String>(size);
-                values = new ArrayList<Serializable>(size);
+                keys = new ArrayList<>(size);
+                values = new ArrayList<>(size);
             }
         }
     }
@@ -473,19 +473,19 @@ public class State implements StateAccessor, Serializable {
         if (isEmpty()) {
             return "{}";
         }
-        StringBuilder buf = new StringBuilder();
-        buf.append('{');
+        StringBuilder sb = new StringBuilder();
+        sb.append('{');
         boolean empty = true;
         // some keys go first
         for (String key : TO_STRING_KEY_ORDER) {
             if (containsKey(key)) {
                 if (!empty) {
-                    buf.append(", ");
+                    sb.append(", ");
                 }
                 empty = false;
-                buf.append(key);
-                buf.append('=');
-                toString(buf, get(key));
+                sb.append(key);
+                sb.append('=');
+                toString(sb, get(key));
             }
         }
         // sort keys
@@ -497,25 +497,25 @@ public class State implements StateAccessor, Serializable {
                 continue;
             }
             if (!empty) {
-                buf.append(", ");
+                sb.append(", ");
             }
             empty = false;
-            buf.append(key);
-            buf.append('=');
-            toString(buf, get(key));
+            sb.append(key);
+            sb.append('=');
+            toString(sb, get(key));
         }
-        buf.append('}');
-        return buf.toString();
+        sb.append('}');
+        return sb.toString();
     }
 
     @SuppressWarnings("boxing")
-    protected static void toString(StringBuilder buf, Object value) {
+    protected static void toString(StringBuilder sb, Object value) {
         if (value instanceof String) {
             String v = (String) value;
             if (v.length() > DEBUG_MAX_STRING) {
                 v = v.substring(0, DEBUG_MAX_STRING) + "...(" + v.length() + " chars)...";
             }
-            buf.append(v);
+            sb.append(v);
         } else if (value instanceof Calendar) {
             Calendar cal = (Calendar) value;
             char sign;
@@ -526,7 +526,7 @@ public class State implements StateAccessor, Serializable {
             } else {
                 sign = '+';
             }
-            buf.append(String.format("Calendar(%04d-%02d-%02dT%02d:%02d:%02d.%03d%c%02d:%02d)", cal.get(Calendar.YEAR), //
+            sb.append(String.format("Calendar(%04d-%02d-%02dT%02d:%02d:%02d.%03d%c%02d:%02d)", cal.get(Calendar.YEAR), //
                     cal.get(Calendar.MONTH) + 1, //
                     cal.get(Calendar.DAY_OF_MONTH), //
                     cal.get(Calendar.HOUR_OF_DAY), //
@@ -536,20 +536,20 @@ public class State implements StateAccessor, Serializable {
                     sign, offset / 60, offset % 60));
         } else if (value instanceof Object[]) {
             Object[] v = (Object[]) value;
-            buf.append('[');
+            sb.append('[');
             for (int i = 0; i < v.length; i++) {
                 if (i > 0) {
-                    buf.append(',');
+                    sb.append(',');
                     if (i > DEBUG_MAX_ARRAY) {
-                        buf.append("...(" + v.length + " items)...");
+                        sb.append("...(" + v.length + " items)...");
                         break;
                     }
                 }
-                toString(buf, v[i]);
+                toString(sb, v[i]);
             }
-            buf.append(']');
+            sb.append(']');
         } else {
-            buf.append(value);
+            sb.append(value);
         }
     }
 

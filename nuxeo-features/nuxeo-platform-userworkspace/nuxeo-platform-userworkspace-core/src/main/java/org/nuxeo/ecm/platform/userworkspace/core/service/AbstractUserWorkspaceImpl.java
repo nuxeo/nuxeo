@@ -156,20 +156,20 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService,
      * @since 9.2
      */
     protected String escape(String string) {
-        StringBuilder buf = new StringBuilder(string.length());
+        StringBuilder sb = new StringBuilder(string.length());
         for (char c : string.toCharArray()) {
             if (ESCAPED_CHARS.indexOf(c) == -1) {
-                buf.append(c);
+                sb.append(c);
             } else {
-                buf.append(ESCAPE_CHAR);
+                sb.append(ESCAPE_CHAR);
                 if (c < 16) {
-                    buf.append('0');
+                    sb.append('0');
                 }
-                buf.append(Integer.toHexString(c)); // assumed to be < 256
+                sb.append(Integer.toHexString(c)); // assumed to be < 256
             }
         }
         // don't re-allocate a new string if we didn't escape anything
-        return buf.length() == string.length() ? string : buf.toString();
+        return sb.length() == string.length() ? string : sb.toString();
     }
 
     protected void generateCandidates(List<String> names, String username, int max) {
@@ -218,6 +218,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService,
      *
      * @deprecated since 9.3
      */
+    @Deprecated
     @Override
     public DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession, DocumentModel context) {
         return getCurrentUserPersonalWorkspace(userCoreSession);
@@ -433,7 +434,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService,
 
     protected UserWorkspaceServiceImplComponent getComponent() {
         return (UserWorkspaceServiceImplComponent) Framework.getRuntime()
-                                                            .getComponent(UserWorkspaceServiceImplComponent.NAME);
+                .getComponent(UserWorkspaceServiceImplComponent.NAME);
     }
 
     protected abstract DocumentModel doCreateUserWorkspacesRoot(CoreSession unrestrictedSession, PathRef rootRef);

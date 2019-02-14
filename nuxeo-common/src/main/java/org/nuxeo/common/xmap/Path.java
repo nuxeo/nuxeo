@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -64,31 +64,31 @@ public class Path {
     }
 
     private void parse(String path) {
-        List<String> seg = new ArrayList<String>();
-        StringBuilder buf = new StringBuilder();
+        List<String> seg = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
         char[] chars = path.toCharArray();
         boolean attr = false;
         for (char c : chars) {
             switch (c) {
             case '/':
-                seg.add(buf.toString());
-                buf.setLength(0);
+                seg.add(sb.toString());
+                sb.setLength(0);
                 break;
             case '@':
                 attr = true;
-                seg.add(buf.toString());
-                buf.setLength(0);
+                seg.add(sb.toString());
+                sb.setLength(0);
                 break;
             default:
-                buf.append(c);
+                sb.append(c);
                 break;
             }
         }
-        if (buf.length() > 0) {
+        if (sb.length() > 0) {
             if (attr) {
-                attribute = buf.toString();
+                attribute = sb.toString();
             } else {
-                seg.add(buf.toString());
+                seg.add(sb.toString());
             }
         }
         int size = seg.size();

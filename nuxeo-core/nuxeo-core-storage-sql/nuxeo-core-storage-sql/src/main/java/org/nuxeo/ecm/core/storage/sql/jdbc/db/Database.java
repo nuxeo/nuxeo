@@ -70,18 +70,18 @@ public class Database implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(getClass().getSimpleName());
-        buf.append('(');
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append('(');
         for (Iterator<Table> iter = tables.values().iterator(); iter.hasNext();) {
             Table table = iter.next();
-            buf.append(table.getPhysicalName());
+            sb.append(table.getPhysicalName());
             if (iter.hasNext()) {
-                buf.append(',');
+                sb.append(',');
             }
         }
-        buf.append(')');
-        return buf.toString();
+        sb.append(')');
+        return sb.toString();
     }
 
 }

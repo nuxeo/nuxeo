@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.SubscriptionStatusType;
@@ -100,7 +99,7 @@ public class ConnectUpdateStatusInfo {
 
     protected static String buildFeedUrl(boolean registred) {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(Framework.getProperty("org.nuxeo.connect.client.feedUrl", ConnectUrlConfig.getBaseUrl()));
         sb.append("connect-gateway/jsonp/");

@@ -757,19 +757,19 @@ public class CoreGraph implements Graph {
                 if (subjects.isEmpty()) {
                     throw new UnsupportedOperationException("empty subjects");
                 }
-                StringBuilder buf = new StringBuilder(REL_SOURCE_URI);
-                buf.append(" IN (");
+                StringBuilder sb = new StringBuilder(REL_SOURCE_URI);
+                sb.append(" IN (");
                 for (Node sub : subjects) {
                     NodeAsString sn = getNodeAsString(sub);
                     if (sn.id != null) {
                         throw new UnsupportedOperationException("subjects ListNode with id instead of uri" + subjects);
                     }
-                    buf.append("?, ");
+                    sb.append("?, ");
                     params.add(sn.uri);
                 }
-                buf.setLength(buf.length() - 2); // remove last comma/space
-                buf.append(")");
-                clauses.add(buf.toString());
+                sb.setLength(sb.length() - 2); // remove last comma/space
+                sb.append(")");
+                clauses.add(sb.toString());
             } else {
                 NodeAsString sn = getNodeAsString(s);
                 if (sn.id != null) {

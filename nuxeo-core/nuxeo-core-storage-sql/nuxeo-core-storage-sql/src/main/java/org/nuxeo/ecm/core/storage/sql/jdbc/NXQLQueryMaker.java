@@ -489,7 +489,7 @@ public class NXQLQueryMaker implements QueryMaker {
             if (queryAnalyzer.wherePredicate != null) {
                 queryAnalyzer.wherePredicate.accept(whereBuilder);
                 // WHERE clause
-                String where = whereBuilder.buf.toString();
+                String where = whereBuilder.sb.toString();
                 if (where.length() != 0) {
                     whereClauses.add(where);
                 }
@@ -551,14 +551,14 @@ public class NXQLQueryMaker implements QueryMaker {
                 if (sqlQuery.orderBy != null) {
                     // needs aliasesByName
                     whereBuilder.aliasOrderByColumns = doUnion;
-                    whereBuilder.buf.setLength(0);
+                    whereBuilder.sb.setLength(0);
                     sqlQuery.orderBy.accept(whereBuilder);
                     // ends up in WhereBuilder#visitOrderByExpr
                     if (hasSelectCollection) {
                         // also add all pos columns
                         whereBuilder.visitOrderByPosColumns();
                     }
-                    orderBy = whereBuilder.buf.toString();
+                    orderBy = whereBuilder.sb.toString();
                 }
             }
 
@@ -894,7 +894,7 @@ public class NXQLQueryMaker implements QueryMaker {
     // non-canonical index syntax, for replaceAll
     protected final static Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
             + "\\[(\\d+|\\*|\\*\\d+)\\]" // index in brackets
-    );
+            );
 
     /**
      * Canonicalizes a Nuxeo-xpath.
@@ -1496,7 +1496,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public final LinkedList<String> whatKeys = new LinkedList<>();
 
-        public final StringBuilder buf = new StringBuilder();
+        public final StringBuilder sb = new StringBuilder();
 
         // used to assign unique numbers to join aliases for complex property
         // wildcard indexes or tags
@@ -1845,19 +1845,19 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitMultiExpression(MultiExpression node) {
-            buf.append('(');
+            sb.append('(');
             for (Iterator<Predicate> it = node.predicates.iterator(); it.hasNext();) {
                 it.next().accept(this);
                 if (it.hasNext()) {
                     node.operator.accept(this);
                 }
             }
-            buf.append(')');
+            sb.append(')');
         }
 
         @Override
         public void visitExpression(Expression node) {
-            buf.append('(');
+            sb.append('(');
             Reference ref = node.lvalue instanceof Reference ? (Reference) node.lvalue : null;
             String name = ref != null ? ref.name : null;
             String cast = ref != null ? ref.cast : null;
@@ -1899,13 +1899,13 @@ public class NXQLQueryMaker implements QueryMaker {
                                     : op == Operator.NOTIN ? Operator.IN
                                             : op == Operator.NOTLIKE ? Operator.LIKE : Operator.ILIKE);
                     if (!direct) {
-                        buf.append("NOT ");
+                        sb.append("NOT ");
                     }
-                    generateExistsStart(buf, info.column.getTable());
+                    generateExistsStart(sb, info.column.getTable());
                     allowSubSelect = true;
                     visitColumnExpression(info.column, directOp, rvalue, cast, name, info.arrayElementIndex);
                     allowSubSelect = false;
-                    generateExistsEnd(buf);
+                    generateExistsEnd(sb);
                 } else if (info != null) {
                     // boolean literals have to be translated according the
                     // database dialect
@@ -1923,16 +1923,16 @@ public class NXQLQueryMaker implements QueryMaker {
                     checkDateLiteralForCast(l.get(1), node);
                 }
                 node.lvalue.accept(this);
-                buf.append(' ');
+                sb.append(' ');
                 op.accept(this);
-                buf.append(' ');
+                sb.append(' ');
                 l.get(0).accept(this);
-                buf.append(" AND ");
+                sb.append(" AND ");
                 l.get(1).accept(this);
             } else {
                 super.visitExpression(node);
             }
-            buf.append(')');
+            sb.append(')');
         }
 
         protected Operand getBooleanLiteral(Operand rvalue) {
@@ -1979,20 +1979,20 @@ public class NXQLQueryMaker implements QueryMaker {
             }
         }
 
-        protected void generateExistsStart(StringBuilder buf, Table table) {
+        protected void generateExistsStart(StringBuilder sb, Table table) {
             String tableName;
             if (table.isAlias()) {
                 tableName = table.getRealTable().getQuotedName() + " " + table.getQuotedName();
             } else {
                 tableName = table.getQuotedName();
             }
-            buf.append(String.format("EXISTS (SELECT 1 FROM %s WHERE %s = %s AND ", tableName,
+            sb.append(String.format("EXISTS (SELECT 1 FROM %s WHERE %s = %s AND ", tableName,
                     dataHierTable.getColumn(Model.MAIN_KEY).getFullQuotedName(),
                     table.getColumn(Model.MAIN_KEY).getFullQuotedName()));
         }
 
-        protected void generateExistsEnd(StringBuilder buf) {
-            buf.append(")");
+        protected void generateExistsEnd(StringBuilder sb) {
+            sb.append(")");
         }
 
         protected void visitExpressionStartsWith(Expression node) {
@@ -2021,10 +2021,10 @@ public class NXQLQueryMaker implements QueryMaker {
                 // no such path, always return a false
                 // TODO remove the expression more intelligently from the parse
                 // tree
-                buf.append("0=1");
+                sb.append("0=1");
             } else {
                 // id is always valid, no need to pass it as argument to getInTreeSql
-                buf.append(dialect.getInTreeSql(hierTable.getColumn(Model.MAIN_KEY).getFullQuotedName(), null));
+                sb.append(dialect.getInTreeSql(hierTable.getColumn(Model.MAIN_KEY).getFullQuotedName(), null));
                 whereParams.add(id);
             }
         }
@@ -2034,16 +2034,16 @@ public class NXQLQueryMaker implements QueryMaker {
             ColumnInfo info = getColumnInfo(name);
             if (info.needsSubSelect) {
                 // use EXISTS with subselect clause
-                generateExistsStart(buf, info.column.getTable());
+                generateExistsStart(sb, info.column.getTable());
             }
-            buf.append('(');
+            sb.append('(');
             visitExpressionEqOrIn(info.column, Operator.EQ, new StringLiteral(path), null, -1);
             visitOperator(Operator.OR);
             // TODO escape % chars...
             visitExpressionLike(info.column, Operator.LIKE, new StringLiteral(path + PATH_SEP + '%'), name, -1);
-            buf.append(')');
+            sb.append(')');
             if (info.needsSubSelect) {
-                generateExistsEnd(buf);
+                generateExistsEnd(sb);
             }
         }
 
@@ -2063,7 +2063,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 // no such path, always return a false
                 // TODO remove the expression more intelligently from the parse
                 // tree
-                buf.append("0=1");
+                sb.append("0=1");
             } else {
                 visitReference(hierTable.getColumn(Model.MAIN_KEY));
                 visitOperator(node.operator);
@@ -2081,23 +2081,23 @@ public class NXQLQueryMaker implements QueryMaker {
             boolean not = node.operator == Operator.NOTEQ;
             String id = ((StringLiteral) node.rvalue).value;
             if (not) {
-                buf.append("(NOT (");
+                sb.append("(NOT (");
             }
             String sql = dialect.getInTreeSql(hierTable.getColumn(Model.MAIN_KEY).getFullQuotedName(), id);
             if (sql == null) {
-                buf.append("0=1");
+                sb.append("0=1");
             } else {
-                buf.append(sql);
+                sb.append(sql);
                 whereParams.add(id);
             }
             if (not) {
-                buf.append("))");
+                sb.append("))");
             }
         }
 
         protected void visitExpressionIsProxy(Expression node) {
             boolean bool = getBooleanRValue(NXQL.ECM_ISPROXY, node);
-            buf.append(isProxies == bool ? "1=1" : "0=1");
+            sb.append(isProxies == bool ? "1=1" : "0=1");
         }
 
         protected void visitExpressionWhereFalseIsNull(Expression node) {
@@ -2105,10 +2105,10 @@ public class NXQLQueryMaker implements QueryMaker {
             boolean bool = getBooleanRValue(name, node);
             node.lvalue.accept(this);
             if (bool) {
-                buf.append(" = ");
-                buf.append(dialect.toBooleanValueString(true));
+                sb.append(" = ");
+                sb.append(dialect.toBooleanValueString(true));
             } else {
-                buf.append(" IS NULL");
+                sb.append(" IS NULL");
             }
         }
 
@@ -2117,16 +2117,16 @@ public class NXQLQueryMaker implements QueryMaker {
             boolean bool = getBooleanRValue(name, node);
             if (bool) {
                 node.lvalue.accept(this);
-                buf.append(" = ");
-                buf.append(dialect.toBooleanValueString(true));
+                sb.append(" = ");
+                sb.append(dialect.toBooleanValueString(true));
             } else {
-                buf.append('(');
+                sb.append('(');
                 node.lvalue.accept(this);
-                buf.append(" = ");
-                buf.append(dialect.toBooleanValueString(false));
-                buf.append(" OR ");
+                sb.append(" = ");
+                sb.append(dialect.toBooleanValueString(false));
+                sb.append(" OR ");
                 node.lvalue.accept(this);
-                buf.append(" IS NULL)");
+                sb.append(" IS NULL)");
             }
         }
 
@@ -2136,7 +2136,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 visitExpressionIsTrashedOnLifeCycle(node);
             } else if (trashService.hasFeature(TRASHED_STATE_IN_MIGRATION)) {
                 visitExpressionIsTrashedOnLifeCycle(node);
-                buf.append(" OR ");
+                sb.append(" OR ");
                 visitExpressionWhereFalseMayBeNull(node);
             } else if (trashService.hasFeature(TRASHED_STATE_IS_DEDICATED_PROPERTY)) {
                 visitExpressionWhereFalseMayBeNull(node);
@@ -2231,46 +2231,46 @@ public class NXQLQueryMaker implements QueryMaker {
             if (!types.isEmpty()) {
                 Column col = dataHierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY);
                 visitReference(col);
-                buf.append(" IN ");
-                buf.append('(');
+                sb.append(" IN ");
+                sb.append('(');
                 for (Iterator<String> it = types.iterator(); it.hasNext();) {
                     visitStringLiteral(it.next());
                     if (it.hasNext()) {
-                        buf.append(", ");
+                        sb.append(", ");
                     }
                 }
-                buf.append(')');
+                sb.append(')');
 
                 if (!instanceMixins.isEmpty()) {
-                    buf.append(include ? " OR " : " AND ");
+                    sb.append(include ? " OR " : " AND ");
                 }
             }
 
             if (!instanceMixins.isEmpty()) {
-                buf.append('(');
+                sb.append('(');
                 Column mixinsColumn = dataHierTable.getColumn(Model.MAIN_MIXIN_TYPES_KEY);
                 String[] returnParam = new String[1];
                 for (Iterator<String> it = instanceMixins.iterator(); it.hasNext();) {
                     String mixin = it.next();
                     String sql = dialect.getMatchMixinType(mixinsColumn, mixin, include, returnParam);
-                    buf.append(sql);
+                    sb.append(sql);
                     if (returnParam[0] != null) {
                         whereParams.add(returnParam[0]);
                     }
                     if (it.hasNext()) {
-                        buf.append(include ? " OR " : " AND ");
+                        sb.append(include ? " OR " : " AND ");
                     }
                 }
                 if (!include) {
-                    buf.append(" OR ");
+                    sb.append(" OR ");
                     visitReference(mixinsColumn);
-                    buf.append(" IS NULL");
+                    sb.append(" IS NULL");
                 }
-                buf.append(')');
+                sb.append(')');
             }
 
             if (types.isEmpty() && instanceMixins.isEmpty()) {
-                buf.append(include ? "0=1" : "0=0");
+                sb.append(include ? "0=1" : "0=0");
             }
         }
 
@@ -2290,7 +2290,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 if (info.joins != null) {
                     joins.addAll(info.joins);
                 }
-                buf.append(info.whereExpr);
+                sb.append(info.whereExpr);
                 if (info.whereExprParam != null) {
                     whereParams.add(info.whereExprParam);
                 }
@@ -2311,12 +2311,12 @@ public class NXQLQueryMaker implements QueryMaker {
                 Reference ref = new Reference(name);
                 if (dialect.supportsIlike()) {
                     visitReference(ref);
-                    buf.append(" ILIKE ");
+                    sb.append(" ILIKE ");
                     visitStringLiteral(value);
                 } else {
-                    buf.append("LOWER(");
+                    sb.append("LOWER(");
                     visitReference(ref);
-                    buf.append(") LIKE ");
+                    sb.append(") LIKE ");
                     visitStringLiteral(value);
                 }
             }
@@ -2334,7 +2334,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
                 boolean positive = op == Operator.EQ || op == Operator.IN;
                 String sql = dialect.getArrayInSql(column, cast, positive, params);
-                buf.append(sql);
+                sb.append(sql);
                 whereParams.addAll(params);
             } else {
                 visitSimpleExpression(column, op, rvalue, cast, arrayElementIndex);
@@ -2349,7 +2349,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
                 boolean positive = (op == Operator.LIKE);
                 String sql = dialect.getArrayLikeSql(column, lvalueName, positive, dataHierTable);
-                buf.append(sql);
+                sb.append(sql);
                 whereParams.add(getSerializableLiteral((Literal) rvalue));
             } else {
                 visitSimpleExpression(column, op, rvalue, null, arrayElementIndex);
@@ -2365,21 +2365,21 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
                 boolean positive = op == Operator.ILIKE;
                 String sql = dialect.getArrayIlikeSql(column, lvalueName, positive, dataHierTable);
-                buf.append(sql);
+                sb.append(sql);
                 whereParams.add(getSerializableLiteral((Literal) rvalue));
             } else if (dialect.supportsIlike()) {
                 visitSimpleExpression(column, op, rvalue, null, arrayElementIndex);
             } else {
-                buf.append("LOWER(");
+                sb.append("LOWER(");
                 visitReference(column, arrayElementIndex);
-                buf.append(") ");
+                sb.append(") ");
                 if (op == Operator.NOTILIKE) {
-                    buf.append("NOT ");
+                    sb.append("NOT ");
                 }
-                buf.append("LIKE");
-                buf.append(" LOWER(");
+                sb.append("LIKE");
+                sb.append(" LOWER(");
                 rvalue.accept(this);
-                buf.append(")");
+                sb.append(")");
                 addLikeEscaping();
             }
         }
@@ -2387,17 +2387,17 @@ public class NXQLQueryMaker implements QueryMaker {
         protected void addLikeEscaping() {
             String escape = dialect.getLikeEscaping();
             if (escape != null) {
-                buf.append(escape);
+                sb.append(escape);
             }
         }
 
         @Override
         public void visitOperator(Operator node) {
             if (node != Operator.NOT) {
-                buf.append(' ');
+                sb.append(' ');
             }
-            buf.append(node.toString());
-            buf.append(' ');
+            sb.append(node.toString());
+            sb.append(' ');
         }
 
         @Override
@@ -2423,7 +2423,7 @@ public class NXQLQueryMaker implements QueryMaker {
             } else {
                 visitReference(info.column, node.cast);
                 if (inOrderBy && info.posColumn != null) {
-                    buf.append(", ");
+                    sb.append(", ");
                     visitReference(info.posColumn);
                     posColumnsInOrderBy.add(info.posColumn);
                 }
@@ -2465,27 +2465,27 @@ public class NXQLQueryMaker implements QueryMaker {
             if (cast != null) {
                 // only DATE cast for now
                 String fmt = dialect.getDateCast();
-                buf.append(String.format(fmt, qname));
+                sb.append(String.format(fmt, qname));
             } else {
-                buf.append(qname);
+                sb.append(qname);
             }
         }
 
         @Override
         public void visitLiteralList(LiteralList node) {
-            buf.append('(');
+            sb.append('(');
             for (Iterator<Literal> it = node.iterator(); it.hasNext();) {
                 it.next().accept(this);
                 if (it.hasNext()) {
-                    buf.append(", ");
+                    sb.append(", ");
                 }
             }
-            buf.append(')');
+            sb.append(')');
         }
 
         @Override
         public void visitDateLiteral(DateLiteral node) {
-            buf.append('?');
+            sb.append('?');
             if (node.onlyDate) {
                 whereParams.add(node.toSqlDate());
             } else {
@@ -2505,28 +2505,28 @@ public class NXQLQueryMaker implements QueryMaker {
         // wrap the string so that the mapper can detect it
         // and map to an actual database id
         protected void visitId(String string) {
-            buf.append('?');
+            sb.append('?');
             whereParams.add(new WrappedId(string));
         }
 
         public void visitStringLiteral(String string) {
-            buf.append('?');
+            sb.append('?');
             whereParams.add(string);
         }
 
         @Override
         public void visitDoubleLiteral(DoubleLiteral node) {
-            buf.append(node.value);
+            sb.append(node.value);
         }
 
         @Override
         public void visitIntegerLiteral(IntegerLiteral node) {
-            buf.append(node.value);
+            sb.append(node.value);
         }
 
         @Override
         public void visitBooleanLiteral(BooleanLiteral node) {
-            buf.append('?');
+            sb.append('?');
             whereParams.add(Boolean.valueOf(node.value));
         }
 
@@ -2570,7 +2570,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 whatColumns.add(col);
                 whatKeys.add(NXQL.ECM_FULLTEXT_SCORE);
             } else {
-                buf.append(aliasesByName.get(NXQL.ECM_FULLTEXT_SCORE));
+                sb.append(aliasesByName.get(NXQL.ECM_FULLTEXT_SCORE));
             }
         }
 
@@ -2589,9 +2589,9 @@ public class NXQLQueryMaker implements QueryMaker {
         public void visitOrderByList(OrderByList node) {
             inOrderBy = true;
             for (OrderByExpr obe : node) {
-                if (buf.length() != 0) {
+                if (sb.length() != 0) {
                     // we can do this because we generate in an initially empty buffer
-                    buf.append(", ");
+                    sb.append(", ");
                 }
                 obe.accept(this);
             }
@@ -2605,17 +2605,17 @@ public class NXQLQueryMaker implements QueryMaker {
                 if (posColumnsInOrderBy.contains(col)) {
                     continue;
                 }
-                if (buf.length() != 0) {
-                    buf.append(", ");
+                if (sb.length() != 0) {
+                    sb.append(", ");
                 }
-                int length = buf.length();
+                int length = sb.length();
                 visitReference(col);
                 if (aliasOrderByColumns) {
                     // but don't use generated values
                     // make the ORDER BY clause uses the aliases instead
-                    buf.setLength(length);
+                    sb.setLength(length);
                     String alias = aliasesByName.get(es.getKey());
-                    buf.append(alias);
+                    sb.append(alias);
                 }
             }
             inOrderBy = false;
@@ -2623,17 +2623,17 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitOrderByExpr(OrderByExpr node) {
-            int length = buf.length();
+            int length = sb.length();
             // generates needed joins
             super.visitOrderByExpr(node); // visit reference
             if (aliasOrderByColumns) {
                 // but don't use generated values
                 // make the ORDER BY clause uses the aliases instead
-                buf.setLength(length);
-                buf.append(aliasesByName.get(node.reference.name));
+                sb.setLength(length);
+                sb.append(aliasesByName.get(node.reference.name));
             }
             if (node.isDescending) {
-                buf.append(dialect.getDescending());
+                sb.append(dialect.getDescending());
             }
         }
 

@@ -53,19 +53,19 @@ public class LayoutFunctions {
      * Returns a String representing each of the field definitions property name, separated by a space.
      */
     public static String getFieldDefinitionsAsString(FieldDefinition[] defs) {
-        StringBuilder buff = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         if (defs != null) {
             for (FieldDefinition def : defs) {
-                buff.append(def.getPropertyName()).append(" ");
+                sb.append(def.getPropertyName()).append(" ");
             }
         }
-        return buff.toString().trim();
+        return sb.toString().trim();
     }
 
     public static List<LayoutRow> getSelectedRows(Layout layout, List<String> selectedRowNames,
             boolean showAlwaysSelected) {
         LayoutRow[] rows = layout.getRows();
-        List<LayoutRow> selectedRows = new ArrayList<LayoutRow>();
+        List<LayoutRow> selectedRows = new ArrayList<>();
         if (rows != null) {
             for (LayoutRow row : rows) {
                 if (row.isAlwaysSelected() && showAlwaysSelected) {
@@ -84,7 +84,7 @@ public class LayoutFunctions {
 
     public static List<LayoutRow> getNotSelectedRows(Layout layout, List<String> selectedRowNames) {
         LayoutRow[] rows = layout.getRows();
-        List<LayoutRow> notSelectedRows = new ArrayList<LayoutRow>();
+        List<LayoutRow> notSelectedRows = new ArrayList<>();
         if (rows != null) {
             for (LayoutRow row : rows) {
                 if (selectedRowNames == null && !row.isSelectedByDefault() && !row.isAlwaysSelected()) {
@@ -102,7 +102,7 @@ public class LayoutFunctions {
         List<LayoutRow> selectedRows = getSelectedRows(layout, null, showAlwaysSelected);
         List<String> selectedRowNames = null;
         if (selectedRows != null && !selectedRows.isEmpty()) {
-            selectedRowNames = new ArrayList<String>();
+            selectedRowNames = new ArrayList<>();
             for (LayoutRow row : selectedRows) {
                 selectedRowNames.add(row.getName());
             }
@@ -155,7 +155,7 @@ public class LayoutFunctions {
      * @since 5.5
      */
     public static String computeLayoutRowDefinitionId(LayoutRowDefinition layoutRowDef) {
-        StringBuffer builder = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
         builder.append(layoutRowDef.getName()).append(";");
         builder.append(layoutRowDef.isSelectedByDefault()).append(";");
         builder.append(layoutRowDef.isAlwaysSelected()).append(";");
@@ -186,7 +186,7 @@ public class LayoutFunctions {
      * @since 5.5
      */
     public static String computeWidgetDefinitionId(WidgetDefinition widgetDef) {
-        StringBuffer builder = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
         builder.append(widgetDef.getName()).append(";");
         builder.append(widgetDef.getType()).append(";");
         builder.append(widgetDef.getTypeCategory()).append(";");

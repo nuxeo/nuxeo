@@ -46,7 +46,7 @@ public class StringLiteral extends Literal {
 
     @Override
     public String toString() {
-        return new StringBuffer(value.length() + 2).append("\'").append(value).append("\'").toString();
+        return "\'" + value + "\'";
     }
 
     @Override

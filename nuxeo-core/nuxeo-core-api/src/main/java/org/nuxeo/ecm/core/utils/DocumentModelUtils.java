@@ -141,15 +141,15 @@ public final class DocumentModelUtils {
     }
 
     private static String join(String[] items, String sep) {
-        StringBuilder buf = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         int max = items.length - 1;
         for (int i = 0; i < items.length; i++) {
-            buf.append(items[i]);
+            sb.append(items[i]);
             if (i < max) {
-                buf.append(sep);
+                sb.append(sep);
             }
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     /**

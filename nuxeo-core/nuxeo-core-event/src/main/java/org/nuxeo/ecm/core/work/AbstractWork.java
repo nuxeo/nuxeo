@@ -548,23 +548,23 @@ public abstract class AbstractWork implements Work {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(getClass().getSimpleName());
-        buf.append('(');
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append('(');
         if (docId != null) {
-            buf.append(docId);
-            buf.append(", ");
+            sb.append(docId);
+            sb.append(", ");
         } else if (docIds != null && docIds.size() > 0) {
-            buf.append(docIds.get(0));
-            buf.append("..., ");
+            sb.append(docIds.get(0));
+            sb.append("..., ");
         }
-        buf.append(getSchedulePath().getParentPath());
-        buf.append(", ");
-        buf.append(getProgress());
-        buf.append(", ");
-        buf.append(getStatus());
-        buf.append(')');
-        return buf.toString();
+        sb.append(getSchedulePath().getParentPath());
+        sb.append(", ");
+        sb.append(getProgress());
+        sb.append(", ");
+        sb.append(getStatus());
+        sb.append(')');
+        return sb.toString();
     }
 
     @Override

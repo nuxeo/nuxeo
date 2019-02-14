@@ -162,7 +162,7 @@ public class BaseExport {
         pipe.run();
     }
 
-    protected void dump(StringBuffer sb, File root) {
+    protected void dump(StringBuilder sb, File root) {
         for (File f : root.listFiles()) {
             sb.append(f.getAbsolutePath());
             sb.append("\n");
@@ -172,7 +172,7 @@ public class BaseExport {
         }
     }
 
-    protected void dump(StringBuffer sb, DocumentModelList alldocs) {
+    protected void dump(StringBuilder sb, DocumentModelList alldocs) {
         for (DocumentModel doc : alldocs) {
             sb.append(doc.getId());
             sb.append(" - ");

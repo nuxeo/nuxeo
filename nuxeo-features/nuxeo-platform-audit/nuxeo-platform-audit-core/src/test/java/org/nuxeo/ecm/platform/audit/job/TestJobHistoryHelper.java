@@ -20,15 +20,17 @@
 
 package org.nuxeo.ecm.platform.audit.job;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.job.JobHistoryHelper;
@@ -42,7 +44,7 @@ public class TestJobHistoryHelper {
 
     @Test
     public void testLogger() throws Exception {
-        StringBuffer query = new StringBuffer("from LogEntry log where ");
+        StringBuilder query = new StringBuilder("from LogEntry log where ");
         query.append(" log.category='");
         query.append("MyExport");
         query.append("'  ORDER BY log.eventDate DESC");

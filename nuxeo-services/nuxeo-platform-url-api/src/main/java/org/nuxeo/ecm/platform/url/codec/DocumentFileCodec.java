@@ -59,17 +59,17 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
         String filepath = docView.getParameter(FILE_PROPERTY_PATH_KEY);
         String filename = docView.getParameter(FILENAME_KEY);
         if (docLoc != null && filepath != null && filename != null) {
-            StringBuilder buf = new StringBuilder();
-            buf.append(getPrefix());
-            buf.append("/");
-            buf.append(docLoc.getServerName());
-            buf.append("/");
-            buf.append(docLoc.getDocRef().toString());
-            buf.append("/");
-            buf.append(filepath);
-            buf.append("/");
-            buf.append(URIUtils.quoteURIPathToken(filename));
-            String uri = buf.toString();
+            StringBuilder sb = new StringBuilder();
+            sb.append(getPrefix());
+            sb.append("/");
+            sb.append(docLoc.getServerName());
+            sb.append("/");
+            sb.append(docLoc.getDocRef().toString());
+            sb.append("/");
+            sb.append(filepath);
+            sb.append("/");
+            sb.append(URIUtils.quoteURIPathToken(filename));
+            String uri = sb.toString();
             Map<String, String> requestParams = new HashMap<>(docView.getParameters());
             requestParams.remove(FILE_PROPERTY_PATH_KEY);
             requestParams.remove(FILENAME_KEY);

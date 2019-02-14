@@ -188,7 +188,7 @@ public class TestImportModifiedZipArchive {
         session.save();
         // check result
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         DocumentModelList docs = session.query("select * from Document order by ecm:path");
         for (DocumentModel doc : docs) {
             sb.append(doc.getPathAsString() + " - " + doc.getType() + " -- " + doc.getTitle());

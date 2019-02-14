@@ -32,15 +32,15 @@ public class TestRFC2231 {
 
     @Test
     public void testEncodeWithPercent() {
-        StringBuilder buf = new StringBuilder();
-        RFC2231.percentEscape(buf, "foo");
-        assertEquals("foo", buf.toString());
-        buf.setLength(0);
-        RFC2231.percentEscape(buf, "foo bar");
-        assertEquals("foo%20bar", buf.toString());
-        buf.setLength(0);
-        RFC2231.percentEscape(buf, "R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).");
-        assertEquals("R%C3%A9sultat%20d%27Activit%C3%A9%20%28%3Bprovisoire/draft%29.", buf.toString());
+        StringBuilder sb = new StringBuilder();
+        RFC2231.percentEscape(sb, "foo");
+        assertEquals("foo", sb.toString());
+        sb.setLength(0);
+        RFC2231.percentEscape(sb, "foo bar");
+        assertEquals("foo%20bar", sb.toString());
+        sb.setLength(0);
+        RFC2231.percentEscape(sb, "R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).");
+        assertEquals("R%C3%A9sultat%20d%27Activit%C3%A9%20%28%3Bprovisoire/draft%29.", sb.toString());
     }
 
     @Test

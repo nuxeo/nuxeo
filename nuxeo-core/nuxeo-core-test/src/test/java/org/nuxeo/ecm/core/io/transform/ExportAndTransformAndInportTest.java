@@ -81,7 +81,7 @@ public class ExportAndTransformAndInportTest extends BaseExport {
 
             DocumentModelList alldocs = importSession.query("select * from Document order by ecm:path");
 
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
 
             dump(sb, alldocs);
 

@@ -28,7 +28,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class OpenXmlContentHandler extends DefaultHandler {
 
-    protected final StringBuffer sb = new StringBuffer();
+    protected final StringBuilder sb = new StringBuilder();
 
     protected final Stack<String> path = new Stack<String>();
 

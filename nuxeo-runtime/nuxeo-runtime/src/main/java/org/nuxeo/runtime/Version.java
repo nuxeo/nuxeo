@@ -170,7 +170,7 @@ public class Version implements Serializable, Comparable<Version> {
      */
     @Override
     public String toString() {
-        return new StringBuffer().append(major).append('.').append(minor).append('.').append(update).toString();
+        return major + "." + minor + "." + update;
     }
 
     @Override

@@ -58,18 +58,18 @@ public class MultiExpression extends Predicate {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(operator);
-        buf.append('(');
+        StringBuilder sb = new StringBuilder();
+        sb.append(operator);
+        sb.append('(');
         for (Iterator<Predicate> it = predicates.iterator(); it.hasNext();) {
             Predicate predicate = it.next();
-            buf.append(predicate.toString());
+            sb.append(predicate.toString());
             if (it.hasNext()) {
-                buf.append(", ");
+                sb.append(", ");
             }
         }
-        buf.append(')');
-        return buf.toString();
+        sb.append(')');
+        return sb.toString();
     }
 
     @Override

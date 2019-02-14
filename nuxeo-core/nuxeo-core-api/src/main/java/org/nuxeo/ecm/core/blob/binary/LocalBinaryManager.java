@@ -173,14 +173,14 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         if (digest.length() < 2 * depth) {
             return null;
         }
-        StringBuilder buf = new StringBuilder(3 * depth - 1);
+        StringBuilder sb = new StringBuilder(3 * depth - 1);
         for (int i = 0; i < depth; i++) {
             if (i != 0) {
-                buf.append(File.separatorChar);
+                sb.append(File.separatorChar);
             }
-            buf.append(digest.substring(2 * i, 2 * i + 2));
+            sb.append(digest.substring(2 * i, 2 * i + 2));
         }
-        File dir = new File(storageDir, buf.toString());
+        File dir = new File(storageDir, sb.toString());
         if (createDir) {
             dir.mkdirs();
         }

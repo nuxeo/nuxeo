@@ -270,23 +270,23 @@ class FileManager {
     protected static final char[] HEX_DIGITS = "0123456789abcdef".toCharArray();
 
     protected static String toHexString(byte[] data) {
-        StringBuilder buf = new StringBuilder(2 * data.length);
+        StringBuilder sb = new StringBuilder(2 * data.length);
         for (byte b : data) {
-            buf.append(HEX_DIGITS[(0xF0 & b) >> 4]);
-            buf.append(HEX_DIGITS[0x0F & b]);
+            sb.append(HEX_DIGITS[(0xF0 & b) >> 4]);
+            sb.append(HEX_DIGITS[0x0F & b]);
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     protected static File getFileForDigest(String digest, File dataDir) {
-        StringBuilder buf = new StringBuilder(3 * DEPTH - 1);
+        StringBuilder sb = new StringBuilder(3 * DEPTH - 1);
         for (int i = 0; i < DEPTH; i++) {
             if (i != 0) {
-                buf.append(File.separatorChar);
+                sb.append(File.separatorChar);
             }
-            buf.append(digest.substring(2 * i, 2 * i + 2));
+            sb.append(digest.substring(2 * i, 2 * i + 2));
         }
-        File dir = new File(dataDir, buf.toString());
+        File dir = new File(dataDir, sb.toString());
         dir.mkdirs();
         return new File(dir, digest);
     }

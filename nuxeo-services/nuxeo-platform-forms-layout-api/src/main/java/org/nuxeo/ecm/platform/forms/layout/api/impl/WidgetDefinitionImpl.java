@@ -597,23 +597,23 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
      */
     @Override
     public String toString() {
-        final StringBuilder buf = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
-        buf.append("WidgetDefinitionImpl");
-        buf.append(" {");
-        buf.append(" name=");
-        buf.append(name);
-        buf.append(", type=");
-        buf.append(type);
-        buf.append(", typeCategory=");
-        buf.append(typeCategory);
-        buf.append(", properties=");
-        buf.append(properties);
-        buf.append(", controls=");
-        buf.append(controls);
-        buf.append('}');
+        sb.append("WidgetDefinitionImpl");
+        sb.append(" {");
+        sb.append(" name=");
+        sb.append(name);
+        sb.append(", type=");
+        sb.append(type);
+        sb.append(", typeCategory=");
+        sb.append(typeCategory);
+        sb.append(", properties=");
+        sb.append(properties);
+        sb.append(", controls=");
+        sb.append(controls);
+        sb.append('}');
 
-        return buf.toString();
+        return sb.toString();
     }
 
 }

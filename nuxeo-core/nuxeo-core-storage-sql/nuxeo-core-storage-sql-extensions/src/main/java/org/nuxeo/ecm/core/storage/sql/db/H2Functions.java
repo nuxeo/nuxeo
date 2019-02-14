@@ -286,15 +286,15 @@ public class H2Functions extends EmbeddedFunctions {
     }
 
     protected static String getSelectParentIdsByIdsSql(int size) {
-        StringBuilder buf = new StringBuilder("SELECT DISTINCT \"PARENTID\" FROM \"HIERARCHY\" WHERE \"ID\" IN (");
+        StringBuilder sb = new StringBuilder("SELECT DISTINCT \"PARENTID\" FROM \"HIERARCHY\" WHERE \"ID\" IN (");
         for (int i = 0; i < size; i++) {
             if (i != 0) {
-                buf.append(", ");
+                sb.append(", ");
             }
-            buf.append('?');
+            sb.append('?');
         }
-        buf.append(')');
-        return buf.toString();
+        sb.append(')');
+        return sb.toString();
     }
 
 }

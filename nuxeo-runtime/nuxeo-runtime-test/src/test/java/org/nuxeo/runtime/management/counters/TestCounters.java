@@ -68,7 +68,7 @@ public class TestCounters {
     }
 
     protected String getCountersSnapshot() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         CounterManager cm = Framework.getService(CounterManager.class);
         for (int i = 0; i < 9; i++) {
             String snapshot = cm.getCounterHistory("org.nuxeo.counter" + i).toString();

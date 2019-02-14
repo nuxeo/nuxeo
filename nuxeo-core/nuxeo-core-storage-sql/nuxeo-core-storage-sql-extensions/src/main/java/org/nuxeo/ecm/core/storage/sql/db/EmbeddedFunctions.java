@@ -219,10 +219,10 @@ public class EmbeddedFunctions {
      * @return a string with extracted words
      */
     public static String parseFullText(String string1, String string2) {
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         set.addAll(parseFullText(string1));
         set.addAll(parseFullText(string2));
-        List<String> words = new ArrayList<String>(set);
+        List<String> words = new ArrayList<>(set);
         Collections.sort(words);
         return join(words, ' ');
     }
@@ -231,7 +231,7 @@ public class EmbeddedFunctions {
         if (string == null) {
             return Collections.emptySet();
         }
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         for (String word : wordPattern.split(string)) {
             String w = parseWord(word);
             if (w != null) {
@@ -253,7 +253,7 @@ public class EmbeddedFunctions {
             return false;
         }
         Set<String> words = split(query.toLowerCase(), ' ');
-        Set<String> filtered = new HashSet<String>();
+        Set<String> filtered = new HashSet<>();
         for (String word : words) {
             if (!wordPattern.matcher(word).matches()) {
                 filtered.add(word);
@@ -297,32 +297,32 @@ public class EmbeddedFunctions {
             + "i in is it of on or that the this to was what when where who will with "
             + "car donc est il ils je la le les mais ni nous or ou pour tu un une vous " + "www com net org";
 
-    private static final Set<String> stopWords = new HashSet<String>(split(STOPWORDS, ' '));
+    private static final Set<String> stopWords = new HashSet<>(split(STOPWORDS, ' '));
 
     public static final String parseWord(String string) {
         int len = string.length();
         if (len < 3) {
             return null;
         }
-        StringBuilder buf = new StringBuilder(len);
+        StringBuilder sb = new StringBuilder(len);
         for (int i = 0; i < len; i++) {
             char c = Character.toLowerCase(string.charAt(i));
             if (c == '\u00e6') {
-                buf.append("ae");
+                sb.append("ae");
             } else if (c >= '\u00e0' && c <= '\u00ff') {
-                buf.append(UNACCENTED.charAt((c) - 0xe0));
+                sb.append(UNACCENTED.charAt((c) - 0xe0));
             } else if (c == '\u0153') {
-                buf.append("oe");
+                sb.append("oe");
             } else {
-                buf.append(c);
+                sb.append(c);
             }
         }
         // simple heuristic to remove plurals
-        int l = buf.length();
-        if (l > 3 && buf.charAt(l - 1) == 's') {
-            buf.setLength(l - 1);
+        int l = sb.length();
+        if (l > 3 && sb.charAt(l - 1) == 's') {
+            sb.setLength(l - 1);
         }
-        String word = buf.toString();
+        String word = sb.toString();
         if (stopWords.contains(word)) {
             return null;
         }
@@ -344,7 +344,7 @@ public class EmbeddedFunctions {
         if (end == -1) {
             return Collections.singleton(string);
         }
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         int start = 0;
         do {
             String segment = string.substring(start, end);
@@ -368,13 +368,13 @@ public class EmbeddedFunctions {
         for (String word : strings) {
             size += word.length() + 1;
         }
-        StringBuilder buf = new StringBuilder(size);
+        StringBuilder sb = new StringBuilder(size);
         for (String word : strings) {
-            buf.append(word);
-            buf.append(sep);
+            sb.append(word);
+            sb.append(sep);
         }
-        buf.setLength(size - 1);
-        return buf.toString();
+        sb.setLength(size - 1);
+        return sb.toString();
     }
 
 }
