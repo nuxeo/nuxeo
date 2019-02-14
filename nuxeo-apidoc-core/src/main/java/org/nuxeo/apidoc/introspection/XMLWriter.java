@@ -451,27 +451,27 @@ public class XMLWriter {
      * @return text with escaped delimiters
      */
     public static final String escapeBodyValue(Object value) {
-        StringBuilder buffer = new StringBuilder(value.toString());
-        for (int i = 0, size = buffer.length(); i < size; i++) {
-            switch (buffer.charAt(i)) {
+        StringBuilder sb = new StringBuilder(value.toString());
+        for (int i = 0, size = sb.length(); i < size; i++) {
+            switch (sb.charAt(i)) {
             case '<':
-                buffer.replace(i, i + 1, LESS_THAN_ENTITY);
+                sb.replace(i, i + 1, LESS_THAN_ENTITY);
                 size += 3;
                 i += 3;
                 break;
             case '>':
-                buffer.replace(i, i + 1, GREATER_THAN_ENTITY);
+                sb.replace(i, i + 1, GREATER_THAN_ENTITY);
                 size += 3;
                 i += 3;
                 break;
             case '&':
-                buffer.replace(i, i + 1, AMPERSAND_ENTITY);
+                sb.replace(i, i + 1, AMPERSAND_ENTITY);
                 size += 4;
                 i += 4;
                 break;
             }
         }
-        return buffer.toString();
+        return sb.toString();
     }
 
     /**
@@ -485,37 +485,37 @@ public class XMLWriter {
      * @return text with characters restricted (for use in attributes) escaped
      */
     public static final String escapeAttributeValue(Object value) {
-        StringBuilder buffer = new StringBuilder(value.toString());
-        for (int i = 0, size = buffer.length(); i < size; i++) {
-            switch (buffer.charAt(i)) {
+        StringBuilder sb = new StringBuilder(value.toString());
+        for (int i = 0, size = sb.length(); i < size; i++) {
+            switch (sb.charAt(i)) {
             case '<':
-                buffer.replace(i, i + 1, LESS_THAN_ENTITY);
+                sb.replace(i, i + 1, LESS_THAN_ENTITY);
                 size += 3;
                 i += 3;
                 break;
             case '>':
-                buffer.replace(i, i + 1, GREATER_THAN_ENTITY);
+                sb.replace(i, i + 1, GREATER_THAN_ENTITY);
                 size += 3;
                 i += 3;
                 break;
             case '&':
-                buffer.replace(i, i + 1, AMPERSAND_ENTITY);
+                sb.replace(i, i + 1, AMPERSAND_ENTITY);
                 size += 4;
                 i += 4;
                 break;
             case '\'':
-                buffer.replace(i, i + 1, APOSTROPHE_ENTITY);
+                sb.replace(i, i + 1, APOSTROPHE_ENTITY);
                 size += 5;
                 i += 5;
                 break;
             case '\"':
-                buffer.replace(i, i + 1, QUOTE_ENTITY);
+                sb.replace(i, i + 1, QUOTE_ENTITY);
                 size += 5;
                 i += 5;
                 break;
             }
         }
-        return buffer.toString();
+        return sb.toString();
     }
 
     Element push(String name) {

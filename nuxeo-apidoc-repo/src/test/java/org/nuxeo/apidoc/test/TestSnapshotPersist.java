@@ -73,7 +73,12 @@ public class TestSnapshotPersist {
             for (int i = 0; i <= info.getLevel(); i++) {
                 pad += " ";
             }
-            sb.append(pad + "- " + info.getGroup().getName() + "(" + info.getGroup().getId() + ")");
+            sb.append(pad)
+            .append("- ")
+            .append(info.getGroup().getName())
+            .append("(")
+            .append(info.getGroup().getId())
+            .append(")");
             sb.append(" *** ");
             sb.append(info.getGroup().getHierarchyPath());
             sb.append("\n");
@@ -92,7 +97,7 @@ public class TestSnapshotPersist {
         Collections.sort(exids);
 
         for (String bid : bids) {
-            sb.append("bundle : " + bid);
+            sb.append("bundle : ").append(bid);
             BundleInfo bi = snap.getBundle(bid);
             sb.append(" *** ");
             sb.append(bi.getHierarchyPath());
@@ -100,7 +105,7 @@ public class TestSnapshotPersist {
         }
 
         for (String cid : cids) {
-            sb.append("component : " + cid);
+            sb.append("component : ").append(cid);
             sb.append(" *** ");
             ComponentInfo ci = snap.getComponent(cid);
             sb.append(ci.getHierarchyPath());
@@ -108,7 +113,7 @@ public class TestSnapshotPersist {
         }
 
         for (String sid : sids) {
-            sb.append("service : " + sid);
+            sb.append("service : ").append(sid);
             sb.append(" *** ");
             ServiceInfo si = snap.getService(sid);
             sb.append(si.getHierarchyPath());
@@ -116,7 +121,7 @@ public class TestSnapshotPersist {
         }
 
         for (String epid : epids) {
-            sb.append("extensionPoint : " + epid);
+            sb.append("extensionPoint : ").append(epid);
             sb.append(" *** ");
             ExtensionPointInfo epi = snap.getExtensionPoint(epid);
             sb.append(epi.getHierarchyPath());
@@ -124,7 +129,7 @@ public class TestSnapshotPersist {
         }
 
         for (String exid : exids) {
-            sb.append("contribution : " + exid);
+            sb.append("contribution : ").append(exid);
             sb.append(" *** ");
             ExtensionInfo exi = snap.getContribution(exid);
             sb.append(exi.getHierarchyPath());
