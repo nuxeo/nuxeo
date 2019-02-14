@@ -30,7 +30,7 @@ public class ContributionItem {
 
     protected String xml;
 
-    public void write(StringBuffer sb) {
+    public void write(StringBuilder sb) {
         sb.append("\n\n<div>");
         sb.append("\n<div>");
         sb.append(tagName);
@@ -52,7 +52,7 @@ public class ContributionItem {
     }
 
     public String getLabel() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(tagName);
         if (nameOrId != null) {
             sb.append(" ");

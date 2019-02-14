@@ -451,7 +451,7 @@ public class XMLWriter {
      * @return text with escaped delimiters
      */
     public static final String escapeBodyValue(Object value) {
-        StringBuffer buffer = new StringBuffer(value.toString());
+        StringBuilder buffer = new StringBuilder(value.toString());
         for (int i = 0, size = buffer.length(); i < size; i++) {
             switch (buffer.charAt(i)) {
             case '<':
@@ -485,7 +485,7 @@ public class XMLWriter {
      * @return text with characters restricted (for use in attributes) escaped
      */
     public static final String escapeAttributeValue(Object value) {
-        StringBuffer buffer = new StringBuffer(value.toString());
+        StringBuilder buffer = new StringBuilder(value.toString());
         for (int i = 0, size = buffer.length(); i < size; i++) {
             switch (buffer.charAt(i)) {
             case '<':

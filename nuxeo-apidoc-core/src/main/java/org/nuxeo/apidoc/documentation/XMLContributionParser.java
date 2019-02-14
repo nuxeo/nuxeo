@@ -34,7 +34,7 @@ public class XMLContributionParser {
 
     public static String prettyfy(String xml) throws DocumentException {
 
-        StringBuffer writter = new StringBuffer();
+        StringBuilder writter = new StringBuilder();
 
         SAXReader reader = new SAXReader();
         Document document = reader.read(new StringReader(xml));

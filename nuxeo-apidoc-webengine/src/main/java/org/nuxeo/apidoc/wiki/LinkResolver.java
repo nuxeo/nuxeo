@@ -55,8 +55,8 @@ public class LinkResolver implements WikiFilter {
 
         WebContext ctx = WebEngine.getActiveContext();
         Resource resource = ctx.getTargetObject();
-        StringBuffer links = new StringBuffer();
-        StringBuffer relativePath = new StringBuffer();
+        StringBuilder links = new StringBuilder();
+        StringBuilder relativePath = new StringBuilder();
 
         if (pageName.startsWith(".")) {
             // Absolute path
@@ -89,7 +89,7 @@ public class LinkResolver implements WikiFilter {
         return links.toString();
     }
 
-    protected String buildLink(String basePath, StringBuffer relativePath, String str) {
+    protected String buildLink(String basePath, StringBuilder relativePath, String str) {
         return String.format(LINK_TEMPLATE, basePath + relativePath, str);
     }
 
