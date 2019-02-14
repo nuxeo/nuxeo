@@ -41,6 +41,7 @@ public class ResourceService extends AbstractResourceService {
         super(session);
     }
 
+    @Override
     @GET
     @Path("name")
     @Produces(MediaType.TEXT_PLAIN)
@@ -59,11 +60,20 @@ public class ResourceService extends AbstractResourceService {
 
         sb.append("[");
         for (TemplateSourceDocument t : templates) {
-            sb.append("{");
-            sb.append("\"label\":" + "\"" + t.getLabel() + "\",");
-            sb.append("\"name\":" + "\"" + t.getName() + "\",");
-            sb.append("\"id\":" + "\"" + t.getId() + "\"");
-            sb.append("},");
+            sb.append("{")
+              .append("\"label\":")
+              .append("\"")
+              .append(t.getLabel())
+              .append("\",")
+              .append("\"name\":")
+              .append("\"")
+              .append(t.getName())
+              .append("\",")
+              .append("\"id\":")
+              .append("\"")
+              .append(t.getId())
+              .append("\"")
+              .append("},");
         }
 
         String result = sb.toString();

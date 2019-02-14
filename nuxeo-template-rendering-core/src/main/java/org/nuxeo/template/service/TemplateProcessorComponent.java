@@ -302,7 +302,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     public List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source) {
         StringBuilder sb = new StringBuilder()
                 .append("select * from Document where ecm:isVersion = 0 AND ecm:isProxy = 0 AND ")
-                .append(TemplateBindings.BINDING_PROP_NAME + "/*/")
+                .append(TemplateBindings.BINDING_PROP_NAME)
+                .append("/*/")
                 .append(TemplateBinding.TEMPLATE_ID_KEY)
                 .append(" = '")
                 .append(source.getId())

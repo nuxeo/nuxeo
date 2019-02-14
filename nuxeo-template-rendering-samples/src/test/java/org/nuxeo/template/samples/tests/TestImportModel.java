@@ -75,12 +75,23 @@ public class TestImportModel {
         StringBuilder sb = new StringBuilder();
         DocumentModelList docs = session.query("select * from Document where ecm:isVersion = 0 and ecm:mixinType in ('Template','TemplateBased') order by ecm:path");
         for (DocumentModel doc : docs) {
-            sb.append("path: " + doc.getPathAsString() + " type: " + doc.getType() + " title:" + doc.getTitle()
-                    + " name:" + doc.getName() + " uuid:" + doc.getId());
+            sb.append("path: ")
+            .append(doc.getPathAsString())
+            .append(" type: ")
+            .append(doc.getType())
+            .append(" title:")
+            .append(doc.getTitle())
+            .append(" name:")
+            .append(doc.getName())
+            .append(" uuid:")
+            .append(doc.getId());
             TemplateBasedDocument templateDoc = doc.getAdapter(TemplateBasedDocument.class);
             if (templateDoc != null) {
                 for (String tName : templateDoc.getTemplateNames()) {
-                    sb.append(" target: " + tName + "-" + templateDoc.getSourceTemplateDocRef(tName));
+                    sb.append(" target: ")
+                      .append(tName)
+                      .append("-")
+                      .append(templateDoc.getSourceTemplateDocRef(tName));
                     assertTrue(session.exists(templateDoc.getSourceTemplateDocRef(tName)));
                 }
             } else {
