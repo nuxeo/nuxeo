@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.text.StrBuilder;
 import org.nuxeo.apidoc.adapters.BaseNuxeoArtifactDocAdapter;
 import org.nuxeo.apidoc.adapters.BundleGroupDocAdapter;
 import org.nuxeo.apidoc.adapters.BundleInfoDocAdapter;
@@ -96,9 +95,7 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         }
 
         DocumentModel dist = ((RepositoryDistributionSnapshot) snap).getDoc();
-        StrBuilder q = new StrBuilder("SELECT * FROM Document WHERE ");
-        q.append("ecm:path STARTSWITH '").append(dist.getPathAsString()).append("'");
-        String query = q.toString();
+        String query = "SELECT * FROM Document WHERE ecm:path STARTSWITH '" + dist.getPathAsString() + "'";
         if (fulltext != null) {
             query += " AND " + NXQL.ECM_FULLTEXT + " = " + NXQL.escapeString(fulltext);
         }
