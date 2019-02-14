@@ -348,41 +348,41 @@ public class WidgetImpl implements Widget {
 
     @Override
     public String toString() {
-        final StringBuilder buf = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
-        buf.append("WidgetImpl");
-        buf.append(" {");
-        buf.append(" name=");
-        buf.append(name);
-        buf.append(", layoutName=");
-        buf.append(layoutName);
-        buf.append(", id=");
-        buf.append(id);
-        buf.append(", mode=");
-        buf.append(mode);
-        buf.append(", type=");
-        buf.append(type);
-        buf.append(", label=");
-        buf.append(label);
-        buf.append(", helpLabel=");
-        buf.append(helpLabel);
-        buf.append(", translated=");
-        buf.append(translated);
-        buf.append(", handlingLabels=");
-        buf.append(handlingLabels);
-        buf.append(", required=");
-        buf.append(required);
-        buf.append(", properties=");
-        buf.append(properties);
-        buf.append(", controls=");
-        buf.append(controls);
-        buf.append(", valueName=");
-        buf.append(valueName);
-        buf.append(", level=");
-        buf.append(level);
-        buf.append('}');
+        sb.append("WidgetImpl");
+        sb.append(" {");
+        sb.append(" name=");
+        sb.append(name);
+        sb.append(", layoutName=");
+        sb.append(layoutName);
+        sb.append(", id=");
+        sb.append(id);
+        sb.append(", mode=");
+        sb.append(mode);
+        sb.append(", type=");
+        sb.append(type);
+        sb.append(", label=");
+        sb.append(label);
+        sb.append(", helpLabel=");
+        sb.append(helpLabel);
+        sb.append(", translated=");
+        sb.append(translated);
+        sb.append(", handlingLabels=");
+        sb.append(handlingLabels);
+        sb.append(", required=");
+        sb.append(required);
+        sb.append(", properties=");
+        sb.append(properties);
+        sb.append(", controls=");
+        sb.append(controls);
+        sb.append(", valueName=");
+        sb.append(valueName);
+        sb.append(", level=");
+        sb.append(level);
+        sb.append('}');
 
-        return buf.toString();
+        return sb.toString();
     }
 
 }

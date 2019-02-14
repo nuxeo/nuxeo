@@ -33,7 +33,7 @@ public class OOoXmlContentHandler extends DefaultHandler {
 
     protected static final Log log = LogFactory.getLog(OOoXmlContentHandler.class);
 
-    protected final StringBuffer sb = new StringBuffer();
+    protected final StringBuilder sb = new StringBuilder();
 
     protected final Stack<String> path = new Stack<>();
 

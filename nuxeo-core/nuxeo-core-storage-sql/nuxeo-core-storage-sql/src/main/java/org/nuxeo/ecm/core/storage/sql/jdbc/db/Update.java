@@ -99,25 +99,25 @@ public class Update implements Serializable {
     }
 
     public String getStatement() {
-        StringBuilder buf = new StringBuilder(128);
-        buf.append("UPDATE ");
-        buf.append(table.getQuotedName());
-        buf.append(" SET ");
-        buf.append(newValues);
+        StringBuilder sb = new StringBuilder(128);
+        sb.append("UPDATE ");
+        sb.append(table.getQuotedName());
+        sb.append(" SET ");
+        sb.append(newValues);
         if (from != null) {
-            buf.append(" FROM ");
+            sb.append(" FROM ");
             if (table.getDialect().doesUpdateFromRepeatSelf()) {
-                buf.append(table.getQuotedName());
-                buf.append(", ");
+                sb.append(table.getQuotedName());
+                sb.append(", ");
             }
-            buf.append(StringUtils.join(from, ", "));
+            sb.append(StringUtils.join(from, ", "));
         }
         if (where != null) {
-            buf.append(" WHERE ");
-            buf.append(where);
+            sb.append(" WHERE ");
+            sb.append(where);
         } else {
             throw new IllegalArgumentException("unexpected empty WHERE");
         }
-        return buf.toString();
+        return sb.toString();
     }
 }

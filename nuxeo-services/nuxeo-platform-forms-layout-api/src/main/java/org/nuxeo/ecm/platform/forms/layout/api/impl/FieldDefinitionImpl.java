@@ -67,17 +67,17 @@ public class FieldDefinitionImpl implements FieldDefinition {
      */
     @Override
     public String toString() {
-        final StringBuilder buf = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
-        buf.append("FieldDefinitionImpl");
-        buf.append(" {");
-        buf.append(" schema=");
-        buf.append(schema);
-        buf.append(", field=");
-        buf.append(field);
-        buf.append('}');
+        sb.append("FieldDefinitionImpl");
+        sb.append(" {");
+        sb.append(" schema=");
+        sb.append(schema);
+        sb.append(", field=");
+        sb.append(field);
+        sb.append('}');
 
-        return buf.toString();
+        return sb.toString();
     }
 
     /**

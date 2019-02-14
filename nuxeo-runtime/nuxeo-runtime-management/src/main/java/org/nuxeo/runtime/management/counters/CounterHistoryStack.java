@@ -52,7 +52,7 @@ public class CounterHistoryStack implements Iterable<long[]> {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         for (long[] entry : this) {
             sb.append(entry[0]);

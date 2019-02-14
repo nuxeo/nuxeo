@@ -68,7 +68,7 @@ public class DownloadHandler extends DefaultObject {
     public String getDownloadsProgress() {
         ConnectDownloadManager cdm = Framework.getService(ConnectDownloadManager.class);
         List<DownloadingPackage> pkgs = cdm.listDownloadingPackages();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < pkgs.size(); i++) {
             if (i > 0) {
@@ -106,9 +106,14 @@ public class DownloadHandler extends DefaultObject {
                 downloadOver = true;
             }
         }
-        return getView("downloadStarted").arg("pkg", pkg).arg("source", source).arg("over", downloadOver).arg(
-                "install", install).arg("depCheck", depCheck).arg("filterOnPlatform", filterOnPlatform.toString()).arg(
-                "type", pkgType.toString()).arg("onlyRemote", onlyRemote.toString());
+        return getView("downloadStarted").arg("pkg", pkg)
+                                         .arg("source", source)
+                                         .arg("over", downloadOver)
+                                         .arg("install", install)
+                                         .arg("depCheck", depCheck)
+                                         .arg("filterOnPlatform", filterOnPlatform.toString())
+                                         .arg("type", pkgType.toString())
+                                         .arg("onlyRemote", onlyRemote.toString());
     }
 
     protected DownloadingPackage getDownloadingPackage(String pkgId) {
@@ -146,9 +151,14 @@ public class DownloadHandler extends DefaultObject {
         } catch (ConnectServerError e) {
             return getView("downloadError").arg("e", e);
         }
-        return getView("downloadStarted").arg("pkg", getDownloadingPackage(pkgId)).arg("source", source).arg("over",
-                false).arg("install", install).arg("depCheck", depCheck).arg("filterOnPlatform",
-                filterOnPlatform.toString()).arg("type", pkgType.toString()).arg("onlyRemote", onlyRemote.toString());
+        return getView("downloadStarted").arg("pkg", getDownloadingPackage(pkgId))
+                                         .arg("source", source)
+                                         .arg("over", false)
+                                         .arg("install", install)
+                                         .arg("depCheck", depCheck)
+                                         .arg("filterOnPlatform", filterOnPlatform.toString())
+                                         .arg("type", pkgType.toString())
+                                         .arg("onlyRemote", onlyRemote.toString());
     }
 
     @GET
@@ -168,7 +178,7 @@ public class DownloadHandler extends DefaultObject {
                 // here we generate a fake progress report so that if some
                 // download are very fast, they will still be visible on the
                 // client side
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 sb.append("[");
                 for (int i = 0; i < pkgs.length; i++) {
                     if (i > 0) {

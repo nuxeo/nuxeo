@@ -700,12 +700,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "RestrictionBig", false);
-        StringBuilder buf = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         int size = 10000; // from testrestrictionbig.xsd
         for (int i = 0; i < size - 1; i++) {
-            buf.append("x");
+            sb.append("x");
         }
-        String bigstring = buf.toString();
+        String bigstring = sb.toString();
         nodea.setSimpleProperty("restrbg:bigstring", bigstring);
         session.save();
 
@@ -724,11 +724,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
 
-        StringBuilder buf = new StringBuilder(5000);
+        StringBuilder sb = new StringBuilder(5000);
         for (int i = 0; i < 1000; i++) {
-            buf.append(String.format("%-5d", Integer.valueOf(i)));
+            sb.append(String.format("%-5d", Integer.valueOf(i)));
         }
-        String bigtext = buf.toString();
+        String bigtext = sb.toString();
         assertEquals(5000, bigtext.length());
         nodea.setSimpleProperty("tst:bignote", bigtext);
         nodea.setCollectionProperty("tst:bignotes", new String[] { bigtext });

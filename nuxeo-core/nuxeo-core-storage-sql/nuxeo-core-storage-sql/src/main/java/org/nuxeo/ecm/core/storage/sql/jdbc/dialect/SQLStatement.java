@@ -138,20 +138,20 @@ public class SQLStatement {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("SQLStatement(");
+        StringBuilder sb = new StringBuilder();
+        sb.append("SQLStatement(");
         for (Tag tag : tags) {
-            buf.append(tag.key);
+            sb.append(tag.key);
             String value = tag.value;
             if (value != null) {
-                buf.append(' ');
-                buf.append(value);
+                sb.append(' ');
+                sb.append(value);
             }
-            buf.append(", ");
+            sb.append(", ");
         }
-        buf.append(sql);
-        buf.append(')');
-        return buf.toString();
+        sb.append(sql);
+        sb.append(')');
+        return sb.toString();
     }
 
     /**
@@ -213,7 +213,7 @@ public class SQLStatement {
                 if (line.startsWith("#")) {
                     continue;
                 }
-                StringBuilder buf = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 boolean read = false;
                 while (true) {
                     if (read) {
@@ -222,10 +222,10 @@ public class SQLStatement {
                         read = true;
                     }
                     if (line == null || line.trim().equals("")) {
-                        if (buf.length() == 0) {
+                        if (sb.length() == 0) {
                             break;
                         }
-                        String sql = buf.toString().trim();
+                        String sql = sb.toString().trim();
                         SQLStatement statement = new SQLStatement(sql, tags);
                         List<SQLStatement> catStatements = statements.get(category);
                         if (catStatements == null) {
@@ -236,8 +236,8 @@ public class SQLStatement {
                     } else if (line.startsWith("#")) {
                         continue;
                     } else {
-                        buf.append(line);
-                        buf.append('\n');
+                        sb.append(line);
+                        sb.append('\n');
                     }
                 }
                 tags = new LinkedList<>();

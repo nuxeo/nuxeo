@@ -77,11 +77,9 @@ public class DateLiteral extends Literal {
     @Override
     public String toString() {
         if (onlyDate) {
-            String s = dateFormatter.print(value);
-            return new StringBuffer(s.length() + 7).append("DATE '").append(s).append("'").toString();
+            return "DATE '" + dateFormatter.print(value) + "'";
         } else {
-            String s = dateTimeFormatter.print(value);
-            return new StringBuffer(s.length() + 12).append("TIMESTAMP '").append(s).append("'").toString();
+            return "TIMESTAMP '" + dateTimeFormatter.print(value) + "'";
         }
     }
 

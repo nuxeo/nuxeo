@@ -112,6 +112,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthen
 
     protected String errorPage;
 
+    @Override
     public List<String> getUnAuthenticatedURLPrefix() {
         // CAS login screen is not part of Nuxeo5 Web App
         return null;
@@ -143,6 +144,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthen
         return url;
     }
 
+    @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
 
         // Check for an alternative authentication plugin in request cookies
@@ -157,7 +159,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthen
         // passing our application URL as service name
         String location = null;
         try {
-            Map<String, String> urlParameters = new HashMap<String, String>();
+            Map<String, String> urlParameters = new HashMap<>();
             urlParameters.put("service", getAppURL(httpRequest));
             location = URIUtils.addParametersToURIQuery(getServiceURL(httpRequest, LOGIN_ACTION), urlParameters);
             httpResponse.sendRedirect(location);
@@ -170,7 +172,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthen
 
     protected String getAppURL(HttpServletRequest httpRequest) {
         if (isValidStartupPage(httpRequest)) {
-            StringBuffer sb = new StringBuffer(VirtualHostHelper.getServerURL(httpRequest));
+            StringBuilder sb = new StringBuilder(VirtualHostHelper.getServerURL(httpRequest));
             if (VirtualHostHelper.getServerURL(httpRequest).endsWith("/")) {
                 sb.deleteCharAt(sb.length() - 1);
             }
@@ -218,6 +220,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthen
         return false;
     }
 
+    @Override
     public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
         String casTicket = httpRequest.getParameter(ticketKey);
@@ -250,6 +253,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthen
         return uui;
     }
 
+    @Override
     public void initPlugin(Map<String, String> parameters) {
         if (parameters.containsKey(CAS2Parameters.TICKET_NAME_KEY)) {
             ticketKey = parameters.get(CAS2Parameters.TICKET_NAME_KEY);
@@ -287,7 +291,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthen
         if (parameters.containsKey(CAS2Parameters.PROMPT_LOGIN)) {
             promptLogin = Boolean.parseBoolean(parameters.get(CAS2Parameters.PROMPT_LOGIN));
         }
-        excludePromptURLs = new ArrayList<String>();
+        excludePromptURLs = new ArrayList<>();
         for (String key : parameters.keySet()) {
             if (key.startsWith(EXCLUDE_PROMPT_KEY)) {
                 excludePromptURLs.add(parameters.get(key));
@@ -298,6 +302,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthen
         }
     }
 
+    @Override
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
         String requestedURI = httpRequest.getRequestURI();
         String context = httpRequest.getContextPath() + '/';
@@ -310,6 +315,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthen
         return promptLogin;
     }
 
+    @Override
     public Boolean handleLogout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
         // Check for an alternative authentication plugin in request cookies

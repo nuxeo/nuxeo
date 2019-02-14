@@ -76,10 +76,10 @@ public class ContributionBuilder extends AbstractContribution {
     }
 
     public void addXmlExtension(String target, String point, String content) {
-        StringBuilder buf = new StringBuilder(1024);
-        buf.append("<extension target=\"" + target + "\" point=\"" + point + "\">\n").append(content).append(
+        StringBuilder sb = new StringBuilder(1024);
+        sb.append("<extension target=\"" + target + "\" point=\"" + point + "\">\n").append(content).append(
                 "\n</extension>");
-        extensions.add(buf.toString());
+        extensions.add(sb.toString());
     }
 
     public void addExtension(String target, String point, Object... contribs) {
@@ -116,20 +116,20 @@ public class ContributionBuilder extends AbstractContribution {
 
     @Override
     public String getContent() {
-        StringBuilder buf = new StringBuilder(1024 * 32);
-        buf.append("<component name=\"").append(ContributionPersistenceComponent.getComponentName(name)).append("\" ");
+        StringBuilder sb = new StringBuilder(1024 * 32);
+        sb.append("<component name=\"").append(ContributionPersistenceComponent.getComponentName(name)).append("\" ");
         if (bundle != null) {
-            buf.append("bundle=\"").append(bundle).append("\" ");
+            sb.append("bundle=\"").append(bundle).append("\" ");
         }
-        buf.append(">\n\n");
+        sb.append(">\n\n");
         if (description != null) {
-            buf.append("<documentation>\n").append(description).append("\n</documentation>\n\n");
+            sb.append("<documentation>\n").append(description).append("\n</documentation>\n\n");
         }
         for (String xt : extensions) {
-            buf.append(xt).append("\n\n");
+            sb.append(xt).append("\n\n");
         }
-        buf.append("</component>\n");
-        return buf.toString();
+        sb.append("</component>\n");
+        return sb.toString();
     }
 
     @Override

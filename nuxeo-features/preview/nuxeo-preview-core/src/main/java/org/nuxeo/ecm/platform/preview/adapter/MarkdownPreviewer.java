@@ -19,15 +19,15 @@
 
 package org.nuxeo.ecm.platform.preview.adapter;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @since 8.2
@@ -38,7 +38,7 @@ public class MarkdownPreviewer extends AbstractPreviewer implements MimeTypePrev
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         List<Blob> blobResults = new ArrayList<>();
         String basePath = VirtualHostHelper.getContextPathProperty();
-        StringBuffer html = new StringBuffer();
+        StringBuilder html = new StringBuilder();
         html.append("<html><head>");
         html.append("<title>" + getPreviewTitle(dm) + "</title>");
         html.append(String.format("<script src=\"%s/bower_components/webcomponentsjs/webcomponents-lite.js\"></script>", basePath));

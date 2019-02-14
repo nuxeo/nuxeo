@@ -128,12 +128,12 @@ public class TestBlob {
     @Test
     public void testStringBlob() throws Exception {
         // Use random string for this test.
-        StringBuilder buff = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         Random rand = new Random();
         for (int i = 0; i < 1000000; i++) {
-            buff.append((char) rand.nextInt());
+            sb.append((char) rand.nextInt());
         }
-        String s = buff.toString();
+        String s = sb.toString();
 
         Blob blob = new StringBlob(s);
 

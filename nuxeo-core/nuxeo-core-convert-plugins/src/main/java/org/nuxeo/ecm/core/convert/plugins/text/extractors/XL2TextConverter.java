@@ -52,7 +52,7 @@ public class XL2TextConverter implements Converter {
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         InputStream stream = null;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         try {
             stream = blobHolder.getBlob().getStream();
             POIFSFileSystem fs = new POIFSFileSystem(stream);
@@ -85,7 +85,7 @@ public class XL2TextConverter implements Converter {
         }
     }
 
-    protected void appendTextFromCell(HSSFCell cell, StringBuffer sb) {
+    protected void appendTextFromCell(HSSFCell cell, StringBuilder sb) {
         String cellValue = null;
         switch (cell.getCellType()) {
         case HSSFCell.CELL_TYPE_NUMERIC:

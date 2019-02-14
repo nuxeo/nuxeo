@@ -39,11 +39,11 @@ public class BlockWriter extends Writer {
 
     final String name;
 
-    StringBuilder buf = new StringBuilder();
+    StringBuilder sb = new StringBuilder();
 
-    List<String> segments = new ArrayList<String>();
+    List<String> segments = new ArrayList<>();
 
-    List<String> blocks = new ArrayList<String>();
+    List<String> blocks = new ArrayList<>();
 
     BlockWriter superBlock; // the direct parent in the hierarchy - null if none
 
@@ -78,7 +78,7 @@ public class BlockWriter extends Writer {
 
     @Override
     public void close() throws IOException {
-        buf = null;
+        sb = null;
         segments = null;
         blocks = null;
         superBlock = null;
@@ -91,22 +91,22 @@ public class BlockWriter extends Writer {
     }
 
     public boolean isEmpty() {
-        return buf.length() == 0 && segments.isEmpty() && blocks.isEmpty();
+        return sb.length() == 0 && segments.isEmpty() && blocks.isEmpty();
     }
 
     @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
         if (!suppressOutput) {
-            buf.append(cbuf, off, len);
+            sb.append(cbuf, off, len);
         }
     }
 
     public void writeBlock(BlockWriter bw) {
         if (!suppressOutput) {
-            // add the current buffer to the segments list
-            segments.add(buf.toString());
-            // reset buffer
-            buf.setLength(0);
+            // add the current builder to the segments list
+            segments.add(sb.toString());
+            // reset builder
+            sb.setLength(0);
             // ad the sub block to the children block list
             blocks.add(bw.name);
         }
@@ -116,9 +116,9 @@ public class BlockWriter extends Writer {
 
     public void writeSuperBlock() {
         if (!suppressOutput) {
-            segments.add(buf.toString()); // add the current buffer to the
+            segments.add(sb.toString()); // add the current builder to the
             // segments list
-            buf.setLength(0); // reset buffer
+            sb.setLength(0); // reset builder
             blocks.add(".."); // add a special key that represent the super
             // block
         }
@@ -143,7 +143,7 @@ public class BlockWriter extends Writer {
             }
             bw.copyTo(writer);
         }
-        writer.write(buf.toString());
+        writer.write(sb.toString());
     }
 
     @Override

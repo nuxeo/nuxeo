@@ -133,15 +133,15 @@ public class SQLQuery implements ASTNode {
         if (queryString != null) {
             return queryString;
         }
-        StringBuilder buf = new StringBuilder();
-        buf.append("SELECT ").append(select).append(" FROM ").append(from);
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT ").append(select).append(" FROM ").append(from);
         if (where != null) {
-            buf.append(" WHERE ").append(where);
+            sb.append(" WHERE ").append(where);
         }
         if (orderBy != null) {
-            buf.append(" ORDER BY ").append(orderBy);
+            sb.append(" ORDER BY ").append(orderBy);
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     public void setLimit(long limit) {

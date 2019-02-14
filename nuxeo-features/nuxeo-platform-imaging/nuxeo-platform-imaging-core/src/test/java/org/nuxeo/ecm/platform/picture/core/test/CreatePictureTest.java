@@ -100,7 +100,7 @@ public class CreatePictureTest {
         Properties templates = new Properties();
 
         for (int i = 1; i < 5; i++) {
-            StringBuffer sb = new StringBuffer("{");
+            StringBuilder sb = new StringBuilder("{");
             sb.append("\"description\": \"Desc " + i + "\",");
             sb.append("\"title\": \"Title" + i + "\",");
             sb.append("\"maxsize\":" + i * 100);
@@ -108,7 +108,7 @@ public class CreatePictureTest {
             templates.put("thumb" + i, sb.toString());
         }
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("properties", properties);
         params.put("pictureTemplates", templates);
 

@@ -71,10 +71,10 @@ public class Insert implements Serializable {
      * @return the SQL insert or copy statement
      */
     public String getStatement() {
-        StringBuilder buf = new StringBuilder(128);
-        buf.append("INSERT INTO ");
-        buf.append(table.getQuotedName());
-        buf.append(' ');
+        StringBuilder sb = new StringBuilder(128);
+        sb.append("INSERT INTO ");
+        sb.append(table.getQuotedName());
+        sb.append(' ');
 
         List<String> columnNames = new LinkedList<>();
         List<String> values = new LinkedList<>();
@@ -84,19 +84,19 @@ public class Insert implements Serializable {
         }
 
         if (columnNames.isEmpty()) {
-            buf.append(dialect.getNoColumnsInsertString(idColumn));
+            sb.append(dialect.getNoColumnsInsertString(idColumn));
         } else {
-            buf.append('(');
-            buf.append(String.join(", ", columnNames));
-            buf.append(") ");
+            sb.append('(');
+            sb.append(String.join(", ", columnNames));
+            sb.append(") ");
             if (insertValues == null) {
-                buf.append("VALUES (");
-                buf.append(String.join(", ", values));
-                buf.append(')');
+                sb.append("VALUES (");
+                sb.append(String.join(", ", values));
+                sb.append(')');
             } else {
-                buf.append(insertValues);
+                sb.append(insertValues);
             }
         }
-        return buf.toString();
+        return sb.toString();
     }
 }

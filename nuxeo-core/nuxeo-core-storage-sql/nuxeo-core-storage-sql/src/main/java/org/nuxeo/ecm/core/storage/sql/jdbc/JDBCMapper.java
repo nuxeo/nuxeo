@@ -546,13 +546,13 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         for (String word : strings) {
             size += word.length() + 1;
         }
-        StringBuilder buf = new StringBuilder(size);
+        StringBuilder sb = new StringBuilder(size);
         for (String word : strings) {
-            buf.append(word);
-            buf.append(sep);
+            sb.append(word);
+            sb.append(sep);
         }
-        buf.setLength(size - 1);
-        return buf.toString();
+        sb.setLength(size - 1);
+        return sb.toString();
     }
 
     @Override

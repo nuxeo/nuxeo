@@ -53,15 +53,15 @@ public class DocumentPropertyContext {
 
     @Override
     public String toString() {
-        final StringBuilder buf = new StringBuilder();
-        buf.append("DocumentPropertyContext");
-        buf.append(" {");
-        buf.append(" doc=");
-        buf.append(doc);
-        buf.append(", schema=");
-        buf.append(schema);
-        buf.append('}');
-        return buf.toString();
+        final StringBuilder sb = new StringBuilder();
+        sb.append("DocumentPropertyContext");
+        sb.append(" {");
+        sb.append(" doc=");
+        sb.append(doc);
+        sb.append(", schema=");
+        sb.append(schema);
+        sb.append('}');
+        return sb.toString();
     }
 
 }

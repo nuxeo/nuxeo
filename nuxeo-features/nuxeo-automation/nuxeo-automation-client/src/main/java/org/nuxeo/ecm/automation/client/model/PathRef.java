@@ -50,13 +50,13 @@ public class PathRef extends DocRef {
     }
 
     public PathRef getChild(String childPath) {
-        StringBuilder buf = new StringBuilder(ref);
+        StringBuilder sb = new StringBuilder(ref);
         if (ref.endsWith("/")) {
-            buf.append(childPath);
+            sb.append(childPath);
         } else {
-            buf.append('/').append(childPath);
+            sb.append('/').append(childPath);
         }
-        return new PathRef(buf.toString());
+        return new PathRef(sb.toString());
     }
 
 }

@@ -305,18 +305,18 @@ public class TestScriptRunnerInfrastructure {
     }
 
     public String toString(Map<String, Object> creationProps) {
-        StringBuilder buf = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, Object> entry : creationProps.entrySet()) {
             Object v = entry.getValue();
             if (v != null) {
                 if (v.getClass() == String.class) {
-                    buf.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
+                    sb.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
                 }
             } else {
-                buf.append(entry.getKey()).append("=").append("\n");
+                sb.append(entry.getKey()).append("=").append("\n");
             }
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     @Test

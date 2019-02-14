@@ -37,7 +37,7 @@ public class ExportAndTransformTest extends BaseExport {
         try {
             runExport(root, out, skipBlobs);
 
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
 
             dump(sb, out);
 

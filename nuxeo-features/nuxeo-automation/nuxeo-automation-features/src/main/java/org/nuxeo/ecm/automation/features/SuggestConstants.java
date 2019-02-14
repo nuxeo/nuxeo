@@ -190,21 +190,21 @@ public class SuggestConstants {
                 // a pattern is provided, let's compute the field name
                 // according
                 // to the current lang
-                StringBuffer buf = new StringBuffer();
-                buf.append(labelFieldName.substring(0, i));
-                buf.append(lang);
-                buf.append(labelFieldName.substring(i + LANG_TOKEN.length()));
-                String result = buf.toString();
+                StringBuilder sb = new StringBuilder();
+                sb.append(labelFieldName.substring(0, i));
+                sb.append(lang);
+                sb.append(labelFieldName.substring(i + LANG_TOKEN.length()));
+                String result = sb.toString();
                 if (schema.getField(result) != null) {
                     return result;
                 } else {
                     // there is no field for the current lang, let's pick
                     // english by default
-                    buf = new StringBuffer();
-                    buf.append(labelFieldName.substring(0, i));
-                    buf.append(DEFAULT_LANG);
-                    buf.append(labelFieldName.substring(i + LANG_TOKEN.length()));
-                    return buf.toString();
+                    sb = new StringBuilder();
+                    sb.append(labelFieldName.substring(0, i));
+                    sb.append(DEFAULT_LANG);
+                    sb.append(labelFieldName.substring(i + LANG_TOKEN.length()));
+                    return sb.toString();
                 }
             } else {
                 // No pattern

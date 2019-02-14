@@ -893,25 +893,25 @@ public abstract class ExpressionEvaluator {
         if (len < 3) {
             return null;
         }
-        StringBuilder buf = new StringBuilder(len);
+        StringBuilder sb = new StringBuilder(len);
         for (int i = 0; i < len; i++) {
             char c = Character.toLowerCase(string.charAt(i));
             if (c == '\u00e6') {
-                buf.append("ae");
+                sb.append("ae");
             } else if (c >= '\u00e0' && c <= '\u00ff') {
-                buf.append(UNACCENTED.charAt((c) - 0xe0));
+                sb.append(UNACCENTED.charAt((c) - 0xe0));
             } else if (c == '\u0153') {
-                buf.append("oe");
+                sb.append("oe");
             } else {
-                buf.append(c);
+                sb.append(c);
             }
         }
         // simple heuristic to remove plurals
-        int l = buf.length();
-        if (l > 3 && buf.charAt(l - 1) == 's') {
-            buf.setLength(l - 1);
+        int l = sb.length();
+        if (l > 3 && sb.charAt(l - 1) == 's') {
+            sb.setLength(l - 1);
         }
-        String word = buf.toString();
+        String word = sb.toString();
         if (STOP_WORDS.contains(word)) {
             return null;
         }

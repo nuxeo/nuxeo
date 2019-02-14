@@ -236,7 +236,7 @@ public class DialectPostgreSQL extends Dialect {
             return jdbcInfo("varchar(250)[]", Types.ARRAY, "varchar", Types.VARCHAR);
         case BLOB:
             return jdbcInfo("bytea", Types.BINARY);
-        // -----
+            // -----
         case NODEID:
         case NODEIDFK:
         case NODEIDFKNP:
@@ -562,9 +562,9 @@ public class DialectPostgreSQL extends Dialect {
          */
         FulltextQuery noand = removeToplevelAndedWords(ft);
         if (noand != null) {
-            StringBuilder buf = new StringBuilder();
-            generateLikeSql(noand, buf);
-            ftsql += FT_LIKE_SEP + buf.toString();
+            StringBuilder sb = new StringBuilder();
+            generateLikeSql(noand, sb);
+            ftsql += FT_LIKE_SEP + sb.toString();
 
         }
         return ftsql;
@@ -662,38 +662,38 @@ public class DialectPostgreSQL extends Dialect {
     // abc "foo bar" -"gee man"
     // -> ?? LIKE '% foo bar %' AND ?? NOT LIKE '% gee man %'
     // ?? is a pseudo-parameter for the col
-    protected static void generateLikeSql(FulltextQuery ft, StringBuilder buf) {
+    protected static void generateLikeSql(FulltextQuery ft, StringBuilder sb) {
         if (ft.op == Op.AND || ft.op == Op.OR) {
-            buf.append('(');
+            sb.append('(');
             boolean first = true;
             for (FulltextQuery term : ft.terms) {
                 if (!first) {
                     if (ft.op == Op.AND) {
-                        buf.append(" AND ");
+                        sb.append(" AND ");
                     } else { // Op.OR
-                        buf.append(" OR ");
+                        sb.append(" OR ");
                     }
                 }
                 first = false;
-                generateLikeSql(term, buf);
+                generateLikeSql(term, sb);
             }
-            buf.append(')');
+            sb.append(')');
         } else {
-            buf.append(FT_LIKE_COL);
+            sb.append(FT_LIKE_COL);
             if (ft.op == Op.NOTWORD) {
-                buf.append(" NOT");
+                sb.append(" NOT");
             }
-            buf.append(" ILIKE '% ");
+            sb.append(" ILIKE '% ");
             String word = ft.word.toLowerCase();
             // SQL escaping
             word = word.replace("'", "''");
             word = word.replace("\\", ""); // don't take chances
             word = word.replace(PREFIX_SEARCH, "%");
-            buf.append(word);
+            sb.append(word);
             if (!word.endsWith("%")) {
-                buf.append(" %");
+                sb.append(" %");
             }
-            buf.append("'");
+            sb.append("'");
         }
     }
 
@@ -1360,8 +1360,8 @@ public class DialectPostgreSQL extends Dialect {
         if (compatibilityFulltextTable) {
             // extract tokens from tsvector
             String columnsAs = columns.stream()
-                                      .map(col -> "regexp_replace(" + col + "::text, $$'|'\\:[^']*'?$$, ' ', 'g')")
-                                      .collect(Collectors.joining(", "));
+                    .map(col -> "regexp_replace(" + col + "::text, $$'|'\\:[^']*'?$$, ' ', 'g')")
+                    .collect(Collectors.joining(", "));
             return "SELECT " + columnsAs + " FROM fulltext WHERE id=?";
         }
         return super.getBinaryFulltextSql(columns);

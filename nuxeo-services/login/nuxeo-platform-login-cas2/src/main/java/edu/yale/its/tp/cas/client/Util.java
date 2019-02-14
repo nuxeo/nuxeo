@@ -51,7 +51,7 @@ public class Util {
             throw new IllegalArgumentException("name of server is required");
 
         // now, construct our best guess at the string
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (request.isSecure())
             sb.append("https://");
         else

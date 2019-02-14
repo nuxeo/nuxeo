@@ -50,12 +50,12 @@ public class JsonNodeToProperties implements TypeAdapter {
                 } else if (size == 1) {
                     map.put(key, value.get(0).asText());
                 } else {
-                    StringBuilder buf = new StringBuilder(size * 32);
-                    buf.append(value.get(0).asText());
+                    StringBuilder sb = new StringBuilder(size * 32);
+                    sb.append(value.get(0).asText());
                     for (int i = 1; i < size; i++) {
-                        buf.append(',').append(value.get(i).asText());
+                        sb.append(',').append(value.get(i).asText());
                     }
-                    map.put(key, buf.toString());
+                    map.put(key, sb.toString());
                 }
             } else {
                 if (value.isTextual()) {

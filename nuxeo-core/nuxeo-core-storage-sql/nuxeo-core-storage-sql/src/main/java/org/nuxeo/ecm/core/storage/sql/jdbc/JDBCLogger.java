@@ -190,10 +190,10 @@ public class JDBCLogger {
     private static final String CALLABLE_START = "{?=";
 
     public void logSQL(String sql, Collection<? extends Serializable> values) {
-        StringBuilder buf = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         int start = 0;
         if (sql.startsWith(CALLABLE_START)) {
-            buf.append(CALLABLE_START);
+            sb.append(CALLABLE_START);
             start = CALLABLE_START.length();
         }
         for (Serializable v : values) {
@@ -202,12 +202,12 @@ public class JDBCLogger {
                 // mismatch between number of ? and number of values
                 break;
             }
-            buf.append(sql, start, index);
-            buf.append(loggedValue(v));
+            sb.append(sql, start, index);
+            sb.append(loggedValue(v));
             start = index + 1;
         }
-        buf.append(sql, start, sql.length());
-        log(buf.toString());
+        sb.append(sql, start, sql.length());
+        log(sb.toString());
     }
 
     /**

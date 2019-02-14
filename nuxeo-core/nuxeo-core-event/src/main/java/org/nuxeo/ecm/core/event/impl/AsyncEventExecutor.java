@@ -239,16 +239,16 @@ public class AsyncEventExecutor {
 
         @Override
         public String toString() {
-            StringBuilder buf = new StringBuilder();
-            buf.append(getClass().getSimpleName());
-            buf.append('(');
-            buf.append(title);
-            buf.append(", ");
-            buf.append(getProgress());
-            buf.append(", ");
-            buf.append(getStatus());
-            buf.append(')');
-            return buf.toString();
+            StringBuilder sb = new StringBuilder();
+            sb.append(getClass().getSimpleName());
+            sb.append('(');
+            sb.append(title);
+            sb.append(", ");
+            sb.append(getProgress());
+            sb.append(", ");
+            sb.append(getStatus());
+            sb.append(')');
+            return sb.toString();
         }
     }
 

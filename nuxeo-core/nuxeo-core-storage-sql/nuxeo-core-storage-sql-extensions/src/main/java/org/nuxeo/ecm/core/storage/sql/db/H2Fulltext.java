@@ -726,16 +726,16 @@ public class H2Fulltext {
             for (String indexName : columnTypes.keySet()) {
                 int[] types = columnTypes.get(indexName);
                 int[] indices = columnIndices.get(indexName);
-                StringBuilder buf = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < types.length; i++) {
                     String data = asString(row[indices[i]], types[i]);
                     if (i > 0) {
-                        buf.append(' ');
+                        sb.append(' ');
                     }
-                    buf.append(data);
+                    sb.append(data);
                 }
                 // TextField is tokenized
-                TextField textField = new TextField(fieldForIndex(indexName), buf.toString(), Field.Store.NO);
+                TextField textField = new TextField(fieldForIndex(indexName), sb.toString(), Field.Store.NO);
                 doc.add(textField);
             }
 

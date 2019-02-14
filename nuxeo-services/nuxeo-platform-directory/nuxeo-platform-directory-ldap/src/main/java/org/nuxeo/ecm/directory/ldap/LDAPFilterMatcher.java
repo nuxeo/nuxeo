@@ -172,7 +172,7 @@ public class LDAPFilterMatcher {
                 while (rawValues.hasMore()) {
                     String rawValue = rawValues.next().toString();
                     getNormalizer();
-                    StringBuffer sb = new StringBuffer();
+                    StringBuilder sb = new StringBuilder();
                     String initial = substringElement.getInitial();
                     String finalSegment = substringElement.getFinal();
                     if (initial != null && !initial.isEmpty()) {

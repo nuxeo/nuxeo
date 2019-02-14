@@ -130,22 +130,22 @@ public class PropertyMap implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             Object v = entry.getValue();
             if (v != null) {
                 if (v.getClass() == String.class) {
-                    buf.append(entry.getKey()).append("=").append(entry.getValue()).append("\n"); // TODO escape \n
+                    sb.append(entry.getKey()).append("=").append(entry.getValue()).append("\n"); // TODO escape \n
                                                                                                   // in value
                 } else {
                     // TODO - use full xpath
-                    // buf.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
+                    // sb.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
                     // //TODO escape \n in value
                 }
             } else {
-                buf.append(entry.getKey()).append("=").append("\n");
+                sb.append(entry.getKey()).append("=").append("\n");
             }
         }
-        return buf.toString();
+        return sb.toString();
     }
 }

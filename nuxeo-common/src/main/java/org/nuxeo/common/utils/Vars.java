@@ -45,17 +45,17 @@ public class Vars {
     }
 
     private static String expand(String expression, int offset, int s, int e, UnaryOperator<String> resolver) {
-        StringBuilder buf = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         do {
             if (s > offset) {
-                buf.append(expression.substring(offset, s));
+                sb.append(expression.substring(offset, s));
             }
             String v = resolveVar(expression.substring(s + 2, e), resolver);
             if (v == null) {
-                buf.append(expression.substring(s, e + 1));
+                sb.append(expression.substring(s, e + 1));
             } else {
-                buf.append(v);
+                sb.append(v);
             }
             offset = e + 1;
             s = expression.indexOf("${", offset);
@@ -69,10 +69,10 @@ public class Vars {
         } while (true);
 
         if (offset < expression.length()) {
-            buf.append(expression.substring(offset));
+            sb.append(expression.substring(offset));
         }
 
-        return buf.toString();
+        return sb.toString();
     }
 
     private static String resolveVar(String var, UnaryOperator<String> resolver) {

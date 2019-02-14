@@ -44,7 +44,7 @@ public class ImagePreviewer extends AbstractPreviewer implements MimeTypePreview
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         List<Blob> blobResults = new ArrayList<>();
         String basePath = VirtualHostHelper.getContextPathProperty();
-        StringBuffer html = new StringBuffer();
+        StringBuilder html = new StringBuilder();
         html.append("<html><head>");
         html.append("<title>" + getPreviewTitle(dm) + "</title>");
         html.append(String.format("<script src=\"%s/bower_components/webcomponentsjs/webcomponents-lite.js\"></script>", basePath));

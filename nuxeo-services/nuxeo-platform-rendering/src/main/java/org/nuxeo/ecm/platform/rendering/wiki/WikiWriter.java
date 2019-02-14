@@ -1,4 +1,4 @@
-/* 
+/*
  * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,11 +44,11 @@ public class WikiWriter implements IWikiPrinter, WikiText {
 
     protected WikiWriter parent;
 
-    protected final List<String> segments = new ArrayList<String>();
+    protected final List<String> segments = new ArrayList<>();
 
-    protected final List<WikiText> dynamicSegments = new ArrayList<WikiText>();
+    protected final List<WikiText> dynamicSegments = new ArrayList<>();
 
-    protected final StringBuilder buf = new StringBuilder();
+    protected final StringBuilder sb = new StringBuilder();
 
     public WikiWriter() {
     }
@@ -57,22 +57,24 @@ public class WikiWriter implements IWikiPrinter, WikiText {
         this.parent = parent;
     }
 
+    @Override
     public void print(String str) {
-        buf.append(str);
+        sb.append(str);
     }
 
     public void println() {
-        buf.append(LINE_SEP);
+        sb.append(LINE_SEP);
     }
 
+    @Override
     public void println(String str) {
-        buf.append(str);
-        buf.append(LINE_SEP);
+        sb.append(str);
+        sb.append(LINE_SEP);
     }
 
     public void writeText(WikiText text) {
-        segments.add(buf.toString());
-        buf.setLength(0);
+        segments.add(sb.toString());
+        sb.setLength(0);
         dynamicSegments.add(text);
     }
 
@@ -81,15 +83,16 @@ public class WikiWriter implements IWikiPrinter, WikiText {
     }
 
     public StringBuilder getBuffer() {
-        return buf;
+        return sb;
     }
 
+    @Override
     public void writeTo(WikiSerializerHandler handler, Writer writer) throws IOException {
         for (int i = 0, len = segments.size(); i < len; i++) {
             writer.write(segments.get(i));
             dynamicSegments.get(i).writeTo(handler, writer);
         }
-        writer.write(buf.toString());
+        writer.write(sb.toString());
     }
 
 }

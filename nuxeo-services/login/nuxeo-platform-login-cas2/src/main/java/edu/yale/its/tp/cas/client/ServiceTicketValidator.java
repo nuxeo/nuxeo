@@ -217,7 +217,7 @@ public class ServiceTicketValidator {
         // **********************************************
         // Parsing state
 
-        protected StringBuffer currentText = new StringBuffer();
+        protected StringBuilder currentText = new StringBuilder();
 
         protected boolean authenticationSuccess = false;
 
@@ -230,7 +230,7 @@ public class ServiceTicketValidator {
 
         public void startElement(String ns, String ln, String qn, Attributes a) {
             // clear the buffer
-            currentText = new StringBuffer();
+            currentText = new StringBuilder();
 
             // check outer elements
             if (qn.equals(AUTHENTICATION_SUCCESS)) {

@@ -21,7 +21,6 @@
 
 package org.nuxeo.common.utils;
 
-import static org.nuxeo.common.utils.UserAgentMatcher.isSafari5;
 import static org.nuxeo.common.utils.UserAgentMatcher.isMSIE6or7;
 
 import java.io.UnsupportedEncodingException;
@@ -48,7 +47,7 @@ public class RFC2231 {
      * @param buf the buffer to which escaped chars are appended
      * @param value the value to escape
      */
-    public static void percentEscape(StringBuilder buf, String value) {
+    public static void percentEscape(StringBuilder sb, String value) {
         byte[] bytes;
         try {
             bytes = value.getBytes(UTF8);
@@ -58,14 +57,14 @@ public class RFC2231 {
         }
         for (byte b : bytes) {
             if (b < '+' || b == ';' || b == ',' || b == '\\' || b > 'z') {
-                buf.append('%');
+                sb.append('%');
                 String s = Integer.toHexString(b & 0xff).toUpperCase();
                 if (s.length() < 2) {
-                    buf.append('0');
+                    sb.append('0');
                 }
-                buf.append(s);
+                sb.append(s);
             } else {
-                buf.append((char) b);
+                sb.append((char) b);
             }
         }
     }
@@ -80,20 +79,20 @@ public class RFC2231 {
      * @return a full string to set as value of a {@code Content-Disposition} header
      */
     public static String encodeContentDisposition(String filename, boolean inline, String userAgent) {
-        StringBuilder buf = new StringBuilder(inline ? "inline; " : "attachment; ");
+        StringBuilder sb = new StringBuilder(inline ? "inline; " : "attachment; ");
         if (userAgent == null) {
             userAgent = "";
         }
         if (isMSIE6or7(userAgent)) {
             // MSIE understands straight %-encoding
-            buf.append("filename=");
-            percentEscape(buf, filename);
+            sb.append("filename=");
+            percentEscape(sb, filename);
         } else {
             // proper RFC2231
-            buf.append("filename*=UTF-8''");
-            percentEscape(buf, filename);
+            sb.append("filename*=UTF-8''");
+            percentEscape(sb, filename);
         }
-        return buf.toString();
+        return sb.toString();
     }
 
 }

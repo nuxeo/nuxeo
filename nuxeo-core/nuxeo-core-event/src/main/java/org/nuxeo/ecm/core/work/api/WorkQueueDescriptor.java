@@ -114,20 +114,20 @@ public class WorkQueueDescriptor implements Descriptor {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder(getClass().getSimpleName());
-        buf.append("(id=");
-        buf.append(id);
-        buf.append(" categories=");
-        buf.append(categories);
-        buf.append(" queuing=");
-        buf.append(isQueuingEnabled());
-        buf.append(" processing=");
-        buf.append(isProcessingEnabled());
-        buf.append(" maxThreads=");
-        buf.append(getMaxThreads());
-        buf.append(" capacity=");
-        buf.append(getCapacity());
-        buf.append(")");
-        return buf.toString();
+        StringBuilder sb = new StringBuilder(getClass().getSimpleName());
+        sb.append("(id=");
+        sb.append(id);
+        sb.append(" categories=");
+        sb.append(categories);
+        sb.append(" queuing=");
+        sb.append(isQueuingEnabled());
+        sb.append(" processing=");
+        sb.append(isProcessingEnabled());
+        sb.append(" maxThreads=");
+        sb.append(getMaxThreads());
+        sb.append(" capacity=");
+        sb.append(getCapacity());
+        sb.append(")");
+        return sb.toString();
     }
 }

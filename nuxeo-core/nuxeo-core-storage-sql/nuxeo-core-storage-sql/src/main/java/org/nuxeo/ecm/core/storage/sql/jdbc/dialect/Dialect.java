@@ -361,12 +361,12 @@ public abstract class Dialect {
                 v = null;
             } else {
                 // use initial and final separator as terminator
-                StringBuilder buf = new StringBuilder(ARRAY_SEP);
+                StringBuilder sb = new StringBuilder(ARRAY_SEP);
                 for (String string : strings) {
-                    buf.append(string);
-                    buf.append(ARRAY_SEP);
+                    sb.append(string);
+                    sb.append(ARRAY_SEP);
                 }
-                v = buf.toString();
+                v = sb.toString();
             }
         } else {
             v = (String) value;
@@ -516,12 +516,12 @@ public abstract class Dialect {
     protected static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
 
     public static String toHexString(byte[] bytes) {
-        StringBuilder buf = new StringBuilder(2 * bytes.length);
+        StringBuilder sb = new StringBuilder(2 * bytes.length);
         for (byte b : bytes) {
-            buf.append(HEX_DIGITS[(0xF0 & b) >> 4]);
-            buf.append(HEX_DIGITS[0x0F & b]);
+            sb.append(HEX_DIGITS[(0xF0 & b) >> 4]);
+            sb.append(HEX_DIGITS[0x0F & b]);
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     public String getTableName(String name) {

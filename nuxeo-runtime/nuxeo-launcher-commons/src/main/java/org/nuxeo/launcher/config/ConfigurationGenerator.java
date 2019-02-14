@@ -55,7 +55,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1063,7 +1062,7 @@ public class ConfigurationGenerator {
         }
     }
 
-    private StringBuffer readConfiguration() throws ConfigurationException {
+    private StringBuilder readConfiguration() throws ConfigurationException {
         // Will change wizardParam value instead of appending it
         String wizardParam = userConfig.getProperty(PARAM_WIZARD_DONE);
 
@@ -1168,9 +1167,9 @@ public class ConfigurationGenerator {
         } catch (IOException e) {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
         }
-        StringBuffer newContent = new StringBuffer();
+        StringBuilder newContent = new StringBuilder();
         for (String newLine : newLines) {
-            newContent.append(newLine.trim()).append(System.getProperty("line.separator"));
+            newContent.append(newLine.trim()).append(System.lineSeparator());
         }
         return newContent;
     }
@@ -1767,8 +1766,11 @@ public class ConfigurationGenerator {
                 } else {
                     String key = line.substring(0, equalIdx).trim();
                     if (newParametersToSave.containsKey(key)) {
-                        newContent.append(key).append("=").append(newParametersToSave.get(key)).append(
-                                System.getProperty("line.separator"));
+                        newContent.append(key)
+                                  .append("=")
+                                  .append(newParametersToSave.get(key))
+                                  .append(
+                                          System.getProperty("line.separator"));
                     } else {
                         newContent.append(line).append(System.getProperty("line.separator"));
                     }
@@ -1780,8 +1782,10 @@ public class ConfigurationGenerator {
             if (templateProperties.containsKey(key)) {
                 oldValues.put(key, templateProperties.getProperty(key));
             } else {
-                newContent.append(key).append("=").append(newParametersToSave.get(key)).append(
-                        System.getProperty("line.separator"));
+                newContent.append(key)
+                          .append("=")
+                          .append(newParametersToSave.get(key))
+                          .append(System.lineSeparator());
             }
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(templateConf))) {
@@ -1849,7 +1853,7 @@ public class ConfigurationGenerator {
      */
     private Driver lookupDriver(String databaseTemplate, File databaseTemplateDir, String classname)
             throws DatabaseDriverException {
-        File[] files = (File[]) ArrayUtils.addAll( //
+        File[] files = ArrayUtils.addAll( //
                 new File(databaseTemplateDir, "lib").listFiles(), //
                 serverConfigurator.getServerLibDir().listFiles());
         List<URL> urlsList = new ArrayList<>();

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Florent Guillaume
  */
@@ -84,29 +84,29 @@ public class FullTextUtils {
         if (len < MIN_SIZE) {
             return null;
         }
-        StringBuilder buf = new StringBuilder(len);
+        StringBuilder sb = new StringBuilder(len);
         for (int i = 0; i < len; i++) {
             char c = Character.toLowerCase(string.charAt(i));
             if (removeDiacritics) {
                 if (c == '\u00e6') {
-                    buf.append("ae");
+                    sb.append("ae");
                 } else if (c >= '\u00e0' && c <= '\u00ff') {
-                    buf.append(UNACCENTED.charAt((c) - 0xe0));
+                    sb.append(UNACCENTED.charAt((c) - 0xe0));
                 } else if (c == '\u0153') {
-                    buf.append("oe");
+                    sb.append("oe");
                 } else {
-                    buf.append(c);
+                    sb.append(c);
                 }
             } else {
-                buf.append(c);
+                sb.append(c);
             }
         }
         // simple heuristic to remove plurals
-        int l = buf.length();
-        if (l > 3 && buf.charAt(l - 1) == 's') {
-            buf.setLength(l - 1);
+        int l = sb.length();
+        if (l > 3 && sb.charAt(l - 1) == 's') {
+            sb.setLength(l - 1);
         }
-        String word = buf.toString();
+        String word = sb.toString();
         if (stopWords.contains(word)) {
             return null;
         }

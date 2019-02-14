@@ -37,7 +37,7 @@ public class PlainImagePreviewer extends AbstractPreviewer implements MimeTypePr
 
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         List<Blob> blobResults = new ArrayList<Blob>();
-        StringBuffer htmlPage = new StringBuffer();
+        StringBuilder htmlPage = new StringBuilder();
         htmlPage.append("<html><head><title>");
         htmlPage.append(getPreviewTitle(dm));
         htmlPage.append("</title></head><body>");
@@ -50,7 +50,7 @@ public class PlainImagePreviewer extends AbstractPreviewer implements MimeTypePr
         return blobResults;
     }
 
-    private static void appendPreviewSettings(StringBuffer sb) {
+    private static void appendPreviewSettings(StringBuilder sb) {
         sb.append("<script type=\"text/javascript\">");
         sb.append("var previewSettings = { ");
         sb.append("imageOnly: true");

@@ -127,7 +127,7 @@ public class Context {
     }
 
     public String getFieldsInErrorAsJson() {
-        StringBuffer sb = new StringBuffer("[");
+        StringBuilder sb = new StringBuilder("[");
         for (String key : errors.keySet()) {
             sb.append("'");
             sb.append(key);

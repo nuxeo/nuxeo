@@ -90,23 +90,23 @@ public class Template {
     }
 
     public String getText() {
-        StringBuilder buf = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (Part part : parts.values()) {
-            buf.append(part.text);
+            sb.append(part.text);
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     static class Part {
         public final String name; // the name of the part used in markers
 
-        public final StringBuffer text; // the text before the marker
+        public final StringBuilder text; // the text before the marker
 
         public final int offset; // the initial length of the text
 
         Part(String name, String text) {
             this.name = name;
-            this.text = text == null ? new StringBuffer() : new StringBuffer(text);
+            this.text = text == null ? new StringBuilder() : new StringBuilder(text);
             offset = this.text.length();
         }
 

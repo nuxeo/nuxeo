@@ -137,32 +137,32 @@ public class TestDialectQuerySyntax {
         return m;
     }
 
-    protected static void dumpFulltextQuery(FulltextQuery ft, StringBuilder buf) {
+    protected static void dumpFulltextQuery(FulltextQuery ft, StringBuilder sb) {
         if (ft.op == Op.AND || ft.op == Op.OR) {
             assertNull(ft.word);
-            buf.append('[');
+            sb.append('[');
             for (int i = 0; i < ft.terms.size(); i++) {
                 if (i != 0) {
-                    buf.append(' ');
-                    buf.append(ft.op.name());
-                    buf.append(' ');
+                    sb.append(' ');
+                    sb.append(ft.op.name());
+                    sb.append(' ');
                 }
-                dumpFulltextQuery(ft.terms.get(i), buf);
+                dumpFulltextQuery(ft.terms.get(i), sb);
             }
-            buf.append(']');
+            sb.append(']');
             return;
         } else {
             assertNull(ft.terms);
             if (ft.op == Op.NOTWORD) {
-                buf.append('~');
+                sb.append('~');
             }
             boolean isPhrase = ft.word.contains(" ");
             if (isPhrase) {
-                buf.append('{');
+                sb.append('{');
             }
-            buf.append(ft.word);
+            sb.append(ft.word);
             if (isPhrase) {
-                buf.append('}');
+                sb.append('}');
             }
         }
     }
@@ -170,9 +170,9 @@ public class TestDialectQuerySyntax {
     protected void assertPGPhraseBreak(String expected, String query) {
         FulltextQuery ft = FulltextQueryAnalyzer.analyzeFulltextQuery(query);
         FulltextQuery broken = DialectPostgreSQL.breakPhrases(ft);
-        StringBuilder buf = new StringBuilder();
-        dumpFulltextQuery(broken, buf);
-        assertEquals(expected, buf.toString());
+        StringBuilder sb = new StringBuilder();
+        dumpFulltextQuery(broken, sb);
+        assertEquals(expected, sb.toString());
     }
 
     protected void assertPGRemoveToplevelAndedWord(String expected, String query) {
@@ -181,17 +181,17 @@ public class TestDialectQuerySyntax {
         if (simplified == null) {
             assertNull(expected);
         } else {
-            StringBuilder buf = new StringBuilder();
-            dumpFulltextQuery(simplified, buf);
-            assertEquals(expected, buf.toString());
+            StringBuilder sb = new StringBuilder();
+            dumpFulltextQuery(simplified, sb);
+            assertEquals(expected, sb.toString());
         }
     }
 
     protected void assertPGLikeSql(String expected, String query) {
         FulltextQuery ft = FulltextQueryAnalyzer.analyzeFulltextQuery(query);
-        StringBuilder buf = new StringBuilder();
-        DialectPostgreSQL.generateLikeSql(ft, buf);
-        assertEquals(expected, buf.toString());
+        StringBuilder sb = new StringBuilder();
+        DialectPostgreSQL.generateLikeSql(ft, sb);
+        assertEquals(expected, sb.toString());
     }
 
     protected void assertDialectFT(String expected, String query) {

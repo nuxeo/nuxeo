@@ -19,15 +19,15 @@
 
 package org.nuxeo.ecm.platform.preview.adapter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @since 8.2
@@ -42,7 +42,7 @@ public class VideoPreviewer extends AbstractPreviewer implements MimeTypePreview
     protected List<Blob> buildPreview(List<Blob> blobs, DocumentModel dm) {
         List<Blob> blobResults = new ArrayList<>();
         String basePath = VirtualHostHelper.getContextPathProperty();
-        StringBuffer html = new StringBuffer();
+        StringBuilder html = new StringBuilder();
         html.append("<html><head>");
         html.append("<title>" + getPreviewTitle(dm) + "</title>");
         html.append(String.format(

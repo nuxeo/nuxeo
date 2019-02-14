@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  *
@@ -44,7 +44,7 @@ public class FileNamePattern {
             return;
         }
         List<char[]> result = new ArrayList<>();
-        StringBuffer buf = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         char[] chars = pattern.toCharArray();
         char c = chars[0];
         int i = 0;
@@ -57,31 +57,31 @@ public class FileNamePattern {
             c = chars[i];
             switch (c) {
             case '*':
-                len = buf.length();
+                len = sb.length();
                 if (len > 0) {
-                    result.add(toCharArray(buf, len));
-                    buf.setLength(0);
+                    result.add(toCharArray(sb, len));
+                    sb.setLength(0);
                 }
                 break;
             default:
-                buf.append(c);
+                sb.append(c);
                 break;
             }
         }
         if (c == '*') {
             wend = true;
         } else {
-            len = buf.length();
+            len = sb.length();
             if (len > 0) {
-                result.add(toCharArray(buf, len));
+                result.add(toCharArray(sb, len));
             }
         }
         parts = result.toArray(new char[result.size()][]);
     }
 
-    private static char[] toCharArray(StringBuffer buf, int len) {
+    private static char[] toCharArray(StringBuilder sb, int len) {
         char[] part = new char[len];
-        buf.getChars(0, len, part, 0);
+        sb.getChars(0, len, part, 0);
         return part;
     }
 

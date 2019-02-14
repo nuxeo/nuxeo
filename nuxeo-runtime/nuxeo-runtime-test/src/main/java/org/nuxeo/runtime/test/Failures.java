@@ -22,13 +22,13 @@ package org.nuxeo.runtime.test;
 
 import java.util.List;
 
-import junit.framework.AssertionFailedError;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * Utility class for working with {@link org.junit.runner.Result#getFailures()}
@@ -50,15 +50,15 @@ public class Failures {
 
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int i = 1;
         AssertionFailedError errors = new AssertionFailedError();
         for (Failure failure : failures) {
-            buffer.append("* Failure " + i + ": ")
-                  .append(failure.getTestHeader())
-                  .append("\n")
-                  .append(failure.getTrace())
-                  .append("\n");
+            sb.append("* Failure " + i + ": ")
+            .append(failure.getTestHeader())
+            .append("\n")
+            .append(failure.getTrace())
+            .append("\n");
             errors.addSuppressed(failure.getException());
             i++;
         }
@@ -66,7 +66,7 @@ public class Failures {
             // Log because JUnit swallows some parts of the stack trace
             log.debug(errors.getMessage(), errors);
         }
-        return buffer.toString();
+        return sb.toString();
     }
 
     /**
@@ -80,22 +80,22 @@ public class Failures {
         if (failures.isEmpty()) {
             Assert.fail(customMessage);
         }
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int i = 1;
         AssertionFailedError errors = new AssertionFailedError(customMessage);
-        buffer.append(customMessage);
+        sb.append(customMessage);
         for (Failure failure : failures) {
-            buffer.append("\n* Failure " + i + ": ");
+            sb.append("\n* Failure " + i + ": ");
             String trace = failure.getTrace();
             if (originalMessage != null && originalMessage.equals(failure.getMessage())) {
                 trace = trace.replaceAll(originalMessage, customMessage);
             }
-            buffer.append(failure.getTestHeader()).append("\n").append(trace);
+            sb.append(failure.getTestHeader()).append("\n").append(trace);
             errors.addSuppressed(failure.getException());
             i++;
         }
         // Log because JUnit swallows some parts of the stack trace
         log.debug(errors.getMessage(), errors);
-        Assert.fail(buffer.toString());
+        Assert.fail(sb.toString());
     }
 }

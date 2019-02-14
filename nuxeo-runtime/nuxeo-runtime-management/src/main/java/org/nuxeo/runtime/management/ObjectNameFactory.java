@@ -78,14 +78,14 @@ public class ObjectNameFactory {
     }
 
     public static String formatAVAs(String... avas) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (String ava : avas) {
-            if (buffer.length() > 0) {
-                buffer.append(",");
+            if (sb.length() > 0) {
+                sb.append(",");
             }
-            buffer.append(ava);
+            sb.append(ava);
         }
-        return buffer.toString();
+        return sb.toString();
     }
 
     public static String formatInventoryQualifiedName(ComponentName name) {

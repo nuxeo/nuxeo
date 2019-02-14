@@ -43,16 +43,16 @@ public class DocRefs extends ArrayList<DocRef> implements OperationInput {
     }
 
     public String getInputRef() {
-        StringBuilder buf = new StringBuilder("docs:");
+        StringBuilder sb = new StringBuilder("docs:");
         int size = size();
         if (size == 0) {
-            return buf.toString();
+            return sb.toString();
         }
-        buf.append(get(0).ref);
+        sb.append(get(0).ref);
         for (int i = 1; i < size; i++) {
-            buf.append(",").append(get(i).ref);
+            sb.append(",").append(get(i).ref);
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     public boolean isBinary() {
@@ -60,16 +60,16 @@ public class DocRefs extends ArrayList<DocRef> implements OperationInput {
     }
 
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         int size = size();
         if (size == 0) {
-            return buf.toString();
+            return sb.toString();
         }
-        buf.append(get(0).ref);
+        sb.append(get(0).ref);
         for (int i = 1; i < size; i++) {
-            buf.append(",").append(get(i).ref);
+            sb.append(",").append(get(i).ref);
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     public String dump() {

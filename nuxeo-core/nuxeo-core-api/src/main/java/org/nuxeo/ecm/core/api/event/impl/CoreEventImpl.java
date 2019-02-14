@@ -149,29 +149,29 @@ public class CoreEventImpl implements CoreEvent {
 
     @Override
     public String toString() {
-        final StringBuilder buf = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
-        buf.append(CoreEventImpl.class.getSimpleName());
-        buf.append(" {");
-        buf.append(" eventId: ");
-        buf.append(eventId);
-        buf.append(", source: ");
-        buf.append(source);
-        buf.append(", info: ");
-        buf.append(info);
-        buf.append(", date: ");
-        buf.append(date);
-        buf.append(", principal name: ");
+        sb.append(CoreEventImpl.class.getSimpleName());
+        sb.append(" {");
+        sb.append(" eventId: ");
+        sb.append(eventId);
+        sb.append(", source: ");
+        sb.append(source);
+        sb.append(", info: ");
+        sb.append(info);
+        sb.append(", date: ");
+        sb.append(date);
+        sb.append(", principal name: ");
         if (principal != null) {
-            buf.append(principal.getName());
+            sb.append(principal.getName());
         }
-        buf.append(", comment: ");
-        buf.append(getComment());
-        buf.append(", category: ");
-        buf.append(getCategory());
-        buf.append('}');
+        sb.append(", comment: ");
+        sb.append(getComment());
+        sb.append(", category: ");
+        sb.append(getCategory());
+        sb.append('}');
 
-        return buf.toString();
+        return sb.toString();
     }
 
 }

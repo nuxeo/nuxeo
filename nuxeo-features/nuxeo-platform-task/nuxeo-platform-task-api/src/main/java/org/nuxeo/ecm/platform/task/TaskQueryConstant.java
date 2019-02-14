@@ -186,7 +186,7 @@ public class TaskQueryConstant {
      */
     @Deprecated
     public static String formatStringList(List<String> actors) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         Iterator<String> actorIterator = actors.iterator();
         while (actorIterator.hasNext()) {
             String userName = actorIterator.next();

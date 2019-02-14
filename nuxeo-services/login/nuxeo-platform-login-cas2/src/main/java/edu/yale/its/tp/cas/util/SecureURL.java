@@ -71,10 +71,10 @@ public class SecureURL {
             uc.setRequestProperty("Connection", "close");
             r = new BufferedReader(new InputStreamReader(uc.getInputStream()));
             String line;
-            StringBuffer buf = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             while ((line = r.readLine()) != null)
-                buf.append(line + "\n");
-            return buf.toString();
+                sb.append(line + "\n");
+            return sb.toString();
         } finally {
             try {
                 if (r != null)

@@ -381,14 +381,14 @@ public abstract class Fragment implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(getClass().getSimpleName());
-        buf.append("(row=");
-        buf.append(row);
-        buf.append(", state=");
-        buf.append(getState());
-        buf.append(')');
-        return buf.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append("(row=");
+        sb.append(row);
+        sb.append(", state=");
+        sb.append(getState());
+        sb.append(')');
+        return sb.toString();
     }
 }
 

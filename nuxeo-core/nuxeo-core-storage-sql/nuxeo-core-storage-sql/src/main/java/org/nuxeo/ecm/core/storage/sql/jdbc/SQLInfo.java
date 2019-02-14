@@ -36,7 +36,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
@@ -406,20 +405,20 @@ public class SQLInfo {
             }
         }
         Column whereColumn = table.getColumn(Model.MAIN_KEY);
-        StringBuilder wherebuf = new StringBuilder(whereColumn.getQuotedName());
-        wherebuf.append(" IN (");
+        StringBuilder sb = new StringBuilder(whereColumn.getQuotedName());
+        sb.append(" IN (");
         for (int i = 0; i < nids; i++) {
             if (i != 0) {
-                wherebuf.append(", ");
+                sb.append(", ");
             }
-            wherebuf.append('?');
+            sb.append('?');
         }
-        wherebuf.append(')');
-        wherebuf.append(getSoftDeleteClause(tableName));
+        sb.append(')');
+        sb.append(getSoftDeleteClause(tableName));
         Select select = new Select(table);
         select.setWhat(String.join(", ", whats));
         select.setFrom(table.getQuotedName());
-        select.setWhere(wherebuf.toString());
+        select.setWhere(sb.toString());
         if (orderBys != null) {
             List<String> orders = new LinkedList<>();
             for (String orderBy : orderBys) {
@@ -457,20 +456,20 @@ public class SQLInfo {
         Table table = database.getTable(Model.HIER_TABLE_NAME);
         Column whatColumn = table.getColumn(Model.HIER_PARENT_KEY);
         Column whereColumn = table.getColumn(Model.MAIN_KEY);
-        StringBuilder wherebuf = new StringBuilder(whereColumn.getQuotedName());
-        wherebuf.append(" IN (");
+        StringBuilder sb = new StringBuilder(whereColumn.getQuotedName());
+        sb.append(" IN (");
         for (int i = 0; i < nids; i++) {
             if (i != 0) {
-                wherebuf.append(", ");
+                sb.append(", ");
             }
-            wherebuf.append('?');
+            sb.append('?');
         }
-        wherebuf.append(')');
-        wherebuf.append(getSoftDeleteClause(Model.HIER_TABLE_NAME));
+        sb.append(')');
+        sb.append(getSoftDeleteClause(Model.HIER_TABLE_NAME));
         Select select = new Select(table);
         select.setWhat("DISTINCT " + whatColumn.getQuotedName());
         select.setFrom(table.getQuotedName());
-        select.setWhere(wherebuf.toString());
+        select.setWhere(sb.toString());
         return new SQLInfoSelect(select.getStatement(), Collections.singletonList(whatColumn),
                 Collections.singletonList(whereColumn), null);
     }
@@ -502,24 +501,24 @@ public class SQLInfo {
         }
         select.setFrom(from);
         Column whereColumn = hierTable.getColumn(Model.HIER_PARENT_KEY);
-        StringBuilder wherebuf = new StringBuilder(whereColumn.getFullQuotedName());
+        StringBuilder sb = new StringBuilder(whereColumn.getFullQuotedName());
         if (nids == 1) {
-            wherebuf.append(" = ?");
+            sb.append(" = ?");
         } else {
-            wherebuf.append(" IN (");
+            sb.append(" IN (");
             for (int i = 0; i < nids; i++) {
                 if (i != 0) {
-                    wherebuf.append(", ");
+                    sb.append(", ");
                 }
-                wherebuf.append('?');
+                sb.append('?');
             }
-            wherebuf.append(')');
+            sb.append(')');
         }
-        wherebuf.append(" AND ");
-        wherebuf.append(hierTable.getColumn(Model.HIER_CHILD_ISPROPERTY_KEY).getFullQuotedName());
-        wherebuf.append(" = ").append(dialect.toBooleanValueString(false)); // not complex
-        wherebuf.append(getSoftDeleteClause(Model.HIER_TABLE_NAME));
-        select.setWhere(wherebuf.toString());
+        sb.append(" AND ");
+        sb.append(hierTable.getColumn(Model.HIER_CHILD_ISPROPERTY_KEY).getFullQuotedName());
+        sb.append(" = ").append(dialect.toBooleanValueString(false)); // not complex
+        sb.append(getSoftDeleteClause(Model.HIER_TABLE_NAME));
+        select.setWhere(sb.toString());
         return new SQLInfoSelect(select.getStatement(), whatColumns, Collections.singletonList(whereColumn), null);
     }
 
@@ -548,21 +547,21 @@ public class SQLInfo {
         String where = null;
         for (Column column : table.getColumns()) {
             if (column.getKey().equals(Model.MAIN_KEY)) {
-                StringBuilder buf = new StringBuilder();
-                buf.append(column.getQuotedName());
+                StringBuilder sb = new StringBuilder();
+                sb.append(column.getQuotedName());
                 if (n == 1) {
-                    buf.append(" = ?");
+                    sb.append(" = ?");
                 } else {
-                    buf.append(" IN (");
+                    sb.append(" IN (");
                     for (int i = 0; i < n; i++) {
                         if (i > 0) {
-                            buf.append(", ");
+                            sb.append(", ");
                         }
-                        buf.append("?");
+                        sb.append("?");
                     }
-                    buf.append(")");
+                    sb.append(")");
                 }
-                where = buf.toString();
+                where = sb.toString();
             }
         }
         delete.setWhere(where);
@@ -1033,10 +1032,10 @@ public class SQLInfo {
         protected void postProcessDelete() {
             Delete delete = new Delete(table);
             String wheres = table.getColumns()
-                                 .stream()
-                                 .filter(col -> Model.MAIN_KEY.equals(col.getKey()))
-                                 .map(col -> col.getQuotedName() + " = ?")
-                                 .collect(Collectors.joining(" AND "));
+                    .stream()
+                    .filter(col -> Model.MAIN_KEY.equals(col.getKey()))
+                    .map(col -> col.getQuotedName() + " = ?")
+                    .collect(Collectors.joining(" AND "));
             delete.setWhere(wheres);
             deleteSqlMap.put(tableName, delete.getStatement());
         }
@@ -1165,20 +1164,20 @@ public class SQLInfo {
 
             Column whatColumn = table.getColumn(Model.MAIN_KEY);
             Column whereColumn = table.getColumn(type.selKey);
-            StringBuilder wherebuf = new StringBuilder(whereColumn.getQuotedName());
-            wherebuf.append(" IN (");
+            StringBuilder sb = new StringBuilder(whereColumn.getQuotedName());
+            sb.append(" IN (");
             for (int i = 0; i < nids; i++) {
                 if (i != 0) {
-                    wherebuf.append(", ");
+                    sb.append(", ");
                 }
-                wherebuf.append('?');
+                sb.append('?');
             }
-            wherebuf.append(')');
-            wherebuf.append(getSoftDeleteClause(Model.HIER_TABLE_NAME));
+            sb.append(')');
+            sb.append(getSoftDeleteClause(Model.HIER_TABLE_NAME));
             Select select = new Select(table);
             select.setWhat(whatColumn.getFullQuotedName());
             select.setFrom(from);
-            select.setWhere(wherebuf.toString());
+            select.setWhere(sb.toString());
             return new SQLInfoSelect(select.getStatement(), Collections.singletonList(whatColumn),
                     Collections.singletonList(whereColumn), null);
         }
