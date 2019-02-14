@@ -18,7 +18,9 @@
  */
 package org.nuxeo.snapshot;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,16 +28,16 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.snapshot.Snapshot;
-import org.nuxeo.snapshot.Snapshotable;
-import org.nuxeo.snapshot.SnapshotableAdapter;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
@@ -90,9 +92,9 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
                 IdRef target = new IdRef(doc.getSourceId());
                 DocumentModel targetDoc = session.getDocument(target);
                 if (targetDoc.isVersion()) {
-                    sb.append("version " + targetDoc.getPathAsString());
+                    sb.append("version ").append(targetDoc.getPathAsString());
                 } else {
-                    sb.append("live " + targetDoc.getPathAsString());
+                    sb.append("live ").append(targetDoc.getPathAsString());
                 }
                 sb.append(" ]");
             }

@@ -34,13 +34,14 @@ public class SnapshotRemovalPolicy implements OrphanVersionRemovalFilter {
     protected boolean canRemoveVersions(CoreSession session, DocumentModel doc, List<String> uuids) {
         IterableQueryResult result = null;
         try {
-            StringBuilder nxql = new StringBuilder("select ecm:uuid from Document where ");
-            nxql.append(SnapshotableAdapter.CHILDREN_PROP + "/* IN (");
+            StringBuilder nxql = new StringBuilder().append("select ecm:uuid from Document where ")
+                                                    .append(SnapshotableAdapter.CHILDREN_PROP)
+                                                    .append("/* IN (");
             for (int i = 0; i < uuids.size(); i++) {
                 if (i > 0) {
                     nxql.append(",");
                 }
-                nxql.append("'" + uuids.get(i) + "'");
+                nxql.append("'").append(uuids.get(i)).append("'");
             }
             nxql.append(")");
             result = session.queryAndFetch(nxql.toString(), NXQL.NXQL, QueryFilter.EMPTY);
@@ -56,7 +57,6 @@ public class SnapshotRemovalPolicy implements OrphanVersionRemovalFilter {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<String> getRemovableVersionIds(CoreSession session, ShallowDocumentModel deletedLiveDoc,
             List<String> versionUUIDs) {

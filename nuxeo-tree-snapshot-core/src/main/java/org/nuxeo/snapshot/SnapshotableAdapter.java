@@ -247,7 +247,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
     @Override
     public List<Snapshot> getChildrenSnapshots() {
 
-        List<Snapshot> snaps = new ArrayList<Snapshot>();
+        List<Snapshot> snaps = new ArrayList<>();
 
         for (DocumentModel child : getChildren()) {
             snaps.add(new SnapshotableAdapter(child));
@@ -267,7 +267,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
     @Override
     public List<Snapshot> getFlatTree() {
-        List<Snapshot> list = new ArrayList<Snapshot>();
+        List<Snapshot> list = new ArrayList<>();
 
         fillFlatTree(list);
 
@@ -276,9 +276,11 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
     protected void dump(int level, StringBuilder sb) {
         for (Snapshot snap : getChildrenSnapshots()) {
-            sb.append(new String(new char[level]).replace('\0', ' '));
-            sb.append(snap.getDocument().getName() + " -- " + snap.getDocument().getVersionLabel());
-            sb.append("\n");
+            sb.append(new String(new char[level]).replace('\0', ' '))
+              .append(snap.getDocument().getName())
+              .append(" -- ")
+              .append(snap.getDocument().getVersionLabel())
+              .append("\n");
             if (snap.getDocument().isFolder()) {
                 ((SnapshotableAdapter) snap).dump(level + 1, sb);
             }
@@ -288,8 +290,10 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(doc.getName() + " -- " + doc.getVersionLabel());
-        sb.append("\n");
+        sb.append(doc.getName())
+          .append(" -- ")
+          .append(doc.getVersionLabel())
+          .append("\n");
 
         dump(1, sb);
 

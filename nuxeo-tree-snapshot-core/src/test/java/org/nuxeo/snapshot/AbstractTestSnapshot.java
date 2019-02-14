@@ -20,7 +20,11 @@ package org.nuxeo.snapshot;
 
 import javax.inject.Inject;
 
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -206,9 +210,9 @@ public class AbstractTestSnapshot {
                 IdRef target = new IdRef(doc.getSourceId());
                 DocumentModel targetDoc = session.getDocument(target);
                 if (targetDoc.isVersion()) {
-                    sb.append("version " + targetDoc.getPathAsString());
+                    sb.append("version ").append(targetDoc.getPathAsString());
                 } else {
-                    sb.append("live " + targetDoc.getPathAsString());
+                    sb.append("live ").append(targetDoc.getPathAsString());
                 }
                 sb.append(" ]");
             }

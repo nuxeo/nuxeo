@@ -94,7 +94,10 @@ public class TestTreePublication {
     }
 
     protected void debugCreationDate(DocumentModel doc) {
-        debug.append(doc.getName() + "@time=" + System.currentTimeMillis() + ", ");
+        debug.append(doc.getName())
+             .append("@time=")
+             .append(System.currentTimeMillis())
+             .append(", ");
     }
 
     protected void buildTree() throws Exception {
@@ -190,7 +193,9 @@ public class TestTreePublication {
 
         tree.publish(root, targetNode);
         session.save();
-        debug.append("published@time=" + System.currentTimeMillis() + ", ");
+        debug.append("published@time=")
+             .append(System.currentTimeMillis())
+             .append(", ");
         if (verbose) {
             dumpDBContent();
         }
@@ -215,7 +220,9 @@ public class TestTreePublication {
         // republish
         tree.publish(root, targetNode);
         session.save();
-        debug.append("published@time=" + System.currentTimeMillis() + ", ");
+        debug.append("published@time=")
+             .append(System.currentTimeMillis())
+             .append(", ");
         if (verbose) {
             dumpDBContent();
         }
@@ -226,7 +233,10 @@ public class TestTreePublication {
 
         // gather debug info
         for (DocumentModel doc : docs) {
-            debug.append(doc.getName() + "=" + doc.getVersionLabel() + ", ");
+            debug.append(doc.getName())
+                 .append("=")
+                 .append(doc.getVersionLabel())
+                 .append(", ");
         }
         for (DocumentModel doc : docs) {
             assertTrue(doc.isProxy());
