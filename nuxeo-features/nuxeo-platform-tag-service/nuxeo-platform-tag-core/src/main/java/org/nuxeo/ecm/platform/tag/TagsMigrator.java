@@ -23,6 +23,7 @@ import static java.util.function.Predicate.isEqual;
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_NAME;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
+import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.platform.tag.FacetedTagService.LABEL_PROPERTY;
 import static org.nuxeo.ecm.platform.tag.FacetedTagService.USERNAME_PROPERTY;
 import static org.nuxeo.ecm.platform.tag.TagConstants.MIGRATION_STATE_FACETS;
@@ -260,6 +261,7 @@ public class TagsMigrator extends AbstractRepositoryMigrator {
             }
         }
         if (changed) {
+            doc.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE); // Remove notifications
             doc.putContextData(ALLOW_VERSION_WRITE, TRUE);
             doc.setPropertyValue(TAG_LIST, (Serializable) tagsList);
             doc.getCoreSession().saveDocument(doc);

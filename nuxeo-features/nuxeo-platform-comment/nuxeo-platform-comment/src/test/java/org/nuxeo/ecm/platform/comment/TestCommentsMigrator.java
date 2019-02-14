@@ -19,17 +19,22 @@
 
 package org.nuxeo.ecm.platform.comment;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 import static org.nuxeo.ecm.platform.comment.AbstractTestCommentManager.newConfig;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_ID;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_RELATION;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_RELATION_TO_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +46,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.comment.api.Comment;
@@ -49,6 +57,7 @@ import org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl;
 import org.nuxeo.ecm.platform.comment.impl.CommentsMigrator;
 import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
@@ -70,6 +79,8 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.comment")
+@Deploy("org.nuxeo.ecm.platform.notification.api")
+@Deploy("org.nuxeo.ecm.platform.notification.core")
 @Deploy("org.nuxeo.ecm.relations.api")
 @Deploy("org.nuxeo.ecm.relations")
 @Deploy("org.nuxeo.ecm.relations.jena")
@@ -86,6 +97,9 @@ public class TestCommentsMigrator {
 
     @Inject
     protected MigrationService migrationService;
+
+    @Inject
+    protected NotificationManager notificationManager;
 
     protected static void sleep(long millis) {
         try {
@@ -182,21 +196,31 @@ public class TestCommentsMigrator {
         DocumentModel file2 = session.createDocumentModel("/test-domain", "file2", "File");
         file2 = session.createDocument(file2);
 
+        NuxeoPrincipal principal = session.getPrincipal();
         // create some comments
         for (int i = 0; i < NB_COMMENTS; i++) {
             DocumentModel comment = session.createDocumentModel(null, "comment_" + i, COMMENT_DOC_TYPE);
+            DocumentModel createdComment;
             if (i % 2 == 0) {
-                relationCommentManager.createComment(file1, comment);
+                createdComment = relationCommentManager.createComment(file1, comment);
             } else {
-                relationCommentManager.createComment(file2, comment);
+                createdComment = relationCommentManager.createComment(file2, comment);
             }
+            notificationManager.addSubscription(principal.getName(), "notification" + i, createdComment, FALSE,
+                    principal, "notification" + i);
         }
 
         session.save();
         transactionalFeature.nextTransaction();
 
         // migrate
-        migrator.run();
+        try (CapturingEventListener listener = new CapturingEventListener(DOCUMENT_UPDATED)) {
+            migrator.run();
+            List<Event> events = listener.getCapturedEvents();
+            for (Event event : events) {
+                assertEquals(TRUE, event.getContext().getProperty(DISABLE_NOTIFICATION_SERVICE));
+            }
+        }
 
         // check resulting tags
         List<Comment> commentsForFile1 = propertyCommentManager.getComments(session, file1.getId());
@@ -231,6 +255,7 @@ public class TestCommentsMigrator {
 
         // just a relation-based comment, detected as not migrated
         DocumentModel comment = session.createDocumentModel(null, "comment", COMMENT_DOC_TYPE);
+        comment.setPropertyValue(COMMENT_AUTHOR, session.getPrincipal().getName());
         comment = relationCommentManager.createComment(file, comment);
         session.save();
         assertEquals(MIGRATION_STATE_RELATION, migrator.probeState());
@@ -238,6 +263,7 @@ public class TestCommentsMigrator {
         // both a relation-based comment and a property-based comment, detected as not migrated
         DocumentModel otherComment = session.createDocumentModel(null, "comment", COMMENT_DOC_TYPE);
         otherComment.setPropertyValue(COMMENT_PARENT_ID, file.getId());
+        otherComment.setPropertyValue(COMMENT_AUTHOR, session.getPrincipal().getName());
         propertyCommentManager.createComment(file, otherComment);
         session.save();
         assertEquals(MIGRATION_STATE_RELATION, migrator.probeState());
