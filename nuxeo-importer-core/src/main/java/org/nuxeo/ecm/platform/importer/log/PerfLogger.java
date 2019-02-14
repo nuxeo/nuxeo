@@ -46,7 +46,7 @@ public class PerfLogger {
     }
 
     public void log(String[] data) throws IOException {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(System.currentTimeMillis());
         for (String s : data) {
             sb.append(SEP);
@@ -59,7 +59,7 @@ public class PerfLogger {
     }
 
     public void log(Double[] data) throws IOException {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(System.currentTimeMillis());
         for (Double d : data) {
             sb.append(SEP);

@@ -80,7 +80,7 @@ public class RandomTextGenerator {
     }
 
     public String getRandomTitle(int nbWord) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < nbWord; i++) {
             sb.append(dictionaryHolder.getRandomWord());
         }
@@ -90,7 +90,7 @@ public class RandomTextGenerator {
 
     public String getRandomLine() {
         int nbW = 10 + RANDOM.nextInt(NB_WORDS_PER_LINE);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < nbW; i++) {
             sb.append(dictionaryHolder.getRandomWord());
@@ -101,7 +101,7 @@ public class RandomTextGenerator {
 
     public String generateParagraph() {
         int nbL = 10 + RANDOM.nextInt(NB_LINES_PER_PARAGRAPH);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         int maxSize = getTargetParagraphMaxSizeB();
 
@@ -155,7 +155,7 @@ public class RandomTextGenerator {
 
     public String generatePage() {
         int nbL = RANDOM.nextInt(NB_PARAGRAPH_PER_PAGE) + 1;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         int maxTargetPageSize = getTargetPageMaxSizeB();
         for (int i = 0; i < nbL; i++) {
@@ -183,7 +183,7 @@ public class RandomTextGenerator {
     }
 
     public String generateBloc() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         while (sb.length() < BLOC_SIZE) {
             sb.append(getRandomPage());
@@ -209,7 +209,7 @@ public class RandomTextGenerator {
         if (avSizeInK == 0) {
             return "";
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int minSize = (int) (avSizeInK * 1024 * (0.8 + 0.4 * RANDOM.nextFloat()));
         while (sb.length() < (minSize - BLOC_SIZE)) {
             String p = getRandomBloc();

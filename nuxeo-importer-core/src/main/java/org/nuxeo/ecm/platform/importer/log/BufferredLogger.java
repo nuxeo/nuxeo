@@ -72,7 +72,7 @@ public class BufferredLogger extends BasicLogger {
 
     @Override
     public String getLoggerBuffer(String sep) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         lock.readLock().lock();
         try {

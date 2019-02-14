@@ -372,7 +372,7 @@ public class XMLImporterServiceImpl {
             xpr = xpr.substring(2, xpr.length() - 1);
             return resolveMVEL(el, xpr);
         } else if (xpr.contains("{{")) { // String containing XPaths
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             int idx = xpr.indexOf("{{");
             while (idx >= 0) {
                 int idx2 = xpr.indexOf("}}", idx);
