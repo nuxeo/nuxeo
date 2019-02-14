@@ -107,7 +107,10 @@ public class RoutingRestBaseTest extends BaseTest {
 
     protected String getCreateAndStartWorkflowBodyContent(String workflowName, List<String> docIds) {
         StringBuilder result = new StringBuilder();
-        result.append("{\"entity-type\": \"workflow\", " + "\"workflowModelName\": \"").append(workflowName).append(
+        result.append("{\"entity-type\": \"workflow\", ")
+              .append("\"workflowModelName\": \"")
+              .append(workflowName)
+              .append(
                 "\"");
         if (docIds != null && !docIds.isEmpty()) {
             result.append(", \"attachedDocumentIds\": [");

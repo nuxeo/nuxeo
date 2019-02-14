@@ -516,7 +516,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         if (states != null && !states.isEmpty()) {
             statesString.append(" ecm:currentLifeCycleState IN (");
             for (DocumentRouteElement.ElementLifeCycleState state : states) {
-                statesString.append("'" + state.name() + "',");
+                statesString.append("'").append(state.name()).append("',");
             }
             statesString.deleteCharAt(statesString.length() - 1);
             statesString.append(") AND");
@@ -1337,7 +1337,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 String.format("SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s'",
                         TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE));
         if (StringUtils.isNotBlank(actorId)) {
-            List<String> actors = new ArrayList<String>();
+            List<String> actors = new ArrayList<>();
             UserManager userManager = Framework.getService(UserManager.class);
             NuxeoPrincipal principal = userManager.getPrincipal(actorId);
             if (principal != null) {

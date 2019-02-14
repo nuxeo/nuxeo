@@ -65,10 +65,8 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry> i
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-
-        sb.append("\nquery : " + auditQuery);
-        sb.append("\nparams : ");
-        List<String> pNames = new ArrayList<String>(auditQueryParams.keySet());
+        sb.append("\nquery : ").append(auditQuery).append("\nparams : ");
+        List<String> pNames = new ArrayList<>(auditQueryParams.keySet());
         Collections.sort(pNames);
         for (String name : pNames) {
             sb.append("\n ");
@@ -182,7 +180,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry> i
 
             String baseQuery = def.getPattern();
 
-            Map<String, Object> qParams = new HashMap<String, Object>();
+            Map<String, Object> qParams = new HashMap<>();
             for (int i = 0; i < params.length; i++) {
                 baseQuery = baseQuery.replaceFirst("\\?", ":param" + i);
                 qParams.put("param" + i, convertParam(params[i]));
@@ -202,7 +200,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry> i
 
             // manage fixed part
             String fixedPart = getFixedPart();
-            Map<String, Object> qParams = new HashMap<String, Object>();
+            Map<String, Object> qParams = new HashMap<>();
             int idxParam = 0;
             if (fixedPart != null && !fixedPart.isEmpty()) {
                 while (fixedPart.indexOf('?') >= 0) {
@@ -270,8 +268,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry> i
                             while (valueIterator.hasNext()) {
                                 Object v = valueIterator.next();
                                 qParams.put("param" + idxParam, convertParam(v));
-                                baseQuery.append(" :param" + idxParam);
-                                idxParam++;
+                                baseQuery.append(" :param").append(idxParam++);
                                 if (valueIterator.hasNext()) {
                                     baseQuery.append(",");
                                 }
@@ -281,8 +278,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry> i
                             for (int i = 0; i < valArray.length; i++) {
                                 Object v = valArray[i];
                                 qParams.put("param" + idxParam, convertParam(v));
-                                baseQuery.append(" :param" + idxParam);
-                                idxParam++;
+                                baseQuery.append(" :param").append(idxParam++);
                                 if (i < valArray.length - 1) {
                                     baseQuery.append(",");
                                 }
@@ -296,24 +292,20 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry> i
                             endValue = convertParam(val[1]);
                         }
                         if (startValue != null && endValue != null) {
-                            baseQuery.append(predicate.getOperator());
-                            baseQuery.append(" :param" + idxParam);
-                            qParams.put("param" + idxParam, startValue);
-                            idxParam++;
-                            baseQuery.append(" AND :param" + idxParam);
+                            baseQuery.append(predicate.getOperator()).append(" :param").append(idxParam);
+                            qParams.put("param" + idxParam++, startValue);
+                            baseQuery.append(" AND :param").append(idxParam);
                             qParams.put("param" + idxParam, endValue);
                         } else if (startValue == null) {
-                            baseQuery.append("<=");
-                            baseQuery.append(" :param" + idxParam);
+                            baseQuery.append("<=").append(" :param").append(idxParam);
                             qParams.put("param" + idxParam, endValue);
                         } else if (endValue == null) {
-                            baseQuery.append(">=");
-                            baseQuery.append(" :param" + idxParam);
+                            baseQuery.append(">=").append(" :param").append(idxParam);
                             qParams.put("param" + idxParam, startValue);
                         }
                         idxParam++;
                     } else {
-                        baseQuery.append(" :param" + idxParam);
+                        baseQuery.append(" :param").append(idxParam);
                         qParams.put("param" + idxParam, convertParam(val[0]));
                         idxParam++;
                     }
