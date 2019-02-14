@@ -41,14 +41,17 @@ public class ImagePreviewer extends AbstractPreviewer implements MimeTypePreview
         return original;
     }
 
+    @Override
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         List<Blob> blobResults = new ArrayList<>();
         String basePath = VirtualHostHelper.getContextPathProperty();
         StringBuilder html = new StringBuilder();
         html.append("<html><head>");
-        html.append("<title>" + getPreviewTitle(dm) + "</title>");
-        html.append(String.format("<script src=\"%s/bower_components/webcomponentsjs/webcomponents-lite.js\"></script>", basePath));
-        html.append(String.format("<link rel=\"import\" href=\"%s/viewers/nuxeo-image-viewer.vulcanized.html\">", basePath));
+        html.append("<title>").append(getPreviewTitle(dm)).append("</title>");
+        html.append(String.format("<script src=\"%s/bower_components/webcomponentsjs/webcomponents-lite.js\"></script>",
+                basePath));
+        html.append(String.format("<link rel=\"import\" href=\"%s/viewers/nuxeo-image-viewer.vulcanized.html\">",
+                basePath));
         html.append("<style>");
         html.append("nuxeo-image-viewer {");
         html.append("height: 100%; }");

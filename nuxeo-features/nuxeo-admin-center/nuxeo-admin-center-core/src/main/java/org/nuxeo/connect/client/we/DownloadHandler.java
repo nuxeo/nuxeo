@@ -74,10 +74,13 @@ public class DownloadHandler extends DefaultObject {
             if (i > 0) {
                 sb.append(",");
             }
-            sb.append("{ \"pkgid\" : ");
-            sb.append("\"" + pkgs.get(i).getId() + "\",");
-            sb.append(" \"progress\" : ");
-            sb.append(pkgs.get(i).getDownloadProgress() + "}");
+            sb.append("{ \"pkgid\" : ")
+              .append("\"")
+              .append(pkgs.get(i).getId())
+              .append("\",")
+              .append(" \"progress\" : ")
+              .append(pkgs.get(i).getDownloadProgress())
+              .append("}");
         }
         sb.append("]");
         return sb.toString();
@@ -184,9 +187,11 @@ public class DownloadHandler extends DefaultObject {
                     if (i > 0) {
                         sb.append(",");
                     }
-                    sb.append("{ \"pkgid\" : ");
-                    sb.append("\"" + pkgs[i] + "\",");
-                    sb.append(" \"progress\" : 0}");
+                    sb.append("{ \"pkgid\" : ")
+                      .append("\"")
+                      .append(pkgs[i])
+                      .append("\",")
+                      .append(" \"progress\" : 0}");
                 }
                 sb.append("]");
                 return sb.toString();

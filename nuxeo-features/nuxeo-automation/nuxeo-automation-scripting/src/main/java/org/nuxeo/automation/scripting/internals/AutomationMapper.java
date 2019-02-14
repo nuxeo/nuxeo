@@ -69,11 +69,11 @@ public class AutomationMapper implements Bindings {
 
     protected final Map<String, Object> wrapped = new HashMap<>();
 
-    public static CompiledScript compile(Compilable compilable)  {
+    public static CompiledScript compile(Compilable compilable) {
         try {
             return new ScriptBuilder().build(compilable);
         } catch (ScriptException cause) {
-           throw new NuxeoException("Cannot compile mapper initialization script", cause);
+            throw new NuxeoException("Cannot compile mapper initialization script", cause);
         }
     }
 
@@ -120,8 +120,11 @@ public class AutomationMapper implements Bindings {
     @Override
     public int size() {
         return Stream
-                .concat(automatic.keySet().stream(), Stream.concat(bindings.keySet().stream(), ctx.keySet().stream()))
-                .distinct().collect(Collectors.counting()).intValue();
+                     .concat(automatic.keySet().stream(),
+                             Stream.concat(bindings.keySet().stream(), ctx.keySet().stream()))
+                     .distinct()
+                     .collect(Collectors.counting())
+                     .intValue();
     }
 
     @Override
@@ -143,7 +146,7 @@ public class AutomationMapper implements Bindings {
     public Object get(Object key) {
         return automatic.getOrDefault(key,
                 () -> bindings.computeIfAbsent((String) key, k -> wrap(ctx.get(k))))
-                .get();
+                        .get();
     }
 
     @Override
@@ -304,15 +307,23 @@ public class AutomationMapper implements Bindings {
         }
 
         protected void generateFunction(StringBuilder sb, String opId) {
-            sb.append("\n" + replaceDashByUnderscore(opId) + " = function(input,params) {");
-            sb.append("\nreturn automation.executeOperation('" + opId + "', input , params);");
-            sb.append("\n};");
+            sb.append("\n")
+              .append(replaceDashByUnderscore(opId))
+              .append(" = function(input,params) {")
+              .append("\nreturn automation.executeOperation('")
+              .append(opId)
+              .append("', input , params);")
+              .append("\n};");
         }
 
         protected void generateFlatFunction(StringBuilder sb, String opId) {
-            sb.append("\nvar " + replaceDashByUnderscore(opId) + " = function(input,params) {");
-            sb.append("\nreturn automation.executeOperation('" + opId + "', input , params);");
-            sb.append("\n};");
+            sb.append("\nvar ")
+              .append(replaceDashByUnderscore(opId))
+              .append(" = function(input,params) {")
+              .append("\nreturn automation.executeOperation('")
+              .append(opId)
+              .append("', input , params);")
+              .append("\n};");
         }
 
         protected String replaceDashByUnderscore(String id) {

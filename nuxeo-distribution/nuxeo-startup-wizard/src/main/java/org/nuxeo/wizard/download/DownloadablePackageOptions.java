@@ -102,8 +102,10 @@ public class DownloadablePackageOptions {
                 for (String implied : option.getPackage().getImpliedDeps()) {
                     if (!ids.contains(implied)) {
                         if (findById(id, pkgOptions) != null) {
-                            if (option.isExclusive() && option.getSiblingPackages().stream().anyMatch(
-                                    sib -> sib.getId().equals(implied))) {
+                            if (option.isExclusive() && option.getSiblingPackages()
+                                                              .stream()
+                                                              .anyMatch(
+                                                                      sib -> sib.getId().equals(implied))) {
                                 log.error(String.format(
                                         "Option %s cannot be exclusive and imply one of its sibling packages", id));
                                 continue;
@@ -193,22 +195,22 @@ public class DownloadablePackageOptions {
 
     protected void asJson(DownloadablePackageOption option, StringBuilder sb) {
         sb.append("{");
-        sb.append("\"id\":\"" + option.id + "\",");
-        sb.append("\"package\":\"" + option.getPackage().getId() + "\",");
-        sb.append("\"color\":\"" + option.getColor() + "\",");
-        sb.append("\"textcolor\":\"" + option.getTextColor() + "\",");
-        sb.append("\"label\":\"" + option.getLabel() + "\",");
-        sb.append("\"shortlabel\":\"" + option.getShortLabel() + "\",");
-        sb.append("\"selected\":\"" + option.selected + "\",");
+        sb.append("\"id\":\"").append(option.id).append("\",");
+        sb.append("\"package\":\"").append(option.getPackage().getId()).append("\",");
+        sb.append("\"color\":\"").append(option.getColor()).append("\",");
+        sb.append("\"textcolor\":\"").append(option.getTextColor()).append("\",");
+        sb.append("\"label\":\"").append(option.getLabel()).append("\",");
+        sb.append("\"shortlabel\":\"").append(option.getShortLabel()).append("\",");
+        sb.append("\"selected\":\"").append(option.selected).append("\",");
         if (option.selectionType != null) {
-            sb.append("\"selectionType\":\"" + option.getSelectionType() + "\",");
+            sb.append("\"selectionType\":\"").append(option.getSelectionType()).append("\",");
         }
-        sb.append("\"exclusive\":\"" + option.exclusive + "\",");
-        sb.append("\"description\":\"" + option.getDescription() + "\",");
-        sb.append("\"virtual\":\"" + option.isVirtual() + "\",");
+        sb.append("\"exclusive\":\"").append(option.exclusive).append("\",");
+        sb.append("\"description\":\"").append(option.getDescription()).append("\",");
+        sb.append("\"virtual\":\"").append(option.isVirtual()).append("\",");
         sb.append("\"implies\": [");
         for (int i = 0; i < option.getPackage().getImpliedDeps().size(); i++) {
-            sb.append("\"" + option.getPackage().getImpliedDeps().get(i).trim() + "\"");
+            sb.append("\"").append(option.getPackage().getImpliedDeps().get(i).trim()).append("\"");
             if (i < option.getPackage().getImpliedDeps().size() - 1) {
                 sb.append(", ");
             }

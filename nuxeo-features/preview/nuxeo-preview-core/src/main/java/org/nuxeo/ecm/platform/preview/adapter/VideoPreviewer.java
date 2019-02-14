@@ -34,6 +34,7 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
  */
 public class VideoPreviewer extends AbstractPreviewer implements MimeTypePreviewer {
 
+    @Override
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         List<Blob> blobs = Arrays.asList(blob);
         return buildPreview(blobs, dm);
@@ -44,7 +45,7 @@ public class VideoPreviewer extends AbstractPreviewer implements MimeTypePreview
         String basePath = VirtualHostHelper.getContextPathProperty();
         StringBuilder html = new StringBuilder();
         html.append("<html><head>");
-        html.append("<title>" + getPreviewTitle(dm) + "</title>");
+        html.append("<title>").append(getPreviewTitle(dm)).append("</title>");
         html.append(String.format(
                 "<script src=\"%s/bower_components/webcomponentsjs/webcomponents-lite.js\"></script>", basePath));
         html.append(String.format("<link rel=\"import\" href=\"%s/viewers/nuxeo-video-viewer.vulcanized.html\">",

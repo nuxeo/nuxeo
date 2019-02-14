@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.automation.core.Constants.LF;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -58,7 +57,7 @@ public class Call {
 
     protected final OperationType type;
 
-    protected final List<Trace> nested = new LinkedList<Trace>();
+    protected final List<Trace> nested = new LinkedList<>();
 
     protected final Details details;
 
@@ -201,7 +200,9 @@ public class Call {
         try {
             writer.append(LF);
             writer.append(LF);
-            writer.append("****** " + getType().getId() + " ******");
+            writer.append("****** ");
+            writer.append(getType().getId());
+            writer.append(" ******");
             writer.append(LF);
             writer.append("Chain ID: ");
             writer.append(getChainId());
@@ -271,6 +272,6 @@ public class Call {
     }
 
     protected void printHeading(String heading, BufferedWriter writer) throws IOException {
-        writer.append(LF + LF + "****** " + heading + " ******");
+        writer.append(LF).append(LF).append("****** ").append(heading).append(" ******");
     }
 }

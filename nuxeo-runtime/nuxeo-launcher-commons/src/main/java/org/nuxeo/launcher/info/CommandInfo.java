@@ -19,6 +19,8 @@
 
 package org.nuxeo.launcher.info;
 
+import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
@@ -145,21 +146,22 @@ public class CommandInfo {
     public void log(boolean debug) {
         StringBuilder sb = new StringBuilder();
         if (pending) {
-            sb.append("* Pending action: " + name);
+            sb.append("* Pending action: ").append(name);
         } else {
-            sb.append("* " + name);
+            sb.append("* ").append(name);
         }
         if (id != null) {
-            sb.append(" [" + id + "]");
+            sb.append(" [").append(id).append("]");
         }
         if (param != null) {
-            sb.append(" (" + param + ")");
+            sb.append(" (").append(param).append(")");
         }
         for (PackageInfo packageInfo : packages) {
-            sb.append("\n\t"
-                    + new ReflectionToStringBuilder(packageInfo, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames(
-                            new String[] { "description" })
-                                                                                                  .toString());
+            String[] ex = new String[] { "description" };
+            String info = new ReflectionToStringBuilder(packageInfo, SHORT_PREFIX_STYLE).setExcludeFieldNames(ex)
+                                                                                        .toString();
+            sb.append("\n\t")
+              .append(info);
         }
         if (exitCode != 0 || debug) {
             if (exitCode != 0) {

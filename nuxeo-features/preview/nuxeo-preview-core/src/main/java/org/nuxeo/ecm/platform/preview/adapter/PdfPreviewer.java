@@ -33,13 +33,18 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
  */
 public class PdfPreviewer extends AbstractPreviewer implements MimeTypePreviewer {
 
+    @Override
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
-        List<Blob> blobResults = new ArrayList<Blob>();
+        List<Blob> blobResults = new ArrayList<>();
         StringBuilder htmlPage = new StringBuilder();
         String basePath = VirtualHostHelper.getContextPathProperty();
 
-        htmlPage.append("<script src=\"" + basePath + "/bower_components/webcomponentsjs/webcomponents-lite.js\"></script>");
-        htmlPage.append("<link rel=\"import\" href=\"" + basePath + "/viewers/nuxeo-pdf-viewer.vulcanized.html\">");
+        htmlPage.append("<script src=\"")
+                .append(basePath)
+                .append("/bower_components/webcomponentsjs/webcomponents-lite.js\"></script>");
+        htmlPage.append("<link rel=\"import\" href=\"")
+                .append(basePath)
+                .append("/viewers/nuxeo-pdf-viewer.vulcanized.html\">");
 
         htmlPage.append("<style>");
         htmlPage.append("nuxeo-pdf-viewer {");

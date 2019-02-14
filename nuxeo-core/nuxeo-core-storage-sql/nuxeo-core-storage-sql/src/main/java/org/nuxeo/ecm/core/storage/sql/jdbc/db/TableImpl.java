@@ -264,7 +264,7 @@ public class TableImpl implements Table {
         if (column.isPrimary() && !(column.isIdentity() && dialect.isIdentityAlreadyPrimary())) {
             StringBuilder sb = new StringBuilder();
             String constraintName = dialect.openQuote() + dialect.getPrimaryKeyConstraintName(key)
-            + dialect.closeQuote();
+                    + dialect.closeQuote();
             sb.append("ALTER TABLE ");
             sb.append(getQuotedName());
             sb.append(dialect.getAddPrimaryKeyConstraintString(constraintName));
@@ -303,35 +303,35 @@ public class TableImpl implements Table {
         // add indexes for this column
         String columnName = column.getKey();
         INDEXES: //
-            for (String[] columnNames : indexedColumns) {
-                List<String> names = new ArrayList<>(Arrays.asList(columnNames));
-                // check that column is part of this index
-                if (!names.contains(columnName)) {
-                    continue;
-                }
-                // check that column is the last one mentioned
-                for (Column c : getColumns()) {
-                    String key = c.getKey();
-                    names.remove(key);
-                    if (names.isEmpty()) {
-                        // last one?
-                        if (!columnName.equals(key)) {
-                            continue INDEXES;
-                        }
-                        break;
-                    }
-                }
-                // add this index now, as all columns have been created
-                List<Column> cols = new ArrayList<>(columnNames.length);
-                for (String name : columnNames) {
-                    Column col = getColumn(name);
-                    cols.add(col);
-                }
-                String indexName = indexNames.get(columnNames);
-                IndexType indexType = indexTypes.get(columnNames);
-                String createIndexSql = dialect.getCreateIndexSql(indexName, indexType, this, cols, model);
-                sqls.add(createIndexSql);
+        for (String[] columnNames : indexedColumns) {
+            List<String> names = new ArrayList<>(Arrays.asList(columnNames));
+            // check that column is part of this index
+            if (!names.contains(columnName)) {
+                continue;
             }
+            // check that column is the last one mentioned
+            for (Column c : getColumns()) {
+                String key = c.getKey();
+                names.remove(key);
+                if (names.isEmpty()) {
+                    // last one?
+                    if (!columnName.equals(key)) {
+                        continue INDEXES;
+                    }
+                    break;
+                }
+            }
+            // add this index now, as all columns have been created
+            List<Column> cols = new ArrayList<>(columnNames.length);
+            for (String name : columnNames) {
+                Column col = getColumn(name);
+                cols.add(col);
+            }
+            String indexName = indexNames.get(columnNames);
+            IndexType indexType = indexTypes.get(columnNames);
+            String createIndexSql = dialect.getCreateIndexSql(indexName, indexType, this, cols, model);
+            sqls.add(createIndexSql);
+        }
     }
 
     /**

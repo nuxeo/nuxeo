@@ -68,15 +68,15 @@ public class Util {
 
             // if no ticket is present, we use the query string wholesale
             if (ticketLoc == -1)
-                sb.append("?" + request.getQueryString());
+                sb.append("?").append(request.getQueryString());
             else if (ticketLoc > 0) {
                 ticketLoc = request.getQueryString().indexOf("&ticket=");
                 if (ticketLoc == -1) {
                     // there was a 'ticket=' unrelated to a parameter named 'ticket'
-                    sb.append("?" + request.getQueryString());
+                    sb.append("?").append(request.getQueryString());
                 } else if (ticketLoc > 0) {
                     // otherwise, we use the query string up to "&ticket="
-                    sb.append("?" + request.getQueryString().substring(0, ticketLoc));
+                    sb.append("?").append(request.getQueryString().substring(0, ticketLoc));
                 }
             }
         }

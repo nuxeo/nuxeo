@@ -60,6 +60,7 @@ import org.restlet.data.Status;
  * @since 10.3
  * @deprecated since 10.3
  */
+@Deprecated
 public class PreviewRestlet extends BaseStatelessNuxeoRestlet {
 
     private static final Log log = LogFactory.getLog(PreviewRestlet.class);
@@ -230,9 +231,9 @@ public class PreviewRestlet extends BaseStatelessNuxeoRestlet {
 
         sb.append("<html><body><center><h1>");
         if (e == null) {
-            sb.append("No preview is available for this document." + "</h1>");
+            sb.append("No preview is available for this document.").append("</h1>");
         } else {
-            sb.append("Preview cannot be generated for this document." + "</h1>");
+            sb.append("Preview cannot be generated for this document.").append("</h1>");
             sb.append("<pre>Technical issue:</pre>");
             sb.append("<pre>Blob path: ");
             sb.append(xpath);

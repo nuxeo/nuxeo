@@ -52,22 +52,34 @@ public abstract class ActivityDashboardPage extends ActivityPage {
     public void setStartDate(Date date) {
         String fmtDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
         StringBuilder sb = new StringBuilder();
-        sb.append("var date = document.querySelectorAll(\"input[type='date']\")[0];");
-        sb.append("date.value = '" + fmtDate + "';");
-        // force set the date since change events might not be triggered
-        sb.append("var els = document.querySelectorAll('" + selector + "');");
-        sb.append("for (var i=0; i<els.length; i++) { els[i].startDate = '" + fmtDate + "'; }");
+        sb.append("var date = document.querySelectorAll(\"input[type='date']\")[0];")
+          .append("date.value = '")
+          .append(fmtDate)
+          .append("';")
+          // force set the date since change events might not be triggered
+          .append("var els = document.querySelectorAll('")
+          .append(selector)
+          .append("');")
+          .append("for (var i=0; i<els.length; i++) { els[i].startDate = '")
+          .append(fmtDate)
+          .append("'; }");
         js.executeScript(sb.toString());
     }
 
     public void setEndDate(Date date) {
         String fmtDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
         StringBuilder sb = new StringBuilder();
-        sb.append("var date = document.querySelectorAll(\"input[type='date']\")[1];");
-        sb.append("date.value = '" + fmtDate + "';");
-        // force set the date since change events might not be triggered
-        sb.append("var els = document.querySelectorAll('" + selector + "');");
-        sb.append("for (var i=0; i<els.length; i++) { els[i].endDate = '" + fmtDate + "'; }");
+        sb.append("var date = document.querySelectorAll(\"input[type='date']\")[1];")
+          .append("date.value = '")
+          .append(fmtDate)
+          .append("';")
+          // force set the date since change events might not be triggered
+          .append("var els = document.querySelectorAll('")
+          .append(selector)
+          .append("');")
+          .append("for (var i=0; i<els.length; i++) { els[i].endDate = '")
+          .append(fmtDate)
+          .append("'; }");
         js.executeScript(sb.toString());
     }
 }

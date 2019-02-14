@@ -49,7 +49,7 @@ public class PDF2ImageConverter extends CommandLineBasedConverter {
         String outputPath = cmdParams.getParameter("outDirPath");
         File outputDir = new File(outputPath);
         File[] files = outputDir.listFiles();
-        List<Blob> blobs = new ArrayList<Blob>();
+        List<Blob> blobs = new ArrayList<>();
 
         for (File file : files) {
             try {
@@ -67,7 +67,7 @@ public class PDF2ImageConverter extends CommandLineBasedConverter {
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
 
-        Map<String, Blob> cmdBlobParams = new HashMap<String, Blob>();
+        Map<String, Blob> cmdBlobParams = new HashMap<>();
         cmdBlobParams.put("inputFilePath", blobHolder.getBlob());
         return cmdBlobParams;
     }
@@ -76,7 +76,7 @@ public class PDF2ImageConverter extends CommandLineBasedConverter {
     protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
 
-        Map<String, String> cmdStringParams = new HashMap<String, String>();
+        Map<String, String> cmdStringParams = new HashMap<>();
 
         String baseDir = getTmpDirectory(parameters);
         Path tmpPath = new Path(baseDir).append("pdf2image_" + System.currentTimeMillis());
