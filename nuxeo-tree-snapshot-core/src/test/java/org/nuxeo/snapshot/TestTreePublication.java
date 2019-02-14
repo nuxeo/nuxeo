@@ -159,7 +159,7 @@ public class TestTreePublication {
         System.out.println("\nDumping Live docs in repository");
         DocumentModelList docs = session.query("select * from Document where ecm:isVersion = 0 order by ecm:path");
         for (DocumentModel doc : docs) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append(doc.getPathAsString());
             sb.append(" - ");
             sb.append(doc.getVersionLabel());

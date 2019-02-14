@@ -274,7 +274,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         return list;
     }
 
-    protected void dump(int level, StringBuffer sb) {
+    protected void dump(int level, StringBuilder sb) {
         for (Snapshot snap : getChildrenSnapshots()) {
             sb.append(new String(new char[level]).replace('\0', ' '));
             sb.append(snap.getDocument().getName() + " -- " + snap.getDocument().getVersionLabel());
@@ -287,7 +287,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(doc.getName() + " -- " + doc.getVersionLabel());
         sb.append("\n");
 

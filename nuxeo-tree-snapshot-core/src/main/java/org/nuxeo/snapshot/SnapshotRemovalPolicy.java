@@ -34,7 +34,7 @@ public class SnapshotRemovalPolicy implements OrphanVersionRemovalFilter {
     protected boolean canRemoveVersions(CoreSession session, DocumentModel doc, List<String> uuids) {
         IterableQueryResult result = null;
         try {
-            StringBuffer nxql = new StringBuffer("select ecm:uuid from Document where ");
+            StringBuilder nxql = new StringBuilder("select ecm:uuid from Document where ");
             nxql.append(SnapshotableAdapter.CHILDREN_PROP + "/* IN (");
             for (int i = 0; i < uuids.size(); i++) {
                 if (i > 0) {

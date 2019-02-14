@@ -51,7 +51,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
 
     protected String getContentHash() throws Exception {
         DocumentModelList alldocs = session.query("select * from Document where ecm:isVersion = 0 order by ecm:path");
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (DocumentModel doc : alldocs) {
             sb.append(doc.getId());
             sb.append(" -- ");
