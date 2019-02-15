@@ -26,7 +26,7 @@ Contributors:
 <dom-module id="nuxeo-liveconnect-box-link">
 
   <template>
-    <style>
+    <style include="nuxeo-styles">
       :host {
         display: inline-block;
         @apply --layout-horizontal;
@@ -45,6 +45,11 @@ Contributors:
         @apply --layout-center;
         @apply --layout-center-justified;
         @apply --nuxeo-liveconnect-anchor-layout;
+      }
+
+      a, a:active, a:visited, a:focus {
+        color: var(--nuxeo-secondary-color, #0066ff);
+        text-decoration: underline;
       }
     </style>
 
