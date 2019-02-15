@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,6 +36,8 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
 
 /**
  * @since 7.4
@@ -49,6 +49,7 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
     public static final String CONFIGURATION_EP = "configuration";
 
     protected static final JavaPropsMapper PROPERTIES_MAPPER = new JavaPropsMapper();
+
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /**
@@ -147,7 +148,8 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
                                .filter(desc -> startsWithNamespace(desc.getName(), namespace))
                                .collect(Collectors.toMap(desc -> desc.getId().substring(namespace.length() + 1),
                                        desc -> desc.getValue() != null && desc.list
-                                               ? desc.getValue().split(LIST_SEPARATOR) : desc.getValue()));
+                                               ? desc.getValue().split(LIST_SEPARATOR)
+                                               : desc.getValue()));
     }
 
     @Override
@@ -164,15 +166,14 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
                 properties.put(key, value);
             }
         });
-        return OBJECT_MAPPER.writer().writeValueAsString(
-                PROPERTIES_MAPPER.readPropertiesAs(properties, ObjectNode.class));
+        return OBJECT_MAPPER.writer()
+                            .writeValueAsString(PROPERTIES_MAPPER.readPropertiesAs(properties, ObjectNode.class));
     }
 
     /**
      * Returns true if a string starts with a namespace.
      *
      * @param string a string
-     * @param namespace
      * @since 10.3
      */
     protected static boolean startsWithNamespace(String string, String namespace) {

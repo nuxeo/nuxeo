@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public interface ConfigurationService {
 
-    public static final String LIST_SEPARATOR = ",";
+    String LIST_SEPARATOR = ",";
 
     /**
      * Returns the given property value if any, otherwise null.
@@ -70,7 +70,6 @@ public interface ConfigurationService {
      * Returns the json string representing the properties with key starting with the given namespace.
      *
      * @param namespace the namespace of the properties
-     * @throws IOException
      * @since 10.3
      */
     String getPropertiesAsJson(String namespace) throws IOException;
