@@ -239,10 +239,8 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         BlobProvider bp = getBlobProvider();
         BinaryGarbageCollector gc = bp.getBinaryManager().getGarbageCollector();
         gc.start();
-        keyStream().map(this::getBlobs) //
+        keyStream().map(this::getBlobKeys) //
                    .flatMap(Collection::stream)
-                   .map(ManagedBlob.class::cast)
-                   .map(ManagedBlob::getKey)
                    .forEach(gc::mark);
         gc.stop(true); // delete
         computeStorageSize();
@@ -530,6 +528,37 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
             }
         }
         return blobs;
+    }
+
+    // used by GC
+    protected List<String> getBlobKeys(String key) {
+        KeyValueStore kvs = getKeyValueStore();
+        String info = kvs.getString(key + DOT_BLOBINFO);
+        if (info == null) {
+            return Collections.emptyList();
+        }
+        Map<String, String> blobInfoMap = jsonToMap(info);
+        String countStr = blobInfoMap.get(COUNT);
+        if (countStr == null) {
+            return Collections.emptyList();
+        }
+        int count = Integer.parseInt(countStr);
+        List<String> blobKeys = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            String blobMapJson = kvs.getString(key + DOT_BLOB_DOT + i);
+            if (blobMapJson == null) {
+                // corrupted entry, bail out
+                break;
+            }
+            Map<String, String> blobMap = jsonToMap(blobMapJson);
+            String blobKey = blobMap.get(KEY);
+            if (blobKey == null) {
+                // corrupted entry, bail out
+                break;
+            }
+            blobKeys.add(blobKey);
+        }
+        return blobKeys;
     }
 
     @Override
