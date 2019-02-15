@@ -1132,6 +1132,28 @@
       </selectOptions>
     </widget>
 
+    <widget name="select_layout_page_default" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Layout</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The select layout binding.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>layout</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Page direction (default)" itemValue="" />
+        <option itemLabel="Page direction" itemValue="pageDirection" />
+        <option itemLabel="Line direction" itemValue="lineDirection" />
+      </selectOptions>
+    </widget>
+
     <widget name="select_selectOptions" type="text">
       <categories>
         <category>widgetTypeConf</category>

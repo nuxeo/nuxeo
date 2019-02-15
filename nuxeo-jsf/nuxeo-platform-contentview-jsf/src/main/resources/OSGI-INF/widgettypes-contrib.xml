@@ -43,7 +43,7 @@
                   <widget category="widgetTypeConf">select_selectOptions</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">select_layout</widget>
+                  <widget category="widgetTypeConf">select_layout_page_default</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">directory_style</widget>
@@ -177,7 +177,7 @@
                   <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">select_layout</widget>
+                  <widget category="widgetTypeConf">select_layout_page_default</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">directory_localize</widget>
@@ -342,7 +342,7 @@
                   <widget category="widgetTypeConf">select_selectOptions</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">select_layout</widget>
+                  <widget category="widgetTypeConf">select_layout_page_default</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">directory_style</widget>
@@ -464,10 +464,7 @@
             <layout name="selectManyCheckboxUserAggregate_widget_type_properties_edit">
               <rows>
                 <row>
-                  <widget category="widgetTypeConf">select_selectOptions</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">select_layout</widget>
+                  <widget category="widgetTypeConf">select_layout_page_default</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">directory_style</widget>
@@ -525,9 +522,6 @@
           <layouts mode="edit">
             <layout name="selectManyListboxUserAggregate_widget_type_properties_edit">
               <rows>
-                <row>
-                  <widget category="widgetTypeConf">select_selectOptions</widget>
-                </row>
                 <row>
                   <widget category="widgetTypeConf">placeholder</widget>
                 </row>
