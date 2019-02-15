@@ -28,6 +28,10 @@ import java.util.Calendar;
 
 import org.junit.Test;
 
+/**
+ * @deprecated since 11.1 as {@link DateMatcher} is deprecated
+ */
+@Deprecated
 public class TestDateMatcher {
 
     @Test

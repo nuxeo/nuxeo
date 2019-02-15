@@ -18,15 +18,20 @@
  */
 package org.nuxeo.ecm.platform.suggestbox.utils;
 
+import java.time.DateTimeException;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.joda.time.Chronology;
-import org.joda.time.DateTime;
-import org.joda.time.IllegalFieldValueException;
-import org.joda.time.chrono.GregorianChronology;
+import org.nuxeo.ecm.platform.suggestbox.service.suggesters.DocumentSearchByDateSuggester;
 
+/**
+ * @deprecated since 11.1 only used from deprecated {@link DocumentSearchByDateSuggester}
+ */
+@Deprecated
 public class DateMatcher {
 
     private static final Pattern YEAR_ONLY_MATCHER = Pattern.compile("^\\d{4}$");
@@ -112,8 +117,8 @@ public class DateMatcher {
             if (month > 12 || month < 1) {
                 return new DateMatcher(false, true, false, null);
             }
-            return new DateMatcher(false, true, false, dateToInstance(Calendar.getInstance().get(Calendar.YEAR), month,
-                    1));
+            return new DateMatcher(false, true, false,
+                    dateToInstance(Calendar.getInstance().get(Calendar.YEAR), month, 1));
         }
         matcher = parsingDate(YEAR_MONTHS_MATCHER, input);
         if (matcher.find()) {
@@ -182,10 +187,8 @@ public class DateMatcher {
 
     protected static Calendar dateToInstance(int year, int month, int day) {
         try {
-            Chronology chrono = GregorianChronology.getInstance();
-            DateTime dt = new DateTime(year, month, day, 12, 0, 0, 0, chrono);
-            return dt.toGregorianCalendar();
-        } catch (IllegalArgumentException e) {
+            return GregorianCalendar.from(ZonedDateTime.of(year, month, day, 12, 0, 0, 0, ZoneOffset.UTC));
+        } catch (IllegalArgumentException | DateTimeException e) {
             return null;
         }
     }
