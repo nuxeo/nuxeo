@@ -197,11 +197,16 @@ public class LayoutDemoActions implements Serializable {
         if (type != null && type.contains("Aggregate")) {
             // fill up aggregates mapping as default properties
             if (type.contains("Aggregate")) {
-                props.put("selectOptions", "#{layoutDemoAggregates['dir_terms'].buckets}");
+                if (type.contains("UserAggregate")) {
+                    props.put("selectOptions", "#{layoutDemoAggregates['prefixed_user_group_terms'].buckets}");
+                } else {
+                    props.put("selectOptions", "#{layoutDemoAggregates['dir_terms'].buckets}");
+                    props.put("directoryName", "layout_demo_crew");
+                }
             } else {
                 props.put("selectOptions", "#{layoutDemoAggregates['string_terms'].buckets}");
+                props.put("directoryName", "layout_demo_crew");
             }
-            props.put("directoryName", "layout_demo_crew");
         }
         PreviewLayoutDefinition def = new PreviewLayoutDefinition(widgetType.getName(), widgetType.getFields(), props);
 
@@ -229,7 +234,7 @@ public class LayoutDemoActions implements Serializable {
     }
 
     protected List<WidgetDefinition> retrieveSubWidgets(LayoutDefinition layoutDef) {
-        List<WidgetDefinition> res = new ArrayList<WidgetDefinition>();
+        List<WidgetDefinition> res = new ArrayList<>();
         LayoutRowDefinition[] rows = layoutDef.getRows();
         if (rows != null && rows.length > 0) {
             WidgetReference[] refs = rows[0].getWidgetReferences();
