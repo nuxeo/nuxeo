@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.opencmis.impl.server;
 
 import static org.apache.chemistry.opencmis.commons.enums.BaseTypeId.CMIS_DOCUMENT;
 import static org.apache.chemistry.opencmis.commons.enums.BaseTypeId.CMIS_RELATIONSHIP;
+import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
 import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE;
 
 import java.io.Serializable;
@@ -62,9 +63,6 @@ import org.apache.chemistry.opencmis.server.support.query.QueryUtilStrict;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -109,8 +107,6 @@ public class CMISQLtoNXQL {
     protected static final String NXQL_REL_SOURCE = "relation:source";
 
     protected static final String NXQL_REL_TARGET = "relation:target";
-
-    protected static final DateTimeFormatter ISO_DATE_TIME_FORMAT = ISODateTimeFormat.dateTime();
 
     private static final char QUOTE = '\'';
 
@@ -835,7 +831,7 @@ public class CMISQLtoNXQL {
             Calendar value = (Calendar) super.walkTimestamp(node);
             buf.append("TIMESTAMP ");
             buf.append(QUOTE);
-            buf.append(ISO_DATE_TIME_FORMAT.print(LocalDateTime.fromCalendarFields(value)));
+            buf.append(formatISODateTime(value.getTime()));
             buf.append(QUOTE);
             return null;
         }
