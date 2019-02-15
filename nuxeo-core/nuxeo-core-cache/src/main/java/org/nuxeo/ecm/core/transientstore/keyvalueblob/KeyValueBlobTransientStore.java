@@ -523,7 +523,10 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
                 Blob blob = bp.readBlob(blobInfo);
                 blobs.add(blob);
             } catch (IOException e) {
-                throw new NuxeoException(e);
+                // ignore, the blob was removed from the blob provider
+                // maybe by a concurrent GC from this transient store
+                // or from the blob provider itself (if it's incorrectly shared)
+                log.debug("Failed to read blob: " + digest);
             }
         }
         return blobs;
