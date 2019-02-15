@@ -196,10 +196,6 @@
       <artifactId>validation-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
-    <dependency>
       <!-- note that this contains all of javax.ws.rs:jsr311-api -->
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-core</artifactId>
