@@ -24,10 +24,8 @@ import static java.lang.Boolean.TRUE;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -463,7 +461,7 @@ public abstract class MongoDBAbstractQueryBuilder {
     }
 
     public Date walkDateLiteral(DateLiteral lit) {
-        return lit.value.toDate(); // TODO onlyDate
+        return Date.from(lit.value.toInstant());
     }
 
     public Double walkDoubleLiteral(DoubleLiteral lit) {

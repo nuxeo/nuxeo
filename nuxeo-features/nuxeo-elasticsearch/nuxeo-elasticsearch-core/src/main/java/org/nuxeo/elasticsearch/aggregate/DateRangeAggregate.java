@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch.aggregate;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_FORMAT_PROP;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -101,8 +102,11 @@ public class DateRangeAggregate extends MultiBucketAggregate<BucketRangeDate> {
         List<BucketRangeDate> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             Range.Bucket rangeBucket = (Range.Bucket) bucket;
-            nxBuckets.add(new BucketRangeDate(bucket.getKeyAsString(), (DateTime) rangeBucket.getFrom(),
-                    (DateTime) rangeBucket.getTo(), rangeBucket.getDocCount()));
+            DateTime from = (DateTime) rangeBucket.getFrom();
+            DateTime to = (DateTime) rangeBucket.getTo();
+            ZonedDateTime fromZDT = ZonedDateTime.from(from.toDate().toInstant());
+            ZonedDateTime toZDT = ZonedDateTime.from(to.toDate().toInstant());
+            nxBuckets.add(new BucketRangeDate(bucket.getKeyAsString(), fromZDT, toZDT, rangeBucket.getDocCount()));
         }
         nxBuckets.sort(new BucketRangeDateComparator());
         this.buckets = nxBuckets;

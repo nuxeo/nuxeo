@@ -160,7 +160,7 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
                 } else {
                     code = SC_LOCKINFO_LOCKED;
                     response = lock.getOwner() + '/'
-                            + ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated()));
+                            + DateTimeFormatter.ISO_DATE_TIME.format(new DateTime(lock.getCreated()));
                 }
             } catch (NuxeoException e) {
                 handleError(result, res, e);

@@ -18,11 +18,13 @@
  */
 package org.nuxeo.elasticsearch.io.marshallers.json;
 
+import static java.util.Date.from;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.FETCH_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.MAX_DEPTH_PARAM;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.TRANSLATE_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.core.schema.utils.DateParser.formatW3CDateTime;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -48,7 +50,6 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.Bucket;
@@ -202,8 +203,8 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
 
             if (bucket instanceof BucketRangeDate) {
                 BucketRangeDate bucketRange = (BucketRangeDate) bucket;
-                jg.writeStringField("fromAsDate", DateParser.formatW3CDateTime(bucketRange.getFromAsDate().toDate()));
-                jg.writeStringField("toAsDate", DateParser.formatW3CDateTime(bucketRange.getToAsDate().toDate()));
+                jg.writeStringField("fromAsDate", formatW3CDateTime(from(bucketRange.getFromAsDate().toInstant())));
+                jg.writeStringField("toAsDate", formatW3CDateTime(from(bucketRange.getToAsDate().toInstant())));
             }
         }
         jg.writeEndArray();

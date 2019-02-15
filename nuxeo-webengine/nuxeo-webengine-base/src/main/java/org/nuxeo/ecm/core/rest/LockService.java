@@ -21,12 +21,12 @@
 
 package org.nuxeo.ecm.core.rest;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -53,7 +53,7 @@ public class LockService extends DefaultAdapter {
         try {
             DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
             Lock lock = ctx.getCoreSession().getLockInfo(doc.getRef());
-            return lock.getOwner() + '/' + ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated()));
+            return lock.getOwner() + '/' + ISO_DATE_TIME.format(lock.getCreated().toInstant());
         } catch (NuxeoException e) {
             e.addInfo("Failed to get lock on document");
             throw e;

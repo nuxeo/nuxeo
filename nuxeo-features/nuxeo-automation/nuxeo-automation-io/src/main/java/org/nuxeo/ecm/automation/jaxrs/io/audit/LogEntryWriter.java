@@ -18,8 +18,11 @@
  */
 package org.nuxeo.ecm.automation.jaxrs.io.audit;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
 
@@ -27,8 +30,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -65,9 +66,9 @@ public class LogEntryWriter extends EntityWriter<LogEntry> {
         jg.writeStringField("docUUID", logEntry.getDocUUID());
         jg.writeStringField("eventId", logEntry.getEventId());
         jg.writeStringField("repositoryId", logEntry.getRepositoryId());
-        jg.writeStringField("eventDate", ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getEventDate())));
+        jg.writeStringField("eventDate", ISO_DATE_TIME.format(ZonedDateTime.from(logEntry.getEventDate().toInstant())));
         jg.writeNumberField("id", logEntry.getId());
-        jg.writeStringField("logDate", ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getLogDate())));
+        jg.writeStringField("logDate", ISO_DATE_TIME.format(ZonedDateTime.from(logEntry.getLogDate().toInstant())));
         writeExtendedInfos(jg, logEntry);
     }
 
@@ -94,7 +95,7 @@ public class LogEntryWriter extends EntityWriter<LogEntry> {
         } else if (Double.class.isAssignableFrom(clazz)) {
             jg.writeNumberField(key, (Double) value);
         } else if (Date.class.isAssignableFrom(clazz)) {
-            jg.writeStringField(key, ISODateTimeFormat.dateTime().print(new DateTime(value)));
+            jg.writeStringField(key, ISO_DATE_TIME.format(ZonedDateTime.from(((Date) value).toInstant())));
         } else if (String.class.isAssignableFrom(clazz)) {
             jg.writeStringField(key, (String) value);
         } else if (Boolean.class.isAssignableFrom(clazz)) {

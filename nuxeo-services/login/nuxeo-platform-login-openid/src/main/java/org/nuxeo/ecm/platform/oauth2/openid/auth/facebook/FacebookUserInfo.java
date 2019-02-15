@@ -19,11 +19,11 @@
  */
 package org.nuxeo.ecm.platform.oauth2.openid.auth.facebook;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+
+import java.time.ZonedDateTime;
 import java.util.Date;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.DefaultOpenIDUserInfo;
 
 import com.google.api.client.util.Key;
@@ -74,9 +74,8 @@ public class FacebookUserInfo extends DefaultOpenIDUserInfo {
     public Date getUpdatedTime() {
         Date date;
         try {
-            DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
-            DateTime dateTime = parser.parseDateTime(updatedTime);
-            date = dateTime.toDate();
+            ZonedDateTime zdt = ZonedDateTime.parse(updatedTime, ISO_DATE_TIME);
+            date = Date.from(zdt.toInstant());
         } catch (IllegalArgumentException e) {
             return null;
         }

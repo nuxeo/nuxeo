@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.audit.io;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_CATEGORY;
@@ -44,9 +45,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ClassUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -111,9 +109,8 @@ public class LogEntryJsonWriter extends ExtensibleEntityJsonWriter<LogEntry> {
         jg.writeStringField(LOG_DOC_UUID, logEntry.getDocUUID());
         jg.writeStringField(LOG_EVENT_ID, logEntry.getEventId());
         jg.writeStringField(LOG_REPOSITORY_ID, logEntry.getRepositoryId());
-        DateTimeFormatter dateTime = ISODateTimeFormat.dateTime();
-        jg.writeStringField(LOG_EVENT_DATE, dateTime.print(new DateTime(logEntry.getEventDate())));
-        jg.writeStringField(LOG_LOG_DATE, dateTime.print(new DateTime(logEntry.getLogDate())));
+        jg.writeStringField(LOG_EVENT_DATE, ISO_DATE_TIME.format(logEntry.getEventDate().toInstant()));
+        jg.writeStringField(LOG_LOG_DATE, ISO_DATE_TIME.format(logEntry.getLogDate().toInstant()));
         writeExtendedInfos(jg, logEntry);
     }
 
@@ -140,7 +137,7 @@ public class LogEntryJsonWriter extends ExtensibleEntityJsonWriter<LogEntry> {
         } else if (Double.class.isAssignableFrom(clazz)) {
             jg.writeNumberField(key, (Double) value);
         } else if (Date.class.isAssignableFrom(clazz)) {
-            jg.writeStringField(key, ISODateTimeFormat.dateTime().print(new DateTime(value)));
+            jg.writeStringField(key, ISO_DATE_TIME.format(((Date) value).toInstant()));
         } else if (String.class.isAssignableFrom(clazz)) {
             jg.writeStringField(key, (String) value);
         } else if (Boolean.class.isAssignableFrom(clazz)) {

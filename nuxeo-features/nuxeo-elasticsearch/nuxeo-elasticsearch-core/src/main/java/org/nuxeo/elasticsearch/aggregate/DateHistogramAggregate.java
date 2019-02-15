@@ -31,6 +31,9 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_PROP;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_PRE_ZONE_PROP;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TIME_ZONE_PROP;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -48,8 +51,6 @@ import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInter
 import org.elasticsearch.search.aggregations.bucket.histogram.ExtendedBounds;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
@@ -122,26 +123,28 @@ public class DateHistogramAggregate extends MultiBucketAggregate<BucketRangeDate
         BoolQueryBuilder ret = QueryBuilders.boolQuery();
         for (String sel : getSelection()) {
             RangeQueryBuilder rangeFilter = QueryBuilders.rangeQuery(getField());
-            DateTime from = convertStringToDate(sel);
-            DateTime to = DateHelper.plusDuration(from, getInterval());
-            rangeFilter.gte(from.getMillis()).lt(to.getMillis()).format(ElasticSearchConstants.EPOCH_MILLIS_FORMAT);
+            ZonedDateTime from = convertStringToDate(sel);
+            ZonedDateTime to = DateHelper.plusDuration(from, getInterval());
+            rangeFilter.gte(from.toInstant().toEpochMilli())
+                       .lt(to.toInstant().toEpochMilli())
+                       .format(ElasticSearchConstants.EPOCH_MILLIS_FORMAT);
             ret.should(rangeFilter);
         }
         return ret;
     }
 
-    private DateTime convertStringToDate(String date) {
+    private ZonedDateTime convertStringToDate(String date) {
         Map<String, String> props = getProperties();
         DateTimeFormatter fmt;
         if (props.containsKey(AGG_FORMAT_PROP)) {
-            fmt = DateTimeFormat.forPattern(props.get(AGG_FORMAT_PROP));
+            fmt = DateTimeFormatter.ofPattern(props.get(AGG_FORMAT_PROP));
         } else {
             throw new IllegalArgumentException("format property must be defined for " + toString());
         }
         if (props.containsKey(AGG_TIME_ZONE_PROP)) {
-            fmt = fmt.withZone(DateTimeZone.forID(props.get(AGG_TIME_ZONE_PROP)));
+            fmt = fmt.withZone(ZoneId.of(props.get(AGG_TIME_ZONE_PROP)));
         }
-        return fmt.parseDateTime(date);
+        return ZonedDateTime.parse(date, fmt);
     }
 
     @JsonIgnore
@@ -149,9 +152,9 @@ public class DateHistogramAggregate extends MultiBucketAggregate<BucketRangeDate
     public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
         List<BucketRangeDate> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
-            DateTime from = (DateTime) bucket.getKey();
-            DateTime to = DateHelper.plusDuration(from, getInterval());
-            nxBuckets.add(new BucketRangeDate(bucket.getKeyAsString(), from, to, bucket.getDocCount()));
+            ZonedDateTime fromZDT = ZonedDateTime.from(((DateTime) bucket.getKey()).toDate().toInstant());
+            ZonedDateTime toZDT = DateHelper.plusDuration(fromZDT, getInterval());
+            nxBuckets.add(new BucketRangeDate(bucket.getKeyAsString(), fromZDT, toZDT, bucket.getDocCount()));
         }
         this.buckets = nxBuckets;
     }

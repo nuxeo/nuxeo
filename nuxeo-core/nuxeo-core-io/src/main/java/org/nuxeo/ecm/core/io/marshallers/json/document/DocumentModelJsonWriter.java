@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.document;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.WILDCARD_VALUE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
@@ -32,8 +33,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -165,7 +164,7 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
             Lock lock = doc.getLockInfo();
             if (lock != null) {
                 jg.writeStringField("lockOwner", lock.getOwner());
-                jg.writeStringField("lockCreated", ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated())));
+                jg.writeStringField("lockCreated", ISO_DATE_TIME.format(lock.getCreated().toInstant()));
             }
         }
         if (doc.hasSchema("dublincore")) {

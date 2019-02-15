@@ -19,12 +19,11 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Locale;
-
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * @author Florent Guillaume
@@ -33,20 +32,20 @@ public class DateLiteral extends Literal {
 
     private static final long serialVersionUID = 279219479611055690L;
 
-    public static final DateTimeFormatter dateParser = ISODateTimeFormat.dateParser().withLocale(Locale.getDefault());
+    public static final DateTimeFormatter dateParser = DateTimeFormatter.ISO_DATE.withLocale(Locale.getDefault());
 
-    public static final DateTimeFormatter dateTimeParser = ISODateTimeFormat.dateOptionalTimeParser().withOffsetParsed();
+    public static final DateTimeFormatter dateTimeParser = DateTimeFormatter.ISO_DATE_TIME;
 
-    public static final DateTimeFormatter dateFormatter = ISODateTimeFormat.date();
+    public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_DATE;
 
-    public static final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
+    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
 
     // Direct access from org.nuxeo.ecm.core.search.backend.compass.QueryConverter
-    public final DateTime value;
+    public final ZonedDateTime value;
 
     public final boolean onlyDate;
 
-    public DateLiteral(DateTime value) {
+    public DateLiteral(ZonedDateTime value) {
         this.value = value;
         this.onlyDate = false;
     }
@@ -54,7 +53,7 @@ public class DateLiteral extends Literal {
     public DateLiteral(String value, boolean onlyDate) {
         this.onlyDate = onlyDate;
         if (onlyDate) {
-            this.value = dateParser.parseDateTime(value);
+            this.value = ZonedDateTime.parse(value, dateParser);
         } else {
             // workaround to allow space instead of T after the date part
             if (value.charAt(10) == ' ') {
@@ -62,25 +61,25 @@ public class DateLiteral extends Literal {
                 s[10] = 'T';
                 value = new String(s);
             }
-            this.value = dateTimeParser.parseDateTime(value);
+            this.value = ZonedDateTime.parse(value, dateTimeParser);
         }
     }
 
     public Calendar toCalendar() {
-        return value.toGregorianCalendar();
+        return GregorianCalendar.from(value);
     }
 
     public java.sql.Date toSqlDate() {
-        return new java.sql.Date(value.toDate().getTime());
+        return new java.sql.Date(value.toInstant().toEpochMilli());
     }
 
     @Override
     public String toString() {
         if (onlyDate) {
-            String s = dateFormatter.print(value);
+            String s = dateFormatter.format(value);
             return new StringBuffer(s.length() + 7).append("DATE '").append(s).append("'").toString();
         } else {
-            String s = dateTimeFormatter.print(value);
+            String s = dateTimeFormatter.format(value);
             return new StringBuffer(s.length() + 12).append("TIMESTAMP '").append(s).append("'").toString();
         }
     }
@@ -88,9 +87,9 @@ public class DateLiteral extends Literal {
     @Override
     public String asString() {
         if (onlyDate) {
-            return dateFormatter.print(value);
+            return dateFormatter.format(value);
         } else {
-            return dateTimeFormatter.print(value);
+            return dateTimeFormatter.format(value);
         }
     }
 
@@ -116,10 +115,10 @@ public class DateLiteral extends Literal {
     }
 
     public static String dateTime(DateLiteral date) {
-        return dateTimeFormatter.print(date.value);
+        return dateTimeFormatter.format(date.value);
     }
 
     public static String date(DateLiteral date) {
-        return dateFormatter.print(date.value);
+        return dateFormatter.format(date.value);
     }
 }

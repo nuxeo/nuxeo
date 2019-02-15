@@ -18,6 +18,7 @@
  */
 package org.nuxeo.elasticsearch.audit.io;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_CATEGORY;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_COMMENT;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_LIFE_CYCLE;
@@ -38,8 +39,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -78,9 +77,9 @@ public class AuditEntryJSONWriter {
         writeField(jg, LOG_DOC_UUID, logEntry.getDocUUID());
         writeField(jg, LOG_EVENT_ID, logEntry.getEventId());
         writeField(jg, LOG_REPOSITORY_ID, logEntry.getRepositoryId());
-        jg.writeStringField(LOG_EVENT_DATE, ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getEventDate())));
+        jg.writeStringField(LOG_EVENT_DATE, ISO_DATE_TIME.format(logEntry.getEventDate().toInstant()));
         jg.writeNumberField(LOG_ID, logEntry.getId());
-        jg.writeStringField(LOG_LOG_DATE, ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getLogDate())));
+        jg.writeStringField(LOG_LOG_DATE, ISO_DATE_TIME.format(logEntry.getLogDate().toInstant()));
         Map<String, ExtendedInfo> extended = logEntry.getExtendedInfos();
         jg.writeObjectFieldStart(LOG_EXTENDED);
         for (String key : extended.keySet()) {

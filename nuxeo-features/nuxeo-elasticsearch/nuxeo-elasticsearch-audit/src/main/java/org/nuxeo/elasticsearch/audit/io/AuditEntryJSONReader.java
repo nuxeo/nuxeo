@@ -18,6 +18,7 @@
  */
 package org.nuxeo.elasticsearch.audit.io;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_CATEGORY;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_COMMENT;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_LIFE_CYCLE;
@@ -33,11 +34,12 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_PRINCIPAL
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -102,9 +104,9 @@ public class AuditEntryJSONReader {
                     } else if (LOG_ID.equals(key)) {
                         entry.setId(jp.getLongValue());
                     } else if (LOG_EVENT_DATE.equals(key)) {
-                        entry.setEventDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
+                        entry.setEventDate(Date.from(ZonedDateTime.parse(jp.getText(), ISO_DATE_TIME).toInstant()));
                     } else if (LOG_LOG_DATE.equals(key)) {
-                        entry.setLogDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
+                        entry.setLogDate(Date.from(ZonedDateTime.parse(jp.getText(), ISO_DATE_TIME).toInstant()));
                     } else if (LOG_EXTENDED.equals(key)) {
                         entry.setExtendedInfos(readExtendedInfo(jp, objectMapper));
                     }

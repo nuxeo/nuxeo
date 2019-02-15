@@ -18,7 +18,8 @@
  */
 package org.nuxeo.ecm.platform.query.core;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
+
 import org.nuxeo.ecm.platform.query.api.Bucket;
 
 /**
@@ -30,17 +31,17 @@ public class BucketRangeDate implements Bucket {
 
     private final BucketRange range;
 
-    // joda DateTime are immutables
-    private final DateTime fromDate;
+    private final ZonedDateTime fromDate;
 
-    private final DateTime toDate;
+    private final ZonedDateTime toDate;
 
-    public BucketRangeDate(String key, DateTime from, DateTime to, long docCount) {
+    public BucketRangeDate(String key, ZonedDateTime from, ZonedDateTime to, long docCount) {
         if (key == null) {
             throw new IllegalArgumentException("key is null");
-        };
+        }
         // fromDate.
-        range = new BucketRange(key, from != null ? from.getMillis() : null, to != null ? to.getMillis() : null,
+        range = new BucketRange(key, from != null ? from.toInstant().toEpochMilli() : null,
+                to != null ? to.toInstant().toEpochMilli() : null,
                 docCount);
         fromDate = from;
         toDate = to;
@@ -63,7 +64,7 @@ public class BucketRangeDate implements Bucket {
     /**
      * @return null if there are no minimal limit
      */
-    public DateTime getFromAsDate() {
+    public ZonedDateTime getFromAsDate() {
         return fromDate;
     }
 
@@ -74,7 +75,7 @@ public class BucketRangeDate implements Bucket {
     /**
      * @return null if there are no maximal limit
      */
-    public DateTime getToAsDate() {
+    public ZonedDateTime getToAsDate() {
         return toDate;
     }
 

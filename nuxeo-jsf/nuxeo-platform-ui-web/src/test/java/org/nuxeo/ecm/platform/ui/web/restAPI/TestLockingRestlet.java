@@ -241,7 +241,7 @@ public class TestLockingRestlet extends AbstractRestletTest {
     public void testStateLocked() throws Exception {
         Lock lock = lockDoc();
         String path = "/" + repositoryName + "/" + doc.getId() + ENDPOINT + "/" + ACTION_STATE;
-        String lockInfo = lock.getOwner() + '/' + ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated()));
+        String lockInfo = lock.getOwner() + '/' + DateTimeFormatter.ISO_DATE_TIME.format(new DateTime(lock.getCreated()));
         String content = XML + "<document code=\"LOCKED\" message=\"" + lockInfo + "\"/>";
         executeRequest(path, content);
     }

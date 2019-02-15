@@ -20,7 +20,8 @@ package org.nuxeo.elasticsearch.test.aggregates;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.elasticsearch.aggregate.DateHelper;
@@ -29,8 +30,8 @@ public class TestDateHelper {
 
     @Test
     public void testPlusDuration() {
-        DateTime now = new DateTime();
-        DateTime ret = DateHelper.plusDuration(now, "3w");
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime ret = DateHelper.plusDuration(now, "3w");
         assertEquals(now.plusWeeks(3), ret);
 
         ret = DateHelper.plusDuration(now, "week");
@@ -46,16 +47,16 @@ public class TestDateHelper {
         assertEquals(now.plusMonths(3), ret);
 
         ret = DateHelper.plusDuration(now, "1234");
-        assertEquals(now.plusMillis(1234), ret);
+        assertEquals(now.plusNanos(1234 * 1000), ret);
 
         ret = DateHelper.plusDuration(now, "7");
-        assertEquals(now.plusMillis(7), ret);
+        assertEquals(now.plusNanos(7 * 1000), ret);
     }
 
     @Test
     public void testPlusDurationInvalid() {
-        DateTime now = new DateTime();
-        DateTime ret = null;
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime ret = null;
 
         try {
             ret = DateHelper.plusDuration(now, "days");
