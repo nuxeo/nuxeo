@@ -51,6 +51,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.LocalBinaryManager.DefaultBinaryGarbageCollector;
 import org.nuxeo.ecm.core.transientstore.api.MaximumTransientSpaceExceeded;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
@@ -294,6 +296,49 @@ public class TestKeyValueBlobTransientStore {
         assertFalse(ts.exists("foo"));
         assertFalse(ts.exists("bar"));
         assertEquals(0, tsp.getStorageSize());
+    }
+
+    /**
+     * Test GC of a blob that's been removed from the underlying blob store by someone else.
+     */
+    @Test
+    public void testMissingBlobGC() throws Exception {
+        // create a blob
+        String key = "foo";
+        createBlob(key, "SomeContent");
+
+        removeAllBlobsFromBlobProvider();
+
+        // do transient store GC, should not crash
+        tsp.doGC();
+        // GC should still be possible again
+        tsp.doGC();
+    }
+
+    /**
+     * Test getting a blob that's been removed from underlying the blob store by someone else.
+     */
+    @Test
+    public void testMissingBlobGet() throws Exception {
+        // create a blob
+        String key = "foo";
+        createBlob(key, "SomeContent");
+
+        removeAllBlobsFromBlobProvider();
+
+        // get the blob, should not crash
+        ts.getBlobs(key);
+    }
+
+    protected void removeAllBlobsFromBlobProvider() throws Exception {
+        // sleep needed because the GC doesn't remove very young files
+        Thread.sleep(DefaultBinaryGarbageCollector.TIME_RESOLUTION + 100);
+        BinaryGarbageCollector gc = ((KeyValueBlobTransientStore) ts).getBlobProvider()
+                                                                     .getBinaryManager()
+                                                                     .getGarbageCollector();
+        gc.start();
+        // mark nothing, so remove everything
+        gc.stop(true);
     }
 
     @Test
