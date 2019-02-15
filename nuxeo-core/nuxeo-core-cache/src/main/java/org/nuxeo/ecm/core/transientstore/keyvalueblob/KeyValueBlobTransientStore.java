@@ -135,6 +135,8 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
 
     public static final String CONFIG_BLOB_PROVIDER = "blobProvider";
 
+    protected String name;
+
     protected String keyValueStoreName;
 
     protected String blobProviderId;
@@ -155,7 +157,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
 
     @Override
     public void init(TransientStoreConfig config) {
-        String name = config.getName();
+        name = config.getName();
         Map<String, String> properties = config.getProperties();
         if (properties == null) {
             properties = Collections.emptyMap();
@@ -508,7 +510,11 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
                 Blob blob = bp.readBlob(blobInfo);
                 blobs.add(blob);
             } catch (IOException e) {
-                throw new NuxeoException(e);
+                // ignore, the blob was removed from the blob provider
+                // maybe by a concurrent GC from this transient store
+                // or from the blob provider itself (if it's incorrectly shared)
+                log.debug("Failed to read blob: " + digest + " in blob provider: " + blobProviderId
+                        + " for transient store: " + name);
             }
         }
         return blobs;
