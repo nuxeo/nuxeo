@@ -182,7 +182,7 @@ public class QuotaStatsActions implements Serializable {
      */
     protected void initConfiguredMaxQuotaSize() {
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        String max = configurationService.getProperty(QUOTA_MAX_SIZE_PROP, QUOTA_MAX_SIZE_DEFAULT);
+        String max = configurationService.getString(QUOTA_MAX_SIZE_PROP, QUOTA_MAX_SIZE_DEFAULT);
         try {
             configuredMaxQuotaSize = SizeUtils.parseSizeInBytes(max);
         } catch (NumberFormatException e) {
