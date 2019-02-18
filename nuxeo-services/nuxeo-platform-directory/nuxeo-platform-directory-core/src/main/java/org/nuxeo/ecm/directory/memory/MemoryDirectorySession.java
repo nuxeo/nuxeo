@@ -25,7 +25,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,6 +34,7 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -59,9 +59,11 @@ public class MemoryDirectorySession extends BaseSession {
 
     protected final String passwordField;
 
+    protected NuxeoException closeStackTrace;
+
     public MemoryDirectorySession(MemoryDirectory directory) {
         super(directory, null);
-        data = Collections.synchronizedMap(new LinkedHashMap<String, Map<String, Object>>());
+        data = directory.data;
         passwordField = getPasswordField();
     }
 
@@ -73,6 +75,7 @@ public class MemoryDirectorySession extends BaseSession {
 
     @Override
     public boolean authenticate(String username, String password) {
+        checkClose();
         Map<String, Object> map = data.get(username);
         if (map == null) {
             return false;
@@ -86,6 +89,21 @@ public class MemoryDirectorySession extends BaseSession {
 
     @Override
     public void close() {
+        NuxeoException exc = new NuxeoException("debug close stack trace");
+        if (closeStackTrace == null) {
+            closeStackTrace = exc;
+        } else {
+            closeStackTrace.addSuppressed(exc);
+        }
+        getDirectory().removeSession(this);
+    }
+
+    protected void checkClose() {
+        if (closeStackTrace != null) {
+            NuxeoException exc = new NuxeoException("Session is closed");
+            exc.addSuppressed(closeStackTrace);
+            throw exc;
+        }
     }
 
     public void commit() {
@@ -97,6 +115,7 @@ public class MemoryDirectorySession extends BaseSession {
 
     @Override
     public DocumentModel createEntryWithoutReferences(Map<String, Object> fieldMap) {
+        checkClose();
         // find id
         Object rawId = fieldMap.get(getIdField());
         if (rawId == null) {
@@ -122,6 +141,7 @@ public class MemoryDirectorySession extends BaseSession {
 
     @Override
     protected List<String> updateEntryWithoutReferences(DocumentModel docModel) {
+        checkClose();
         String id = docModel.getId();
         DataModel dataModel = docModel.getDataModel(directory.getSchema());
 
@@ -147,30 +167,35 @@ public class MemoryDirectorySession extends BaseSession {
 
     @Override
     protected void deleteEntryWithoutReferences(String id) {
+        checkClose();
         checkDeleteConstraints(id);
         data.remove(id);
     }
 
     @Override
     public DocumentModel createEntry(Map<String, Object> fieldMap) {
+        checkClose();
         checkPermission(SecurityConstants.WRITE);
         return createEntryWithoutReferences(fieldMap);
     }
 
     @Override
     public void updateEntry(DocumentModel docModel) {
+        checkClose();
         checkPermission(SecurityConstants.WRITE);
         updateEntryWithoutReferences(docModel);
     }
 
     @Override
     public void deleteEntry(String id) {
+        checkClose();
         checkPermission(SecurityConstants.WRITE);
         deleteEntryWithoutReferences(id);
     }
 
     @Override
     public DocumentModel getEntry(String id, boolean fetchReferences) {
+        checkClose();
         // XXX no references here
         Map<String, Object> map = data.get(id);
         if (map == null) {
@@ -189,6 +214,7 @@ public class MemoryDirectorySession extends BaseSession {
 
     @Override
     public DocumentModelList getEntries() {
+        checkClose();
         DocumentModelList list = new DocumentModelListImpl();
         for (String id : data.keySet()) {
             list.add(getEntry(id));
@@ -200,17 +226,20 @@ public class MemoryDirectorySession extends BaseSession {
     // unique
     @Override
     public void deleteEntry(String id, Map<String, String> map) {
+        checkClose();
         throw new DirectoryException("Not implemented");
     }
 
     @Override
     public void deleteEntry(DocumentModel docModel) {
+        checkClose();
         deleteEntry(docModel.getId());
     }
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences, int limit, int offset) {
+        checkClose();
         DocumentModelList results = new DocumentModelListImpl();
         // canonicalize filter
         Map<String, Object> filt = new HashMap<>();
@@ -257,6 +286,7 @@ public class MemoryDirectorySession extends BaseSession {
 
     @Override
     public DocumentModelList query(QueryBuilder queryBuilder, boolean fetchReferences) {
+        checkClose();
         if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
         }
@@ -291,6 +321,7 @@ public class MemoryDirectorySession extends BaseSession {
 
     @Override
     public List<String> queryIds(QueryBuilder queryBuilder) {
+        checkClose();
         if (!hasPermission(SecurityConstants.READ)) {
             return Collections.emptyList();
         }
@@ -328,12 +359,14 @@ public class MemoryDirectorySession extends BaseSession {
 
     @Override
     public DocumentModel createEntry(DocumentModel entry) {
+        checkClose();
         Map<String, Object> fieldMap = entry.getProperties(directory.getSchema());
         return createEntry(fieldMap);
     }
 
     @Override
     public boolean hasEntry(String id) {
+        checkClose();
         return data.containsKey(id);
     }
 
