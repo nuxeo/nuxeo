@@ -248,9 +248,7 @@ public class MultiDirectoryExpressionEvaluator {
         } else {
             queryBuilder.predicate(predicate);
         }
-        try (Session s = subDirInfo.getSession()) {
-            return new HashSet<>(s.queryIds(queryBuilder));
-        }
+        return new HashSet<>(subDirInfo.getSession().queryIds(queryBuilder));
     }
 
     /**
