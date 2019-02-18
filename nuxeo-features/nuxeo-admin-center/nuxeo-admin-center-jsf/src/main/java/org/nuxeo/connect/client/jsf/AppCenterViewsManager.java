@@ -287,7 +287,7 @@ public class AppCenterViewsManager implements Serializable {
      */
     protected boolean shouldValidateStudioSnapshot() {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        if (cs.isBooleanPropertyTrue(ConnectClientComponent.STUDIO_SNAPSHOT_DISABLE_VALIDATION_PROPERTY)) {
+        if (cs.isBooleanTrue(ConnectClientComponent.STUDIO_SNAPSHOT_DISABLE_VALIDATION_PROPERTY)) {
             return false;
         }
         return Boolean.TRUE.equals(getValidateStudioSnapshot());

@@ -170,7 +170,7 @@ public class AddPermission {
         ensureUserListIsUsed();
 
         ConfigurationService configService = Framework.getService(ConfigurationService.class);
-        if (configService.isBooleanPropertyFalse(ALLOW_VIRTUAL_USER)) {
+        if (configService.isBooleanFalse(ALLOW_VIRTUAL_USER)) {
             UserManager userManager = Framework.getService(UserManager.class);
 
             List<String> unknownNames = users.stream()

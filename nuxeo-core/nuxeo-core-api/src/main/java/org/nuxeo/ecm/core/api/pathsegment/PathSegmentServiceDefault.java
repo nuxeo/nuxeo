@@ -62,7 +62,7 @@ public class PathSegmentServiceDefault implements PathSegmentService {
     @Override
     public int getMaxSize() {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        return Integer.parseInt(cs.getProperty(PathSegmentService.NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
+        return cs.getInteger(PathSegmentService.NUXEO_MAX_SEGMENT_SIZE_PROPERTY, 24);
     }
 
 }

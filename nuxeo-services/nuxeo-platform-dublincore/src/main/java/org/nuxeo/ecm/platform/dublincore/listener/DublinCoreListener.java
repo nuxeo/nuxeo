@@ -126,7 +126,7 @@ public class DublinCoreListener implements EventListener {
 
         Boolean resetCreator = (Boolean) event.getContext().getProperty(CoreEventConstants.RESET_CREATOR);
         boolean resetCreatorProperty = Framework.getService(ConfigurationService.class)
-                                                .isBooleanPropertyTrue(RESET_CREATOR_PROPERTY);
+                                                .isBooleanTrue(RESET_CREATOR_PROPERTY);
         Boolean dirty = (Boolean) event.getContext().getProperty(CoreEventConstants.DOCUMENT_DIRTY);
         if ((eventId.equals(BEFORE_DOC_UPDATE) && Boolean.TRUE.equals(dirty))
                 || (eventId.equals(TRANSITION_EVENT) && !doc.isImmutable())) {

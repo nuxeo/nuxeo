@@ -490,7 +490,7 @@ public class WebActionsBean implements WebActions, Serializable {
     @Factory(value = "useAjaxTabs", scope = ScopeType.SESSION)
     public boolean useAjaxTabs() {
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        if (configurationService.isBooleanPropertyTrue(AJAX_TAB_PROPERTY)) {
+        if (configurationService.isBooleanTrue(AJAX_TAB_PROPERTY)) {
             return canUseAjaxTabs();
         }
         return false;
@@ -515,7 +515,7 @@ public class WebActionsBean implements WebActions, Serializable {
     @Factory(value = "removeActionOptims", scope = ScopeType.SESSION)
     public boolean removeActionOptims() {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        return cs.isBooleanPropertyTrue("nuxeo.jsf.actions.removeActionOptims");
+        return cs.isBooleanTrue("nuxeo.jsf.actions.removeActionOptims");
     }
 
     @Observer(value = { EventNames.FLUSH_EVENT }, create = false)

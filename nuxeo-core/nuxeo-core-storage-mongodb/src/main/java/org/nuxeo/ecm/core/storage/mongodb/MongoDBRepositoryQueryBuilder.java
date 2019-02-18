@@ -127,7 +127,6 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
         this.pathResolver = pathResolver;
         this.fulltextSearchDisabled = fulltextSearchDisabled;
         this.propertyKeys = new HashMap<>();
-        likeAnchored = !Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(LIKE_ANCHORED_PROP);
     }
 
     @Override

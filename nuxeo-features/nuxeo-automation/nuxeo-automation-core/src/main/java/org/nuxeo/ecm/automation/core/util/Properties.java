@@ -60,10 +60,10 @@ public class Properties extends HashMap<String, String> {
      * @since 8.2
      */
     protected static boolean isPropertyValueTrimmed() {
-        return Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(IS_PROPERTY_VALUE_TRIMMED_KEY);
+        return Framework.getService(ConfigurationService.class).isBooleanTrue(IS_PROPERTY_VALUE_TRIMMED_KEY);
     }
 
-    public static final String PROPERTIES_MULTILINE_ESCAPE = "nuxeo" + ".automation.properties.multiline.escape";
+    public static final String PROPERTIES_MULTILINE_ESCAPE = "nuxeo.automation.properties.multiline.escape";
 
     protected static final String multiLineEscape = MoreObjects.firstNonNull(
             Framework.getProperty(PROPERTIES_MULTILINE_ESCAPE), "true");

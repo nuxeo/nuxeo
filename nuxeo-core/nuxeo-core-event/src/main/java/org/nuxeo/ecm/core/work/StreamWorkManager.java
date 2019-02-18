@@ -100,7 +100,7 @@ public class StreamWorkManager extends WorkManagerImpl {
     /**
      * @since 10.2
      */
-    public static final String STATETTL_DEFAULT_VALUE = "3600";
+    public static final long STATETTL_DEFAULT_VALUE = 3600;
 
     protected Topology topology;
 
@@ -184,8 +184,8 @@ public class StreamWorkManager extends WorkManagerImpl {
     public void start(ComponentContext context) {
         super.start(context);
         ConfigurationService configuration = Framework.getService(ConfigurationService.class);
-        storeState = configuration.isBooleanPropertyTrue(STORESTATE_KEY);
-        stateTTL = Long.parseLong(configuration.getProperty(STATETTL_KEY, STATETTL_DEFAULT_VALUE));
+        storeState = configuration.isBooleanTrue(STORESTATE_KEY);
+        stateTTL = configuration.getLong(STATETTL_KEY, STATETTL_DEFAULT_VALUE);
     }
 
     @Override
@@ -356,8 +356,7 @@ public class StreamWorkManager extends WorkManagerImpl {
         log.info("Shutdown WorkManager in " + timeUnit.toMillis(timeout) + " ms");
         shutdownInProgress = true;
         try {
-            long shutdownDelay = Long.parseLong(Framework.getService(ConfigurationService.class)
-                                                         .getProperty(SHUTDOWN_DELAY_MS_KEY, "0"));
+            long shutdownDelay = Framework.getService(ConfigurationService.class).getLong(SHUTDOWN_DELAY_MS_KEY, 0);
             boolean ret = streamProcessor.stop(Duration.ofMillis(Math.max(timeUnit.toMillis(timeout), shutdownDelay)));
             if (!ret) {
                 log.error("Not able to stop worker pool within the timeout.");

@@ -1390,7 +1390,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     private boolean mustCheckPasswordValidity() {
-        return Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(VALIDATE_PASSWORD_PARAM);
+        return Framework.getService(ConfigurationService.class).isBooleanTrue(VALIDATE_PASSWORD_PARAM);
     }
 
     @Override

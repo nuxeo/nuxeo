@@ -535,7 +535,7 @@ public class NXQLQueryBuilder {
         // complicated to implement correctly than the following simple user
         // input filtering scheme.
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        String ignoredChars = cs.getProperty(IGNORED_CHARS_KEY, DEFAULT_SPECIAL_CHARACTERS_REGEXP);
+        String ignoredChars = cs.getString(IGNORED_CHARS_KEY, DEFAULT_SPECIAL_CHARACTERS_REGEXP);
         String res = "";
         value = value.replaceAll("[" + ignoredChars + "]", " ");
         value = value.trim();

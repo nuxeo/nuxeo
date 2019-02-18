@@ -131,7 +131,7 @@ public class HotReloadStudioSnapshot {
 
     protected boolean shouldValidate() {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        if (cs.isBooleanPropertyTrue(ConnectClientComponent.STUDIO_SNAPSHOT_DISABLE_VALIDATION_PROPERTY)) {
+        if (cs.isBooleanTrue(ConnectClientComponent.STUDIO_SNAPSHOT_DISABLE_VALIDATION_PROPERTY)) {
             return false;
         }
         return validate;

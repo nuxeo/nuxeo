@@ -430,7 +430,7 @@ public final class Functions {
     public static BytePrefix getDefaultBytePrefix() {
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
         return BytePrefix.valueOf(
-                configurationService.getProperty(BYTE_PREFIX_FORMAT_PROPERTY, DEFAULT_BYTE_PREFIX_FORMAT));
+                configurationService.getString(BYTE_PREFIX_FORMAT_PROPERTY, DEFAULT_BYTE_PREFIX_FORMAT));
     }
 
     public static String printFileSize(String size) {

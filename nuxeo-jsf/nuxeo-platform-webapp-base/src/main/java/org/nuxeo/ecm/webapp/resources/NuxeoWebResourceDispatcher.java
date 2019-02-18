@@ -149,7 +149,7 @@ public class NuxeoWebResourceDispatcher implements ComponentSystemEventListener 
 
     public boolean isDeferJavaScriptLoading() {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        return cs.isBooleanPropertyTrue(DEFER_JS_PROP);
+        return cs.isBooleanTrue(DEFER_JS_PROP);
     }
 
     public String getHeadStartTarget() {

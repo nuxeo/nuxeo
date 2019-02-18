@@ -284,16 +284,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
     public long getMaxResultWindow() {
         if (maxResultWindow == null) {
             ConfigurationService cs = Framework.getService(ConfigurationService.class);
-            String maxResultWindowStr = cs.getProperty(ES_MAX_RESULT_WINDOW_PROPERTY,
-                    DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
-            try {
-                maxResultWindow = Long.valueOf(maxResultWindowStr);
-            } catch (NumberFormatException e) {
-                log.warn(String.format(
-                        "Invalid maxResultWindow property value: %s for page provider: %s, fallback to default.",
-                        maxResultWindowStr, getName()));
-                maxResultWindow = Long.valueOf(DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
-            }
+            maxResultWindow = cs.getLong(ES_MAX_RESULT_WINDOW_PROPERTY, DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
         }
         return maxResultWindow;
     }

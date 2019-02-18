@@ -230,8 +230,7 @@ public interface NuxeoPrincipal extends Principal, Serializable {
         if (baseUsername != null && !baseUsername.startsWith(TRANSIENT_USER_PREFIX)) {
             StringBuilder sb = new StringBuilder(TRANSIENT_USER_PREFIX);
             sb.append(baseUsername);
-            if (Framework.getService(ConfigurationService.class)
-                         .isBooleanPropertyTrue(TRANSIENT_USERNAME_UNIQUE_PROP)) {
+            if (Framework.getService(ConfigurationService.class).isBooleanTrue(TRANSIENT_USERNAME_UNIQUE_PROP)) {
                 String uuid = UUID.randomUUID().toString();
                 uuid = uuid.replaceAll("-", "").substring(0, 16);
                 sb.append("/");

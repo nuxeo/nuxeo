@@ -473,7 +473,7 @@ public class ACPImpl implements ACP {
             // check runtime is present - as ACP is a simple object, it could be used outside of a runtime context
             // otherwise don't use legacy behavior
             legacyBehavior = Framework.getRuntime() != null
-                    && Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(LEGACY_BEHAVIOR_PROPERTY);
+                    && Framework.getService(ConfigurationService.class).isBooleanTrue(LEGACY_BEHAVIOR_PROPERTY);
         }
         return legacyBehavior.booleanValue();
     }

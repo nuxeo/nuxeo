@@ -101,7 +101,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         this.clusterInvalidator = clusterInvalidator;
         this.invalidationsPropagator = invalidationsPropagator;
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        collectionDeleteBeforeAppend = configurationService.isBooleanPropertyTrue(COLLECTION_DELETE_BEFORE_APPEND_PROP);
+        collectionDeleteBeforeAppend = configurationService.isBooleanTrue(COLLECTION_DELETE_BEFORE_APPEND_PROP);
         aclCollectionIO = new ACLCollectionIO(collectionDeleteBeforeAppend);
         scalarCollectionIO = new ScalarCollectionIO(collectionDeleteBeforeAppend);
     }

@@ -77,9 +77,7 @@ public class TestTextSearchCleaner {
     public void testCustomCleaner() throws Exception {
 
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        String s = cs.getProperty(NXQLQueryBuilder.IGNORED_CHARS_KEY);
-        assertEquals("&/{}()", s);
-        assertNotNull(s);
+        assertEquals("&/{}()", cs.getString(NXQLQueryBuilder.IGNORED_CHARS_KEY, null));
         assertEquals("= 'a $ b'", NXQLQueryBuilder.serializeFullText("a $ b"));
         assertEquals("= '10.3'", NXQLQueryBuilder.serializeFullText("10.3"));
     }

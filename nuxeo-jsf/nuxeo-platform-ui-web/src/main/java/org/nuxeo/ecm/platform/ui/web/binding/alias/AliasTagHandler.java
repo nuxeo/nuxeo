@@ -131,7 +131,7 @@ public class AliasTagHandler extends ComponentHandler {
 
     protected boolean isOptimizedAgain() {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        return !cs.isBooleanPropertyTrue("nuxeo.jsf.removeAliasOptimsReloaded");
+        return cs.isBooleanFalse("nuxeo.jsf.removeAliasOptimsReloaded");
     }
 
     protected void applyOptimized(FaceletContext ctx, UIComponent parent, boolean cache)
@@ -184,7 +184,7 @@ public class AliasTagHandler extends ComponentHandler {
     protected void apply(FaceletContext ctx, UIComponent parent, AliasVariableMapper alias, FaceletHandler nextHandler)
             throws IOException, FacesException, FaceletException, ELException {
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        if (configurationService.isBooleanPropertyTrue("nuxeo.jsf.removeAliasOptims")) {
+        if (configurationService.isBooleanTrue("nuxeo.jsf.removeAliasOptims")) {
             applyCompat(ctx, parent, alias, nextHandler);
             return;
         }

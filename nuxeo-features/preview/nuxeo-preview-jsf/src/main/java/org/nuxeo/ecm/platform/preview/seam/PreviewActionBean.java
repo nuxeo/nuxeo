@@ -123,14 +123,14 @@ public class PreviewActionBean implements Serializable {
 
     public String getPreviewURL(DocumentModel doc) {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        return cs.isBooleanPropertyTrue(ConverterBasedHtmlPreviewAdapter.OLD_PREVIEW_PROPERTY)
+        return cs.isBooleanTrue(ConverterBasedHtmlPreviewAdapter.OLD_PREVIEW_PROPERTY)
                 ? getOldPreviewURL(doc, fieldXPathValue)
                 : PreviewHelper.getPreviewURL(doc, fieldXPathValue);
     }
 
     public String getPreviewURL(DocumentModel doc, String xpath) {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        return cs.isBooleanPropertyTrue(ConverterBasedHtmlPreviewAdapter.OLD_PREVIEW_PROPERTY)
+        return cs.isBooleanTrue(ConverterBasedHtmlPreviewAdapter.OLD_PREVIEW_PROPERTY)
                 ? getOldPreviewURL(doc, protectField(xpath))
                 : PreviewHelper.getPreviewURL(doc, xpath);
     }

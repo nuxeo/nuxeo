@@ -704,8 +704,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                     hasRunningWork = true;
                 }
                 if (hasRunningWork) {
-                    long shutdownDelay = Long.parseLong(
-                            Framework.getService(ConfigurationService.class).getProperty(SHUTDOWN_DELAY_MS_KEY, "0"));
+                    long shutdownDelay = Framework.getService(ConfigurationService.class)
+                                                  .getLong(SHUTDOWN_DELAY_MS_KEY, 0);
                     // sleep for a given amount of time for works to have time to persist their state and stop properly
                     Thread.sleep(shutdownDelay);
                 }

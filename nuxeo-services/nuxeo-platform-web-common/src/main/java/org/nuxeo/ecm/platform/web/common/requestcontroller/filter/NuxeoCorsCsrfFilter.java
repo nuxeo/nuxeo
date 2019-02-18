@@ -108,9 +108,6 @@ public class NuxeoCorsCsrfFilter implements Filter {
      */
     public static final String ALLOW_NULL_ORIGIN_PROP = "nuxeo.cors.allowNullOrigin";
 
-    /** @since 10.3 */
-    public static final String ALLOW_NULL_ORIGIN_DEFAULT = "false";
-
     /**
      * Configuration property (namespace) for CSRF tokens.
      *
@@ -183,8 +180,7 @@ public class NuxeoCorsCsrfFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) {
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        allowNullOrigin = Boolean.parseBoolean(
-                configurationService.getProperty(ALLOW_NULL_ORIGIN_PROP, ALLOW_NULL_ORIGIN_DEFAULT));
+        allowNullOrigin = configurationService.isBooleanTrue(ALLOW_NULL_ORIGIN_PROP);
         Map<String, Serializable> csrfTokenConfig = configurationService.getProperties(CSRF_TOKEN_NS_PROP);
         csrfTokenEnabled = Boolean.parseBoolean(StringUtils.defaultString(
                 (String) csrfTokenConfig.get(CSRF_TOKEN_ENABLED_SUBPROP), CSRF_TOKEN_ENABLED_DEFAULT));

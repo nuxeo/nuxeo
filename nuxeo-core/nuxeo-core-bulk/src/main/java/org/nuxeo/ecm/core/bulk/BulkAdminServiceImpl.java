@@ -82,21 +82,19 @@ public class BulkAdminServiceImpl implements BulkAdminService {
 
     public static final String BULK_SCROLL_CONTINUE_ON_FAILURE_PROPERTY = "nuxeo.core.bulk.scroller.continueOnFailure";
 
-    public static final String DEFAULT_STATUS_CONCURRENCY = "1";
+    public static final int DEFAULT_STATUS_CONCURRENCY = 1;
 
-    public static final String DEFAULT_STATUS_MAX_RETRIES = "3";
+    public static final int DEFAULT_STATUS_MAX_RETRIES = 3;
 
-    public static final String DEFAULT_STATUS_DELAY_MILLIS = "500";
+    public static final int DEFAULT_STATUS_DELAY_MILLIS = 500;
 
-    public static final String DEFAULT_STATUS_MAX_DELAY_MILLIS = "10000";
+    public static final int DEFAULT_STATUS_MAX_DELAY_MILLIS = 10000;
 
-    public static final String DEFAULT_SCROLLER_CONCURRENCY = "1";
+    public static final int DEFAULT_SCROLLER_CONCURRENCY = 1;
 
-    public static final String DEFAULT_SCROLL_SIZE = "100";
+    public static final int DEFAULT_SCROLL_SIZE = 100;
 
-    public static final String DEFAULT_SCROLL_KEEP_ALIVE = "60";
-
-    public static final String DEFAULT_SCROLL_PRODUCE_IMMEDIATE = "false";
+    public static final int DEFAULT_SCROLL_KEEP_ALIVE = 60;
 
     public static final Duration STOP_DURATION = Duration.ofSeconds(1);
 
@@ -112,9 +110,10 @@ public class BulkAdminServiceImpl implements BulkAdminService {
         this.actions = descriptorsList.stream().map(Descriptor::getId).collect(Collectors.toList());
         this.descriptors = new HashMap<>(descriptorsList.size());
         descriptorsList.forEach(descriptor -> descriptors.put(descriptor.name, descriptor));
-        actionValidations = descriptorsList.stream().collect(HashMap::new,
-                (map, desc) -> map.put(desc.name, desc.validationClass != null ? desc.newValidationInstance() : null),
-                 HashMap::putAll);
+        actionValidations = descriptorsList.stream()
+                                           .collect(HashMap::new, (map, desc) -> map.put(desc.name,
+                                                   desc.validationClass != null ? desc.newValidationInstance() : null),
+                                                   HashMap::putAll);
     }
 
     protected void initProcessor() {
@@ -125,37 +124,31 @@ public class BulkAdminServiceImpl implements BulkAdminService {
         Codec<Record> codec = codecService.getCodec(RECORD_CODEC, Record.class);
         // we don't set any partitioning because it is already defined by logConfig contribution
         Settings settings = new Settings(1, 1, codec);
-        settings.setConcurrency(SCROLLER_NAME, Integer.parseInt(
-                confService.getProperty(BULK_SCROLLER_CONCURRENCY_PROPERTY, DEFAULT_SCROLLER_CONCURRENCY)));
-        settings.setConcurrency(STATUS_NAME, Integer.parseInt(
-                confService.getProperty(BULK_STATUS_CONCURRENCY_PROPERTY, DEFAULT_STATUS_CONCURRENCY)));
+        settings.setConcurrency(SCROLLER_NAME,
+                confService.getInteger(BULK_SCROLLER_CONCURRENCY_PROPERTY, DEFAULT_SCROLLER_CONCURRENCY));
+        settings.setConcurrency(STATUS_NAME,
+                confService.getInteger(BULK_STATUS_CONCURRENCY_PROPERTY, DEFAULT_STATUS_CONCURRENCY));
         // we don't want any retry on scroller this creates duplicates
         ComputationPolicy scrollerPolicy = new ComputationPolicyBuilder().continueOnFailure(
-                confService.isBooleanPropertyTrue(BULK_SCROLL_CONTINUE_ON_FAILURE_PROPERTY))
+                confService.isBooleanTrue(BULK_SCROLL_CONTINUE_ON_FAILURE_PROPERTY))
                                                                          .retryPolicy(ComputationPolicy.NO_RETRY)
                                                                          .build();
         settings.setPolicy(SCROLLER_NAME, scrollerPolicy);
         // status policy is configurable
         RetryPolicy retryPolicy = new RetryPolicy().withMaxRetries(
-                Integer.parseInt(confService.getProperty(BULK_STATUS_MAX_RETRIES_PROPERTY, DEFAULT_STATUS_MAX_RETRIES)))
+                confService.getInteger(BULK_STATUS_MAX_RETRIES_PROPERTY, DEFAULT_STATUS_MAX_RETRIES))
                                                    .withBackoff(
-                                                           Integer.parseInt(
-                                                                   confService.getProperty(BULK_STATUS_DELAY_PROPERTY,
-                                                                           DEFAULT_STATUS_DELAY_MILLIS)),
-                                                           Integer.parseInt(confService.getProperty(
-                                                                   BULK_STATUS_MAX_DELAY_PROPERTY,
-                                                                   DEFAULT_STATUS_MAX_DELAY_MILLIS)),
+                                                           confService.getInteger(BULK_STATUS_DELAY_PROPERTY,
+                                                                   DEFAULT_STATUS_DELAY_MILLIS),
+                                                           confService.getInteger(BULK_STATUS_MAX_DELAY_PROPERTY,
+                                                                   DEFAULT_STATUS_MAX_DELAY_MILLIS),
                                                            TimeUnit.MILLISECONDS);
         ComputationPolicy statusPolicy = new ComputationPolicyBuilder().continueOnFailure(
-                confService.isBooleanPropertyTrue(BULK_STATUS_CONTINUE_ON_FAILURE_PROPERTY))
-                                                                       .retryPolicy(retryPolicy)
-                                                                       .build();
+                confService.isBooleanTrue(BULK_STATUS_CONTINUE_ON_FAILURE_PROPERTY)).retryPolicy(retryPolicy).build();
         settings.setPolicy(SCROLLER_NAME, statusPolicy);
-        int scrollSize = Integer.parseInt(confService.getProperty(BULK_SCROLL_SIZE_PROPERTY, DEFAULT_SCROLL_SIZE));
-        int scrollKeepAlive = Integer.parseInt(
-                confService.getProperty(BULK_SCROLL_KEEP_ALIVE_PROPERTY, DEFAULT_SCROLL_KEEP_ALIVE));
-        boolean scrollProduceImmediate = Boolean.parseBoolean(
-                confService.getProperty(BULK_SCROLL_PRODUCE_IMMEDIATE_PROPERTY, DEFAULT_SCROLL_PRODUCE_IMMEDIATE));
+        int scrollSize = confService.getInteger(BULK_SCROLL_SIZE_PROPERTY, DEFAULT_SCROLL_SIZE);
+        int scrollKeepAlive = confService.getInteger(BULK_SCROLL_KEEP_ALIVE_PROPERTY, DEFAULT_SCROLL_KEEP_ALIVE);
+        boolean scrollProduceImmediate = confService.isBooleanTrue(BULK_SCROLL_PRODUCE_IMMEDIATE_PROPERTY);
 
         streamProcessor.init(getTopology(scrollSize, scrollKeepAlive, scrollProduceImmediate), settings);
     }

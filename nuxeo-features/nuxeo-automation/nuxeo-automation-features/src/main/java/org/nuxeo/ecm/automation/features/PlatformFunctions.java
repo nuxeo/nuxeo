@@ -173,7 +173,7 @@ public class PlatformFunctions extends CoreFunctions {
 
     public String getNextId(final String key) {
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        boolean useHibernate = configurationService.isBooleanPropertyTrue(HIBERNATE_SEQUENCER_PROPERTY);
+        boolean useHibernate = configurationService.isBooleanTrue(HIBERNATE_SEQUENCER_PROPERTY);
         return getNextId(key, useHibernate ? "hibernateSequencer" : null);
     }
 
