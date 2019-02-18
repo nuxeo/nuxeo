@@ -21,7 +21,9 @@
 
 package org.nuxeo.ecm.directory.memory;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,9 +41,7 @@ public class MemoryDirectory extends AbstractDirectory {
 
     public final Set<String> schemaSet;
 
-    public Map<String, Object> map;
-
-    public MemoryDirectorySession session;
+    protected final Map<String, Map<String, Object>> data;
 
     public MemoryDirectory(MemoryDirectoryDescriptor descriptor) {
         super(descriptor, null);
@@ -57,6 +57,7 @@ public class MemoryDirectory extends AbstractDirectory {
             }
         }
         this.schemaSet = schemaSet;
+        data = Collections.synchronizedMap(new LinkedHashMap<String, Map<String, Object>>());
     }
 
     @Override
@@ -66,17 +67,9 @@ public class MemoryDirectory extends AbstractDirectory {
 
     @Override
     public MemoryDirectorySession getSession() {
-        if (session == null) {
-            session = new MemoryDirectorySession(this);
-        }
+        MemoryDirectorySession session = new MemoryDirectorySession(this);
         addSession(session);
         return session;
-    }
-
-    @Override
-    public void shutdown() {
-        super.shutdown();
-        session = null;
     }
 
 }
