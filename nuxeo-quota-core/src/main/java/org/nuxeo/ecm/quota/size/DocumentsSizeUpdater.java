@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
 
-    private static Log log = LogFactory.getLog(DocumentsSizeUpdater.class);
+    private static Logger log = LogManager.getLogger(DocumentsSizeUpdater.class);
 
     public static final String DISABLE_QUOTA_CHECK_LISTENER = "disableQuotaListener";
 
@@ -56,7 +56,7 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
 
     @Override
     public void computeInitialStatistics(CoreSession session, QuotaStatsInitialWork currentWorker, String path) {
-        log.debug("Starting initial Quota computation for path: " + path);
+        log.debug("Starting initial Quota computation for path: {}", path);
         String query = "SELECT ecm:uuid FROM Document WHERE ecm:isVersion = 0 AND ecm:isProxy = 0";
         DocumentModel root;
         if (path == null) {
@@ -68,39 +68,29 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
         // reset on all documents
         // this will force an update if the quota addon was installed and then removed
         long count;
-        IterableQueryResult res = session.queryAndFetch(query, "NXQL");
-        try {
+        try (IterableQueryResult res = session.queryAndFetch(query, "NXQL")) {
             count = res.size();
-            log.debug("Start iteration on " + count + " items");
+            log.debug("Start iteration on {} items", count);
             for (Map<String, Serializable> r : res) {
                 String uuid = (String) r.get("ecm:uuid");
                 clearQuotas(session, uuid);
             }
-        } finally {
-            res.close();
         }
         clearQuotas(session, root.getId());
         session.save();
 
         // recompute quota on each doc
-        res = session.queryAndFetch(query, "NXQL");
-        try {
+        try (IterableQueryResult res = session.queryAndFetch(query, "NXQL")) {
             long idx = 0;
             for (Map<String, Serializable> r : res) {
                 String uuid = (String) r.get("ecm:uuid");
                 DocumentModel doc = session.getDocument(new IdRef(uuid));
-                if (log.isTraceEnabled()) {
-                    log.trace("process Quota initial computation on uuid " + doc.getId());
-                    log.trace("doc with uuid " + doc.getId() + " started update");
-                }
+                log.trace("process Quota initial computation on uuid={}", doc::getId);
+                log.trace("doc with uuid {} started update", doc::getId);
                 initDocument(session, doc);
-                if (log.isTraceEnabled()) {
-                    log.trace("doc with uuid " + doc.getId() + " update completed");
-                }
+                log.trace("doc with uuid {} update completed", doc::getId);
                 currentWorker.notifyProgress(++idx, count);
             }
-        } finally {
-            res.close();
         }
 
         // if recomputing only for descendants of a given path, recompute ancestors from their direct children
@@ -265,26 +255,19 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
             // hasn't finished yet, see NXP-13665
             size = getBlobsSize(doc);
             versionsSize = 0;
-            if (log.isTraceEnabled()) {
-                log.trace(
-                        "Document " + doc.getId() + " doesn't have the facet quotaDoc. Compute impacted size:" + size);
-            }
+            log.trace("Document {} doesn't have the facet quotaDoc. Compute impacted size: {}", doc.getId(), size);
         } else {
             size = quotaDoc.getTotalSize();
             versionsSize = quotaDoc.getVersionsSize();
-            if (log.isTraceEnabled()) {
-                log.trace("Found facet quotaDoc on document  " + doc.getId() + ". Total size: " + size
-                        + " and versions size: " + versionsSize);
-            }
+            log.trace("Found facet quotaDoc on document  {}. Total size: {} and versions size: {}", doc.getId(), size,
+                    versionsSize);
         }
         // remove size for all its versions from sizeVersions on parents
         boolean isDeleted = doc.isTrashed();
         // when permanently deleting the doc clean the trash if the doc is in the trash
         // and all archived versions size
-        if (log.isTraceEnabled()) {
-            log.trace("Processing document about to be removed on parents. Total: " + size + " , trash size: "
-                    + (isDeleted ? size : 0) + " , versions size: " + versionsSize);
-        }
+        log.trace("Processing document about to be removed on parents. Total: {}, trash size: {}, versions size: ",
+                size, isDeleted ? size : 0, versionsSize);
         long deltaTrash = isDeleted ? versionsSize - size : 0;
         updateAncestors(session, doc, -size, deltaTrash, -versionsSize);
     }
@@ -347,9 +330,7 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
             return;
         }
         for (DocumentModel parent : getAncestors(session, doc)) {
-            if (log.isTraceEnabled()) {
-                log.trace("processing " + parent.getId() + " " + parent.getPathAsString());
-            }
+            log.trace("processing {} {}", parent::getId, parent::getPathAsString);
             QuotaAware quotaDoc = parent.getAdapter(QuotaAware.class);
             // when enabling quota on user workspaces, the max size set on the
             // UserWorkspacesRoot is the max size set on every user workspace
@@ -357,7 +338,7 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
                 continue;
             }
             if (quotaDoc.getTotalSize() + delta > quotaDoc.getMaxQuota()) {
-                log.info("Raising Quota Exception on " + doc.getId() + " (" + doc.getPathAsString() + ")");
+                log.info("Raising Quota Exception on {} ({})", doc::getId, doc::getPathAsString);
                 throw new QuotaExceededException(parent, doc, quotaDoc.getMaxQuota());
             }
         }
@@ -400,16 +381,11 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
         QuotaAware quotaDoc = doc.getAdapter(QuotaAware.class);
         boolean save = false;
         if (quotaDoc == null) {
-            if (log.isTraceEnabled()) {
-                log.trace("   add quota on: " + doc.getId() + " (" + doc.getPathAsString() + ")");
-            }
+            log.trace("   add quota on: {} ({})", doc::getId, doc::getPathAsString);
             quotaDoc = QuotaAwareDocumentFactory.make(doc);
             save = true;
         } else {
-            if (log.isTraceEnabled()) {
-                log.trace("   update quota on: " + doc.getId() + " (" + doc.getPathAsString() + ") ("
-                        + quotaDoc.getQuotaInfo() + ")");
-            }
+            log.trace("   update quota on: {} ({}) ({})", doc::getId, doc::getPathAsString, quotaDoc::getQuotaInfo);
         }
         if (deltaInner != 0) {
             quotaDoc.addInnerSize(deltaInner);
@@ -430,9 +406,7 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
         if (save && allowSave) {
             quotaDoc.save();
         }
-        if (log.isTraceEnabled()) {
-            log.trace("     ==> " + doc.getId() + " (" + doc.getPathAsString() + ") (" + quotaDoc.getQuotaInfo() + ")");
-        }
+        log.trace("     ==> {} ({}) ({})", doc::getId, doc::getPathAsString, quotaDoc::getQuotaInfo);
     }
 
     protected void updateAncestors(CoreSession session, DocumentModel doc, long deltaTotal, long deltaTrash,
