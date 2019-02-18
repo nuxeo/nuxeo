@@ -1197,7 +1197,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         @Override
         public Boolean walkContains(Tree opNode, Tree qualNode, Tree queryNode) {
             if (hasContains && Framework.getService(ConfigurationService.class)
-                                        .isBooleanPropertyFalse(NuxeoRepository.RELAX_CMIS_SPEC)) {
+                                        .isBooleanFalse(NuxeoRepository.RELAX_CMIS_SPEC)) {
                 throw new QueryParseException("At most one CONTAINS() is allowed");
             }
             hasContains = true;

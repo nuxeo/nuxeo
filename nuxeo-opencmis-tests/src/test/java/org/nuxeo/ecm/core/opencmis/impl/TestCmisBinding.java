@@ -2360,7 +2360,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assumeFalse("JOINs are not supported", supportsJoins());
 
         ConfigurationService configService = Framework.getService(ConfigurationService.class);
-        assertTrue(configService.isBooleanPropertyTrue(NuxeoRepository.RELAX_CMIS_SPEC));
+        assertTrue(configService.getBoolean(NuxeoRepository.RELAX_CMIS_SPEC).orElseThrow(AssertionError::new));
 
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
@@ -2389,7 +2389,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     public void testQueryMultiConainsFollowingSpec() throws Exception {
 
         ConfigurationService configService = Framework.getService(ConfigurationService.class);
-        assertFalse(configService.isBooleanPropertyTrue(NuxeoRepository.RELAX_CMIS_SPEC));
+        assertFalse(configService.getBoolean(NuxeoRepository.RELAX_CMIS_SPEC).orElseThrow(AssertionError::new));
 
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, "dc:title"));

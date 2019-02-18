@@ -153,9 +153,9 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.server.versioning.CMISVersioningFilter;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
+import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
-import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -280,7 +280,7 @@ public class NuxeoCmisService extends AbstractCmisService
         writePermissions = new HashSet<>(
                 Arrays.asList(securityService.getPermissionsToCheck(SecurityConstants.READ_WRITE)));
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        errorOnCancelCheckOutOfDraftVersion = configurationService.isBooleanPropertyTrue(
+        errorOnCancelCheckOutOfDraftVersion = configurationService.isBooleanTrue(
                 ERROR_ON_CANCEL_CHECK_OUT_OF_DRAFT_VERSION_PROP);
         CMISVersioningFilter.enable();
     }
