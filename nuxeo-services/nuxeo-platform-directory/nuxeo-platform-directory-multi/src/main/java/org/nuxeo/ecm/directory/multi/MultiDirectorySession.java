@@ -114,6 +114,7 @@ public class MultiDirectorySession extends BaseSession {
             this.isOptional = isOptional;
         }
 
+        /** Gets the {@link Session} associated to this subdirectory; the session MUST NOT be closed. */
         Session getSession() {
             if (session == null) {
                 session = directoryService.open(dirName);
