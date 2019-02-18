@@ -89,7 +89,7 @@ public class MongoDBUIDSequencer extends AbstractUIDSequencer {
         if (coll == null) {
             // Get collection name
             ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-            String collName = configurationService.getProperty(COLLECTION_NAME_PROPERTY, DEFAULT_COLLECTION_NAME);
+            String collName = configurationService.getString(COLLECTION_NAME_PROPERTY, DEFAULT_COLLECTION_NAME);
             // Get a connection to MongoDB
             MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
             // Get database

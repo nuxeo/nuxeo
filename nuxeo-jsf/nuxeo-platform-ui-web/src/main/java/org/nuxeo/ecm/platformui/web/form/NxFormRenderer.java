@@ -45,7 +45,7 @@ public class NxFormRenderer extends FormRenderer {
 
     protected static boolean isDoubleShieldEnabled() {
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        return !configurationService.isBooleanPropertyFalse(ENABLE_DOUBLE_CLICK_SHIELD);
+        return configurationService.isBooleanTrue(ENABLE_DOUBLE_CLICK_SHIELD);
     }
 
     protected static boolean dcDisabledOnElement(UIComponent component) {

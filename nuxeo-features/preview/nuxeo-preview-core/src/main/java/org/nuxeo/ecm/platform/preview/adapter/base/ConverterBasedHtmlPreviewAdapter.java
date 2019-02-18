@@ -133,7 +133,7 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
             return false;
         }
         if ("application/zip".equals(srcMT)
-                && !Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(ALLOW_ZIP_PREVIEW)) {
+                && Framework.getService(ConfigurationService.class).isBooleanFalse(ALLOW_ZIP_PREVIEW)) {
             return false;
         }
         MimeTypePreviewer mtPreviewer = getPreviewManager().getPreviewer(srcMT);
@@ -203,7 +203,7 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         }
 
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        if (cs.isBooleanPropertyTrue(TEXT_ANNOTATIONS_PROPERTY) && (mtPreviewer instanceof PdfPreviewer
+        if (cs.isBooleanTrue(TEXT_ANNOTATIONS_PROPERTY) && (mtPreviewer instanceof PdfPreviewer
                 || mtPreviewer instanceof MarkdownPreviewer || mtPreviewer instanceof OfficePreviewer)) {
             return null;
         }
@@ -301,7 +301,7 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         }
         String srcMT = getMimeType(xpath);
         if ("application/zip".equals(srcMT)
-                && !Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(ALLOW_ZIP_PREVIEW)) {
+                && Framework.getService(ConfigurationService.class).isBooleanFalse(ALLOW_ZIP_PREVIEW)) {
             return false;
         }
         return blob2Preview != null;

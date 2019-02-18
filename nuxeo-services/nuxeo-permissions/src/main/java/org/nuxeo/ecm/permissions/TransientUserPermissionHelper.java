@@ -146,7 +146,7 @@ public class TransientUserPermissionHelper {
      */
     protected static boolean hasOtherPermission(String username, DocumentModel doc) {
         if (Framework.getService(ConfigurationService.class)
-                     .isBooleanPropertyTrue(NuxeoPrincipal.TRANSIENT_USERNAME_UNIQUE_PROP)) {
+                     .isBooleanTrue(NuxeoPrincipal.TRANSIENT_USERNAME_UNIQUE_PROP)) {
             // as the transient username is unique, assume there is no other document with a permission
             // for username.
             return false;

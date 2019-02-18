@@ -251,7 +251,7 @@ public class SuggestConstants {
     protected static boolean isForceDisplayEmailInSuggestion() {
         if (forceDisplayEmailInSuggestion == null) {
             ConfigurationService cs = Framework.getService(ConfigurationService.class);
-            forceDisplayEmailInSuggestion = cs.isBooleanPropertyTrue(FORCE_DISPLAY_EMAIL_IN_SUGGESTION);
+            forceDisplayEmailInSuggestion = cs.isBooleanTrue(FORCE_DISPLAY_EMAIL_IN_SUGGESTION);
         }
         return forceDisplayEmailInSuggestion;
     }

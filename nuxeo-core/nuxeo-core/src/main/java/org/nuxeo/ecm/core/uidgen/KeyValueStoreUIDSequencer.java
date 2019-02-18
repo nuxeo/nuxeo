@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.uidgen;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
@@ -50,10 +48,7 @@ public class KeyValueStoreUIDSequencer extends AbstractUIDSequencer {
 
     @Override
     public void init() {
-        storeName = Framework.getService(ConfigurationService.class).getProperty(STORE_NAME_PROPERTY);
-        if (isBlank(storeName)) {
-            storeName = DEFAULT_STORE_NAME;
-        }
+        storeName = Framework.getService(ConfigurationService.class).getString(STORE_NAME_PROPERTY, DEFAULT_STORE_NAME);
     }
 
     @Override

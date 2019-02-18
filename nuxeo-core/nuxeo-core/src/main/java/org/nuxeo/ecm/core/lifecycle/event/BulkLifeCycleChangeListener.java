@@ -155,9 +155,9 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
     protected void changeChildrenState(CoreSession session, String transition, String targetState, DocumentModel doc) {
         // Check if we need to paginate children fetch
         ConfigurationService confService = Framework.getService(ConfigurationService.class);
-        boolean paginate = confService.isBooleanPropertyTrue(PAGINATE_GET_CHILDREN_PROPERTY);
+        boolean paginate = confService.isBooleanTrue(PAGINATE_GET_CHILDREN_PROPERTY);
         if (paginate) {
-            long pageSize = Long.parseLong(confService.getProperty(GET_CHILDREN_PAGE_SIZE_PROPERTY, "500"));
+            long pageSize = confService.getLong(GET_CHILDREN_PAGE_SIZE_PROPERTY, 500);
             // execute a first query to know total size
             String query = String.format("SELECT * FROM Document where ecm:parentId ='%s'", doc.getId());
             DocumentModelList documents = session.query(query, null, pageSize, 0, true);

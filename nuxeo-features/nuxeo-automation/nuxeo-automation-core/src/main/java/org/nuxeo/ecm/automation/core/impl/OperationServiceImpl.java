@@ -430,7 +430,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
         List<OperationDocumentation> result = new ArrayList<>();
         HashSet<OperationType> ops = new HashSet<>(operations.lookup().values());
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        boolean exportAliases = configurationService.isBooleanPropertyTrue(EXPORT_ALIASES_CONFIGURATION_PARAM);
+        boolean exportAliases = configurationService.isBooleanTrue(EXPORT_ALIASES_CONFIGURATION_PARAM);
         for (OperationType ot : ops.toArray(new OperationType[ops.size()])) {
             try {
                 OperationDocumentation documentation = ot.getDocumentation();

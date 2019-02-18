@@ -101,7 +101,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         initializeData(value);
         this.template = template;
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        skipMissingRow = configurationService.isBooleanPropertyTrue(SKIP_MISSING_ROW);
+        skipMissingRow = configurationService.isBooleanTrue(SKIP_MISSING_ROW);
     }
 
     protected void initializeData(Object originalData) {

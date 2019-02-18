@@ -129,7 +129,7 @@ public class ACLJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
             writeACEsField(jg, "aces", acl, document);
 
             ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-            if (configurationService.isBooleanPropertyTrue(COMPATIBILITY_CONFIGURATION_PARAM)) {
+            if (configurationService.isBooleanTrue(COMPATIBILITY_CONFIGURATION_PARAM)) {
                 writeACEsField(jg, "ace", acl, document);
             }
             jg.writeEndObject();

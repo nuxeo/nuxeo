@@ -42,7 +42,7 @@ public class ActionWidgetTypeHandler extends TemplateWidgetTypeHandler {
     @Override
     protected String getTemplateValue(Widget widget) {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        boolean useCompat = cs.isBooleanPropertyTrue("nuxeo.jsf.actions.removeActionOptims");
+        boolean useCompat = cs.isBooleanTrue("nuxeo.jsf.actions.removeActionOptims");
         if (useCompat) {
             String compatTemplate = lookupProperty(COMPAT_TEMPLATE_PROPERTY_NAME, widget);
             if (compatTemplate != null) {

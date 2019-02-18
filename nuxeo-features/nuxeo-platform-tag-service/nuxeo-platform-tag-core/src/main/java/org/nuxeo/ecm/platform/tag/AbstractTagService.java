@@ -216,7 +216,7 @@ public abstract class AbstractTagService implements TagService {
 
     protected boolean isTagSanitizationEnabled() {
         return !hasFeature(TAGS_BELONG_TO_DOCUMENT)
-                || Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(TAG_SANITIZATION_PROP);
+                || Framework.getService(ConfigurationService.class).isBooleanTrue(TAG_SANITIZATION_PROP);
     }
 
     public abstract void doTag(CoreSession session, String docId, String label, String username);

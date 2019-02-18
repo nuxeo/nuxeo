@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -55,7 +54,8 @@ public abstract class AbstractUserGroupCodec extends AbstractDocumentViewCodec {
      */
     public DocumentView getDocumentViewFromUrl(String url, String defaultTab, String paramIdName, String paramShowName) {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        String allowedCharsRegex = cs.getProperty(ALLOWED_CHARACTERS_REGEX);
+        String allowedCharsRegex = cs.getString(ALLOWED_CHARACTERS_REGEX)
+                                     .orElseThrow(() -> new NuxeoException(ALLOWED_CHARACTERS_REGEX + " is missing"));
         String userGroupNameRegex = String.format("(%s)?", allowedCharsRegex);
 
         // prefix/groupname/view_id?requestParams

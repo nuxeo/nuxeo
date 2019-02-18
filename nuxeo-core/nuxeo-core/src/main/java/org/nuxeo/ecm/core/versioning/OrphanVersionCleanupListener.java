@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.CoreService;
@@ -50,16 +49,7 @@ public class OrphanVersionCleanupListener implements PostCommitEventListener {
      */
     protected long getCommitSize() {
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        String commitSize = configurationService.getProperty(DEFAULT_COMMIT_SIZE_PROP);
-        if (StringUtils.isBlank(commitSize)) {
-            return DEFAULT_COMMIT_SIZE;
-        }
-        try {
-            return Long.parseLong(commitSize);
-        } catch (NumberFormatException e) {
-            log.error("Invalid configuration property " + DEFAULT_COMMIT_SIZE_PROP, e);
-            return DEFAULT_COMMIT_SIZE;
-        }
+        return configurationService.getLong(DEFAULT_COMMIT_SIZE_PROP, DEFAULT_COMMIT_SIZE);
     }
 
     @Override

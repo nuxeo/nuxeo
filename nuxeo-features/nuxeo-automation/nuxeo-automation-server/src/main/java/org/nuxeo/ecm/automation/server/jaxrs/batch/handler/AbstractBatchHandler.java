@@ -102,7 +102,7 @@ public abstract class AbstractBatchHandler implements BatchHandler {
         TransientStore transientStore = getTransientStore();
         if (isEmpty(batchId)) {
             batchId = generateBatchId();
-        } else if (!Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(CLIENT_BATCH_ID_FLAG)) {
+        } else if (!Framework.getService(ConfigurationService.class).isBooleanTrue(CLIENT_BATCH_ID_FLAG)) {
             throw new NuxeoException(String.format(
                     "Cannot initialize upload batch with a given id since configuration property %s is not set to true",
                     CLIENT_BATCH_ID_FLAG));

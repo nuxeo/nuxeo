@@ -619,7 +619,7 @@ public final class FaceletHandlerHelper {
      */
     public static boolean isAliasOptimEnabled() {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        return !cs.isBooleanPropertyTrue("nuxeo.jsf.layout.removeAliasOptims");
+        return cs.isBooleanFalse("nuxeo.jsf.layout.removeAliasOptims");
     }
 
 }

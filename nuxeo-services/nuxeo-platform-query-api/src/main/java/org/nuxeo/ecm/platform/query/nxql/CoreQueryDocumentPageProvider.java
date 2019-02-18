@@ -293,7 +293,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
             if (maxResultsStr != null) {
                 if (DEFAULT_NAVIGATION_RESULTS_KEY.equals(maxResultsStr)) {
                     ConfigurationService cs = Framework.getService(ConfigurationService.class);
-                    maxResultsStr = cs.getProperty(DEFAULT_NAVIGATION_RESULTS_PROPERTY,
+                    maxResultsStr = cs.getString(DEFAULT_NAVIGATION_RESULTS_PROPERTY,
                             DEFAULT_NAVIGATION_RESULTS_VALUE);
                 } else if (PAGE_SIZE_RESULTS_KEY.equals(maxResultsStr)) {
                     maxResultsStr = Long.valueOf(getPageSize()).toString();

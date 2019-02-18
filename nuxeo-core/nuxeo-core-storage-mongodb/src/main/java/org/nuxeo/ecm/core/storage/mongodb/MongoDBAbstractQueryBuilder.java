@@ -94,7 +94,7 @@ public abstract class MongoDBAbstractQueryBuilder {
     public MongoDBAbstractQueryBuilder(MongoDBConverter converter, Expression expression) {
         this.converter = converter;
         this.expression = expression;
-        likeAnchored = !Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(LIKE_ANCHORED_PROP);
+        likeAnchored = Framework.getService(ConfigurationService.class).isBooleanTrue(LIKE_ANCHORED_PROP);
     }
 
     public void walk() {

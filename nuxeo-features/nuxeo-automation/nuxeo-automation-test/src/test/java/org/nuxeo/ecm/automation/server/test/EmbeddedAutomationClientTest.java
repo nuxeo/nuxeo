@@ -1016,7 +1016,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     @Deploy("org.nuxeo.ecm.automation.test.test:test-allow-virtual-user.xml")
     public void canSendCalendarParametersIfUserNotFound() throws IOException {
         ConfigurationService configService = Framework.getService(ConfigurationService.class);
-        assertTrue(configService.isBooleanPropertyTrue(AddPermission.ALLOW_VIRTUAL_USER));
+        assertTrue(configService.getBoolean(AddPermission.ALLOW_VIRTUAL_USER).orElseThrow(AssertionError::new));
 
         canSendCalendarParameters("nonExistentMembers");
     }

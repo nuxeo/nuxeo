@@ -20,16 +20,23 @@
  */
 package org.nuxeo.runtime.services.config;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -44,7 +51,7 @@ import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
  */
 public class ConfigurationServiceImpl extends DefaultComponent implements ConfigurationService {
 
-    protected static final Log log = LogFactory.getLog(ConfigurationServiceImpl.class);
+    protected static final Logger log = LogManager.getLogger(ConfigurationServiceImpl.class);
 
     public static final String CONFIGURATION_EP = "configuration";
 
@@ -81,27 +88,26 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
     }
 
     @Override
+    @Deprecated
     public String getProperty(String key) {
-        return getProperty(key, null);
+        return getString(key, null);
     }
 
     @Override
+    @Deprecated
     public String getProperty(String key, String defaultValue) {
-        ConfigurationPropertyDescriptor conf = getDescriptors().get(key);
-        if (conf == null) {
-            return defaultValue;
-        }
-        String value = conf.getValue();
-        return value != null ? value : defaultValue;
+        return getString(key, defaultValue);
     }
 
     @Override
+    @Deprecated
     public boolean isBooleanPropertyTrue(String key) {
         String value = getProperty(key);
         return Boolean.parseBoolean(value);
     }
 
     @Override
+    @Deprecated
     public boolean isBooleanPropertyFalse(String key) {
         String value = getProperty(key);
         return StringUtils.isNotBlank(value) && !Boolean.parseBoolean(value);
@@ -179,6 +185,128 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
     protected static boolean startsWithNamespace(String string, String namespace) {
         int nl = namespace.length();
         return string.length() > nl && string.charAt(nl) == '.' && string.startsWith(namespace);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public Optional<String> getString(String key) {
+        return Optional.ofNullable(getDescriptors().get(key))
+                       .map(ConfigurationPropertyDescriptor::getValue)
+                       .filter(StringUtils::isNotBlank);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public String getString(String key, String defaultValue) {
+        return getString(key).orElse(defaultValue);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public Optional<Integer> getInteger(String key) {
+        return getString(key).map(value -> {
+            try {
+                return Integer.valueOf(value);
+            } catch (NumberFormatException e) {
+                log.error("Invalid configuration property '{}', '{}' should be a number", key, value, e);
+                return null;
+            }
+        });
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public int getInteger(String key, int defaultValue) {
+        return getInteger(key).orElse(defaultValue);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public Optional<Long> getLong(String key) {
+        return getString(key).map(value -> {
+            try {
+                return Long.valueOf(value);
+            } catch (NumberFormatException e) {
+                log.error("Invalid configuration property '{}', '{}' should be a number", key, value, e);
+                return null;
+            }
+        });
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public long getLong(String key, long defaultValue) {
+        return getLong(key).orElse(defaultValue);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public Optional<Boolean> getBoolean(String key) {
+        return getString(key).map(value -> {
+            // don't use Boolean.parseBoolean because we want to enforce typing
+            if ("true".equalsIgnoreCase(value)) {
+                return TRUE;
+            } else if ("false".equalsIgnoreCase(value)) {
+                return FALSE;
+            } else {
+                log.error("Invalid configuration property '{}', '{}' should be a boolean", key, value);
+                return null;
+            }
+        });
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public boolean isBooleanTrue(String key) {
+        return getBoolean(key).filter(TRUE::equals).orElse(FALSE);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public boolean isBooleanFalse(String key) {
+        // inverse value as we're getting FALSE
+        return getBoolean(key).filter(FALSE::equals).map(value -> !value).orElse(FALSE);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public Optional<Duration> getDuration(String key) {
+        return getString(key).map(value -> {
+            try {
+                return DurationUtils.parse(value);
+            } catch (DateTimeParseException e) {
+                log.error("Invalid configuration property '{}', '{}' should be a duration", key, value, e);
+                return null;
+            }
+        });
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public Duration getDuration(String key, Duration defaultValue) {
+        return getDuration(key).orElse(defaultValue);
     }
 
 }

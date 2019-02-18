@@ -85,7 +85,7 @@ public class AnnotationsActions implements Serializable {
 
     public boolean isAnnotationsEnabled(DocumentModel doc) {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        if (cs.isBooleanPropertyFalse(ConverterBasedHtmlPreviewAdapter.OLD_PREVIEW_PROPERTY)) {
+        if (cs.isBooleanFalse(ConverterBasedHtmlPreviewAdapter.OLD_PREVIEW_PROPERTY)) {
             // cannot work without old preview
             return false;
         }
@@ -101,7 +101,7 @@ public class AnnotationsActions implements Serializable {
 
     protected boolean isTextAnnotationsEnabled() {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        return cs.isBooleanPropertyTrue(TEXT_ANNOTATIONS_KEY);
+        return cs.isBooleanTrue(TEXT_ANNOTATIONS_KEY);
     }
 
 }

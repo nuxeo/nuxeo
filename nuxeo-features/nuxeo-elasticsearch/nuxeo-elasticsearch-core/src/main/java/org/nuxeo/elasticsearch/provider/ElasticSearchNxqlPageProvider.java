@@ -62,7 +62,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
     public static final String ES_MAX_RESULT_WINDOW_PROPERTY = "org.nuxeo.elasticsearch.provider.maxResultWindow";
 
     // This is the default ES index.max_result_window
-    public static final String DEFAULT_ES_MAX_RESULT_WINDOW_VALUE = "10000";
+    public static final long DEFAULT_ES_MAX_RESULT_WINDOW_VALUE = 10000;
 
     protected static final Logger log = LogManager.getLogger(ElasticSearchNxqlPageProvider.class);
 
@@ -257,15 +257,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
     public long getMaxResultWindow() {
         if (maxResultWindow == null) {
             ConfigurationService cs = Framework.getService(ConfigurationService.class);
-            String maxResultWindowStr = cs.getProperty(ES_MAX_RESULT_WINDOW_PROPERTY,
-                    DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
-            try {
-                maxResultWindow = Long.valueOf(maxResultWindowStr);
-            } catch (NumberFormatException e) {
-                log.warn("Invalid maxResultWindow property value: %s for page provider: %s, fallback to default.",
-                        maxResultWindowStr, name);
-                maxResultWindow = Long.valueOf(DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
-            }
+            maxResultWindow = cs.getLong(ES_MAX_RESULT_WINDOW_PROPERTY, DEFAULT_ES_MAX_RESULT_WINDOW_VALUE);
         }
         return maxResultWindow;
     }

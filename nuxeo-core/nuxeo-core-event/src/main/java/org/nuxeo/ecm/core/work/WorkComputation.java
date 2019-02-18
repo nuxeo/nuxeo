@@ -69,8 +69,7 @@ public class WorkComputation extends AbstractComputation {
         super(name, 1, 0);
         MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
         workTimer = registry.timer(MetricRegistry.name("nuxeo", "works", name, "total"));
-        stateTTL = Long.parseLong(
-                Framework.getService(ConfigurationService.class).getProperty(STATETTL_KEY, STATETTL_DEFAULT_VALUE));
+        stateTTL = Framework.getService(ConfigurationService.class).getLong(STATETTL_KEY, STATETTL_DEFAULT_VALUE);
     }
 
     @Override
@@ -89,8 +88,7 @@ public class WorkComputation extends AbstractComputation {
             } else if (work.isIdempotent() && workIds.contains(work.getId())) {
                 log.debug("Skipping duplicate of idempotent work id: " + work.getId());
             } else {
-                boolean storeState = Framework.getService(ConfigurationService.class)
-                                              .isBooleanPropertyTrue(STORESTATE_KEY);
+                boolean storeState = Framework.getService(ConfigurationService.class).isBooleanTrue(STORESTATE_KEY);
                 if (storeState) {
                     if (WorkStateHelper.getState(work.getId()) != Work.State.SCHEDULED) {
                         log.warn("work has been canceled, saving and returning");

@@ -70,7 +70,7 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
 
     @Override
     public void doInitializeRepository(CoreSession session) {
-        if (Framework.getService(ConfigurationService.class).isBooleanPropertyTrue("nuxeo.picture.migration.enabled")) {
+        if (Framework.getService(ConfigurationService.class).isBooleanTrue("nuxeo.picture.migration.enabled")) {
             if (log.isInfoEnabled()) {
                 log.info(
                         "Starting picture migration handler (this may take some time depending on the number of documents)");

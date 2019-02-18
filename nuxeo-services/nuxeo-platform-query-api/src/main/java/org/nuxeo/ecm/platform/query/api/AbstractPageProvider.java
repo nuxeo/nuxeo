@@ -29,7 +29,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -874,16 +873,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         long res = DEFAULT_MAX_PAGE_SIZE;
         if (Framework.isInitialized()) {
             ConfigurationService cs = Framework.getService(ConfigurationService.class);
-            String maxPageSize = cs.getProperty(DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP);
-            if (!StringUtils.isBlank(maxPageSize)) {
-                try {
-                    res = Long.parseLong(maxPageSize.trim());
-                } catch (NumberFormatException e) {
-                    log.warn(String.format(
-                            "Invalid max page size defined for property " + "\"%s\": %s (waiting for a long value)",
-                            DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP, maxPageSize));
-                }
-            }
+            res = cs.getLong(DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP, res);
         }
         return res;
     }

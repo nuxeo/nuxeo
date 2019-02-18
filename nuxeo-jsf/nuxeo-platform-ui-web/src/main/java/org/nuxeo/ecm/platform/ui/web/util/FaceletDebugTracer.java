@@ -64,7 +64,7 @@ public class FaceletDebugTracer {
     protected static long getMaxTraceLag() {
         if (log.isDebugEnabled()) {
             ConfigurationService cs = Framework.getService(ConfigurationService.class);
-            return Long.valueOf(cs.getProperty(TRACE_PROP, "-1"));
+            return cs.getLong(TRACE_PROP, -1);
         }
         return -1;
     }

@@ -98,7 +98,7 @@ public class UserProfileEnricher extends AbstractJsonEnricher<NuxeoPrincipal> {
             }
 
             jg.writeStartObject();
-            if (configurationService.isBooleanPropertyTrue(COMPATIBILITY_CONFIGURATION_PARAM)) {
+            if (configurationService.isBooleanTrue(COMPATIBILITY_CONFIGURATION_PARAM)) {
                 writeCompatibilityUserProfile(jg, up);
             } else {
                 writeUserProfile(jg, up);

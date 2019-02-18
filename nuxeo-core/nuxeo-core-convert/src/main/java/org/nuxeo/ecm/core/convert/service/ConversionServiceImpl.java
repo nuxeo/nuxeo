@@ -353,7 +353,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
      * @since 10.3
      */
     protected boolean hasSourceMimeType(ConverterDescriptor converterDescriptor, String mimeType) {
-        if (!Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(ENFORCE_SOURCE_MIME_TYPE_CHECK)) {
+        if (!Framework.getService(ConfigurationService.class).isBooleanTrue(ENFORCE_SOURCE_MIME_TYPE_CHECK)) {
             return true;
         }
 
