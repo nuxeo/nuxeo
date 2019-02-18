@@ -196,7 +196,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         canDelete = !doc.hasFacet(FacetNames.PUBLISH_SPACE) && !doc.isProxy()
                 && docSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE);
         if (canDelete && Framework.getService(ConfigurationService.class)
-                                  .isBooleanPropertyFalse(PERMISSION_CHECK_OPTIMIZED_PROPERTY)) {
+                                  .isBooleanFalse(PERMISSION_CHECK_OPTIMIZED_PROPERTY)) {
             // In non optimized mode check RemoveChildren on the parent
             canDelete = parentRef == null || docSession.hasPermission(parentRef, SecurityConstants.REMOVE_CHILDREN);
         }

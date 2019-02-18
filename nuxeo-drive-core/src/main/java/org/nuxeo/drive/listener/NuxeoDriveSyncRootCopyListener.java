@@ -42,7 +42,7 @@ public class NuxeoDriveSyncRootCopyListener implements EventListener {
     @Override
     public void handleEvent(Event event) {
         if (Framework.getService(ConfigurationService.class)
-                     .isBooleanPropertyFalse(RESET_SYNC_ROOTS_ON_COPY_CONFIGURATION_PROPERTY)) {
+                     .isBooleanFalse(RESET_SYNC_ROOTS_ON_COPY_CONFIGURATION_PROPERTY)) {
             return;
         }
         EventContext context = event.getContext();

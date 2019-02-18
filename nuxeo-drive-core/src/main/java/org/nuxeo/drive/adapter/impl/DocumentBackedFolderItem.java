@@ -77,7 +77,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
     protected static final String MAX_DESCENDANTS_BATCH_SIZE_PROPERTY = "org.nuxeo.drive.maxDescendantsBatchSize";
 
-    protected static final String MAX_DESCENDANTS_BATCH_SIZE_DEFAULT = "1000";
+    protected static final int MAX_DESCENDANTS_BATCH_SIZE_DEFAULT = 1000;
 
     protected static final int VCS_CHUNK_SIZE = 100;
 
@@ -230,8 +230,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     protected void checkBatchSize(int batchSize) {
-        int maxDescendantsBatchSize = Integer.parseInt(Framework.getService(ConfigurationService.class).getProperty(
-                MAX_DESCENDANTS_BATCH_SIZE_PROPERTY, MAX_DESCENDANTS_BATCH_SIZE_DEFAULT));
+        int maxDescendantsBatchSize = Framework.getService(ConfigurationService.class).getInteger(
+                MAX_DESCENDANTS_BATCH_SIZE_PROPERTY, MAX_DESCENDANTS_BATCH_SIZE_DEFAULT);
         if (batchSize > maxDescendantsBatchSize) {
             throw new NuxeoException(String.format(
                     "Batch size %d is greater than the maximum batch size allowed %d. If you need to increase this limit you can set the %s configuration property but this is not recommended for performance reasons.",
@@ -496,8 +496,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         this.folder = true;
         this.canCreateChild = !doc.hasFacet(FacetNames.PUBLISH_SPACE);
         if (canCreateChild) {
-            if (Framework.getService(ConfigurationService.class)
-                         .isBooleanPropertyTrue(PERMISSION_CHECK_OPTIMIZED_PROPERTY)) {
+            if (Framework.getService(ConfigurationService.class).isBooleanTrue(PERMISSION_CHECK_OPTIMIZED_PROPERTY)) {
                 // In optimized mode consider that canCreateChild <=> canRename because canRename <=> WriteProperties
                 // and by default WriteProperties <=> Write <=> AddChildren
                 this.canCreateChild = canRename;

@@ -60,7 +60,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
 
     protected static final String CONCURRENT_SCROLL_BATCH_LIMIT = "org.nuxeo.drive.concurrentScrollBatchLimit";
 
-    protected static final String CONCURRENT_SCROLL_BATCH_LIMIT_DEFAULT = "4";
+    protected static final int CONCURRENT_SCROLL_BATCH_LIMIT_DEFAULT = 4;
 
     protected TopLevelFolderItemFactoryRegistry topLevelFolderItemFactoryRegistry;
 
@@ -143,8 +143,9 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
                 activeTopLevelFolderItemFactoryRegistry.activeFactory);
         fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedActiveFactories(
                 activeFileSystemItemFactoryRegistry.activeFactories);
-        int concurrentScrollBatchLimit = Integer.parseInt(Framework.getService(ConfigurationService.class).getProperty(
-                CONCURRENT_SCROLL_BATCH_LIMIT, CONCURRENT_SCROLL_BATCH_LIMIT_DEFAULT));
+        int concurrentScrollBatchLimit = Framework.getService(ConfigurationService.class)
+                                                  .getInteger(CONCURRENT_SCROLL_BATCH_LIMIT,
+                                                          CONCURRENT_SCROLL_BATCH_LIMIT_DEFAULT);
         scrollBatchSemaphore = new Semaphore(concurrentScrollBatchLimit, false);
     }
 
