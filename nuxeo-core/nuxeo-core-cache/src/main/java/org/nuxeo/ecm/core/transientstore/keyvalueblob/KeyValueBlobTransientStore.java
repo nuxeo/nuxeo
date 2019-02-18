@@ -241,11 +241,17 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
     public void doGC() {
         BlobProvider bp = getBlobProvider();
         BinaryGarbageCollector gc = bp.getBinaryManager().getGarbageCollector();
+        boolean delete = false;
         gc.start();
-        keyStream().map(this::getBlobKeys) //
-                   .flatMap(Collection::stream)
-                   .forEach(gc::mark);
-        gc.stop(true); // delete
+        try {
+            keyStream().map(this::getBlobKeys) //
+                       .flatMap(Collection::stream)
+                       .forEach(gc::mark);
+            delete = true;
+        } finally {
+            // don't delete if there's an exception, but still stop the GC
+            gc.stop(delete);
+        }
         computeStorageSize();
     }
 
