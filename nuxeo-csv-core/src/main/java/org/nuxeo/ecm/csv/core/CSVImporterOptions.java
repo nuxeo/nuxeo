@@ -183,7 +183,7 @@ public class CSVImporterOptions implements Serializable {
             return new SimpleDateFormat(dateFormat);
         }
 
-        return Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(LEGACY_DATE_FORMAT_PROP)
+        return Framework.getService(ConfigurationService.class).isBooleanTrue(LEGACY_DATE_FORMAT_PROP)
                 ? new SimpleDateFormat(LEGACY_DATE_FORMAT)
                 : null;
     }
