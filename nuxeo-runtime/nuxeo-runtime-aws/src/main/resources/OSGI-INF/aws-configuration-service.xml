@@ -7,14 +7,20 @@
 
   <extension-point name="configuration">
     <documentation>
-      Used to configure AWS. Example:
+      Used to register AWS configurations. Example:
       <code>
-        <configuration>
+        <configuration id="myconfig">
           <accessKeyId>MY_ACCESS_KEY</accessKeyId>
           <secretKey>MY_SECRET_KEY</secretKey>
           <region>MY_REGION</region>
         </configuration>
       </code>
+      If the configuration id is not present, "default" is used.
+
+      To look up a configuration, use new NuxeoAWSCredentialsProvider("myconfig")
+      and new NuxeoAWSRegionProvider("myconfig"). Alternatively, you can use
+      the service AWSConfigurationService directly (but it just looks up provided configuration,
+      it doesn't fall back to the AWS SDK default behavior).
     </documentation>
     <object class="org.nuxeo.runtime.aws.AWSConfigurationDescriptor" />
   </extension-point>

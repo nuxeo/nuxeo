@@ -39,15 +39,37 @@ public class NuxeoAWSRegionProvider extends AwsRegionProvider {
 
     protected static final String DEFAULT_REGION = "us-east-1";
 
+    protected final String id;
+
+    /**
+     * Gets a Nuxeo AWS Region Provider for the default configuration.
+     */
     public static AwsRegionProvider getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Creates a new Nuxeo AWS Region Provider for the default configuration.
+     */
+    public NuxeoAWSRegionProvider() {
+        this(null);
+    }
+
+    /**
+     * Creates a new Nuxeo AWS Region Provider for the given configuration.
+     *
+     * @param id the configuration id, or {@code null} for the default
+     * @since 11.1
+     */
+    public NuxeoAWSRegionProvider(String id) {
+        this.id = id;
     }
 
     @Override
     public String getRegion() {
         AWSConfigurationService service = Framework.getService(AWSConfigurationService.class);
         if (service != null) {
-            String region = service.getAWSRegion();
+            String region = service.getAWSRegion(id);
             if (region != null) {
                 return region;
             }
