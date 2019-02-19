@@ -1,3 +1,31 @@
+def targetTestEnvironments = [] as Set
+def targetPreviewEnvironments = [] as Set
+def mvnOpts = ""
+
+def buildStepsForParallelJUnit(envs) {
+  def stages = [:]
+  for (env in envs) {
+    stages["JUnit - ${env}"] = {
+      stage("JUnit - ${env}") {
+        echo "Execute junit for ${env}"
+      }
+    }
+  }
+  return stages;
+}
+
+def buildStepsForParallelPreviews(envs) {
+  def stages = [:]
+  for (env in envs) {
+    stages["Preview - ${env}"] = {
+      stage("Preview - ${env}") {
+        echo "Deploy preview for ${env}"
+      }
+    }
+  }
+  return stages;
+}
+
 pipeline {
   agent {
     label "builder-maven-nuxeo"
@@ -10,118 +38,69 @@ pipeline {
     PREVIEW_VERSION = "0.0.0-SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER"
   }
   stages {
-    stage('Core junits on H2') {
+    stage('Fetch PR Labels') {
       when {
-        branch 'master'
-      }
-      environment {
-        APP_NAME = 'redis'     
+        branch 'PR-*'
       }
       steps {
         container('maven-nuxeo') {
-          dir('charts/junits') {
-            sh "make redis"
-            sh "make helm"
-            sh "jx preview --app $APP_NAME --namespace=${NAMESPACE} --dir ../.."
-          }
-          sh "git checkout master"
-          sh "git config --global credential.helper store"
-          sh "jx step git credentials"
-          dir('nuxeo-core') {
-            script {
-              try {
-                 sh "mvn clean package -fae -Dmaven.test.failure.ignore=true"
+          script {
+            if (!(pullRequest.labels as List).isEmpty()) {
+              String labels = pullRequest.labels.join(" ").trim();
+              String labelsTest = sh(returnStdout: true, script: "njx pr filter-labels -m test -l ${labels}").trim();
+              if (labelsTest) {
+                targetTestEnvironments.addAll(labelsTest.split(","));
               }
-              catch(err) {
-                if (currentBuild.result == 'FAILURE'){
-                  throw err
-                }
-              }
-              finally {
-                junit testResults: '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
+              String labelsPreview = sh(returnStdout: true, script: "njx pr filter-labels -m preview -l ${labels}").trim();
+              if (labelsPreview) {
+                targetPreviewEnvironments.addAll(labelsPreview.split(","));
               }
             }
           }
         }
       }
     }
-
-    stage('Core junits on Mongo') {
-      environment {
-        APP_NAME = 'mongodb'
+    stage('Summary') {
+      when {
+        branch 'PR-*'
       }
       steps {
-        container('maven-nuxeo') {
-          dir('charts/junits') {
-            sh "make mongodb"
-            sh "make redis"
-            sh "make helm"
-            sh "jx preview --app $APP_NAME --namespace=${NAMESPACE} --dir ../.."
-          }
-          sh "touch /root/nuxeo-test-vcs.properties"
-          sh "echo nuxeo.test.core=mongodb > /root/nuxeo-test-vcs.properties"
-          sh "echo nuxeo.test.mongodb.server=mongodb://preview-${APP_NAME}.${NAMESPACE}.svc.cluster.local >> /root/nuxeo-test-vcs.properties"
-          sh "echo nuxeo.test.mongodb.dbname=vcstest >> /root/nuxeo-test-vcs.properties"  
-          dir('nuxeo-core') {
-            script {
-              try {
-                sh "mvn clean package -fae -Pcustomdb,mongodb  -Dmaven.test.failure.ignore=true"
-              }
-              catch(err) {
-                if (currentBuild.result == 'FAILURE'){
-                  throw err
-                }
-              }
-              finally {
-                junit testResults: '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
-              }
-             }
-            }
-        sh "kubectl delete namespace ${NAMESPACE}"    
+        script {
+          println("Test environments: ${(targetTestEnvironments as List).join(' ')}")
+          println("Preview environments: ${(targetPreviewEnvironments as List).join(' ')}")
+          println("Maven Args: ${mvnOpts}")
         }
-      }  
+      }
     }
-    stage('Core junits on Postgres') {
-      environment {
-        APP_NAME = "postgresql"
-      }
+    stage('Prepare test compile') {
       steps {
         container('maven-nuxeo') {
-         dir('charts/junits') {
-            sh "make postgresql"
-            sh "make redis"
-            sh "make helm"
-            sh "jx preview --app $APP_NAME --namespace=${NAMESPACE} --dir ../.."
-          }
-          sh "touch /root/nuxeo-test-vcs.properties"
-          sh "echo nuxeo.test.vcs.db=PostgreSQL > /root/nuxeo-test-vcs.properties"
-          sh "echo nuxeo.test.vcs.server=preview-${APP_NAME}.${NAMESPACE}.svc.cluster.local >> /root/nuxeo-test-vcs.properties"
-          sh "echo nuxeo.test.vcs.database=vctests >> /root/nuxeo-test-vcs.properties"
-          sh "echo nuxeo.test.vcs.user=nuxeo >> /root/nuxeo-test-vcs.properties"
-          sh "echo nuxeo.test.vcs.password=nuxeo >> /root/nuxeo-test-vcs.properties"  
-          dir('nuxeo-core') {
-            script {
-              try {
-                sh "mvn clean package -fae -Pcustomdb,pgsql  -Dmaven.test.failure.ignore=true"
-              }
-              catch(err) {
-                if (currentBuild.result == 'FAILURE'){
-                  throw err
-                }
-              }
-              finally {
-                junit testResults: '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
-              }
-            }
-          }
-        sh "kubectl delete namespace ${NAMESPACE}" 
+          // Load local Maven repository
+          sh "echo foo=bar > /root/nuxeo-test-vcs.properties"
+          //sh "mvn package process-test-resources -Pcustomdb -DskipTests ${mvnOpts}"
         }
-      }  
+      }
+    }
+    stage('CI Build') {
+      steps {
+        script {
+          def stages = buildStepsForParallelJUnit(targetTestEnvironments)
+          parallel stages
+        }
+      }
+    }
+    stage('Deploy Previews') {
+      steps {
+        script {
+          def stages = buildStepsForParallelPreviews(targetPreviewEnvironments)
+          parallel stages
+        }
+      }
     }
   }
   post {
-        always {
-          cleanWs()
-        }
+    always {
+      cleanWs()
+    }
   }
 }
