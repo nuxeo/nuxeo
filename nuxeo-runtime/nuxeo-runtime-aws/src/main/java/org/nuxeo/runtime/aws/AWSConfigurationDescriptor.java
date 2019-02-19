@@ -28,6 +28,11 @@ import org.nuxeo.runtime.model.Descriptor;
 @XObject("configuration")
 public class AWSConfigurationDescriptor implements Descriptor {
 
+    public static final String DEFAULT_CONFIG_ID = "default";
+
+    @XNode("@id")
+    protected String id = DEFAULT_CONFIG_ID;
+
     @XNode("accessKeyId")
     protected String accessKeyId;
 
@@ -42,7 +47,7 @@ public class AWSConfigurationDescriptor implements Descriptor {
 
     @Override
     public String getId() {
-        return UNIQUE_DESCRIPTOR_ID;
+        return id;
     }
 
     public String getAccessKeyId() {
