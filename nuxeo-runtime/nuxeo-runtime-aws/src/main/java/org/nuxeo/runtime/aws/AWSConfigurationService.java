@@ -29,17 +29,39 @@ import com.amazonaws.auth.AWSCredentials;
 public interface AWSConfigurationService {
 
     /**
-     * Gets the AWS Credentials.
+     * Gets the AWS Credentials for the default configuration.
      *
      * @return the AWS credentials, or {@code null} if not defined
      */
-    AWSCredentials getAWSCredentials();
+    default AWSCredentials getAWSCredentials() {
+        return getAWSCredentials(null);
+    }
 
     /**
-     * Gets the AWS Region.
+     * Gets the AWS Credentials for the given configuration.
+     *
+     * @param id the configuration id, or {@code null} for the default
+     * @return the AWS credentials, or {@code null} if not defined
+     * @since 11.1
+     */
+    AWSCredentials getAWSCredentials(String id);
+
+    /**
+     * Gets the AWS Region for the default configuration.
      *
      * @return the AWS Region, or {@code null} if not defined
      */
-    String getAWSRegion();
+    default String getAWSRegion() {
+        return getAWSRegion(null);
+    }
+
+    /**
+     * Gets the AWS Region for the given configuration.
+     *
+     * @param id the configuration id, or {@code null} for the default
+     * @return the AWS Region, or {@code null} if not defined
+     * @since 11.1
+     */
+    String getAWSRegion(String id);
 
 }

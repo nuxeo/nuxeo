@@ -35,15 +35,37 @@ public class NuxeoAWSCredentialsProvider implements AWSCredentialsProvider {
 
     protected static final AWSCredentialsProvider DEFAULT = new DefaultAWSCredentialsProviderChain();
 
+    protected final String id;
+
+    /**
+     * Gets a Nuxeo AWS Credentials Provider for the default configuration.
+     */
     public static AWSCredentialsProvider getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Creates a new Nuxeo AWS Credentials Provider for the default configuration.
+     */
+    public NuxeoAWSCredentialsProvider() {
+        this(null);
+    }
+
+    /**
+     * Creates a new Nuxeo AWS Credentials Provider for the given configuration.
+     *
+     * @param id the configuration id, or {@code null} for the default
+     * @since 11.1
+     */
+    public NuxeoAWSCredentialsProvider(String id) {
+        this.id = id;
     }
 
     @Override
     public AWSCredentials getCredentials() {
         AWSConfigurationService service = Framework.getService(AWSConfigurationService.class);
         if (service != null) {
-            AWSCredentials credentials = service.getAWSCredentials();
+            AWSCredentials credentials = service.getAWSCredentials(id);
             if (credentials != null) {
                 return credentials;
             }
