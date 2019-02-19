@@ -8,6 +8,12 @@
       <sessionToken>XML_SESSION_TOKEN</sessionToken>
       <region>XML_REGION</region>
     </configuration>
+    <configuration id="myconfig">
+      <accessKeyId>MY_XML_ACCESS_KEY_ID</accessKeyId>
+      <secretKey>MY_XML_SECRET_KEY</secretKey>
+      <sessionToken>MY_XML_SESSION_TOKEN</sessionToken>
+      <region>MY_XML_REGION</region>
+    </configuration>
   </extension>
 
 </component>

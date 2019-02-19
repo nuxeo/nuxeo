@@ -49,6 +49,9 @@ import com.amazonaws.regions.AwsEnvVarOverrideRegionProvider;
 @Deploy("org.nuxeo.runtime.aws")
 public class TestAWSConfigurationService {
 
+    // from the XML test file
+    protected static final String MY_CONFIG = "myconfig";
+
     @Inject
     protected AWSConfigurationService service;
 
@@ -69,9 +72,23 @@ public class TestAWSConfigurationService {
 
     @Test
     @Deploy("org.nuxeo.runtime.aws:OSGI-INF/test-aws-config.xml")
+    public void testServiceCredentialsWithId() {
+        AWSCredentials credentials = service.getAWSCredentials(MY_CONFIG);
+        assertCredentials(credentials, "MY_XML_ACCESS_KEY_ID", "MY_XML_SECRET_KEY", "MY_XML_SESSION_TOKEN");
+    }
+
+    @Test
+    @Deploy("org.nuxeo.runtime.aws:OSGI-INF/test-aws-config.xml")
     public void testNuxeoCredentialsProvider() {
         AWSCredentials credentials = NuxeoAWSCredentialsProvider.getInstance().getCredentials();
         assertCredentials(credentials, "XML_ACCESS_KEY_ID", "XML_SECRET_KEY", "XML_SESSION_TOKEN");
+    }
+
+    @Test
+    @Deploy("org.nuxeo.runtime.aws:OSGI-INF/test-aws-config.xml")
+    public void testNuxeoCredentialsProviderWithId() {
+        AWSCredentials credentials = new NuxeoAWSCredentialsProvider(MY_CONFIG).getCredentials();
+        assertCredentials(credentials, "MY_XML_ACCESS_KEY_ID", "MY_XML_SECRET_KEY", "MY_XML_SESSION_TOKEN");
     }
 
     @Test
@@ -125,9 +142,23 @@ public class TestAWSConfigurationService {
 
     @Test
     @Deploy("org.nuxeo.runtime.aws:OSGI-INF/test-aws-config.xml")
+    public void testServiceRegionWithId() {
+        String region = service.getAWSRegion(MY_CONFIG);
+        assertEquals("MY_XML_REGION", region);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.runtime.aws:OSGI-INF/test-aws-config.xml")
     public void testNuxeoRegionProvider() {
         String region = NuxeoAWSRegionProvider.getInstance().getRegion();
         assertEquals("XML_REGION", region);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.runtime.aws:OSGI-INF/test-aws-config.xml")
+    public void testNuxeoRegionProviderWithId() {
+        String region = new NuxeoAWSRegionProvider(MY_CONFIG).getRegion();
+        assertEquals("MY_XML_REGION", region);
     }
 
     @Test
