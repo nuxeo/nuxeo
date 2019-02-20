@@ -1,1 +1,1 @@
-File ${filename} has downloaded
+File ${filename} has been downloaded

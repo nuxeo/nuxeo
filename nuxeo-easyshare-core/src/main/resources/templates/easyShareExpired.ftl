@@ -1,1 +1,1 @@
-${ip} attempts to access EasyShare folder ${docShare.name}
+${ip} attempted to access EasyShare folder ${docShare.name}
