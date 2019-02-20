@@ -8,6 +8,7 @@ def buildStepsForParallelJUnit(envs) {
     stages["JUnit - ${env}"] = {
       stage("JUnit - ${env}") {
         echo "Execute junit for ${env}"
+        // sh "njx nuxeo preset --name ${env} --namespace ${NAMESPACE} install"
       }
     }
   }
@@ -20,6 +21,7 @@ def buildStepsForParallelPreviews(envs) {
     stages["Preview - ${env}"] = {
       stage("Preview - ${env}") {
         echo "Deploy preview for ${env}"
+        sh "njx nuxeo preset --name ${env} --namespace ${NAMESPACE} preview --app ${APP_NAME}"
       }
     }
   }
@@ -83,17 +85,21 @@ pipeline {
     }
     stage('CI Build') {
       steps {
-        script {
-          def stages = buildStepsForParallelJUnit(targetTestEnvironments)
-          parallel stages
+        container('maven-nuxeo') {
+          script {
+            def stages = buildStepsForParallelJUnit(targetTestEnvironments)
+            parallel stages
+          }
         }
       }
     }
     stage('Deploy Previews') {
       steps {
-        script {
-          def stages = buildStepsForParallelPreviews(targetPreviewEnvironments)
-          parallel stages
+        container('maven-nuxeo') {
+          script {
+            def stages = buildStepsForParallelPreviews(targetPreviewEnvironments)
+            parallel stages
+          }
         }
       }
     }
