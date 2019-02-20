@@ -484,10 +484,15 @@ public class DialectPostgreSQL extends Dialect {
         if (childNameUniqueConstraintEnabled && key.equals(Model.HIER_TABLE_NAME)) {
             // CREATE UNIQUE INDEX hierarchy_unique_child ON hierarchy (parentid, name)
             // WHERE isproperty = false
-            sqls.add(String.format(
+            String sql = String.format(
                     "CREATE UNIQUE INDEX \"hierarchy_unique_child\" ON \"%s\" (\"%s\", \"%s\") WHERE \"%s\" = false",
                     Model.HIER_TABLE_NAME, Model.HIER_PARENT_KEY, Model.HIER_CHILD_NAME_KEY,
-                    Model.HIER_CHILD_ISPROPERTY_KEY));
+                    Model.HIER_CHILD_ISPROPERTY_KEY);
+            if (softDeleteEnabled) {
+                // ... AND isdeleted IS DISTINCT FROM true
+                sql += String.format(" AND \"%s\" IS DISTINCT FROM true", Model.MAIN_IS_DELETED_KEY);
+            }
+            sqls.add(sql);
             // CREATE UNIQUE INDEX hierarchy_unique_child_complex ON hierarchy (parentid, name)
             // WHERE isproperty = true AND pos IS NULL
             sqls.add(String.format(
