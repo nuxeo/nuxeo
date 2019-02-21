@@ -93,6 +93,7 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements 
 
     // service interface impl
 
+    @Override
     public boolean hasAdapter(DocumentModel doc) {
         if (doc == null) {
             return false;
@@ -106,6 +107,7 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements 
         return doc.hasSchema("file") || doc.hasSchema("files");
     }
 
+    @Override
     public HtmlPreviewAdapter getAdapter(DocumentModel doc) {
         if (doc == null) {
             return null;
@@ -141,6 +143,7 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements 
         }
     }
 
+    @Override
     public MimeTypePreviewer getPreviewer(String mimeType) {
         for (Map.Entry<String, MimeTypePreviewer> entry : previewerFactory.entrySet()) {
             if (mimeType.matches(entry.getKey())) {
@@ -150,6 +153,7 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements 
         return null;
     }
 
+    @Override
     public List<BlobPostProcessor> getBlobPostProcessors() {
         return Collections.unmodifiableList(blobPostProcessors);
     }
