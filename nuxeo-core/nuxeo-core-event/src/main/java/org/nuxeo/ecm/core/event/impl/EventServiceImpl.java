@@ -23,6 +23,7 @@ package org.nuxeo.ecm.core.event.impl;
 
 import java.rmi.dgc.VMID;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
+import org.nuxeo.ecm.core.event.async.EventTransformer;
 import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
 import org.nuxeo.ecm.core.event.pipe.EventPipeRegistry;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventBundleDispatcher;
@@ -519,4 +521,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         }
     }
 
+    @Override
+    public List<EventTransformer> getEventTransformers() {
+        return Collections.emptyList(); // TODO use Descriptor otherwise we should use deprecated registry
+    }
 }

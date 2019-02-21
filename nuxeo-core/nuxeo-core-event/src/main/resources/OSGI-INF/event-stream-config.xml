@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.event.async.config" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <documentation>
+      Synchronous event listener to push events to a Stream.
+    </documentation>
+    <listener name="eventsStreamListener" async="false" postCommit="false" priority="500"
+              class="org.nuxeo.ecm.notification.listener.EventsStreamListener"/>
+  </extension>
+
+  <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
+    <logConfig name="event">
+    </logConfig>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="event"
+                     class="org.nuxeo.ecm.core.event.async.EventStreamTopology"
+                     logConfig="event">
+      <!-- Change default policy to continue on Failure -->
+      <policy name="default" continueOnFailure="true" maxRetries="0" />
+    </streamProcessor>
+  </extension>
+
+</component>
