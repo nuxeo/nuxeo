@@ -33,7 +33,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
