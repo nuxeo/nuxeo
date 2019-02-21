@@ -74,12 +74,49 @@ pipeline {
         }
       }
     }
-    stage('Prepare test compile') {
+    stage('Prepare tests') {
+      when {
+        branch 'PR-*'
+      }
       steps {
         container('maven-nuxeo') {
-          // Load local Maven repository
-          sh "echo foo=bar > /root/nuxeo-test-vcs.properties"
-          //sh "mvn package process-test-resources -Pcustomdb -DskipTests ${mvnOpts}"
+          // Prepare vcs file for test
+          sh "echo '# Custom VCS file for tests' > /root/nuxeo-test-vcs.properties"
+        }
+      }
+    }
+    stage('Core junits on H2') {
+      when {
+        branch 'master'
+      }
+      environment {
+        APP_NAME = 'redis'
+      }
+      steps {
+        container('maven-nuxeo') {
+          dir('charts/junits') {
+            sh "make redis"
+            sh "make helm"
+            sh "jx preview --app $APP_NAME --namespace=${NAMESPACE} --dir ../.."
+          }
+          sh "git checkout master"
+          sh "git config --global credential.helper store"
+          sh "jx step git credentials"
+          dir('nuxeo-core') {
+            script {
+              try {
+                 sh "mvn clean package -fae -Dmaven.test.failure.ignore=true"
+              }
+              catch(err) {
+                if (currentBuild.result == 'FAILURE'){
+                  throw err
+                }
+              }
+              finally {
+                junit testResults: '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
+              }
+            }
+          }
         }
       }
     }
