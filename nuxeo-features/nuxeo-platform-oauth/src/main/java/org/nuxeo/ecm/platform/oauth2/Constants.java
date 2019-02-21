@@ -56,9 +56,15 @@ public final class Constants {
 
     public static final String GRANT_TYPE_PARAM = "grant_type";
 
+    /** @since 11.1 */
+    public static final String ASSERTION_PARAM = "assertion";
+
     public static final String AUTHORIZATION_CODE_GRANT_TYPE = "authorization_code";
 
     public static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
+
+    /** @since 11.1 */
+    public static final String JWT_BEARER_GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
 
     /** --------------------------- PKCE --------------------------- */
     public static final String CODE_CHALLENGE_PARAM = "code_challenge";

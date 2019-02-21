@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.oauth2.Constants.ASSERTION_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_GRANT_TYPE;
 import static org.nuxeo.ecm.platform.oauth2.Constants.AUTHORIZATION_CODE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.CLIENT_ID_PARAM;
@@ -35,6 +36,7 @@ import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_CHALLENGE_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_RESPONSE_TYPE;
 import static org.nuxeo.ecm.platform.oauth2.Constants.CODE_VERIFIER_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.GRANT_TYPE_PARAM;
+import static org.nuxeo.ecm.platform.oauth2.Constants.JWT_BEARER_GRANT_TYPE;
 import static org.nuxeo.ecm.platform.oauth2.Constants.REDIRECT_URI_PARAM;
 import static org.nuxeo.ecm.platform.oauth2.Constants.REFRESH_TOKEN_GRANT_TYPE;
 import static org.nuxeo.ecm.platform.oauth2.Constants.REFRESH_TOKEN_PARAM;
@@ -74,6 +76,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
+import org.nuxeo.ecm.jwt.JWTService;
+import org.nuxeo.ecm.jwt.JWTFeature;
 import org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
@@ -98,7 +102,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 5.9.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ OAuthFeature.class, OAuth2ServletContainerFeature.class })
+@Features({ OAuthFeature.class, OAuth2ServletContainerFeature.class, JWTFeature.class })
 public class OAuth2ChallengeFixture {
 
     protected static final String CLIENT_ID = "testClient";
@@ -117,6 +121,9 @@ public class OAuth2ChallengeFixture {
 
     @Inject
     protected ServletContainerFeature servletContainerFeature;
+
+    @Inject
+    protected JWTService jwtService;
 
     protected Client authenticatedClient;
 
@@ -607,6 +614,61 @@ public class OAuth2ChallengeFixture {
     @Test
     public void shouldRetrieveAccessAndRefreshTokenWithState() throws IOException {
         shouldRetrieveAccessAndRefreshToken(STATE);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldRetrieveAccessTokenWithJWT() throws Exception {
+
+        String jwtToken = jwtService.newBuilder().build();
+
+        Map<String, String> params = new HashMap<>();
+        params.put(GRANT_TYPE_PARAM, JWT_BEARER_GRANT_TYPE);
+        params.put(ASSERTION_PARAM, jwtToken);
+
+        // Test empty client id
+        try (CloseableClientResponse cr = responseFromTokenWith(params)) {
+            assertEquals(400, cr.getStatus());
+            String json = cr.getEntity(String.class);
+            Map<String, Serializable> error = new ObjectMapper().readValue(json, Map.class);
+            assertEquals(INVALID_REQUEST, error.get(ERROR_PARAM));
+            assertEquals("Empty client id", error.get(ERROR_DESCRIPTION_PARAM));
+        }
+
+        // Test invalid client id
+        params.put(CLIENT_ID_PARAM, "toto");
+        try (CloseableClientResponse cr = responseFromTokenWith(params)) {
+            assertEquals(400, cr.getStatus());
+            String json = cr.getEntity(String.class);
+            Map<String, Serializable> error = new ObjectMapper().readValue(json, Map.class);
+            assertEquals(INVALID_CLIENT, error.get(ERROR_PARAM));
+            assertEquals("Invalid client: toto", error.get(ERROR_DESCRIPTION_PARAM));
+        }
+
+        // Test invalid client secret
+        params.put(CLIENT_ID_PARAM, CLIENT_ID);
+        params.put(CLIENT_SECRET_PARAM, "invalid");
+        try (CloseableClientResponse cr = responseFromTokenWith(params)) {
+            assertEquals(400, cr.getStatus());
+            String json = cr.getEntity(String.class);
+            Map<String, Serializable> error = new ObjectMapper().readValue(json, Map.class);
+            assertEquals(INVALID_CLIENT, error.get(ERROR_PARAM));
+            assertEquals(String.format("Disabled client: %s or invalid client secret", CLIENT_ID),
+                    error.get(ERROR_DESCRIPTION_PARAM));
+        }
+
+        // Test ok
+        params.put(CLIENT_ID_PARAM, CLIENT_ID);
+        params.put(CLIENT_SECRET_PARAM, CLIENT_SECRET);
+        try (CloseableClientResponse cr = responseFromTokenWith(params)) {
+            assertEquals(200, cr.getStatus());
+            String json = cr.getEntity(String.class);
+            Map<String, Serializable> token = new ObjectMapper().readValue(json, Map.class);
+            assertNotNull(token.get("access_token"));
+        }
     }
 
     protected void shouldRetrieveAccessAndRefreshToken(String state) throws IOException {
