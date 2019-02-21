@@ -122,10 +122,6 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements 
             return factoryRegistry.get(docType).getAdapter(doc);
         }
 
-        if (doc.isFolder()) {
-            return null;
-        }
-
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh != null) {
             log.debug("using Blob Holder based HtmlPreviewAdapter factory");
