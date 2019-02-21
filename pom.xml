@@ -853,6 +853,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-login-jwt</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login-kerberos</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
