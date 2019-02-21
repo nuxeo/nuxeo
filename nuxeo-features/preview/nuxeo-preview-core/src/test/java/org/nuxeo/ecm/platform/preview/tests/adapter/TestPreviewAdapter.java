@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.preview.tests.adapter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -139,6 +140,14 @@ public class TestPreviewAdapter {
                                      .convert("any2pdf", new SimpleBlobHolder(officeBlob), null)
                                      .getBlob();
         assertEquals(expectedBlob, pdfBlob);
+    }
+
+    @Test
+    public void testFolderishDocument() throws Exception {
+        DocumentModel document = session.createDocumentModel("File");
+        document.addFacet("Folderish");
+        HtmlPreviewAdapter adapter = document.getAdapter(HtmlPreviewAdapter.class);
+        assertNotNull(adapter);
     }
 
 }
