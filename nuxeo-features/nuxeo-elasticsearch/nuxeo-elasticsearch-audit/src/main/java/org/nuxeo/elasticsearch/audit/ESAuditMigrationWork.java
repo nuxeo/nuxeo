@@ -80,9 +80,10 @@ public class ESAuditMigrationWork extends AbstractWork {
             int pageIdx = 1;
 
             while (nbEntriesMigrated < nbEntriesToMigrate) {
+                int pageIdxF = pageIdx;
                 @SuppressWarnings("unchecked")
-                List<LogEntry> entries = (List<LogEntry>) sourceBackend.nativeQuery(
-                        "from LogEntry log order by log.id asc", pageIdx, batchSize);
+                List<LogEntry> entries = TransactionHelper.runInTransaction(() -> (List<LogEntry>) sourceBackend.nativeQuery(
+                        "from LogEntry log order by log.id asc", pageIdxF, batchSize));
 
                 if (entries.size() == 0) {
                     log.warn("Migration ending after " + nbEntriesMigrated + " entries");
