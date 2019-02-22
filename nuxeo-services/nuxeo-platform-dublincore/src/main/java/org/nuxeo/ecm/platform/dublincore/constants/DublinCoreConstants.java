@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Nuno Cunha (ncunha@nuxeo.com)
+ *     Quentin Le Henaff (qlehenaff@nuxeo.com)
  */
 
 package org.nuxeo.ecm.platform.dublincore.constants;
@@ -32,28 +33,49 @@ public class DublinCoreConstants {
 
     public static final String DUBLINCORE_SCHEMA_NAME = "dublincore";
 
+    public static final String DUBLINCORE_CONTRIBUTORS_PROPERTY = "dc:contributors";
+
+    public static final String DUBLINCORE_CREATED_DATE_PROPERTY = "dc:created";
+
     public static final String DUBLINCORE_CREATOR_PROPERTY = "dc:creator";
 
     public static final String DUBLINCORE_ISSUED_DATE_PROPERTY = "dc:issued";
 
-    public static final String DUBLINCORE_MODIFIED_DATE_PROPERTY = "dc:modified";
-
-    public static final String DUBLINCORE_CREATED_DATE_PROPERTY = "dc:created";
-
-    public static final String DUBLINCORE_CONTRIBUTORS_PROPERTY = "dc:contributors";
-
     public static final String DUBLINCORE_LAST_CONTRIBUTOR_PROPERTY = "dc:lastContributor";
 
-    public static final String DUBLINCORE_CREATOR = "creator";
+    public static final String DUBLINCORE_MODIFIED_DATE_PROPERTY = "dc:modified";
 
-    public static final String DUBLINCORE_ISSUED_DATE = "issued";
+    /** @since 11.1 */
+    public static final String DUBLINCORE_DESCRIPTION_PROPERTY = "dc:description";
 
-    public static final String DUBLINCORE_MODIFIED_DATE = "modified";
+    /** @since 11.1 */
+    public static final String DUBLINCORE_COVERAGE_PROPERTY = "dc:coverage";
 
-    public static final String DUBLINCORE_CREATED_DATE = "created";
+    /** @since 11.1 */
+    public static final String DUBLINCORE_VALID_PROPERTY = "dc:valid";
 
-    public static final String DUBLINCORE_CONTRIBUTORS = "contributors";
+    /** @since 11.1 */
+    public static final String DUBLINCORE_RIGHTS_PROPERTY = "dc:rights";
 
-    public static final String DUBLINCORE_LAST_CONTRIBUTOR = "lastContributor";
+    /** @since 11.1 */
+    public static final String DUBLINCORE_EXPIRED_PROPERTY = "dc:expired";
+
+    /** @since 11.1 */
+    public static final String DUBLINCORE_FORMAT_PROPERTY = "dc:format";
+
+    /** @since 11.1 */
+    public static final String DUBLINCORE_TITLE_PROPERTY = "dc:title";
+
+    /** @since 11.1 */
+    public static final String DUBLINCORE_NATURE_PROPERTY = "dc:nature";
+
+    /** @since 11.1 */
+    public static final String DUBLINCORE_SUBJECTS_PROPERTY = "dc:subjects";
+
+    /** @since 11.1 */
+    public static final String DUBLINCORE_SOURCE_PROPERTY = "dc:source";
+
+    /** @since 11.1 */
+    public static final String DUBLINCORE_PUBLISHER_PROPERTY = "dc:publisher";
 
 }
