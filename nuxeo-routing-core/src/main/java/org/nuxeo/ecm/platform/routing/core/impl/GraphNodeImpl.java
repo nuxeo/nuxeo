@@ -77,7 +77,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode {
 
-    public static final String ENFORCE_GLOBAL_WF_VAR_ASSIGN_CHECK = "nuxeo.routing.enforceGlobalVariablesAssignementCheck";
+    public static final String ENFORCE_GLOBAL_WF_VAR_ASSIGN_CHECK = "nuxeo.routing.enforceGlobalVariablesAssignmentCheck";
 
     private static final long serialVersionUID = 1L;
 
