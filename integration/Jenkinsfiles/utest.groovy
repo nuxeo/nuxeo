@@ -19,7 +19,7 @@
 
 currentBuild.setDescription("Branch: $BRANCH -> $PARENT_BRANCH, DB: $DBPROFILE, VERSION: $DBVERSION")
 
-node('SLAVE') {
+node('SLAVE&&STATIC') {
     tool name: 'ant-1.9', type: 'ant'
     tool name: 'java-8-openjdk', type: 'hudson.model.JDK'
     tool name: 'maven-3', type: 'hudson.tasks.Maven$MavenInstallation'
