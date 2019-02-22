@@ -453,7 +453,7 @@ public class RestHelper {
      * @since 9.10
      */
     public static void deleteDirectoryEntries(String directoryName) {
-        CLIENT.directoryManager().directory(directoryName).fetchEntries().getDirectoryEntries().forEach(entry -> {
+        CLIENT.directoryManager().directory(directoryName).fetchEntries().getEntries().forEach(entry -> {
             entry.delete();
             removeDirectoryEntryToDelete(directoryName, entry.getId());
         });
