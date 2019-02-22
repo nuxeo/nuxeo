@@ -19,51 +19,6 @@
     </license>
   </licenses>
 
-  <mailingLists>
-    <mailingList>
-      <name>Nuxeo ECM list</name>
-      <post>ecm@lists.nuxeo.com</post>
-      <subscribe>http://lists.nuxeo.com/mailman/listinfo/ECM</subscribe>
-      <unsubscribe>http://lists.nuxeo.com/mailman/listinfo/ECM</unsubscribe>
-      <archive>http://lists.nuxeo.com/pipermail/ecm/</archive>
-      <otherArchives>
-        <otherArchive>
-          http://dir.gmane.org/gmane.comp.cms.nuxeo.bugs
-        </otherArchive>
-        <otherArchive>
-          http://www.mail-archive.com/ecm@lists.nuxeo.com/
-        </otherArchive>
-      </otherArchives>
-    </mailingList>
-    <mailingList>
-      <name>Nuxeo ECM checkins list</name>
-      <subscribe>
-        http://lists.nuxeo.com/mailman/listinfo/ecm-checkins
-      </subscribe>
-      <unsubscribe>
-        http://lists.nuxeo.com/mailman/listinfo/ecm-checkins
-      </unsubscribe>
-      <archive>http://lists.nuxeo.com/pipermail/ecm-checkins/</archive>
-      <otherArchives>
-        <otherArchive>
-          http://dir.gmane.org/gmane.comp.cms.nuxeo.scm
-        </otherArchive>
-        <otherArchive>
-          http://www.mail-archive.com/ecm-checkins@lists.nuxeo.com/
-        </otherArchive>
-      </otherArchives>
-    </mailingList>
-    <mailingList>
-      <name>Nuxeo ECM developers list</name>
-      <post>nuxeo-dev@lists.nuxeo.com</post>
-      <subscribe>http://lists.nuxeo.com/mailman/listinfo/nuxeo-dev</subscribe>
-      <unsubscribe>
-        http://lists.nuxeo.com/mailman/listinfo/nuxeo-dev
-      </unsubscribe>
-      <archive>http://lists.nuxeo.com/pipermail/nuxeo-dev/</archive>
-    </mailingList>
-  </mailingLists>
-
   <issueManagement>
     <system>jira</system>
     <url>http://jira.nuxeo.com/browse/NXP</url>
