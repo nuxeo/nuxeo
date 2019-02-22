@@ -288,13 +288,6 @@
 </suppress>
 <suppress>
    <notes><![CDATA[
-   file name: okhttp-3.1.1.jar (only used in tests)
-   ]]></notes>
-   <gav regex="true">^com\.squareup\.okhttp3:okhttp:.*$</gav>
-   <cpe>cpe:/a:squareup:okhttp3</cpe>
-</suppress>
-<suppress>
-   <notes><![CDATA[
    file name: gwt-servlet-2.7.0-NX1.jar (protobuf not directly accessible)
    ]]></notes>
    <gav regex="true">^com\.google\.gwt:gwt-servlet:.*$</gav>
