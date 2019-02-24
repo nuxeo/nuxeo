@@ -18,11 +18,13 @@
  */
 package org.nuxeo.ecm.platform.contentview.json;
 
-import java.io.Serializable;
-import java.util.Calendar;
-import java.util.TimeZone;
+import static org.nuxeo.common.utils.DateUtils.toZonedDateTime;
 
-import org.apache.commons.lang3.time.FastDateFormat;
+import java.io.Serializable;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,8 +50,8 @@ public class DocumentModelToJSON implements PropertyVisitor {
 
     Log log = LogFactory.getLog(DocumentModelToJSON.class);
 
-    protected static final FastDateFormat dateFormat = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ssZ",
-            TimeZone.getTimeZone("UTC"));
+    protected static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")
+                                                                           .withZone(ZoneOffset.UTC);
 
     protected JSONObject result;
 
@@ -132,7 +134,7 @@ public class DocumentModelToJSON implements PropertyVisitor {
         // convert values if needed
         Serializable value = property.getValue();
         if (value instanceof Calendar) {
-            value = dateFormat.format(((Calendar) value).getTime());
+            value = dateFormat.format(toZonedDateTime((Calendar) value));
         }
         // build json
         if (property.getParent().isList()) {

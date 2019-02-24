@@ -25,14 +25,14 @@ import static org.nuxeo.ecm.core.api.event.CoreEventConstants.REPOSITORY_NAME;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ACE_STATUS_UPDATED;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.time.FastDateFormat;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -62,7 +62,7 @@ public class UpdateACEStatusWork extends AbstractWork {
             + " WHERE (ecm:acl/*1/status = 0 AND ecm:acl/*1/begin <= TIMESTAMP '%s')"
             + " OR (ecm:acl/*1/status = 1 AND ecm:acl/*1/end <= TIMESTAMP '%s')";
 
-    public static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     protected int batchSize = DEFAULT_BATCH_SIZE;
 
@@ -71,8 +71,7 @@ public class UpdateACEStatusWork extends AbstractWork {
         setStatus("Updating ACE status");
         openSystemSession();
 
-        Date now = new Date();
-        String formattedDate = FORMATTER.format(now);
+        String formattedDate = FORMATTER.format(ZonedDateTime.now());
 
         IterableQueryResult result = session.queryAndFetch(String.format(QUERY, formattedDate, formattedDate),
                 NXQL.NXQL);
