@@ -19,11 +19,17 @@
  */
 package org.nuxeo.ecm.platform.web.common.requestcontroller.filter;
 
+import static java.time.ZonedDateTime.ofInstant;
+import static java.time.format.DateTimeFormatter.ofPattern;
+
 import java.io.IOException;
 import java.security.Principal;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map.Entry;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -38,7 +44,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -66,8 +71,8 @@ public class NuxeoRequestControllerFilter implements Filter {
     protected static final int LOCK_TIMEOUT_S = 120;
 
     // formatted http Expires: Thu, 01 Dec 1994 16:00:00 GMT
-    public static final FastDateFormat HTTP_EXPIRES_DATE_FORMAT = FastDateFormat.getInstance(
-            "EEE, dd MMM yyyy HH:mm:ss z", TimeZone.getTimeZone("GMT"), Locale.US);
+    public static final DateTimeFormatter HTTP_EXPIRES_DATE_FORMAT = ofPattern("EEE, dd MMM yyyy HH:mm:ss z").withZone(
+            ZoneId.of("GMT")).withLocale(Locale.US);
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -283,7 +288,8 @@ public class NuxeoRequestControllerFilter implements Filter {
             String privateOrPublic = config.isPrivate() ? "private" : "public";
             response.setHeader("Cache-Control", privateOrPublic + ", max-age=" + config.getCacheTime());
             long expires = System.currentTimeMillis() + Long.parseLong(config.getCacheTime()) * 1000;
-            response.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(expires));
+            ZonedDateTime zdt = ofInstant(Instant.ofEpochMilli(expires), ZoneId.systemDefault());
+            response.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(zdt));
         } else if (config.isPrivate()) {
             response.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
         }

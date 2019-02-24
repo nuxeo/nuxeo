@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.user.center.profile.rest;
 
+import static org.nuxeo.common.utils.DateUtils.toZonedDateTime;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_AVATAR_FIELD;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_BIRTHDATE_FIELD;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_PHONENUMBER_FIELD;
@@ -26,13 +27,13 @@ import static org.nuxeo.ecm.user.center.profile.rest.UserProfileEnricher.NAME;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.time.FastDateFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
@@ -64,7 +65,7 @@ import org.nuxeo.runtime.test.runner.Features;
 @Deploy("org.nuxeo.ecm.user.center.profile")
 public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<NuxeoPrincipalJsonWriter, NuxeoPrincipal> {
 
-    private static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     public UserProfileEnricherTest() {
         super(NuxeoPrincipalJsonWriter.class, NuxeoPrincipal.class);
@@ -142,6 +143,6 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
         jsonAssert.has("avatar").isEquals(avatarURL);
         jsonAssert.has("birthdate");
         jsonAssert.get("phonenumber").isEquals("mynumber");
-        jsonAssert.get("birthdate").isEquals(FORMATTER.format(birthDate));
+        jsonAssert.get("birthdate").isEquals(FORMATTER.format(toZonedDateTime(birthDate)));
     }
 }

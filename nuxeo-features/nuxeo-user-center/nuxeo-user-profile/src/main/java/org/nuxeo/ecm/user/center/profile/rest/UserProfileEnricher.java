@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.user.center.profile.rest;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static org.nuxeo.common.utils.DateUtils.toZonedDateTime;
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter.ENTITY_TYPE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
@@ -32,11 +33,11 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.time.FastDateFormat;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -64,7 +65,7 @@ public class UserProfileEnricher extends AbstractJsonEnricher<NuxeoPrincipal> {
 
     public static final String NAME = "userprofile";
 
-    private static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     /**
      * @since 9.3
@@ -110,7 +111,7 @@ public class UserProfileEnricher extends AbstractJsonEnricher<NuxeoPrincipal> {
     protected void writeCompatibilityUserProfile(JsonGenerator jg, DocumentModel up) throws IOException {
         Serializable propertyValue = up.getPropertyValue(USER_PROFILE_BIRTHDATE_FIELD);
         jg.writeStringField("birthdate",
-                propertyValue == null ? null : FORMATTER.format(((GregorianCalendar) propertyValue).getTime()));
+                propertyValue == null ? null : FORMATTER.format(toZonedDateTime((GregorianCalendar) propertyValue)));
         jg.writeStringField("phonenumber", (String) up.getPropertyValue(USER_PROFILE_PHONENUMBER_FIELD));
         Blob avatar = (Blob) up.getPropertyValue(USER_PROFILE_AVATAR_FIELD);
         if (avatar != null) {
