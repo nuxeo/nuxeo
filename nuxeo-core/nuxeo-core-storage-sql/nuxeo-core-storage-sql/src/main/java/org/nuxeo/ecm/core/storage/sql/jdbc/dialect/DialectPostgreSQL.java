@@ -47,7 +47,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -65,6 +64,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * PostgreSQL-specific dialect.
@@ -1194,7 +1194,8 @@ public class DialectPostgreSQL extends Dialect {
             }
             properties.put("fulltextTriggerStatements", String.join("\n", lines));
         }
-        String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(SecurityConstants.BROWSE);
+        String[] permissions = Framework.getService(SecurityService.class)
+                                        .getPermissionsToCheck(SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<>();
         for (String perm : permissions) {
             permsList.add("('" + perm + "')");
@@ -1294,7 +1295,7 @@ public class DialectPostgreSQL extends Dialect {
                 }
             }
         }
-        SecurityService securityService = NXCore.getSecurityService();
+        SecurityService securityService = Framework.getService(SecurityService.class);
         Set<String> confPermissions = new HashSet<>(
                 Arrays.asList(securityService.getPermissionsToCheck(SecurityConstants.BROWSE)));
         if (!dbPermissions.equals(confPermissions)) {

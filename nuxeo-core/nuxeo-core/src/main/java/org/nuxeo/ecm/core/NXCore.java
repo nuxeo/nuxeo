@@ -31,7 +31,10 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @deprecated since 11.1, use directly {@link Framework#getService(Class)} with {@link LifeCycleService} or
+ *             {@link SecurityService}
  */
+@Deprecated
 public final class NXCore {
 
     private NXCore() {
@@ -49,6 +52,10 @@ public final class NXCore {
         return (LifeCycleService) Framework.getRuntime().getComponent(LifeCycleServiceImpl.NAME);
     }
 
+    /**
+     * @deprecated since 11.1, use directly {@link Framework#getService(Class)} with {@link SecurityService}
+     */
+    @Deprecated
     public static SecurityService getSecurityService() {
         return (SecurityService) Framework.getRuntime().getComponent(SecurityService.NAME);
     }
