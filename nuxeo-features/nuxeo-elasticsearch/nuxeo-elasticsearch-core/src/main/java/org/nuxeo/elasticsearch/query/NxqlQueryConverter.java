@@ -57,7 +57,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -89,6 +88,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
@@ -223,9 +223,9 @@ public final class NxqlQueryConverter {
     }
 
     protected static SQLQuery addSecurityPolicy(CoreSession session, SQLQuery query) {
-        Collection<SQLQuery.Transformer> transformers = NXCore.getSecurityService()
-                                                              .getPoliciesQueryTransformers(
-                                                                      session.getRepositoryName());
+        Collection<SQLQuery.Transformer> transformers = Framework.getService(SecurityService.class)
+                                                                 .getPoliciesQueryTransformers(
+                                                                         session.getRepositoryName());
         for (SQLQuery.Transformer trans : transformers) {
             query = trans.transform(session.getPrincipal(), query);
         }

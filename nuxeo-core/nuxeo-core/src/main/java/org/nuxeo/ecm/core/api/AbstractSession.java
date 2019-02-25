@@ -59,7 +59,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.CoreService;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
@@ -171,7 +170,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     protected SecurityService getSecurityService() {
         if (securityService == null) {
-            securityService = NXCore.getSecurityService();
+            securityService = Framework.getService(SecurityService.class);
         }
         return securityService;
     }

@@ -538,7 +538,7 @@ public class TestSQLRepositorySecurity {
     public void testReadAclSecurity() {
         // Check that all permissions that contain Browse enable to list a
         // document using aclOptimization
-        SecurityService securityService = NXCore.getSecurityService();
+        SecurityService securityService = Framework.getService(SecurityService.class);
         String[] browsePermissions = securityService.getPermissionsToCheck(BROWSE);
         // Check for test permission contribution
         assertTrue(Arrays.asList(browsePermissions).contains("ViewTest"));
