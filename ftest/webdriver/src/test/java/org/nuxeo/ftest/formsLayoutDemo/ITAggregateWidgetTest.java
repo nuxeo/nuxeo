@@ -104,4 +104,22 @@ public class ITAggregateWidgetTest extends AbstractTest {
                 driver.findElement(By.xpath("//form[@id='selectManyListboxAggregate_edit_form']//table//tr/td[2]")).getText());
     }
 
+    @Test
+    public void testSelectManyCheckboxUserAggregateWidget() {
+        navigateTo("selectManyCheckboxUserAggregateWidget");
+        checkNoError();
+        String prefix1 = "selectManyCheckboxUserAggregate_edit_form:nxl_selectManyCheckboxUserAggregate:nxw_widget:";
+        checkLabel(prefix1 + "0", "Administrator (10)");
+        checkLabel(prefix1 + "1", "Members group (5)");
+    }
+
+    @Test
+    public void testSelectManyListboxUserAggregateWidget() {
+        navigateTo("selectManyListboxUserAggregateWidget");
+        checkNoError();
+        assertEquals("Administrator (10)\nMembers group (5)",
+                driver.findElement(By.xpath("//form[@id='selectManyListboxUserAggregate_edit_form']//table//tr/td[2]"))
+                      .getText());
+    }
+
 }
