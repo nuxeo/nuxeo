@@ -22,11 +22,10 @@ package org.nuxeo.ecm.quota.size;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETED_STATE;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,14 +33,16 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting space used by Blobs in document. This implementation does not
@@ -57,6 +58,30 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
 
     public static final String USER_WORKSPACES_ROOT = "UserWorkspacesRoot";
 
+    /** @since 11.1 */
+    public static final String CLEAR_SCROLL_SIZE_PROP = "nuxeo.quota.clear.scroll.size";
+
+    /** @since 11.1 */
+    public static final String DEFAULT_CLEAR_SCROLL_SIZE = "500";
+
+    /** @since 11.1 */
+    public static final String CLEAR_SCROLL_KEEP_ALIVE_PROP = "nuxeo.quota.clear.scroll.keepAliveSeconds";
+
+    /** @since 11.1 */
+    public static final String DEFAULT_CLEAR_SCROLL_KEEP_ALIVE = "60";
+
+    /** @since 11.1 */
+    public static final String INIT_SCROLL_SIZE_PROP = "nuxeo.quota.init.scroll.size";
+
+    /** @since 11.1 */
+    public static final String DEFAULT_INIT_SCROLL_SIZE = "250";
+
+    /** @since 11.1 */
+    public static final String INIT_SCROLL_KEEP_ALIVE_PROP = "nuxeo.quota.init.scroll.keepAliveSeconds";
+
+    /** @since 11.1 */
+    public static final String DEFAULT_INIT_SCROLL_KEEP_ALIVE = "120";
+
     @Override
     public void computeInitialStatistics(CoreSession session, QuotaStatsInitialWork currentWorker, String path) {
         log.debug("Starting initial Quota computation for path: " + path);
@@ -68,42 +93,41 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
             root = session.getDocument(new PathRef(path));
             query += " AND ecm:path STARTSWITH " + NXQL.escapeString(path);
         }
+        // get scroll configuration parameters
+        ConfigurationService confService = Framework.getService(ConfigurationService.class);
+        int clearScrollSize = Integer.parseInt(confService.getProperty(CLEAR_SCROLL_SIZE_PROP, DEFAULT_CLEAR_SCROLL_SIZE));
+        int clearScrollKeepAlive = Integer.parseInt(confService.getProperty(CLEAR_SCROLL_KEEP_ALIVE_PROP,
+                DEFAULT_CLEAR_SCROLL_KEEP_ALIVE));
+        int initScrollSize = Integer.parseInt(confService.getProperty(INIT_SCROLL_SIZE_PROP, DEFAULT_INIT_SCROLL_SIZE));
+        int initScrollKeepAlive = Integer.parseInt(confService.getProperty(INIT_SCROLL_KEEP_ALIVE_PROP, DEFAULT_INIT_SCROLL_KEEP_ALIVE));
+
         // reset on all documents
         // this will force an update if the quota addon was installed and then removed
-        long count = 0;
-        IterableQueryResult res = session.queryAndFetch(query, "NXQL");
-        try {
-            count = res.size();
-            log.debug("Start iteration on " + count + " items");
-            for (Map<String, Serializable> r : res) {
-                String uuid = (String) r.get("ecm:uuid");
-                clearQuotas(session, uuid);
-            }
-        } finally {
-            res.close();
+        log.debug("Start scrolling to clear quotas");
+        long clearCount = scrollAndDo(session, query, clearScrollSize, clearScrollKeepAlive,
+                (uuid, idx) -> clearQuotas(session, uuid));
+        if (log.isDebugEnabled()) {
+            log.debug("End scrolling to clear quotas, documentCount=" + clearCount);
         }
         clearQuotas(session, root.getId());
         session.save();
 
         // recompute quota on each doc
-        res = session.queryAndFetch(query, "NXQL");
-        try {
-            long idx = 0;
-            for (Map<String, Serializable> r : res) {
-                String uuid = (String) r.get("ecm:uuid");
-                DocumentModel doc = session.getDocument(new IdRef(uuid));
-                if (log.isTraceEnabled()) {
-                    log.trace("process Quota initial computation on uuid " + doc.getId());
-                    log.trace("doc with uuid " + doc.getId() + " started update");
-                }
-                initDocument(session, doc);
-                if (log.isTraceEnabled()) {
-                    log.trace("doc with uuid " + doc.getId() + " update completed");
-                }
-                currentWorker.notifyProgress(++idx, count);
+        log.debug("Start scrolling to init quotas");
+        long initCount = scrollAndDo(session, query, initScrollSize, initScrollKeepAlive, (uuid, idx) -> {
+            DocumentModel doc = session.getDocument(new IdRef(uuid));
+            if (log.isTraceEnabled()) {
+                log.trace("process Quota initial computation on uuid " + doc.getId());
+                log.trace("doc with uuid " + doc.getId() + " started update");
             }
-        } finally {
-            res.close();
+            initDocument(session, doc);
+            if (log.isTraceEnabled()) {
+                log.trace("doc with uuid " + doc.getId() + " update completed");
+            }
+            currentWorker.notifyProgress(idx, clearCount);
+        });
+        if (log.isDebugEnabled()) {
+            log.debug("End scrolling to init quotas, documentCount=" + initCount);
         }
 
         // if recomputing only for descendants of a given path, recompute ancestors from their direct children
@@ -114,6 +138,24 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
                 initDocumentFromChildren(doc);
             } while (!doc.getPathAsString().equals("/"));
         }
+    }
+
+    protected long scrollAndDo(CoreSession session, String query, int scrollSize, int scrollKeepAlive,
+            BiConsumer<String, Long> consumer) {
+        long count = 0;
+        ScrollResult<String> scroll = session.scroll(query, scrollSize, scrollKeepAlive);
+        while (scroll.hasResults()) {
+            for (String uuid : scroll.getResults()) {
+                consumer.accept(uuid, ++count);
+            }
+            // commit current scroll
+            session.save();
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+            // next scroll
+            scroll = session.scroll(scroll.getScrollId());
+        }
+        return count;
     }
 
     protected void clearQuotas(CoreSession session, String docID) {
