@@ -148,6 +148,7 @@ elasticsearch.restClient.keystoreType=
 # Kafka
 kafka.enabled=false
 kafka.bootstrap.servers=localhost:9092
+kafka.default.replication.factor=1
 kafka.topicPrefix=nuxeo-
 # must be greater than poll.interval
 kafka.request.timeout.ms=3605000

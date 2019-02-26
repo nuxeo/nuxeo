@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
@@ -83,7 +82,7 @@ public class KafkaLogManager extends AbstractLogManager {
                 producerProperties.getProperty(DEFAULT_REPLICATION_FACTOR_PROP, "1"));
         this.producerProperties = normalizeProducerProperties(producerProperties);
         this.consumerProperties = normalizeConsumerProperties(consumerProperties);
-        this.adminProperties = createAdminProperties(producerProperties, consumerProperties);
+        this.adminProperties = createAdminProperties(producerProperties);
         this.kUtils = new KafkaUtils(adminProperties);
     }
 
@@ -177,11 +176,25 @@ public class KafkaLogManager extends AbstractLogManager {
         return ret;
     }
 
-    protected Properties createAdminProperties(Properties producerProperties, Properties consumerProperties) {
+    protected Properties createAdminProperties(Properties producerProperties) {
         Properties ret = new Properties();
-        ret.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
-                producerProperties.getOrDefault(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                        consumerProperties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG)));
+        for (Map.Entry<Object, Object> prop : producerProperties.entrySet()) {
+            switch (prop.getKey().toString()) {
+            case ProducerConfig.ACKS_CONFIG:
+            case ProducerConfig.BATCH_SIZE_CONFIG:
+            case ProducerConfig.BUFFER_MEMORY_CONFIG:
+            case ProducerConfig.COMPRESSION_TYPE_CONFIG:
+            case ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG:
+            case ProducerConfig.LINGER_MS_CONFIG:
+            case ProducerConfig.MAX_BLOCK_MS_CONFIG:
+            case ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG:
+            case DEFAULT_REPLICATION_FACTOR_PROP:
+                // Skip non admin config properties to avoid warning on unused properties
+                break;
+            default:
+                ret.put(prop.getKey(), prop.getValue());
+            }
+        }
         return ret;
     }
 
@@ -221,8 +234,17 @@ public class KafkaLogManager extends AbstractLogManager {
 
     @Override
     public String toString() {
-        return "KafkaLogManager{" + "producerProperties=" + producerProperties + ", consumerProperties="
-                + consumerProperties + ", prefix='" + prefix + '\'' + '}';
+        return "KafkaLogManager{" + "producerProperties=" + filterDisplayedProperties(producerProperties)
+                + ", consumerProperties=" + filterDisplayedProperties(consumerProperties) + ", prefix='" + prefix + '\''
+                + '}';
+    }
+
+    protected String filterDisplayedProperties(Properties properties) {
+        String ret = properties.toString();
+        if (ret.indexOf("password") < 0) {
+            return ret;
+        }
+        return ret.replaceAll("password=.[^\\\"\\;\\,\\ ]*", "password=****");
     }
 
     @Override
