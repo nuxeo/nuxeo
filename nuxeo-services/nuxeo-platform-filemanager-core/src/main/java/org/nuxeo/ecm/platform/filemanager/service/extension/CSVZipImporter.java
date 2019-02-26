@@ -124,6 +124,8 @@ public class CSVZipImporter extends AbstractFileImporter {
                             type = lineValue;
                         } else if ("id".equalsIgnoreCase(headerValue)) {
                             id = lineValue;
+                        } else if ("name".equalsIgnoreCase(headerValue)) {
+                            name = lineValue;
                         } else {
                             stringValues.put(headerValue, lineValue);
                         }
