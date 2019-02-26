@@ -31,6 +31,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")
 @Deploy("org.nuxeo.ecm.quota.core")
+@Deploy("org.nuxeo.ecm.quota.core.test")
 @Deploy("org.nuxeo.ecm.platform.content.template")
 public class QuotaFeature implements RunnerFeature {
 

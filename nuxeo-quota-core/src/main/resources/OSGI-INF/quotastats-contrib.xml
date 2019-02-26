@@ -23,4 +23,40 @@
 
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property controlling the scroll size when clearing quota size.
+
+      @since 11.1
+    </documentation>
+    <property name="nuxeo.quota.clear.scroll.size">500</property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property controlling the scroll lifetime when clearing quota size.
+
+      @since 11.1
+    </documentation>
+    <property name="nuxeo.quota.clear.scroll.keepAliveSeconds">60</property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property controlling the scroll size when initialising quota size.
+
+      @since 11.1
+    </documentation>
+    <property name="nuxeo.quota.init.scroll.size">250</property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property controlling the scroll lifetime when initialising quota size.
+
+      @since 11.1
+    </documentation>
+    <property name="nuxeo.quota.init.scroll.keepAliveSeconds">120</property>
+  </extension>
+
 </component>
