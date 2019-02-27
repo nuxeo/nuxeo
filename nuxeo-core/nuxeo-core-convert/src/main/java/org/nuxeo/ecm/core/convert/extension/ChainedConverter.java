@@ -85,6 +85,10 @@ public class ChainedConverter implements Converter {
             }
             Converter converter = ConversionServiceImpl.getConverter(converterName);
             result = converter.convert(result, parameters);
+            // Mark for deletion intermediate results
+            if (subConverters.indexOf(converterName) != subConverters.size() - 1) {
+                result.getBlobs().forEach(blob -> Framework.trackFile(blob.getFile(), blob.getFile()));
+            }
             srcMT = desc.getDestinationMimeType();
         }
         return result;
