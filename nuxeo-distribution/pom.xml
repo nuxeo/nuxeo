@@ -16,7 +16,6 @@
 
   <properties>
     <nuxeo.distribution.version>11.1-SNAPSHOT</nuxeo.distribution.version>
-    <nuxeo.webui.mp.version>2.5.0-SNAPSHOT</nuxeo.webui.mp.version>
   </properties>
 
   <modules>
@@ -95,12 +94,6 @@
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-marketplace-jsf-ui</artifactId>
         <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.web.ui</groupId>
-        <artifactId>nuxeo-web-ui-marketplace</artifactId>
-        <version>${nuxeo.webui.mp.version}</version>
         <type>zip</type>
       </dependency>
       <dependency>
