@@ -18,10 +18,11 @@
  */
 package org.nuxeo.ecm.platform.oauth2.tokens;
 
+import java.time.Instant;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.google.api.client.auth.oauth2.StoredCredential;
 import org.apache.commons.lang.RandomStringUtils;
@@ -121,8 +122,11 @@ public class NuxeoOAuth2Token {
         m.put("access_token", accessToken);
         m.put("refresh_token", refreshToken);
         m.put("token_type", "bearer");
-        m.put("expires_in",
-                Math.floor((creationDate.getTimeInMillis() + expirationTimeMilliseconds - new Date().getTime()) / 1000));
+        // Lifetime in seconds of the access token, see https://tools.ietf.org/html/rfc6749#section-5.1.
+        // Must be a whole number otherwise some clients might fail reading the token response.
+        m.put("expires_in", TimeUnit.MILLISECONDS.toSeconds(
+                creationDate.getTimeInMillis() + expirationTimeMilliseconds - Instant.now().toEpochMilli()));
+
         return m;
     }
 
