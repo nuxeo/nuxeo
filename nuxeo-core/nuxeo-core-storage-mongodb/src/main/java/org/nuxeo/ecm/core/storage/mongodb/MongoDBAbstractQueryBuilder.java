@@ -24,14 +24,13 @@ import static java.lang.Boolean.TRUE;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.bson.Document;
+import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
@@ -463,7 +462,7 @@ public abstract class MongoDBAbstractQueryBuilder {
     }
 
     public Date walkDateLiteral(DateLiteral lit) {
-        return lit.value.toDate(); // TODO onlyDate
+        return DateUtils.toDate(lit.value); // TODO onlyDate
     }
 
     public Double walkDoubleLiteral(DoubleLiteral lit) {

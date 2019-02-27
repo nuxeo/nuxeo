@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -123,7 +124,7 @@ public class TestSchedulerService {
         ScheduleImpl schedule = buildTestSchedule();
         schedule.timeZone = "UTC";
         ZonedDateTime future = LocalDateTime.now().plusSeconds(3).atZone(ZoneId.systemDefault())
-                .withZoneSameInstant(ZoneId.of("UTC"));
+                .withZoneSameInstant(ZoneOffset.UTC);
 
         schedule.cronExpression = CRON_EXPRESSION_FORMATTER.format(future);
 

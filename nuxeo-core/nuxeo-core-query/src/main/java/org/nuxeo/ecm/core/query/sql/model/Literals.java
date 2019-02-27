@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.core.query.sql.model;
 
+import static org.nuxeo.common.utils.DateUtils.toZonedDateTime;
+
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Calendar;
@@ -26,7 +28,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.query.QueryParseException;
 
@@ -70,7 +71,7 @@ public class Literals {
     }
 
     public static ZonedDateTime valueOf(DateLiteral lit) {
-        return lit.value.toGregorianCalendar().toZonedDateTime(); // TODO onlyDate
+        return lit.value; // TODO onlyDate
     }
 
     public static Double valueOf(DoubleLiteral lit) {
@@ -88,9 +89,14 @@ public class Literals {
     public static Literal toLiteral(Object value) {
         if (value instanceof Boolean) {
             return new BooleanLiteral(((Boolean) value).booleanValue());
-        } else if (value instanceof Calendar || value instanceof Date || value instanceof Temporal
-                || value instanceof DateTime) {
-            return new DateLiteral(new DateTime(value));
+        } else if (value instanceof Calendar) {
+            return new DateLiteral(toZonedDateTime((Calendar) value));
+        } else if (value instanceof Date) {
+            return new DateLiteral(toZonedDateTime((Date) value));
+        } else if (value instanceof ZonedDateTime) {
+            return new DateLiteral((ZonedDateTime) value);
+        } else if (value instanceof Temporal) {
+            return new DateLiteral(ZonedDateTime.from((Temporal) value));
         } else if (value instanceof Double) {
             return new DoubleLiteral((Double) value);
         } else if (value instanceof Float) {

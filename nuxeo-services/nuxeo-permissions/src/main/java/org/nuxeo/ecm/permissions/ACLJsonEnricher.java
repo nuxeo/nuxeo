@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.permissions;
 
+import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
+import static org.nuxeo.common.utils.DateUtils.nowIfNull;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_COMMENT;
@@ -31,9 +33,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -149,11 +148,8 @@ public class ACLJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
             jg.writeStringField("permission", ace.getPermission());
             jg.writeBooleanField("granted", ace.isGranted());
             writePrincipalOrGroup(CREATOR_PROPERTY, ace.getCreator(), jg);
-            DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
-            jg.writeStringField("begin",
-                    ace.getBegin() != null ? dateTimeFormatter.print(new DateTime(ace.getBegin())) : null);
-            jg.writeStringField("end",
-                    ace.getEnd() != null ? dateTimeFormatter.print(new DateTime(ace.getEnd())) : null);
+            jg.writeStringField("begin", formatISODateTime(nowIfNull(ace.getBegin())));
+            jg.writeStringField("end", formatISODateTime(nowIfNull(ace.getEnd())));
             jg.writeStringField("status", ace.getStatus().toString().toLowerCase());
 
             if (ctx.getFetched(NAME).contains(EXTENDED_ACLS_PROPERTY)) {

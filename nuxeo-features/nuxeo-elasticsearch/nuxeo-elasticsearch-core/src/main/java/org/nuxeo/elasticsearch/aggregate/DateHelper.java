@@ -18,7 +18,7 @@
  */
 package org.nuxeo.elasticsearch.aggregate;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
 
 /**
  * Helper to add duration to a date with the same format as ES Date histogram interval
@@ -32,25 +32,25 @@ public final class DateHelper {
     }
 
     /**
-     * Returns a new datetime plus the specified duration.
+     * Returns a new ZonedDateTime plus the specified duration.
      *
-     * @param origin the initial datetime
+     * @param origin the initial ZonedDateTime
      * @param duration can be expressed with a noun: hour, day, month, quarter, year or expression: 2d, 3h, 5w, 2M, 3y
      *            or a number of ms: 1234
      * @throws IllegalArgumentException if the duration cannot be parsed
-     * @return a new datetime
+     * @return a new ZonedDateTime
      */
-    public static DateTime plusDuration(DateTime origin, String duration) {
+    public static ZonedDateTime plusDuration(ZonedDateTime origin, String duration) {
         if (duration.matches("[a-zA-Z]+")) {
             return plusDurationAsNoun(origin, duration);
         }
         if (duration.matches("[0-9]+")) {
-            return origin.plusMillis(Integer.valueOf(duration));
+            return origin.plusNanos(Integer.valueOf(duration) * 1000);
         }
         return plusDurationAsExpression(origin, duration);
     }
 
-    private static DateTime plusDurationAsExpression(DateTime origin, String duration) {
+    private static ZonedDateTime plusDurationAsExpression(ZonedDateTime origin, String duration) {
         int k = getFactor(duration);
         switch (duration.substring(duration.length() - 1, duration.length())) {
         case "s":
@@ -80,7 +80,7 @@ public final class DateHelper {
         return 1;
     }
 
-    private static DateTime plusDurationAsNoun(DateTime origin, String duration) {
+    private static ZonedDateTime plusDurationAsNoun(ZonedDateTime origin, String duration) {
         switch (duration.toLowerCase()) {
         case "second":
             return origin.plusSeconds(1);
@@ -102,7 +102,7 @@ public final class DateHelper {
         return invalid(duration);
     }
 
-    private static DateTime invalid(String msg) {
+    private static ZonedDateTime invalid(String msg) {
         throw new IllegalArgumentException("Invalid duration: " + msg);
     }
 

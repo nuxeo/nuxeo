@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
-import java.util.Calendar;
-import java.util.Locale;
+import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
+import static org.nuxeo.common.utils.DateUtils.parseISODateTime;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * @author Florent Guillaume
@@ -33,63 +33,41 @@ public class DateLiteral extends Literal {
 
     private static final long serialVersionUID = 279219479611055690L;
 
-    public static final DateTimeFormatter dateParser = ISODateTimeFormat.dateParser().withLocale(Locale.getDefault());
-
-    public static final DateTimeFormatter dateTimeParser = ISODateTimeFormat.dateOptionalTimeParser().withOffsetParsed();
-
-    public static final DateTimeFormatter dateFormatter = ISODateTimeFormat.date();
-
-    public static final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
-
-    // Direct access from org.nuxeo.ecm.core.search.backend.compass.QueryConverter
-    public final DateTime value;
+    public final ZonedDateTime value;
 
     public final boolean onlyDate;
 
-    public DateLiteral(DateTime value) {
+    public DateLiteral(ZonedDateTime value) {
         this.value = value;
         this.onlyDate = false;
     }
 
     public DateLiteral(String value, boolean onlyDate) {
         this.onlyDate = onlyDate;
-        if (onlyDate) {
-            this.value = dateParser.parseDateTime(value);
-        } else {
-            // workaround to allow space instead of T after the date part
-            if (value.charAt(10) == ' ') {
-                char[] s = value.toCharArray();
-                s[10] = 'T';
-                value = new String(s);
-            }
-            this.value = dateTimeParser.parseDateTime(value);
-        }
+        this.value = parseISODateTime(value);
     }
 
     public Calendar toCalendar() {
-        return value.toGregorianCalendar();
+        return GregorianCalendar.from(value);
     }
 
     public java.sql.Date toSqlDate() {
-        return new java.sql.Date(value.toDate().getTime());
+        return new java.sql.Date(value.toInstant().toEpochMilli());
     }
 
     @Override
     public String toString() {
+        String s = formatISODateTime(value, onlyDate);
         if (onlyDate) {
-            return "DATE '" + dateFormatter.print(value) + "'";
+            return "DATE '" + s + "'";
         } else {
-            return "TIMESTAMP '" + dateTimeFormatter.print(value) + "'";
+            return "TIMESTAMP '" + s + "'";
         }
     }
 
     @Override
     public String asString() {
-        if (onlyDate) {
-            return dateFormatter.print(value);
-        } else {
-            return dateTimeFormatter.print(value);
-        }
+        return formatISODateTime(value, onlyDate);
     }
 
     @Override
@@ -113,11 +91,19 @@ public class DateLiteral extends Literal {
         return value.hashCode();
     }
 
+    /**
+     * @deprecated since 11.1 as not used
+     */
+    @Deprecated
     public static String dateTime(DateLiteral date) {
-        return dateTimeFormatter.print(date.value);
+        return formatISODateTime(date.value);
     }
 
+    /**
+     * @deprecated since 11.1 as not used
+     */
+    @Deprecated
     public static String date(DateLiteral date) {
-        return dateFormatter.print(date.value);
+        return formatISODateTime(date.value);
     }
 }

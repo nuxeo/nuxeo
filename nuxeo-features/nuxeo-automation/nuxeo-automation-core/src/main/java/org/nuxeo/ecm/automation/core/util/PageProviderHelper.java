@@ -18,13 +18,24 @@
  */
 package org.nuxeo.ecm.automation.core.util;
 
+import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
+import static org.nuxeo.common.utils.DateUtils.nowIfNull;
 import static org.nuxeo.ecm.platform.query.api.PageProviderService.NAMED_PARAMETERS;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import javax.el.ELContext;
+import javax.el.ValueExpression;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -53,17 +64,6 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.el.ELContext;
-import javax.el.ValueExpression;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -95,8 +95,6 @@ public class PageProviderHelper {
     public static final String CURRENT_REPO_PATTERN = "$currentRepository";
 
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    protected static final DateTimeFormatter DATE_TIME_FORMATTER = ISODateTimeFormat.dateTime();
 
     public static PageProviderDefinition getQueryAndFetchProviderDefinition(String query) {
         return getQueryAndFetchProviderDefinition(query, null);
@@ -362,12 +360,14 @@ public class PageProviderHelper {
         Double from = bucketRangeDate.getFrom();
         Double to = bucketRangeDate.getTo();
         if (from == null && to != null) {
-            return field + " < TIMESTAMP '" + DATE_TIME_FORMATTER.print(bucketRangeDate.getToAsDate()) + "'";
+            return field + " < TIMESTAMP '" + formatISODateTime(nowIfNull(bucketRangeDate.getToAsDate()))
+                    + "'";
         } else if (from != null && to == null) {
-            return field + " >= TIMESTAMP '" + DATE_TIME_FORMATTER.print(bucketRangeDate.getFromAsDate()) + "'";
+            return field + " >= TIMESTAMP '" + formatISODateTime(nowIfNull(bucketRangeDate.getFromAsDate()))
+                    + "'";
         }
-        return field + " BETWEEN TIMESTAMP '" + DATE_TIME_FORMATTER.print(bucketRangeDate.getFromAsDate())
-                + "' AND TIMESTAMP '" + DATE_TIME_FORMATTER.print(bucketRangeDate.getToAsDate()) + "'";
+        return field + " BETWEEN TIMESTAMP '" + formatISODateTime(nowIfNull(bucketRangeDate.getFromAsDate()))
+                + "' AND TIMESTAMP '" + formatISODateTime(nowIfNull(bucketRangeDate.getToAsDate())) + "'";
     }
 
     protected static String appendToPattern(String pattern, String clause) {
@@ -380,7 +380,7 @@ public class PageProviderHelper {
      *
      * @param parameters parameters from the operation
      */
-    public static Object[] resolveELParameters(PageProviderDefinition def, Object ...parameters) {
+    public static Object[] resolveELParameters(PageProviderDefinition def, Object... parameters) {
         ELService elService = Framework.getService(ELService.class);
         if (elService == null) {
             return parameters;
