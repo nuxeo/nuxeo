@@ -148,6 +148,7 @@ public class CommandLineConverter extends CommandLineBasedConverter {
                 }
             }
         }
+        Framework.trackFile(outputDir, blobs); // Mark the temporary folder for deletion
         return new SimpleCachableBlobHolder(blobs);
     }
 
