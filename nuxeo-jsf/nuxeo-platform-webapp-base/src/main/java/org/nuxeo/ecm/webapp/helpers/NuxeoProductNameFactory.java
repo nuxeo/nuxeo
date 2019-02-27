@@ -24,14 +24,13 @@ package org.nuxeo.ecm.webapp.helpers;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
+import java.util.Calendar;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.joda.time.DateTime;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 
@@ -59,7 +58,7 @@ public class NuxeoProductNameFactory implements Serializable {
      */
     @Factory(value = "copyrightCurrentYear", scope = ScopeType.APPLICATION)
     public String getCurrentYearAsString() {
-        return new DateTime().toString("Y");
+        return String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
     }
 
 }

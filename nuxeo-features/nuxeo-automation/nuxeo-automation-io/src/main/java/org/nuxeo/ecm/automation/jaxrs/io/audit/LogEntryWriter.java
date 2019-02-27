@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.automation.jaxrs.io.audit;
 
+import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
+import static org.nuxeo.common.utils.DateUtils.nowIfNull;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
@@ -27,8 +30,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -65,9 +66,9 @@ public class LogEntryWriter extends EntityWriter<LogEntry> {
         jg.writeStringField("docUUID", logEntry.getDocUUID());
         jg.writeStringField("eventId", logEntry.getEventId());
         jg.writeStringField("repositoryId", logEntry.getRepositoryId());
-        jg.writeStringField("eventDate", ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getEventDate())));
+        jg.writeStringField("eventDate", formatISODateTime(nowIfNull(logEntry.getEventDate())));
         jg.writeNumberField("id", logEntry.getId());
-        jg.writeStringField("logDate", ISODateTimeFormat.dateTime().print(new DateTime(logEntry.getLogDate())));
+        jg.writeStringField("logDate", formatISODateTime(nowIfNull(logEntry.getLogDate())));
         writeExtendedInfos(jg, logEntry);
     }
 
@@ -94,7 +95,7 @@ public class LogEntryWriter extends EntityWriter<LogEntry> {
         } else if (Double.class.isAssignableFrom(clazz)) {
             jg.writeNumberField(key, (Double) value);
         } else if (Date.class.isAssignableFrom(clazz)) {
-            jg.writeStringField(key, ISODateTimeFormat.dateTime().print(new DateTime(value)));
+            jg.writeStringField(key, formatISODateTime((Date) value));
         } else if (String.class.isAssignableFrom(clazz)) {
             jg.writeStringField(key, (String) value);
         } else if (Boolean.class.isAssignableFrom(clazz)) {

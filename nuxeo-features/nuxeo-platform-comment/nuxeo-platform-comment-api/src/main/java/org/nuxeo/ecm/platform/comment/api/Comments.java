@@ -19,24 +19,22 @@
 
 package org.nuxeo.ecm.platform.comment.api;
 
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
-import java.io.Serializable;
+
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.GregorianCalendar;
+import java.util.Date;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -58,13 +56,11 @@ public class Comments {
         documentModel.setPropertyValue(COMMENT_PARENT_ID, comment.getParentId());
         Instant creationDate = comment.getCreationDate();
         if (creationDate != null) {
-            documentModel.setPropertyValue(COMMENT_CREATION_DATE,
-                    GregorianCalendar.from(ZonedDateTime.ofInstant(creationDate, ZoneId.systemDefault())));
+            documentModel.setPropertyValue(COMMENT_CREATION_DATE, Date.from(creationDate));
         }
         Instant modificationDate = comment.getModificationDate();
         if (modificationDate != null) {
-            documentModel.setPropertyValue(COMMENT_MODIFICATION_DATE,
-                    GregorianCalendar.from(ZonedDateTime.ofInstant(modificationDate, ZoneId.systemDefault())));
+            documentModel.setPropertyValue(COMMENT_MODIFICATION_DATE, Date.from(modificationDate));
         }
     }
 

@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
 
 import java.net.URI;
 import java.text.DateFormat;
@@ -31,8 +32,6 @@ import javax.inject.Inject;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -241,7 +240,7 @@ public class TestLockingRestlet extends AbstractRestletTest {
     public void testStateLocked() throws Exception {
         Lock lock = lockDoc();
         String path = "/" + repositoryName + "/" + doc.getId() + ENDPOINT + "/" + ACTION_STATE;
-        String lockInfo = lock.getOwner() + '/' + ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated()));
+        String lockInfo = lock.getOwner() + '/' + formatISODateTime(lock.getCreated().getTime());
         String content = XML + "<document code=\"LOCKED\" message=\"" + lockInfo + "\"/>";
         executeRequest(path, content);
     }

@@ -19,7 +19,9 @@
 package org.nuxeo.ecm.restapi.jaxrs.io;
 
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.common.utils.DateUtils.parseISODateTime;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,8 +29,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,7 +93,7 @@ public class LogEntryWriterTest {
         entry.setLogDate(new Date());
         Map<String, ExtendedInfo> extendedInfo = new HashMap<>();
 
-        DateTime testDate = new DateTime();
+        ZonedDateTime testDate = ZonedDateTime.now();
         extendedInfo.put("extInfo1", ExtendedInfoImpl.createExtendedInfo("testString"));
         extendedInfo.put("extInfo2", ExtendedInfoImpl.createExtendedInfo(2L));
         extendedInfo.put("extInfo3", ExtendedInfoImpl.createExtendedInfo(testDate));
@@ -119,7 +119,7 @@ public class LogEntryWriterTest {
                 assertEquals(2L, info.getValue().longValue());
             }
             if ("extInfo3".equals(info.getKey())) {
-                assertEquals(testDate, ISODateTimeFormat.dateTime().parseDateTime(info.getValue().textValue()));
+                assertEquals(testDate, parseISODateTime(info.getValue().textValue()));
             }
         }
         assertEquals(3, count);

@@ -19,14 +19,14 @@
  */
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
+import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
+
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.restlet.Request;
@@ -159,8 +159,7 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
                     response = "";
                 } else {
                     code = SC_LOCKINFO_LOCKED;
-                    response = lock.getOwner() + '/'
-                            + ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated()));
+                    response = lock.getOwner() + '/' + formatISODateTime(lock.getCreated().getTime());
                 }
             } catch (NuxeoException e) {
                 handleError(result, res, e);

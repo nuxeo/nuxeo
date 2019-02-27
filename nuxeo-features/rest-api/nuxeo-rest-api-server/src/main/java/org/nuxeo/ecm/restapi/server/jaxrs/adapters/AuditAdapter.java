@@ -19,8 +19,11 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
+import static org.nuxeo.common.utils.DateUtils.parseISODateTime;
+
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
@@ -28,8 +31,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
@@ -92,21 +93,17 @@ public class AuditAdapter extends PaginableAdapter<LogEntry> {
 
     public static Calendar getCalendarParameter(String param) {
         if (param != null) {
-            Calendar cal = Calendar.getInstance();
             try {
                 Date date = DateParser.parseW3CDateTime(param);
                 if (date != null) {
+                    Calendar cal = Calendar.getInstance();
                     cal.setTime(date);
                     return cal;
                 }
             } catch (IllegalArgumentException e) {
                 // Backward compat
                 log.warn("Date should have 'YYYY-MM-DDThh:mm:ss.sTZD' format, trying to parse 'yyyy-MM-dd' format");
-                DateTime date = ISODateTimeFormat.date().parseDateTime(param);
-                if (date != null) {
-                    cal.setTime(date.toDate());
-                    return cal;
-                }
+                return GregorianCalendar.from(parseISODateTime(param));
             }
         }
         return null;

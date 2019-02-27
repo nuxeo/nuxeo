@@ -28,6 +28,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -36,7 +37,6 @@ import javax.swing.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.joda.time.DateTime;
 import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.log4j.Log4JHelper;
@@ -282,7 +282,8 @@ public class NuxeoFrame extends JFrame {
     }
 
     protected JComponent buildFooter() {
-        JLabel label = new JLabel(NuxeoLauncherGUI.getMessage("footer.label", new DateTime().toString("Y")));
+        String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+        JLabel label = new JLabel(NuxeoLauncherGUI.getMessage("footer.label", year));
         label.setForeground(Color.WHITE);
         label.setPreferredSize(new Dimension(470, 16));
         label.setFont(new Font(label.getFont().getName(), label.getFont().getStyle(), 9));

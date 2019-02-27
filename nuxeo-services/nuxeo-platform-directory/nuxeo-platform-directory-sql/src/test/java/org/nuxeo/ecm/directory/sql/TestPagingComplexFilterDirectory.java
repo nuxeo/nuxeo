@@ -23,13 +23,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -56,10 +56,10 @@ public class TestPagingComplexFilterDirectory {
     @Test
     public void testPaging() {
         try (Session session = directoryService.open(DIR)) {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put("label", "Label");
 
-            Map<String, String> order = new HashMap<String, String>();
+            Map<String, String> order = new HashMap<>();
             order.put("id", "ASC");
 
             List<DocumentModel> entries = session.query(filter, filter.keySet());
@@ -83,12 +83,12 @@ public class TestPagingComplexFilterDirectory {
     @Test
     public void testComplexFilter() {
         try (Session session = directoryService.open(DIR)) {
-            Calendar d121110 = new DateTime(2012, 11, 10, 0, 0, 0, 0).toGregorianCalendar();
-            Calendar d121211 = new DateTime(2012, 12, 11, 0, 0, 0, 0).toGregorianCalendar();
-            Calendar d121224 = new DateTime(2012, 12, 24, 0, 0, 0, 0).toGregorianCalendar();
+            Calendar d121110 = new GregorianCalendar(2012, 10, 10);
+            Calendar d121211 = new GregorianCalendar(2012, 11, 11);
+            Calendar d121224 = new GregorianCalendar(2012, 11, 24);
 
             SQLBetweenFilter betweenFilter = new SQLBetweenFilter(d121110, d121224);
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put("date", betweenFilter);
             List<DocumentModel> entries = session.query(filter);
             assertEquals(12, entries.size());
