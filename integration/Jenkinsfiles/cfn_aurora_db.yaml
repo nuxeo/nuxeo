@@ -1,0 +1,125 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: Aurora PostgreSQL DB
+
+Parameters:
+
+  VPC:
+    Type: String
+
+  NXDBADMINNAME:
+    Type: String
+
+  NXDBADMINUSER:
+    Type: String
+
+  NXDBADMINPASS:
+    Type: String
+
+  SUBNET:
+    Type: String
+
+Resources:
+
+  NuxeoDBCluster:
+    Type: "AWS::RDS::DBCluster"
+    Properties:
+      BackupRetentionPeriod: 1
+      DatabaseName: !Ref NXDBADMINNAME
+      DBClusterIdentifier: "nuxeo"
+      DBClusterParameterGroupName: "default.aurora-postgresql9.6"
+      DBSubnetGroupName: !Ref AuroraDBSubnetGroup
+      DeletionProtection: false
+      Engine: "aurora-postgresql"
+      EngineMode: "provisioned"
+      EngineVersion: "9.6.8"
+      MasterUsername: !Ref NXDBADMINUSER
+      MasterUserPassword: !Ref NXDBADMINPASS
+      Port: 5432
+      StorageEncrypted: true
+      VpcSecurityGroupIds:
+        - !Ref AuroraDBSecurityGroup
+      Tags:
+        -
+          Key: "billing-category"
+          Value: "build"
+        -
+          Key: "billing-subcategory"
+          Value: "test"
+
+  AuroraDBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow Postgresql port 5432 From VPC qa-generic
+      VpcId:
+        Fn::ImportValue:
+          !Join [ "-", [ !Ref VPC, "VPCID" ] ]
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 5432
+        ToPort: 5432
+        CidrIp: 10.253.0.0/23
+      SecurityGroupEgress:
+      - IpProtocol: "-1"
+        CidrIp: 0.0.0.0/0
+      Tags:
+        -
+          Key: "billing-category"
+          Value: "build"
+        -
+          Key: "billing-subcategory"
+          Value: "test"
+
+  AuroraDBSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: "The EC2 Subnet IDs for the DB Subnet Group"
+      SubnetIds:
+        - Fn::ImportValue:
+            !Join [ '-', [ !Ref SUBNET, "Subnet1AID" ] ]
+        - Fn::ImportValue:
+            !Join [ '-', [ !Ref SUBNET, "Subnet1BID" ] ]
+      Tags:
+        -
+          Key: "billing-category"
+          Value: "build"
+        -
+          Key: "billing-subcategory"
+          Value: "test"
+
+  NuxeoAuroraDb:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBClusterIdentifier: !Ref NuxeoDBCluster
+      DBInstanceClass: "db.r4.large"
+      DBParameterGroupName: "default.aurora-postgresql9.6"
+      DBSubnetGroupName: !Ref AuroraDBSubnetGroup
+      DeleteAutomatedBackups: true
+      EnablePerformanceInsights: false
+      Engine: "aurora-postgresql"
+      EngineVersion: "9.6.8"
+      StorageEncrypted: true
+      PubliclyAccessible: false
+      Tags:
+        -
+          Key: "billing-category"
+          Value: "build"
+        -
+          Key: "billing-subcategory"
+          Value: "test"
+
+Outputs:
+
+  ClusterId:
+    Description: Id of the DB cluster
+    Value: !Ref NuxeoAuroraDb
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-ClusterId"
+
+  DatabaseId:
+    Description: Connection information of the newly created Database
+    Value: !GetAtt NuxeoAuroraDb.Endpoint.Address
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-DatabaseId"
