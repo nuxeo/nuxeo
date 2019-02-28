@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
@@ -243,7 +242,7 @@ public class DialectH2 extends Dialect {
                         fulltextQuery, // param
                         String.format("%s.KEY", quotedTableAlias), // on1
                         mainColumn.getFullQuotedName() // on2
-        ));
+                ));
         info.whereExpr = String.format("%s.KEY IS NOT NULL", quotedTableAlias);
         info.scoreExpr = "1";
         info.scoreAlias = "_NXSCORE" + nthSuffix;

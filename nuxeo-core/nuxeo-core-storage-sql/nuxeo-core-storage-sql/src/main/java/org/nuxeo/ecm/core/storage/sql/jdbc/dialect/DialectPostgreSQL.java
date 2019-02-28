@@ -236,7 +236,7 @@ public class DialectPostgreSQL extends Dialect {
             return jdbcInfo("varchar(250)[]", Types.ARRAY, "varchar", Types.VARCHAR);
         case BLOB:
             return jdbcInfo("bytea", Types.BINARY);
-            // -----
+        // -----
         case NODEID:
         case NODEIDFK:
         case NODEIDFKNP:
@@ -1365,8 +1365,8 @@ public class DialectPostgreSQL extends Dialect {
         if (compatibilityFulltextTable) {
             // extract tokens from tsvector
             String columnsAs = columns.stream()
-                    .map(col -> "regexp_replace(" + col + "::text, $$'|'\\:[^']*'?$$, ' ', 'g')")
-                    .collect(Collectors.joining(", "));
+                                      .map(col -> "regexp_replace(" + col + "::text, $$'|'\\:[^']*'?$$, ' ', 'g')")
+                                      .collect(Collectors.joining(", "));
             return "SELECT " + columnsAs + " FROM fulltext WHERE id=?";
         }
         return super.getBinaryFulltextSql(columns);

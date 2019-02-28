@@ -339,7 +339,8 @@ public class TestSQLRepositorySecurity {
         DocumentModel workspaces = session.createDocumentModel(root.getPathAsString(), name, "Workspace");
         session.createDocument(workspaces);
         String name2 = "repositoryWorkspace2#";
-        DocumentModel repositoryWorkspace = session.createDocumentModel(workspaces.getPathAsString(), name2, "Workspace");
+        DocumentModel repositoryWorkspace = session.createDocumentModel(workspaces.getPathAsString(), name2,
+                "Workspace");
         repositoryWorkspace = session.createDocument(repositoryWorkspace);
 
         String name3 = "ws#3";
@@ -368,8 +369,9 @@ public class TestSQLRepositorySecurity {
 
         try (CloseableCoreSession testSession = openSessionAs("test")) {
             List<DocumentModel> ws2ParentsUnderTest = testSession.getParentDocuments(ws2.getRef());
-            assertTrue("list parents for" + ws2.getName() + "under " + testSession.getPrincipal().getName()
-                    + " is empty:", ws2ParentsUnderTest.isEmpty());
+            assertTrue(
+                    "list parents for" + ws2.getName() + "under " + testSession.getPrincipal().getName() + " is empty:",
+                    ws2ParentsUnderTest.isEmpty());
         }
     }
 
@@ -424,7 +426,8 @@ public class TestSQLRepositorySecurity {
             }
 
             try {
-                joeReaderSession.createDocument(session.createDocumentModel(joeReaderDoc.getPathAsString(), "child", "File"));
+                joeReaderSession.createDocument(
+                        session.createDocumentModel(joeReaderDoc.getPathAsString(), "child", "File"));
                 fail("should have raised a security exception");
             } catch (DocumentSecurityException e) {
             }
@@ -837,7 +840,7 @@ public class TestSQLRepositorySecurity {
         assertEquals(2, acl.size());
 
         // Using setACEs at your own risk
-        ACE[] aces = {ace, ace2, ace, acedup};
+        ACE[] aces = { ace, ace2, ace, acedup };
         logFeature.hideWarningFromConsoleLog();
         try {
             acl.setACEs(aces);

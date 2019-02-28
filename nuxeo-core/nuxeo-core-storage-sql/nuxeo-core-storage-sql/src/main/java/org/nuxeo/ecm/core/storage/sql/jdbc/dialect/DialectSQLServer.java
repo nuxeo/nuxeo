@@ -440,7 +440,7 @@ public class DialectSQLServer extends Dialect {
             info.joins.add(new Join(Join.LEFT, ft.getQuotedName(), null, null, ftMain.getFullQuotedName(),
                     mainColumn.getFullQuotedName()));
         }
-        info.joins.add(
+        info.joins.add( //
                 new Join(Join.LEFT, //
                         String.format("CONTAINSTABLE(%s, *, ?, LANGUAGE %s)", ft.getQuotedName(),
                                 getQuotedFulltextAnalyzer()),
@@ -448,7 +448,7 @@ public class DialectSQLServer extends Dialect {
                         fulltextQuery, // param
                         ftMain.getFullQuotedName(), // on1
                         String.format("%s.[KEY]", tableAlias) // on2
-        ));
+                ));
         info.whereExpr = String.format("%s.[KEY] IS NOT NULL", tableAlias);
         info.scoreExpr = String.format("(%s.RANK / 1000.0)", tableAlias);
         info.scoreAlias = "_nxscore" + nthSuffix;
