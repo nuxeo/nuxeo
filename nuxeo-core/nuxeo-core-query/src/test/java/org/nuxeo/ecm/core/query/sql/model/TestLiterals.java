@@ -59,9 +59,9 @@ public class TestLiterals {
         d = new DateLiteral("2007-01-02", true);
         assertEquals("DATE '2007-01-02'", d.toString());
         d = new DateLiteral("2007-01-30T01:02:03+04:56", false); // with T
-        assertEquals("TIMESTAMP '2007-01-30T01:02:03.000+04:56'", d.toString());
+        assertEquals("TIMESTAMP '2007-01-29T20:06:03.000Z'", d.toString());
         d = new DateLiteral("2007-01-30 01:02:03+04:56", false); // with space
-        assertEquals("TIMESTAMP '2007-01-30T01:02:03.000+04:56'", d.toString());
+        assertEquals("TIMESTAMP '2007-01-29T20:06:03.000Z'", d.toString());
     }
 
 }

@@ -111,7 +111,7 @@ public class TestQueryParser {
         assertEquals("DATE '2007-01-30'", datel.toString());
         query = SQLQueryParser.parse("SELECT p FROM t WHERE title = TIMESTAMP '2007-01-30 01:02:03+04:00'");
         datel = (DateLiteral) query.getWhereClause().predicate.rvalue;
-        assertEquals("TIMESTAMP '2007-01-30T01:02:03.000+04:00'", datel.toString());
+        assertEquals("TIMESTAMP '2007-01-29T21:02:03.000Z'", datel.toString());
     }
 
     @Test
