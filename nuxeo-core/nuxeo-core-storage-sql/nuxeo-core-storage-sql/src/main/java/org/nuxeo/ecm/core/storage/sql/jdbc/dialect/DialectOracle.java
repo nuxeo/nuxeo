@@ -196,7 +196,8 @@ public class DialectOracle extends Dialect {
             Class<PreparedStatement> opsClass = (Class<PreparedStatement>) Class.forName(
                     "oracle.jdbc.OraclePreparedStatement");
             oraclePreparedStatementClass = opsClass;
-            oraclePreparedStatementRegisterReturnParameter = opsClass.getMethod("registerReturnParameter", int.class, int.class);
+            oraclePreparedStatementRegisterReturnParameter = opsClass.getMethod("registerReturnParameter", int.class,
+                    int.class);
             oraclePreparedStatementGetReturnResultSet = opsClass.getMethod("getReturnResultSet");
         } catch (ClassNotFoundException e) {
             // query syntax unit test run without Oracle JDBC driver
