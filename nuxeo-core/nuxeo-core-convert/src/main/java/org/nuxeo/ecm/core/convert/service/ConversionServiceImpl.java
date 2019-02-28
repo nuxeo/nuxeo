@@ -421,13 +421,13 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     }
 
     @Override
-    public List<String> getConverterNames(String sourceMimeType, String destinationMimeType) {
-        return translationHelper.getConverterNames(sourceMimeType, destinationMimeType);
+    public List<String> getConverterNames(String sourceMimeType, String destinationMimeType, boolean allowWildcard) {
+        return translationHelper.getConverterNames(sourceMimeType, destinationMimeType, allowWildcard);
     }
 
     @Override
-    public String getConverterName(String sourceMimeType, String destinationMimeType) {
-        return translationHelper.getConverterName(sourceMimeType, destinationMimeType);
+    public String getConverterName(String sourceMimeType, String destinationMimeType, boolean allowWildcard) {
+        return translationHelper.getConverterName(sourceMimeType, destinationMimeType, allowWildcard);
     }
 
     @Override
