@@ -204,4 +204,25 @@ public class TestGridFSBinaryManager {
         assertTrue(bm.isTransient());
     }
 
+    @Test
+    public void testNamespace() throws Exception {
+        doTestNamespace("test.fs", null, null);
+        doTestNamespace("buck", "buck", null);
+        doTestNamespace("test.ns.fs", null, "ns");
+        doTestNamespace("buck.ns", "buck", "ns");
+    }
+
+    protected static void doTestNamespace(String expectedBucket, String bucket, String namespace) throws Exception {
+        Map<String, String> properties = new HashMap<>();
+        if (bucket != null) {
+            properties.put("bucket", bucket);
+        }
+        if (namespace != null) {
+            properties.put("namespace", namespace);
+        }
+        GridFSBinaryManager bm = new GridFSBinaryManager();
+        bm.initialize("test", properties);
+        assertEquals(expectedBucket, bm.getGridFSBucket().getBucketName());
+    }
+
 }
