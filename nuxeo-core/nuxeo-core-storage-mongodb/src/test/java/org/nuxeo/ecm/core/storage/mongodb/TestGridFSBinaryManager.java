@@ -193,4 +193,15 @@ public class TestGridFSBinaryManager {
         return IOUtils.toString(stream, "UTF-8");
     }
 
+    @Test
+    public void testTransientFlag() throws Exception {
+        assertFalse(BINARY_MANAGER.isTransient());
+
+        GridFSBinaryManager bm = new GridFSBinaryManager();
+        Map<String, String> properties = new HashMap<>();
+        properties.put("transient", "true");
+        bm.initialize("test", properties);
+        assertTrue(bm.isTransient());
+    }
+
 }

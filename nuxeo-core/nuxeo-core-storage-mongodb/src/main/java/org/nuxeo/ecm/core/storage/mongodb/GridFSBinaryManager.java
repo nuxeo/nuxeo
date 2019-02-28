@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE;
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.TRANSIENT;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -226,6 +227,11 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
     @Override
     public boolean supportsUserUpdate() {
         return !Boolean.parseBoolean(properties.get(PREVENT_USER_UPDATE));
+    }
+
+    @Override
+    public boolean isTransient() {
+        return Boolean.parseBoolean(properties.get(TRANSIENT));
     }
 
     public class GridFSBinaryGarbageCollector implements BinaryGarbageCollector {
