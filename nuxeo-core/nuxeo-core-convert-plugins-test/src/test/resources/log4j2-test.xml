@@ -12,6 +12,7 @@
   </Appenders>
   <Loggers>
     <Logger name="org.nuxeo" level="info" />
+    <Logger name="org.nuxeo.ecm.core.convert.plugins.text.extractors.FullTextConverter" level="debug" />
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
       <AppenderRef ref="FILE" />
