@@ -24,21 +24,27 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 public class TestConverters extends SimpleConverterTest {
 
@@ -47,6 +53,9 @@ public class TestConverters extends SimpleConverterTest {
 
     @Inject
     protected CommandLineExecutorService cles;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     @Test
     public void testHTMLConverter() throws Exception {
@@ -163,7 +172,19 @@ public class TestConverters extends SimpleConverterTest {
         doTestAny2TextConverter("application/pdf", "any2text", "hello.pdf");
         doTestAny2TextConverter("application/rtf", "any2text", "hello.rtf");
         doTestAny2TextConverter("text/rtf", "any2text", "hello.rtf");
+    }
 
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "DEBUG")
+    public void testFullTextConverterInfiniteLoop() throws IOException {
+        Blob blob = Blobs.createBlob("foo", "foo/bar");
+        BlobHolder bh = new SimpleBlobHolder(blob);
+        BlobHolder result = cs.convert("any2text", bh, null);
+        // no converter found, return an empty blob
+        assertEquals("", result.getBlob().getString());
+        assertEquals(1, logCaptureResult.getCaughtEventMessages().size());
+        assertEquals("Unable to find full text extractor for source mime type foo/bar",
+                logCaptureResult.getCaughtEventMessages().get(0));
     }
 
 }

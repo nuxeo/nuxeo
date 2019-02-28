@@ -36,14 +36,53 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 public interface ConversionService {
 
     /**
-     * Gets the convertName given a source and destination MimeType.
+     * Returns the converter name for the given {@code sourceMimeType} and {@code destinationMimeType}.
+     * <p>
+     * Follows the algorithm of {@link #getConverterNames(String, String)}.
+     *
+     * @see #getConverterNames(String, String)
+     * @see #getConverterName(String, String, boolean)
      */
-    String getConverterName(String sourceMimeType, String destinationMimeType);
+    default String getConverterName(String sourceMimeType, String destinationMimeType) {
+        return getConverterName(sourceMimeType, destinationMimeType, true);
+    }
 
     /**
-     * Gets the available convertNames given a source and destination MimeType.
+     * Returns the converter name for the given {@code sourceMimeType} and {@code destinationMimeType}.
+     * <p>
+     * Follows the algorithm of {@link #getConverterNames(String, String, boolean)}.
+     *
+     * @since 11.1
+     * @see #getConverterNames(String, String, boolean)
      */
-    List<String> getConverterNames(String sourceMimeType, String destinationMimeType);
+    String getConverterName(String sourceMimeType, String destinationMimeType, boolean allowWildcard);
+
+    /**
+     * Returns the list of converter names handling the given {@code sourceMimeType} and {@code destinationMimeType}.
+     *
+     * @see #getConverterNames(String, String, boolean)
+     */
+    default List<String> getConverterNames(String sourceMimeType, String destinationMimeType) {
+        return getConverterNames(sourceMimeType, destinationMimeType, true);
+    }
+
+    /**
+     * Returns the list of converter names handling the given {@code sourceMimeType} and {@code destinationMimeType}.
+     * <p>
+     * Finds the converter names based on the following algorithm:
+     * <ul>
+     * <li>Find the converters exactly matching the given {@code sourceMimeType}</li>
+     * <li>If no converter found, find the converters matching a wildcard subtype based on the {@code sourceMimeType},
+     * such has "image/*"</li>
+     * <li>If no converter found and {@code allowWildcard} is {@code true}, find the converters matching a wildcard
+     * source mime type "*"</li>
+     * <li>Then, filter only the converters matching the given {@code destinationMimeType}</li>
+     * </ul>
+     *
+     * @param allowWildcard {@code true} to allow returning converters with '*' as source mime type.
+     * @since 11.1
+     */
+    List<String> getConverterNames(String sourceMimeType, String destinationMimeType, boolean allowWildcard);
 
     /**
      * Converts a Blob given a converter name.
