@@ -21,8 +21,8 @@ package org.nuxeo.ecm.diff.content.converters;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ContentDiffHtmlConverter extends AbstractContentDiffConverter {
 
-    private static final Log LOGGER = LogFactory.getLog(ContentDiffHtmlConverter.class);
+    private static final Logger log = LogManager.getLogger(ContentDiffHtmlConverter.class);
 
     private static final String HTML_MIME_TYPE = "text/html";
 
@@ -50,20 +50,17 @@ public class ContentDiffHtmlConverter extends AbstractContentDiffConverter {
     private static final String OFFICE_2_HTML_CONVERTER_NAME = "office2html";
 
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-
-        String converterName = null;
-
         // Fetch blob from blob holder
         Blob blob = blobHolder.getBlob();
         if (blob == null) {
-            LOGGER.warn("Trying to convert a blob holder that has a null blob. Nothing to do, returning the blob holder.");
+            log.warn("Trying to convert a blob holder that has a null blob. Nothing to do, returning the blob holder.");
             return blobHolder;
         }
 
         // Get HTML converter name from blob mime type
         String mimeType = blob.getMimeType();
         ConversionService cs = Framework.getService(ConversionService.class);
-        converterName = cs.getConverterName(mimeType, HTML_MIME_TYPE);
+        String converterName = cs.getConverterName(mimeType, HTML_MIME_TYPE);
         // We don't want to use the "any2html" converter contributed for the
         // preview in the case of non pdf blobs since it uses the following
         // conversion chain : any2pdf --> pdf2html.
@@ -76,8 +73,8 @@ public class ContentDiffHtmlConverter extends AbstractContentDiffConverter {
 
         // No converter found, throw appropriate exception
         if (converterName == null) {
-            throw new ConverterNotRegistered(String.format("for sourceMimeType = %s, destinationMimeType = %s",
-                    mimeType, HTML_MIME_TYPE));
+            throw new ConverterNotRegistered(
+                    String.format("for sourceMimeType = %s, destinationMimeType = %s", mimeType, HTML_MIME_TYPE));
         }
 
         return convert(converterName, blobHolder, parameters);
