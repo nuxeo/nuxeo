@@ -18,6 +18,8 @@
  */
 package org.nuxeo.targetplatforms.core.service;
 
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -29,10 +31,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Session;
@@ -74,9 +73,8 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
 
     public static final String XP_PACKAGES = "packages";
 
-    protected static final DateTimeFormatter dateParser = DateTimeFormat.forPattern("yyyy/MM/dd")
-                                                                        .withLocale(Locale.ENGLISH)
-                                                                        .withZone(DateTimeZone.UTC);
+    public static final DateTimeFormatter dateParser = DateTimeFormatter.ofPattern("yyyy/MM/dd", Locale.ENGLISH)
+                                                                        .withZone(ZoneOffset.UTC);
 
     protected ServiceConfigurationRegistry conf;
 
@@ -271,8 +269,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         if (StringUtils.isBlank(date)) {
             return null;
         }
-        DateTime dt = dateParser.parseDateTime(date);
-        return dt.toDate();
+        return DateUtils.toDate(DateUtils.parse(date, dateParser));
     }
 
     @Override
