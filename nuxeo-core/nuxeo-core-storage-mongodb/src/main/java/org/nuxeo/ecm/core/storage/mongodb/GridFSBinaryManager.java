@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.NAMESPACE;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.TRANSIENT;
 
@@ -116,9 +117,18 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
             throw new NuxeoException("Unable to initialize GridFS Binary Manager, properties " + SERVER_PROPERTY
                     + " and " + DBNAME_PROPERTY + " has been removed. Please configure a connection!");
         }
+
+        String namespace = properties.get(NAMESPACE);
         String bucket = properties.get(BUCKET_PROPERTY);
         if (StringUtils.isBlank(bucket)) {
-            bucket = blobProviderId + ".fs";
+            if (StringUtils.isNotBlank(namespace)) {
+                bucket = blobProviderId + "." + namespace.trim();
+            } else {
+                bucket = blobProviderId;
+            }
+            bucket = bucket + ".fs";
+        } else if (StringUtils.isNotBlank(namespace)) {
+            bucket = bucket + "." + namespace.trim();
         }
 
         MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
