@@ -58,7 +58,8 @@ public class FullTextConverter implements Converter {
 
         ConversionService cs = Framework.getService(ConversionService.class);
 
-        String converterName = cs.getConverterName(srcMT, TEXT_PLAIN_MT);
+        // do not find converter with * as source mime type, we want a specific one
+        String converterName = cs.getConverterName(srcMT, TEXT_PLAIN_MT, false);
 
         if (converterName != null) {
             if (converterName.equals(descriptor.getConverterName())) {
@@ -68,7 +69,7 @@ public class FullTextConverter implements Converter {
             }
             return cs.convert(converterName, blobHolder, parameters);
         } else {
-            log.debug("Unable to find full text extractor for source mime type" + srcMT);
+            log.debug("Unable to find full text extractor for source mime type " + srcMT);
             return new SimpleBlobHolder(Blobs.createBlob(""));
         }
     }
