@@ -16,7 +16,6 @@
   <modules>
     <module>nuxeo-dam</module>
     <module>nuxeo-dam-jsf</module>
-    <module>nuxeo-dam-web-ui</module>
   </modules>
 
   <repositories>
