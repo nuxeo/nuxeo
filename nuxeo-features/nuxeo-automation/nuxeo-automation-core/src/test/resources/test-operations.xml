@@ -1,7 +1,7 @@
 <component name="org.nuxeo.ecm.core.rules.test-operations" version="1.0">
 
   <extension point="operations"
-    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+             target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
     <operation class="org.nuxeo.ecm.automation.core.test.Operation1" />
     <operation class="org.nuxeo.ecm.automation.core.test.Operation2" />
     <operation class="org.nuxeo.ecm.automation.core.test.Operation3" />
@@ -20,7 +20,7 @@
   </extension>
 
   <extension point="chains"
-    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+             target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
     <chain id="mychain">
       <operation id="o1">
         <param type="string" name="message">Hello 1!</param>
@@ -38,8 +38,8 @@
         <param type="string" name="type">Note</param>
         <param type="string" name="name">MyDoc</param>
         <param type="properties" name="properties">
-        dc:title=My Doc
-        dc:description=My Doc desc
+          dc:title=My Doc
+          dc:description=My Doc desc
         </param>
       </operation>
     </chain>
@@ -71,13 +71,14 @@
       <operation id="Document.SetProperty">
         <param type="string" name="xpath">dc:description</param>
         <param type="serializable" name="value">
-          expr:Document.getProperty('dc:description') != null &amp;&amp; Document.getProperty('dc:description') != '' ? Document.getProperty('dc:description').toUpperCase() : 'mydesc'
+          expr:Document.getProperty('dc:description') != null &amp;&amp; Document.getProperty('dc:description') != '' ?
+          Document.getProperty('dc:description').toUpperCase() : 'mydesc'
         </param>
       </operation>
     </chain>
 
     <chain id="testDateCopy">
-      <operation id="Context.FetchDocument"/>
+      <operation id="Context.FetchDocument" />
       <operation id="Document.SetProperty">
         <param type="serializable" name="value">expr:Document.parent.getProperty("dc:issued")</param>
         <param type="string" name="xpath">dc:issued</param>
@@ -86,14 +87,14 @@
     </chain>
 
     <chain id="testExitChain">
-      <operation id="Test.Exit" >
+      <operation id="Test.Exit">
         <param type="boolean" name="error">true</param>
         <param type="boolean" name="rollback">true</param>
       </operation>
     </chain>
 
     <chain id="testEmptyExpression">
-      <operation id="Context.FetchDocument"/>
+      <operation id="Context.FetchDocument" />
       <operation id="Document.SetProperty">
         <param type="serializable" name="value">expr:@{empty}</param>
         <param type="string" name="xpath">dc:title</param>
