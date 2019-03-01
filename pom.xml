@@ -4957,6 +4957,12 @@
         <version>${opencensus.version}</version>
       </dependency>
       <dependency>
+        <groupId>io.opencensus</groupId>
+        <artifactId>opencensus-contrib-log-correlation-log4j2</artifactId>
+        <version>${opencensus.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
         <groupId>io.prometheus</groupId>
         <artifactId>simpleclient_httpserver</artifactId>
         <version>0.6.0</version>
