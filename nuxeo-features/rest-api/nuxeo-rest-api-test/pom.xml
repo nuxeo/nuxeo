@@ -196,7 +196,6 @@
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
