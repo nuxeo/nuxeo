@@ -122,6 +122,13 @@
       </operation>
     </chain>
 
+    <chain id="testAddPermissionToUsers">
+      <operation id="Document.AddPermission">
+        <param type="string" name="permission">Read</param>
+        <param type="serializable" name="users">jchastain, rdeniro, dwashington</param>
+      </operation>
+    </chain>
+
   </extension>
 
 </component>
