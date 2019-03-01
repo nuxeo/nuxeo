@@ -27,7 +27,6 @@ import static org.nuxeo.ecm.core.api.NuxeoPrincipal.computeTransientUsername;
 import static org.nuxeo.ecm.core.api.NuxeoPrincipal.isTransientUsername;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +38,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -79,10 +79,10 @@ public class AddPermission {
     protected CoreSession session;
 
     /**
-     * @since 10.3
+     * @since 11.1
      */
     @Param(name = "users", required = false, alias = "users", description = "ACE target set of users and/or groups.")
-    protected List<String> users;
+    protected StringList users;
 
     /**
      * @deprecated since 10.3, use {@link #users} instead.
@@ -192,7 +192,7 @@ public class AddPermission {
      * Method to help deprecating {@link #user} parameter.
      */
     protected void ensureUserListIsUsed() {
-        users = users == null ? new ArrayList<>() : new ArrayList<>(users);
+        users = users == null ? new StringList() : new StringList(users);
 
         if (user != null && !users.contains(user)) {
             users.add(user);

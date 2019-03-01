@@ -21,6 +21,9 @@ package org.nuxeo.ecm.automation.core.operations.document;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.arrayWithSize;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -37,6 +40,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -55,6 +59,7 @@ import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
@@ -419,6 +424,37 @@ public class AddPermissionTest {
         assertThat(acl.size(), greaterThan(1));
 
         assertExpectedPermissions(acl, params, "existingUser1");
+    }
+
+    @Test
+    public void shouldAddPermissionForUsersWhenUsingChainExtension() throws OperationException {
+        // Mock the users params
+        List<String> users = Arrays.asList("jchastain", "rdeniro", "dwashington");
+        users.forEach(user -> when(userManager.getUserModel(user)).thenReturn(new SimpleDocumentModel(user)));
+
+        DocumentModel doc = session.getDocument(new PathRef("/src"));
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(doc);
+
+        Object object = automationService.run(ctx, "testAddPermissionToUsers");
+        assertThat(object, instanceOf(DocumentModel.class));
+
+        DocumentModel documentModel = (DocumentModel) object;
+
+        ACL acl = documentModel.getACP().getACL("local");
+        assertNotNull("Local ACL cannot be null !", acl);
+        assertThat("ACEs size must be the same then users size !", acl.getACEs(), arrayWithSize(users.size()));
+
+        Map<String, ACE> mapAceByUser = Arrays.stream(acl.getACEs())
+                                              .collect(Collectors.toMap(ACE::getUsername, ace -> ace));
+        for (String user : users) {
+            ACE ace = mapAceByUser.get(user);
+
+            assertNotNull(String.format("User of %s must have a defined ACE", user), ace);
+            assertThat(String.format("User of %s must have a Read permission on document %s", user, documentModel),
+                    SecurityConstants.READ, equalTo(ace.getPermission()));
+        }
+
     }
 
     protected void assertExpectedPermissions(ACL acl, Map<String, Object> params, String userOrGroup) {
