@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +56,9 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
@@ -419,6 +423,31 @@ public class AddPermissionTest {
         assertThat(acl.size(), greaterThan(1));
 
         assertExpectedPermissions(acl, params, "existingUser1");
+    }
+
+    @Test
+    public void shouldAddPermissionForUsersWhenUsingChainExtension() throws OperationException {
+        // Mock the users params
+        List<String> users = Arrays.asList("jchastain", "rdeniro", "dwashington");
+        users.forEach(user -> when(userManager.getUserModel(user)).thenReturn(new SimpleDocumentModel(user)));
+
+        DocumentModel doc = session.getDocument(new PathRef("/src"));
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(doc);
+
+        DocumentModel documentModel = (DocumentModel) automationService.run(ctx, "testAddPermissionToUsers");
+
+        ACP acp = documentModel.getACP();
+        assertNotNull(acp);
+
+        ACL acl = acp.getACL("local");
+        assertNotNull(acl);
+
+        Map<String, Object> params = Collections.singletonMap("permission", SecurityConstants.READ);
+        Assert.assertTrue(acl.getACEs().length >= 3);
+        for (String user : users) {
+            assertExpectedPermissions(acl, params, user);
+        }
     }
 
     protected void assertExpectedPermissions(ACL acl, Map<String, Object> params, String userOrGroup) {
