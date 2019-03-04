@@ -31,9 +31,8 @@ public class MetadataProcessorDescriptor {
     protected BinaryMetadataProcessor processor;
 
     @XNode("@class")
-    public void setClass(Class<? extends BinaryMetadataProcessor> aType) throws InstantiationException,
-            IllegalAccessException {
-        processor = aType.newInstance();
+    public void setClass(Class<? extends BinaryMetadataProcessor> aType) throws ReflectiveOperationException {
+        processor = aType.getDeclaredConstructor().newInstance();
     }
 
     public String getId() {
