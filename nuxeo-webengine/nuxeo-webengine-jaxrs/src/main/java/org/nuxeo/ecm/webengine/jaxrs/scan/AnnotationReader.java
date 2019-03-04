@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs.scan;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -38,9 +37,9 @@ public class AnnotationReader extends ClassVisitor {
 
     protected String cname;
 
-    public AnnotationReader(Set<String> annotations) throws IOException {
+    public AnnotationReader(Set<String> annotations) {
         super(Opcodes.ASM5);
-        results = new ArrayList<String>();
+        results = new ArrayList<>();
         this.annotations = annotations;
     }
 
