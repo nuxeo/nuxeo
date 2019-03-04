@@ -56,7 +56,7 @@ public class QuotaStatsUpdaterRegistry extends ContributionFragmentRegistry<Quot
             QuotaStatsUpdaterDescriptor newOrigContrib) {
         if (contrib.isEnabled()) {
             try {
-                QuotaStatsUpdater updater = contrib.getQuotaStatsUpdaterClass().newInstance();
+                QuotaStatsUpdater updater = contrib.getQuotaStatsUpdaterClass().getDeclaredConstructor().newInstance();
                 updater.setName(contrib.getName());
                 updater.setLabel(contrib.getLabel());
                 updater.setDescriptionLabel(contrib.getDescriptionLabel());

@@ -68,13 +68,13 @@ public class QuotaDisplayValue {
             valueInUnit = 0;
         } else if (value > GB_LIMIT) {
             unit = GB_UNIT;
-            valueInUnit = new Float(value) / GB_LIMIT;
+            valueInUnit = Float.valueOf(value) / GB_LIMIT;
         } else if (value > MB_LIMIT) {
             unit = MB_UNIT;
-            valueInUnit = new Float(value) / MB_LIMIT;
+            valueInUnit = Float.valueOf(value) / MB_LIMIT;
         } else {
             unit = KB_UNIT;
-            valueInUnit = new Float(value) / KB_LIMIT;
+            valueInUnit = Float.valueOf(value) / KB_LIMIT;
         }
     }
 
@@ -93,7 +93,7 @@ public class QuotaDisplayValue {
     public String getPercent() {
         if (max > 0) {
             NumberFormat formatter = new DecimalFormat("0.0");
-            return formatter.format((new Float(value) / max) * 100) + "%";
+            return formatter.format((Float.valueOf(value) / max) * 100) + "%";
         } else {
             return "";
         }
