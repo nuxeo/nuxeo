@@ -30,7 +30,8 @@ public class MxThreadDumpReport implements ReportWriter {
 
     @Override
     public void write(OutputStream output) {
-        MXComponent.instance.exec("java.lang:type=Threading", "dumpAllThreads", true, true).run(output);
+        MXComponent.instance.exec("java.lang:type=Threading", "dumpAllThreads(boolean, boolean)", true, true)
+                            .run(output);
     }
 
 }
