@@ -45,7 +45,7 @@ public class ArtifactWithWeight implements Comparable<ArtifactWithWeight> {
 
     @Override
     public int compareTo(ArtifactWithWeight other) {
-        return new Integer(hits).compareTo(new Integer(other.getHitNumbers()));
+        return Integer.compare(hits, other.getHitNumbers());
     }
 
 }
