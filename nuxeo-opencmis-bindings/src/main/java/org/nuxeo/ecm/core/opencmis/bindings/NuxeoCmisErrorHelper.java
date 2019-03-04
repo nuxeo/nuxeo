@@ -77,7 +77,7 @@ public class NuxeoCmisErrorHelper {
                 className = DefaultErrorExtractor.class.getName();
             }
             try {
-                errorExtractor = (ErrorExtractor) Class.forName(className).newInstance();
+                errorExtractor = (ErrorExtractor) Class.forName(className).getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException | ClassCastException e) {
                 throw new RuntimeException("Cannot instantiate " + className, e);
             }
