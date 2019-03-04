@@ -321,7 +321,9 @@ public class ReportConnector {
                     ClassLoader loader = new Loader(findTools());
                     Thread.currentThread().setContextClassLoader(loader);
                     try {
-                        return (Iterable<ReportServer>) loader.loadClass(Discovery.class.getName()).newInstance();
+                        return (Iterable<ReportServer>) loader.loadClass(Discovery.class.getName())
+                                                              .getDeclaredConstructor()
+                                                              .newInstance();
                     } catch (ReflectiveOperationException cause1) {
                         throw new AssertionError("Cannot discover servers", cause1);
                     } finally {

@@ -102,7 +102,7 @@ public class ReportConfiguration extends SimpleContributionRegistry<Contribution
 
         @XNode("@oftype")
         public void oftype(Class<? extends ReportWriter> typeof) throws ReflectiveOperationException {
-            writer = typeof.newInstance();
+            writer = typeof.getDeclaredConstructor().newInstance();
         }
 
         ReportWriter writer;
