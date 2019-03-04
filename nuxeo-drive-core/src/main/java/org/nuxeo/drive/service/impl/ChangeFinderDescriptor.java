@@ -42,8 +42,8 @@ public class ChangeFinderDescriptor {
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     protected Map<String, String> parameters = new HashMap<>();
 
-    public FileSystemChangeFinder getChangeFinder() throws InstantiationException, IllegalAccessException {
-        FileSystemChangeFinder changeFinder = changeFinderClass.newInstance();
+    public FileSystemChangeFinder getChangeFinder() throws ReflectiveOperationException {
+        FileSystemChangeFinder changeFinder = changeFinderClass.getDeclaredConstructor().newInstance();
         changeFinder.handleParameters(parameters);
         return changeFinder;
     }

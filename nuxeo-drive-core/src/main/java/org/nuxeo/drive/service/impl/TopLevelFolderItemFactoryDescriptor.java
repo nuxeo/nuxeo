@@ -42,8 +42,8 @@ public class TopLevelFolderItemFactoryDescriptor {
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     protected Map<String, String> parameters = new HashMap<>();
 
-    public TopLevelFolderItemFactory getFactory() throws InstantiationException, IllegalAccessException {
-        TopLevelFolderItemFactory factory = factoryClass.newInstance();
+    public TopLevelFolderItemFactory getFactory() throws ReflectiveOperationException {
+        TopLevelFolderItemFactory factory = factoryClass.getDeclaredConstructor().newInstance();
         factory.setName(factory.getClass().getName());
         factory.handleParameters(parameters);
         return factory;

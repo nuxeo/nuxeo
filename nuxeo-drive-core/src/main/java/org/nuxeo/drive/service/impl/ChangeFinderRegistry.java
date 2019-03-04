@@ -50,7 +50,7 @@ public class ChangeFinderRegistry extends ContributionFragmentRegistry<ChangeFin
         try {
             log.trace("Updating change finder contribution {}.", contrib);
             changeFinder = contrib.getChangeFinder();
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (ReflectiveOperationException e) {
             throw new NuxeoException("Cannot update changeFinder contribution.", e);
         }
     }

@@ -115,7 +115,7 @@ public class FileSystemItemFactoryDescriptor implements Serializable, Comparable
     public FileSystemItemFactory getFactory() {
         FileSystemItemFactory factory;
         try {
-            factory = factoryClass.newInstance();
+            factory = factoryClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
         }

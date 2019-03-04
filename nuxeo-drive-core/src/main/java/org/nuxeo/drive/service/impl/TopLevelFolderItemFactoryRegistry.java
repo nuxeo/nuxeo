@@ -57,7 +57,7 @@ public class TopLevelFolderItemFactoryRegistry
         try {
             log.trace("Putting contribution with class name {} in factory registry.", contrib::getName);
             factories.put(id, contrib.getFactory());
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (ReflectiveOperationException e) {
             throw new NuxeoException("Cannot update topLevelFolderItemFactory contribution.", e);
         }
     }
