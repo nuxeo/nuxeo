@@ -74,7 +74,7 @@ public class ContentDiffAdapterFactoryDescriptor implements Serializable {
 
     public ContentDiffAdapterFactory getNewInstance() {
         try {
-            return (ContentDiffAdapterFactory) adapterClass.newInstance();
+            return (ContentDiffAdapterFactory) adapterClass.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

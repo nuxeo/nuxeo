@@ -81,7 +81,7 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
         } else if (MIME_TYPE_CONTENT_DIFFER_EP.equals(extensionPoint)) {
             MimeTypeContentDifferDescriptor desc = (MimeTypeContentDifferDescriptor) contribution;
             try {
-                MimeTypeContentDiffer contentDiffer = desc.getKlass().newInstance();
+                MimeTypeContentDiffer contentDiffer = desc.getKlass().getDeclaredConstructor().newInstance();
                 contentDifferFactory.put(desc.getPattern(), contentDiffer);
 
                 // Also (since 7.4) add a name in the contribution
