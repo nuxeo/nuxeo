@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
+import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -834,7 +835,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
     protected List<Comment> createSampleComments(int nbComments, String parentId, String author, String text) {
         List<Comment> comments = new ArrayList<>();
-        Instant date = Instant.now();
+        Instant date = Instant.now().truncatedTo(MILLIS);
         for (int i = 0; i < nbComments; i++) {
             Comment comment = new CommentImpl();
             comment.setParentId(parentId);
