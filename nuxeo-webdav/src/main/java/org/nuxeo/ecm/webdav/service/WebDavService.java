@@ -52,7 +52,7 @@ public class WebDavService extends DefaultComponent {
             BackendFactoryDescriptor desc = (BackendFactoryDescriptor) contribution;
             Class<?> factoryClass = desc.getFactoryClass();
             try {
-                backendFactory = (BackendFactory) factoryClass.newInstance();
+                backendFactory = (BackendFactory) factoryClass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
