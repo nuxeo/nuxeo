@@ -42,8 +42,8 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
         ExportLogicDescriptor exportLogicDesc = (ExportLogicDescriptor) contribution;
         if (exportLogicDesc.plugin != null) {
             try {
-                exporter = exportLogicDesc.plugin.newInstance();
-            } catch (IllegalAccessException | InstantiationException e) {
+                exporter = exportLogicDesc.plugin.getDeclaredConstructor().newInstance();
+            } catch (ReflectiveOperationException e) {
                 throw new NuxeoException("Failed to instantiate " + exportLogicDesc.plugin, e);
             }
         }
