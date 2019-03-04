@@ -232,7 +232,7 @@ public class LayoutDemoContext implements Serializable {
             doc.setPropertyValue("lds:select_doc_field", "");
             doc.setPropertyValue("lds:select_docs_multi_fields", new String[] {});
             doc.setPropertyValue("lds:dateField", Calendar.getInstance());
-            doc.setPropertyValue("lds:intField", new Integer(666));
+            doc.setPropertyValue("lds:intField", Integer.valueOf(666));
             doc.setPropertyValue("lds:booleanField", Boolean.FALSE);
             Blob blob = Blobs.createBlob("Hello!\nThis is a sample text.");
             blob.setFilename("hello.txt");
@@ -243,7 +243,7 @@ public class LayoutDemoContext implements Serializable {
             HashMap<String, Serializable> clItem = new HashMap<>();
             clItem.put("stringComplexItem", "Some sample text");
             clItem.put("dateComplexItem", Calendar.getInstance());
-            clItem.put("intComplexItem", new Integer(33));
+            clItem.put("intComplexItem", Integer.valueOf(33));
             clItem.put("booleanComplexItem", Boolean.FALSE);
             clItem.put("stringComplexItem2", "Hello, ");
             clItem.put("stringComplexItem3", "is it me you're looking for?");
@@ -251,7 +251,7 @@ public class LayoutDemoContext implements Serializable {
             HashMap<String, Serializable> clItem2 = new HashMap<>();
             clItem2.put("stringComplexItem", "Some other sample text");
             clItem2.put("dateComplexItem", Calendar.getInstance());
-            clItem2.put("intComplexItem", new Integer(-2));
+            clItem2.put("intComplexItem", Integer.valueOf(-2));
             clItem2.put("booleanComplexItem", Boolean.TRUE);
 
             cl.add(clItem);
@@ -272,7 +272,7 @@ public class LayoutDemoContext implements Serializable {
             doc.setPropertyValue("lds:select_subjects_multi_fields", new String[] { "art/art history", "art/culture",
                     "sciences/logic" });
             doc.setPropertyValue("lds:dateField", Calendar.getInstance());
-            doc.setPropertyValue("lds:intField", new Integer(667));
+            doc.setPropertyValue("lds:intField", Integer.valueOf(667));
             doc.setPropertyValue("lds:booleanField", Boolean.TRUE);
             Blob blob = Blobs.createBlob("Hello!\nThis is another sample text.");
             blob.setFilename("hello-again.txt");
@@ -307,8 +307,8 @@ public class LayoutDemoContext implements Serializable {
             doc.setPropertyValue("dc:creator", "Administrator");
             doc.setPropertyValue("dc:lastContributor", "Administrator");
         }
-        doc.setPropertyValue("uid:major_version", new Integer(1));
-        doc.setPropertyValue("uid:minor_version", new Integer(index));
+        doc.setPropertyValue("uid:major_version", Integer.valueOf(1));
+        doc.setPropertyValue("uid:minor_version", Integer.valueOf(index));
         if (index <= 1) {
             doc.setPropertyValue("common:icon", "/icons/pdf.png");
         }
