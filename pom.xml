@@ -155,7 +155,7 @@
     <scala.version>2.12.3</scala.version>
     <scala-logging.version>3.9.0</scala-logging.version>
     <scala-maven-plugin.version>3.3.2</scala-maven-plugin.version>
-    <jgiven.version>0.16.0</jgiven.version>
+    <jgiven.version>0.17.1</jgiven.version>
 
     <!-- Tests properties -->
     <!-- for use integration/vcstests.xml and org.nuxeo:nuxeo-ftest -->
