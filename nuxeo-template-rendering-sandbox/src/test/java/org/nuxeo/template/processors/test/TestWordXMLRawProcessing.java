@@ -68,7 +68,7 @@ public class TestWordXMLRawProcessing {
         TemplateInput input3 = new TemplateInput("name_of_the_call");
         input3.setType(InputType.DocumentProperty);
         input3.setSource("dc:description");
-        TemplateInput input4 = new TemplateInput("boolean_property", new Boolean(false));
+        TemplateInput input4 = new TemplateInput("boolean_property", Boolean.FALSE);
 
         params.add(input1);
         params.add(input2);

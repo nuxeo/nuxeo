@@ -147,7 +147,7 @@ public class TemplateInput implements Serializable {
 
     public Boolean getBooleanValue() {
         if (booleanValue == null) {
-            return new Boolean(false);
+            return Boolean.FALSE;
         }
         return booleanValue;
     }

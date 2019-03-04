@@ -48,7 +48,7 @@ public class TestXMLSerialization extends TestCase {
         TemplateInput input2 = new TemplateInput("field2", new Date(cal.getTimeInMillis()));
         params.add(input2);
 
-        TemplateInput input3 = new TemplateInput("field3", new Boolean(true));
+        TemplateInput input3 = new TemplateInput("field3", Boolean.TRUE);
         params.add(input3);
 
         TemplateInput input4 = new TemplateInput("field4");
@@ -86,7 +86,7 @@ public class TestXMLSerialization extends TestCase {
 
         assertEquals("field3", params2.get(2).getName());
         assertEquals(InputType.BooleanValue, params2.get(2).getType());
-        assertEquals(new Boolean(true), params2.get(2).getBooleanValue());
+        assertEquals(Boolean.TRUE, params2.get(2).getBooleanValue());
 
         assertEquals("field4", params2.get(3).getName());
         assertEquals(InputType.DocumentProperty, params2.get(3).getType());

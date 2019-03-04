@@ -46,7 +46,7 @@ public class TemplateProcessorDescriptor implements Serializable {
 
     @SuppressWarnings("rawtypes")
     @XNode("@class")
-    protected Class className;
+    protected Class<?> className;
 
     @XNode("@default")
     protected boolean defaultProcessor = true;
@@ -70,7 +70,7 @@ public class TemplateProcessorDescriptor implements Serializable {
     public TemplateProcessor getProcessor() {
         if (processor == null) {
             try {
-                processor = (TemplateProcessor) className.newInstance();
+                processor = (TemplateProcessor) className.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 log.error("Unable to instanciate Processor", e);
             }

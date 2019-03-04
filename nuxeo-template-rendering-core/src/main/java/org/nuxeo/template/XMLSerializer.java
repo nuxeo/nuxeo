@@ -138,7 +138,7 @@ public class XMLSerializer {
                     throw new DocumentException(e);
                 }
             } else if (InputType.BooleanValue.equals(type)) {
-                param.setBooleanValue(new Boolean(strValue));
+                param.setBooleanValue(Boolean.valueOf(strValue));
             } else {
                 param.setSource(elem.attributeValue("source"));
             }

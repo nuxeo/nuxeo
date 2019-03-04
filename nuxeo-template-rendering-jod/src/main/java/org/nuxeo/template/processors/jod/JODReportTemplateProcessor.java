@@ -146,7 +146,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
                         // no available value, try to find a default one ...
                         Type pType = property.getType();
                         if (pType.getName().equals(BooleanType.ID)) {
-                            context.put(param.getName(), new Boolean(false));
+                            context.put(param.getName(), Boolean.FALSE);
                         } else if (pType.getName().equals(DateType.ID)) {
                             context.put(param.getName(), new Date());
                         } else if (pType.getName().equals(StringType.ID)) {

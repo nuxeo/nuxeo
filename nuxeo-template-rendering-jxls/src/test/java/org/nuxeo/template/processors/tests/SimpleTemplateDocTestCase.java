@@ -124,7 +124,7 @@ public abstract class SimpleTemplateDocTestCase {
         TemplateInput input3 = new TemplateInput("Description");
         input3.setType(InputType.PictureProperty);
         input3.setSource("dc:description");
-        TemplateInput input4 = new TemplateInput("BooleanVar", new Boolean(false));
+        TemplateInput input4 = new TemplateInput("BooleanVar", Boolean.FALSE);
         TemplateInput input5 = new TemplateInput("picture");
         input5.setType(InputType.PictureProperty);
         input5.setSource("files:files/0/file");

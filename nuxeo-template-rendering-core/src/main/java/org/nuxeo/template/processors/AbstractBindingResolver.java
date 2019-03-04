@@ -136,7 +136,7 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                         if (property != null) {
                             Type pType = property.getType();
                             if (pType.getName().equals(BooleanType.ID)) {
-                                context.put(param.getName(), new Boolean(false));
+                                context.put(param.getName(), Boolean.FALSE);
                             } else if (pType.getName().equals(DateType.ID)) {
                                 context.put(param.getName(), new Date());
                             } else if (pType.getName().equals(StringType.ID)) {
