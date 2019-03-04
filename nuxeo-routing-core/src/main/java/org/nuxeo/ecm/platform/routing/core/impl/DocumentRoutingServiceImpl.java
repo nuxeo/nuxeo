@@ -172,7 +172,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         } else if (PERSISTER_XP.equals(extensionPoint)) {
             PersisterDescriptor des = (PersisterDescriptor) contribution;
             try {
-                persister = des.getKlass().newInstance();
+                persister = des.getKlass().getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
