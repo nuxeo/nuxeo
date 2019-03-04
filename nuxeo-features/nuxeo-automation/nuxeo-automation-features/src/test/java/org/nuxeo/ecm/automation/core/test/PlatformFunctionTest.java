@@ -53,9 +53,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.automation.features:test-platform-functions.xml")
 public class PlatformFunctionTest {
 
-    List<String> listOfString = Arrays.asList("value list 1", "value list 2");
+    List<String> listOfString = List.of("value list 1", "value list 2");
 
-    List<Integer> listOfInteger = Arrays.asList(Integer.valueOf(-1), Integer.valueOf(-2));
+    List<Integer> listOfInteger = List.of(Integer.valueOf(-1), Integer.valueOf(-2));
 
     String[] arrayOfString = new String[] { "value list 1", "value list 2" };
 
