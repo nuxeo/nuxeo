@@ -82,8 +82,8 @@ public class TestService extends NXRuntimeTestCase {
 
         assertEquals("/tmp/somefolder", config.getSourcePath());
         assertEquals("/tmp/processed", config.getProcessedPath());
-        assertEquals(new Integer(2), config.getNbThreads());
-        assertEquals(new Integer(5), config.getBatchSize());
+        assertEquals(Integer.valueOf(2), config.getNbThreads());
+        assertEquals(Integer.valueOf(5), config.getBatchSize());
         assertEquals("/default-domain/import", config.getTargetPath());
 
     }

@@ -335,7 +335,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
                 log.info("immediate speed = " + imediateSpeed + " docs/s");
 
                 if (enablePerfLogging) {
-                    Double[] perfData = { new Double(inbCreatedDocs), averageSpeed, imediateSpeed };
+                    Double[] perfData = { Double.valueOf(inbCreatedDocs), averageSpeed, imediateSpeed };
                     perfLogger.log(perfData);
                 }
 

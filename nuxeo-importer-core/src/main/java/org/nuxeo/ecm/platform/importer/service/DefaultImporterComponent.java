@@ -79,7 +79,7 @@ public class DefaultImporterComponent extends DefaultComponent {
                 log.info("No specific ImporterLogger configured for this importer");
             } else {
                 try {
-                    importerService.setImporterLogger(logClass.newInstance());
+                    importerService.setImporterLogger(logClass.getDeclaredConstructor().newInstance());
                 } catch (ReflectiveOperationException e) {
                     throw new RuntimeException(e);
                 }

@@ -168,7 +168,7 @@ public class ScannedFileImporter {
                 cst = factoryClass.getConstructor(ImporterConfig.class);
                 return cst.newInstance(config);
             } catch (NoSuchMethodException e) {
-                return factoryClass.newInstance();
+                return factoryClass.getDeclaredConstructor().newInstance();
             }
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);
