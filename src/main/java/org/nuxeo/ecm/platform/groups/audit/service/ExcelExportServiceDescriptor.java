@@ -73,7 +73,7 @@ public class ExcelExportServiceDescriptor implements Serializable {
     public ExcelExportFactory getFactory() {
         if (factoryClass != null) {
             try {
-                return factoryClass.newInstance();
+                return factoryClass.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new NuxeoException(e);
             }
