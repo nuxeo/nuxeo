@@ -120,7 +120,7 @@ public class VideoToolsServiceImpl extends DefaultComponent implements VideoTool
         }
         try {
             // initialize the tool and set up the parameters
-            VideoTool tool = (VideoTool) videoTools.get(toolName).newInstance();
+            VideoTool tool = (VideoTool) videoTools.get(toolName).getDeclaredConstructor().newInstance();
             Map<String, String> params = tool.setupParameters(blobHolder, parameters);
             CmdParameters cmdParams = setupCmdParameters(params);
             String commandLineName = tool.getCommandLineName();
@@ -141,9 +141,7 @@ public class VideoToolsServiceImpl extends DefaultComponent implements VideoTool
             result = tool.buildResult(blobHolder.getBlob().getMimeType(), params);
         } catch (CommandNotAvailable e) {
             throw new NuxeoException("The video tool command is not available.", e);
-        } catch (InstantiationException e) {
-            throw new NuxeoException("The video tool is not available.", e);
-        } catch (IllegalAccessException e) {
+        } catch (ReflectiveOperationException e) {
             throw new NuxeoException("The video tool is not available.", e);
         }
         return result;
@@ -152,11 +150,9 @@ public class VideoToolsServiceImpl extends DefaultComponent implements VideoTool
     public boolean isToolAvailable(String toolName) {
         String commandLine;
         try {
-            VideoTool tool = (VideoTool) videoTools.get(toolName).newInstance();
+            VideoTool tool = (VideoTool) videoTools.get(toolName).getDeclaredConstructor().newInstance();
             commandLine = tool.getCommandLineName();
-        } catch (InstantiationException e) {
-            throw new NuxeoException("The video tool is not available.", e);
-        } catch (IllegalAccessException e) {
+        } catch (ReflectiveOperationException e) {
             throw new NuxeoException("The video tool is not available.", e);
         }
         CommandAvailability ca = Framework.getService(CommandLineExecutorService.class)
