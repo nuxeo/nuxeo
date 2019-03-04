@@ -113,7 +113,7 @@ public class SignatureDescriptor {
         this.reason = reason;
     }
 
-    public SignatureAppearanceFactory getAppearanceFatory() throws InstantiationException, IllegalAccessException {
+    public SignatureAppearanceFactory getAppearanceFatory() throws ReflectiveOperationException {
         Class<? extends SignatureAppearanceFactory> appearanceClass = null;
         if (signatureAppearance != null) {
             appearanceClass = signatureAppearance.getAppearanceClass();
@@ -121,7 +121,7 @@ public class SignatureDescriptor {
         if (appearanceClass == null) {
             return new DefaultSignatureAppearanceFactory();
         }
-        return appearanceClass.newInstance();
+        return appearanceClass.getDeclaredConstructor().newInstance();
     }
 
     public String getId() {

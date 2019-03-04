@@ -344,7 +344,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
             log.debug("File " + outputFile.getAbsolutePath() + " created and signed with " + reason);
 
             return blob;
-        } catch (IOException | DocumentException | InstantiationException | IllegalAccessException e) {
+        } catch (IOException | DocumentException | ReflectiveOperationException e) {
             throw new SignException(e);
         } catch (IllegalArgumentException e) {
             if (String.valueOf(e.getMessage()).contains("PdfReader not opened with owner password")) {
@@ -370,8 +370,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
         return new SignatureDescriptor.SignatureLayout();
     }
 
-    protected SignatureAppearanceFactory getSignatureAppearanceFactory()
-            throws InstantiationException, IllegalAccessException {
+    protected SignatureAppearanceFactory getSignatureAppearanceFactory() throws ReflectiveOperationException {
         if (!signatureRegistryMap.isEmpty()) {
             SignatureDescriptor signatureDescriptor = signatureRegistryMap.values().iterator().next();
             return signatureDescriptor.getAppearanceFatory();
