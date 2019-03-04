@@ -25,6 +25,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.naming.InvalidNameException;
@@ -115,12 +116,7 @@ public class LDAPServerDescriptor {
 
     @XNode("bindPassword")
     public void setBindPassword(String bindPassword) {
-        if (bindPassword == null) {
-            // no password means empty pasword
-            this.bindPassword = "";
-        } else {
-            this.bindPassword = bindPassword;
-        }
+        this.bindPassword = Objects.requireNonNullElse(bindPassword, ""); // no password means empty password
     }
 
     public String getBindPassword() {
