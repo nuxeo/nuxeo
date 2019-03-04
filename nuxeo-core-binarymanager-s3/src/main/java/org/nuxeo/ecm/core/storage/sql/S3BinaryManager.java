@@ -455,6 +455,24 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         return amazonS3;
     }
 
+    /**
+     * Gets the bucket name.
+     *
+     * @since 11.1
+     */
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    /**
+     * Gets the bucket prefix.
+     *
+     * @since 11.1
+     */
+    public String getBucketPrefix() {
+        return bucketNamePrefix;
+    }
+
     @Override
     public String writeBlob(Blob blob) throws IOException {
         // Attempt to do S3 Copy if the Source Blob provider is also S3
