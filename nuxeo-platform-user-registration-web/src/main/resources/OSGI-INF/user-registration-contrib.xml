@@ -18,7 +18,7 @@
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
              point="types">
     <types>
-      <type name="UserRegistrationContainer">default></type>
+      <type name="UserRegistrationContainer">default</type>
       <type name="UserRegistration">registrationRequest</type>
     </types>
   </extension>
