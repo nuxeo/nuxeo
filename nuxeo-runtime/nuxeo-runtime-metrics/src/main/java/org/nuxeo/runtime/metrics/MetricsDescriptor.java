@@ -551,14 +551,22 @@ public class MetricsDescriptor implements Serializable {
 
         public static final String SERVICE_NAME_PROPERTY = "opencensus.exporter.service.name";
 
+        public static final String SAMPLER_PROB_PROPERTY = "opencensus.sampler.probability";
+
+        public static final String MAX_ATTRIBUTES_PROPERTY = "opencensus.attributes.max";
+
+        public static final String MAX_ANNOTATION_PROPERTY = "opencensus.annotations.max";
+
         @XNode("@enabled")
-        protected boolean enabled = Boolean.parseBoolean(Framework.getProperty(ENABLED_PROPERTY, "true"));
+        protected boolean enabled = Boolean.parseBoolean(Framework.getProperty(ENABLED_PROPERTY, "false"));
 
-        @XNode("@port")
-        public Integer port = Integer.valueOf(Framework.getProperty(PORT_PROPERTY, "8888"));
+        // Expose metrics to Prometheus, usual port should be 8888
+        @XNode("@prometheusPort")
+        public Integer prometheusPort = Integer.valueOf(Framework.getProperty(PORT_PROPERTY, "0"));
 
-        @XNode("@zport")
-        public Integer zport = Integer.valueOf(Framework.getProperty(ZPORT_PROPERTY, "8887"));
+        // Expose OpenCensus zpages
+        @XNode("@zPagesPort")
+        public Integer zPagesPort = Integer.valueOf(Framework.getProperty(ZPORT_PROPERTY, "0"));
 
         // Thrift endpoint like: http://127.0.0.1:14268/api/traces
         @XNode("@jaeger")
@@ -571,6 +579,18 @@ public class MetricsDescriptor implements Serializable {
         @XNode("@serviceName")
         public String serviceName = Framework.getProperty(SERVICE_NAME_PROPERTY, "nuxeo");
 
+        // between 0.0 and 1.0 (1 means always sample)
+        @XNode("@samplerProbability")
+        public Float samplerProbability = Float.valueOf(Framework.getProperty(SAMPLER_PROB_PROPERTY, "0.1"));
+
+        // max number of annotations per span
+        @XNode("@maxAnnotations")
+        public Integer maxAnnotations = Integer.valueOf(Framework.getProperty(MAX_ANNOTATION_PROPERTY, "128"));
+
+        // max number of attributes
+        @XNode("@maxAttributes")
+        public Integer maxAttributes = Integer.valueOf(Framework.getProperty(MAX_ATTRIBUTES_PROPERTY, "128"));
+
         protected HTTPServer server;
 
         public void enable(MetricRegistry registry) {
@@ -578,51 +598,60 @@ public class MetricsDescriptor implements Serializable {
                 return;
             }
             Log log = LogFactory.getLog(MetricsServiceImpl.class);
-            log.info("OpenCensus enabling");
-            DropWizardMetrics registries = new DropWizardMetrics(Collections.singletonList(registry));
-            Metrics.getExportComponent().getMetricProducerManager().add(registries);
-            ArrayList<Metric> metrics = new ArrayList<>(registries.getMetrics());
-            log.warn("OpenCensus exposing dropwizard metrics to prometheus: " + metrics.size());
-            PrometheusStatsCollector.createAndRegister();
-            try {
-                server = new HTTPServer(port, true);
-                ZPageHandlers.startHttpServerAndRegisterAll(zport);
-            } catch (IOException e) {
-                throw new RuntimeException("Cannot start prometheus server on port " + port, e);
+            log.debug("Enabling OpenCensus");
+            if (prometheusPort > 0) {
+                DropWizardMetrics registries = new DropWizardMetrics(Collections.singletonList(registry));
+                Metrics.getExportComponent().getMetricProducerManager().add(registries);
+                ArrayList<Metric> metrics = new ArrayList<>(registries.getMetrics());
+                log.debug("OpenCensus number of dropwizard metrics exposed to prometheus: " + metrics.size());
+                PrometheusStatsCollector.createAndRegister();
+                try {
+                    server = new HTTPServer(prometheusPort, true);
+                    if (zPagesPort > 0) {
+                        ZPageHandlers.startHttpServerAndRegisterAll(zPagesPort);
+                    }
+                } catch (IOException e) {
+                    throw new IllegalArgumentException("Cannot start prometheus server on port: " + prometheusPort, e);
+                }
+                log.info("OpenCensus Prometheus started");
             }
-            log.warn("OpenCensus prometheus started");
             if (jaeger != null) {
-                log.warn("OpenCensus creating Jaeger tracer");
+                log.debug("OpenCensus creating Jaeger tracer");
                 JaegerTraceExporter.createAndRegister(jaeger, serviceName);
                 addTracing();
-                log.warn("OpenCensus Jaeger tracer started");
+                log.info("OpenCensus Jaeger tracer started");
             }
             if (zipkin != null) {
-                log.warn("OpenCensus creating Zipkin tracer");
+                log.debug("OpenCensus creating Zipkin tracer");
                 ZipkinTraceExporter.createAndRegister(zipkin, serviceName);
                 addTracing();
-                log.warn("OpenCensus Zipkin tracer started");
+                log.info("OpenCensus Zipkin tracer started");
             }
         }
 
         protected void addTracing() {
-            // TODO: testing configure 100% sample rate, otherwise, few traces will be sampled.
             TraceConfig traceConfig = Tracing.getTraceConfig();
             TraceParams activeTraceParams = traceConfig.getActiveTraceParams();
-            traceConfig.updateActiveTraceParams(
-                    activeTraceParams.toBuilder()
-                                     .setSampler(Samplers.alwaysSample())
-                                     .setMaxNumberOfAnnotations(128)
-                                     .setMaxNumberOfAttributes(128)
-                                     .build());
+            TraceParams.Builder builder = activeTraceParams.toBuilder();
+            builder.setMaxNumberOfAttributes(maxAttributes).setMaxNumberOfAnnotations(maxAnnotations);
+            if (samplerProbability >= 0.999) {
+                builder.setSampler(Samplers.alwaysSample());
+            } else if (samplerProbability <= 0.001) {
+                builder.setSampler(Samplers.neverSample());
+            } else {
+                builder.setSampler(Samplers.probabilitySampler(samplerProbability));
+            }
+            traceConfig.updateActiveTraceParams(builder.build());
         }
 
         public void disable(MetricRegistry registry) {
             if (!enabled) {
                 return;
             }
-            server.stop();
-            server = null;
+            if (server != null) {
+                server.stop();
+                server = null;
+            }
             // Gracefully shutdown the exporter, so that it'll flush queued traces
             Tracing.getExportComponent().shutdown();
             if (jaeger != null) {
@@ -632,7 +661,7 @@ public class MetricsDescriptor implements Serializable {
                 ZipkinTraceExporter.unregister();
             }
             Log log = LogFactory.getLog(MetricsServiceImpl.class);
-            log.warn("OpenCensus disabled");
+            log.info("OpenCensus disabled");
         }
     }
 
