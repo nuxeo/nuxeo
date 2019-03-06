@@ -116,6 +116,8 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     protected String roleArn;
 
+    protected boolean useServerSideEncryption;
+
     @Override
     protected void initialize(Map<String, String> properties) {
         super.initialize(properties);
@@ -138,6 +140,8 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         String awsSessionToken = properties.get(AWS_SESSION_TOKEN_PROPERTY);
         expiration = Integer.parseInt(defaultIfEmpty(properties.get(INFO_EXPIRATION), "0"));
         policy = properties.get(POLICY_TEMPLATE_PROPERTY);
+
+        useServerSideEncryption = Boolean.parseBoolean(properties.get(S3BinaryManager.SERVERSIDE_ENCRYPTION_PROPERTY));
 
         AWSCredentialsProvider credentials = S3Utils.getAWSCredentialsProvider(awsSecretKeyId, awsSecretAccessKey,
                 awsSessionToken);
@@ -214,11 +218,19 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         String mimeType = metadata.getContentType();
         String encoding = metadata.getContentEncoding();
 
+        // server-side encryption
+        String targetSSEAlgorithm;
+        if (useServerSideEncryption) { // TODO KMS
+            targetSSEAlgorithm = ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION;
+        } else {
+            targetSSEAlgorithm = null;
+        }
+
         ObjectMetadata newMetadata;
         if (metadata.getContentLength() > lowerThresholdToUseMultipartCopy()) {
-            newMetadata = S3Utils.copyFileMultipart(amazonS3, metadata, bucket, fileKey, bucket, newFileKey, true);
+            newMetadata = S3Utils.copyFileMultipart(amazonS3, metadata, bucket, fileKey, bucket, newFileKey, targetSSEAlgorithm, true);
         } else {
-            newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, fileKey, bucket, newFileKey, true);
+            newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, fileKey, bucket, newFileKey, targetSSEAlgorithm, true);
             boolean isMultipartUpload = REGEX_MULTIPART_ETAG.matcher(etag).find();
             if (isMultipartUpload) {
                 etag = newMetadata.getETag();

@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.nuxeo.ecm.core.storage.sql.S3Utils.NON_MULTIPART_COPY_MAX_SIZE;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -519,11 +518,17 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         }
         long length = sourceMetadata.getContentLength();
         try {
-            if (length > NON_MULTIPART_COPY_MAX_SIZE) {
-                S3Utils.copyFileMultipart(amazonS3, sourceMetadata, sourceBucketName, sourceKey, bucketName, key, true);
+            String sseAlgorithm;
+            if (useServerSideEncryption) {
+                if (isNotBlank(serverSideKMSKeyID)) { // TODO
+                    log.warn("S3 copy not supported with KMS, falling back to regular copy");
+                    return null;
+                }
+                sseAlgorithm = ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION;
             } else {
-                S3Utils.copyFile(amazonS3, sourceMetadata, sourceBucketName, sourceKey, bucketName, key, true);
+                sseAlgorithm = null;
             }
+            S3Utils.copyFile(amazonS3, sourceMetadata, sourceBucketName, sourceKey, bucketName, key, sseAlgorithm, true);
             if (log.isDebugEnabled()) {
                 long dtms = System.currentTimeMillis() - t0;
                 log.debug("copied blob " + sourceKey + " to " + key + " in " + dtms + "ms");
