@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.aws.NuxeoAWSCredentialsProvider;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -52,8 +54,26 @@ public class S3Utils {
     /** The maximum size of a file that can be copied without using multipart: 5 GB */
     public static final long NON_MULTIPART_COPY_MAX_SIZE = 5L * 1024 * 1024 * 1024;
 
-    /** The size of the parts that we use for multipart copy. */
-    public static final long PART_SIZE = 5L * 1024 * 1024; // 5 MB
+    /**
+     * The default multipart copy part size. This default is used only if the configuration service is not available or
+     * if the configuration property {@value #MULTIPART_COPY_PART_SIZE_PROPERTY} is not defined.
+     *
+     * @since 11.1
+     */
+    public static final long MULTIPART_COPY_PART_SIZE_DEFAULT = 5L * 1024 * 1024; // 5 MB
+
+    /**
+     * @deprecated since 11.1, use {@link #MULTIPART_COPY_PART_SIZE_DEFAULT} instead
+     */
+    @Deprecated
+    public static final long PART_SIZE = MULTIPART_COPY_PART_SIZE_DEFAULT;
+
+    /**
+     * The configuration property to define the multipart copy part size.
+     *
+     * @since 11.1
+     */
+    public static final String MULTIPART_COPY_PART_SIZE_PROPERTY = "nuxeo.s3.multipart.copy.part.size";
 
     private S3Utils() {
         // utility class
@@ -180,7 +200,19 @@ public class S3Utils {
                                                                .withPartNumber(num + 1);
             copyResponses.add(amazonS3.copyPart(copyRequest));
         };
-        processSlices(PART_SIZE, objectSize, partCopy);
+        long partSize = MULTIPART_COPY_PART_SIZE_DEFAULT;
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        if (configurationService != null) {
+            String partSizeProp = configurationService.getProperty(MULTIPART_COPY_PART_SIZE_PROPERTY);
+            if (isNotBlank(partSizeProp)) {
+                try {
+                    partSize = Long.parseLong(partSizeProp);
+                } catch (NumberFormatException e) {
+                    // use default
+                }
+            }
+        }
+        processSlices(partSize, objectSize, partCopy);
 
         CompleteMultipartUploadRequest completeRequest = new CompleteMultipartUploadRequest(targetBucket, targetKey,
                 uploadId, responsesToETags(copyResponses));
