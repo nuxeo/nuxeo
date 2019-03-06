@@ -720,6 +720,11 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
+    public void removeSingleton() {
+        session.removeDocument(id);
+    }
+
+    @Override
     public String getLifeCycleState() {
         DBSDocumentState docState = getStateOrTarget();
         return (String) docState.get(KEY_LIFECYCLE_STATE);

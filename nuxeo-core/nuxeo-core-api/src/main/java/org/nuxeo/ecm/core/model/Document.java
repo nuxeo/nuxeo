@@ -186,6 +186,13 @@ public interface Document {
     void remove();
 
     /**
+     * Removes this document only, without its children.
+     *
+     * @since 11.1
+     */
+    void removeSingleton();
+
+    /**
      * Checks whether this document is under active retention.
      *
      * @since 9.3

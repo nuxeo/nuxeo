@@ -910,6 +910,11 @@ public class SQLSession implements Session<QueryFilter> {
         return session.getBinaryFulltext(idFromString(id));
     }
 
+    @Override
+    public void removeDocument(String id) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
     public boolean isChangeTokenEnabled() {
         return session.isChangeTokenEnabled();
     }

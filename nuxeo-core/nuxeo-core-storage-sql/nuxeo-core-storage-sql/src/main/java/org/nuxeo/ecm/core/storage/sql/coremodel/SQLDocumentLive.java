@@ -163,6 +163,11 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         session.remove(getNode());
     }
 
+    @Override
+    public void removeSingleton() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
     /**
      * Reads into the {@link DocumentPart} the values from this {@link SQLDocument}.
      */
