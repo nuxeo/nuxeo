@@ -265,4 +265,12 @@ public interface Session<T extends QueryFilter> {
      */
     Map<String, String> getBinaryFulltext(String id);
 
+    /**
+     * Removes a document.
+     *
+     * @param id the document id
+     * @since 11.1
+     */
+    void removeDocument(String id);
+
 }

@@ -142,6 +142,11 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
+    public void removeSingleton() {
+        proxy.removeSingleton();
+    }
+
+    @Override
     public DocumentType getType() {
         return target.getType();
     }

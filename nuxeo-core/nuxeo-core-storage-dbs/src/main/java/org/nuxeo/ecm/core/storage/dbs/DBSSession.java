@@ -1449,6 +1449,21 @@ public class DBSSession implements Session<QueryFilter> {
     }
 
     @Override
+    public void removeDocument(String id) {
+        transaction.save();
+
+        State state = transaction.getStateForRead(id);
+
+        if (TRUE.equals(state.get(KEY_IS_RETENTION_ACTIVE))) {
+            throw new DocumentExistsException("Cannot remove " + id + ", it is under active retention");
+        }
+
+        // remove doc
+        transaction.removeStates(Collections.singleton(id));
+
+    }
+
+    @Override
     public PartialList<Document> query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
         // query
         PartialList<String> pl = doQuery(query, queryType, queryFilter, (int) countUpTo);
