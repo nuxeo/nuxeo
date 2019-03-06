@@ -94,6 +94,28 @@ public class S3Utils {
     }
 
     /**
+     * Copies a file, using multipart upload if needed.
+     *
+     * @param amazonS3 the S3 client
+     * @param objectMetadata the metadata of the object being copied
+     * @param sourceBucket the source bucket
+     * @param sourceKey the source key
+     * @param targetBucket the target bucket
+     * @param targetKey the target key
+     * @param targetSSEAlgorithm the target SSE Algorithm to use, or {@code null}
+     * @param deleteSource whether to delete the source object if the copy is successful
+     * @since 11.1
+     */
+    public static ObjectMetadata copyFile(AmazonS3 amazonS3, ObjectMetadata objectMetadata, String sourceBucket,
+            String sourceKey, String targetBucket, String targetKey, String targetSSEAlgorithm, boolean deleteSource) {
+        if (objectMetadata.getContentLength() > NON_MULTIPART_COPY_MAX_SIZE) {
+            return copyFileMultipart(amazonS3, objectMetadata, sourceBucket, sourceKey, targetBucket, targetKey, targetSSEAlgorithm, deleteSource);
+        } else {
+            return copyFileNonMultipart(amazonS3, objectMetadata, sourceBucket, sourceKey, targetBucket, targetKey, targetSSEAlgorithm, deleteSource);
+        }
+    }
+
+    /**
      * Copies a file using multipart upload.
      *
      * @param amazonS3 the S3 client
@@ -103,11 +125,43 @@ public class S3Utils {
      * @param targetBucket the target bucket
      * @param targetKey the target key
      * @param deleteSource whether to delete the source object if the copy is successful
+     * @deprecated since 11.1, use
+     *             {@link #copyFileMultipart(AmazonS3, ObjectMetadata, String, String, String, String, String, boolean)}
+     *             instead
      */
+    @Deprecated
     public static ObjectMetadata copyFileMultipart(AmazonS3 amazonS3, ObjectMetadata objectMetadata,
             String sourceBucket, String sourceKey, String targetBucket, String targetKey, boolean deleteSource) {
+        return copyFileMultipart(amazonS3, objectMetadata, sourceBucket, sourceKey, targetBucket, targetKey, null,
+                deleteSource);
+    }
+
+    /**
+     * Copies a file using multipart upload.
+     *
+     * @param amazonS3 the S3 client
+     * @param objectMetadata the metadata of the object being copied
+     * @param sourceBucket the source bucket
+     * @param sourceKey the source key
+     * @param targetBucket the target bucket
+     * @param targetKey the target key
+     * @param targetSSEAlgorithm the target SSE Algorithm to use, or {@code null}
+     * @param deleteSource whether to delete the source object if the copy is successful
+     * @since 11.1
+     */
+    public static ObjectMetadata copyFileMultipart(AmazonS3 amazonS3, ObjectMetadata objectMetadata,
+            String sourceBucket, String sourceKey, String targetBucket, String targetKey, String targetSSEAlgorithm,
+            boolean deleteSource) {
         InitiateMultipartUploadRequest initiateMultipartUploadRequest = new InitiateMultipartUploadRequest(sourceBucket,
                 targetKey);
+
+        // server-side encryption
+        if (targetSSEAlgorithm != null) {
+            ObjectMetadata newObjectMetadata = new ObjectMetadata();
+            newObjectMetadata.setSSEAlgorithm(targetSSEAlgorithm);
+            initiateMultipartUploadRequest.setObjectMetadata(newObjectMetadata);
+        }
+
         InitiateMultipartUploadResult initiateMultipartUploadResult = amazonS3.initiateMultipartUpload(
                 initiateMultipartUploadRequest);
 
@@ -152,10 +206,36 @@ public class S3Utils {
      * @param targetBucket the target bucket
      * @param targetKey the target key
      * @param deleteSource whether to delete the source object if the copy is successful
+     * @deprecated since 11.1, use {@link #copyFileNonMultipart} instead
      */
+    @Deprecated
     public static ObjectMetadata copyFile(AmazonS3 amazonS3, ObjectMetadata objectMetadata, String sourceBucket,
             String sourceKey, String targetBucket, String targetKey, boolean deleteSource) {
+        return copyFileNonMultipart(amazonS3, objectMetadata, sourceBucket, sourceKey, targetBucket, targetKey, null, deleteSource);
+    }
+
+    /**
+     * Copies a file without using multipart upload.
+     *
+     * @param amazonS3 the S3 client
+     * @param objectMetadata the metadata of the object being copied
+     * @param sourceBucket the source bucket
+     * @param sourceKey the source key
+     * @param targetBucket the target bucket
+     * @param targetKey the target key
+     * @param targetSSEAlgorithm the target SSE Algorithm to use, or {@code null}
+     * @param deleteSource whether to delete the source object if the copy is successful
+     * @since 11.1
+     */
+    public static ObjectMetadata copyFileNonMultipart(AmazonS3 amazonS3, ObjectMetadata objectMetadata, String sourceBucket,
+            String sourceKey, String targetBucket, String targetKey, String targetSSEAlgorithm, boolean deleteSource) {
         CopyObjectRequest copyObjectRequest = new CopyObjectRequest(sourceBucket, sourceKey, targetBucket, targetKey);
+        // server-side encryption
+        if (targetSSEAlgorithm != null) {
+            ObjectMetadata newObjectMetadata = new ObjectMetadata();
+            newObjectMetadata.setSSEAlgorithm(targetSSEAlgorithm);
+            copyObjectRequest.setNewObjectMetadata(newObjectMetadata);
+        }
         amazonS3.copyObject(copyObjectRequest);
         if (deleteSource) {
             amazonS3.deleteObject(sourceBucket, sourceKey);
