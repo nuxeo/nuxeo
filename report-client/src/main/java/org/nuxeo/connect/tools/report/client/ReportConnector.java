@@ -32,7 +32,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
@@ -56,7 +55,6 @@ import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 
 /**
- *
  * @since 8.3
  */
 public class ReportConnector {
@@ -88,7 +86,8 @@ public class ReportConnector {
         return generator;
     }
 
-    public JsonObjectBuilder feed(JsonObjectBuilder builder) throws IOException, InterruptedException, ExecutionException {
+    public JsonObjectBuilder feed(JsonObjectBuilder builder)
+            throws IOException, InterruptedException, ExecutionException {
         class Feeder implements Consumer {
             ObjectFeeder feeder = new ObjectFeeder();
 
@@ -160,17 +159,20 @@ public class ReportConnector {
                     }
 
                     JMXServiceURL lookupRemote(VirtualMachine vm) throws IOException {
-                        boolean isRemote =
-                                Boolean.valueOf(vm.getSystemProperties().getProperty("com.sun.management.jmxremote", "false")).booleanValue();
+                        boolean isRemote = Boolean.parseBoolean(
+                                vm.getSystemProperties().getProperty("com.sun.management.jmxremote", "false"));
                         if (!isRemote) {
                             return null;
                         }
-                        int port = Integer.valueOf(vm.getSystemProperties().getProperty("com.sun.management.jmxremote.port", "1089")).intValue();
-                        return new JMXServiceURL(String.format("service:jmx:rmi:///jndi/rmi://localhost:%d/jmxrmi", port));
+                        int port = Integer.parseInt(
+                                vm.getSystemProperties().getProperty("com.sun.management.jmxremote.port", "1089"));
+                        return new JMXServiceURL(
+                                String.format("service:jmx:rmi:///jndi/rmi://localhost:%d/jmxrmi", port));
                     }
 
                     JMXServiceURL lookupAgent(VirtualMachine vm) throws IOException {
-                        String address = vm.getAgentProperties().getProperty("com.sun.management.jmxremote.localConnectorAddress");
+                        String address = vm.getAgentProperties()
+                                           .getProperty("com.sun.management.jmxremote.localConnectorAddress");
                         if (address != null) {
                             return new JMXServiceURL(address);
                         }
@@ -186,12 +188,11 @@ public class ReportConnector {
                         // might
                         // be in ${java.home}/lib in build environments.
 
-                        String agent = home + File.separator + "jre" + File.separator +
-                                "lib" + File.separator + "management-agent.jar";
+                        String agent = home + File.separator + "jre" + File.separator + "lib" + File.separator
+                                + "management-agent.jar";
                         File f = new File(agent);
                         if (!f.exists()) {
-                            agent = home + File.separator + "lib" + File.separator +
-                                    "management-agent.jar";
+                            agent = home + File.separator + "lib" + File.separator + "management-agent.jar";
                             f = new File(agent);
                             if (!f.exists()) {
                                 throw new IOException("Management agent not found");
@@ -239,52 +240,39 @@ public class ReportConnector {
         void consume(JsonParser stream);
     }
 
-    <A> void connect(Consumer consumer) throws IOException, InterruptedException, ExecutionException {
-        ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactory() {
-
-            @Override
-            public Thread newThread(Runnable target) {
-                Thread thread = new Thread(target, "connect-report");
-                thread.setDaemon(true);
-                return thread;
-            }
+    void connect(Consumer consumer) throws IOException, InterruptedException, ExecutionException {
+        ExecutorService executor = Executors.newCachedThreadPool(target -> {
+            Thread thread = new Thread(target, "connect-report");
+            thread.setDaemon(true);
+            return thread;
         });
         try {
             for (ReportServer server : new Discovery()) {
                 try (ServerSocket callback = new ServerSocket(0)) {
-                    final Future<?> consumed = executor.submit(new Runnable() {
+                    final Future<?> consumed = executor.submit(() -> {
 
-                        @Override
-                        public void run() {
-
-                            String name = Thread.currentThread().getName();
-                            Thread.currentThread().setName("connect-report-consumer-" + server);
-                            try (InputStream source = callback.accept().getInputStream()) {
-                                consumer.consume(Json.createParser(source));
-                            } catch (IOException | JsonParsingException cause) {
-                                throw new AssertionError("Cannot consume connect report", cause);
-                            } finally {
-                                Thread.currentThread().setName(name);
-                            }
-                            LogFactory.getLog(ReportConnector.class).info("Consumed " + server);
+                        String name = Thread.currentThread().getName();
+                        Thread.currentThread().setName("connect-report-consumer-" + server);
+                        try (InputStream source = callback.accept().getInputStream()) {
+                            consumer.consume(Json.createParser(source));
+                        } catch (IOException | JsonParsingException cause) {
+                            throw new AssertionError("Cannot consume connect report", cause);
+                        } finally {
+                            Thread.currentThread().setName(name);
                         }
+                        LogFactory.getLog(ReportConnector.class).info("Consumed " + server);
                     });
-                    final Future<?> served = executor.submit(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            String name = Thread.currentThread().getName();
-                            Thread.currentThread().setName("connect-report-server-" + server);
-                            InetSocketAddress address = (InetSocketAddress) callback.getLocalSocketAddress();
-                            try {
-                                server.run(address.getHostName(), address.getPort());
-                            } catch (IOException cause) {
-                                throw new AssertionError("Cannot run connect report", cause);
-                            } finally {
-                                Thread.currentThread().setName(name);
-                            }
+                    final Future<?> served = executor.submit(() -> {
+                        String name = Thread.currentThread().getName();
+                        Thread.currentThread().setName("connect-report-server-" + server);
+                        InetSocketAddress address = (InetSocketAddress) callback.getLocalSocketAddress();
+                        try {
+                            server.run(address.getHostName(), address.getPort());
+                        } catch (IOException cause) {
+                            throw new AssertionError("Cannot run connect report", cause);
+                        } finally {
+                            Thread.currentThread().setName(name);
                         }
-
                     });
                     ExecutionException consumerError = null;
                     try {
@@ -353,10 +341,7 @@ public class ReportConnector {
 
             Path findTools() {
                 Path home = Paths.get(System.getProperty("java.home"));
-                for (Path path : new Path[] {
-                        Paths.get("../lib/tools.jar"),
-                        Paths.get("../Classes/classes.jar")
-                }) {
+                for (Path path : new Path[] { Paths.get("../lib/tools.jar"), Paths.get("../Classes/classes.jar") }) {
                     Path tools = home.resolve(path);
                     if (Files.exists(tools)) {
                         return tools;

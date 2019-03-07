@@ -46,17 +46,12 @@ public class ThreadDumpPrinter {
     }
 
     public Iterable<ThreadInfo> iterableOf() {
-        return new Iterable<ThreadInfo>() {
-
-            @Override
-            public Iterator<ThreadInfo> iterator() {
-                try {
-                    return iteratorOf();
-                } catch (IOException cause) {
-                    throw new AssertionError("Cannot parse thread dump", cause);
-                }
+        return () -> {
+            try {
+                return iteratorOf();
+            } catch (IOException cause) {
+                throw new AssertionError("Cannot parse thread dump", cause);
             }
-
         };
     }
 
@@ -64,7 +59,7 @@ public class ThreadDumpPrinter {
 
     public Iterator<ThreadInfo> iteratorOf() throws IOException {
 
-        return new Iterator<ThreadInfo>() {
+        return new Iterator<>() {
 
             Iterator<JsonNode> nodes = dump.iterator();
 
@@ -76,8 +71,8 @@ public class ThreadDumpPrinter {
             @Override
             public ThreadInfo next() {
                 try {
-                    return ThreadInfo.from(
-                            (CompositeData) converter.convertToObject(MappedMXBeanType.toOpenType(ThreadInfo.class), nodes.next().toString()));
+                    return ThreadInfo.from((CompositeData) converter.convertToObject(
+                            MappedMXBeanType.toOpenType(ThreadInfo.class), nodes.next().toString()));
                 } catch (OpenDataException cause) {
                     throw new AssertionError("Cannot parse thread info attributes", cause);
                 }
