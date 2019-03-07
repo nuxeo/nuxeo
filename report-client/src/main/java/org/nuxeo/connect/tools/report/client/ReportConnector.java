@@ -16,7 +16,6 @@
  */
 package org.nuxeo.connect.tools.report.client;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -48,8 +47,6 @@ import javax.management.remote.JMXServiceURL;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.connect.tools.report.ReportServer;
 
-import com.sun.tools.attach.AgentInitializationException;
-import com.sun.tools.attach.AgentLoadException;
 import com.sun.tools.attach.AttachNotSupportedException;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
@@ -181,36 +178,7 @@ public class ReportConnector {
                     }
 
                     void startAgent(VirtualMachine vm) throws IOException {
-                        String home = vm.getSystemProperties().getProperty("java.home");
-
-                        // Normally in
-                        // ${java.home}/jre/lib/management-agent.jar but
-                        // might
-                        // be in ${java.home}/lib in build environments.
-
-                        String agent = home + File.separator + "jre" + File.separator + "lib" + File.separator
-                                + "management-agent.jar";
-                        File f = new File(agent);
-                        if (!f.exists()) {
-                            agent = home + File.separator + "lib" + File.separator + "management-agent.jar";
-                            f = new File(agent);
-                            if (!f.exists()) {
-                                throw new IOException("Management agent not found");
-                            }
-                        }
-
-                        agent = f.getCanonicalPath();
-                        try {
-                            vm.loadAgent(agent, "com.sun.management.jmxremote");
-                        } catch (AgentLoadException x) {
-                            IOException ioe = new IOException(x.getMessage());
-                            ioe.initCause(x);
-                            throw ioe;
-                        } catch (AgentInitializationException x) {
-                            IOException ioe = new IOException(x.getMessage());
-                            ioe.initCause(x);
-                            throw ioe;
-                        }
+                        vm.startLocalManagementAgent();
                     }
 
                     MBeanServerConnection connect(JMXServiceURL url) throws IOException {
