@@ -703,11 +703,6 @@
         <artifactId>nuxeo-drive-operations</artifactId>
         <version>${nuxeo.drive.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm</groupId>
-        <artifactId>nuxeo-drive-web-ui</artifactId>
-        <version>${nuxeo.drive.version}</version>
-      </dependency>
 
       <!-- Nuxeo Resources Compat -->
       <dependency>
