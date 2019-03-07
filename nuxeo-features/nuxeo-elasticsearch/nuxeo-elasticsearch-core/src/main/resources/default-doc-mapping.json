@@ -150,6 +150,10 @@
       "type": "keyword",
       "ignore_above": 256
     },
+    "ecm:title": {
+      "type": "keyword",
+      "ignore_above": 256
+    },
     "note:note": {
       "type": "keyword",
       "copy_to": "all_field",
