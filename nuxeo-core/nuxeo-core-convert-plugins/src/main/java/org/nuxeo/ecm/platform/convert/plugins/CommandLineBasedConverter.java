@@ -30,7 +30,6 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableFile;
@@ -141,8 +140,8 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
                 for (String blobParamName : blobParameters.keySet()) {
                     Blob blob = blobParameters.get(blobParamName);
                     // closed in finally block
-                    CloseableFile closeable = blob.getCloseableFile("."
-                            + FilenameUtils.getExtension(blob.getFilename()));
+                    CloseableFile closeable = blob.getCloseableFile(
+                            "." + FilenameUtils.getExtension(blob.getFilename()));
                     params.addNamedParameter(blobParamName, closeable.getFile());
                     toClose.add(closeable);
                 }
@@ -187,8 +186,8 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             return new ConverterCheckResult();
         }
 
-        CommandAvailability ca = Framework.getService(CommandLineExecutorService.class).getCommandAvailability(
-                commandName);
+        CommandAvailability ca = Framework.getService(CommandLineExecutorService.class)
+                                          .getCommandAvailability(commandName);
 
         if (ca.isAvailable()) {
             return new ConverterCheckResult();

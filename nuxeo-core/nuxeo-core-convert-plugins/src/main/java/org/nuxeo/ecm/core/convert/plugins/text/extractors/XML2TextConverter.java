@@ -39,10 +39,10 @@ public class XML2TextConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder holder, Map<String, Serializable> parameters) throws ConversionException {
-        return new SimpleBlobHolder(new StringBlob(convert(holder.getBlob(), parameters)));
+        return new SimpleBlobHolder(new StringBlob(convert(holder.getBlob())));
     }
 
-    String convert(Blob blob, Map<String, Serializable> parameters) {
+    String convert(Blob blob) {
         if (blob.getLength() == 0L) {
             return "";
         }

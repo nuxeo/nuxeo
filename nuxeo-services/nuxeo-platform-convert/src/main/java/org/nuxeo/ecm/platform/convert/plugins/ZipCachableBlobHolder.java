@@ -55,9 +55,6 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
 
     protected String key;
 
-    public ZipCachableBlobHolder() {
-    }
-
     public ZipCachableBlobHolder(Blob zipBlob) {
         this.zipBlob = zipBlob;
     }
@@ -94,20 +91,18 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
     public void load(String path) throws IOException {
         blobs = new ArrayList<>();
         File base = new File(path);
-        try {
-            if (base.isDirectory()) {
-                addDirectoryToList(base, "");
-            } else {
-                File file = new File(path);
-                String mimeType = getMimeType(file);
-                Blob mainBlob = Blobs.createBlob(file, mimeType, null, file.getName());
-                blobs.add(mainBlob);
-            }
 
-            orderIndexPageFirst(blobs);
-        } catch (ConversionException e) {
-            throw new RuntimeException("Blob loading from cache failed", e.getCause());
+        if (base.isDirectory()) {
+            addDirectoryToList(base, "");
+        } else {
+            File file = new File(path);
+            String mimeType = getMimeType(file);
+            Blob mainBlob = Blobs.createBlob(file, mimeType, null, file.getName());
+            blobs.add(mainBlob);
         }
+
+        orderIndexPageFirst(blobs);
+
     }
 
     @Override
