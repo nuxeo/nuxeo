@@ -47,11 +47,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ChainedConverter implements Converter {
 
-    protected boolean subConvertersBased = false;
+    protected boolean subConvertersBased;
 
-    protected List<String> steps = new ArrayList<String>();
+    protected List<String> steps = new ArrayList<>();
 
-    protected List<String> subConverters = new ArrayList<String>();
+    protected List<String> subConverters = new ArrayList<>();
 
     public ChainedConverter() {
         subConvertersBased = false;

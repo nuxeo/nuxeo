@@ -40,7 +40,6 @@ import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;

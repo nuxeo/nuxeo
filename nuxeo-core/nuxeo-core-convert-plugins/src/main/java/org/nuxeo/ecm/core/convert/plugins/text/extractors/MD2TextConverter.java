@@ -51,7 +51,8 @@ public class MD2TextConverter implements Converter {
         try {
             Blob blob = blobHolder.getBlob();
             if (blob == null) {
-                LOGGER.warn("Trying to convert a blobHolder that has a null blob. Nothing to do, returning the blobHolder.");
+                LOGGER.warn(
+                        "Trying to convert a blobHolder that has a null blob. Nothing to do, returning the blobHolder.");
                 return blobHolder;
             }
             String text = blob.getString();

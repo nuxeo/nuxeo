@@ -84,7 +84,7 @@ public class Image2PDFConverter extends CommandLineBasedConverter {
 
         cmdStringParams.put("outDirPath", outDir.getAbsolutePath());
         cmdStringParams.put("outputFilePath", outDir.getAbsolutePath() + System.getProperty("file.separator")
-            + FilenameUtils.getBaseName(blobHolder.getBlob().getFilename()) + ".pdf");
+                + FilenameUtils.getBaseName(blobHolder.getBlob().getFilename()) + ".pdf");
         return cmdStringParams;
     }
 

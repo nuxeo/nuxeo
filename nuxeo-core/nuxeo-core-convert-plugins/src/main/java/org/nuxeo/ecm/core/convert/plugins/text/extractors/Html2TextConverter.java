@@ -26,9 +26,6 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.util.Map;
 
-import net.htmlparser.jericho.Renderer;
-import net.htmlparser.jericho.Source;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -39,6 +36,9 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+
+import net.htmlparser.jericho.Renderer;
+import net.htmlparser.jericho.Source;
 
 /**
  * Extract the text content of HTML documents while trying to respect the paragraph structure.
