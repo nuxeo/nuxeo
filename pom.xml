@@ -1116,11 +1116,6 @@
         <artifactId>nuxeo-wopi</artifactId>
         <version>${nuxeo.wopi.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm</groupId>
-        <artifactId>nuxeo-wopi-web-ui</artifactId>
-        <version>${nuxeo.wopi.version}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
