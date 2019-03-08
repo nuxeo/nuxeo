@@ -17,7 +17,6 @@
     <module>nuxeo-platform-spreadsheet-core</module>
     <module>nuxeo-platform-spreadsheet-web</module>
     <module>nuxeo-platform-spreadsheet-jsf</module>
-    <module>nuxeo-platform-spreadsheet-web-ui</module>
   </modules>
 
   <repositories>
