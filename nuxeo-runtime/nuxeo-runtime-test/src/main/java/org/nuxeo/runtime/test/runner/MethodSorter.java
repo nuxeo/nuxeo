@@ -74,7 +74,7 @@ public class MethodSorter {
         public Map<String, Integer> nameToLine;
 
         public CV(Map<String, Integer> nameToLine) {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM7);
             this.nameToLine = nameToLine;
         }
 
@@ -94,7 +94,7 @@ public class MethodSorter {
         public final String name;
 
         public MV(Map<String, Integer> nameToLine, String name) {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM7);
             this.nameToLine = nameToLine;
             this.name = name;
         }

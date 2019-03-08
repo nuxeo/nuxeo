@@ -20,7 +20,6 @@ package org.nuxeo.automation.scripting.internals;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +44,6 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.DocumentType;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import jdk.nashorn.internal.objects.NativeArray;
 
 /**
  * Wrap a {@link DocumentModel} to expose in a pretty way more information to automation scripts.
@@ -90,10 +88,6 @@ public class DocumentScriptingWrapper extends HashMap<String, Object> {
         Object result = object;
         if (result instanceof ScriptObjectMirror) {
             result = ScriptObjectMirrors.unwrap((ScriptObjectMirror) result);
-        }
-        // TODO: not sure if this code is used, but we shouldn't use NativeArray as it's an internal class of nashorn
-        if (result instanceof NativeArray) {
-            result = Arrays.asList(((NativeArray) result).asObjectArray());
         }
         // Second unwrap object
         if (result instanceof DocumentScriptingWrapper) {
