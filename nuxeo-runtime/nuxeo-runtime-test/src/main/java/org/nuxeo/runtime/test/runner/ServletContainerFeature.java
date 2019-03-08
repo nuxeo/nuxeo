@@ -19,26 +19,14 @@
 package org.nuxeo.runtime.test.runner;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.ServerSocket;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.server.ServerComponent;
 
-import sun.net.www.http.HttpClient;
-
 /**
  * Runs an embedded servlet container.
- * <p>
- * Note that at initialization the feature disables the {@code retryPostProp} property of
- * {@link sun.net.www.http.HttpClient}, the underlying HTTP client used by {@link com.sun.jersey.api.client.Client}.
- * <p>
- * This is to prevent the JDK's default behavior kept for backward compatibility: an unsuccessful HTTP POST request is
- * automatically resent to the server, unsuccessful in this case meaning the server did not send a valid HTTP response
- * or an {@code IOException} occurred. Yet in the tests using the Jersey client to make calls to Nuxeo we don't want
- * this as it can hide errors occurring in the HTTP communication that should prevent an appropriate response from being
- * sent by the server.
  */
 @Deploy("org.nuxeo.runtime.server")
 @Features(RuntimeFeature.class)
@@ -53,8 +41,6 @@ public class ServletContainerFeature implements RunnerFeature {
     @SuppressWarnings("deprecation")
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        disableSunHttpClientRetryPostProp();
-
         ServletContainer conf = runner.getConfig(ServletContainer.class);
         int port = conf == null ? 0 : conf.port();
         if (port <= 0) {
@@ -83,21 +69,6 @@ public class ServletContainerFeature implements RunnerFeature {
      */
     public int getPort() {
         return port;
-    }
-
-    /**
-     * Prevents the JDK's default behavior of resending an unsuccessful HTTP POST request automatically to the server by
-     * disabling the the {@code retryPostProp} property of {@link sun.net.www.http.HttpClient}.
-     * <p>
-     * This can also be achieved by setting the {@code sun.net.http.retryPost} system property to {@code false}.
-     *
-     * @since 9.3
-     */
-    public static void disableSunHttpClientRetryPostProp()
-            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        Field field = HttpClient.class.getDeclaredField("retryPostProp");
-        field.setAccessible(true);
-        field.setBoolean(null, false);
     }
 
 }

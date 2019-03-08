@@ -21,11 +21,11 @@ package org.nuxeo.runtime.avro;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 
 import org.apache.avro.Schema;
 
@@ -40,19 +40,6 @@ import org.apache.avro.Schema;
  */
 public class AvroSchemaFactoryContext {
 
-    protected static final AvroSchemaFactory<Object> NULL = new AvroSchemaFactory<Object>(null) {
-
-        @Override
-        public Schema createSchema(Object input) {
-            return null;
-        }
-
-        @Override
-        public String getName(Object input) {
-            return null;
-        }
-    };
-
     protected final Map<Class<?>, AvroSchemaFactory<?>> factories = new HashMap<>();
 
     protected final Map<String, Schema> createdSchemas = new HashMap<>();
@@ -66,7 +53,14 @@ public class AvroSchemaFactoryContext {
 
     public <T> Schema createSchema(T input) {
         String qualifiedName = getFactory(input).getQualifiedName(input);
-        return createdSchemas.computeIfAbsent(qualifiedName, k -> getFactory(input).createSchema(input));
+        // don't use computeIfAbsent here as getFactory(T).createSchema(T) will call back this method and modify the map
+        // which will throw a ConcurrentModificationException since java 11
+        Schema schema = createdSchemas.get(qualifiedName);
+        if (schema == null) {
+            schema = getFactory(input).createSchema(input);
+            createdSchemas.put(qualifiedName, schema);
+        }
+        return schema;
     }
 
     public AvroService getService() {
@@ -82,8 +76,7 @@ public class AvroSchemaFactoryContext {
             return Collections.emptyList();
         }
         List<U> sortedChildren = new ArrayList<>(children);
-        sortedChildren.sort((o1, o2) -> Objects.compare(factory.getQualifiedName(o1), factory.getQualifiedName(o2),
-                String::compareTo));
+        sortedChildren.sort(Comparator.comparing(factory::getQualifiedName));
         return sortedChildren;
     }
 
@@ -104,7 +97,7 @@ public class AvroSchemaFactoryContext {
                 return (AvroSchemaFactory<T>) entry.getValue();
             }
         }
-        return (AvroSchemaFactory<T>) NULL;
+        return null;
     }
 
     protected void register(Class<?> type, AvroSchemaFactory<?> factory) {

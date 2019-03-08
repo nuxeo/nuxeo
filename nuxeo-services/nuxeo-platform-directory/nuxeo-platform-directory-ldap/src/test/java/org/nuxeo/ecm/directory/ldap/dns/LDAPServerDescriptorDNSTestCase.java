@@ -19,8 +19,6 @@
 package org.nuxeo.ecm.directory.ldap.dns;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +34,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-import com.sun.jndi.ldap.LdapURL;
 
 /**
  * Test case to ensure LDAPServerDescriptor correctly handles entries returned from DNSService implementation
@@ -156,19 +153,5 @@ public class LDAPServerDescriptorDNSTestCase {
          * Assert that when run using empty hostname in URI we get the same result as passing in the list of servers
          */
         assertEquals(testA, d.getLdapUrls());
-    }
-
-    /**
-     * Ensure LdapURL correctly determines SSL support of server URL
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testLdapUrlSslSupport() throws Exception {
-        LdapURL url = new LdapURL("ldap:///dc=example,dc=com");
-        assertFalse(url.useSsl());
-
-        url = new LdapURL("ldaps:///dc=example,dc=com");
-        assertTrue(url.useSsl());
     }
 }
