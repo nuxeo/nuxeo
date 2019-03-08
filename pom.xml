@@ -4534,12 +4534,6 @@
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-java-sdk-core</artifactId>
         <version>${aws.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.amazonaws</groupId>
