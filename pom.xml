@@ -13,7 +13,6 @@
 
   <modules>
     <module>nuxeo-wopi</module>
-    <module>nuxeo-wopi-web-ui</module>
   </modules>
 
   <repositories>
