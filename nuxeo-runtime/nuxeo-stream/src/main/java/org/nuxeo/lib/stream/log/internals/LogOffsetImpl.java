@@ -87,7 +87,7 @@ public class LogOffsetImpl implements LogOffset {
             throw new IllegalArgumentException("Cannot compare offsets with different classes");
         }
         LogOffsetImpl offsetImpl = (LogOffsetImpl) o;
-        if (partition.equals(offsetImpl.partition)) {
+        if (!partition.equals(offsetImpl.partition)) {
             throw new IllegalArgumentException("Cannot compare offsets from different partitions");
         }
         return Long.compare(offset, offsetImpl.offset);
