@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -103,10 +104,20 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected String threadName;
 
-    @SuppressWarnings("unchecked")
+    protected Function<Record, String> identityExtractor;
+
     public ComputationRunner(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
             List<LogPartition> defaultAssignment, LogManager logManager, Codec<Record> inputCodec,
             Codec<Record> outputCodec, ComputationPolicy policy) {
+        this(supplier, metadata, defaultAssignment, logManager, inputCodec, outputCodec, policy, null);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public ComputationRunner(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
+            List<LogPartition> defaultAssignment, LogManager logManager, Codec<Record> inputCodec,
+            Codec<Record> outputCodec, ComputationPolicy policy, Function<Record, String> identityExtractor) {
         this.supplier = supplier;
         this.metadata = metadata;
         this.logManager = logManager;
@@ -114,6 +125,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         this.inputCodec = inputCodec;
         this.outputCodec = outputCodec;
         this.policy = policy;
+        this.identityExtractor = identityExtractor == null ? (record) -> record.getKey() : identityExtractor;
         if (metadata.inputStreams().isEmpty()) {
             this.tailer = null;
             assignmentLatch.countDown();
@@ -295,7 +307,9 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             lowWatermark.mark(record.getWatermark());
             String from = metadata.reverseMap(logRecord.offset().partition().name());
             context.setLastOffset(logRecord.offset());
-            processRecordWithRetry(from, record);
+            if (!policy.getFilteringPolicy().shouldSkip(identityExtractor.apply(record), context)) {
+                processRecordWithRetry(from, record);
+            }
             checkRecordFlags(record);
             checkSourceLowWatermark();
             setThreadName("record");

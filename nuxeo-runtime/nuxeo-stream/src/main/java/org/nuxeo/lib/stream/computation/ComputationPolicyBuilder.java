@@ -35,6 +35,8 @@ public class ComputationPolicyBuilder {
 
     protected RetryPolicy retryPolicy = ComputationPolicy.NO_RETRY;
 
+    protected FilteringPolicy filteringPolicy = ComputationPolicy.NO_FILTER;
+
     protected boolean skipFailure = false;
 
     protected int batchCapacity = DEFAULT_BATCH_CAPACITY;
@@ -64,6 +66,15 @@ public class ComputationPolicyBuilder {
      */
     public ComputationPolicyBuilder retryPolicy(RetryPolicy policy) {
         retryPolicy = policy;
+        return this;
+    }
+
+    /**
+     * Defines records that should be filtered out.
+     * @since 11.1
+     */
+    public ComputationPolicyBuilder filteringPolicy(FilteringPolicy policy) {
+        filteringPolicy = policy;
         return this;
     }
 

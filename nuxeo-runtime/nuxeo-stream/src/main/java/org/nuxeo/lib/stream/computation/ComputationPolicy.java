@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,12 @@ public class ComputationPolicy {
 
     public static final RetryPolicy NO_RETRY = new RetryPolicy().withMaxRetries(0);
 
+    public static final FilteringPolicy NO_FILTER = new FilteringPolicy() {
+    };
+
     /* No retry, abort on failure, no batching */
     public static final ComputationPolicy NONE = new ComputationPolicyBuilder().retryPolicy(NO_RETRY)
+                                                                               .filteringPolicy(NO_FILTER)
                                                                                .continueOnFailure(false)
                                                                                .build();
 
@@ -44,11 +48,14 @@ public class ComputationPolicy {
 
     protected final boolean skipFailure;
 
+    protected final FilteringPolicy filteringPolicy;
+
     public ComputationPolicy(ComputationPolicyBuilder builder) {
         batchCapacity = builder.batchCapacity;
         batchThreshold = builder.batchThreshold;
         skipFailure = builder.skipFailure;
         retryPolicy = builder.retryPolicy;
+        filteringPolicy = builder.filteringPolicy;
     }
 
     public RetryPolicy getRetryPolicy() {
@@ -65,6 +72,13 @@ public class ComputationPolicy {
 
     public boolean continueOnFailure() {
         return skipFailure;
+    }
+
+    /**
+     * @since 11.1
+     */
+    public FilteringPolicy getFilteringPolicy() {
+        return filteringPolicy;
     }
 
     /**
