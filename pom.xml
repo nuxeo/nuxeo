@@ -6900,6 +6900,12 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>gwt</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+    </profile>
   </profiles>
 
   <developers>
