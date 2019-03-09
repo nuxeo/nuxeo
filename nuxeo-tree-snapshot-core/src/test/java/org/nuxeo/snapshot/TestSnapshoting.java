@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -48,6 +49,9 @@ public class TestSnapshoting extends AbstractTestSnapshot {
 
     @Inject
     protected EventService eventService;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
 
     protected String getContentHash() throws Exception {
         DocumentModelList alldocs = session.query("select * from Document where ecm:isVersion = 0 order by ecm:path");
@@ -170,6 +174,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         session.save();
         // now delete a folder
         session.removeDocument(folder13.getRef());
+        transactionalFeature.nextTransaction();
 
         if (verbose) {
             System.out.println("## new Tree after cutting a branch");

@@ -40,6 +40,7 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -66,6 +67,9 @@ public class TestTreePublication {
 
     @Inject
     protected PublisherService publisherService;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
 
     protected DocumentModel root;
 
@@ -219,6 +223,7 @@ public class TestTreePublication {
 
         // republish
         tree.publish(root, targetNode);
+        transactionalFeature.nextTransaction();
         session.save();
         debug.append("published@time=")
              .append(System.currentTimeMillis())
