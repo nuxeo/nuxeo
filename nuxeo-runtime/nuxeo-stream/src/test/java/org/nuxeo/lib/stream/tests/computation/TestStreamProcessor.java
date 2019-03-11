@@ -40,11 +40,13 @@ import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.codec.SerializableCodec;
 import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.ComputationPolicyBuilder;
+import org.nuxeo.lib.stream.computation.FilteringPolicy;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.Watermark;
+import org.nuxeo.lib.stream.computation.internals.IdempotentFilteringPolicy;
 import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
@@ -52,6 +54,7 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.internals.InMemoryLogOffsetStorage;
 
 import net.jodah.failsafe.RetryPolicy;
 
@@ -65,6 +68,8 @@ public abstract class TestStreamProcessor {
     protected static final String OUTPUT_STREAM = "output";
 
     public Codec<Record> codec = new AvroMessageCodec<>(Record.class);
+
+    public InMemoryLogOffsetStorage storage = new InMemoryLogOffsetStorage();
 
     public abstract LogManager getLogManager() throws Exception;
 
@@ -608,6 +613,43 @@ public abstract class TestStreamProcessor {
             assertEquals(lag.toString(), 0, lag.lag());
         }
 
+    }
+
+    @Test
+    public void testIdempotentFilteringPolicy() throws Exception {
+        testFilteringPolicy(new IdempotentFilteringPolicy());
+    }
+
+    protected void testFilteringPolicy(FilteringPolicy filteringPolicy) throws Exception {
+        // we don't want the timer to reset the count
+        ComputationRecordCounter counter = new ComputationRecordCounter("count", Duration.ofDays(1));
+        // topology with single computation that counts calls to processRecord()
+        Topology topology = Topology.builder()
+                                    .addComputation(() -> counter, Arrays.asList("i1:input", "o1:output"))
+                                    .build();
+        // our filtering policy under test
+        ComputationPolicy policy = new ComputationPolicyBuilder().filteringPolicy(filteringPolicy).build();
+
+        try (LogManager manager = getLogManager()) {
+            // Run the processor
+            StreamProcessor processor = getStreamProcessor(manager);
+            Settings settings = new Settings(1, 1, policy);
+            processor.init(topology, settings).start();
+            processor.waitForAssignments(Duration.ofSeconds(10));
+            // Add an input records
+            LogAppender<Record> appender = manager.getAppender("input");
+            appender.append("stream", Record.of("idem1", null));
+            appender.append("stream", Record.of("idem1", null));
+            appender.append("stream", Record.of("idem2", null));
+            appender.append("stream", Record.of("idem1", null));
+            appender.append("stream", Record.of("idem2", null));
+            appender.append("stream", Record.of("idem2", null));
+            appender.append("stream", Record.of("idem1", null));
+            // wait
+            assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
+            // assert only 2 records has been processed by the computation
+            assertEquals(2, counter.count);
+        }
     }
 
     // ---------------------------------
