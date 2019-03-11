@@ -73,7 +73,7 @@ public class XL2TextConverter implements Converter {
             }
             return new SimpleCachableBlobHolder(Blobs.createBlob(sb.toString()));
         } catch (IOException e) {
-            throw new ConversionException("Error during XL2Text conversion", e);
+            throw new ConversionException("Error during XL2Text conversion", blobHolder, e);
         } finally {
             if (stream != null) {
                 try {

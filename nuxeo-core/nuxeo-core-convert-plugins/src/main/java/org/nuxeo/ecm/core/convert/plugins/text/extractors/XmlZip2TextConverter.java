@@ -66,7 +66,7 @@ public abstract class XmlZip2TextConverter implements Converter {
             }
             return new SimpleCachableBlobHolder(Blobs.createBlob(sb.toString()));
         } catch (IOException | ParserConfigurationException | SAXException e) {
-            throw new ConversionException("Error during OpenXml2Text conversion", e);
+            throw new ConversionException("Error during OpenXml2Text conversion", blobHolder, e);
         }
     }
 

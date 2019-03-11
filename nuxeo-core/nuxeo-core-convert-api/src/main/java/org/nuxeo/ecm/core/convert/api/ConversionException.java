@@ -19,7 +19,13 @@
  */
 package org.nuxeo.ecm.core.convert.api;
 
+import java.util.List;
+
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 
 /**
  * Base exception raised by the {@link ConversionService}.
@@ -46,4 +52,62 @@ public class ConversionException extends NuxeoException {
         super(cause);
     }
 
+    /**
+     * @since 11.1
+     */
+    public ConversionException(String message, BlobHolder blobHolder) {
+        super(message);
+        addInfos(blobHolder);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public ConversionException(String message, BlobHolder blobHolder, Throwable cause) {
+        super(message, cause);
+        addInfos(blobHolder);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public ConversionException(BlobHolder blobHolder, Throwable cause) {
+        super(cause);
+        addInfos(blobHolder);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public ConversionException(String message, Blob blob, Throwable cause) {
+        super(message, cause);
+        addInfo(blob);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public ConversionException(String message, Blob blob) {
+        super(message);
+        addInfo(blob);
+    }
+
+    protected void addInfos(BlobHolder blobHolder) {
+        if (blobHolder instanceof DocumentBlobHolder) {
+            DocumentBlobHolder documentBlobHolder = (DocumentBlobHolder) blobHolder;
+            addInfo(String.format("Document: %s", documentBlobHolder.getDocument()));
+        }
+
+        List<Blob> blobs = blobHolder.getBlobs();
+        if (blobs != null) {
+            blobs.forEach(this::addInfo);
+        }
+    }
+
+    protected void addInfo(Blob blob) {
+        if (blob instanceof ManagedBlob) {
+            ManagedBlob managedBlob = (ManagedBlob) blob;
+            addInfo(String.format("Blob Key/Provider: %s/%s", managedBlob.getKey(), managedBlob.getProviderId()));
+        }
+    }
 }

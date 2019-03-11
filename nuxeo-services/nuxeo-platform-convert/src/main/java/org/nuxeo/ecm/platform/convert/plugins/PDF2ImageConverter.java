@@ -84,7 +84,7 @@ public class PDF2ImageConverter extends CommandLineBasedConverter {
         File outDir = new File(tmpPath.toString());
         boolean dirCreated = outDir.mkdir();
         if (!dirCreated) {
-            throw new ConversionException("Unable to create tmp dir for transformer output");
+            throw new ConversionException("Unable to create tmp dir for transformer output", blobHolder);
         }
 
         cmdStringParams.put("outDirPath", outDir.getAbsolutePath());

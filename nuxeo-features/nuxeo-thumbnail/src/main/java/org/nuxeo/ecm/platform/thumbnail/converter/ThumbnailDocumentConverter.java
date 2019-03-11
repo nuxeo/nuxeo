@@ -85,7 +85,7 @@ public class ThumbnailDocumentConverter implements Converter {
             }
             return new SimpleCachableBlobHolder(targetBlob);
         } catch (CommandNotAvailable | IOException | NuxeoException | CommandException e) {
-            throw new ConversionException("Thumbnail conversion failed", e);
+            throw new ConversionException("Thumbnail conversion failed", blobHolder, e);
         }
     }
 

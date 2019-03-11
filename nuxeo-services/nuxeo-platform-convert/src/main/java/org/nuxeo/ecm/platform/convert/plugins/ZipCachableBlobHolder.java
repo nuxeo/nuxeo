@@ -55,6 +55,9 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
 
     protected String key;
 
+    public ZipCachableBlobHolder() {
+    }
+
     public ZipCachableBlobHolder(Blob zipBlob) {
         this.zipBlob = zipBlob;
     }
@@ -102,7 +105,6 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
         }
 
         orderIndexPageFirst(blobs);
-
     }
 
     @Override

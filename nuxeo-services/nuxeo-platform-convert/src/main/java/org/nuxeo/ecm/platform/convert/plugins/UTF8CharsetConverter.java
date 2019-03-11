@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +58,7 @@ public class UTF8CharsetConverter implements Converter {
         try {
             transcodedBlob = convert(originalBlob);
         } catch (IOException | ConversionException e) {
-            throw new ConversionException("Cannot transcode " + path + " to UTF-8", e);
+            throw new ConversionException("Cannot transcode " + path + " to UTF-8", blobHolder, e);
         }
         return new SimpleBlobHolder(transcodedBlob);
     }
@@ -72,9 +73,7 @@ public class UTF8CharsetConverter implements Converter {
             return blob;
         }
         if (StringUtils.isEmpty(encoding)) {
-            try (InputStream in = blob.getStream()) {
-                encoding = detectEncoding(in);
-            }
+            encoding = detectEncoding(blob);
         }
         Blob newBlob;
         if (UTF_8.equals(encoding)) {
@@ -95,18 +94,35 @@ public class UTF8CharsetConverter implements Converter {
         return newBlob;
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link #detectEncoding(Blob)} instead.
+     */
+    @Deprecated
     protected String detectEncoding(InputStream in) throws IOException, ConversionException {
-        if (!in.markSupported()) {
-            // detector.setText requires mark
-            in = new BufferedInputStream(in);
-        }
-        CharsetDetector detector = new CharsetDetector();
-        detector.setText(in);
-        CharsetMatch charsetMatch = detector.detect();
-        if (charsetMatch == null) {
-            throw new ConversionException("Cannot detect source charset.");
-        }
-        return charsetMatch.getName();
+        return getEncoding(in).orElseThrow(() -> new ConversionException("Cannot detect source charset."));
     }
 
+    protected String detectEncoding(Blob blob) throws IOException, ConversionException {
+        try (InputStream stream = blob.getStream()) {
+            return getEncoding(stream).orElseThrow(
+                    () -> new ConversionException("Cannot detect source charset.", blob));
+        }
+    }
+
+    /**
+     * The private accessor is used to avoid the case when the caller don't close the stream. This method can be merged
+     * with {@link #detectEncoding(Blob)} once the {@link #detectEncoding(InputStream)} is removed.
+     */
+    private Optional<String> getEncoding(InputStream in) throws IOException {
+        InputStream inputStream = in;
+        if (!inputStream.markSupported()) {
+            // detector.setText requires mark
+            inputStream = new BufferedInputStream(inputStream);
+        }
+        CharsetDetector detector = new CharsetDetector();
+        detector.setText(inputStream);
+        CharsetMatch charsetMatch = detector.detect();
+
+        return Optional.ofNullable(charsetMatch).map(CharsetMatch::getName);
+    }
 }

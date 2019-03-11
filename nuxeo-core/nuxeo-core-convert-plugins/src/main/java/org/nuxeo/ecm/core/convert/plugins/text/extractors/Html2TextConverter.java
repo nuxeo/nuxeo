@@ -78,7 +78,7 @@ public class Html2TextConverter implements Converter {
             text = text.trim();
             return new SimpleCachableBlobHolder(Blobs.createBlob(text));
         } catch (IOException e) {
-            throw new ConversionException("Error during Html2Text conversion", e);
+            throw new ConversionException("Error during Html2Text conversion", blobHolder, e);
         } finally {
             if (stream != null) {
                 try {

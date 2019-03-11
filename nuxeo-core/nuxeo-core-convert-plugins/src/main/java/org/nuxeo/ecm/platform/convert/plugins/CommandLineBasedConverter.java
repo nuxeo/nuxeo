@@ -83,7 +83,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         String commandName = getCommandName(blobHolder, parameters);
         if (commandName == null) {
-            throw new ConversionException("Unable to determine target CommandLine name");
+            throw new ConversionException("Unable to determine target CommandLine name", blobHolder);
         }
 
         Map<String, Blob> blobParams = getCmdBlobParameters(blobHolder, parameters);

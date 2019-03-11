@@ -21,12 +21,21 @@
 
 package org.nuxeo.ecm.core.convert.api;
 
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+
 public class ConverterNotAvailable extends ConversionException {
 
     private static final long serialVersionUID = 1L;
 
     public ConverterNotAvailable(String message) {
         super("Converter " + message + " is not available");
+    }
+
+    /**
+     * @since 11.1
+     */
+    public ConverterNotAvailable(String message, BlobHolder blobHolder) {
+        super("Converter " + message + " is not available", blobHolder);
     }
 
 }

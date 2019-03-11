@@ -56,13 +56,13 @@ public class IWork2PDFConverter implements Converter {
             String mimeType = blob.getMimeType();
 
             if (mimeType == null || !IWORK_MIME_TYPES.contains(mimeType)) {
-                throw new ConversionException("not an iWork file");
+                throw new ConversionException("not an iWork file", blobHolder);
             }
 
             // check if the stream represents a valid zip
             try (InputStream blobStream = blob.getStream()) {
                 if (!ZipUtils.isValid(blobStream)) {
-                    throw new ConversionException("not a valid iWork file");
+                    throw new ConversionException("not a valid iWork file", blobHolder);
                 }
             }
 
@@ -79,11 +79,11 @@ public class IWork2PDFConverter implements Converter {
                     return new SimpleCachableBlobHolder(previewBlob);
                 } else {
                     // Pdf file does not exist, conversion cannot be done.
-                    throw new ConversionException("iWork file does not contain a pdf preview.");
+                    throw new ConversionException("iWork file does not contain a pdf preview.", blobHolder);
                 }
             }
         } catch (IOException e) {
-            throw new ConversionException("Could not find the pdf preview in the iWork file", e);
+            throw new ConversionException("Could not find the pdf preview in the iWork file", blobHolder, e);
         }
     }
 

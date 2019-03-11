@@ -81,7 +81,7 @@ public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements Con
             }
             return new SimpleCachableBlobHolder(Blobs.createBlob(sb.toString()));
         } catch (IOException | OpenXML4JException e) {
-            throw new ConversionException("Error during XLX2Text conversion", e);
+            throw new ConversionException("Error during XLX2Text conversion", blobHolder, e);
         }
     }
 
