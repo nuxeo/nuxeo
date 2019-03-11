@@ -732,11 +732,6 @@
         <artifactId>nuxeo-easyshare-jsf</artifactId>
         <version>${nuxeo.easyshare.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm</groupId>
-        <artifactId>nuxeo-easyshare-web-ui</artifactId>
-        <version>${nuxeo.easyshare.version}</version>
-      </dependency>
 
       <!-- DEPRECATED FS Exporter -->
       <dependency>
