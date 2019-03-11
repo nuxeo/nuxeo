@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
+import org.nuxeo.lib.stream.computation.manager.StreamManager;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 
@@ -48,12 +49,13 @@ public class TestLogStreamProcessorChronicle extends TestStreamProcessor {
     @Override
     public LogManager getLogManager() throws Exception {
         this.basePath = folder.newFolder();
-        return new ChronicleLogManager(basePath.toPath());
+        storage.clear();
+        return new StreamManager(new ChronicleLogManager(basePath.toPath()), storage, null);
     }
 
     @Override
     public LogManager getSameLogManager() {
-        return new ChronicleLogManager(basePath.toPath());
+        return new StreamManager(new ChronicleLogManager(basePath.toPath()), storage, null);
     }
 
     @Override

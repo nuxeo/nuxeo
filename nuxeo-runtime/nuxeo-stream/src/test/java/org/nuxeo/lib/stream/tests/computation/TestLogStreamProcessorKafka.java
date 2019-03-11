@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
+import org.nuxeo.lib.stream.computation.manager.StreamManager;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.lib.stream.tests.TestKafkaUtils;
@@ -53,12 +54,15 @@ public class TestLogStreamProcessorKafka extends TestStreamProcessor {
     @Override
     public LogManager getLogManager() {
         this.prefix = getTopicPrefix();
-        return new KafkaLogManager(prefix, TestLogKafka.getProducerProps(), getConsumerProps());
+        storage.clear();
+        return new StreamManager(new KafkaLogManager(prefix, TestLogKafka.getProducerProps(), getConsumerProps()),
+                storage, null);
     }
 
     @Override
     public LogManager getSameLogManager() {
-        return new KafkaLogManager(prefix, TestLogKafka.getProducerProps(), getConsumerProps());
+        return new StreamManager(new KafkaLogManager(prefix, TestLogKafka.getProducerProps(), getConsumerProps()),
+                storage, null);
     }
 
     protected Properties getConsumerProps() {

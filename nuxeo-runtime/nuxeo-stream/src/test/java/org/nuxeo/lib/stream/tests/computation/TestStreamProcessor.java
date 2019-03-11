@@ -46,6 +46,7 @@ import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.Watermark;
+import org.nuxeo.lib.stream.computation.internals.CoalescingFilteringPolicy;
 import org.nuxeo.lib.stream.computation.internals.IdempotentFilteringPolicy;
 import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogAppender;
@@ -620,6 +621,11 @@ public abstract class TestStreamProcessor {
         testFilteringPolicy(new IdempotentFilteringPolicy());
     }
 
+    @Test
+    public void testCoalescingFilteringPolicy() throws Exception {
+        testFilteringPolicy(new CoalescingFilteringPolicy(storage));
+    }
+
     protected void testFilteringPolicy(FilteringPolicy filteringPolicy) throws Exception {
         // we don't want the timer to reset the count
         ComputationRecordCounter counter = new ComputationRecordCounter("count", Duration.ofDays(1));
@@ -638,6 +644,10 @@ public abstract class TestStreamProcessor {
             processor.waitForAssignments(Duration.ofSeconds(10));
             // Add an input records
             LogAppender<Record> appender = manager.getAppender("input");
+            // let chronicle warm up as the first offset is falsely set to 0
+            appender.append("warmup", Record.of("warmup", null));
+            counter.count = 0;
+            // then send actual messages
             appender.append("stream", Record.of("idem1", null));
             appender.append("stream", Record.of("idem1", null));
             appender.append("stream", Record.of("idem2", null));
