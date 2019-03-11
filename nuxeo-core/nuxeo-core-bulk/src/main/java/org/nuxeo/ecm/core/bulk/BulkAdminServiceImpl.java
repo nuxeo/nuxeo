@@ -145,7 +145,7 @@ public class BulkAdminServiceImpl implements BulkAdminService {
                                                            TimeUnit.MILLISECONDS);
         ComputationPolicy statusPolicy = new ComputationPolicyBuilder().continueOnFailure(
                 confService.isBooleanTrue(BULK_STATUS_CONTINUE_ON_FAILURE_PROPERTY)).retryPolicy(retryPolicy).build();
-        settings.setPolicy(SCROLLER_NAME, statusPolicy);
+        settings.setPolicy(STATUS_NAME, statusPolicy);
         int scrollSize = confService.getInteger(BULK_SCROLL_SIZE_PROPERTY, DEFAULT_SCROLL_SIZE);
         int scrollKeepAlive = confService.getInteger(BULK_SCROLL_KEEP_ALIVE_PROPERTY, DEFAULT_SCROLL_KEEP_ALIVE);
         boolean scrollProduceImmediate = confService.isBooleanTrue(BULK_SCROLL_PRODUCE_IMMEDIATE_PROPERTY);
