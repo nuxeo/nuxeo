@@ -15,7 +15,6 @@
   <modules>
     <module>nuxeo-easyshare-core</module>
     <module>nuxeo-easyshare-jsf</module>
-    <module>nuxeo-easyshare-web-ui</module>
   </modules>
 
   <properties>
@@ -32,11 +31,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-easyshare-jsf</artifactId>
-        <version>${nuxeo.easyshare.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm</groupId>
-        <artifactId>nuxeo-easyshare-web-ui</artifactId>
         <version>${nuxeo.easyshare.version}</version>
       </dependency>
     </dependencies>
