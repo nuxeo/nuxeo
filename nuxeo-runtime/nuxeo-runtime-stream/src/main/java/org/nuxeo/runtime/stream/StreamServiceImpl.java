@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
@@ -35,7 +36,9 @@ import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
+import org.nuxeo.lib.stream.computation.manager.StreamManager;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.LogOffsetStorage;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.runtime.api.Framework;
@@ -81,11 +84,18 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
             if (config == null) {
                 throw new IllegalArgumentException("Unknown logConfig: " + name);
             }
+            LogManager manager = null;
             if ("kafka".equalsIgnoreCase(config.type)) {
-                managers.put(name, createKafkaLogManager(config));
+                manager = createKafkaLogManager(config);
             } else {
-                managers.put(name, createChronicleLogManager(config));
+                manager = createChronicleLogManager(config);
             }
+            LogOffsetStorage storage = getInstance(config.options.getOrDefault("storage", null));
+            if (storage != null) {
+                Function<Record, String> extractor = getInstance(config.options.getOrDefault("extractor", null));
+                manager = new StreamManager(manager, storage, extractor);
+            }
+            managers.put(name, manager);
         }
         return managers.get(name);
     }
@@ -133,6 +143,20 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
             log.info("Create if not exists stream: {} with manager: {}", l.getId(), config.getId());
             manager.createIfNotExists(l.getId(), l.size);
         });
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> T getInstance(String type) {
+        if (type == null) {
+            return null;
+        }
+        try {
+            Class<T> clazz = (Class<T>) Class.forName(type);
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException | IllegalArgumentException | SecurityException e) {
+            log.error("Could not instantiate {}", type);
+            return null;
+        }
     }
 
     @Override
