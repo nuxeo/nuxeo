@@ -573,12 +573,14 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         new UnrestrictedSessionRunner(getTargetRepositoryName()) {
             @Override
             public void run() {
-                String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated' AND"
-                        + " ecm:mixinType = '" + getConfiguration(configurationName).getRequestDocType()
-                        + "' AND docinfo:documentId = '%s' AND"
-                        + getConfiguration(configurationName).getUserInfoUsernameField()
-                        + " = '%s' AND ecm:isVersion = 0";
-                query = String.format(query, docId, username);
+                String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated'"
+                        + " AND ecm:mixinType = '%s' AND docinfo:documentId = '%s'"
+                        + " AND %s = '%s' AND ecm:isVersion = 0";
+
+                UserRegistrationConfiguration configuration = getConfiguration(configurationName);
+                query = String.format(query, configuration.getRequestDocType(), docId,
+                        configuration.getUserInfoUsernameField(), username);
+
                 registrationDocs.addAll(session.query(query));
             }
         }.runUnrestricted();
