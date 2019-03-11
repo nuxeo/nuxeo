@@ -125,7 +125,7 @@ public class CommandLineConverter extends CommandLineBasedConverter {
 
             return cmdStringParams;
         } catch (IOException e) {
-            throw new ConversionException(e.getMessage(), e);
+            throw new ConversionException(e.getMessage(), blobHolder, e);
         }
     }
 

@@ -58,7 +58,7 @@ public class MD2TextConverter implements Converter {
             String text = blob.getString();
             return new SimpleCachableBlobHolder(Blobs.createBlob(text));
         } catch (IOException e) {
-            throw new ConversionException("Error during MD2Text conversion", e);
+            throw new ConversionException("Error during MD2Text conversion", blobHolder, e);
         }
     }
 

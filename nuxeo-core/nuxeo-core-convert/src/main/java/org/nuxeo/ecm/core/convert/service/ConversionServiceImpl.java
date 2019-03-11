@@ -224,7 +224,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             blobHolder = convertBlobToMimeType(blobHolder, destMimeType);
             adjustBlobName(filename, blobHolder, destMimeType);
         } catch (IOException e) {
-            throw new ConversionException(e);
+            throw new ConversionException(blobHolder, e);
         } finally {
             if (tempDirectory != null) {
                 org.apache.commons.io.FileUtils.deleteQuietly(tempDirectory.toFile());
@@ -308,19 +308,20 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         ConverterCheckResult check = isConverterAvailable(converterName);
         if (!check.isAvailable()) {
             // exit is not installed / configured
-            throw new ConverterNotAvailable(converterName);
+            throw new ConverterNotAvailable(converterName, blobHolder);
         }
 
         ConverterDescriptor desc = converterDescriptors.get(converterName);
         if (desc == null) {
-            throw new ConversionException("Converter " + converterName + " can not be found");
+            throw new ConversionException("Converter " + converterName + " can not be found", blobHolder);
         }
 
         // make sure the converter can handle the blob mime type
         String mimeType = blobHolder.getBlob().getMimeType();
         if (!hasSourceMimeType(desc, mimeType)) {
             throw new ConversionException(
-                    String.format("%s mime type not supported by %s converter", mimeType, desc.getConverterName()));
+                    String.format("%s mime type not supported by %s converter", mimeType, desc.getConverterName()),
+                    blobHolder);
         }
 
         String cacheKey = CacheKeyGenerator.computeKey(converterName, blobHolder, parameters);
@@ -410,7 +411,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             converterName = translationHelper.getConverterName(srcMimeType, MediaType.TEXT_HTML);
             if (converterName == null) {
                 throw new ConversionException(String.format("No converters available to convert from %s to %s.",
-                        srcMimeType, destinationMimeType));
+                        srcMimeType, destinationMimeType), blobHolder);
             }
             // Use a chain of 2 converters which will first try to go through HTML,
             // then HTML to the destination mimetype

@@ -109,7 +109,8 @@ public class HtmlPreviewConverter implements ExternalConverter {
         List<String> subConverters = getConverterChain(sourceBlob.getMimeType());
 
         if (subConverters == null) {
-            throw new ConversionException("Can not find suitable underlying converters to handle html preview");
+            throw new ConversionException("Can not find suitable underlying converters to handle html preview",
+                    blobHolder);
         }
 
         BlobHolder result = blobHolder;

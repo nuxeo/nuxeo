@@ -78,7 +78,7 @@ public class Md2HtmlConverter implements Converter {
             }
             return new SimpleCachableBlobHolder(outputBlob);
         } catch (IOException e) {
-            throw new ConversionException("Could not get Markdown string from BlobHolder", e);
+            throw new ConversionException("Could not get Markdown string from BlobHolder", blobHolder, e);
         }
     }
 

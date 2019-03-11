@@ -81,7 +81,7 @@ public class ChainedConverter implements Converter {
         for (String converterName : subConverters) {
             ConverterDescriptor desc = ConversionServiceImpl.getConverterDescriptor(converterName);
             if (!desc.getSourceMimeTypes().contains(srcMT)) {
-                throw new ConversionException("Conversion Chain is not well defined");
+                throw new ConversionException("Conversion Chain is not well defined", blobHolder);
             }
             Converter converter = ConversionServiceImpl.getConverter(converterName);
             result = converter.convert(result, parameters);
@@ -105,7 +105,8 @@ public class ChainedConverter implements Converter {
             String converterName = Framework.getService(ConversionService.class).getConverterName(srcMT, dstMT);
             if (converterName == null) {
                 throw new ConversionException(
-                        "Chained conversion error : unable to find converter between " + srcMT + " and " + dstMT);
+                        "Chained conversion error : unable to find converter between " + srcMT + " and " + dstMT,
+                        blobHolder);
             }
             Converter converter = ConversionServiceImpl.getConverter(converterName);
             result = converter.convert(result, parameters);

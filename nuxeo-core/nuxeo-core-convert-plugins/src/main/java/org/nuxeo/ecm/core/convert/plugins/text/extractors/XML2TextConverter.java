@@ -42,7 +42,15 @@ public class XML2TextConverter implements Converter {
         return new SimpleBlobHolder(new StringBlob(convert(holder.getBlob())));
     }
 
-    String convert(Blob blob) {
+    /**
+     * @deprecated since 11.1. Use {@link #convert(Blob)} instead.
+     */
+    @Deprecated
+    String convert(Blob blob, Map<String, Serializable> parameters) {
+        return convert(blob);
+    }
+
+    protected String convert(Blob blob) {
         if (blob.getLength() == 0L) {
             return "";
         }
@@ -50,12 +58,11 @@ public class XML2TextConverter implements Converter {
             Xml2TextHandler xml2text = new Xml2TextHandler();
             return xml2text.parse(stream);
         } catch (IOException | SAXException | ParserConfigurationException e) {
-            throw new ConversionException("Error during XML2Text conversion", e);
+            throw new ConversionException("Error during XML2Text conversion", blob, e);
         }
     }
 
     @Override
     public void init(ConverterDescriptor descriptor) {
     }
-
 }

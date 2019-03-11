@@ -61,7 +61,7 @@ public class LibreOfficeConverter extends CommandLineConverter {
             // the -env:userInstallation expects an URI (file:///tmp/foo)
             cmdStringParameters.put(USER_INSTALLATION_PATH_KEY, tempDirectoryPath.toUri().toString());
         } catch (IOException e) {
-            throw new ConversionException(e);
+            throw new ConversionException(blobHolder, e);
         }
 
         return cmdStringParameters;

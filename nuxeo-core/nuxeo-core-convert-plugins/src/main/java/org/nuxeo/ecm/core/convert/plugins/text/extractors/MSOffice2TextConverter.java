@@ -66,7 +66,7 @@ public class MSOffice2TextConverter implements Converter {
                 return new SimpleCachableBlobHolder(blob);
             }
         } catch (IOException | OpenXML4JException | XmlException e) {
-            throw new ConversionException("Error during MSOffice2Text conversion", e);
+            throw new ConversionException("Error during MSOffice2Text conversion", blobHolder, e);
         } finally {
             if (f != null) {
                 f.delete();

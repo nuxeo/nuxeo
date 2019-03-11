@@ -150,7 +150,7 @@ public class PDF2TextConverter implements Converter {
                 return new SimpleCachableBlobHolder(Blobs.createBlob(""));
             }
         } catch (IOException e) {
-            throw new ConversionException("Error during text extraction with PDFBox", e);
+            throw new ConversionException("Error during text extraction with PDFBox", blobHolder, e);
         } finally {
             if (document != null) {
                 try {

@@ -35,7 +35,10 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
@@ -59,6 +62,9 @@ public abstract class BaseConverterTest {
 
     @Inject
     protected ConversionService cs;
+
+    @Inject
+    protected CoreSession session;
 
     protected static final Log log = LogFactory.getLog(BaseConverterTest.class);
 
@@ -85,6 +91,11 @@ public abstract class BaseConverterTest {
     }
 
     protected static BlobHolder getBlobFromPath(String path, String srcMT) throws IOException {
+        Blob blob = buildBlob(path, srcMT);
+        return new SimpleBlobHolder(blob);
+    }
+
+    protected static Blob buildBlob(String path, String srcMT) throws IOException {
         File file = FileUtils.getResourceFileFromContext(path);
         assertTrue(file.length() > 0);
 
@@ -96,10 +107,27 @@ public abstract class BaseConverterTest {
             blob.setMimeType(mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(file.getName(), blob, null));
         }
         blob.setFilename(file.getName());
-        return new SimpleBlobHolder(blob);
+        return blob;
     }
 
     protected static BlobHolder getBlobFromPath(String path) throws IOException {
         return getBlobFromPath(path, null);
+    }
+
+    protected DocumentBlobHolder getDocumentBlob(String path, String srcMT) throws IOException {
+        Blob blob = buildBlob(path, srcMT);
+        return createDocumentBlob(blob);
+    }
+
+    protected DocumentBlobHolder createDocumentBlob(Blob blob) {
+        DocumentModel documentModel = session.createDocumentModel("/", "src", "File");
+        documentModel = session.createDocument(documentModel);
+        session.save();
+
+        DocumentBlobHolder documentBlobHolder = new DocumentBlobHolder(documentModel, "file:content");
+
+        documentBlobHolder.setBlob(blob);
+
+        return documentBlobHolder;
     }
 }
