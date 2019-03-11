@@ -535,8 +535,9 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     protected boolean checkUserFromRegistrationExistence(DocumentModel registrationDoc) {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
-        return null != Framework.getService(UserManager.class).getPrincipal(
-                (String) registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField()));
+        return null != Framework.getService(UserManager.class)
+                                .getPrincipal((String) registrationDoc.getPropertyValue(
+                                        configuration.getUserInfoUsernameField()));
     }
 
     protected void generateMail(String destination, String copy, String title, String content)
@@ -603,7 +604,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept) {
 
         // First check that we have the originating user for that request
-        if (StringUtils.isBlank((String)additionnalInfo.get(PARAM_ORIGINATING_USER))) {
+        if (StringUtils.isBlank((String) additionnalInfo.get(PARAM_ORIGINATING_USER))) {
             throw new IllegalArgumentException("Originating user should be provided in a registration request");
         }
         RegistrationCreator creator = new RegistrationCreator(configurationName, userRegistrationModel, additionnalInfo,
@@ -612,8 +613,9 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         String registrationUuid = creator.getRegistrationUuid();
 
         UserRegistrationConfiguration currentConfig = getConfiguration(configurationName);
-        boolean userAlreadyExists = null != Framework.getService(UserManager.class).getPrincipal(
-                (String) userRegistrationModel.getPropertyValue(currentConfig.getUserInfoUsernameField()));
+        boolean userAlreadyExists = null != Framework.getService(UserManager.class)
+                                                     .getPrincipal((String) userRegistrationModel.getPropertyValue(
+                                                             currentConfig.getUserInfoUsernameField()));
 
         if (!userAlreadyExists && isEmailExist(currentConfig, userRegistrationModel)) {
             log.info("Trying to submit a registration from an existing email with a different username.");
