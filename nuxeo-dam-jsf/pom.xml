@@ -20,11 +20,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-tiling-preview</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-audio-jsf</artifactId>
       <scope>runtime</scope>
     </dependency>
@@ -59,14 +54,27 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.annot</groupId>
-      <artifactId>nuxeo-annot-gwt</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-imaging-tiling</artifactId>
       <scope>runtime</scope>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>gwt</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.annot</groupId>
+          <artifactId>nuxeo-annot-gwt</artifactId>
+          <scope>runtime</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.nuxeo.ecm.platform</groupId>
+          <artifactId>nuxeo-platform-imaging-tiling-preview</artifactId>
+          <scope>runtime</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>
