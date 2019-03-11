@@ -18,19 +18,14 @@
     <module>nuxeo-liveconnect-core-dependencies</module>
     <module>nuxeo-liveconnect-jsf</module>
     <module>nuxeo-liveconnect-jsf-dependencies</module>
-    <module>nuxeo-liveconnect-web-ui</module>
     <module>nuxeo-liveconnect-google-drive-core</module>
     <module>nuxeo-liveconnect-google-drive-jsf</module>
-    <module>nuxeo-liveconnect-google-drive-web-ui</module>
     <module>nuxeo-liveconnect-dropbox-core</module>
     <module>nuxeo-liveconnect-dropbox-jsf</module>
-    <module>nuxeo-liveconnect-dropbox-web-ui</module>
     <module>nuxeo-liveconnect-box-core</module>
     <module>nuxeo-liveconnect-box-jsf</module>
-    <module>nuxeo-liveconnect-box-web-ui</module>
     <module>nuxeo-liveconnect-onedrive-core</module>
     <module>nuxeo-liveconnect-onedrive-jsf</module>
-    <module>nuxeo-liveconnect-onedrive-web-ui</module>
   </modules>
 
   <repositories>
