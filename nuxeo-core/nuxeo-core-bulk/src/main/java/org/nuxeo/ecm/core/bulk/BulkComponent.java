@@ -22,6 +22,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.stream.StreamServiceImpl;
 
 /**
  * The bulk component.
@@ -29,6 +30,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 10.2
  */
 public class BulkComponent extends DefaultComponent {
+
+    private static final int APPLICATION_STARTED_ORDER = StreamServiceImpl.APPLICATION_STARTED_ORDER + 10;
 
     public static final String XP_ACTIONS = "actions";
 
@@ -45,6 +48,12 @@ public class BulkComponent extends DefaultComponent {
             return (T) bulkAdminService;
         }
         return null;
+    }
+
+    @Override
+    public int getApplicationStartedOrder() {
+        // start after stream service
+        return APPLICATION_STARTED_ORDER;
     }
 
     @Override

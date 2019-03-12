@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.stream;
 
+import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.appender.StreamAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 
 /**
@@ -29,4 +31,6 @@ public interface StreamService {
      * should not do it directly.
      */
     LogManager getLogManager(String name);
+
+    <M extends Record> StreamAppender<M> getStreamAppender(String name);
 }

@@ -35,6 +35,7 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
+import org.nuxeo.lib.stream.computation.appender.StreamAppender;
 import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.lib.stream.computation.manager.StreamManager;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -53,6 +54,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 9.3
  */
 public class StreamServiceImpl extends DefaultComponent implements StreamService {
+
+    public static final int APPLICATION_STARTED_ORDER = KafkaConfigServiceImpl.APPLICATION_STARTED_ORDER + 10;
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(StreamServiceImpl.class);
 
@@ -73,7 +76,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     @Override
     public int getApplicationStartedOrder() {
         // start after kafka config service
-        return KafkaConfigServiceImpl.APPLICATION_STARTED_ORDER + 10;
+        return APPLICATION_STARTED_ORDER;
     }
 
     @Override
@@ -199,9 +202,9 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         descriptor.policies.forEach(policy -> settings.setPolicy(policy.name, descriptor.getPolicy(policy.name)));
         descriptor.streams.forEach(stream -> settings.setPartitions(stream.name, stream.partitions));
         descriptor.streams.stream()
-                          .filter(stream -> Objects.nonNull(stream.codec))
-                          .forEach(stream -> settings.setCodec(stream.name,
-                                  codecService.getCodec(stream.codec, Record.class)));
+        .filter(stream -> Objects.nonNull(stream.codec))
+        .forEach(stream -> settings.setCodec(stream.name,
+                codecService.getCodec(stream.codec, Record.class)));
         return settings;
     }
 
@@ -244,5 +247,12 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
             stopComputations();
             Framework.getRuntime().getComponentManager().removeListener(this);
         }
+    }
+
+    @Override
+    public <M extends Record> StreamAppender<M> getStreamAppender(String name) {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new UnsupportedOperationException();
     }
 }
