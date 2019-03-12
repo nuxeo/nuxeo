@@ -91,7 +91,7 @@ public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
         edit.getWidget("nxl_demoToggleableLayout:nxw_htmlWidget", RichEditorElement.class).setInputValue(
                 "<b>Bold</b> content");
         edit.getWidget("nxl_demoToggleableLayout:nxw_datetimeWidget", DateWidgetElement.class).setInputValue(
-                "09/7/2010 03:14 PM");
+                "09/7/2010, 03:14 PM");
         edit.getWidget("nxl_demoToggleableLayout:nxw_intWidget").setInputValue("42");
 
         saveToggleLayout(editIdPrefix);
@@ -136,7 +136,7 @@ public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
                 "s2id_nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_toggledForm:nxl_demoToggleableLayout_edit:nxw_l10ncoverage_1_select2");
         suggest.selectValue("Germany", true);
         edit.getWidget("nxl_demoToggleableLayout_edit:nxw_datetimeWidget_2", DateWidgetElement.class).setInputValue(
-                "09/7/2010 03:14 PM");
+                "09/7/2010, 03:14 PM");
         edit.getWidget("nxl_demoToggleableLayout_edit:nxw_intWidget_2").setInputValue("42");
 
         String saveButtonId = editIdPrefix + "nxw_toggleableLayoutStudioWidget_saveDemoToggleableLayout";

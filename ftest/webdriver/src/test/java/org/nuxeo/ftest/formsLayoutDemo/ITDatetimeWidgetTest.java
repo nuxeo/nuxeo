@@ -45,7 +45,7 @@ public class ITDatetimeWidgetTest extends AbstractWidgetPageTest {
         submitDemo();
         checkValueRequired(false);
         assertTrue(getEditWidgetMessage().startsWith("'test' could not be understood as a date. Example:"));
-        getEditWidget(DateWidgetElement.class).setInputValue("09/7/2010 03:14 PM");
+        getEditWidget(DateWidgetElement.class).setInputValue("09/7/2010, 03:14 PM");
         submitDemo();
         checkValueRequired(false);
         assertEquals("", getEditWidgetMessage());

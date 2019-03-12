@@ -62,7 +62,7 @@ public class ITLayoutWidgetTest extends AbstractWidgetPageTest {
 
         LayoutElement edit = new LayoutElement(driver, editIdPrefix);
         edit.getWidget("nxw_textareaWidget").setInputValue("test");
-        edit.getWidget("nxw_datetimeWidget", DateWidgetElement.class).setInputValue("09/7/2010 03:14 PM");
+        edit.getWidget("nxw_datetimeWidget", DateWidgetElement.class).setInputValue("09/7/2010, 03:14 PM");
         edit.getWidget("nxw_intWidget").setInputValue("42");
 
         submitDemo();

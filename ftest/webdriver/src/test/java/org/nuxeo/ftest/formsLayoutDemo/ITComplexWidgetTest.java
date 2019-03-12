@@ -56,7 +56,7 @@ public class ITComplexWidgetTest extends AbstractWidgetPageTest {
         String editId = "complexWidgetLayout_edit_form:nxl_complexWidgetLayout:nxw_complexWidget";
         LayoutElement edit = new LayoutElement(driver, editId);
         edit.getWidget("nxw_stringComplexItem").setInputValue("test");
-        edit.getWidget("nxw_dateComplexItem", DateWidgetElement.class).setInputValue("09/7/2010 03:14 PM");
+        edit.getWidget("nxw_dateComplexItem", DateWidgetElement.class).setInputValue("09/7/2010, 03:14 PM");
         edit.getWidget("nxw_intComplexItem").setInputValue("lalala");
         edit.getWidget("nxw_booleanComplexItem").setInputValue("false");
 

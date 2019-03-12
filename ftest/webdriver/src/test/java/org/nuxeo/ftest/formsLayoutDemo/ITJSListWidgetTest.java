@@ -166,7 +166,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertNotNull(listWidget.getSubWidget("nxw_stringComplexItem", 0));
         assertNotNull(listWidget.getSubWidget("nxw_text", 0));
         listWidget.getSubWidget("nxw_stringComplexItem", 0).setInputValue("test");
-        listWidget.getSubWidget("nxw_dateComplexItemInputDate", 0).setInputValue("09/7/2010 03:14 PM");
+        listWidget.getSubWidget("nxw_dateComplexItemInputDate", 0).setInputValue("09/7/2010, 03:14 PM");
         listWidget.getSubWidget("nxw_intComplexItem", 0).setInputValue("lala");
         listWidget.getSubWidget("nxw_text", 0).setInputValue("field 1");
         listWidget.getSubWidget("nxw_text_1", 0).setInputValue("field 2");
