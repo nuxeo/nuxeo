@@ -6,7 +6,8 @@
     <processor id="exifTool" class="org.nuxeo.binary.metadata.internals.ExifToolProcessor" prefix="true" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" point="environment">
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+             point="environment">
     <environment name="exiftool">
       <parameters>
         <!-- See http://search.cpan.org/dist/PAR/lib/PAR.pm#Notes -->
