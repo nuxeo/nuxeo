@@ -111,8 +111,8 @@ public class TestBinaryMetadataService {
 
         DocumentModel doc = session.createDocumentModel("/folder", "file_1000", "File");
         doc.setPropertyValue("dc:title", "file_1000");
-        doc.setPropertyValue("file:content",  (Serializable) Blobs.createBlob(binary));
-        //doc = session.createDocument(doc);
+        doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob(binary));
+        // doc = session.createDocument(doc);
         binaryMetadataService.writeMetadata(doc, "IPTC-ONE-KW");
         String[] subjects = (String[]) doc.getPropertyValue("dc:subjects");
         assertEquals(1, subjects.length);
@@ -126,8 +126,8 @@ public class TestBinaryMetadataService {
 
         DocumentModel doc = session.createDocumentModel("/folder", "file_2000", "File");
         doc.setPropertyValue("dc:title", "file_2000");
-        doc.setPropertyValue("file:content",  (Serializable) Blobs.createBlob(binary));
-        //doc = session.createDocument(doc);
+        doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob(binary));
+        // doc = session.createDocument(doc);
         binaryMetadataService.writeMetadata(doc, "EXCEL-TITLES-OF-PARTS-TO-SUBJECTS");
         String[] subjects = (String[]) doc.getPropertyValue("dc:subjects");
         assertEquals(4, subjects.length);
@@ -141,8 +141,8 @@ public class TestBinaryMetadataService {
 
         DocumentModel doc = session.createDocumentModel("/folder", "file_3000", "File");
         doc.setPropertyValue("dc:title", "file_3000");
-        doc.setPropertyValue("file:content",  (Serializable) Blobs.createBlob(binary));
-        //doc = session.createDocument(doc);
+        doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob(binary));
+        // doc = session.createDocument(doc);
         binaryMetadataService.writeMetadata(doc, "EXCEL-TITLES-OF-PARTS-TO-FORMAT");
         String format = (String) doc.getPropertyValue("dc:format");
         assertEquals("[Example, Hop, Sheet2, Chart Data]", format);
