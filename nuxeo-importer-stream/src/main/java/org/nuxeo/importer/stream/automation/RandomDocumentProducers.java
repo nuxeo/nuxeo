@@ -18,7 +18,8 @@
  */
 package org.nuxeo.importer.stream.automation;
 
-import static org.nuxeo.importer.stream.automation.BlobConsumers.DEFAULT_LOG_CONFIG;
+import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_CONFIG;
+import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_DOC_NAME;
 
 import java.util.concurrent.ExecutionException;
 
@@ -31,11 +32,14 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.importer.stream.StreamImporters;
 import org.nuxeo.importer.stream.message.DocumentMessage;
 import org.nuxeo.importer.stream.producer.RandomDocumentMessageProducerFactory;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.pattern.producer.ProducerPool;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.stream.StreamService;
 
 /**
@@ -46,8 +50,6 @@ public class RandomDocumentProducers {
     private static final Log log = LogFactory.getLog(RandomDocumentProducers.class);
 
     public static final String ID = "StreamImporter.runRandomDocumentProducers";
-
-    public static final String DEFAULT_DOC_LOG_NAME = "import-doc";
 
     @Context
     protected OperationContext ctx;
@@ -65,7 +67,7 @@ public class RandomDocumentProducers {
     protected String lang = "en_US";
 
     @Param(name = "logName", required = false)
-    protected String logName;
+    protected String logName = DEFAULT_LOG_DOC_NAME;
 
     @Param(name = "logSize", required = false)
     protected Integer logSize;
@@ -74,7 +76,7 @@ public class RandomDocumentProducers {
     protected String logBlobInfoName;
 
     @Param(name = "logConfig", required = false)
-    protected String logConfig;
+    protected String logConfig = DEFAULT_LOG_CONFIG;
 
     @Param(name = "countFolderAsDocument", required = false)
     protected Boolean countFolderAsDocument = true;
@@ -82,9 +84,8 @@ public class RandomDocumentProducers {
     @OperationMethod
     public void run() throws OperationException {
         RandomBlobProducers.checkAccess(ctx);
-        StreamService service = Framework.getService(StreamService.class);
-        LogManager manager = service.getLogManager(getLogConfig());
-        manager.createIfNotExists(getLogName(), getLogSize());
+        LogManager manager = Framework.getService(StreamService.class).getLogManager(logConfig);
+        manager.createIfNotExists(logName, getLogSize());
         RandomDocumentMessageProducerFactory factory;
         if (logBlobInfoName != null) {
             factory = new RandomDocumentMessageProducerFactory(nbDocuments, lang, manager, logBlobInfoName,
@@ -92,7 +93,8 @@ public class RandomDocumentProducers {
         } else {
             factory = new RandomDocumentMessageProducerFactory(nbDocuments, lang, avgBlobSizeKB, countFolderAsDocument);
         }
-        try (ProducerPool<DocumentMessage> producers = new ProducerPool<>(getLogName(), manager, factory,
+        Codec<DocumentMessage> codec = StreamImporters.getDocCodec();
+        try (ProducerPool<DocumentMessage> producers = new ProducerPool<>(logName, manager, codec, factory,
                 nbThreads.shortValue())) {
             producers.start().get();
         } catch (InterruptedException e) {
@@ -103,20 +105,6 @@ public class RandomDocumentProducers {
             log.error("Operation fails", e);
             throw new OperationException(e);
         }
-    }
-
-    protected String getLogConfig() {
-        if (logConfig != null) {
-            return logConfig;
-        }
-        return DEFAULT_LOG_CONFIG;
-    }
-
-    protected String getLogName() {
-        if (logName != null) {
-            return logName;
-        }
-        return DEFAULT_DOC_LOG_NAME;
     }
 
     protected int getLogSize() {

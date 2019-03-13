@@ -18,11 +18,15 @@
  */
 package org.nuxeo.lib.stream.pattern.producer;
 
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
+
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.pattern.Message;
 import org.nuxeo.lib.stream.pattern.consumer.internals.AbstractCallablePool;
@@ -38,14 +42,29 @@ public class ProducerPool<M extends Message> extends AbstractCallablePool<Produc
 
     protected final LogManager manager;
 
-    protected final ProducerFactory<M> factory;
-
     protected final String logName;
 
+    protected final Codec<M> codec;
+
+    protected final ProducerFactory<M> factory;
+
+    /**
+     * @deprecated since 11.1, due to serialization issue with java 11, use
+     *             {@link #ProducerPool(String, LogManager, Codec, ProducerFactory, short)} which allows to give a
+     *             {@link org.nuxeo.lib.stream.codec.Codec codec} to {@link LogAppender appender}.
+     */
+    @Deprecated
+    @SuppressWarnings("unchecked")
     public ProducerPool(String logName, LogManager manager, ProducerFactory<M> factory, short nbThreads) {
+        this(logName, manager, NO_CODEC, factory, nbThreads);
+    }
+
+    public ProducerPool(String logName, LogManager manager, Codec<M> codec, ProducerFactory<M> factory,
+            short nbThreads) {
         super(nbThreads);
         this.logName = logName;
         this.manager = manager;
+        this.codec = codec;
         this.factory = factory;
     }
 
@@ -56,7 +75,7 @@ public class ProducerPool<M extends Message> extends AbstractCallablePool<Produc
 
     @Override
     protected Callable<ProducerStatus> getCallable(int i) {
-        return new ProducerRunner<>(factory, manager.getAppender(logName), i);
+        return new ProducerRunner<>(factory, manager.getAppender(logName, codec), i);
     }
 
     @Override

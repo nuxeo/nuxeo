@@ -18,6 +18,8 @@
  */
 package org.nuxeo.lib.stream.pattern.consumer;
 
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
@@ -40,20 +43,36 @@ import org.nuxeo.lib.stream.pattern.consumer.internals.ConsumerRunner;
 public class ConsumerPool<M extends Message> extends AbstractCallablePool<ConsumerStatus> {
     private static final Log log = LogFactory.getLog(ConsumerPool.class);
 
+    protected final String logName;
+
     protected final LogManager manager;
+
+    protected final Codec<M> codec;
 
     protected final ConsumerFactory<M> factory;
 
     protected final ConsumerPolicy policy;
 
-    protected final String logName;
-
     protected final List<List<LogPartition>> defaultAssignments;
 
+    /**
+     * @deprecated since 11.1, due to serialization issue with java 11, use
+     *             {@link #ConsumerPool(String, LogManager, Codec, ConsumerFactory, ConsumerPolicy)} which allows to
+     *             give a {@link org.nuxeo.lib.stream.codec.Codec codec} to {@link org.nuxeo.lib.stream.log.LogTailer
+     *             tailer}.
+     */
+    @Deprecated
+    @SuppressWarnings("unchecked")
     public ConsumerPool(String logName, LogManager manager, ConsumerFactory<M> factory, ConsumerPolicy policy) {
+        this(logName, manager, NO_CODEC, factory, policy);
+    }
+
+    public ConsumerPool(String logName, LogManager manager, Codec<M> codec, ConsumerFactory<M> factory,
+            ConsumerPolicy policy) {
         super(computeNbThreads((short) manager.getAppender(logName).size(), policy.getMaxThreads()));
         this.logName = logName;
         this.manager = manager;
+        this.codec = codec;
         this.factory = factory;
         this.policy = policy;
         this.defaultAssignments = getDefaultAssignments();
@@ -82,7 +101,7 @@ public class ConsumerPool<M extends Message> extends AbstractCallablePool<Consum
 
     @Override
     protected Callable<ConsumerStatus> getCallable(int i) {
-        return new ConsumerRunner<>(factory, policy, manager, defaultAssignments.get(i));
+        return new ConsumerRunner<>(factory, policy, manager, codec, defaultAssignments.get(i));
     }
 
     @Override

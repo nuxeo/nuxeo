@@ -20,8 +20,10 @@ package org.nuxeo.importer.stream.producer;
 
 import java.util.Collections;
 
+import org.nuxeo.importer.stream.StreamImporters;
 import org.nuxeo.importer.stream.message.BlobInfoMessage;
 import org.nuxeo.importer.stream.message.DocumentMessage;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
@@ -85,8 +87,9 @@ public class RandomDocumentMessageProducerFactory implements ProducerFactory<Doc
         BlobInfoFetcher fetcher = null;
         if (manager != null) {
             // read only on the first partition
+            Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
             LogTailer<BlobInfoMessage> tailer = manager.createTailer(getGroupName(producerId),
-                    Collections.singleton(LogPartition.of(logName, 0)));
+                    Collections.singleton(LogPartition.of(logName, 0)), blobInfoCodec);
             fetcher = new RandomLogBlobInfoFetcher(tailer);
         }
         return new RandomDocumentMessageProducer(producerId, nbDocuments, lang, fetcher) // NOSONAR (factory)

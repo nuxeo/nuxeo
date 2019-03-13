@@ -81,7 +81,6 @@ public class DocumentMessageConsumer extends AbstractConsumer<DocumentMessage> {
         doc.putContextData(CoreSession.SKIP_DESTINATION_CHECK_ON_CREATE, true);
         Blob blob = getBlob(message);
         if (blob != null) {
-            // doc.setProperty("file", "filename", blob.getFilename());
             doc.setProperty("file", "content", blob);
         }
         Map<String, Serializable> props = message.getProperties();

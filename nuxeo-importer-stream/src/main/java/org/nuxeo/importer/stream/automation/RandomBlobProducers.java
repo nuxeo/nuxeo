@@ -18,7 +18,8 @@
  */
 package org.nuxeo.importer.stream.automation;
 
-import static org.nuxeo.importer.stream.automation.BlobConsumers.DEFAULT_LOG_CONFIG;
+import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_BLOB_NAME;
+import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_CONFIG;
 
 import java.util.concurrent.ExecutionException;
 
@@ -32,8 +33,10 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.importer.stream.StreamImporters;
 import org.nuxeo.importer.stream.message.BlobMessage;
 import org.nuxeo.importer.stream.producer.RandomStringBlobMessageProducerFactory;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.pattern.producer.ProducerPool;
 import org.nuxeo.runtime.api.Framework;
@@ -47,8 +50,6 @@ public class RandomBlobProducers {
     private static final Log log = LogFactory.getLog(RandomBlobProducers.class);
 
     public static final String ID = "StreamImporter.runRandomBlobProducers";
-
-    public static final String DEFAULT_BLOB_LOG_NAME = "import-blob";
 
     @Context
     protected OperationContext ctx;
@@ -66,13 +67,13 @@ public class RandomBlobProducers {
     protected String lang = "en_US";
 
     @Param(name = "logName", required = false)
-    protected String logName;
+    protected String logName = DEFAULT_LOG_BLOB_NAME;
 
     @Param(name = "logSize", required = false)
     protected Integer logSize;
 
     @Param(name = "logConfig", required = false)
-    protected String logConfig;
+    protected String logConfig = DEFAULT_LOG_CONFIG;
 
     @Param(name = "blobMarker", required = false)
     protected String blobMarker;
@@ -80,10 +81,10 @@ public class RandomBlobProducers {
     @OperationMethod
     public void run() throws OperationException {
         checkAccess(ctx);
-        StreamService service = Framework.getService(StreamService.class);
-        LogManager manager = service.getLogManager(getLogConfig());
-        manager.createIfNotExists(getLogName(), getLogSize());
-        try (ProducerPool<BlobMessage> producers = new ProducerPool<>(getLogName(), manager,
+        LogManager manager = Framework.getService(StreamService.class).getLogManager(logConfig);
+        manager.createIfNotExists(logName, getLogSize());
+        Codec<BlobMessage> codec = StreamImporters.getBlobCodec();
+        try (ProducerPool<BlobMessage> producers = new ProducerPool<>(logName, manager, codec,
                 new RandomStringBlobMessageProducerFactory(nbBlobs, lang, avgBlobSizeKB, blobMarker),
                 nbThreads.shortValue())) {
             producers.start().get();
@@ -95,20 +96,6 @@ public class RandomBlobProducers {
             log.error("fail", e);
             throw new OperationException(e);
         }
-    }
-
-    protected String getLogConfig() {
-        if (logConfig != null) {
-            return logConfig;
-        }
-        return DEFAULT_LOG_CONFIG;
-    }
-
-    protected String getLogName() {
-        if (logName != null) {
-            return logName;
-        }
-        return DEFAULT_BLOB_LOG_NAME;
     }
 
     protected int getLogSize() {

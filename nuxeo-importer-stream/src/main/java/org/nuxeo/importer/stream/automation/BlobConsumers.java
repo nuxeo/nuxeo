@@ -18,7 +18,9 @@
  */
 package org.nuxeo.importer.stream.automation;
 
-import static org.nuxeo.importer.stream.automation.RandomBlobProducers.DEFAULT_BLOB_LOG_NAME;
+import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_BLOB_INFO_NAME;
+import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_BLOB_NAME;
+import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_CONFIG;
 
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
@@ -33,10 +35,13 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.importer.stream.StreamImporters;
 import org.nuxeo.importer.stream.consumer.BlobInfoWriter;
 import org.nuxeo.importer.stream.consumer.BlobMessageConsumerFactory;
 import org.nuxeo.importer.stream.consumer.LogBlobInfoWriter;
+import org.nuxeo.importer.stream.message.BlobInfoMessage;
 import org.nuxeo.importer.stream.message.BlobMessage;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.pattern.consumer.BatchPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
@@ -54,10 +59,6 @@ public class BlobConsumers {
     private static final Log log = LogFactory.getLog(BlobConsumers.class);
 
     public static final String ID = "StreamImporter.runBlobConsumers";
-
-    public static final String DEFAULT_LOG_BLOB_INFO_NAME = "import-blob-info";
-
-    public static final String DEFAULT_LOG_CONFIG = "default";
 
     @Context
     protected OperationContext ctx;
@@ -81,13 +82,13 @@ public class BlobConsumers {
     protected Integer retryDelayS = 2;
 
     @Param(name = "logName", required = false)
-    protected String logName;
+    protected String logName = DEFAULT_LOG_BLOB_NAME;
 
     @Param(name = "logBlobInfo", required = false)
-    protected String logBlobInfoName;
+    protected String logBlobInfoName = DEFAULT_LOG_BLOB_INFO_NAME;
 
     @Param(name = "logConfig", required = false)
-    protected String logConfig;
+    protected String logConfig = DEFAULT_LOG_CONFIG;
 
     @Param(name = "waitMessageTimeoutSeconds", required = false)
     protected Integer waitMessageTimeoutSeconds = 20;
@@ -111,15 +112,16 @@ public class BlobConsumers {
                                                                          .timeThreshold(
                                                                                  Duration.ofSeconds(batchThresholdS))
                                                                          .build())
-                                                      .retryPolicy(new RetryPolicy().withMaxRetries(retryMax).withDelay(
-                                                              retryDelayS, TimeUnit.SECONDS))
+                                                      .retryPolicy(new RetryPolicy().withMaxRetries(retryMax)
+                                                                                    .withDelay(retryDelayS,
+                                                                                            TimeUnit.SECONDS))
                                                       .maxThreads(getNbThreads())
                                                       .waitMessageTimeout(Duration.ofSeconds(waitMessageTimeoutSeconds))
                                                       .build();
-        StreamService service = Framework.getService(StreamService.class);
-        LogManager manager = service.getLogManager(getLogConfig());
+        LogManager manager = Framework.getService(StreamService.class).getLogManager(logConfig);
+        Codec<BlobMessage> codec = StreamImporters.getBlobCodec();
         try (BlobInfoWriter blobInfoWriter = getBlobInfoWriter(manager)) {
-            ConsumerPool<BlobMessage> consumers = new ConsumerPool<>(getLogName(), manager,
+            ConsumerPool<BlobMessage> consumers = new ConsumerPool<>(logName, manager, codec,
                     new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter, watermark, persistBlobPath),
                     consumerPolicy);
             consumers.start().get();
@@ -135,11 +137,12 @@ public class BlobConsumers {
 
     protected BlobInfoWriter getBlobInfoWriter(LogManager managerBlobInfo) {
         initBlobInfoMQ(managerBlobInfo);
-        return new LogBlobInfoWriter(managerBlobInfo.getAppender(getLogBlobInfoName()));
+        Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
+        return new LogBlobInfoWriter(managerBlobInfo.getAppender(logBlobInfoName, blobInfoCodec));
     }
 
     protected void initBlobInfoMQ(LogManager manager) {
-        manager.createIfNotExists(getLogBlobInfoName(), 1);
+        manager.createIfNotExists(logBlobInfoName, 1);
     }
 
     protected short getNbThreads() {
@@ -147,26 +150,5 @@ public class BlobConsumers {
             return nbThreads.shortValue();
         }
         return 0;
-    }
-
-    protected String getLogName() {
-        if (logName != null) {
-            return logName;
-        }
-        return DEFAULT_BLOB_LOG_NAME;
-    }
-
-    protected String getLogBlobInfoName() {
-        if (logBlobInfoName != null) {
-            return logBlobInfoName;
-        }
-        return DEFAULT_LOG_BLOB_INFO_NAME;
-    }
-
-    protected String getLogConfig() {
-        if (logConfig != null) {
-            return logConfig;
-        }
-        return DEFAULT_LOG_CONFIG;
     }
 }

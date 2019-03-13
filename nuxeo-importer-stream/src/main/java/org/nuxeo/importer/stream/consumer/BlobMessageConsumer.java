@@ -103,7 +103,7 @@ public class BlobMessageConsumer extends AbstractConsumer<BlobMessage> {
         } else {
             bi.filename = message.getFilename();
         }
-        bi.mimeType = message.getMimetype();
+        bi.mimeType = message.getMimeType();
         bi.encoding = message.getEncoding();
         blobInfoWriter.save(null, bi);
     }

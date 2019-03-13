@@ -19,6 +19,7 @@
 package org.nuxeo.lib.stream.pattern.consumer.internals;
 
 import static java.lang.Thread.currentThread;
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
@@ -97,25 +99,38 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
 
     protected Counter globalConsumersCounter;
 
+    /**
+     * @deprecated since 11.1, due to serialization issue with java 11, use
+     *             {@link #ConsumerRunner(ConsumerFactory, ConsumerPolicy, LogManager, Codec, List)} which allows to
+     *             give a {@link org.nuxeo.lib.stream.codec.Codec codec} to {@link org.nuxeo.lib.stream.log.LogTailer
+     *             tailer}.
+     */
+    @Deprecated
+    @SuppressWarnings("unchecked")
     public ConsumerRunner(ConsumerFactory<M> factory, ConsumerPolicy policy, LogManager manager,
+            List<LogPartition> defaultAssignments) {
+        this(factory, policy, manager, NO_CODEC, defaultAssignments);
+    }
+
+    public ConsumerRunner(ConsumerFactory<M> factory, ConsumerPolicy policy, LogManager manager, Codec<M> codec,
             List<LogPartition> defaultAssignments) {
         this.factory = factory;
         this.currentBatchPolicy = policy.getBatchPolicy();
         this.policy = policy;
-        this.tailer = createTailer(manager, defaultAssignments);
+        this.tailer = createTailer(manager, codec, defaultAssignments);
         consumerId = tailer.toString();
         globalConsumersCounter = registry.counter(MetricRegistry.name("nuxeo", "importer", "stream", "consumers"));
         setTailerPosition(manager);
         log.debug("Consumer thread created tailing on: " + consumerId);
     }
 
-    protected LogTailer<M> createTailer(LogManager manager, List<LogPartition> defaultAssignments) {
+    protected LogTailer<M> createTailer(LogManager manager, Codec<M> codec, List<LogPartition> defaultAssignments) {
         LogTailer<M> tailer;
         if (manager.supportSubscribe()) {
             Set<String> names = defaultAssignments.stream().map(LogPartition::name).collect(Collectors.toSet());
-            tailer = manager.subscribe(policy.getName(), names, this);
+            tailer = manager.subscribe(policy.getName(), names, this, codec);
         } else {
-            tailer = manager.createTailer(policy.getName(), defaultAssignments);
+            tailer = manager.createTailer(policy.getName(), defaultAssignments, codec);
         }
         return tailer;
     }

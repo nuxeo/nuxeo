@@ -22,12 +22,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.pattern.Message;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerFactory;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPool;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 
 /**
  * Consumer Pool that block Nuxeo listeners during import.
@@ -85,9 +88,22 @@ public class DocumentConsumerPool<M extends Message> extends ConsumerPool<M> {
 
     protected boolean listenerBlobEnabled;
 
+    /**
+     * @deprecated since 11.1, due to serialization issue with java 11, use
+     *             {@link #DocumentConsumerPool(String, LogManager, Codec, ConsumerFactory, ConsumerPolicy)} which
+     *             allows to give a {@link org.nuxeo.lib.stream.codec.Codec codec} to
+     *             {@link org.nuxeo.lib.stream.log.LogTailer tailer}.
+     */
+    @Deprecated
+    @SuppressWarnings("unchecked")
     public DocumentConsumerPool(String logName, LogManager manager, ConsumerFactory<M> factory,
             ConsumerPolicy consumerPolicy) {
-        super(logName, manager, factory, consumerPolicy);
+        this(logName, manager, NO_CODEC, factory, consumerPolicy);
+    }
+
+    public DocumentConsumerPool(String logName, LogManager manager, Codec<M> codec, ConsumerFactory<M> factory,
+            ConsumerPolicy consumerPolicy) {
+        super(logName, manager, codec, factory, consumerPolicy);
         EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         policy = (DocumentConsumerPolicy) consumerPolicy;
         if (eventAdmin == null) {

@@ -73,7 +73,7 @@ public class BlobWatermarkMessageConsumer extends BlobMessageConsumer {
     @Override
     protected CloseableBlob getBlob(BlobMessage message) {
         String watermark = getWatermarkString();
-        switch (message.getMimetype()) {
+        switch (message.getMimeType()) {
         case "text/plain":
             return addWatermark(message, watermark, textWatermarker);
         case "image/jpeg":
@@ -88,7 +88,7 @@ public class BlobWatermarkMessageConsumer extends BlobMessageConsumer {
     protected CloseableBlob addWatermark(BlobMessage message, String watermark, Watermarker watermarker) {
         Path output = watermarker.addWatermark(Paths.get(message.getPath()), outputPath, watermark);
         Path fileToDelete = StringUtils.isBlank(generatedBlobPath) ? output : null;
-        return new CloseableBlob(new FileBlob(output.toFile(), message.getMimetype()), fileToDelete);
+        return new CloseableBlob(new FileBlob(output.toFile(), message.getMimeType()), fileToDelete);
     }
 
     protected String getWatermarkString() {

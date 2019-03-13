@@ -34,7 +34,7 @@ import org.nuxeo.lib.stream.pattern.Message;
 public class BlobMessage implements Message {
     static final long serialVersionUID = 20170529L;
 
-    protected String mimetype;
+    protected String mimeType;
 
     protected String encoding;
 
@@ -48,7 +48,7 @@ public class BlobMessage implements Message {
     }
 
     protected BlobMessage(StringMessageBuilder builder) {
-        mimetype = builder.mimetype;
+        mimeType = builder.mimetype;
         encoding = builder.encoding;
         filename = builder.filename;
         path = builder.path;
@@ -63,8 +63,8 @@ public class BlobMessage implements Message {
         return filename;
     }
 
-    public String getMimetype() {
-        return mimetype;
+    public String getMimeType() {
+        return mimeType;
     }
 
     public String getFilename() {
@@ -159,7 +159,7 @@ public class BlobMessage implements Message {
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(mimetype);
+        out.writeObject(mimeType);
         out.writeObject(encoding);
         out.writeObject(filename);
         out.writeObject(path);
@@ -168,7 +168,7 @@ public class BlobMessage implements Message {
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        mimetype = (String) in.readObject();
+        mimeType = (String) in.readObject();
         encoding = (String) in.readObject();
         filename = (String) in.readObject();
         path = (String) in.readObject();
@@ -184,7 +184,7 @@ public class BlobMessage implements Message {
 
         BlobMessage that = (BlobMessage) o;
 
-        if (mimetype != null ? !mimetype.equals(that.mimetype) : that.mimetype != null)
+        if (mimeType != null ? !mimeType.equals(that.mimeType) : that.mimeType != null)
             return false;
         if (encoding != null ? !encoding.equals(that.encoding) : that.encoding != null)
             return false;
@@ -197,7 +197,7 @@ public class BlobMessage implements Message {
 
     @Override
     public int hashCode() {
-        int result = mimetype != null ? mimetype.hashCode() : 0;
+        int result = mimeType != null ? mimeType.hashCode() : 0;
         result = 31 * result + (encoding != null ? encoding.hashCode() : 0);
         result = 31 * result + (filename != null ? filename.hashCode() : 0);
         result = 31 * result + (path != null ? path.hashCode() : 0);
@@ -207,7 +207,7 @@ public class BlobMessage implements Message {
 
     @Override
     public String toString() {
-        return "BlobMessage{" + "mimetype='" + mimetype + '\'' + ", encoding='" + encoding + '\'' + ", filename='"
+        return "BlobMessage{" + "mimeType='" + mimeType + '\'' + ", encoding='" + encoding + '\'' + ", filename='"
                 + filename + '\'' + ", path='" + path + '\'' + ", content='" + content + '\'' + '}';
     }
 }

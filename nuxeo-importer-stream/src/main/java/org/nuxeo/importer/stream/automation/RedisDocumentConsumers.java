@@ -18,7 +18,8 @@
  */
 package org.nuxeo.importer.stream.automation;
 
-import static org.nuxeo.importer.stream.automation.BlobConsumers.DEFAULT_LOG_CONFIG;
+import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_CONFIG;
+import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_DOC_NAME;
 
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
@@ -33,8 +34,10 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.importer.stream.StreamImporters;
 import org.nuxeo.importer.stream.consumer.RedisDocumentMessageConsumerFactory;
 import org.nuxeo.importer.stream.message.DocumentMessage;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.pattern.consumer.BatchPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
@@ -71,10 +74,10 @@ public class RedisDocumentConsumers {
     protected Integer retryDelayS = 2;
 
     @Param(name = "logName", required = false)
-    protected String logName;
+    protected String logName = DEFAULT_LOG_DOC_NAME;
 
     @Param(name = "logConfig", required = false)
-    protected String logConfig;
+    protected String logConfig = DEFAULT_LOG_CONFIG;
 
     @Param(name = "waitMessageTimeoutSeconds", required = false)
     protected Integer waitMessageTimeoutSeconds = 20;
@@ -90,11 +93,10 @@ public class RedisDocumentConsumers {
                                                       .maxThreads(getNbThreads())
                                                       .waitMessageTimeout(Duration.ofSeconds(waitMessageTimeoutSeconds))
                                                       .build();
-        log.warn(String.format("Import documents into Redis from log: %s, with policy: %s", getLogName(),
-                consumerPolicy));
-        StreamService service = Framework.getService(StreamService.class);
-        LogManager manager = service.getLogManager(getLogConfig());
-        try (ConsumerPool<DocumentMessage> consumers = new ConsumerPool<>(getLogName(), manager,
+        log.warn(String.format("Import documents into Redis from log: %s, with policy: %s", logName, consumerPolicy));
+        LogManager manager = Framework.getService(StreamService.class).getLogManager(logConfig);
+        Codec<DocumentMessage> codec = StreamImporters.getDocCodec();
+        try (ConsumerPool<DocumentMessage> consumers = new ConsumerPool<>(logName, manager, codec,
                 new RedisDocumentMessageConsumerFactory(redisPrefix), consumerPolicy)) {
             consumers.start().get();
         } catch (InterruptedException e) {
@@ -112,19 +114,5 @@ public class RedisDocumentConsumers {
             return nbThreads.shortValue();
         }
         return 0;
-    }
-
-    protected String getLogName() {
-        if (logName != null) {
-            return logName;
-        }
-        return RandomDocumentProducers.DEFAULT_DOC_LOG_NAME;
-    }
-
-    protected String getLogConfig() {
-        if (logConfig != null) {
-            return logConfig;
-        }
-        return DEFAULT_LOG_CONFIG;
     }
 }

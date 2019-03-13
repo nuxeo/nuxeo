@@ -19,7 +19,8 @@
 package org.nuxeo.importer.stream.automation;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.nuxeo.importer.stream.automation.BlobConsumers.DEFAULT_LOG_CONFIG;
+import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_BLOB_NAME;
+import static org.nuxeo.importer.stream.StreamImporters.DEFAULT_LOG_CONFIG;
 
 import java.io.File;
 import java.util.concurrent.ExecutionException;
@@ -34,8 +35,10 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.importer.stream.StreamImporters;
 import org.nuxeo.importer.stream.message.BlobMessage;
 import org.nuxeo.importer.stream.producer.FileBlobMessageProducerFactory;
+import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.pattern.producer.ProducerPool;
 import org.nuxeo.runtime.api.Framework;
@@ -52,8 +55,6 @@ public class FileBlobProducers {
 
     public static final String ID = "StreamImporter.runFileBlobProducers";
 
-    public static final String DEFAULT_BLOB_LOG_NAME = "import-blob";
-
     @Context
     protected OperationContext ctx;
 
@@ -67,13 +68,13 @@ public class FileBlobProducers {
     protected Integer nbThreads = 1;
 
     @Param(name = "logName", required = false)
-    protected String logName;
+    protected String logName = DEFAULT_LOG_BLOB_NAME;
 
     @Param(name = "logSize", required = false)
     protected Integer logSize;
 
     @Param(name = "logConfig", required = false)
-    protected String logConfig;
+    protected String logConfig = DEFAULT_LOG_CONFIG;
 
     @Param(name = "basePath", required = false)
     protected String basePath;
@@ -81,15 +82,13 @@ public class FileBlobProducers {
     @OperationMethod
     public void run() throws OperationException {
         checkAccess(ctx);
-        StreamService service = Framework.getService(StreamService.class);
-        LogManager manager = service.getLogManager(getLogConfig());
-        try {
-            manager.createIfNotExists(getLogName(), getLogSize());
-            try (ProducerPool<BlobMessage> producers = new ProducerPool<>(getLogName(), manager,
-                    new FileBlobMessageProducerFactory(getListFile(), getBasePath(), getNbBlobs()),
-                    nbThreads.shortValue())) {
-                producers.start().get();
-            }
+        LogManager manager = Framework.getService(StreamService.class).getLogManager(logConfig);
+        manager.createIfNotExists(logName, getLogSize());
+        Codec<BlobMessage> codec = StreamImporters.getBlobCodec();
+        try (ProducerPool<BlobMessage> producers = new ProducerPool<>(logName, manager, codec,
+                new FileBlobMessageProducerFactory(getListFile(), getBasePath(), getNbBlobs()),
+                nbThreads.shortValue())) {
+            producers.start().get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.warn("Operation interrupted");
@@ -131,20 +130,6 @@ public class FileBlobProducers {
             throw new IllegalArgumentException("Can not access or read listFile: " + listFile);
         }
         return ret;
-    }
-
-    protected String getLogConfig() {
-        if (logConfig != null) {
-            return logConfig;
-        }
-        return DEFAULT_LOG_CONFIG;
-    }
-
-    protected String getLogName() {
-        if (logName != null) {
-            return logName;
-        }
-        return DEFAULT_BLOB_LOG_NAME;
     }
 
     protected static void checkAccess(OperationContext context) {
