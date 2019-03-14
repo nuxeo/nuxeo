@@ -34,7 +34,7 @@
 
     <command name="exiftool-write" enabled="true">
       <commandLine>exiftool</commandLine>
-      <parameterString>-m -q -q -G #{tagList} #{inFilePath}</parameterString>
+      <parameterString>-m -q -q -G -overwrite_original #{tagList} #{inFilePath}</parameterString>
       <installationDirective>You need to install exiftool</installationDirective>
     </command>
 
@@ -55,7 +55,7 @@
     <!-- Since 7.3 -->
     <command name="exiftool-write-noprefix" enabled="true">
       <commandLine>exiftool</commandLine>
-      <parameterString>-m -q -q #{tagList} #{inFilePath}</parameterString>
+      <parameterString>-m -q -q -overwrite_original #{tagList} #{inFilePath}</parameterString>
       <installationDirective>You need to install exiftool</installationDirective>
     </command>
 
