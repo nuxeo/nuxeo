@@ -29,7 +29,6 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinary;
 import org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinaryToContext;
 import org.nuxeo.binary.metadata.internals.operations.TriggerMetadataMappingOnDocument;
@@ -41,7 +40,6 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -60,19 +58,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.binary.metadata:binary-metadata-disable-listener.xml")
 @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, init = BinaryMetadataServerInit.class)
-public class TestBinaryMetadataOperation {
+public class TestBinaryMetadataOperation extends BaseBinaryMetadataTest {
 
     @Inject
     AutomationService automationService;
 
     @Inject
     OperationContext operationContext;
-
-    @Inject
-    BinaryMetadataService binaryMetadataService;
-
-    @Inject
-    CoreSession session;
 
     private static final Map<String, Object> triggerParameters;
 
