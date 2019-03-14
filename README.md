@@ -45,12 +45,12 @@ Open Nuxeo in [Eclipse Che](https://www.eclipse.org/che/):
 
 ## Requirements
 
-Running the Nuxeo Platform requires Java 8.
+Running the Nuxeo Platform requires Java 11.
 Depending on the features you want to use, you may need some third-party software, such as Libre Office and pdftohtml for document preview or ImageMagick for pictures. The list of third-party software is available in our Admin documentation: [Installing and Setting Up Related Software](http://doc.nuxeo.com/x/zgJc).
 
 Building the Nuxeo Platform requires the following tools:
 
-* JDK 8 (Oracle's JDK or OpenJDK recommended)
+* JDK 11 (Oracle's JDK or OpenJDK recommended)
 * Apache Maven 3.1.1+ (3.2+ recommended)
 * Apache Ant 1.7.1+
 * Git (obviously)
