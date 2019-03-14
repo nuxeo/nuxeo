@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -48,13 +47,10 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @LocalDeploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-async-test.xml",
         "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-public class TestBinaryMetadataAsyncListener {
+public class TestBinaryMetadataAsyncListener extends BaseBinaryMetadataTest {
 
     @Inject
     CoreSession session;
-
-    @Inject
-    EventService eventService;
 
     @Inject
     TransactionalFeature txFeature;

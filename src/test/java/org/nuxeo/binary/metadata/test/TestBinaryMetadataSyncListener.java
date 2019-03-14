@@ -23,15 +23,12 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
@@ -54,10 +51,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml",
         "org.nuxeo.binary.metadata:binary-metadata-contrib-provider.xml"})
 @RepositoryConfig(cleanup = Granularity.METHOD)
-public class TestBinaryMetadataSyncListener {
-
-    @Inject
-    CoreSession session;
+public class TestBinaryMetadataSyncListener extends BaseBinaryMetadataTest {
 
     @Test
     public void testListener() throws Exception {
@@ -167,6 +161,7 @@ public class TestBinaryMetadataSyncListener {
         assertEquals("DDP", picture.getPropertyValue("dc:source"));
         assertEquals("ImageForum", picture.getPropertyValue("dc:rights"));
         assertEquals("Music", picture.getPropertyValue("dc:description").toString().substring(0, 5));
+
     }
 
     @Test
