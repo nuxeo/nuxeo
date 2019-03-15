@@ -21,10 +21,9 @@ import {parseNXQL} from './nuxeo/util/nxql';
 import {i18n} from './ui/i18n';
 
 // Extract the parameters (content view state and page provider)
-var params = new URLSearchParams(location.search);
+var { cv, pp } = parseParams();
 // Parse the content view state
-var cv = params.has('cv') && JSON.parse(b64DecodeUnicode(decodeURIComponent(params.get('cv').replace(/\+/g, ' '))));
-var pp = params.has('pp') && decodeURIComponent(params.get('pp').replace(/\+/g, ' '));
+var cv = cv && JSON.parse(b64DecodeUnicode(cv));
 
 // Check if we're in standalone mode
 var isStandalone = !cv;
@@ -161,6 +160,21 @@ function run(baseURL = '/nuxeo', username = null, password = null) {
 }
 
 // Utils
+function parseParams() {
+  var parameters = {};
+  var query = window.location.search.replace('?', '');
+  if (query.length === 0) {
+    return parameters;
+  }
+  var params = query.split('&');
+  for (var param of params) {
+    var [k, v] = param.split('=');
+    v = v.replace(/\+/g, ' ');
+    parameters[k] = decodeURIComponent(v);
+  }
+  return parameters;
+}
+
 // see https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding
 function b64DecodeUnicode(str) {
   return decodeURIComponent(atob(str).split('').map(function(c) {
