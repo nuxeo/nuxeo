@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.permissions;
 
 import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
-import static org.nuxeo.common.utils.DateUtils.nowIfNull;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_COMMENT;
@@ -148,8 +147,8 @@ public class ACLJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
             jg.writeStringField("permission", ace.getPermission());
             jg.writeBooleanField("granted", ace.isGranted());
             writePrincipalOrGroup(CREATOR_PROPERTY, ace.getCreator(), jg);
-            jg.writeStringField("begin", formatISODateTime(nowIfNull(ace.getBegin())));
-            jg.writeStringField("end", formatISODateTime(nowIfNull(ace.getEnd())));
+            jg.writeStringField("begin", formatISODateTime(ace.getBegin()));
+            jg.writeStringField("end", formatISODateTime(ace.getEnd()));
             jg.writeStringField("status", ace.getStatus().toString().toLowerCase());
 
             if (ctx.getFetched(NAME).contains(EXTENDED_ACLS_PROPERTY)) {
