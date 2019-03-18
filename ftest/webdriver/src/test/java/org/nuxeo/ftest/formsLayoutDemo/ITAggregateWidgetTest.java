@@ -20,9 +20,12 @@ package org.nuxeo.ftest.formsLayoutDemo;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.HomePage;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.Page;
 import org.openqa.selenium.By;
@@ -31,6 +34,16 @@ import org.openqa.selenium.By;
  * @since 7.4
  */
 public class ITAggregateWidgetTest extends AbstractTest {
+
+    @Before
+    public void before() throws Exception {
+        RestHelper.createUser(TEST_USERNAME, TEST_USERNAME, "First Name", "Last Name", null, null, "members");
+    }
+
+    @After
+    public void after() {
+        RestHelper.cleanup();
+    }
 
     protected void navigateTo(String pageId) {
         driver.get(HomePage.URL);
@@ -110,14 +123,15 @@ public class ITAggregateWidgetTest extends AbstractTest {
         checkNoError();
         String prefix1 = "selectManyCheckboxUserAggregate_edit_form:nxl_selectManyCheckboxUserAggregate:nxw_widget:";
         checkLabel(prefix1 + "0", "Administrator (10)");
-        checkLabel(prefix1 + "1", "Members group (5)");
+        checkLabel(prefix1 + "1", "First Name Last Name (3)");
+        checkLabel(prefix1 + "2", "Members group (5)");
     }
 
     @Test
     public void testSelectManyListboxUserAggregateWidget() {
         navigateTo("selectManyListboxUserAggregateWidget");
         checkNoError();
-        assertEquals("Administrator (10)\nMembers group (5)",
+        assertEquals("Administrator (10)\n" + "First Name Last Name (3)\n" + "Members group (5)",
                 driver.findElement(By.xpath("//form[@id='selectManyListboxUserAggregate_edit_form']//table//tr/td[2]"))
                       .getText());
     }

@@ -366,6 +366,7 @@ public class LayoutDemoContext implements Serializable {
 
             buckets = new ArrayList<>();
             buckets.add(new BucketTerm("user:Administrator", 10));
+            buckets.add(new BucketTerm("jdoe", 3));
             buckets.add(new BucketTerm("group:members", 5));
             Aggregate<Bucket> userGroupTerms = new AggregateBase<>(mockDef, null);
             userGroupTerms.setBuckets(buckets);
