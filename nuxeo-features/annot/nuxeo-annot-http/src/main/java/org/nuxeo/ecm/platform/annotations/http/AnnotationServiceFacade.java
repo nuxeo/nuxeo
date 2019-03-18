@@ -46,18 +46,13 @@ public class AnnotationServiceFacade {
 
     private static final String TRANSIENT_GRAPH_TYPE = "jena";
 
-    private AnnotationsService service;
-
     private final AnnotationManager manager = new AnnotationManager();
 
     public AnnotationServiceFacade() {
     }
 
     protected AnnotationsService getService() {
-        if (service == null) {
-            service = Framework.getService(AnnotationsService.class);
-        }
-        return service;
+        return Framework.getService(AnnotationsService.class);
     }
 
     public void query(String uri, OutputStream outputStream, NuxeoPrincipal name) {

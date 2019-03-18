@@ -69,8 +69,6 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
 
     private ImporterConfig config;
 
-    private UserWorkspaceService userWorkspaceService;
-
     protected final Cache<String, String> profileUidCache = CacheBuilder.newBuilder()
                                                                         .concurrencyLevel(CACHE_CONCURRENCY_LEVEL)
                                                                         .maximumSize(CACHE_MAXIMUM_SIZE)
@@ -80,7 +78,8 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
 
     @Override
     public DocumentModel getUserProfileDocument(CoreSession session) {
-        DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(session, null);
+        DocumentModel userWorkspace = Framework.getService(UserWorkspaceService.class)
+                                               .getCurrentUserPersonalWorkspace(session, null);
         if (userWorkspace == null) {
             return null;
         }
@@ -98,8 +97,8 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
 
     @Override
     public DocumentModel getUserProfileDocument(String userName, CoreSession session) {
-        DocumentModel userWorkspace = getUserWorkspaceService().getUserPersonalWorkspace(userName,
-                session.getRootDocument());
+        DocumentModel userWorkspace = Framework.getService(UserWorkspaceService.class)
+                                               .getUserPersonalWorkspace(userName, session.getRootDocument());
         if (userWorkspace == null) {
             return null;
         }
@@ -125,13 +124,6 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
         userProfileDoc.detach(true);
         userProfileDoc.getDataModels().putAll(userModel.getDataModels());
         return userProfileDoc;
-    }
-
-    private UserWorkspaceService getUserWorkspaceService() {
-        if (userWorkspaceService == null) {
-            userWorkspaceService = Framework.getService(UserWorkspaceService.class);
-        }
-        return userWorkspaceService;
     }
 
     private class UserProfileDocumentGetter extends UnrestrictedSessionRunner {

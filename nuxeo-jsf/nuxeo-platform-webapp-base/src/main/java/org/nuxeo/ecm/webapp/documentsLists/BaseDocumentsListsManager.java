@@ -37,8 +37,6 @@ public abstract class BaseDocumentsListsManager implements Serializable {
 
     private static final long serialVersionUID = 98757690654316L;
 
-    private static DocumentsListsService dlService;
-
     private transient DocumentsListsPersistenceManager persistenceManager;
 
     // ListName => DocumentModel List
@@ -53,10 +51,7 @@ public abstract class BaseDocumentsListsManager implements Serializable {
     protected final Map<String, DocumentsListDescriptor> documentsLists_descriptors = new HashMap<String, DocumentsListDescriptor>();
 
     protected DocumentsListsService getService() {
-        if (dlService == null) {
-            dlService = (DocumentsListsService) Framework.getRuntime().getComponent(DocumentsListsService.NAME);
-        }
-        return dlService;
+        return (DocumentsListsService) Framework.getRuntime().getComponent(DocumentsListsService.NAME);
     }
 
     protected String userName;

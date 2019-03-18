@@ -51,6 +51,10 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
 
     protected Blob zipBlob;
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link MimetypeRegistry} instead.
+     */
+    @Deprecated
     protected MimetypeRegistry mimeTypeService;
 
     protected String key;
@@ -67,7 +71,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
         String filePath = key + path;
         File file = new File(filePath);
         Blob blob = Blobs.createBlob(file);
-        String mimeType = getMimeTypeService().getMimetypeFromBlob(blob);
+        String mimeType = Framework.getService(MimetypeRegistry.class).getMimetypeFromBlob(blob);
         blob.setMimeType(mimeType);
         blob.setFilename(path);
         return blob;
@@ -135,7 +139,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
 
     public String getMimeType(File file) throws ConversionException {
         try {
-            return getMimeTypeService().getMimetypeFromFile(file);
+            return Framework.getService(MimetypeRegistry.class).getMimetypeFromFile(file);
         } catch (ConversionException e) {
             throw new ConversionException("Could not get MimeTypeRegistry", e);
         } catch (MimetypeNotFoundException | MimetypeDetectionException e) {
@@ -143,6 +147,10 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
         }
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link MimetypeRegistry} instead.
+     */
+    @Deprecated
     public MimetypeRegistry getMimeTypeService() throws ConversionException {
         if (mimeTypeService == null) {
             mimeTypeService = Framework.getService(MimetypeRegistry.class);

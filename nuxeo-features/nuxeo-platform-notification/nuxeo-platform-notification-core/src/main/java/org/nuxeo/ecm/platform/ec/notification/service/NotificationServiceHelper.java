@@ -33,8 +33,6 @@ public final class NotificationServiceHelper {
     private NotificationServiceHelper() {
     }
 
-    private static UserManager userManager;
-
     /**
      * Locates the notification service using NXRuntime.
      */
@@ -43,10 +41,7 @@ public final class NotificationServiceHelper {
     }
 
     public static UserManager getUsersService() {
-        if (userManager == null) {
-            userManager = Framework.getService(UserManager.class);
-        }
-        return userManager;
+        return Framework.getService(UserManager.class);
     }
 
 }

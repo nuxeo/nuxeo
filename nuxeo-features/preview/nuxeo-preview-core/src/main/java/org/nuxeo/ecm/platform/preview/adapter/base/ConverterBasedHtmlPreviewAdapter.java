@@ -69,6 +69,10 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
 
     protected String defaultFieldXPath;
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link MimetypeRegistry} instead.
+     */
+    @Deprecated
     protected MimetypeRegistry mimeTypeService;
 
     /**
@@ -265,7 +269,7 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
 
     public String getMimeType(File file) throws ConversionException {
         try {
-            return getMimeTypeService().getMimetypeFromFile(file);
+            return Framework.getService(MimetypeRegistry.class).getMimetypeFromFile(file);
         } catch (ConversionException e) {
             throw new ConversionException("Could not get MimeTypeRegistry");
         } catch (MimetypeNotFoundException | MimetypeDetectionException e) {
@@ -273,6 +277,10 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         }
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link MimetypeRegistry} instead.
+     */
+    @Deprecated
     public MimetypeRegistry getMimeTypeService() throws ConversionException {
         if (mimeTypeService == null) {
             mimeTypeService = Framework.getService(MimetypeRegistry.class);

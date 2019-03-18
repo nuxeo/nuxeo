@@ -59,8 +59,16 @@ public class RestfulPhaseListener implements PhaseListener {
 
     public static final String SEAM_HOTRELOAD_TRIGGER_ACTION = "#{seamReloadContext.triggerReloadIdNeeded()}";
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link URLPolicyService} instead.
+     */
+    @Deprecated
     protected URLPolicyService service;
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link URLPolicyService} instead.
+     */
+    @Deprecated
     protected URLPolicyService getURLPolicyService() {
         if (service == null) {
             service = Framework.getService(URLPolicyService.class);
@@ -78,7 +86,7 @@ public class RestfulPhaseListener implements PhaseListener {
         FacesContext context = event.getFacesContext();
         HttpServletRequest httpRequest = (HttpServletRequest) context.getExternalContext().getRequest();
         try {
-            URLPolicyService service = getURLPolicyService();
+            URLPolicyService service = Framework.getService(URLPolicyService.class);
             if (service.isCandidateForDecoding(httpRequest)) {
                 // Make sure we're in a transaction, and that Seam knows it.
                 // Sometimes, when there is a page action, SeamPhaseListener

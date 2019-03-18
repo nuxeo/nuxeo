@@ -39,21 +39,23 @@ public class ConversationTrashManager implements Serializable {
 
     private static final Log log = LogFactory.getLog(ConversationTrashManager.class);
 
-    private static TrashManagementService trashService;
-
     public void initTrashManager() {
         log.debug("Initialize");
     }
 
     public static boolean isTrashManagementEnabled() {
-        return getService().isTrashManagementEnabled();
+        TrashManagementService trashManagementService = (TrashManagementService) Framework.getRuntime()
+                                                                                          .getComponent(
+                                                                                                  TrashManagementService.NAME);
+        return trashManagementService.isTrashManagementEnabled();
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link TrashManagementService} instead.
+     */
+    @Deprecated
     protected static TrashManagementService getService() {
-        if (trashService == null) {
-            trashService = (TrashManagementService) Framework.getRuntime().getComponent(TrashManagementService.NAME);
-        }
-        return trashService;
+        return (TrashManagementService) Framework.getRuntime().getComponent(TrashManagementService.NAME);
     }
 
 }

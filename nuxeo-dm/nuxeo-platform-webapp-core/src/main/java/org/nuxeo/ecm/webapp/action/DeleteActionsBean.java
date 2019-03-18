@@ -98,13 +98,15 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     @In
     protected transient NuxeoPrincipal currentUser;
 
+    @In(create = true)
     protected transient TrashService trashService;
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link TrashService} instead.
+     */
+    @Deprecated
     protected TrashService getTrashService() {
-        if (trashService == null) {
-            trashService = Framework.getService(TrashService.class);
-        }
-        return trashService;
+        return Framework.getService(TrashService.class);
     }
 
     @Override
@@ -112,7 +114,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
         if (container == null) {
             return false;
         }
-        return getTrashService().folderAllowsDelete(container);
+        return trashService.folderAllowsDelete(container);
     }
 
     @Override
@@ -123,34 +125,33 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     @Override
     public boolean getCanDelete(String listName) {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(listName);
-        return getTrashService().canDelete(docs, currentUser, false);
+        return trashService.canDelete(docs, currentUser, false);
     }
 
     @Override
     public boolean getCanDeleteSections() {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SECTION_SELECTION);
-        return getTrashService().canDelete(docs, currentUser, true);
+        return trashService.canDelete(docs, currentUser, true);
     }
 
     @Override
     public boolean getCanPurge() {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
-        return getTrashService().canPurgeOrUntrash(docs, currentUser);
+        return trashService.canPurgeOrUntrash(docs, currentUser);
     }
 
     public boolean getCanEmptyTrash() {
         List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
         if (selectedDocuments.size() == 0) {
-            DocumentModelList currentTrashDocuments = getTrashService().getDocuments(
-                    navigationContext.getCurrentDocument());
-            return getTrashService().canPurgeOrUntrash(currentTrashDocuments, currentUser);
+            DocumentModelList currentTrashDocuments = trashService.getDocuments(navigationContext.getCurrentDocument());
+            return trashService.canPurgeOrUntrash(currentTrashDocuments, currentUser);
         }
         return false;
     }
 
     @Override
     public boolean checkDeletePermOnParents(List<DocumentModel> docs) {
-        return getTrashService().checkDeletePermOnParents(docs);
+        return trashService.checkDeletePermOnParents(docs);
     }
 
     @Override
@@ -227,9 +228,9 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
         if (docs == null) {
             return null;
         }
-        TrashInfo info = getTrashService().getTrashInfo(docs, currentUser, false, false);
+        TrashInfo info = trashService.getTrashInfo(docs, currentUser, false, false);
 
-        DocumentModel targetContext = getTrashService().getAboveDocument(navigationContext.getCurrentDocument(),
+        DocumentModel targetContext = trashService.getAboveDocument(navigationContext.getCurrentDocument(),
                 info.rootPaths);
 
         // remove from all lists
@@ -240,17 +241,17 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
         // operation to do
         switch (op) {
         case OP_PURGE:
-            getTrashService().purgeDocuments(documentManager, info.rootRefs);
+            trashService.purgeDocuments(documentManager, info.rootRefs);
             parentRefs = info.rootParentRefs;
             msgid = "n_deleted_docs";
             break;
         case OP_DELETE:
-            getTrashService().trashDocuments(info.docs);
+            trashService.trashDocuments(info.docs);
             parentRefs = info.rootParentRefs;
             msgid = "n_deleted_docs";
             break;
         case OP_UNDELETE:
-            parentRefs = getTrashService().undeleteDocuments(info.docs);
+            parentRefs = trashService.undeleteDocuments(info.docs);
             msgid = "n_undeleted_docs";
             break;
         default:
@@ -326,7 +327,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
             log.warn("Null currentDocument in navigationContext");
             return false;
         }
-        return getTrashService().canPurgeOrUntrash(doc, currentUser);
+        return trashService.canPurgeOrUntrash(doc, currentUser);
     }
 
     public boolean restoreActionDisplay() {
