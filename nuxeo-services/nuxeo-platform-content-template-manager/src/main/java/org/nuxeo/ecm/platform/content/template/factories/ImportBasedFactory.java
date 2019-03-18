@@ -55,6 +55,10 @@ public class ImportBasedFactory extends BaseContentFactory {
 
     public static final String IMPORT_OVERWRITE_OPTION = "overwrite";
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link FileManager} instead.
+     */
+    @Deprecated
     protected FileManager fileManager;
 
     protected Map<String, String> options;
@@ -141,9 +145,10 @@ public class ImportBasedFactory extends BaseContentFactory {
      * @param parentPath of the targetDocument
      */
     protected void importBlob(File file, String parentPath) throws IOException {
+        FileManager fileManagerService = Framework.getService(FileManager.class);
         if (file.isDirectory()) {
-            DocumentModel createdFolder = getFileManagerService().createFolder(session, file.getAbsolutePath(),
-                    parentPath, true);
+            DocumentModel createdFolder = fileManagerService.createFolder(session, file.getAbsolutePath(), parentPath,
+                    true);
             File[] files = file.listFiles();
             for (File childFile : files) {
                 importBlob(childFile, createdFolder.getPathAsString());
@@ -154,14 +159,19 @@ public class ImportBasedFactory extends BaseContentFactory {
             FileImporterContext context = FileImporterContext.builder(session, fb, parentPath)
                                                              .overwrite(overwrite)
                                                              .build();
-            getFileManagerService().createOrUpdateDocument(context);
+            fileManagerService.createOrUpdateDocument(context);
         }
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link FileManager} instead.
+     */
+    @Deprecated
     protected FileManager getFileManagerService() {
         if (fileManager == null) {
             fileManager = Framework.getService(FileManager.class);
         }
         return fileManager;
     }
+
 }

@@ -51,30 +51,25 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class PlatformFunctions extends CoreFunctions {
 
-    private volatile DirectoryService dirService;
-
     private static final Log log = LogFactory.getLog(PlatformFunctions.class);
-
-    private volatile UserManager userMgr;
 
     public static final String HIBERNATE_SEQUENCER_PROPERTY = "org.nuxeo.ecm.core.uidgen.sequencer.hibernate";
 
     public UserManager getUserManager() {
-        if (userMgr == null) {
-            userMgr = Framework.getService(UserManager.class);
-        }
-        return userMgr;
+        return Framework.getService(UserManager.class);
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link DirectoryService} instead.
+     */
+    @Deprecated
     public DirectoryService getDirService() {
-        if (dirService == null) {
-            dirService = Framework.getService(DirectoryService.class);
-        }
-        return dirService;
+        return Framework.getService(DirectoryService.class);
     }
 
     public String getVocabularyLabel(String voc, String key) {
-        try (Session session = getDirService().open(voc)) {
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        try (Session session = directoryService.open(voc)) {
             if (!session.hasEntry(key)) {
                 log.debug("Unable to find the key '" + key + "' in the vocabulary '" + voc + "'.");
                 return key;

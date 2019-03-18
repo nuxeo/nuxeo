@@ -26,7 +26,6 @@ import static org.jboss.seam.ScopeType.SESSION;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -45,7 +44,6 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.webapp.action.MainTabsActions;
 import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Personal user workspace manager actions bean.
@@ -76,6 +74,7 @@ public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActi
     protected DocumentModel lastAccessedDocument;
 
     // Rux INA-252: very likely cause of passivation error
+    @In(create = true)
     protected transient UserWorkspaceService userWorkspaceService;
 
     // Rux INA-252: another cause of passivation error
@@ -103,20 +102,6 @@ public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActi
         initialized = true;
     }
 
-    @Destroy
-    public void destroy() {
-        userWorkspaceService = null;
-        log.debug("Removing user workspace actions bean");
-    }
-
-    private UserWorkspaceService getUserWorkspaceService() {
-        if (userWorkspaceService != null) {
-            return userWorkspaceService;
-        }
-        userWorkspaceService = Framework.getService(UserWorkspaceService.class);
-        return userWorkspaceService;
-    }
-
     public DocumentModel getCurrentUserPersonalWorkspace() {
         if (!initialized) {
             initialize();
@@ -128,7 +113,7 @@ public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActi
             // dealt with by setCurrentDocument, which will deal with
             // the lack of a documentManager
         }
-        return getUserWorkspaceService().getCurrentUserPersonalWorkspace(documentManager,
+        return userWorkspaceService.getCurrentUserPersonalWorkspace(documentManager,
                 navigationContext.getCurrentDocument());
     }
 
@@ -192,7 +177,7 @@ public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActi
         }
         if (mainTabsActions.isOnMainTab(DOCUMENT_MANAGEMENT_ACTION)) {
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
-            showingPersonalWorkspace = getUserWorkspaceService().isUnderUserWorkspace(currentUser, null, currentDoc);
+            showingPersonalWorkspace = userWorkspaceService.isUnderUserWorkspace(currentUser, null, currentDoc);
         }
         return showingPersonalWorkspace;
     }

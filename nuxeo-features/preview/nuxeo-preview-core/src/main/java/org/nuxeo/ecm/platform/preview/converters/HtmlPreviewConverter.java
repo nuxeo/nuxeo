@@ -37,12 +37,20 @@ import org.nuxeo.runtime.api.Framework;
 
 public class HtmlPreviewConverter implements ExternalConverter {
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link ConversionService} instead.
+     */
+    @Deprecated
     protected static ConversionService cs;
 
     protected static Boolean canUsePDF2Html;
 
     protected static Boolean canUseOOo2Html;
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link ConversionService} instead.
+     */
+    @Deprecated
     protected static ConversionService getConversionService() {
         if (cs == null) {
             cs = Framework.getService(ConversionService.class);
@@ -53,7 +61,9 @@ public class HtmlPreviewConverter implements ExternalConverter {
     protected static boolean getCanUsePDF2Html() {
         if (canUsePDF2Html == null) {
             try {
-                canUsePDF2Html = getConversionService().isConverterAvailable("pdf2html").isAvailable();
+                canUsePDF2Html = Framework.getService(ConversionService.class)
+                                          .isConverterAvailable("pdf2html")
+                                          .isAvailable();
             } catch (ConversionException e) {
                 return false;
             }
@@ -64,7 +74,9 @@ public class HtmlPreviewConverter implements ExternalConverter {
     protected static boolean getCanUseOOo2Html() {
         if (canUseOOo2Html == null) {
             try {
-                canUseOOo2Html = getConversionService().isConverterAvailable("office2html").isAvailable();
+                canUseOOo2Html = Framework.getService(ConversionService.class)
+                                          .isConverterAvailable("office2html")
+                                          .isAvailable();
             } catch (ConversionException e) {
                 return false;
             }
@@ -115,7 +127,7 @@ public class HtmlPreviewConverter implements ExternalConverter {
         BlobHolder result = blobHolder;
 
         for (String converterName : subConverters) {
-            result = getConversionService().convert(converterName, result, parameters);
+            result = Framework.getService(ConversionService.class).convert(converterName, result, parameters);
         }
         Blob blob = result.getBlob();
         if (blob != null && blob.getEncoding() == null) {

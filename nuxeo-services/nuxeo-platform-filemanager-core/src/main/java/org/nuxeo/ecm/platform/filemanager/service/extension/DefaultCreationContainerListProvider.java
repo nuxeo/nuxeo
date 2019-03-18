@@ -47,8 +47,16 @@ public class DefaultCreationContainerListProvider extends AbstractCreationContai
 
     public static final String CONTAINER_LIST_PROVIDER_QM = "DEFAULT_CREATION_CONTAINER_LIST_PROVIDER";
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link PageProviderService} instead.
+     */
+    @Deprecated
     protected PageProviderService ppService;
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link PageProviderService} instead.
+     */
+    @Deprecated
     protected PageProviderService getPageProviderService() {
         if (ppService == null) {
             ppService = Framework.getService(PageProviderService.class);
@@ -61,7 +69,9 @@ public class DefaultCreationContainerListProvider extends AbstractCreationContai
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) documentManager);
 
-        PageProvider<DocumentModel> allContainers = (PageProvider<DocumentModel>) getPageProviderService().getPageProvider(
+        PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
+
+        PageProvider<DocumentModel> allContainers = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
                 CONTAINER_LIST_PROVIDER_QM, null, null, null, props);
         DocumentModelList filteredContainers = new DocumentModelListImpl();
         for (DocumentModel container : allContainers.getCurrentPage()) {

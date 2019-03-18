@@ -54,7 +54,7 @@ public abstract class AbstractUnicityChecker {
 
     protected void doUnicityCheck(DocumentModel doc2Check, CoreSession session, Event event) {
 
-        List<String> xpathFields = getFileManagerService().getFields();
+        List<String> xpathFields = Framework.getService(FileManager.class).getFields();
 
         if (xpathFields == null || xpathFields.isEmpty()) {
             unicityCheckEnabled = false;
@@ -117,17 +117,7 @@ public abstract class AbstractUnicityChecker {
     }
 
     protected boolean isUnicityCheckEnabled() {
-        if (unicityCheckEnabled == null) {
-            unicityCheckEnabled = getFileManagerService().isUnicityEnabled();
-        }
-        return unicityCheckEnabled;
-    }
-
-    private FileManager getFileManagerService() {
-        if (fileManager == null) {
-            fileManager = Framework.getRuntime().getService(FileManager.class);
-        }
-        return fileManager;
+        return Framework.getService(FileManager.class).isUnicityEnabled();
     }
 
 }

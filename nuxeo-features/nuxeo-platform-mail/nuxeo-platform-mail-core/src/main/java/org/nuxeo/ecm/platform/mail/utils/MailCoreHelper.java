@@ -89,29 +89,11 @@ public final class MailCoreHelper {
 
     public static final long EMAILS_LIMIT_DEFAULT = 100;
 
-    private static MailService mailService;
-
-    private static MimetypeRegistry mimeService;
-
     public static final String IMAP_DEBUG = "org.nuxeo.mail.imap.debug";
 
     protected static final CopyOnWriteArrayList<String> processingMailBoxes = new CopyOnWriteArrayList<>();
 
     private MailCoreHelper() {
-    }
-
-    private static MailService getMailService() {
-        if (mailService == null) {
-            mailService = Framework.getService(MailService.class);
-        }
-        return mailService;
-    }
-
-    private static MimetypeRegistry getMimeService() {
-        if (mimeService == null) {
-            mimeService = Framework.getService(MimetypeRegistry.class);
-        }
-        return mimeService;
     }
 
     /**
@@ -136,7 +118,7 @@ public final class MailCoreHelper {
         String email = (String) currentMailFolder.getPropertyValue(EMAIL_PROPERTY_NAME);
         String password = (String) currentMailFolder.getPropertyValue(PASSWORD_PROPERTY_NAME);
         if (!StringUtils.isEmpty(email) && !StringUtils.isEmpty(password)) {
-            mailService = getMailService();
+            MailService mailService = Framework.getService(MailService.class);
 
             MessageActionPipe pipe = mailService.getPipe(PIPE_NAME);
 
@@ -146,7 +128,7 @@ public final class MailCoreHelper {
             // initialize context
             ExecutionContext initialExecutionContext = new ExecutionContext();
 
-            initialExecutionContext.put(MIMETYPE_SERVICE_KEY, getMimeService());
+            initialExecutionContext.put(MIMETYPE_SERVICE_KEY, Framework.getService(MimetypeRegistry.class));
 
             initialExecutionContext.put(PARENT_PATH_KEY, currentMailFolder.getPathAsString());
 

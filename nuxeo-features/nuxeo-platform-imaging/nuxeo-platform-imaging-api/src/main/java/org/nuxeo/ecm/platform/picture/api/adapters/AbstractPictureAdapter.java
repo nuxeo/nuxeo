@@ -150,8 +150,6 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
     private CoreSession session;
 
-    private ConversionService converionService;
-
     @Override
     public void setDocumentModel(DocumentModel doc) {
         this.doc = doc;
@@ -162,10 +160,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     }
 
     protected ConversionService getConversionService() {
-        if (converionService == null) {
-            converionService = Framework.getService(ConversionService.class);
-        }
-        return converionService;
+        return Framework.getService(ConversionService.class);
     }
 
     protected CoreSession getSession() {

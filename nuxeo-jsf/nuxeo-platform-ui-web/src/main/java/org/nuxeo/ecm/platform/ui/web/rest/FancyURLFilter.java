@@ -50,6 +50,10 @@ public class FancyURLFilter implements Filter {
 
     private static final Log log = LogFactory.getLog(FancyURLFilter.class);
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link URLPolicyService} instead.
+     */
+    @Deprecated
     protected URLPolicyService urlService;
 
     protected ServletContext servletContext;
@@ -60,12 +64,18 @@ public class FancyURLFilter implements Filter {
         servletContext = conf.getServletContext();
     }
 
+
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link URLPolicyService} instead.
+     */
+    @Deprecated
     protected URLPolicyService getUrlService() {
         if (urlService == null) {
             urlService = Framework.getService(URLPolicyService.class);
         }
         return urlService;
     }
+
 
     @Override
     public void destroy() {
@@ -77,8 +87,9 @@ public class FancyURLFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        URLPolicyService urlService = Framework.getService(URLPolicyService.class);
         try {
-            getUrlService();
             // initialize its view id manager if necessary
             urlService.initViewIdManager(servletContext, httpRequest, httpResponse);
 

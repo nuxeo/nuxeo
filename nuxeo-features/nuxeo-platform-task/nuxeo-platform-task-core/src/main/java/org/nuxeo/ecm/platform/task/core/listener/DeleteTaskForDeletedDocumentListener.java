@@ -39,25 +39,25 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DeleteTaskForDeletedDocumentListener implements EventListener {
 
-    private TaskService taskService;
-
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link TaskService} instead.
+     */
+    @Deprecated
     public TaskService getTaskService() {
-        if (taskService == null) {
-            taskService = Framework.getService(TaskService.class);
-        }
-        return taskService;
+        return Framework.getService(TaskService.class);
     }
 
     @Override
     public void handleEvent(Event event) {
         if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
+            TaskService taskService = Framework.getService(TaskService.class);
             DocumentEventContext context = (DocumentEventContext) event.getContext();
             DocumentModel dm = context.getSourceDocument();
             CoreSession coreSession = context.getCoreSession();
-            List<Task> tasks = getTaskService().getTaskInstances(dm, (NuxeoPrincipal) null, coreSession);
+            List<Task> tasks = taskService.getTaskInstances(dm, (NuxeoPrincipal) null, coreSession);
             if (!tasks.isEmpty()) {
                 for (Task task : tasks) {
-                    getTaskService().deleteTask(coreSession, task.getId());
+                    taskService.deleteTask(coreSession, task.getId());
                 }
             }
         }

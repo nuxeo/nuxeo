@@ -140,6 +140,7 @@ public class FileManageActionsBean implements FileManageActions {
     @In(create = true)
     protected Map<String, String> messages;
 
+    @In(create = true)
     protected FileManager fileManager;
 
     /**
@@ -147,11 +148,12 @@ public class FileManageActionsBean implements FileManageActions {
      */
     protected List<String> tmpFilePaths = new ArrayList<String>();
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link FileManager} instead.
+     */
+    @Deprecated
     protected FileManager getFileManagerService() {
-        if (fileManager == null) {
-            fileManager = Framework.getService(FileManager.class);
-        }
-        return fileManager;
+        return Framework.getService(FileManager.class);
     }
 
     @Override
@@ -179,7 +181,7 @@ public class FileManageActionsBean implements FileManageActions {
             FileImporterContext context = FileImporterContext.builder(documentManager, blob, path)
                                                              .overwrite(true)
                                                              .build();
-            createdDoc = getFileManagerService().createOrUpdateDocument(context);
+            createdDoc = fileManager.createOrUpdateDocument(context);
         } catch (IOException e) {
             throw new NuxeoException("Can not write blob for" + blob.getFilename(), e);
         }
@@ -250,7 +252,7 @@ public class FileManageActionsBean implements FileManageActions {
                                                              .overwrite(true)
                                                              .fileName(fullName)
                                                              .build();
-            createdDoc = getFileManagerService().createOrUpdateDocument(context);
+            createdDoc = fileManager.createOrUpdateDocument(context);
         } catch (NuxeoException | IOException t) {
             Throwable unwrappedError = ExceptionHelper.unwrapException(t);
             if (ExceptionHelper.isSecurityError(unwrappedError)) {
@@ -302,7 +304,7 @@ public class FileManageActionsBean implements FileManageActions {
 
             DocumentModel createdDoc;
             try {
-                createdDoc = getFileManagerService().createFolder(documentManager, fullName, path, true);
+                createdDoc = fileManager.createFolder(documentManager, fullName, path, true);
             } catch (NuxeoException | IOException t) {
                 Throwable unwrappedError = ExceptionHelper.unwrapException(t);
                 if (ExceptionHelper.isSecurityError(unwrappedError)) {

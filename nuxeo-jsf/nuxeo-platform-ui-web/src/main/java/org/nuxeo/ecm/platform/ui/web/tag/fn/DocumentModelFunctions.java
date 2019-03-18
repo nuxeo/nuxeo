@@ -69,7 +69,6 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions;
-import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
@@ -97,14 +96,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     private static final String NXEDIT_URL_SCHEME = "nxedit";
 
-    private static MimetypeRegistry mimetypeService;
-
-    private static TypeManager typeManagerService;
-
-    private static DirectoryService dirService;
-
-    private static LifeCycleService lifeCycleService;
-
     // static cache of default viewId per document type shared all among
     // threads
     private static final Map<String, String> defaultViewCache = Collections.synchronizedMap(
@@ -114,34 +105,13 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     private DocumentModelFunctions() {
     }
 
-    private static DirectoryService getDirectoryService() {
-        if (dirService == null) {
-            dirService = DirectoryHelper.getDirectoryService();
-        }
-        return dirService;
-    }
-
-    private static MimetypeRegistry getMimetypeService() {
-        if (mimetypeService == null) {
-            mimetypeService = Framework.getService(MimetypeRegistry.class);
-        }
-        return mimetypeService;
-    }
-
-    private static TypeManager getTypeManager() {
-        if (typeManagerService == null) {
-            typeManagerService = Framework.getService(TypeManager.class);
-        }
-        return typeManagerService;
-    }
-
     private static String getDefaultView(DocumentModel doc) {
         String docType = doc.getType();
 
         if (defaultViewCache.containsKey(docType)) {
             return defaultViewCache.get(docType);
         } else {
-            org.nuxeo.ecm.platform.types.Type type = getTypeManager().getType(docType);
+            org.nuxeo.ecm.platform.types.Type type = Framework.getService(TypeManager.class).getType(docType);
             if (type == null) {
                 return null;
             }
@@ -149,16 +119,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             defaultViewCache.put(docType, defaultView);
             return defaultView;
         }
-    }
-
-    private static LifeCycleService geLifeCycleService() {
-        if (lifeCycleService == null) {
-            lifeCycleService = Framework.getService(LifeCycleService.class);
-            if (lifeCycleService == null) {
-                log.error("No Life Cycle service registered");
-            }
-        }
-        return lifeCycleService;
     }
 
     public static TypeInfo typeInfo(DocumentModel document) {
@@ -261,7 +221,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String fileIconPath(Blob blob) {
         String iconPath = "";
         if (blob != null) {
-            MimetypeEntry mimeEntry = getMimetypeService().getMimetypeEntryByMimeType(blob.getMimeType());
+            MimetypeEntry mimeEntry = Framework.getService(MimetypeRegistry.class)
+                                               .getMimetypeEntryByMimeType(blob.getMimeType());
             if (mimeEntry != null) {
                 if (mimeEntry.getIconPath() != null) {
                     // FIXME: above Context should find it
@@ -906,7 +867,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (id == null) {
             return "";
         }
-        try (Session directory = getDirectoryService().open(directoryName)) {
+        try (Session directory = Framework.getService(DirectoryService.class).open(directoryName)) {
             // XXX hack, directory entries have only one datamodel
             DocumentModel documentModel = directory.getEntry(id);
             String schemaName = documentModel.getSchemas()[0];
@@ -929,7 +890,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      */
     public static Collection<String> getAvailableLifeCycleTransitions(String lifeCycleName, String currentState)
             throws LifeCycleException {
-        LifeCycle lf = geLifeCycleService().getLifeCycleByName(lifeCycleName);
+        LifeCycle lf = Framework.getService(LifeCycleService.class).getLifeCycleByName(lifeCycleName);
         return lf.getAllowedStateTransitionsFrom(currentState);
     }
 

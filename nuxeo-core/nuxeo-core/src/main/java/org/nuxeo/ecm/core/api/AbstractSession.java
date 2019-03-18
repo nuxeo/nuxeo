@@ -163,34 +163,16 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 MetricRegistry.name("nuxeo.repositories", getRepositoryName(), "documents", "update"));
     }
 
-    /**
-     * Used to check permissions.
-     */
-    private transient SecurityService securityService;
-
     protected SecurityService getSecurityService() {
-        if (securityService == null) {
-            securityService = Framework.getService(SecurityService.class);
-        }
-        return securityService;
+        return Framework.getService(SecurityService.class);
     }
-
-    private transient VersioningService versioningService;
 
     protected VersioningService getVersioningService() {
-        if (versioningService == null) {
-            versioningService = Framework.getService(VersioningService.class);
-        }
-        return versioningService;
+        return Framework.getService(VersioningService.class);
     }
 
-    private transient DocumentValidationService validationService;
-
     protected DocumentValidationService getValidationService() {
-        if (validationService == null) {
-            validationService = Framework.getService(DocumentValidationService.class);
-        }
-        return validationService;
+        return Framework.getService(DocumentValidationService.class);
     }
 
     /**
@@ -731,13 +713,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         return docModel;
     }
 
-    private transient LifeCycleService lifeCycleService;
-
     private LifeCycleService getLifeCycleService() {
-        if (lifeCycleService == null) {
-            lifeCycleService = Framework.getService(LifeCycleService.class);
-        }
-        return lifeCycleService;
+        return Framework.getService(LifeCycleService.class);
     }
 
     protected Document fillCreateOptions(DocumentRef parentRef, String childName, Map<String, Serializable> options)
@@ -1293,7 +1270,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Collection<Transformer> transformers;
         if (NXQL.NXQL.equals(queryType)) {
             String repoName = getRepositoryName();
-            transformers = securityService.getPoliciesQueryTransformers(repoName);
+            transformers = getSecurityService().getPoliciesQueryTransformers(repoName);
         } else {
             transformers = Collections.emptyList();
         }

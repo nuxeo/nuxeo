@@ -118,13 +118,12 @@ public class XSDLoader {
 
     protected SchemaBindingDescriptor sd;
 
-    private ObjectResolverService referenceService;
-
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link ObjectResolverService} instead.
+     */
+    @Deprecated
     protected ObjectResolverService getObjectResolverService() {
-        if (referenceService == null) {
-            referenceService = Framework.getService(ObjectResolverService.class);
-        }
-        return referenceService;
+        return Framework.getService(ObjectResolverService.class);
     }
 
     public XSDLoader(SchemaManagerImpl schemaManager) {
@@ -608,7 +607,8 @@ public class XSDLoader {
                 }
             }
             if (refName != null) {
-                ObjectResolver resolver = getObjectResolverService().getResolver(refName, refParameters);
+                ObjectResolver resolver = Framework.getService(ObjectResolverService.class)
+                                                   .getResolver(refName, refParameters);
                 if (resolver != null) {
                     simpleType.setResolver(resolver);
                     constraints.add(new ObjectResolverConstraint(resolver));

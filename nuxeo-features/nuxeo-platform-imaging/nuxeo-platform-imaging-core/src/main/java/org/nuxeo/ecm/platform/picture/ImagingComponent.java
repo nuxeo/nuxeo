@@ -26,7 +26,7 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_HEIGHT;
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_WIDTH;
 
-import java.awt.*;
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -86,8 +86,6 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     protected Map<String, String> configurationParameters = new HashMap<>();
 
     protected PictureConversionRegistry pictureConversionRegistry = new PictureConversionRegistry();
-
-    private LibrarySelector librarySelector;
 
     protected final PictureMigrationHandler pictureMigrationHandler = new PictureMigrationHandler();
 
@@ -161,9 +159,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     }
 
     private LibrarySelector getLibrarySelectorService() {
-        if (librarySelector == null) {
-            librarySelector = Framework.getRuntime().getService(LibrarySelector.class);
-        }
+        LibrarySelector librarySelector = Framework.getService(LibrarySelector.class);
         if (librarySelector == null) {
             log.error("Unable to get LibrarySelector runtime service");
             throw new NuxeoException("Unable to get LibrarySelector runtime service");

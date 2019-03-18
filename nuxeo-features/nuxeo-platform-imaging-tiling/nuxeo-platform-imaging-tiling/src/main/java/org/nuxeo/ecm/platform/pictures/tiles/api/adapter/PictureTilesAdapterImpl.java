@@ -48,6 +48,10 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
 
     protected Map<String, PictureTiles> tiles = new ConcurrentHashMap<>();
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link PictureTilingService} instead.
+     */
+    @Deprecated
     protected static PictureTilingService pts;
 
     protected static final Log log = LogFactory.getLog(PictureTilesAdapterImpl.class);
@@ -69,6 +73,10 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
         return res;
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link PictureTilingService} instead.
+     */
+    @Deprecated
     protected PictureTilingService getService() {
         if (pts == null) {
             pts = Framework.getService(PictureTilingService.class);
@@ -81,7 +89,8 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
         String key = tileWidth + "-" + tileHeight + "-" + maxTiles;
 
         if (!tiles.containsKey(key)) {
-            PictureTiles tile = getService().getTiles(getResource(), tileWidth, tileHeight, maxTiles, 0, 0, false);
+            PictureTiles tile = Framework.getService(PictureTilingService.class)
+                                         .getTiles(getResource(), tileWidth, tileHeight, maxTiles, 0, 0, false);
             tiles.put(key, tile);
         }
         return tiles.get(key);

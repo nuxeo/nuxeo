@@ -50,8 +50,6 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.platform.web.common")
 public abstract class AbstractAuthenticator {
 
-    protected PluggableAuthenticationService authService;
-
     protected MockHttpResponse response;
 
     protected MockHttpRequest request;
@@ -61,11 +59,8 @@ public abstract class AbstractAuthenticator {
     protected FilterChain chain;
 
     protected PluggableAuthenticationService getAuthService() {
-        if (authService == null) {
-            authService = (PluggableAuthenticationService) Framework.getRuntime()
-                                                                    .getComponent(PluggableAuthenticationService.NAME);
-        }
-        return authService;
+        return (PluggableAuthenticationService) Framework.getRuntime()
+                                                         .getComponent(PluggableAuthenticationService.NAME);
     }
 
     protected void initRequest() throws ServletException {

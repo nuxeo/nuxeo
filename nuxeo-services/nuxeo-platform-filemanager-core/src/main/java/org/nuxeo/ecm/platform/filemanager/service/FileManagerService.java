@@ -96,8 +96,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     private List<String> fieldsXPath = new ArrayList<>();
 
-    private MimetypeRegistry mimeService;
-
     private boolean unicityEnabled = false;
 
     private String digestAlgorithm = "sha-256";
@@ -124,31 +122,15 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     @Deprecated
     private boolean versioningAfterAdd = DEF_VERSIONING_AFTER_ADD;
 
-    private TypeManager typeService;
-
     public FileManagerService() {
         fileImporters = new HashMap<>();
         folderImporters = new LinkedList<>();
         creationContainerListProviders = new LinkedList<>();
     }
 
-    private MimetypeRegistry getMimeService() {
-        if (mimeService == null) {
-            mimeService = Framework.getService(MimetypeRegistry.class);
-        }
-        return mimeService;
-    }
-
-    private TypeManager getTypeService() {
-        if (typeService == null) {
-            typeService = Framework.getService(TypeManager.class);
-        }
-        return typeService;
-    }
-
     private Blob checkMimeType(Blob blob, String fullname) {
         String filename = FileManagerUtils.fetchFileName(fullname);
-        blob = getMimeService().updateMimetype(blob, filename, true);
+        blob = Framework.getService(MimetypeRegistry.class).updateMimetype(blob, filename, true);
         return blob;
     }
 
@@ -161,7 +143,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         } else {
             // use the last registered folder importer
             FolderImporter folderImporter = folderImporters.get(folderImporters.size() - 1);
-            return folderImporter.create(documentManager, fullname, path, overwrite, getTypeService());
+            return folderImporter.create(documentManager, fullname, path, overwrite,
+                    Framework.getService(TypeManager.class));
         }
     }
 
@@ -217,8 +200,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
         // check allowed sub types
         DocumentModel container = documentManager.getDocument(containerRef);
-        if (checkAllowedSubTypes
-                && !getTypeService().isAllowedSubType(containerTypeName, container.getType(), container)) {
+        if (checkAllowedSubTypes && !Framework.getService(TypeManager.class)
+                                              .isAllowedSubType(containerTypeName, container.getType(), container)) {
             // cannot create document file here
             // TODO: we should better raise a dedicated exception to be
             // catched by the FileManageActionsBean instead of returning
@@ -269,7 +252,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         List<FileImporter> importers = new ArrayList<>(fileImporters.values());
         Collections.sort(importers);
         String mimeType = blob.getMimeType();
-        String normalizedMimeType = getMimeService().getMimetypeEntryByMimeType(mimeType).getNormalized();
+        String normalizedMimeType = Framework.getService(MimetypeRegistry.class)
+                                             .getMimetypeEntryByMimeType(mimeType)
+                                             .getNormalized();
         for (FileImporter importer : importers) {
             if (isImporterAvailable(importer, normalizedMimeType, mimeType, context.isExcludeOneToMany())) {
                 DocumentModel doc = importer.createOrUpdate(context);
