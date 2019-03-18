@@ -164,8 +164,10 @@ public final class MailCoreHelper {
 
                 String host = (String) currentMailFolder.getPropertyValue(HOST_PROPERTY_NAME);
                 String port = (String) currentMailFolder.getPropertyValue(PORT_PROPERTY_NAME);
-                Boolean socketFactoryFallback = (Boolean) currentMailFolder.getPropertyValue(SOCKET_FACTORY_FALLBACK_PROPERTY_NAME);
-                String socketFactoryPort = (String) currentMailFolder.getPropertyValue(SOCKET_FACTORY_PORT_PROPERTY_NAME);
+                Boolean socketFactoryFallback = (Boolean) currentMailFolder.getPropertyValue(
+                        SOCKET_FACTORY_FALLBACK_PROPERTY_NAME);
+                String socketFactoryPort = (String) currentMailFolder.getPropertyValue(
+                        SOCKET_FACTORY_PORT_PROPERTY_NAME);
                 Boolean starttlsEnable = (Boolean) currentMailFolder.getPropertyValue(STARTTLS_ENABLE_PROPERTY_NAME);
                 String sslProtocols = (String) currentMailFolder.getPropertyValue(SSL_PROTOCOLS_PROPERTY_NAME);
                 Long emailsLimit = (Long) currentMailFolder.getPropertyValue(EMAILS_LIMIT_PROPERTY_NAME);

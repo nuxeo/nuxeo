@@ -26,7 +26,7 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_HEIGHT;
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_WIDTH;
 
-import java.awt.Point;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;

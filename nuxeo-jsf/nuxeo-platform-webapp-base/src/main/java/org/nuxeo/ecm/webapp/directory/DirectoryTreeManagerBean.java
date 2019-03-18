@@ -124,8 +124,8 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
                 if (!isFirst) {
                     Schema schema = schemaManager.getSchema(directory.getSchema());
                     if (!schema.hasField(PARENT_FIELD_ID)) {
-                        throw new DirectoryException(directoryName + "does not have the required field: "
-                                + PARENT_FIELD_ID);
+                        throw new DirectoryException(
+                                directoryName + "does not have the required field: " + PARENT_FIELD_ID);
                     }
                 }
                 isFirst = false;
