@@ -152,8 +152,9 @@ public class DirectoryTreeNode {
         }
         // raise this event in order to reset the documents lists from
         // 'conversationDocumentsListsManager'
-        Events.instance().raiseEvent(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
-                DocumentModelFactory.createDocumentModel("Folder"));
+        Events.instance()
+              .raiseEvent(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
+                      DocumentModelFactory.createDocumentModel("Folder"));
         pathProcessing();
         return config.getOutcome();
     }
@@ -417,8 +418,8 @@ public class DirectoryTreeNode {
                         log.error("Cannot check if node is opened: " + "search document model is null");
                     }
                 } else {
-                    log.error(String.format("Cannot check if node is opened on tree '%s': no "
-                            + "content view available", identifier));
+                    log.error(String.format(
+                            "Cannot check if node is opened on tree '%s': no " + "content view available", identifier));
                 }
             }
         }

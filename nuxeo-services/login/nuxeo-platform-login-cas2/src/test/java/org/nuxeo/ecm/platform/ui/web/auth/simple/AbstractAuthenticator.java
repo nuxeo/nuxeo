@@ -62,8 +62,8 @@ public abstract class AbstractAuthenticator {
 
     protected PluggableAuthenticationService getAuthService() {
         if (authService == null) {
-            authService = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                    PluggableAuthenticationService.NAME);
+            authService = (PluggableAuthenticationService) Framework.getRuntime()
+                                                                    .getComponent(PluggableAuthenticationService.NAME);
         }
         return authService;
     }

@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -72,8 +71,12 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
 
     private UserWorkspaceService userWorkspaceService;
 
-    protected final Cache<String, String> profileUidCache = CacheBuilder.newBuilder().concurrencyLevel(
-            CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
+    protected final Cache<String, String> profileUidCache = CacheBuilder.newBuilder()
+                                                                        .concurrencyLevel(CACHE_CONCURRENCY_LEVEL)
+                                                                        .maximumSize(CACHE_MAXIMUM_SIZE)
+                                                                        .expireAfterWrite(CACHE_TIMEOUT,
+                                                                                TimeUnit.MINUTES)
+                                                                        .build();
 
     @Override
     public DocumentModel getUserProfileDocument(CoreSession session) {
@@ -146,8 +149,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
         public void run() {
 
             String query = "select * from " + USER_PROFILE_DOCTYPE + " where ecm:parentId='" + userWorkspace.getId()
-                    + "' " + " AND ecm:isProxy = 0 "
-                    + " AND ecm:isVersion = 0 AND ecm:isTrashed = 0";
+                    + "' " + " AND ecm:isProxy = 0 " + " AND ecm:isVersion = 0 AND ecm:isTrashed = 0";
             DocumentModelList children = session.query(query);
             if (!children.isEmpty()) {
                 userProfileDocRef = children.get(0).getRef();
@@ -217,8 +219,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIG_EP.equals(extensionPoint)) {
             if (config != null) {
                 log.warn("Overriding existing user profile importer config");
@@ -228,8 +229,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIG_EP.equals(extensionPoint)) {
             if (config != null && config.equals(contribution)) {
                 config = null;

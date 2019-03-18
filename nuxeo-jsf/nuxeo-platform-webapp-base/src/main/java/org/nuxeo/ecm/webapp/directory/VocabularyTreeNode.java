@@ -96,7 +96,8 @@ public class VocabularyTreeNode {
     }
 
     public VocabularyTreeNode(int level, String id, String description, String path, String vocabularyName,
-            DirectoryService directoryService, boolean displayObsoleteEntries, char keySeparator, String orderingField) {
+            DirectoryService directoryService, boolean displayObsoleteEntries, char keySeparator,
+            String orderingField) {
         this(level, id, description, path, vocabularyName, directoryService, displayObsoleteEntries, keySeparator,
                 orderingField, null);
     }

@@ -111,8 +111,8 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
 
     // for tests only
     public static void reset() {
-        UserWorkspaceServiceImplComponent s = (UserWorkspaceServiceImplComponent) Framework.getRuntime().getComponent(
-                NAME);
+        UserWorkspaceServiceImplComponent s = (UserWorkspaceServiceImplComponent) Framework.getRuntime()
+                                                                                           .getComponent(NAME);
         s.userWorkspaceService = null;
     }
 

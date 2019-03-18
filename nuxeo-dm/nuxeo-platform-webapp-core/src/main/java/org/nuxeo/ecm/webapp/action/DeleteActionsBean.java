@@ -141,7 +141,8 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     public boolean getCanEmptyTrash() {
         List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
         if (selectedDocuments.size() == 0) {
-            DocumentModelList currentTrashDocuments = getTrashService().getDocuments(navigationContext.getCurrentDocument());
+            DocumentModelList currentTrashDocuments = getTrashService().getDocuments(
+                    navigationContext.getCurrentDocument());
             return getTrashService().canPurgeOrUntrash(currentTrashDocuments, currentUser);
         }
         return false;

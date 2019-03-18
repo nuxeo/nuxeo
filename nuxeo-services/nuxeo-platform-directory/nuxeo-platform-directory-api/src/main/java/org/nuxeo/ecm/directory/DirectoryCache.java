@@ -77,8 +77,8 @@ public class DirectoryCache {
         hitsCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "hits"));
         negativeHitsCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "neghits"));
         missesCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "misses"));
-        invalidationsCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache",
-                "invalidations"));
+        invalidationsCounter = metrics.counter(
+                MetricRegistry.name("nuxeo", "directories", name, "cache", "invalidations"));
         sizeCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "size"));
     }
 
@@ -223,8 +223,7 @@ public class DirectoryCache {
     public Cache getEntryCacheWithoutReferences() {
 
         if (entryCacheWithoutReferences == null) {
-            entryCacheWithoutReferences = getCacheService().getCache(
-                    entryCacheWithoutReferencesName);
+            entryCacheWithoutReferences = getCacheService().getCache(entryCacheWithoutReferencesName);
         }
         return entryCacheWithoutReferences;
     }

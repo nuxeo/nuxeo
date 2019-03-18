@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.computedgroups;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +34,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.directory.BaseSession;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -73,8 +71,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     }
 
     @Override
-    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry, boolean anonymous, List<String> groups)
-            {
+    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry, boolean anonymous, List<String> groups) {
 
         NuxeoPrincipal principal = super.makePrincipal(userEntry, anonymous, groups);
         if (activateComputedGroup() && principal instanceof NuxeoPrincipalImpl) {
@@ -160,14 +157,13 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     }
 
     @Override
-    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext)
-            {
+    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext) {
         return searchGroups(filter, fulltext, null);
     }
 
     @Override
-    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context)
-            {
+    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext,
+            DocumentModel context) {
 
         boolean searchInVirtualGroups = activateComputedGroup();
         if (Boolean.FALSE.equals(filter.get(VIRTUAL_GROUP_MARKER))) {
