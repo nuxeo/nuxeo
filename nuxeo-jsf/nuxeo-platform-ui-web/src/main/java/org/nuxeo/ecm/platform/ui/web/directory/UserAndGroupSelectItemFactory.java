@@ -97,13 +97,20 @@ public abstract class UserAndGroupSelectItemFactory extends SelectItemFactory {
         if (isGroup || unprefixed) {
             try (Session groupDir = dirService.open(getGroupDirectoryName(), null)) {
                 entry = groupDir.getEntry(entryId);
+                if (entry != null) {
+                    isGroup = true;
+                }
             }
         }
         if (isUser || (unprefixed && entry == null)) {
             try (Session userDir = dirService.open(getDirectoryName(), null)) {
                 entry = userDir.getEntry(entryId);
+                if (entry != null) {
+                    isUser = true;
+                }
             }
         }
+        unprefixed = !isGroup && !isUser;
 
         String var = getVar();
         String varId = var + "Id";
@@ -116,11 +123,11 @@ public abstract class UserAndGroupSelectItemFactory extends SelectItemFactory {
             VariableManager.putVariableToRequestParam(varEntry, entry);
 
             String label = "";
-            if (isGroup || unprefixed) {
-                label = getGroupItemLabel();
-            }
-            if (isUser || (unprefixed && StringUtils.isBlank(label))) {
+            if (isUser || unprefixed) {
                 label = getItemLabel();
+            }
+            if (isGroup || (unprefixed && (StringUtils.isBlank(label) || label.equals(entryId)))) {
+                label = getGroupItemLabel();
             }
 
             if (StringUtils.isBlank(label) && entry != null) {
