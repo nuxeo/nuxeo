@@ -20,6 +20,7 @@ package org.nuxeo.lib.stream.computation;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.nuxeo.lib.stream.computation.internals.RecordFilterChainImpl;
 
 /**
  * Settings defines stream's partitions and computation's concurrency.
@@ -27,20 +28,36 @@ import java.util.Map;
  * @since 9.3
  */
 public class Settings {
-    protected final int defaultConcurrency;
-
+    // streams
     protected final int defaultPartitions;
 
-    protected final Map<String, Integer> concurrencies = new HashMap<>();
-
     protected final Map<String, Integer> partitions = new HashMap<>();
+
+    protected final RecordFilterChain defaultFilter;
+
+    protected final Map<String, RecordFilterChain> filters = new HashMap<>();
+
+    // computations
+    protected final int defaultConcurrency;
+
+    protected final Map<String, Integer> concurrencies = new HashMap<>();
 
     /**
      * Default concurrency and partition to use if not specified explicitly
      */
     public Settings(int defaultConcurrency, int defaultPartitions) {
+        this(defaultConcurrency, defaultPartitions, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Settings(int defaultConcurrency, int defaultPartitions, RecordFilterChain defaultFilter) {
         this.defaultConcurrency = defaultConcurrency;
         this.defaultPartitions = defaultPartitions;
+        if (defaultFilter == null) {
+            this.defaultFilter = RecordFilterChainImpl.NONE;
+        } else {
+            this.defaultFilter = defaultFilter;
+        }
     }
 
     /**
@@ -65,6 +82,30 @@ public class Settings {
 
     public int getPartitions(String streamName) {
         return partitions.getOrDefault(streamName, defaultPartitions);
+    }
+
+     /**
+     * Add a filter
+     *
+     * @since 11.1
+     */
+    public Settings addFilter(String streamName, RecordFilter filter) {
+        if (filter == null) {
+            filters.remove(streamName);
+        } else {
+            RecordFilterChain chain = filters.computeIfAbsent(streamName, k -> new RecordFilterChainImpl());
+            chain.addFilter(filter);
+        }
+        return this;
+    }
+
+    /**
+     * Gets the filter chain for a stream.
+     *
+     * @since 11.1
+     */
+    public RecordFilterChain getFilterChain(String streamName) {
+        return filters.getOrDefault(streamName, defaultFilter);
     }
 
 }

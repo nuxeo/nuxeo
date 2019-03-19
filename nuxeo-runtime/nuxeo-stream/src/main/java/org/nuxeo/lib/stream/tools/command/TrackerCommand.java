@@ -26,8 +26,10 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.nuxeo.lib.stream.computation.Settings;
+import org.nuxeo.lib.stream.computation.StreamManager;
+import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
-import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
+import org.nuxeo.lib.stream.computation.log.LogStreamManager;
 import org.nuxeo.lib.stream.log.LogManager;
 
 /**
@@ -63,7 +65,7 @@ public class TrackerCommand extends Command {
 
     protected Topology topology;
 
-    protected LogStreamProcessor processor;
+    protected StreamProcessor processor;
 
     @Override
     public String name() {
@@ -135,9 +137,11 @@ public class TrackerCommand extends Command {
     }
 
     protected boolean runProcessor(LogManager manager) {
-        processor = new LogStreamProcessor(manager);
+        StreamManager streamManager = new LogStreamManager(manager);
         Settings settings = new Settings(1, 1);
-        processor.init(topology, settings).start();
+        streamManager.register("tracker", topology, settings);
+        processor = streamManager.createStreamProcessor("tracker");
+        processor.start();
         while (!processor.isTerminated()) {
             try {
                 Thread.sleep(1000);

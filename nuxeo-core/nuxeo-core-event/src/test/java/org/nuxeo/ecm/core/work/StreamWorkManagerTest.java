@@ -203,4 +203,19 @@ public class StreamWorkManagerTest extends WorkManagerTest {
         tracker.assertDiff(0, 0, 7, 0);
     }
 
+    @Test
+    public void testFatWork() throws InterruptedException {
+        long duration = 1000;
+        MetricsTracker tracker = new MetricsTracker();
+        FatWork fatWorkSlim = new FatWork("slim", 1_000);
+        service.schedule(fatWorkSlim);
+        assertTrue(service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 1, 0);
+
+        FatWork fatWork = new FatWork("fatty", 10_000_000);
+        service.schedule(fatWork);
+        assertTrue(service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 2, 0);
+    }
+
 }
