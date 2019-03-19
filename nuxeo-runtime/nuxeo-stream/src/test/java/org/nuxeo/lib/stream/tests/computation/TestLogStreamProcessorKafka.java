@@ -65,8 +65,4 @@ public class TestLogStreamProcessorKafka extends TestStreamProcessor {
         return TestLogKafka.getConsumerProps();
     }
 
-    @Override
-    public StreamProcessor getStreamProcessor(LogManager logManager) {
-        return new LogStreamProcessor(logManager);
-    }
 }

@@ -39,6 +39,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
@@ -46,6 +47,7 @@ import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.internals.CloseableLogAppender;
 import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 
+import net.openhft.chronicle.bytes.util.DecoratedBufferOverflowException;
 import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
@@ -290,11 +292,15 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
     @Override
     public LogOffset append(int partition, M message) {
         ExcerptAppender appender = partitions.get(partition).acquireAppender();
-        if (NO_CODEC.equals(codec)) {
-            // default format for backward compatibility
-            appender.writeDocument(w -> w.write(MSG_KEY).object(message));
-        } else {
-            appender.writeDocument(w -> w.write().bytes(codec.encode(message)));
+        try {
+            if (NO_CODEC.equals(codec)) {
+                // default format for backward compatibility
+                appender.writeDocument(w -> w.write(MSG_KEY).object(message));
+            } else {
+                appender.writeDocument(w -> w.write().bytes(codec.encode(message)));
+            }
+        } catch (DecoratedBufferOverflowException e) {
+            throw new StreamRuntimeException(e);
         }
         long offset = appender.lastIndexAppended();
         LogOffset ret = new LogOffsetImpl(name, partition, offset);

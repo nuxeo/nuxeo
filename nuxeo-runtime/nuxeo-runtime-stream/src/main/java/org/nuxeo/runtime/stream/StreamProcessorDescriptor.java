@@ -33,6 +33,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.ComputationPolicyBuilder;
+import org.nuxeo.lib.stream.computation.RecordFilter;
 import org.nuxeo.runtime.model.Descriptor;
 
 import net.jodah.failsafe.RetryPolicy;
@@ -55,6 +56,41 @@ public class StreamProcessorDescriptor implements Descriptor {
         }
     }
 
+    @XObject(value = "filter")
+    public static class FilterDescriptor implements Descriptor {
+
+        @XNode("@name")
+        public String name;
+
+        @Override
+        public String getId() {
+            return name;
+        }
+
+        // To provide a custom retry policy
+        @XNode("@class")
+        public Class<? extends RecordFilter> klass;
+
+        @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
+        public Map<String, String> options = new HashMap<>();
+
+        public RecordFilter getFilter() {
+            if (!RecordFilter.class.isAssignableFrom(klass)) {
+                throw new IllegalArgumentException("Cannot create filter: " + getId() + " for stream: " + this.getId()
+                        + ", class must implement Filter");
+            }
+            try {
+                RecordFilter ret = klass.getDeclaredConstructor().newInstance();
+                ret.init(options);
+                return ret;
+            } catch (ReflectiveOperationException e) {
+                throw new StreamRuntimeException("Cannot create filter: " + getId(), e);
+            }
+        }
+
+    }
+
+
     @XObject(value = "stream")
     public static class StreamDescriptor implements Descriptor {
 
@@ -67,11 +103,13 @@ public class StreamProcessorDescriptor implements Descriptor {
         @XNode("@codec")
         public String codec;
 
+        @XNodeList(value = "filter", type = ArrayList.class, componentType = FilterDescriptor.class)
+        public List<FilterDescriptor> filters = new ArrayList<>();
+
         @Override
         public String getId() {
             return name;
         }
-
     }
 
     @XObject(value = "policy")

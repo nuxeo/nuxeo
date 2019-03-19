@@ -44,9 +44,9 @@ import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
+import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
-import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -110,6 +110,8 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     protected LogManager logManager;
 
+    protected StreamManager streamManager;
+
     protected boolean storeState;
 
     protected long stateTTL;
@@ -165,7 +167,7 @@ public class StreamWorkManager extends WorkManagerImpl {
             return;
         }
         String key = work.getPartitionKey();
-        LogOffset offset = appender.append(key, Record.of(key, WorkComputation.serialize(work)));
+        LogOffset offset = streamManager.append(queueId, Record.of(key, WorkComputation.serialize(work)));
         if (work.isCoalescing()) {
             WorkStateHelper.setLastOffset(work.getId(), offset.offset(), stateTTL);
         }
@@ -204,8 +206,9 @@ public class StreamWorkManager extends WorkManagerImpl {
             index();
             initTopology();
             logManager = getLogManager();
-            streamProcessor = new LogStreamProcessor(logManager);
-            streamProcessor.init(topology, settings);
+            streamManager = getStreamManager();
+            streamManager.register("SWM", topology, settings);
+            streamProcessor = streamManager.createStreamProcessor("SWM");
             started = true;
             new ComponentListener().install();
             log.info("Initialized");
@@ -242,6 +245,11 @@ public class StreamWorkManager extends WorkManagerImpl {
         log.info("Init StreamWorkManager with Log configuration: " + config);
         StreamService service = Framework.getService(StreamService.class);
         return service.getLogManager(getLogConfig());
+    }
+
+    protected StreamManager getStreamManager() {
+        StreamService service = Framework.getService(StreamService.class);
+        return service.getStreamManager(getLogConfig());
     }
 
     protected String getLogConfig() {
