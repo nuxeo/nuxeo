@@ -771,7 +771,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                         uri += '?' + URIUtils.getURIQuery(params);
                     }
                 }
-                session.setAttribute(START_PAGE_SAVE_KEY, requestPage);
+                session.setAttribute(START_PAGE_SAVE_KEY, uri);
             }
             return true;
         }
