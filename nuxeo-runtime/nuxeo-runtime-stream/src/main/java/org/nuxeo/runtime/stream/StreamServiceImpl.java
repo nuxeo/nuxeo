@@ -29,9 +29,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.lib.stream.computation.Settings;
+import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
-import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
+import org.nuxeo.lib.stream.computation.log.LogStreamManager;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
@@ -59,7 +60,9 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
 
     protected final Map<String, LogConfigDescriptor> configs = new HashMap<>();
 
-    protected final Map<String, LogManager> managers = new HashMap<>();
+    protected final Map<String, LogManager> logManagers = new HashMap<>();
+
+    protected final Map<String, StreamManager> streamManagers = new HashMap<>();
 
     protected final Map<String, StreamProcessor> processors = new HashMap<>();
 
@@ -74,18 +77,23 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     @Override
     public LogManager getLogManager(String name) {
         // TODO: return a wrapper that don't expose the LogManager#close
-        if (!managers.containsKey(name)) {
+        if (!logManagers.containsKey(name)) {
             if (!configs.containsKey(name)) {
                 throw new IllegalArgumentException("Unknown logConfig: " + name);
             }
             LogConfigDescriptor config = configs.get(name);
             if (config.isKafkaLog()) {
-                managers.put(name, createKafkaLogManager(config));
+                logManagers.put(name, createKafkaLogManager(config));
             } else {
-                managers.put(name, createChronicleLogManager(config));
+                logManagers.put(name, createChronicleLogManager(config));
             }
         }
-        return managers.get(name);
+        return logManagers.get(name);
+    }
+
+    @Override
+    public StreamManager getStreamManager(String name) {
+        return streamManagers.computeIfAbsent(name, app -> new LogStreamManager(getLogManager(name)));
     }
 
     protected LogManager createKafkaLogManager(LogConfigDescriptor config) {
@@ -122,13 +130,13 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         return Paths.get(Framework.getRuntime().getHome().getAbsolutePath(), "data", "stream", name).toAbsolutePath();
     }
 
-    protected void createStreamIfNotExists(String name, LogConfigDescriptor config) {
+    protected void createLogsIfNotExists(LogConfigDescriptor config) {
         if (config.getLogsToCreate().isEmpty()) {
             return;
         }
-        LogManager manager = getLogManager(name);
+        LogManager manager = getLogManager(config.getName());
         config.getLogsToCreate().forEach((stream, size) -> {
-            log.info("Create if not exists stream: " + stream + " with manager: " + name);
+            log.info("Create if not exists stream: " + stream + " with manager: " + config.getName());
             manager.createIfNotExists(stream, size);
         });
     }
@@ -136,26 +144,42 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     @Override
     public void start(ComponentContext context) {
         super.start(context);
-        configs.forEach(this::createStreamIfNotExists);
-        processorDescriptors.forEach(this::initProcessor);
+        configs.values().forEach(this::createLogsIfNotExists);
+        processorDescriptors.values().forEach(this::initProcessor);
         new ComponentsLifeCycleListener().install();
     }
 
-    protected void initProcessor(String name, StreamProcessorDescriptor descriptor) {
-        if (processors.containsKey(name)) {
-            log.error("Processor already initialized: " + name);
+    protected void initProcessor(StreamProcessorDescriptor descriptor) {
+        if (processors.containsKey(descriptor.getName())) {
+            log.error("Processor already initialized: " + descriptor.getName());
             return;
         }
-        log.info("Init Stream processor: " + name + " with manager: " + descriptor.config);
+        log.info("Init Stream processor: " + descriptor.getName() + " with manager: " + descriptor.config);
         LogManager manager = getLogManager(descriptor.config);
-        Topology topology = descriptor.getTopology();
-        StreamProcessor streamProcessor = new LogStreamProcessor(manager);
-        Settings settings = descriptor.getSettings();
-        if (log.isDebugEnabled()) {
-            log.debug("Starting computation topology: " + name + "\n" + topology.toPlantuml(settings));
+        StreamManager streamManager = getStreamManager(descriptor.config);
+        Topology topology;
+        try {
+            topology = descriptor.klass.getDeclaredConstructor().newInstance().getTopology(descriptor.options);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Can not create topology for processor: " + descriptor.getName(), e);
         }
-        streamProcessor.init(topology, settings);
-        processors.put(name, streamProcessor);
+        Settings settings = getSettings(descriptor);
+        if (log.isDebugEnabled()) {
+            log.debug("Starting computation topology: " + descriptor.getName() + "\n" + topology.toPlantuml(settings));
+        }
+        streamManager.register(descriptor.getName(), topology, settings);
+        StreamProcessor streamProcessor = streamManager.createStreamProcessor(descriptor.getName());
+        processors.put(descriptor.getName(), streamProcessor);
+    }
+
+    protected Settings getSettings(StreamProcessorDescriptor descriptor) {
+        Settings settings = new Settings(descriptor.defaultConcurrency, descriptor.defaultPartitions);
+        descriptor.computations.forEach(comp -> settings.setConcurrency(comp.name, comp.concurrency));
+        for (StreamProcessorDescriptor.StreamDescriptor streamDescriptor : descriptor.streams) {
+            settings.setPartitions(streamDescriptor.name, streamDescriptor.partitions);
+            streamDescriptor.filters.forEach(filter -> settings.addFilter(streamDescriptor.name, filter.getFilter()));
+        }
+        return settings;
     }
 
     @Override
@@ -180,8 +204,8 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     }
 
     protected void closeLogManagers() {
-        managers.values().stream().filter(Objects::nonNull).forEach(LogManager::close);
-        managers.clear();
+        logManagers.values().stream().filter(Objects::nonNull).forEach(LogManager::close);
+        logManagers.clear();
     }
 
     @Override

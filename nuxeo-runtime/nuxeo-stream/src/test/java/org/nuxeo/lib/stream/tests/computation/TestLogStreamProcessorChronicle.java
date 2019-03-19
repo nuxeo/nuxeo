@@ -59,15 +59,4 @@ public class TestLogStreamProcessorChronicle extends TestStreamProcessor {
         return new ChronicleLogManager(basePath.toPath());
     }
 
-    @Override
-    public StreamProcessor getStreamProcessor(LogManager logManager) {
-        return new LogStreamProcessor(logManager);
-    }
-
-    @Test
-    @Override
-    @Ignore("NXP-26337")
-    public void testComplexTopoManyRecords() throws Exception {
-        super.testComplexTopoManyRecords();
-    }
 }

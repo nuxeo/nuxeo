@@ -36,8 +36,6 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.computation.internals.ComputationContextImpl;
 import org.nuxeo.lib.stream.computation.internals.WatermarkMonotonicInterval;
-import org.nuxeo.lib.stream.log.LogAppender;
-import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
@@ -59,7 +57,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     private static final Log log = LogFactory.getLog(ComputationRunner.class);
 
-    protected final LogManager logManager;
+    protected final LogStreamManager streamManager;
 
     protected final ComputationMetadataMapping metadata;
 
@@ -95,18 +93,18 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     @SuppressWarnings("unchecked")
     public ComputationRunner(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
-            List<LogPartition> defaultAssignment, LogManager logManager) {
+            List<LogPartition> defaultAssignment, LogStreamManager streamManager) {
         this.supplier = supplier;
         this.metadata = metadata;
-        this.logManager = logManager;
+        this.streamManager = streamManager;
         this.context = new ComputationContextImpl(metadata);
         if (metadata.inputStreams().isEmpty()) {
             this.tailer = null;
             assignmentLatch.countDown();
-        } else if (logManager.supportSubscribe()) {
-            this.tailer = logManager.subscribe(metadata.name(), metadata.inputStreams(), this);
+        } else if (streamManager.supportSubscribe()) {
+            this.tailer = streamManager.subscribe(metadata.name(), metadata.inputStreams(), this);
         } else {
-            this.tailer = logManager.createTailer(metadata.name(), defaultAssignment);
+            this.tailer = streamManager.createTailer(metadata.name(), defaultAssignment);
             assignmentLatch.countDown();
         }
     }
@@ -268,11 +266,22 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         Record record;
         if (logRecord != null) {
             record = logRecord.message();
+            String stream = logRecord.offset().partition().name();
+            Record filteredRecord = streamManager.getFilter(stream).afterRead(record, logRecord.offset());
+            if (filteredRecord == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Filtering skip record: " + record);
+                }
+                return false;
+            } else if (filteredRecord != record) {
+                logRecord = new LogRecord<>(filteredRecord, logRecord.offset());
+                record = filteredRecord;
+            }
             lastReadTime = System.currentTimeMillis();
             inRecords++;
             lowWatermark.mark(record.watermark);
-            String from = metadata.reverseMap(logRecord.offset().partition().name());
             context.setLastOffset(logRecord.offset());
+            String from = metadata.reverseMap(stream);
             computation.processRecord(context, from, record);
             checkRecordFlags(record);
             checkSourceLowWatermark();
@@ -357,14 +366,13 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected void sendRecords() {
         for (String stream : metadata.outputStreams()) {
-            LogAppender<Record> appender = logManager.getAppender(stream);
-            for (Record record : context.getRecords(stream)) {
+           for (Record record : context.getRecords(stream)) {
                 // System.out.println(metadata.name() + " send record to " + stream + " lowWatermark " + lowWatermark);
                 if (record.watermark == 0) {
                     // use low watermark when not set
                     record.watermark = lowWatermark.getLow().getValue();
                 }
-                appender.append(record.key, record);
+                streamManager.append(stream, record);
                 outRecords++;
             }
             context.getRecords(stream).clear();

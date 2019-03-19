@@ -29,13 +29,78 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.lib.stream.computation.RecordFilter;
 import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.Topology;
 
 @SuppressWarnings("CanBeFinal")
 @XObject("streamProcessor")
 public class StreamProcessorDescriptor {
+
     public static final Integer DEFAULT_CONCURRENCY = 4;
+
+    @XObject(value = "filter")
+    public static class FilterDescriptor {
+
+        @XNode("@name")
+        public String name;
+
+        public String getId() {
+            return name;
+        }
+
+        // To provide a custom retry policy
+        @XNode("@class")
+        public Class<? extends RecordFilter> klass;
+
+        @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
+        public Map<String, String> options = new HashMap<>();
+
+        public RecordFilter getFilter() {
+            if (!RecordFilter.class.isAssignableFrom(klass)) {
+                throw new IllegalArgumentException("Cannot create filter: " + getId() + " for stream: " + this.getId()
+                        + ", class must implement Filter");
+            }
+            try {
+                RecordFilter ret = klass.getDeclaredConstructor().newInstance();
+                ret.init(options);
+                return ret;
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException("Cannot create filter: " + getId(), e);
+            }
+        }
+
+    }
+
+    @SuppressWarnings("CanBeFinal")
+    @XObject(value = "computation")
+    public static class ComputationDescriptor {
+        @XNode("@name")
+        public String name;
+
+        @XNode("@concurrency")
+        public Integer concurrency = DEFAULT_CONCURRENCY;
+
+        public ComputationDescriptor() {
+        }
+    }
+
+    @SuppressWarnings("CanBeFinal")
+    @XObject(value = "stream")
+    public static class StreamDescriptor {
+
+        @XNode("@name")
+        public String name;
+
+        @XNode("@partitions")
+        public Integer partitions = DEFAULT_CONCURRENCY;
+
+        @XNodeList(value = "filter", type = ArrayList.class, componentType = FilterDescriptor.class)
+        public List<FilterDescriptor> filters = new ArrayList<>();
+
+        public StreamDescriptor() {
+        }
+    }
 
     @XNode("@name")
     public String name;
@@ -80,32 +145,5 @@ public class StreamProcessorDescriptor {
             throw new RuntimeException("Can not create topology for processor: " + name, e);
         }
 
-    }
-
-    @SuppressWarnings("CanBeFinal")
-    @XObject(value = "computation")
-    public static class ComputationDescriptor {
-        @XNode("@name")
-        public String name;
-
-        @XNode("@concurrency")
-        public Integer concurrency = DEFAULT_CONCURRENCY;
-
-        public ComputationDescriptor() {
-        }
-    }
-
-    @SuppressWarnings("CanBeFinal")
-    @XObject(value = "stream")
-    public static class StreamDescriptor {
-
-        @XNode("@name")
-        public String name;
-
-        @XNode("@partitions")
-        public Integer partitions = DEFAULT_CONCURRENCY;
-
-        public StreamDescriptor() {
-        }
     }
 }

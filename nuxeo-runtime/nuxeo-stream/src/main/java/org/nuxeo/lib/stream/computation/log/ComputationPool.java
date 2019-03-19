@@ -36,7 +36,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.Watermark;
-import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 
 /**
@@ -51,8 +50,6 @@ public class ComputationPool {
 
     protected final int threads;
 
-    protected final LogManager manager;
-
     protected final Supplier<Computation> supplier;
 
     protected final List<List<LogPartition>> defaultAssignments;
@@ -61,12 +58,14 @@ public class ComputationPool {
 
     protected ExecutorService threadPool;
 
+    protected final LogStreamManager streamManager;
+
     public ComputationPool(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
-            List<List<LogPartition>> defaultAssignments, LogManager manager) {
+            List<List<LogPartition>> defaultAssignments, LogStreamManager streamManager) {
         this.supplier = supplier;
-        this.manager = manager;
         this.metadata = metadata;
         this.threads = defaultAssignments.size();
+        this.streamManager = streamManager;
         this.defaultAssignments = defaultAssignments;
         this.runners = new ArrayList<>(threads);
     }
@@ -80,7 +79,7 @@ public class ComputationPool {
         log.info(metadata.name() + ": Starting pool");
         threadPool = newFixedThreadPool(threads, new NamedThreadFactory(metadata.name() + "Pool"));
         defaultAssignments.forEach(assignments -> {
-            ComputationRunner runner = new ComputationRunner(supplier, metadata, assignments, manager);
+            ComputationRunner runner = new ComputationRunner(supplier, metadata, assignments, streamManager);
             threadPool.submit(runner);
             runners.add(runner);
         });

@@ -56,8 +56,21 @@ public class LogStreamProcessor implements StreamProcessor {
 
     protected List<ComputationPool> pools;
 
+    protected LogStreamManager streamManager;
+
+    protected final boolean needRegister;
+
+    @Deprecated
     public LogStreamProcessor(LogManager manager) {
+        needRegister = true;
         this.manager = manager;
+        this.streamManager = new LogStreamManager(manager);
+    }
+
+    public LogStreamProcessor(LogStreamManager streamManager) {
+        needRegister = false;
+        this.streamManager = streamManager;
+        this.manager = streamManager.getLogManager();
     }
 
     @Override
@@ -65,7 +78,10 @@ public class LogStreamProcessor implements StreamProcessor {
         log.debug("Initializing ...");
         this.topology = topology;
         this.settings = settings;
-        initStreams();
+        if (needRegister) {
+            // backward compat when using a LogManager instead of StreamManager
+            streamManager.register("_", topology, settings);
+        }
         return this;
     }
 
@@ -187,7 +203,7 @@ public class LogStreamProcessor implements StreamProcessor {
         return topology.metadataList()
                        .stream()
                        .map(meta -> new ComputationPool(topology.getSupplier(meta.name()), meta,
-                               getDefaultAssignments(meta), manager))
+                               getDefaultAssignments(meta), streamManager))
                        .collect(Collectors.toList());
     }
 
@@ -197,11 +213,4 @@ public class LogStreamProcessor implements StreamProcessor {
         meta.inputStreams().forEach(streamName -> streams.put(streamName, settings.getPartitions(streamName)));
         return KafkaUtils.roundRobinAssignments(threads, streams);
     }
-
-    protected void initStreams() {
-        log.debug("Initializing streams");
-        topology.streamsSet()
-                .forEach(streamName -> manager.createIfNotExists(streamName, settings.getPartitions(streamName)));
-    }
-
 }

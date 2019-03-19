@@ -30,9 +30,12 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
+import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.Watermark;
+import org.nuxeo.lib.stream.computation.log.LogStreamManager;
+import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -49,8 +52,6 @@ public abstract class TestStreamProcessor {
     public abstract LogManager getLogManager() throws Exception;
 
     public abstract LogManager getSameLogManager() throws Exception;
-
-    public abstract StreamProcessor getStreamProcessor(LogManager logManager);
 
     public void testSimpleTopo(int nbRecords, int concurrency) throws Exception {
         final long targetTimestamp = System.currentTimeMillis();
@@ -74,8 +75,10 @@ public abstract class TestStreamProcessor {
         // uncomment to get the plantuml diagram
         // System.out.println(topology.toPlantuml(settings));
         try (LogManager manager = getLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
-            processor.init(topology, settings).start();
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor", topology, settings);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             long start = System.currentTimeMillis();
             // this check works only if there is only one record with the target timestamp
@@ -95,8 +98,8 @@ public abstract class TestStreamProcessor {
             int result = readCounterFrom(manager, "output");
             int expected = nbRecords * settings.getConcurrency("GENERATOR");
             if (result != expected) {
-                processor = getStreamProcessor(manager);
-                processor.init(topology, settings).start();
+                processor = streamManager.createStreamProcessor("processor");
+                processor.start();
                 int waiter = 200;
                 log.warn("FAILURE DEBUG TRACE ========================");
                 do {
@@ -167,9 +170,11 @@ public abstract class TestStreamProcessor {
         // uncomment to get the plantuml diagram
         // System.out.println(topology.toPlantuml(settings));
         try (LogManager manager = getLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor", topology, settings);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor");
             long start = System.currentTimeMillis();
-            processor.init(topology, settings).start();
+            processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             // no record are processed so far
             long lowWatermark = processor.getLowWatermark();
@@ -265,9 +270,11 @@ public abstract class TestStreamProcessor {
 
         // 1. run generators
         try (LogManager manager = getLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor1", topology1, settings1);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor1");
             long start = System.currentTimeMillis();
-            processor.init(topology1, settings1).start();
+            processor.start();
             // This is needed because drainAndStop might consider the source generator as terminated
             // because of a random lag due to kafka init and/or GC > 500ms.
             Thread.sleep(2000);
@@ -281,10 +288,11 @@ public abstract class TestStreamProcessor {
         // 2. resume and kill loop
         for (int i = 0; i < 10; i++) {
             try (LogManager manager = getSameLogManager()) {
-                StreamProcessor processor = getStreamProcessor(manager);
-                long start = System.currentTimeMillis();
+                StreamManager streamManager = new LogStreamManager(manager);
+                streamManager.register("processor2", topology2, settings2);
+                StreamProcessor processor = streamManager.createStreamProcessor("processor2");
                 log.info("RESUME computations");
-                processor.init(topology2, settings2).start();
+                processor.start();
                 assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
                 // must be greater than kafka heart beat ?
                 Thread.sleep(400 + i * 10);
@@ -298,9 +306,11 @@ public abstract class TestStreamProcessor {
         // 3. run the rest
         log.info("Now draining without interruption");
         try (LogManager manager = getSameLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor2", topology2, settings2);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor2");
             long start = System.currentTimeMillis();
-            processor.init(topology2, settings2).start();
+            processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             assertTrue(processor.drainAndStop(Duration.ofSeconds(200)));
             double elapsed = (double) (System.currentTimeMillis() - start) / 1000.0;
@@ -330,9 +340,11 @@ public abstract class TestStreamProcessor {
         Settings settings1 = new Settings(concurrent, concurrent);
 
         try (LogManager manager = getLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor1", topology1, settings1);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor1");
             long start = System.currentTimeMillis();
-            processor.init(topology1, settings1).start();
+            processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             // no record are processed so far
             assertTrue(processor.drainAndStop(Duration.ofSeconds(100)));
@@ -357,12 +369,18 @@ public abstract class TestStreamProcessor {
                                     .build();
         Settings settings = new Settings(2, 1).setConcurrency("GENERATOR", 2).setPartitions("s1", 1);
         try (LogManager manager = getLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
-            processor.init(topology, settings).start();
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor", topology, settings);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
-            assertTrue(processor.drainAndStop(Duration.ofSeconds(100)));
+            // source computation will start on assignment, let them work a bit
+            Thread.sleep(1000);
+            assertTrue(processor.drainAndStop(Duration.ofSeconds(60)));
             LogLag lag = manager.getLag("s1", "test");
-            assertEquals(nbRecords, lag.lag());
+            // without rebalancing we should have lag == nbRecords, but a rebalancing happens
+            // so we can have up to concurrency * nbRecords
+            assertTrue(lag.toString() + ", records: " + nbRecords, lag.lag() >= nbRecords);
         }
     }
 
