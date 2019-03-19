@@ -34,7 +34,7 @@ import org.nuxeo.runtime.model.Descriptor;
 public class LogConfigDescriptor implements Descriptor {
 
     @XObject(value = "log")
-    public static class StreamDescriptor implements Descriptor {
+    public static class LogDescriptor implements Descriptor {
 
         public static final Integer DEFAULT_PARTITIONS = 4;
 
@@ -59,8 +59,8 @@ public class LogConfigDescriptor implements Descriptor {
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> options = new HashMap<>();
 
-    @XNodeList(value = "log", type = ArrayList.class, componentType = StreamDescriptor.class)
-    public List<StreamDescriptor> logs = new ArrayList<>();
+    @XNodeList(value = "log", type = ArrayList.class, componentType = LogDescriptor.class)
+    public List<LogDescriptor> logs = new ArrayList<>();
 
     @Override
     public String getId() {

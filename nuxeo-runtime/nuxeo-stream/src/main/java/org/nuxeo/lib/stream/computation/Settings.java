@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.lib.stream.computation.internals.RecordFilterChainImpl;
 
 /**
  * Settings defines stream's partitions and computation's concurrency and policy.
@@ -32,19 +33,25 @@ import org.nuxeo.lib.stream.codec.Codec;
  * @since 9.3
  */
 public class Settings {
-    protected final int defaultConcurrency;
-
+    // streams
     protected final int defaultPartitions;
-
-    protected final Codec<Record> defaultCodec;
-
-    protected final ComputationPolicy defaultPolicy;
-
-    protected final Map<String, Integer> concurrencies = new HashMap<>();
 
     protected final Map<String, Integer> partitions = new HashMap<>();
 
+    protected final Codec<Record> defaultCodec;
+
     protected final Map<String, Codec<Record>> codecs = new HashMap<>();
+
+    protected final RecordFilterChain defaultFilter;
+
+    protected final Map<String, RecordFilterChain> filters = new HashMap<>();
+
+    // computations
+    protected final int defaultConcurrency;
+
+    protected final Map<String, Integer> concurrencies = new HashMap<>();
+
+    protected final ComputationPolicy defaultPolicy;
 
     protected final Map<String, ComputationPolicy> policies = new HashMap<>();
 
@@ -52,23 +59,28 @@ public class Settings {
      * Default concurrency and partition to use if not specified explicitly.
      */
     public Settings(int defaultConcurrency, int defaultPartitions) {
-        this(defaultConcurrency, defaultPartitions, null, null);
+        this(defaultConcurrency, defaultPartitions, null, null, null);
     }
 
     /**
      * Default concurrency and partition to use if not specified explicitly.
      */
     public Settings(int defaultConcurrency, int defaultPartitions, Codec<Record> defaultCodec) {
-        this(defaultConcurrency, defaultPartitions, defaultCodec, null);
+        this(defaultConcurrency, defaultPartitions, defaultCodec, null, null);
     }
 
     public Settings(int defaultConcurrency, int defaultPartitions, ComputationPolicy defaultPolicy) {
-        this(defaultConcurrency, defaultPartitions, null, defaultPolicy);
+        this(defaultConcurrency, defaultPartitions, null, defaultPolicy, null);
+    }
+
+    public Settings(int defaultConcurrency, int defaultPartitions, Codec<Record> defaultCodec,
+            ComputationPolicy defaultPolicy) {
+        this(defaultConcurrency, defaultPartitions, defaultCodec, defaultPolicy, null);
     }
 
     @SuppressWarnings("unchecked")
     public Settings(int defaultConcurrency, int defaultPartitions, Codec<Record> defaultCodec,
-            ComputationPolicy defaultPolicy) {
+            ComputationPolicy defaultPolicy, RecordFilterChain defaultFilter) {
         this.defaultConcurrency = defaultConcurrency;
         this.defaultPartitions = defaultPartitions;
         if (defaultCodec == null) {
@@ -80,6 +92,11 @@ public class Settings {
             this.defaultPolicy = ComputationPolicy.NONE;
         } else {
             this.defaultPolicy = defaultPolicy;
+        }
+        if (defaultFilter == null) {
+            this.defaultFilter = RecordFilterChainImpl.NONE;
+        } else {
+            this.defaultFilter = defaultFilter;
         }
     }
 
@@ -149,6 +166,30 @@ public class Settings {
      */
     public ComputationPolicy getPolicy(String computationName) {
         return policies.getOrDefault(computationName, defaultPolicy);
+    }
+
+    /**
+     * Add a filter
+     *
+     * @since 11.1
+     */
+    public Settings addFilter(String streamName, RecordFilter filter) {
+        if (filter == null) {
+            filters.remove(streamName);
+        } else {
+            RecordFilterChain chain = filters.computeIfAbsent(streamName, k -> new RecordFilterChainImpl());
+            chain.addFilter(filter);
+        }
+        return this;
+    }
+
+    /**
+     * Gets the filter chain for a stream.
+     *
+     * @since 11.1
+     */
+    public RecordFilterChain getFilterChain(String streamName) {
+        return filters.getOrDefault(streamName, defaultFilter);
     }
 
 }

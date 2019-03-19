@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,15 @@
  * Contributors:
  *     bdelbosc
  */
-package org.nuxeo.runtime.stream;
-
-import org.nuxeo.lib.stream.computation.StreamManager;
-import org.nuxeo.lib.stream.log.LogManager;
+package org.nuxeo.lib.stream.computation;
 
 /**
- * @since 9.3
+ * A chain of record filters.
+ *
+ * @since 11.1
  */
-public interface StreamService {
-    /**
-     * Get a LogManager corresponding to the config name. The service take care of closing the manager on shutdown you
-     * should not do it directly.
-     */
-    LogManager getLogManager(String configName);
+public interface RecordFilterChain extends RecordFilter {
 
+    RecordFilterChain addFilter(RecordFilter filter);
 
-    StreamManager getStreamManager(String configName);
 }

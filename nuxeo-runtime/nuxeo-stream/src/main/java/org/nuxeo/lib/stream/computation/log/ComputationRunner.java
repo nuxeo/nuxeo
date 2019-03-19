@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.ComputationPolicy;
@@ -38,8 +37,6 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.computation.internals.ComputationContextImpl;
 import org.nuxeo.lib.stream.computation.internals.WatermarkMonotonicInterval;
-import org.nuxeo.lib.stream.log.LogAppender;
-import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
@@ -63,7 +60,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     private static final Log log = LogFactory.getLog(ComputationRunner.class);
 
-    protected final LogManager logManager;
+    protected final LogStreamManager streamManager;
 
     protected final ComputationMetadataMapping metadata;
 
@@ -74,10 +71,6 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     protected final CountDownLatch assignmentLatch = new CountDownLatch(1);
 
     protected final WatermarkMonotonicInterval lowWatermark = new WatermarkMonotonicInterval();
-
-    protected final Codec<Record> inputCodec;
-
-    protected final Codec<Record> outputCodec;
 
     protected final ComputationPolicy policy;
 
@@ -105,22 +98,19 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     @SuppressWarnings("unchecked")
     public ComputationRunner(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
-            List<LogPartition> defaultAssignment, LogManager logManager, Codec<Record> inputCodec,
-            Codec<Record> outputCodec, ComputationPolicy policy) {
+            List<LogPartition> defaultAssignment, LogStreamManager streamManager, ComputationPolicy policy) {
         this.supplier = supplier;
         this.metadata = metadata;
-        this.logManager = logManager;
-        this.context = new ComputationContextImpl(logManager, metadata, policy);
-        this.inputCodec = inputCodec;
-        this.outputCodec = outputCodec;
+        this.context = new ComputationContextImpl(streamManager, metadata, policy);
+        this.streamManager = streamManager;
         this.policy = policy;
         if (metadata.inputStreams().isEmpty()) {
             this.tailer = null;
             assignmentLatch.countDown();
-        } else if (logManager.supportSubscribe()) {
-            this.tailer = logManager.subscribe(metadata.name(), metadata.inputStreams(), this, inputCodec);
+        } else if (streamManager.supportSubscribe()) {
+            this.tailer = streamManager.subscribe(metadata.name(), metadata.inputStreams(), this);
         } else {
-            this.tailer = logManager.createTailer(metadata.name(), defaultAssignment, inputCodec);
+            this.tailer = streamManager.createTailer(metadata.name(), defaultAssignment);
             assignmentLatch.countDown();
         }
     }
@@ -290,11 +280,22 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         Record record;
         if (logRecord != null) {
             record = logRecord.message();
+            String stream = logRecord.offset().partition().name();
+            Record filteredRecord = streamManager.getFilter(stream).afterRead(record, logRecord.offset());
+            if (filteredRecord == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Filtering skip record: " + record);
+                }
+                return false;
+            } else if (filteredRecord != record) {
+                logRecord = new LogRecord<>(filteredRecord, logRecord.offset());
+                record = filteredRecord;
+            }
             lastReadTime = System.currentTimeMillis();
             inRecords++;
             lowWatermark.mark(record.getWatermark());
-            String from = metadata.reverseMap(logRecord.offset().partition().name());
             context.setLastOffset(logRecord.offset());
+            String from = metadata.reverseMap(stream);
             processRecordWithRetry(from, record);
             checkRecordFlags(record);
             checkSourceLowWatermark();
@@ -390,13 +391,12 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected void sendRecords() {
         for (String stream : metadata.outputStreams()) {
-            LogAppender<Record> appender = logManager.getAppender(stream, outputCodec);
             for (Record record : context.getRecords(stream)) {
                 if (record.getWatermark() == 0) {
                     // use low watermark when not set
                     record.setWatermark(lowWatermark.getLow().getValue());
                 }
-                appender.append(record.getKey(), record);
+                streamManager.append(stream, record);
                 outRecords++;
             }
             context.getRecords(stream).clear();
@@ -427,7 +427,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         lastReadTime = System.currentTimeMillis();
         setThreadName("rebalance assigned");
         // reset the context
-        this.context = new ComputationContextImpl(logManager, metadata, policy);
+        this.context = new ComputationContextImpl(streamManager, metadata, policy);
         log.debug(metadata.name() + ": Init");
         computation.init(context);
         lastReadTime = System.currentTimeMillis();

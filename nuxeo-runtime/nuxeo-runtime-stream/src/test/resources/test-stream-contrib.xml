@@ -38,6 +38,15 @@
       <policy name="myComputation2" class="org.nuxeo.runtime.stream.tests.MyPolicy" />
       <computation name="myComputation" concurrency="1" />
       <stream name="input" partitions="1" codec="avro" />
+      <stream name="s1">
+        <filter name="skip" class="org.nuxeo.runtime.stream.tests.SkipFilter">
+          <option name="keyMatch">skipMe</option>
+        </filter>
+        <filter name="replace" class="org.nuxeo.runtime.stream.tests.ChangeFilter">
+          <option name="keyMatch">changeMe</option>
+          <option name="replace">changed</option>
+        </filter>
+      </stream>
       <stream name="output" codec="avroJson" />
       <option name="myOption">value</option>
     </streamProcessor>

@@ -60,8 +60,21 @@ public class LogStreamProcessor implements StreamProcessor {
 
     protected List<ComputationPool> pools;
 
+    protected LogStreamManager streamManager;
+
+    protected final boolean needRegister;
+
+    @Deprecated
     public LogStreamProcessor(LogManager manager) {
+        needRegister = true;
         this.manager = manager;
+        this.streamManager = new LogStreamManager(manager);
+    }
+
+    public LogStreamProcessor(LogStreamManager streamManager) {
+        needRegister = false;
+        this.streamManager = streamManager;
+        this.manager = streamManager.getLogManager();
     }
 
     @Override
@@ -69,8 +82,10 @@ public class LogStreamProcessor implements StreamProcessor {
         log.debug("Initializing ...");
         this.topology = topology;
         this.settings = settings;
-        initStreams();
-        initSourceAppenders();
+        if (needRegister) {
+            // backward compat when using a LogManager instead of StreamManager
+            streamManager.register("_", topology, settings);
+        }
         return this;
     }
 
@@ -191,9 +206,8 @@ public class LogStreamProcessor implements StreamProcessor {
         return topology.metadataList()
                        .stream()
                        .map(meta -> new ComputationPool(topology.getSupplier(meta.name()), meta,
-                               getDefaultAssignments(meta), manager,
-                               getCodecForStreams(meta.name(), meta.inputStreams()),
-                               getCodecForStreams(meta.name(), meta.outputStreams()), settings.getPolicy(meta.name())))
+                               getDefaultAssignments(meta), streamManager,
+                               settings.getPolicy(meta.name())))
                        .collect(Collectors.toList());
     }
 
@@ -221,28 +235,4 @@ public class LogStreamProcessor implements StreamProcessor {
         meta.inputStreams().forEach(streamName -> streams.put(streamName, settings.getPartitions(streamName)));
         return KafkaUtils.roundRobinAssignments(threads, streams);
     }
-
-    protected void initStreams() {
-        log.debug("Initializing streams");
-        topology.streamsSet().forEach(streamName -> {
-            if (manager.exists(streamName)) {
-                int size = manager.size(streamName);
-                if (settings.getPartitions(streamName) != size) {
-                    log.debug(String.format(
-                            "Update settings for stream: %s defined with %d partitions but exists with %d partitions",
-                            streamName, settings.getPartitions(streamName), size));
-                    settings.setPartitions(streamName, size);
-                }
-            } else {
-                manager.createIfNotExists(streamName, settings.getPartitions(streamName));
-            }
-        });
-    }
-
-    protected void initSourceAppenders() {
-        log.debug("Initializing source appenders so we ensure they use codec defined in the processor");
-        topology.streamsSet()
-                .forEach(sourceStream -> manager.getAppender(sourceStream, settings.getCodec(sourceStream)));
-    }
-
 }

@@ -34,13 +34,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.ComputationPolicy;
-import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
-import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 
 /**
@@ -55,34 +52,25 @@ public class ComputationPool {
 
     protected final int threads;
 
-    protected final LogManager manager;
-
     protected final Supplier<Computation> supplier;
 
     protected final List<List<LogPartition>> defaultAssignments;
 
     protected final List<ComputationRunner> runners;
 
-    protected final Codec<Record> inputCodec;
-
-    protected final Codec<Record> outputCodec;
+    protected final LogStreamManager streamManager;
 
     protected final ComputationPolicy policy;
 
     protected ExecutorService threadPool;
 
     public ComputationPool(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
-            List<List<LogPartition>> defaultAssignments, LogManager manager, Codec<Record> inputCodec,
-            Codec<Record> outputCodec, ComputationPolicy policy) {
-        Objects.requireNonNull(inputCodec);
-        Objects.requireNonNull(outputCodec);
+            List<List<LogPartition>> defaultAssignments, LogStreamManager streamManager, ComputationPolicy policy) {
         Objects.requireNonNull(policy);
         this.supplier = supplier;
-        this.manager = manager;
         this.metadata = metadata;
         this.threads = defaultAssignments.size();
-        this.inputCodec = inputCodec;
-        this.outputCodec = outputCodec;
+        this.streamManager = streamManager;
         this.defaultAssignments = defaultAssignments;
         this.policy = policy;
         this.runners = new ArrayList<>(threads);
@@ -97,8 +85,7 @@ public class ComputationPool {
         log.info(metadata.name() + ": Starting pool");
         threadPool = newFixedThreadPool(threads, new NamedThreadFactory(metadata.name() + "Pool"));
         defaultAssignments.forEach(assignments -> {
-            ComputationRunner runner = new ComputationRunner(supplier, metadata, assignments, manager, inputCodec,
-                    outputCodec, policy);
+            ComputationRunner runner = new ComputationRunner(supplier, metadata, assignments, streamManager, policy);
             threadPool.submit(runner);
             runners.add(runner);
         });

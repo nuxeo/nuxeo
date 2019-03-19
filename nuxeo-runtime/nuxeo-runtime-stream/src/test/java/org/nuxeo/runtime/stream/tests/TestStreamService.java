@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
@@ -97,18 +98,28 @@ public class TestStreamService {
     @Test
     public void testStreamProcessor() throws Exception {
         LogManager manager = service.getLogManager("default");
-        LogAppender<Record> appender = manager.getAppender("input");
+        StreamManager streamManager = service.getStreamManager("default");
+
         LogTailer<Record> tailer = manager.createTailer("counter", "output");
 
         // add an input message
         String key = "a key";
         String value = "a value";
-        appender.append(key, Record.of(key, value.getBytes("UTF-8")));
+        streamManager.append("input", Record.of(key, value.getBytes("UTF-8")));
+        streamManager.append("input", Record.of("skipMeNow", null));
+        streamManager.append("input", Record.of("changeMeNow", null));
 
-        // the computation should forward this message to the output
+        // the computation should forward the first record as it is to the output
         LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));
         assertNotNull("Record not found in output stream", logRecord);
         assertEquals(key, logRecord.message().getKey());
         assertEquals(value, new String(logRecord.message().getData(), "UTF-8"));
+
+        // the second record should be skipped
+        // the third record should have a modified key
+        logRecord = tailer.read(Duration.ofSeconds(1));
+        assertNotNull("Record not found in output stream", logRecord);
+        assertEquals("changedNow", logRecord.message().getKey());
+
     }
 }
