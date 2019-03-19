@@ -4,4 +4,18 @@ nuxeo.db.user=sa
 nuxeo.db.password=
 nuxeo.db.jdbc.url=jdbc:h2:$${nuxeo.data.dir}/h2/${nuxeo.db.name};DB_CLOSE_ON_EXIT=false
 nuxeo.db.driver=org.h2.Driver
+nuxeo.db.xaMode=false
 nuxeo.db.xadatasource=org.h2.jdbcx.JdbcDataSource
+
+nuxeo.db.commonds=jdbc/nuxeo
+
+nuxeo.db.min-pool-size=5
+nuxeo.db.max-pool-size=100
+nuxeo.db.blocking-timeout-millis=1000
+# Database transaction timeout in seconds
+nuxeo.db.transactiontimeout=300
+nuxeo.db.idle-timeout-minutes=5
+nuxeo.db.active-timeout-minutes=0
+nuxeo.db.validationQuery=
+nuxeo.db.sql-exception-sorter=org.nuxeo.runtime.datasource.DatasourceExceptionSorter
+

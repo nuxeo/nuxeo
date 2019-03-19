@@ -18,4 +18,8 @@
     </hibernateConfiguration>
   </extension>
 
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+    <link name="jdbc/nxuidsequencer" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+  </extension>
+
 </component>
