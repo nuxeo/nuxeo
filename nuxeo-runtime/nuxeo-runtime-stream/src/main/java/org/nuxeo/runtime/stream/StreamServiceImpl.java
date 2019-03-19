@@ -32,9 +32,10 @@ import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
+import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
-import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
+import org.nuxeo.lib.stream.computation.log.LogStreamManager;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
@@ -63,7 +64,9 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
 
     protected static final String XP_STREAM_PROCESSOR = "streamProcessor";
 
-    protected final Map<String, LogManager> managers = new HashMap<>();
+    protected final Map<String, LogManager> logManagers = new HashMap<>();
+
+    protected final Map<String, StreamManager> streamManagers = new HashMap<>();
 
     protected final Map<String, StreamProcessor> processors = new HashMap<>();
 
@@ -76,18 +79,23 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     @Override
     public LogManager getLogManager(String name) {
         // TODO: returns a wrapper that don't expose the LogManager#close
-        if (!managers.containsKey(name)) {
+        if (!logManagers.containsKey(name)) {
             LogConfigDescriptor config = getDescriptor(XP_LOG_CONFIG, name);
             if (config == null) {
                 throw new IllegalArgumentException("Unknown logConfig: " + name);
             }
             if ("kafka".equalsIgnoreCase(config.type)) {
-                managers.put(name, createKafkaLogManager(config));
+                logManagers.put(name, createKafkaLogManager(config));
             } else {
-                managers.put(name, createChronicleLogManager(config));
+                logManagers.put(name, createChronicleLogManager(config));
             }
         }
-        return managers.get(name);
+        return logManagers.get(name);
+    }
+
+    @Override
+    public StreamManager getStreamManager(String name) {
+        return streamManagers.computeIfAbsent(name, app -> new LogStreamManager(getLogManager(name)));
     }
 
     protected LogManager createKafkaLogManager(LogConfigDescriptor config) {
@@ -124,7 +132,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         return Paths.get(Framework.getRuntime().getHome().getAbsolutePath(), "data", "stream", name).toAbsolutePath();
     }
 
-    protected void createStreamIfNotExists(LogConfigDescriptor config) {
+    protected void createLogIfNotExists(LogConfigDescriptor config) {
         if (config.logs.isEmpty()) {
             return;
         }
@@ -139,7 +147,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     public void start(ComponentContext context) {
         super.start(context);
         List<LogConfigDescriptor> logDescs = getDescriptors(XP_LOG_CONFIG);
-        logDescs.forEach(this::createStreamIfNotExists);
+        logDescs.forEach(this::createLogIfNotExists);
         List<StreamProcessorDescriptor> streamDescs = getDescriptors(XP_STREAM_PROCESSOR);
         streamDescs.forEach(this::initProcessor);
         new ComponentsLifeCycleListener().install();
@@ -152,16 +160,17 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         }
         log.info("Init Stream processor: {} with manager: {}", descriptor.getId(), descriptor.config);
         LogManager manager = getLogManager(descriptor.config);
+        StreamManager streamManager = getStreamManager(descriptor.config);
         Topology topology;
         try {
             topology = descriptor.klass.getDeclaredConstructor().newInstance().getTopology(descriptor.options);
         } catch (ReflectiveOperationException e) {
             throw new StreamRuntimeException("Can not create topology for processor: " + descriptor.getId(), e);
         }
-        StreamProcessor streamProcessor = new LogStreamProcessor(manager);
         Settings settings = getSettings(descriptor);
         log.debug("Starting computation topology: {}\n{}", descriptor::getId, () -> topology.toPlantuml(settings));
-        streamProcessor.init(topology, settings);
+        streamManager.register(descriptor.getId(), topology, settings);
+        StreamProcessor streamProcessor = streamManager.createStreamProcessor(descriptor.getId());
         processors.put(descriptor.getId(), streamProcessor);
     }
 
@@ -173,11 +182,13 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
                 descriptor.getDefaultPolicy());
         descriptor.computations.forEach(comp -> settings.setConcurrency(comp.name, comp.concurrency));
         descriptor.policies.forEach(policy -> settings.setPolicy(policy.name, descriptor.getPolicy(policy.name)));
-        descriptor.streams.forEach(stream -> settings.setPartitions(stream.name, stream.partitions));
-        descriptor.streams.stream()
-                          .filter(stream -> Objects.nonNull(stream.codec))
-                          .forEach(stream -> settings.setCodec(stream.name,
-                                  codecService.getCodec(stream.codec, Record.class)));
+        for (StreamProcessorDescriptor.StreamDescriptor streamDescriptor : descriptor.streams) {
+            settings.setPartitions(streamDescriptor.name, streamDescriptor.partitions);
+            if (streamDescriptor.codec != null) {
+                settings.setCodec(streamDescriptor.name, codecService.getCodec(streamDescriptor.codec, Record.class));
+            }
+            streamDescriptor.filters.forEach(filter -> settings.addFilter(streamDescriptor.name, filter.getFilter()));
+        }
         return settings;
     }
 
@@ -203,8 +214,8 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     }
 
     protected void closeLogManagers() {
-        managers.values().stream().filter(Objects::nonNull).forEach(LogManager::close);
-        managers.clear();
+        logManagers.values().stream().filter(Objects::nonNull).forEach(LogManager::close);
+        logManagers.clear();
     }
 
     protected class ComponentsLifeCycleListener implements ComponentManager.Listener {

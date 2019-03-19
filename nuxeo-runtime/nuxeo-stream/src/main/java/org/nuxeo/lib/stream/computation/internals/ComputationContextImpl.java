@@ -29,8 +29,7 @@ import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.Record;
-import org.nuxeo.lib.stream.log.LogAppender;
-import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.log.LogOffset;
 
 /**
@@ -43,7 +42,7 @@ public class ComputationContextImpl implements ComputationContext {
 
     protected final Map<String, Long> timers;
 
-    protected final LogManager manager;
+    protected final StreamManager manager;
 
     protected final ComputationPolicy policy;
 
@@ -55,17 +54,17 @@ public class ComputationContextImpl implements ComputationContext {
 
     protected LogOffset lastOffset;
 
-    public ComputationContextImpl(LogManager logManager, ComputationMetadataMapping metadata,
+    public ComputationContextImpl(StreamManager streamManager, ComputationMetadataMapping metadata,
             ComputationPolicy policy) {
-        this.manager = logManager;
+        this.manager = streamManager;
         this.metadata = metadata;
         this.timers = new HashMap<>();
         this.streamRecords = new HashMap<>();
         this.policy = policy;
     }
 
-    public ComputationContextImpl(LogManager logManager, ComputationMetadataMapping metadata) {
-        this(logManager, metadata, ComputationPolicy.NONE);
+    public ComputationContextImpl(StreamManager streamManager, ComputationMetadataMapping metadata) {
+        this(streamManager, metadata, ComputationPolicy.NONE);
     }
 
     public ComputationContextImpl(ComputationMetadataMapping computationMetadataMapping) {
@@ -112,8 +111,7 @@ public class ComputationContextImpl implements ComputationContext {
         if (!metadata.outputStreams().contains(targetStream)) {
             throw new IllegalArgumentException("Stream not registered as output: " + targetStream + ":" + streamName);
         }
-        LogAppender<Record> appender = manager.getAppender(targetStream);
-        return appender.append(record.getKey(), record);
+        return manager.append(targetStream, record);
     }
 
     public void produceRecordImmediate(String streamName, String key, byte[] data) {
