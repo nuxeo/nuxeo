@@ -42,6 +42,7 @@ import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.ComputationPolicyBuilder;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
+import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
@@ -119,7 +120,8 @@ public class BulkAdminServiceImpl implements BulkAdminService {
     protected void initProcessor() {
         StreamService service = Framework.getService(StreamService.class);
         ConfigurationService confService = Framework.getService(ConfigurationService.class);
-        streamProcessor = new LogStreamProcessor(service.getLogManager(BULK_LOG_MANAGER_NAME));
+        StreamManager streamManager = service.getStreamManager(BULK_LOG_MANAGER_NAME);
+
         CodecService codecService = Framework.getService(CodecService.class);
         Codec<Record> codec = codecService.getCodec(RECORD_CODEC, Record.class);
         // we don't set any partitioning because it is already defined by logConfig contribution
@@ -149,8 +151,8 @@ public class BulkAdminServiceImpl implements BulkAdminService {
         int scrollSize = confService.getInteger(BULK_SCROLL_SIZE_PROPERTY, DEFAULT_SCROLL_SIZE);
         int scrollKeepAlive = confService.getInteger(BULK_SCROLL_KEEP_ALIVE_PROPERTY, DEFAULT_SCROLL_KEEP_ALIVE);
         boolean scrollProduceImmediate = confService.isBooleanTrue(BULK_SCROLL_PRODUCE_IMMEDIATE_PROPERTY);
-
-        streamProcessor.init(getTopology(scrollSize, scrollKeepAlive, scrollProduceImmediate), settings);
+        streamManager.register("bulk", getTopology(scrollSize, scrollKeepAlive, scrollProduceImmediate), settings);
+        streamProcessor = streamManager.createStreamProcessor("bulk");
     }
 
     protected Topology getTopology(int scrollBatchSize, int scrollKeepAlive, boolean scrollProduceImmediate) {

@@ -42,9 +42,11 @@ import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.ComputationPolicyBuilder;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
+import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.Watermark;
+import org.nuxeo.lib.stream.computation.log.LogStreamManager;
 import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
@@ -70,8 +72,6 @@ public abstract class TestStreamProcessor {
 
     public abstract LogManager getSameLogManager();
 
-    public abstract StreamProcessor getStreamProcessor(LogManager logManager);
-
     public void testSimpleTopo(int nbRecords, int concurrency) throws Exception {
         final long targetTimestamp = System.currentTimeMillis();
         final long targetWatermark = Watermark.ofTimestamp(targetTimestamp).getValue();
@@ -94,8 +94,10 @@ public abstract class TestStreamProcessor {
         // uncomment to get the plantuml diagram
         // System.out.println(topology.toPlantuml(settings));
         try (LogManager manager = getLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
-            processor.init(topology, settings).start();
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor", topology, settings);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             long start = System.currentTimeMillis();
             // this check works only if there is only one record with the target timestamp
@@ -115,8 +117,8 @@ public abstract class TestStreamProcessor {
             int result = readOutputCounter(manager);
             int expected = nbRecords * settings.getConcurrency("GENERATOR");
             if (result != expected) {
-                processor = getStreamProcessor(manager);
-                processor.init(topology, settings).start();
+                processor = streamManager.createStreamProcessor("processor");
+                processor.start();
                 int waiter = 200;
                 log.warn("FAILURE DEBUG TRACE ========================");
                 do {
@@ -232,9 +234,11 @@ public abstract class TestStreamProcessor {
         // uncomment to get the plantuml diagram
         // System.out.println(topology.toPlantuml(settings));
         try (LogManager manager = getLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor", topology, settings);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor");
             long start = System.currentTimeMillis();
-            processor.init(topology, settings).start();
+            processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             // no record are processed so far
 
@@ -328,9 +332,11 @@ public abstract class TestStreamProcessor {
 
         // 1. run generators
         try (LogManager manager = getLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor1", topology1, settings1);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor1");
             long start = System.currentTimeMillis();
-            processor.init(topology1, settings1).start();
+            processor.start();
             // This is needed because drainAndStop might consider the source generator as terminated
             // because of a random lag due to kafka init and/or GC > 500ms.
             Thread.sleep(2000);
@@ -344,9 +350,11 @@ public abstract class TestStreamProcessor {
         // 2. resume and kill loop
         for (int i = 0; i < 10; i++) {
             try (LogManager manager = getSameLogManager()) {
-                StreamProcessor processor = getStreamProcessor(manager);
+                StreamManager streamManager = new LogStreamManager(manager);
+                streamManager.register("processor2", topology2, settings2);
+                StreamProcessor processor = streamManager.createStreamProcessor("processor2");
                 log.info("RESUME computations");
-                processor.init(topology2, settings2).start();
+                processor.start();
                 assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
                 // must be greater than kafka heart beat ?
                 Thread.sleep(400 + i * 10);
@@ -360,9 +368,11 @@ public abstract class TestStreamProcessor {
         // 3. run the rest
         log.info("Now draining without interruption");
         try (LogManager manager = getSameLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor2", topology2, settings2);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor2");
             long start = System.currentTimeMillis();
-            processor.init(topology2, settings2).start();
+            processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             assertTrue(processor.drainAndStop(Duration.ofSeconds(200)));
             double elapsed = (double) (System.currentTimeMillis() - start) / 1000.0;
@@ -392,9 +402,11 @@ public abstract class TestStreamProcessor {
         Settings settings1 = new Settings(concurrent, concurrent, codec);
 
         try (LogManager manager = getLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor1", topology1, settings1);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor1");
             long start = System.currentTimeMillis();
-            processor.init(topology1, settings1).start();
+            processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             // no record are processed so far
             assertTrue(processor.drainAndStop(Duration.ofSeconds(100)));
@@ -419,8 +431,10 @@ public abstract class TestStreamProcessor {
                                     .build();
         Settings settings = new Settings(2, 1).setConcurrency("GENERATOR", 2).setPartitions("s1", 1);
         try (LogManager manager = getLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
-            processor.init(topology, settings).start();
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor", topology, settings);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             // source computation will start on assignment, let them work a bit
             Thread.sleep(1000);
@@ -442,9 +456,11 @@ public abstract class TestStreamProcessor {
                                               .setCodec("input-java", new SerializableCodec<>())
                                               .setCodec("output-avro", new AvroMessageCodec<>(Record.class));
         try (LogManager manager = getLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
             try {
-                processor.init(topology, settings).start();
+                streamManager.register("processor", topology, settings);
+                StreamProcessor processor = streamManager.createStreamProcessor("processor");
+                processor.start();
                 fail("It should not be possible to read from input streams with different encoding");
             } catch (IllegalArgumentException e) {
                 // expected
@@ -453,7 +469,7 @@ public abstract class TestStreamProcessor {
     }
 
     @Test
-    public void testInvalidProcessorWithMultipleOutputCodec() throws Exception {
+    public void testProcessorWithMultipleOutputCodec() throws Exception {
         Topology topology = Topology.builder()
                                     .addComputation(() -> new ComputationForward("C1", 1, 2),
                                             Arrays.asList("i1:input", "o1:output-avro", "o2:output-json"))
@@ -461,13 +477,14 @@ public abstract class TestStreamProcessor {
         Settings settings = new Settings(1, 1, new AvroJsonCodec<>(Record.class)).setCodec("output-avro",
                 new AvroMessageCodec<>(Record.class));
         try (LogManager manager = getLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
-            try {
-                processor.init(topology, settings).start();
-                fail("It should not be possible to write to output streams with different encoding");
-            } catch (IllegalArgumentException e) {
-                // expected
-            }
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor", topology, settings);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            processor.start();
+            streamManager.append("input", Record.of("key", "bar".getBytes(StandardCharsets.UTF_8)));
+            assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
+            LogLag lag = manager.getLag("input", "C1");
+            assertEquals(lag.toString(), 0, lag.lag());
         }
     }
 
@@ -480,8 +497,10 @@ public abstract class TestStreamProcessor {
         Settings settings = new Settings(1, 1).setCodec("input-json", new AvroJsonCodec<>(Record.class))
                                               .setCodec("output-avro", new AvroMessageCodec<>(Record.class));
         try (LogManager manager = getLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
-            processor.init(topology, settings).start();
+            StreamManager streamManager = new LogStreamManager(manager);
+            streamManager.register("processor", topology, settings);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            processor.start();
             // The processor init has already configured the codec for source stream
             LogAppender<Record> appender = manager.getAppender("input-json");
             assertEquals("avroJson", appender.getCodec().getName());
@@ -509,13 +528,14 @@ public abstract class TestStreamProcessor {
         // Default policy (no retry, abort on failure)
         try (LogManager manager = getLogManager()) {
             // Run the processor
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
             Settings settings = new Settings(1, 1);
-            processor.init(topology, settings).start();
+            streamManager.register("processor", topology, settings);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            processor.start();
             processor.waitForAssignments(Duration.ofSeconds(10));
             // Add an input record
-            LogAppender<Record> appender = manager.getAppender("input");
-            appender.append("foo", Record.of("foo", null));
+            streamManager.append("input", Record.of("foo", null));
             // wait
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
             LogLag lag = manager.getLag("input", "C1");
@@ -526,9 +546,11 @@ public abstract class TestStreamProcessor {
         ComputationPolicy policy = new ComputationPolicyBuilder().retryPolicy(
                 new RetryPolicy(ComputationPolicy.NO_RETRY)).continueOnFailure(true).build();
         try (LogManager manager = getSameLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
             Settings settings = new Settings(1, 1, policy);
-            processor.init(topology, settings).start();
+            streamManager.register("processor", topology, settings);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            processor.start();
             processor.waitForAssignments(Duration.ofSeconds(10));
             // wait
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
@@ -541,13 +563,14 @@ public abstract class TestStreamProcessor {
                 new RetryPolicy().withMaxRetries(ComputationFailureForward.FAILURE_COUNT)
                                  .retryOn(IllegalStateException.class)).continueOnFailure(false).build();
         try (LogManager manager = getSameLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
             Settings settings = new Settings(1, 1, policy);
-            processor.init(topology, settings).start();
+            streamManager.register("processor", topology, settings);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            processor.start();
             processor.waitForAssignments(Duration.ofSeconds(10));
             // add a new input
-            LogAppender<Record> appender = manager.getAppender("input");
-            appender.append("bar", Record.of("bar", null));
+            streamManager.append("input", Record.of("bar", null));
             // wait
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
             LogLag lag = manager.getLag("input", "C1");
@@ -571,15 +594,17 @@ public abstract class TestStreamProcessor {
         ComputationPolicy policy = new ComputationPolicyBuilder().batchPolicy(batchCapacity, batchThreshold).build();
         try (LogManager manager = getLogManager()) {
             // Run the processor
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
             Settings settings = new Settings(1, 1, policy);
-            processor.init(topology, settings).start();
+            streamManager.register("processor", topology, settings);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            processor.start();
             processor.waitForAssignments(Duration.ofSeconds(10));
             // Add an input records
-            LogAppender<Record> appender = manager.getAppender("input");
-            appender.append("foo", Record.of("foo", null));
-            appender.append("bar", Record.of("bar", null));
-            appender.append("baz", Record.of("foo", null));
+
+            streamManager.append("input", Record.of("foo", null));
+            streamManager.append("input", Record.of("bar", null));
+            streamManager.append("input", Record.of("foo", null));
             // wait
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
             LogLag lag = manager.getLag("input", "C1");
@@ -595,9 +620,11 @@ public abstract class TestStreamProcessor {
                                                .continueOnFailure(false)
                                                .build();
         try (LogManager manager = getSameLogManager()) {
-            StreamProcessor processor = getStreamProcessor(manager);
+            StreamManager streamManager = new LogStreamManager(manager);
             Settings settings = new Settings(1, 1, policy);
-            processor.init(topology, settings).start();
+            streamManager.register("processor", topology, settings);
+            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            processor.start();
             LogLag lag = manager.getLag("input", "C1");
             assertEquals(lag.toString(), 3, lag.lag());
             processor.waitForAssignments(Duration.ofSeconds(10));
