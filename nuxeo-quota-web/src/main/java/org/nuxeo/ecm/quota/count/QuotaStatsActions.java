@@ -83,13 +83,9 @@ public class QuotaStatsActions implements Serializable {
 
     private transient ConfigurationGenerator setupConfigGenerator;
 
-    protected QuotaStatsService quotaStatsService;
-
     protected boolean activateQuotaOnUsersWorkspaces;
 
     protected long maxQuotaOnUsersWorkspaces = -1;
-
-    protected WorkManager workManager;
 
     protected long configuredMaxQuotaSize;
 
@@ -215,7 +211,7 @@ public class QuotaStatsActions implements Serializable {
     }
 
     public boolean workQueuesInProgess() {
-        WorkManager workManager = getWorkManager();
+        WorkManager workManager = Framework.getService(WorkManager.class);
         long running = workManager.getQueueSize("quota", State.RUNNING);
         long scheduled = workManager.getQueueSize("quota", State.SCHEDULED);
         return running + scheduled > 0;
@@ -252,16 +248,6 @@ public class QuotaStatsActions implements Serializable {
     }
 
     QuotaStatsService getQuotaStatsService() {
-        if (quotaStatsService == null) {
-            quotaStatsService = Framework.getService(QuotaStatsService.class);
-        }
-        return quotaStatsService;
-    }
-
-    protected WorkManager getWorkManager() {
-        if (workManager == null) {
-            workManager = Framework.getService(WorkManager.class);
-        }
-        return workManager;
+        return Framework.getService(QuotaStatsService.class);
     }
 }
