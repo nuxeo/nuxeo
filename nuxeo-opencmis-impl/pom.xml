@@ -115,6 +115,11 @@
       <artifactId>chemistry-opencmis-client-bindings</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>javax.xml.ws</groupId>
+      <artifactId>jaxws-api</artifactId>
+    </dependency>
+
     <!-- scope provided -->
     <dependency>
       <groupId>javax.resource</groupId>
