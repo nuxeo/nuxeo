@@ -56,7 +56,7 @@ node('SLAVE') {
     println "Testing branch '$BRANCH_TO_TEST' with parent branch '$BRANCH_TO_TARGET'"
     currentBuild.setDescription("$BRANCH_TO_TEST -> $BRANCH_TO_TARGET")
     tool type: 'ant', name: 'ant-1.9'
-    tool type: 'hudson.model.JDK', name: 'java-8-oracle'
+    tool type: 'hudson.model.JDK', name: 'java-11-oracle'
     tool type: 'hudson.tasks.Maven$MavenInstallation', name: 'maven-3'
     timeout(time: 5, unit: 'HOURS') {
         timestamps {
