@@ -55,10 +55,6 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
 
     private static final String CERTIFICATE_DIRECTORY_NAME = "certificate";
 
-    protected RootService rootService;
-
-    protected CertService certService;
-
     /**
      * Configurable country code
      */
@@ -219,16 +215,10 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     }
 
     protected CertService getCertService() {
-        if (certService == null) {
-            certService = Framework.getService(CertService.class);
-        }
-        return certService;
+        return Framework.getService(CertService.class);
     }
 
     protected RootService getRootService() {
-        if (rootService == null) {
-            rootService = Framework.getService(RootService.class);
-        }
-        return rootService;
+        return Framework.getService(RootService.class);
     }
 }

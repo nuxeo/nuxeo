@@ -23,9 +23,6 @@ import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
@@ -44,24 +41,9 @@ public class SignatureServiceBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
-    private static final Log log = LogFactory.getLog(SignatureServiceBusinessDelegate.class);
-
-    protected transient SignatureService signatureService;
-
     @Unwrap
     public SignatureService getService() {
-        if (signatureService == null) {
-            signatureService = Framework.getService(SignatureService.class);
-        }
-        return signatureService;
-    }
-
-    @Destroy
-    public void destroy() {
-        if (signatureService != null) {
-            signatureService = null;
-        }
-        log.debug("Destroyed the seam component");
+        return Framework.getService(SignatureService.class);
     }
 
 }
