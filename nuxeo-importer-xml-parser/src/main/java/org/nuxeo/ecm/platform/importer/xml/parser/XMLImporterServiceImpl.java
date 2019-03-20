@@ -19,6 +19,16 @@
 
 package org.nuxeo.ecm.platform.importer.xml.parser;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,16 +56,6 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
 
 /**
  * Main implementation class for delivering the Import logic
@@ -111,8 +111,8 @@ public class XMLImporterServiceImpl {
         this(rootDoc, registry, null, false);
     }
 
-    public XMLImporterServiceImpl(DocumentModel rootDoc, ParserConfigRegistry registry,
-            Map<String, Object> mvelContext, boolean deferSave) {
+    public XMLImporterServiceImpl(DocumentModel rootDoc, ParserConfigRegistry registry, Map<String, Object> mvelContext,
+            boolean deferSave) {
         if (mvelContext != null) {
             mvelCtx.putAll(mvelContext);
         }
@@ -335,8 +335,7 @@ public class XMLImporterServiceImpl {
                         newValues[len] = value;
                         property.setValue(newValues);
                     } else {
-                        log.error("Simple multi value property " + targetDocProperty
-                                + " is not an Array");
+                        log.error("Simple multi value property " + targetDocProperty + " is not an Array");
                     }
                 }
             } else {

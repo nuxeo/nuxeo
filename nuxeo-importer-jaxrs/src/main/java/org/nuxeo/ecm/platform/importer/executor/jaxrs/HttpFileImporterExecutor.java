@@ -48,7 +48,8 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
             @QueryParam("inputPath") String inputPath, @QueryParam("targetPath") String targetPath,
             @QueryParam("skipRootContainerCreation") Boolean skipRootContainerCreation,
             @QueryParam("batchSize") Integer batchSize, @QueryParam("nbThreads") Integer nbThreads,
-            @QueryParam("interactive") Boolean interactive, @QueryParam("transactionTimeout") Integer transactionTimeout) {
+            @QueryParam("interactive") Boolean interactive,
+            @QueryParam("transactionTimeout") Integer transactionTimeout) {
 
         if (inputPath == null || targetPath == null) {
             return "Can not import, missing " + (inputPath == null ? "inputPath" : "targetPath");
