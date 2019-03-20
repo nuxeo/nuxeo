@@ -68,8 +68,6 @@ public class EasyShare extends ModuleRoot {
 
     private static final String SHARE_DOC_TYPE = "EasyShareFolder";
 
-    private static AutomationService automationService;
-
     protected final Log log = LogFactory.getLog(EasyShare.class);
 
     @GET
@@ -108,7 +106,8 @@ public class EasyShare extends ModuleRoot {
                              .set("currentPageIndex", pageIndex)
                              .set("pageSize", PAGE_SIZE);
 
-                        PaginableDocumentModelListImpl paginable = (PaginableDocumentModelListImpl) getAutomationService().run(
+                        AutomationService automationService = Framework.getService(AutomationService.class);
+                        PaginableDocumentModelListImpl paginable = (PaginableDocumentModelListImpl) automationService.run(
                                 opCtx, chain);
 
                         try (OperationContext ctx = new OperationContext(session)) {
@@ -119,7 +118,7 @@ public class EasyShare extends ModuleRoot {
                             params.put("event", "Access");
                             params.put("category", "Document");
                             params.put("comment", "IP: " + getIpAddr());
-                            getAutomationService().run(ctx, "Audit.Log", params);
+                            automationService.run(ctx, "Audit.Log", params);
                         }
 
                         return getView("folderList")
@@ -184,13 +183,6 @@ public class EasyShare extends ModuleRoot {
             return false;
         }
         return true;
-    }
-
-    private static AutomationService getAutomationService() {
-        if (automationService == null) {
-            automationService = Framework.getService(AutomationService.class);
-        }
-        return automationService;
     }
 
     @Path("{shareId}/{folderId}")
