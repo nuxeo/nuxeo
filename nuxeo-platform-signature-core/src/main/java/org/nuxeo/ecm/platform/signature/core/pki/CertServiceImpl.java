@@ -102,7 +102,6 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         }
     }
 
-
     @Override
     public X509Certificate getRootCertificate() throws CertException {
         if (rootCertificate == null) {
@@ -205,7 +204,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
             X509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(issuer, serial, getCertStartDate(),
                     getCertEndDate(), principal, keyPair.getPublic());
             builder.addExtension(Extension.authorityKeyIdentifier, false,
-                           extUtils.createAuthorityKeyIdentifier(rootCertificate))
+                    extUtils.createAuthorityKeyIdentifier(rootCertificate))
                    .addExtension(Extension.subjectKeyIdentifier, false,
                            extUtils.createSubjectKeyIdentifier(keyPair.getPublic()))
                    .addExtension(Extension.basicConstraints, true, new BasicConstraints(false))
