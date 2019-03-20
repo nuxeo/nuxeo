@@ -38,8 +38,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentRoutingWorkflowDoneListener implements EventListener {
 
-    private DocumentRoutingService routingService;
-
     @Override
     public void handleEvent(Event event) {
         if (!DocumentRoutingConstants.Events.afterRouteFinish.name().equals(event.getName())) {
@@ -51,15 +49,10 @@ public class DocumentRoutingWorkflowDoneListener implements EventListener {
 
         List<Task> openTasks = Framework.getService(TaskService.class)
                                         .getAllTaskInstances(routeInstanceDoc.getId(), session);
+        DocumentRoutingService documentRoutingService = Framework.getService(DocumentRoutingService.class);
         for (Task task : openTasks) {
-            getDocumentRoutingService().cancelTask(session, task.getId());
+            documentRoutingService.cancelTask(session, task.getId());
         }
     }
 
-    protected DocumentRoutingService getDocumentRoutingService() {
-        if (routingService == null) {
-            routingService = Framework.getService(DocumentRoutingService.class);
-        }
-        return routingService;
-    }
 }

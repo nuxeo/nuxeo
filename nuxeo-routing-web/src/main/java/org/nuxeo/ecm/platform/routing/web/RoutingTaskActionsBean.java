@@ -137,8 +137,6 @@ public class RoutingTaskActionsBean implements Serializable {
     @RequestParameter("button")
     protected String button;
 
-    protected ActionManager actionService;
-
     protected Map<String, TaskInfo> tasksInfoCache = new HashMap<String, TaskInfo>();
 
     protected Task currentTask;
@@ -195,6 +193,7 @@ public class RoutingTaskActionsBean implements Serializable {
             return actions;
         }
         GraphNode node = workflow.getNode(task.getType());
+        ActionManager actionService = Framework.getService(ActionManager.class);
         for (Button button : buttons) {
             Action action = new Action(button.getName(), Action.EMPTY_CATEGORIES);
             action.setLabel(button.getLabel());
@@ -207,7 +206,7 @@ public class RoutingTaskActionsBean implements Serializable {
                     workflowContextualInfo.putAll(node.getWorkflowContextualInfo(documentManager, true));
                     actionContext.putAllLocalVariables(workflowContextualInfo);
                 }
-                displayAction = getActionService().checkFilter(button.filter, actionContext);
+                displayAction = actionService.checkFilter(button.filter, actionContext);
             }
             if (displayAction) {
                 actions.add(action);
@@ -412,6 +411,7 @@ public class RoutingTaskActionsBean implements Serializable {
         }
 
         if (buttons != null && !buttons.isEmpty()) {
+            ActionManager actionService = Framework.getService(ActionManager.class);
             for (Button button : buttons) {
                 String buttonId = button.getName();
                 String id = getTaskActionId(task, buttonId);
@@ -429,7 +429,7 @@ public class RoutingTaskActionsBean implements Serializable {
                 }
                 boolean displayAction = true;
                 if (StringUtils.isNotEmpty(button.getFilter())) {
-                    displayAction = getActionService().checkFilter(button.filter,
+                    displayAction = actionService.checkFilter(button.filter,
                             actionContextProvider.createActionContext());
                 }
                 if (displayAction) {
@@ -602,13 +602,6 @@ public class RoutingTaskActionsBean implements Serializable {
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
         return null;
-    }
-
-    private ActionManager getActionService() {
-        if (actionService == null) {
-            actionService = Framework.getService(ActionManager.class);
-        }
-        return actionService;
     }
 
     /***
