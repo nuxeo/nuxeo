@@ -36,8 +36,6 @@ public class NuxeoBinding implements CmisBinding {
 
     public final CmisService service;
 
-    private NuxeoCmisService nuxeoCmisService;
-
     public NuxeoBinding(CmisService service) {
         this.service = service;
     }
@@ -127,17 +125,8 @@ public class NuxeoBinding implements CmisBinding {
     }
 
     public CoreSession getCoreSession() {
-        return getNuxeoCmisService() == null ? null : nuxeoCmisService.getCoreSession();
-    }
-
-    /**
-     * Gets the potentially wrapped NuxeoCmisService.
-     */
-    public NuxeoCmisService getNuxeoCmisService() {
-        if (nuxeoCmisService == null) {
-            nuxeoCmisService = NuxeoCmisService.extractFromCmisService(service);
-        }
-        return nuxeoCmisService;
+        NuxeoCmisService nuxeoCmisService = NuxeoCmisService.extractFromCmisService(service);
+        return nuxeoCmisService == null ? null : nuxeoCmisService.getCoreSession();
     }
 
 }
