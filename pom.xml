@@ -919,13 +919,6 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
-      <!-- Travel Expenses Sample -->
-      <dependency>
-        <groupId>org.nuxeo.sample</groupId>
-        <artifactId>nuxeo-travel-expenses</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
       <!-- Connect Tools -->
       <dependency>
         <groupId>org.nuxeo.connect.tools</groupId>
