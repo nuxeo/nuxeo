@@ -70,7 +70,7 @@ public class QuotaStatsActions implements Serializable {
     public static final String QUOTA_MAX_SIZE_PROP = "nuxeo.quota.maxsize";
 
     /** @since 9.3 */
-    public static final String QUOTA_MAX_SIZE_DEFAULT= "999 GB";
+    public static final String QUOTA_MAX_SIZE_DEFAULT = "999 GB";
 
     @In(create = true)
     protected transient CoreSession documentManager;
