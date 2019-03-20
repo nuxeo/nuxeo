@@ -49,8 +49,8 @@ public class DocumentRoutingWorkflowDoneListener implements EventListener {
         CoreSession session = docCtx.getCoreSession();
         DocumentModel routeInstanceDoc = docCtx.getSourceDocument();
 
-        List<Task> openTasks = Framework.getService(TaskService.class).getAllTaskInstances(
-                routeInstanceDoc.getId(), session);
+        List<Task> openTasks = Framework.getService(TaskService.class)
+                                        .getAllTaskInstances(routeInstanceDoc.getId(), session);
         for (Task task : openTasks) {
             getDocumentRoutingService().cancelTask(session, task.getId());
         }

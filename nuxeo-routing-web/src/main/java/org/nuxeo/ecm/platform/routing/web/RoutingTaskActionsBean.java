@@ -163,8 +163,8 @@ public class RoutingTaskActionsBean implements Serializable {
         }
 
         if (messageString != null) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
-                    "label.workflow.error.outdated_duedate"), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    ComponentUtils.translate(context, "label.workflow.error.outdated_duedate"), null);
             ((EditableValueHolder) component).setValid(false);
             context.addMessage(component.getClientId(context), message);
         }
@@ -172,8 +172,8 @@ public class RoutingTaskActionsBean implements Serializable {
 
     public void validateSubject(FacesContext context, UIComponent component, Object value) {
         if (!((value instanceof String) && ((String) value).matches(SUBJECT_PATTERN))) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
-                    "label.document.routing.invalid.subject"), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    ComponentUtils.translate(context, "label.document.routing.invalid.subject"), null);
             context.addMessage(null, message);
             throw new ValidatorException(message);
         }
@@ -240,9 +240,8 @@ public class RoutingTaskActionsBean implements Serializable {
         }
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
         clear(task.getId());
-        if (navigationContext.getCurrentDocument() != null
-                && documentManager.hasPermission(navigationContext.getCurrentDocument().getRef(),
-                        SecurityConstants.READ)) {
+        if (navigationContext.getCurrentDocument() != null && documentManager.hasPermission(
+                navigationContext.getCurrentDocument().getRef(), SecurityConstants.READ)) {
             return null;
         }
         // if the user only had temporary permissions on the current doc given
@@ -495,7 +494,8 @@ public class RoutingTaskActionsBean implements Serializable {
         Map<String, Map<String, Action>> actionsPerTaskType = new LinkedHashMap<String, Map<String, Action>>();
         Map<String, Integer> actionsCounter = new HashMap<String, Integer>();
         List<DocumentModel> docs = documentsListsManager.getWorkingList(selectionListName);
-        boolean cachePerType = Boolean.TRUE.equals(Boolean.valueOf(Framework.getProperty(CACHE_ACTIONS_PER_TASK_TYPE_PROP_NAME)));
+        boolean cachePerType = Boolean.TRUE.equals(
+                Boolean.valueOf(Framework.getProperty(CACHE_ACTIONS_PER_TASK_TYPE_PROP_NAME)));
         int taskDocsNum = 0;
         if (docs != null && !docs.isEmpty()) {
             for (DocumentModel doc : docs) {
@@ -553,8 +553,8 @@ public class RoutingTaskActionsBean implements Serializable {
         // collect form data
         Map<String, Object> data = new HashMap<String, Object>();
         String buttonId = (String) taskAction.getProperties().get("buttonId");
-        Map<String, Serializable> formVariables = (Map<String, Serializable>) taskAction.getProperties().get(
-                "formVariables");
+        Map<String, Serializable> formVariables = (Map<String, Serializable>) taskAction.getProperties()
+                                                                                        .get("formVariables");
 
         if (formVariables != null && !formVariables.isEmpty()) {
             // if there is a comment on the submitted form, pass it to be
@@ -631,8 +631,8 @@ public class RoutingTaskActionsBean implements Serializable {
      */
     public String reassignTask(TaskInfo taskInfo) {
         try {
-            Framework.getService(DocumentRoutingService.class).reassignTask(documentManager, taskInfo.getTaskId(),
-                    taskInfo.getActors(), taskInfo.getComment());
+            Framework.getService(DocumentRoutingService.class)
+                     .reassignTask(documentManager, taskInfo.getTaskId(), taskInfo.getActors(), taskInfo.getComment());
             Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_REASSIGNED);
         } catch (DocumentRouteException e) {
             log.error(e);
@@ -661,8 +661,8 @@ public class RoutingTaskActionsBean implements Serializable {
      */
     public String delegateTask(TaskInfo taskInfo) {
         try {
-            Framework.getService(DocumentRoutingService.class).delegateTask(documentManager, taskInfo.getTaskId(),
-                    taskInfo.getActors(), taskInfo.getComment());
+            Framework.getService(DocumentRoutingService.class)
+                     .delegateTask(documentManager, taskInfo.getTaskId(), taskInfo.getActors(), taskInfo.getComment());
             Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_DELEGATED);
         } catch (DocumentRouteException e) {
             log.error(e);
@@ -732,6 +732,7 @@ public class RoutingTaskActionsBean implements Serializable {
             return false;
         }
         GraphNode node = workflow.getNode(currentTask.getType());
-        return node.allowTaskReassignment() && !currentTask.getDelegatedActors().contains(documentManager.getPrincipal().getName());
+        return node.allowTaskReassignment()
+                && !currentTask.getDelegatedActors().contains(documentManager.getPrincipal().getName());
     }
 }
