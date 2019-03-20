@@ -23,9 +23,6 @@ import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
@@ -42,28 +39,13 @@ public class VideoServiceBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(VideoServiceBusinessDelegate.class);
-
-    protected VideoService videoService;
-
     /**
      * Acquires a new {@link VideoService} reference. The related service may be deployed on a local or remote
      * AppServer.
      */
     @Unwrap
     public VideoService getService() {
-        if (videoService == null) {
-            videoService = Framework.getService(VideoService.class);
-        }
-        return videoService;
-    }
-
-    @Destroy
-    public void destroy() {
-        if (videoService != null) {
-            videoService = null;
-        }
-        log.debug("Destroyed the seam component");
+        return Framework.getService(VideoService.class);
     }
 
 }
