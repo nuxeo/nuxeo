@@ -34,8 +34,6 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
 
     private static final Log log = LogFactory.getLog(HttpFileImporterExecutor.class);
 
-    protected DefaultImporterService importerService;
-
     @Override
     protected Log getJavaLogger() {
         return log;
@@ -70,15 +68,17 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
             transactionTimeout = 0;
         }
 
-        getImporterService().setTransactionTimeout(transactionTimeout);
+        DefaultImporterService defaultImporterService = Framework.getService(DefaultImporterService.class);
+
+        defaultImporterService.setTransactionTimeout(transactionTimeout);
 
         if (leafType != null || folderishType != null) {
             log.info("Importing with the specified doc types");
-            return getImporterService().importDocuments(this, leafType, folderishType, targetPath, inputPath,
+            return defaultImporterService.importDocuments(this, leafType, folderishType, targetPath, inputPath,
                     skipRootContainerCreation, batchSize, nbThreads, interactive);
         } else {
             log.info("Importing with the deafult doc types");
-            return getImporterService().importDocuments(this, targetPath, inputPath, skipRootContainerCreation,
+            return defaultImporterService.importDocuments(this, targetPath, inputPath, skipRootContainerCreation,
                     batchSize, nbThreads, interactive);
         }
 
@@ -89,10 +89,4 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
         return doRun(runner, interactive);
     }
 
-    protected DefaultImporterService getImporterService() {
-        if (importerService == null) {
-            importerService = Framework.getService(DefaultImporterService.class);
-        }
-        return importerService;
-    }
 }

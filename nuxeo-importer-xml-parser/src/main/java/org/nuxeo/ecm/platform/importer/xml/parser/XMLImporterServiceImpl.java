@@ -174,8 +174,6 @@ public class XMLImporterServiceImpl {
 
     protected File workingDirectory;
 
-    private AutomationService automationService;
-
     public List<DocumentModel> parse(InputStream is) throws IOException {
         mvelCtx.put("source", is);
         try {
@@ -564,7 +562,7 @@ public class XMLImporterServiceImpl {
                     try (OperationContext ctx = new OperationContext(session)) {
                         ctx.putAll(mvelCtx);
                         ctx.setInput(docsStack.peek());
-                        getAutomationService().run(ctx, chain);
+                        Framework.getService(AutomationService.class).run(ctx, chain);
                     } catch (NuxeoException e) {
                         throw e;
                     } catch (Exception e) {
@@ -576,14 +574,6 @@ public class XMLImporterServiceImpl {
         for (Object e : el.elements()) {
             process((Element) e);
         }
-    }
-
-    private AutomationService getAutomationService() {
-        if (automationService == null) {
-            automationService = Framework.getService(AutomationService.class);
-        }
-        return automationService;
-
     }
 
     private void pushInStack(DocumentModel doc) {
