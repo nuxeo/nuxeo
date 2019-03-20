@@ -73,8 +73,6 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     protected String rootUrl;
 
-    protected TrashService trashService;
-
     protected LinkedList<String> orderedBackendNames;
 
     protected SimpleBackend(String backendDisplayName, String rootPath, String rootUrl, CoreSession session) {
@@ -287,7 +285,7 @@ public class SimpleBackend extends AbstractCoreBackend {
             if (isTemporaryFile(doc)) {
                 session.removeDocument(ref);
             } else {
-                getTrashService().trashDocuments(Arrays.asList(doc));
+                Framework.getService(TrashService.class).trashDocuments(Arrays.asList(doc));
             }
         } else {
             log.warn("Can't move document " + ref.toString() + " to trash. Document did not found.");
@@ -529,13 +527,6 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     protected boolean isTrashDocument(DocumentModel model) {
         return model == null || model.isTrashed();
-    }
-
-    protected TrashService getTrashService() {
-        if (trashService == null) {
-            trashService = Framework.getService(TrashService.class);
-        }
-        return trashService;
     }
 
     protected boolean cleanTrashPath(DocumentModel parent, String name) {
