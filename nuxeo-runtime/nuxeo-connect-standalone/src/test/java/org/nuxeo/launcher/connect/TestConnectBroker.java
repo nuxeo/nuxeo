@@ -29,7 +29,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -133,8 +135,10 @@ public class TestConnectBroker {
         String addonJSON = FileUtils.readFileToString(new File(testStore, "addon_remote.json"));
         String hotfixJSON = FileUtils.readFileToString(new File(testStore, "hotfix_remote.json"));
         String studioJSON = FileUtils.readFileToString(new File(testStore, "studio_remote.json"));
-        NuxeoConnectClient.getConnectGatewayComponent().setTestConnector(
-                new LocalConnectFakeConnector(addonJSON, hotfixJSON, studioJSON));
+        String addonWithPrivateJSON = FileUtils.readFileToString(new File(testStore, "addon_with_private_remote.json"));
+        NuxeoConnectClient.getConnectGatewayComponent()
+                          .setTestConnector(new LocalConnectFakeConnector(addonJSON, hotfixJSON, studioJSON,
+                                  addonWithPrivateJSON));
 
         // build env
         Environment.setDefault(null);
@@ -175,8 +179,8 @@ public class TestConnectBroker {
         File uninstallFile = new File(testStore, "uninstall.xml");
 
         // Copy all zip from testStore
-        FileUtils.iterateFiles(testStore, new String[] { "zip" }, false).forEachRemaining(
-                pkgZip -> copyPackageToStore(nuxeoStore, uninstallFile, pkgZip));
+        FileUtils.iterateFiles(testStore, new String[] { "zip" }, false)
+                 .forEachRemaining(pkgZip -> copyPackageToStore(nuxeoStore, uninstallFile, pkgZip));
         // Copy only installed packages from testStore/local-only
         copyPackageToStore(nuxeoStore, uninstallFile, new File(TEST_LOCAL_ONLY_PATH, "K-1.0.0-SNAPSHOT.zip"));
 
@@ -202,18 +206,6 @@ public class TestConnectBroker {
     }
 
     @Test
-    public void testIsRemotePackageId() throws Exception {
-        Set<String> remotePackageIds = collectIdsFrom("addon_remote.json", "hotfix_remote.json", "studio_remote.json");
-        remotePackageIds.forEach(id -> assertThat(connectBroker.isRemotePackageId(id)).isTrue());
-
-        // Packages in path "$TEST_STORE_PATH/local-only" are not available in remote (local-only)
-        assertThat(connectBroker.isRemotePackageId("E-1.0.1")).isFalse();
-        assertThat(connectBroker.isRemotePackageId("F.1.0.0-SNAPSHOT")).isFalse();
-        assertThat(connectBroker.isRemotePackageId("K.1.0.0-SNAPSHOT")).isFalse();
-        assertThat(connectBroker.isRemotePackageId("unknown-package")).isFalse();
-    }
-
-    @Test
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
     public void testListAllPackages() throws Exception {
         // GIVEN we are unregistered
@@ -228,11 +220,8 @@ public class TestConnectBroker {
                 "studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT) \n" + //
                 "hotfix     started\thfA (id: hfA-1.0.0) \n" + //
                 "hotfix  downloaded\thfA (id: hfA-1.0.8) \n" + //
-                "hotfix      remote\thfAA (id: hfAA-1.0.0) [REGISTRATION REQUIRED]\n" + //
                 "hotfix  downloaded\thfB (id: hfB-1.0.0) \n" + //
-                "hotfix      remote\thfBB (id: hfBB-1.0.0) [REGISTRATION REQUIRED]\n" + //
                 "hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT) \n" + //
-                "hotfix      remote\thfD (id: hfD-1.0.0) \n" + //
                 " addon     started\tA (id: A-1.0.0) \n" + //
                 " addon  downloaded\tA (id: A-1.2.0) \n" + //
                 " addon  downloaded\tA (id: A-1.2.1-SNAPSHOT) \n" + //
@@ -252,11 +241,11 @@ public class TestConnectBroker {
                 " addon     started\tH (id: H-1.0.1-SNAPSHOT) \n" + //
                 " addon     started\tJ (id: J-1.0.1) \n" + //
                 " addon     started\tK (id: K-1.0.0-SNAPSHOT) \n" + //
-                " addon      remote\tL (id: L-1.0.1) \n" + //
-                " addon      remote\tL (id: L-1.0.2) \n" + //
-                " addon      remote\tL (id: L-1.0.3) \n" + //
                 " addon  downloaded\tM (id: M-1.0.0-SNAPSHOT) \n" + //
-                " addon      remote\tM (id: M-1.0.1) [REGISTRATION REQUIRED]\n"; //
+                " addon      remote\tM (id: M-1.0.1) [REGISTRATION REQUIRED]\n" + //
+                " addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT) \n" + //
+                " addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0) \n" + //
+                " addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0) \n";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
         logCaptureResult.clear();
 
@@ -265,6 +254,7 @@ public class TestConnectBroker {
         CLID.save();
 
         // WHEN trying to list all packages
+        connectBroker.refreshCache();
         connectBroker.pkgListAll();
 
         // THEN it shows all expected packages without the "[REGISTRATION REQUIRED]"
@@ -274,11 +264,8 @@ public class TestConnectBroker {
                 "studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT) \n" + //
                 "hotfix     started\thfA (id: hfA-1.0.0) \n" + //
                 "hotfix  downloaded\thfA (id: hfA-1.0.8) \n" + //
-                "hotfix      remote\thfAA (id: hfAA-1.0.0) \n" + //
                 "hotfix  downloaded\thfB (id: hfB-1.0.0) \n" + //
-                "hotfix      remote\thfBB (id: hfBB-1.0.0) \n" + //
                 "hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT) \n" + //
-                "hotfix      remote\thfD (id: hfD-1.0.0) \n" + //
                 " addon     started\tA (id: A-1.0.0) \n" + //
                 " addon  downloaded\tA (id: A-1.2.0) \n" + //
                 " addon  downloaded\tA (id: A-1.2.1-SNAPSHOT) \n" + //
@@ -298,11 +285,13 @@ public class TestConnectBroker {
                 " addon     started\tH (id: H-1.0.1-SNAPSHOT) \n" + //
                 " addon     started\tJ (id: J-1.0.1) \n" + //
                 " addon     started\tK (id: K-1.0.0-SNAPSHOT) \n" + //
-                " addon      remote\tL (id: L-1.0.1) \n" + //
-                " addon      remote\tL (id: L-1.0.2) \n" + //
-                " addon      remote\tL (id: L-1.0.3) \n" + //
                 " addon  downloaded\tM (id: M-1.0.0-SNAPSHOT) \n" + //
-                " addon      remote\tM (id: M-1.0.1) \n"; //
+                " addon      remote\tM (id: M-1.0.1) \n" + //
+                " addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT) \n" + //
+                " addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0) \n" + //
+                " addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0) \n" + //
+                " addon      remote\tprivA (id: privA-1.0.1) [PRIVATE (Owner: customer1)]\n" + //
+                " addon      remote\tprivB (id: privB-1.0.0-SNAPSHOT) [PRIVATE (Owner: customer1)]\n";
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -312,7 +301,8 @@ public class TestConnectBroker {
         // GIVEN we are unregistered
 
         // WHEN trying to show packages properties
-        connectBroker.pkgShow(Arrays.asList("A-1.0.0", "studioA-1.0.1", "hfAA-1.0.0", "M-1.0.1"));
+        connectBroker.pkgShow(Arrays.asList("A-1.0.0", "studioA-1.0.1", "hfAA-1.0.0", "M-1.0.1", "unknown-package"));
+        connectBroker.getCommandSet().log();
 
         // THEN it shows all expected properties
         String expectedLogs = "****************************************\n" + //
@@ -349,7 +339,7 @@ public class TestConnectBroker {
                 "License URL: http://www.gnu.org/licenses/lgpl.html\n" + //
                 "****************************************\n" + //
                 "Package: hfAA-1.0.0\n" + //
-                "State: remote\n" + //
+                "State: remote [REGISTRATION REQUIRED]\n" + //
                 "Version: 1.0.0\n" + //
                 "Name: hfAA\n" + //
                 "Type: hotfix\n" + //
@@ -362,7 +352,7 @@ public class TestConnectBroker {
                 "Description: Hot Fix for NXP\n" + //
                 "****************************************\n" + //
                 "Package: M-1.0.1\n" + //
-                "State: remote\n" + //
+                "State: remote [REGISTRATION REQUIRED]\n" + //
                 "Version: 1.0.1\n" + //
                 "Name: M\n" + //
                 "Type: addon\n" + //
@@ -373,25 +363,30 @@ public class TestConnectBroker {
                 "Validation state: none\n" + //
                 "Title: Package M\n" + //
                 "Description: description of M\n" + //
-                "****************************************"; //
+                "****************************************\n" + //
+                "\tCould not find a remote or local (relative to current directory or to NUXEO_HOME) package with name or ID unknown-package"; //
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
-    }
+        logCaptureResult.clear();
 
-    @Test
-    @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
-    public void testDownloadUnknownPackage() throws Exception {
-        // GIVEN a non existing package
-        checkPackagesState(null, "unknown-package");
+        // GIVEN we are registered
+        LogicalInstanceIdentifier CLID = new LogicalInstanceIdentifier("toto--titi", "myInstance");
+        CLID.save();
 
-        // WHEN trying to download it
-        boolean isSuccessful = connectBroker.downloadPackages(Arrays.asList("unknown-package"));
-        assertThat(isSuccessful).isFalse();
+        // WHEN trying to show packages properties
+        connectBroker.refreshCache();
+        connectBroker.pkgShow(Arrays.asList("privA-1.0.1", "M-1.0.1"));
 
-        // THEN it fails and the package is still unknown
-        checkPackagesState(null, "unknown-package");
-        connectBroker.getCommandSet().log();
-        String expectedLogs = "Downloading [unknown-package]...\n" //
-                + "\tDownload failed (not found)."; //
+        // THEN it shows all expected properties
+        expectedLogs = "****************************************\n" + "Package: privA-1.0.1\n"
+                + "State: remote [PRIVATE (Owner: customer1)]\n" + "Version: 1.0.1\n" + "Name: privA\n"
+                + "Type: addon\n" + "Target platforms: {server-8.3,server-8.4}\n" + "Supports hot-reload: false\n"
+                + "Supported: false\n" + "Production state: testing\n" + "Validation state: none\n"
+                + "Title: Package privA\n" + "Description: description of privA\n"
+                + "****************************************\n" + "Package: M-1.0.1\n" + "State: remote \n"
+                + "Version: 1.0.1\n" + "Name: M\n" + "Type: addon\n" + "Target platforms: {server-8.3,server-8.4}\n"
+                + "Supports hot-reload: false\n" + "Supported: false\n" + "Production state: testing\n"
+                + "Validation state: none\n" + "Title: Package M\n" + "Description: description of M\n"
+                + "****************************************"; //
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -511,8 +506,7 @@ public class TestConnectBroker {
         checkPackagesState(PackageState.STARTED, "NXP-24507-A-1.0.0");
         // And a file is created for pending changes
         Path pending = connectBroker.getPendingFile();
-        assertThat(pending).hasContent("install B\n"
-                + "install C\n");
+        assertThat(pending).hasContent("install B\n" + "install C\n");
     }
 
     @Test
@@ -740,8 +734,8 @@ public class TestConnectBroker {
 
         // SNAPSHOTS must be replaced in local cache before installation and D-1.0.4-SNAPSHOT must be installed after
         // C-1.0.2-SNAPSHOT because of optional dependencies
-        assertThat(connectBroker.pkgRequest(null,
-                Arrays.asList("A-1.2.2-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT"), null, null, true,
+        assertThat(connectBroker.pkgRequest(
+                null, Arrays.asList("A-1.2.2-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.4-SNAPSHOT"), null, null, true,
                 false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.2.2-SNAPSHOT, B-1.0.2, C-1.0.2-SNAPSHOT, D-1.0.2-SNAPSHOT]
@@ -1376,7 +1370,6 @@ public class TestConnectBroker {
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
     public void testHotfixPackageRequest() throws Exception {
         connectBroker.setAllowSNAPSHOT(false);
-        connectBroker.setAllowSNAPSHOT(false);
         // Make sure we are registered
         LogicalInstanceIdentifier CLID = new LogicalInstanceIdentifier("toto--titi", "myInstance");
         CLID.save();
@@ -1602,9 +1595,8 @@ public class TestConnectBroker {
         connectBroker.setAllowSNAPSHOT(false);
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
-        checkPackagesState(connectBroker,
-                Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
-                PackageState.STARTED);
+        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
         checkPackagesState(connectBroker,
                 Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
@@ -1616,8 +1608,8 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT,
         // M-1.0.0-I20181011_1121]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "M-1.0.0-I20181011_1121"), PackageState.STARTED);
+        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "M-1.0.0-I20181011_1121"), PackageState.STARTED);
         checkPackagesState(connectBroker,
                 Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
@@ -1645,8 +1637,9 @@ public class TestConnectBroker {
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT,
         // M-1.0.0-I20181011_1121, N-1.0.1-HF08-SNAPSHOT]
-        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0",
-                "D-1.0.2-SNAPSHOT", "M-1.0.0-I20181011_1121", "N-1.0.1-HF08-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBroker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "M-1.0.0-I20181011_1121", "N-1.0.1-HF08-SNAPSHOT"),
+                PackageState.STARTED);
         checkPackagesState(connectBroker,
                 Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
                         "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
@@ -1698,8 +1691,10 @@ public class TestConnectBroker {
     }
 
     protected static String logOf(LogCaptureFeature.Result logCaptureResult) {
-        return logCaptureResult.getCaughtEvents().stream().map(LoggingEvent::getRenderedMessage).collect(
-                Collectors.joining("\n"));
+        return logCaptureResult.getCaughtEvents()
+                               .stream()
+                               .map(LoggingEvent::getRenderedMessage)
+                               .collect(Collectors.joining("\n"));
     }
 
 }
