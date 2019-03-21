@@ -29,6 +29,7 @@ import org.nuxeo.connect.connector.fake.AbstractFakeConnector;
 import org.nuxeo.connect.data.AbstractJSONSerializableData;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.PackageDescriptor;
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.update.PackageType;
 
 public class LocalConnectFakeConnector extends AbstractFakeConnector {
@@ -38,12 +39,15 @@ public class LocalConnectFakeConnector extends AbstractFakeConnector {
     protected String hotfixJSON;
 
     protected String studioJSON;
+    
+    protected String addonWithPrivateJSON;
 
-    public LocalConnectFakeConnector(String addonJSON, String hotfixJSON, String studioJSON) {
+    public LocalConnectFakeConnector(String addonJSON, String hotfixJSON, String studioJSON, String addonWithPrivateJSON) {
         super();
         this.addonJSON = addonJSON;
         this.hotfixJSON = hotfixJSON;
         this.studioJSON = studioJSON;
+        this.addonWithPrivateJSON = addonWithPrivateJSON;
     }
 
     @Override
@@ -56,7 +60,11 @@ public class LocalConnectFakeConnector extends AbstractFakeConnector {
     protected String getJSONDataForDownloads(String type) {
         String data = null;
         if (PackageType.ADDON.getValue().equals(type)) {
-            data = addonJSON;
+            if (LogicalInstanceIdentifier.isRegistered()) {
+                data = addonWithPrivateJSON;
+            } else {
+                data = addonJSON;
+            }
         } else if (PackageType.HOT_FIX.getValue().equals(type)) {
             data = hotfixJSON;
         } else if (PackageType.STUDIO.getValue().equals(type)) {
