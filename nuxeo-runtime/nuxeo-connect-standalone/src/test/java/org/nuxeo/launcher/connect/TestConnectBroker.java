@@ -129,8 +129,10 @@ public class TestConnectBroker {
         String addonJSON = FileUtils.readFileToString(new File(testStore, "addon_remote.json"));
         String hotfixJSON = FileUtils.readFileToString(new File(testStore, "hotfix_remote.json"));
         String studioJSON = FileUtils.readFileToString(new File(testStore, "studio_remote.json"));
+        String addonWithPrivateJSON = FileUtils.readFileToString(new File(testStore, "addon_with_private_remote.json"));
         NuxeoConnectClient.getConnectGatewayComponent()
-                          .setTestConnector(new LocalConnectFakeConnector(addonJSON, hotfixJSON, studioJSON));
+                          .setTestConnector(new LocalConnectFakeConnector(addonJSON, hotfixJSON, studioJSON,
+                                  addonWithPrivateJSON));
 
         // build env
         Environment.setDefault(null);
@@ -248,6 +250,7 @@ public class TestConnectBroker {
         CLID.save();
 
         // WHEN trying to list all packages
+        connectBroker.refreshCache();
         connectBroker.pkgListAll();
 
         // THEN it shows all expected packages without the "[REGISTRATION REQUIRED]"
@@ -285,7 +288,9 @@ public class TestConnectBroker {
                 " addon      remote\tL (id: L-1.0.2) \n" + //
                 " addon      remote\tL (id: L-1.0.3) \n" + //
                 " addon  downloaded\tM (id: M-1.0.0-SNAPSHOT) \n" + //
-                " addon      remote\tM (id: M-1.0.1) \n"; //
+                " addon      remote\tM (id: M-1.0.1) \n" + //
+                " addon      remote\tprivA (id: privA-1.0.1) [PRIVATE (Owner: customer1)]\n" + //
+                " addon      remote\tprivB (id: privB-1.0.0-SNAPSHOT) [PRIVATE (Owner: customer1)]\n"; //
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
     }
 
@@ -295,8 +300,9 @@ public class TestConnectBroker {
         // GIVEN we are unregistered
 
         // WHEN trying to show packages properties
-        connectBroker.pkgShow(Arrays.asList("A-1.0.0", "studioA-1.0.1", "hfAA-1.0.0", "M-1.0.1"));
-
+        connectBroker.pkgShow(Arrays.asList("A-1.0.0", "studioA-1.0.1", "hfAA-1.0.0", "M-1.0.1", "unknonwn-package"));
+        connectBroker.getCommandSet().log();
+        
         // THEN it shows all expected properties
         String expectedLogs = "****************************************\n" + //
                 "Package: A-1.0.0\n" + //
@@ -332,7 +338,7 @@ public class TestConnectBroker {
                 "License URL: http://www.gnu.org/licenses/lgpl.html\n" + //
                 "****************************************\n" + //
                 "Package: hfAA-1.0.0\n" + //
-                "State: remote\n" + //
+                "State: remote [REGISTRATION REQUIRED]\n" + //
                 "Version: 1.0.0\n" + //
                 "Name: hfAA\n" + //
                 "Type: hotfix\n" + //
@@ -345,7 +351,7 @@ public class TestConnectBroker {
                 "Description: Hot Fix for NXP\n" + //
                 "****************************************\n" + //
                 "Package: M-1.0.1\n" + //
-                "State: remote\n" + //
+                "State: remote [REGISTRATION REQUIRED]\n" + //
                 "Version: 1.0.1\n" + //
                 "Name: M\n" + //
                 "Type: addon\n" + //
@@ -356,8 +362,49 @@ public class TestConnectBroker {
                 "Validation state: none\n" + //
                 "Title: Package M\n" + //
                 "Description: description of M\n" + //
+                "****************************************\n" + //
+                "\tCould not find a remote or local (relative to current directory or to NUXEO_HOME) package with name or ID unknonwn-package"; //
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+        
+        // GIVEN we are registered
+        LogicalInstanceIdentifier CLID = new LogicalInstanceIdentifier("toto--titi", "myInstance");
+        CLID.save();
+
+        // WHEN trying to show packages properties
+        connectBroker.refreshCache();
+        connectBroker.pkgShow(Arrays.asList("privA-1.0.1", "M-1.0.1"));
+
+        // THEN it shows all expected properties
+        expectedLogs = "****************************************\n" + 
+                "Package: privA-1.0.1\n" + 
+                "State: remote [PRIVATE (Owner: customer1)]\n" + 
+                "Version: 1.0.1\n" + 
+                "Name: privA\n" + 
+                "Type: addon\n" + 
+                "Target platforms: {server-8.3,server-8.4}\n" + 
+                "Supports hot-reload: false\n" + 
+                "Supported: false\n" + 
+                "Production state: testing\n" + 
+                "Validation state: none\n" + 
+                "Title: Package privA\n" + 
+                "Description: description of privA\n" + 
+                "****************************************\n" + 
+                "Package: M-1.0.1\n" + 
+                "State: remote \n" + 
+                "Version: 1.0.1\n" + 
+                "Name: M\n" + 
+                "Type: addon\n" + 
+                "Target platforms: {server-8.3,server-8.4}\n" + 
+                "Supports hot-reload: false\n" + 
+                "Supported: false\n" + 
+                "Production state: testing\n" + 
+                "Validation state: none\n" + 
+                "Title: Package M\n" + 
+                "Description: description of M\n" + 
                 "****************************************"; //
         assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        
     }
 
     @Test

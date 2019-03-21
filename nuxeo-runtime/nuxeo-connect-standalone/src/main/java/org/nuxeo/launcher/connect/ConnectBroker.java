@@ -484,6 +484,19 @@ public class ConnectBroker {
         pkgList(NuxeoConnectClient.getPackageManager().listAllPackages());
     }
 
+    private String getPrivateOrSubscriptionTag(DownloadablePackage pkg) {
+        String tag = "";
+        if (pkg.getOwner() != null) {
+            tag = "[PRIVATE (Owner: " + pkg.getOwner() + ")]";
+        } else if (pkg.getPackageState() == PackageState.REMOTE //
+                && pkg.getType() != PackageType.STUDIO //
+                && pkg.hasSubscriptionRequired() //
+                && !LogicalInstanceIdentifier.isRegistered()) {
+            tag = "[REGISTRATION REQUIRED]";
+        }
+        return tag;
+    }
+
     public void pkgList(List<? extends DownloadablePackage> packagesList) {
         CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_LIST);
         try {
@@ -494,14 +507,9 @@ public class ConnectBroker {
                 StringBuilder sb = new StringBuilder();
                 for (DownloadablePackage pkg : packagesList) {
                     newPackageInfo(cmdInfo, pkg);
-                    PackageState packageState = pkg.getPackageState();
-                    String registrationRequiredTag = (packageState == PackageState.REMOTE //
-                            && pkg.getType() != PackageType.STUDIO //
-                            && pkg.hasSubscriptionRequired() //
-                            && !LogicalInstanceIdentifier.isRegistered()) ? "[REGISTRATION REQUIRED]" : "";
-
                     String packageDescription = String.format("%6s %11s\t%s (id: %s) %s\n", pkg.getType(),
-                            packageState.getLabel(), pkg.getName(), pkg.getId(), registrationRequiredTag);
+                            pkg.getPackageState().getLabel(), pkg.getName(), pkg.getId(),
+                            getPrivateOrSubscriptionTag(pkg));
                     sb.append(packageDescription);
                 }
                 log.info(sb.toString());
@@ -1627,13 +1635,17 @@ public class ConnectBroker {
         }
         StringBuilder sb = new StringBuilder();
         sb.append("****************************************");
-        for (String pkg : packages) {
+        for (String pkgId : packages) {
             CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_SHOW);
-            cmdInfo.param = pkg;
+            cmdInfo.param = pkgId;
             try {
-                PackageInfo packageInfo = newPackageInfo(cmdInfo, findPackage(pkg));
+                Package pkg = findPackage(pkgId);
+                PackageInfo packageInfo = newPackageInfo(cmdInfo, pkg);
                 sb.append("\nPackage: " + packageInfo.id);
                 sb.append("\nState: " + packageInfo.state);
+                if (pkg instanceof DownloadablePackage) {
+                    sb.append(" " + getPrivateOrSubscriptionTag((DownloadablePackage) pkg));
+                }
                 sb.append("\nVersion: " + packageInfo.version);
                 sb.append("\nName: " + packageInfo.name);
                 sb.append("\nType: " + packageInfo.type);
