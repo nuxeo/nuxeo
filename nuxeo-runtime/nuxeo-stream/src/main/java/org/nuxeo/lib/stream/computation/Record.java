@@ -39,7 +39,6 @@ import java.util.Objects;
  * @since 9.3
  */
 public class Record implements Externalizable {
-    protected static final EnumSet<Flag> DEFAULT_FLAG = EnumSet.of(Flag.DEFAULT);
 
     // Externalizable do rely on serialVersionUID
     static final long serialVersionUID = 20170529L;
@@ -60,21 +59,21 @@ public class Record implements Externalizable {
      * Creates a record using current watermark corresponding to the current time, with a default flag
      */
     public Record(String key, byte[] data) {
-        this(key, data, Watermark.ofNow().getValue(), DEFAULT_FLAG);
+        this(key, data, Watermark.ofNow().getValue(), null);
     }
 
     /**
      * Creates a record using a default flag
      */
     public Record(String key, byte[] data, long watermark) {
-        this(key, data, watermark, DEFAULT_FLAG);
+        this(key, data, watermark, null);
     }
 
     public Record(String key, byte[] data, long watermark, EnumSet<Flag> flags) {
         this.key = key;
         this.data = data;
         this.watermark = watermark;
-        this.flags = (flags == null) ? DEFAULT_FLAG : flags;
+        this.flags = (flags == null) ? EnumSet.of(Flag.DEFAULT) : flags;
     }
 
     /**

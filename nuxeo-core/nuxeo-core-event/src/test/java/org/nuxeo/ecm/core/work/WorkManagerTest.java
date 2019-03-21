@@ -541,4 +541,18 @@ public class WorkManagerTest {
         assertTrue(service.awaitCompletion(100, TimeUnit.MILLISECONDS));
     }
 
+    @Test
+    public void testFatWork() throws InterruptedException {
+        MetricsTracker tracker = new MetricsTracker();
+        int duration = 1_000;
+        FatWork fatWorkSlim = new FatWork("slim", 1_000);
+        service.schedule(fatWorkSlim);
+        assertTrue(service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 1, 0);
+
+        FatWork fatWork = new FatWork("fatty", 4_000_000);
+        service.schedule(fatWork);
+        assertTrue(service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 2, 0);
+    }
 }
