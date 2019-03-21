@@ -37,7 +37,6 @@ import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageType;
-import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.model.PackageDefinition;
@@ -111,26 +110,6 @@ public class PackageBuilder {
 
     public PackageBuilder type(PackageType type) {
         def.setType(type);
-        return this;
-    }
-
-    /**
-     * @since 5.6
-     */
-    public PackageBuilder visibility(String visibility) {
-        return visibility(PackageVisibility.valueOf(visibility));
-    }
-
-    /**
-     * @since 5.6
-     */
-    public PackageBuilder visibility(PackageVisibility visibility) {
-        try {
-            def.getClass().getMethod("setVisibility", PackageVisibility.class);
-            def.setVisibility(visibility);
-        } catch (NoSuchMethodException e) {
-            // Ignore visibility with old Connect Client versions
-        }
         return this;
     }
 
