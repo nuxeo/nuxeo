@@ -306,7 +306,7 @@ public class TestNuxeoDriveManager {
 
         // check physical deletion of a parent folder
         session.removeDocument(session.getDocument(new PathRef("/default-domain")).getRef());
-        session.save();
+        txFeature.nextTransaction();
         checkRootsCount(user1, 0);
         checkRootsCount(user2, 0);
     }
