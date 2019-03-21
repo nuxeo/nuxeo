@@ -36,11 +36,9 @@ import org.json.JSONObject;
 import org.json.XML;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.nuxeo.connect.connector.fake.FakeDownloadablePackage;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageState;
-import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.Version;
 
 //import org.json.XML;
@@ -69,7 +67,6 @@ public class PackageInfoTest {
         marshaller.marshal(packageInfo1, xml);
         log.debug(xml.toString());
         JSONObject entity = XML.toJSONObject(xml.toString()).getJSONObject("package");
-        assertEquals(PackageVisibility.UNKNOWN, PackageVisibility.valueOf(entity.getString("visibility")));
         assertEquals(false, entity.getBoolean("supported"));
         assertEquals("test", entity.getString("name"));
         assertEquals(PackageState.UNKNOWN, PackageState.getByLabel(entity.getString("state")));

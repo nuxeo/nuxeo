@@ -41,7 +41,6 @@ import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
-import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ProductionState;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -50,7 +49,7 @@ import org.xml.sax.SAXException;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "package")
-@XmlType(propOrder = { "id", "state", "version", "name", "type", "visibility", "targetPlatforms", "vendor",
+@XmlType(propOrder = { "id", "state", "version", "name", "type", "targetPlatforms", "vendor",
         "supportsHotReload", "supported", "productionState", "validationState", "provides", "dependencies", "conflicts",
         "title", "description", "homePage", "licenseType", "licenseUrl", "templates" })
 public class PackageInfo {
@@ -82,8 +81,6 @@ public class PackageInfo {
     public PackageType type;
 
     public String vendor;
-
-    public PackageVisibility visibility;
 
     public PackageDependency[] provides;
 
@@ -117,11 +114,6 @@ public class PackageInfo {
         validationState = pkg.getValidationState();
         targetPlatforms = pkg.getTargetPlatforms();
         type = pkg.getType();
-        vendor = pkg.getVendor();
-        visibility = pkg.getVisibility();
-        if (visibility == null) {
-            visibility = PackageVisibility.UNKNOWN;
-        }
         provides = pkg.getProvides();
         dependencies = pkg.getDependencies();
         conflicts = pkg.getConflicts();

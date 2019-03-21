@@ -57,6 +57,7 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.connector.http.ConnectUrlConfig;
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.launcher.connect.fake.LocalConnectFakeConnector;
@@ -200,6 +201,234 @@ public class TestConnectBroker {
         // clear system properties
         System.clearProperty(Environment.NUXEO_HOME);
         System.clearProperty(TomcatConfigurator.TOMCAT_HOME);
+        // clear any potential registration
+        LogicalInstanceIdentifier.cleanUp();
+    }
+
+    @Test
+    public void testIsRemotePackageId() throws Exception {
+        Set<String> remotePackageIds = collectIdsFrom("addon_remote.json", "hotfix_remote.json", "studio_remote.json");
+        remotePackageIds.forEach(id -> assertThat(connectBroker.isRemotePackageId(id)).isTrue());
+
+        // Packages in path "$TEST_STORE_PATH/local-only" are not available in remote (local-only)
+        assertThat(connectBroker.isRemotePackageId("E-1.0.1")).isFalse();
+        assertThat(connectBroker.isRemotePackageId("F.1.0.0-SNAPSHOT")).isFalse();
+        assertThat(connectBroker.isRemotePackageId("K.1.0.0-SNAPSHOT")).isFalse();
+        assertThat(connectBroker.isRemotePackageId("unknown-package")).isFalse();
+    }
+
+    @Test
+    @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
+    public void testListAllPackages() throws Exception {
+        // GIVEN we are unregistered
+
+        // WHEN trying to list all packages
+        connectBroker.pkgListAll();
+
+        // THEN it shows all expected packages with "[REGISTRATION REQUIRED]" on relevant packages
+        String expectedLogs = "All packages:\n" + //
+                "studio     started\tstudioA (id: studioA-1.0.0) \n" + //
+                "studio  downloaded\tstudioA (id: studioA-1.0.1) \n" + //
+                "studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT) \n" + //
+                "hotfix     started\thfA (id: hfA-1.0.0) \n" + //
+                "hotfix  downloaded\thfA (id: hfA-1.0.8) \n" + //
+                "hotfix      remote\thfAA (id: hfAA-1.0.0) [REGISTRATION REQUIRED]\n" + //
+                "hotfix  downloaded\thfB (id: hfB-1.0.0) \n" + //
+                "hotfix      remote\thfBB (id: hfBB-1.0.0) [REGISTRATION REQUIRED]\n" + //
+                "hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT) \n" + //
+                "hotfix      remote\thfD (id: hfD-1.0.0) \n" + //
+                " addon     started\tA (id: A-1.0.0) \n" + //
+                " addon  downloaded\tA (id: A-1.2.0) \n" + //
+                " addon  downloaded\tA (id: A-1.2.1-SNAPSHOT) \n" + //
+                " addon  downloaded\tA (id: A-1.2.2-SNAPSHOT) \n" + //
+                " addon  downloaded\tA (id: A-1.2.2) \n" + //
+                " addon  downloaded\tA (id: A-1.2.3-SNAPSHOT) \n" + //
+                " addon     started\tB (id: B-1.0.1-SNAPSHOT) \n" + //
+                " addon  downloaded\tB (id: B-1.0.1) \n" + //
+                " addon  downloaded\tB (id: B-1.0.2) \n" + //
+                " addon     started\tC (id: C-1.0.0) \n" + //
+                " addon  downloaded\tC (id: C-1.0.1-SNAPSHOT) \n" + //
+                " addon  downloaded\tC (id: C-1.0.2-SNAPSHOT) \n" + //
+                " addon     started\tD (id: D-1.0.2-SNAPSHOT) \n" + //
+                " addon  downloaded\tD (id: D-1.0.3-SNAPSHOT) \n" + //
+                " addon  downloaded\tD (id: D-1.0.4-SNAPSHOT) \n" + //
+                " addon     started\tG (id: G-1.0.1-SNAPSHOT) \n" + //
+                " addon     started\tH (id: H-1.0.1-SNAPSHOT) \n" + //
+                " addon     started\tJ (id: J-1.0.1) \n" + //
+                " addon     started\tK (id: K-1.0.0-SNAPSHOT) \n" + //
+                " addon      remote\tL (id: L-1.0.1) \n" + //
+                " addon      remote\tL (id: L-1.0.2) \n" + //
+                " addon      remote\tL (id: L-1.0.3) \n" + //
+                " addon  downloaded\tM (id: M-1.0.0-SNAPSHOT) \n" + //
+                " addon      remote\tM (id: M-1.0.1) [REGISTRATION REQUIRED]\n"; //
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // GIVEN we are registered
+        LogicalInstanceIdentifier CLID = new LogicalInstanceIdentifier("toto--titi", "myInstance");
+        CLID.save();
+
+        // WHEN trying to list all packages
+        connectBroker.pkgListAll();
+
+        // THEN it shows all expected packages without the "[REGISTRATION REQUIRED]"
+        expectedLogs = "All packages:\n" + //
+                "studio     started\tstudioA (id: studioA-1.0.0) \n" + //
+                "studio  downloaded\tstudioA (id: studioA-1.0.1) \n" + //
+                "studio  downloaded\tstudioA (id: studioA-1.0.2-SNAPSHOT) \n" + //
+                "hotfix     started\thfA (id: hfA-1.0.0) \n" + //
+                "hotfix  downloaded\thfA (id: hfA-1.0.8) \n" + //
+                "hotfix      remote\thfAA (id: hfAA-1.0.0) \n" + //
+                "hotfix  downloaded\thfB (id: hfB-1.0.0) \n" + //
+                "hotfix      remote\thfBB (id: hfBB-1.0.0) \n" + //
+                "hotfix  downloaded\thfC (id: hfC-1.0.0-SNAPSHOT) \n" + //
+                "hotfix      remote\thfD (id: hfD-1.0.0) \n" + //
+                " addon     started\tA (id: A-1.0.0) \n" + //
+                " addon  downloaded\tA (id: A-1.2.0) \n" + //
+                " addon  downloaded\tA (id: A-1.2.1-SNAPSHOT) \n" + //
+                " addon  downloaded\tA (id: A-1.2.2-SNAPSHOT) \n" + //
+                " addon  downloaded\tA (id: A-1.2.2) \n" + //
+                " addon  downloaded\tA (id: A-1.2.3-SNAPSHOT) \n" + //
+                " addon     started\tB (id: B-1.0.1-SNAPSHOT) \n" + //
+                " addon  downloaded\tB (id: B-1.0.1) \n" + //
+                " addon  downloaded\tB (id: B-1.0.2) \n" + //
+                " addon     started\tC (id: C-1.0.0) \n" + //
+                " addon  downloaded\tC (id: C-1.0.1-SNAPSHOT) \n" + //
+                " addon  downloaded\tC (id: C-1.0.2-SNAPSHOT) \n" + //
+                " addon     started\tD (id: D-1.0.2-SNAPSHOT) \n" + //
+                " addon  downloaded\tD (id: D-1.0.3-SNAPSHOT) \n" + //
+                " addon  downloaded\tD (id: D-1.0.4-SNAPSHOT) \n" + //
+                " addon     started\tG (id: G-1.0.1-SNAPSHOT) \n" + //
+                " addon     started\tH (id: H-1.0.1-SNAPSHOT) \n" + //
+                " addon     started\tJ (id: J-1.0.1) \n" + //
+                " addon     started\tK (id: K-1.0.0-SNAPSHOT) \n" + //
+                " addon      remote\tL (id: L-1.0.1) \n" + //
+                " addon      remote\tL (id: L-1.0.2) \n" + //
+                " addon      remote\tL (id: L-1.0.3) \n" + //
+                " addon  downloaded\tM (id: M-1.0.0-SNAPSHOT) \n" + //
+                " addon      remote\tM (id: M-1.0.1) \n"; //
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+    }
+
+    @Test
+    @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
+    public void testShowPackages() throws Exception {
+        // GIVEN we are unregistered
+
+        // WHEN trying to show packages properties
+        connectBroker.pkgShow(Arrays.asList("A-1.0.0", "studioA-1.0.1", "hfAA-1.0.0", "M-1.0.1"));
+
+        // THEN it shows all expected properties
+        String expectedLogs = "****************************************\n" + //
+                "Package: A-1.0.0\n" + //
+                "State: started\n" + //
+                "Version: 1.0.0\n" + //
+                "Name: A\n" + //
+                "Type: addon\n" + //
+                "Target platforms: {server-8.3,server-8.4}\n" + //
+                "Supports hot-reload: false\n" + //
+                "Supported: true\n" + //
+                "Production state: production_ready\n" + //
+                "Validation state: nuxeo_certified\n" + //
+                "Title: Package A\n" + //
+                "Description: Description of A\n" + //
+                "Homepage: http://doc.nuxeo.com/x/7YGo\n" + //
+                "License: LGPL\n" + //
+                "License URL: http://www.gnu.org/licenses/lgpl.html\n" + //
+                "****************************************\n" + //
+                "Package: studioA-1.0.1\n" + //
+                "State: downloaded\n" + //
+                "Version: 1.0.1\n" + //
+                "Name: studioA\n" + //
+                "Type: studio\n" + //
+                "Target platforms: {server-8.3,server-8.4}\n" + //
+                "Supports hot-reload: false\n" + //
+                "Supported: true\n" + //
+                "Production state: production_ready\n" + //
+                "Validation state: nuxeo_certified\n" + //
+                "Title: Studio A\n" + //
+                "Description: Description of studioA\n" + //
+                "Homepage: http://doc.nuxeo.com/x/7YGo\n" + //
+                "License: LGPL\n" + //
+                "License URL: http://www.gnu.org/licenses/lgpl.html\n" + //
+                "****************************************\n" + //
+                "Package: hfAA-1.0.0\n" + //
+                "State: remote\n" + //
+                "Version: 1.0.0\n" + //
+                "Name: hfAA\n" + //
+                "Type: hotfix\n" + //
+                "Target platforms: {server-8.4}\n" + //
+                "Supports hot-reload: false\n" + //
+                "Supported: false\n" + //
+                "Production state: testing\n" + //
+                "Validation state: none\n" + //
+                "Title: Hot fix NXP\n" + //
+                "Description: Hot Fix for NXP\n" + //
+                "****************************************\n" + //
+                "Package: M-1.0.1\n" + //
+                "State: remote\n" + //
+                "Version: 1.0.1\n" + //
+                "Name: M\n" + //
+                "Type: addon\n" + //
+                "Target platforms: {server-8.3,server-8.4}\n" + //
+                "Supports hot-reload: false\n" + //
+                "Supported: false\n" + //
+                "Production state: testing\n" + //
+                "Validation state: none\n" + //
+                "Title: Package M\n" + //
+                "Description: description of M\n" + //
+                "****************************************"; //
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+    }
+
+    @Test
+    @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
+    public void testDownloadUnknownPackage() throws Exception {
+        // GIVEN a non existing package
+        checkPackagesState(null, "unknown-package");
+
+        // WHEN trying to download it
+        boolean isSuccessful = connectBroker.downloadPackages(Arrays.asList("unknown-package"));
+        assertThat(isSuccessful).isFalse();
+
+        // THEN it fails and the package is still unknown
+        checkPackagesState(null, "unknown-package");
+        connectBroker.getCommandSet().log();
+        String expectedLogs = "Downloading [unknown-package]...\n" //
+                + "\tDownload failed (not found)."; //
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+    }
+
+    @Test
+    @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
+    public void testDownloadSubscriptionRequiredPackage() throws Exception {
+        // GIVEN a remote package with subscription required
+        checkPackagesState(PackageState.REMOTE, "M-1.0.1");
+
+        // WHEN trying to download it
+        boolean isSuccessful = connectBroker.downloadPackages(new ArrayList<String>(Collections.singleton("M-1.0.1")));
+        assertThat(isSuccessful).isFalse();
+
+        // THEN it fails and the package is still remote
+        checkPackagesState(PackageState.REMOTE, "M-1.0.1");
+        connectBroker.getCommandSet().log();
+        String expectedLogs = "Downloading [M-1.0.1]...\n" //
+                + "\tRegistration required."; //
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+        logCaptureResult.clear();
+
+        // GIVEN a remote downloaded snapshot package with subscription required
+        checkPackagesState(PackageState.DOWNLOADED, "M-1.0.0-SNAPSHOT");
+
+        // WHEN trying to re-download it
+        isSuccessful = connectBroker.downloadPackages(new ArrayList<String>(Collections.singleton("M-1.0.0-SNAPSHOT")));
+        assertThat(isSuccessful).isTrue();
+
+        // THEN request is successful but the download is skipped and a message is displayed
+        checkPackagesState(PackageState.DOWNLOADED, "M-1.0.0-SNAPSHOT");
+        expectedLogs = "Registration is required for package 'M-1.0.0-SNAPSHOT'. Download skipped."; //
+        assertThat(logOf(logCaptureResult)).isEqualTo(expectedLogs);
+
     }
 
     // NXP-24507
@@ -1153,6 +1382,10 @@ public class TestConnectBroker {
     @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
     public void testHotfixPackageRequest() {
         connectBroker.setAllowSNAPSHOT(false);
+        connectBroker.setAllowSNAPSHOT(false);
+        // Make sure we are registered
+        LogicalInstanceIdentifier CLID = new LogicalInstanceIdentifier("toto--titi", "myInstance");
+        CLID.save();
 
         // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
         checkPackagesState(connectBroker,
