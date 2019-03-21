@@ -29,7 +29,6 @@ import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
-import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Validator;
 import org.nuxeo.connect.update.Version;
@@ -51,9 +50,6 @@ public class PackageDefinitionImpl implements PackageDefinition {
 
     @XNode("@type")
     protected PackageType type;
-
-    @XNode("visibility")
-    protected PackageVisibility visibility;
 
     @XNode("title")
     protected String title;
@@ -419,9 +415,6 @@ public class PackageDefinitionImpl implements PackageDefinition {
         if (type != null) {
             writer.attr("type", type.getValue());
         }
-        if (visibility != null) {
-            writer.attr("visibility", visibility.toString());
-        }
         writer.startContent();
         writer.element("title", title);
         writer.element("description", description);
@@ -528,15 +521,4 @@ public class PackageDefinitionImpl implements PackageDefinition {
     public boolean isLocal() {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public PackageVisibility getVisibility() {
-        return visibility;
-    }
-
-    @Override
-    public void setVisibility(PackageVisibility visibility) {
-        this.visibility = visibility;
-    }
-
 }

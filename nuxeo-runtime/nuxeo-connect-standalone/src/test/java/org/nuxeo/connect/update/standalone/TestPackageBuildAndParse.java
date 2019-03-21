@@ -37,7 +37,6 @@ import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageState;
-import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -60,7 +59,6 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         assertTrue(packageDef.requireTermsAndConditionsAcceptance());
         assertTrue(packageDef.isSupported());
         assertTrue(packageDef.supportsHotReload());
-        assertEquals(PackageVisibility.MARKETPLACE, packageDef.getVisibility());
         Set<String> expectedTargetPlatforms = new HashSet<>(Arrays.asList("dm-5.3.2", "dam-5.3.2"));
         if (cap) {
             expectedTargetPlatforms.add("cap-8.3");
@@ -93,7 +91,6 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         assertTrue(pkg.requireTermsAndConditionsAcceptance());
         assertTrue(pkg.isSupported());
         assertTrue(pkg.supportsHotReload());
-        assertEquals(PackageVisibility.MARKETPLACE, pkg.getVisibility());
         assertEquals(expectedTargetPlatforms, new HashSet<>(Arrays.asList(pkg.getTargetPlatforms())));
         deps = new HashSet<>();
         for (PackageDependency pd : pkg.getDependencies()) {
