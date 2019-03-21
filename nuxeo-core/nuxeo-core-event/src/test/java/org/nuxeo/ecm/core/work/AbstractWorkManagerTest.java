@@ -189,7 +189,7 @@ public abstract class AbstractWorkManagerTest {
         assertEquals("SleepWork", qd.id);
         assertEquals("Sleep Work Queue", qd.name);
         assertEquals(2, qd.getMaxThreads());
-        
+
         assertEquals(2, qd.categories.size());
         assertTrue(qd.categories.contains("SleepWork"));
         assertTrue(qd.categories.contains("TestCategory"));
@@ -532,4 +532,16 @@ public abstract class AbstractWorkManagerTest {
         assertTrue(service.awaitCompletion(1000, TimeUnit.MILLISECONDS));
     }
 
+    @Test
+    public void testFatWork() throws InterruptedException {
+        FatWork fatWorkSlim = new FatWork("slim", 1_000);
+        service.schedule(fatWorkSlim);
+        assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 1, 0);
+
+        FatWork fatWork = new FatWork("fatty", 4_000_000);
+        service.schedule(fatWork);
+        assertTrue(service.awaitCompletion(getDurationMillis() * 200, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 2, 0);
+    }
 }

@@ -16,9 +16,15 @@
     <logConfig name="work" />
   </extension>
 
-   <!--  this enables the state storage in StreamWorkManager so tests are run in the most complete way -->
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <!--  this enables the state storage in StreamWorkManager so tests are run in the most complete way -->
     <property name="nuxeo.stream.work.storestate.enabled">true</property>
+
+    <!--  this enables to overflow big work that cannot be serialized into a stream using an overflow storage -->
+    <property name="nuxeo.stream.work.computation.filter.class">org.nuxeo.ecm.core.work.KVOverflowRecordFilter</property>
+    <property name="nuxeo.stream.work.computation.filter.storeName">default</property>
+    <property name="nuxeo.stream.work.computation.filter.storeTTL">5m</property>
+    <property name="nuxeo.stream.work.computation.filter.thresholdSize">100000</property>
   </extension>
 
 </component>

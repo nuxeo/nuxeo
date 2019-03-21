@@ -19,12 +19,19 @@
 package org.nuxeo.ecm.core.work;
 
 import static java.lang.Math.min;
+import static org.nuxeo.ecm.core.work.BaseOverflowRecordFilter.PREFIX_OPTION;
+import static org.nuxeo.ecm.core.work.BaseOverflowRecordFilter.STORE_NAME_OPTION;
+import static org.nuxeo.ecm.core.work.BaseOverflowRecordFilter.STORE_TTL_OPTION;
+import static org.nuxeo.ecm.core.work.BaseOverflowRecordFilter.THRESHOLD_SIZE_OPTION;
 import static org.nuxeo.ecm.core.work.api.WorkManager.Scheduling.CANCEL_SCHEDULED;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
@@ -43,10 +50,13 @@ import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.RecordFilter;
+import org.nuxeo.lib.stream.computation.RecordFilterChain;
 import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
+import org.nuxeo.lib.stream.computation.internals.RecordFilterChainImpl;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -102,7 +112,22 @@ public class StreamWorkManager extends WorkManagerImpl {
      */
     public static final String STATETTL_DEFAULT_VALUE = "3600";
 
+    /**
+     * @since 11.1
+     */
+    public static final String COMPUTATION_FILTER_CLASS_KEY = "nuxeo.stream.work.computation.filter.class";
+
+    public static final String COMPUTATION_FILTER_STORE_KEY = "nuxeo.stream.work.computation.filter.storeName";
+
+    public static final String COMPUTATION_FILTER_STORE_TTL_KEY = "nuxeo.stream.work.computation.filter.storeTTL";
+
+    public static final String COMPUTATION_FILTER_THRESHOLD_SIZE_KEY = "nuxeo.stream.work.computation.filter.thresholdSize";
+
+    public static final String COMPUTATION_FILTER_PREFIX_KEY = "nuxeo.stream.work.computation.filter.store.prefix";
+
     protected Topology topology;
+
+    protected Topology topologyDisabled;
 
     protected Settings settings;
 
@@ -190,6 +215,54 @@ public class StreamWorkManager extends WorkManagerImpl {
         stateTTL = Long.parseLong(configuration.getProperty(STATETTL_KEY, STATETTL_DEFAULT_VALUE));
     }
 
+    protected RecordFilterChain getRecordFilter() {
+        String filterClass = getRecordFilterClass();
+        if (filterClass == null) {
+            return null;
+        }
+        RecordFilterChain filter = new RecordFilterChainImpl();
+        Class<? extends RecordFilter> klass;
+        try {
+            klass = (Class<RecordFilter>) Class.forName(filterClass);
+            if (!RecordFilter.class.isAssignableFrom(klass)) {
+                throw new IllegalArgumentException("Invalid class for RecordFilter: " + filterClass);
+            }
+            RecordFilter ret = klass.getDeclaredConstructor().newInstance();
+            ret.init(getRecordFilterOptions());
+            filter.addFilter(ret);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalArgumentException("Invalid class for RecordFilter: " + filterClass, e);
+        }
+        return filter;
+    }
+
+    protected Map<String, String> getRecordFilterOptions() {
+        Map<String, String> ret = new HashMap<>();
+        ConfigurationService configuration = Framework.getService(ConfigurationService.class);
+        String value = configuration.getString(COMPUTATION_FILTER_STORE_KEY).orElse(null);
+        if (value != null) {
+            ret.put(STORE_NAME_OPTION, value);
+        }
+        value = configuration.getString(COMPUTATION_FILTER_PREFIX_KEY).orElse(null);
+        if (value != null) {
+            ret.put(PREFIX_OPTION, value);
+        }
+        Integer intValue = configuration.getInteger(COMPUTATION_FILTER_THRESHOLD_SIZE_KEY).orElse(null);
+        if (intValue != null) {
+            ret.put(THRESHOLD_SIZE_OPTION, intValue.toString());
+        }
+        Duration duration = configuration.getDuration(COMPUTATION_FILTER_STORE_TTL_KEY).orElse(null);
+        if (duration != null) {
+            ret.put(STORE_TTL_OPTION, Long.toString(duration.toSeconds()));
+        }
+        return ret;
+    }
+
+    protected String getRecordFilterClass() {
+        ConfigurationService configuration = Framework.getService(ConfigurationService.class);
+        return configuration.getString(COMPUTATION_FILTER_CLASS_KEY).orElse(null);
+    }
+
     @Override
     public void init() {
         if (started) {
@@ -207,6 +280,7 @@ public class StreamWorkManager extends WorkManagerImpl {
             initTopology();
             logManager = getLogManager();
             streamManager = getStreamManager();
+            streamManager.register("SWMDisable", topologyDisabled, settings);
             streamManager.register("SWM", topology, settings);
             streamProcessor = streamManager.createStreamProcessor("SWM");
             started = true;
@@ -263,13 +337,22 @@ public class StreamWorkManager extends WorkManagerImpl {
     }
 
     protected void initTopology() {
-        // create a single topology with one root per work pool
-        Topology.Builder builder = Topology.builder();
         List<WorkQueueDescriptor> descriptors = getDescriptors(QUEUES_EP);
+        // create the single topology with one root per work pool
+        Topology.Builder builder = Topology.builder();
         descriptors.stream().filter(WorkQueueDescriptor::isProcessingEnabled).forEach(d -> builder.addComputation(
                 () -> new WorkComputation(d.getId()), Collections.singletonList("i1:" + d.getId())));
         topology = builder.build();
-        settings = new Settings(DEFAULT_CONCURRENCY, getPartitions(DEFAULT_CONCURRENCY), getCodec());
+        // create a topology for the disabled work pools in order to init their input streams
+        Topology.Builder builderDisabled = Topology.builder();
+        descriptors.stream()
+                   .filter(Predicate.not(WorkQueueDescriptor::isProcessingEnabled))
+                   .forEach(d -> builderDisabled.addComputation(() -> new WorkComputation(d.getId()),
+                           Collections.singletonList("i1:" + d.getId())));
+        topologyDisabled = builderDisabled.build();
+
+        RecordFilterChain filter = getRecordFilter();
+        settings = new Settings(DEFAULT_CONCURRENCY, getPartitions(DEFAULT_CONCURRENCY), getCodec(), null, filter);
         descriptors.forEach(item -> settings.setConcurrency(item.getId(), item.getMaxThreads()));
         descriptors.forEach(item -> settings.setPartitions(item.getId(), getPartitions(item.getMaxThreads())));
     }

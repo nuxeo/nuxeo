@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     Florent Guillaume
+ *     bdelbosc
  */
 package org.nuxeo.ecm.core.work;
 
@@ -55,12 +55,12 @@ public class FatWork extends AbstractWork {
 
     @Override
     public String getTitle() {
-        return "FatWork " + size + " bytes";
+        return id + " (" + size + " bytes)";
     }
 
     @Override
     public void work() {
-        log.warn("FatWork is working");
+        log.warn(getTitle() + " is running");
         if (veryLongString.length() != size) {
             throw new IllegalStateException("Invalid string size: " + veryLongString.length() + " instead of: " + size);
         }
