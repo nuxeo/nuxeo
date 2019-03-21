@@ -41,7 +41,6 @@ import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
-import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -282,11 +281,10 @@ public class PackageListingProvider extends DefaultObject {
         return PackageState.DOWNLOADING == pkg.getPackageState();
     }
 
-    public boolean canDownload(Package pkg) {
-        return pkg.getPackageState() == PackageState.REMOTE
-                && (pkg.getType() == PackageType.STUDIO || pkg.getVisibility() == PackageVisibility.PUBLIC //
+    public boolean canDownload(DownloadablePackage pkg) {
+        return pkg.getPackageState() == PackageState.REMOTE && (!pkg.hasSubscriptionRequired() //
                 || (ConnectStatusHolder.instance().isRegistred() //
-                && ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK));
+                        && ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK));
     }
 
     @GET
@@ -306,10 +304,10 @@ public class PackageListingProvider extends DefaultObject {
      * @since 5.6
      * @return true if registration is required for download
      */
-    public boolean registrationRequired(Package pkg) {
-        return pkg.getPackageState() == PackageState.REMOTE && pkg.getType() != PackageType.STUDIO
-                && pkg.getVisibility() != PackageVisibility.PUBLIC && (!ConnectStatusHolder.instance().isRegistred() //
-                || ConnectStatusHolder.instance().getStatus().status() != SubscriptionStatusType.OK);
+    public boolean registrationRequired(DownloadablePackage pkg) {
+        return pkg.getPackageState() == PackageState.REMOTE && pkg.hasSubscriptionRequired()
+                && (!ConnectStatusHolder.instance().isRegistred() //
+                        || ConnectStatusHolder.instance().getStatus().status() != SubscriptionStatusType.OK);
     }
 
 }
