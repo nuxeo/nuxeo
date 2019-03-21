@@ -76,15 +76,6 @@ public class XmlSerializer extends XmlWriter {
         }
         element("validator", def.getValidator());
 
-        try {
-            def.getClass().getMethod("getVisibility");
-            if (def.getVisibility() != null) {
-                element("visibility", def.getVisibility().toString());
-            }
-        } catch (NoSuchMethodException e) {
-            // Ignore visibility with old Connect Client versions
-        }
-
         if (def.getTargetPlatforms() != null && def.getTargetPlatforms().length > 0) {
             start("platforms");
             startContent();

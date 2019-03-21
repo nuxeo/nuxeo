@@ -32,6 +32,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -41,6 +42,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -68,6 +70,7 @@ import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
+import org.nuxeo.connect.packages.LocalPackageAsDownloadablePackage;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.packages.dependencies.CUDFHelper;
 import org.nuxeo.connect.packages.dependencies.DependencyResolution;
@@ -77,7 +80,6 @@ import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUtils;
-import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.model.PackageDefinition;
@@ -492,7 +494,7 @@ public class ConnectBroker {
 
     public void pkgList() {
         log.info("Local packages:");
-        pkgList(getPkgList());
+        pkgList(getPkgList().stream().map(LocalPackageAsDownloadablePackage::new).collect(Collectors.toList()));
     }
 
     public void pkgListAll() {
@@ -505,7 +507,7 @@ public class ConnectBroker {
         }
     }
 
-    public void pkgList(List<? extends Package> packagesList) {
+    public void pkgList(List<? extends DownloadablePackage> packagesList) {
         CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_LIST);
         try {
             if (packagesList.isEmpty()) {
@@ -513,17 +515,16 @@ public class ConnectBroker {
             } else {
                 getPackageManager().sort(packagesList);
                 StringBuilder sb = new StringBuilder();
-                for (Package pkg : packagesList) {
+                for (DownloadablePackage pkg : packagesList) {
                     newPackageInfo(cmdInfo, pkg);
                     PackageState packageState = pkg.getPackageState();
-                    String packageDescription = packageState.getLabel();
-                    packageDescription = String.format("%6s %11s\t", pkg.getType(), packageDescription);
-                    if (packageState == PackageState.REMOTE && pkg.getType() != PackageType.STUDIO
-                            && pkg.getVisibility() != PackageVisibility.PUBLIC
-                            && !LogicalInstanceIdentifier.isRegistered()) {
-                        packageDescription += "Registration required for ";
-                    }
-                    packageDescription += String.format("%s (id: %s)\n", pkg.getName(), pkg.getId());
+                    String registrationRequiredTag = (packageState == PackageState.REMOTE //
+                            && pkg.getType() != PackageType.STUDIO //
+                            && pkg.hasSubscriptionRequired() //
+                            && !LogicalInstanceIdentifier.isRegistered()) ? "[REGISTRATION REQUIRED]" : "";
+
+                    String packageDescription = String.format("%6s %11s\t%s (id: %s) %s\n", pkg.getType(),
+                            packageState.getLabel(), pkg.getName(), pkg.getId(), registrationRequiredTag);
                     sb.append(packageDescription);
                 }
                 log.info(sb.toString());
@@ -837,7 +838,7 @@ public class ConnectBroker {
                                 + "current directory or to NUXEO_HOME) " + "package with name or ID "
                                 + packageFileName);
                     }
-                } else if (!downloadPackages(Arrays.asList(new String[] { pkgId }))) {
+                } else if (!downloadPackages(new ArrayList<String>(Collections.singleton(pkgId)))) {
                     throw new PackageException("Could not download package " + pkgId);
                 }
                 pkg = service.getPackage(pkgId);
@@ -1166,12 +1167,14 @@ public class ConnectBroker {
                 log.error(String.format("Package '%s' is installed. Download skipped.", pkg));
                 packagesAlreadyDownloaded.add(pkg);
             } else if (localPackage.getVersion().isSnapshot()) {
-                if (localPackage.getVisibility() != PackageVisibility.PUBLIC && !isRegistered) {
-                    log.info(String.format("Update of '%s' requires being registered.", pkg));
+                // Check if registration is required
+                DownloadablePackage downloadablePkg = getPackageManager().findRemotePackageById(pkg);
+                if (downloadablePkg != null && downloadablePkg.hasSubscriptionRequired() && !isRegistered) {
+                    log.info(String.format("Registration is required for package '%s'. Download skipped.", pkg));
                     packagesAlreadyDownloaded.add(pkg);
-                } else {
-                    log.info(String.format("Download of '%s' will replace the one already in local cache.", pkg));
+                    continue;
                 }
+                log.info(String.format("Download of '%s' will replace the one already in local cache.", pkg));
             } else {
                 log.info(String.format("Package '%s' is already in local cache.", pkg));
                 packagesAlreadyDownloaded.add(pkg);
@@ -1190,10 +1193,9 @@ public class ConnectBroker {
             CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_DOWNLOAD);
             cmdInfo.param = pkg;
 
-            // Check registration and package visibility
+            // Check if registration is required
             DownloadablePackage downloadablePkg = getPackageManager().findRemotePackageById(pkg);
-            if (downloadablePkg != null && downloadablePkg.getVisibility() != PackageVisibility.PUBLIC
-                    && !isRegistered) {
+            if (downloadablePkg != null && downloadablePkg.hasSubscriptionRequired() && !isRegistered) {
                 downloadOk = false;
                 cmdInfo.exitCode = 1;
                 cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Registration required.");
@@ -1712,12 +1714,6 @@ public class ConnectBroker {
                 sb.append("\nVersion: " + packageInfo.version);
                 sb.append("\nName: " + packageInfo.name);
                 sb.append("\nType: " + packageInfo.type);
-                sb.append("\nVisibility: " + packageInfo.visibility);
-                if (packageInfo.state == PackageState.REMOTE && packageInfo.type != PackageType.STUDIO
-                        && packageInfo.visibility != PackageVisibility.PUBLIC
-                        && !LogicalInstanceIdentifier.isRegistered()) {
-                    sb.append(" (registration required)");
-                }
                 sb.append("\nTarget platforms: " + ArrayUtils.toString(packageInfo.targetPlatforms));
                 appendIfNotEmpty(sb, "\nVendor: ", packageInfo.vendor);
                 sb.append("\nSupports hot-reload: " + packageInfo.supportsHotReload);
