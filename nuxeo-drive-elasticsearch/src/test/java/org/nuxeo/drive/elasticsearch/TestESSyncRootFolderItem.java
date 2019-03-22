@@ -24,7 +24,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -33,6 +35,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
@@ -62,7 +65,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.drive.elasticsearch:OSGI-INF/nuxeodrive-elasticsearch-adapter-contrib.xml")
 public class TestESSyncRootFolderItem {
 
-    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
+    protected static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
+
+    protected static final String FOLDER_TYPE = "Folder";
 
     @Inject
     protected CoreSession session;
@@ -84,13 +89,13 @@ public class TestESSyncRootFolderItem {
     protected ESSyncRootFolderItemFactory esSyncRootFolderItemFactory;
 
     @Before
-    public void createTestDocs() throws Exception {
+    public void createTestDocs() throws InterruptedException, ExecutionException, TimeoutException {
 
         // Drop and initialize ES indexes
         esa.initIndexes(true);
 
         // Register a sync root
-        syncRootFolder = session.createDocumentModel("/", "syncRoot", "Folder");
+        syncRootFolder = session.createDocumentModel("/", "syncRoot", FOLDER_TYPE);
         syncRootFolder = session.createDocument(syncRootFolder);
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), syncRootFolder, session);
 
@@ -105,7 +110,8 @@ public class TestESSyncRootFolderItem {
                 "defaultSyncRootFolderItemFactory");
     }
 
-    protected void buildAndIndexTree(String parentPath, int maxLevel, int fileCount, int folderCount) throws Exception {
+    protected void buildAndIndexTree(String parentPath, int maxLevel, int fileCount, int folderCount)
+            throws InterruptedException, ExecutionException, TimeoutException {
         startTransaction();
         buildTree(parentPath, maxLevel, 1, fileCount, folderCount);
         TransactionHelper.commitOrRollbackTransaction();
@@ -128,7 +134,7 @@ public class TestESSyncRootFolderItem {
         }
         for (int i = 0; i < folderCount; i++) {
             String name = "folder-" + level + "-" + i;
-            DocumentModel folder = session.createDocumentModel(parentPath, name, "Folder");
+            DocumentModel folder = session.createDocumentModel(parentPath, name, FOLDER_TYPE);
             folder.setPropertyValue("dc:title", name);
             session.createDocument(folder);
             buildTree(parentPath + "/" + name, maxLevel, level + 1, fileCount, folderCount);
@@ -142,14 +148,14 @@ public class TestESSyncRootFolderItem {
         Assert.assertEquals(0, esa.getPendingWorkerCount());
     }
 
-    public void waitForCompletion() throws Exception {
+    public void waitForCompletion() throws InterruptedException, ExecutionException, TimeoutException {
         workManager.awaitCompletion(20, TimeUnit.SECONDS);
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
         esa.refresh();
     }
 
     @Test
-    public void testScrollDescendants() throws Exception {
+    public void testScrollDescendants() {
 
         FolderItem syncRootFolderItem = (FolderItem) esSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
         assertTrue(syncRootFolderItem instanceof ESSyncRootFolderItem);
@@ -167,8 +173,7 @@ public class TestESSyncRootFolderItem {
                                                 .stream()
                                                 .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
                                                 .collect(Collectors.toList());
-        assertEquals(expectedFSItemIds,
-                descendants.stream().map(fsItem -> fsItem.getId()).collect(Collectors.toList()));
+        assertEquals(expectedFSItemIds, descendants.stream().map(FileSystemItem::getId).collect(Collectors.toList()));
 
         // Scroll through descendants in several steps
         descendants.clear();
@@ -182,8 +187,7 @@ public class TestESSyncRootFolderItem {
         }
         assertEquals(105, descendants.size());
         // Check that descendants are ordered by path
-        assertEquals(expectedFSItemIds,
-                descendants.stream().map(fsItem -> fsItem.getId()).collect(Collectors.toList()));
+        assertEquals(expectedFSItemIds, descendants.stream().map(FileSystemItem::getId).collect(Collectors.toList()));
     }
 
 }

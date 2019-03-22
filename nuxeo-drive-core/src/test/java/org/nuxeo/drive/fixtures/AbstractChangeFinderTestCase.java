@@ -69,6 +69,46 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Features(NuxeoDriveFeature.class)
 public abstract class AbstractChangeFinderTestCase {
 
+    protected static final String COLLECTION_FOLDER = "collectionFolder";
+
+    protected static final String COLLECTION_SYNC_ROOT = "collectionSyncRoot";
+
+    protected static final String DEFAULT_FILE_SYSTEM_ITEM_FACTORY_PREFIX = "defaultFileSystemItemFactory#test#";
+
+    protected static final String DEFAULT_SYNC_ROOT_FOLDER_ITEM_FACTORY_PREFIX = "defaultSyncRootFolderItemFactory#test#";
+
+    protected static final String FILE_CONTENT = "file:content";
+
+    protected static final String FILE_SYSTEM_ITEM_ID_PREFIX = "test#";
+
+    protected static final String FILE_TYPE = "File";
+
+    protected static final String FOLDER_1 = "folder1";
+
+    protected static final String FOLDER_1_PATH = "/folder1";
+
+    protected static final String FOLDER_2 = "folder2";
+
+    protected static final String FOLDER_2_PATH = "/folder2";
+
+    protected static final String FOLDER_3 = "folder3";
+
+    protected static final String FOLDER_TYPE = "Folder";
+
+    protected static final String FOLDERISH_COLLECTION = "FolderishCollection";
+
+    protected static final String SECTION_SYNC_ROOT = "sectionSyncRoot";
+
+    protected static final String SUB_FOLDER = "subFolder";
+
+    protected static final String TEST_DOC = "testDoc";
+
+    protected static final String TEST_DOC_CONTENT = "The content of testDoc.";
+
+    protected static final String TEST_REPOSITORY = "test";
+
+    protected static final String USER_1 = "user1";
+
     @Inject
     protected CoreSession session;
 
@@ -100,7 +140,7 @@ public abstract class AbstractChangeFinderTestCase {
     protected CoreSession user1Session;
 
     @Before
-    public void init() throws Exception {
+    public void init() {
         // Enable deletion listener because the tear down disables it
         eventServiceAdmin.setListenerEnabledFlag("nuxeoDriveFileSystemDeletionListener", true);
 
@@ -111,31 +151,31 @@ public abstract class AbstractChangeFinderTestCase {
         // Create test users
         try (Session userDir = directoryService.open("userDirectory")) {
             Map<String, Object> user1 = new HashMap<>();
-            user1.put("username", "user1");
-            user1.put("groups", Arrays.asList(new String[] { "members" }));
+            user1.put("username", USER_1);
+            user1.put("groups", Arrays.asList("members"));
             userDir.createEntry(user1);
         }
-        user1Session = coreFeature.openCoreSession("user1");
+        user1Session = coreFeature.openCoreSession(USER_1);
 
         commitAndWaitForAsyncCompletion();
 
-        folder1 = session.createDocument(session.createDocumentModel("/", "folder1", "Folder"));
-        folder2 = session.createDocument(session.createDocumentModel("/", "folder2", "Folder"));
-        folder3 = session.createDocument(session.createDocumentModel("/", "folder3", "Folder"));
-        setPermissions(folder1, new ACE("user1", SecurityConstants.READ_WRITE));
-        setPermissions(folder2, new ACE("user1", SecurityConstants.READ_WRITE));
+        folder1 = session.createDocument(session.createDocumentModel("/", FOLDER_1, FOLDER_TYPE));
+        folder2 = session.createDocument(session.createDocumentModel("/", FOLDER_2, FOLDER_TYPE));
+        folder3 = session.createDocument(session.createDocumentModel("/", FOLDER_3, FOLDER_TYPE));
+        setPermissions(folder1, new ACE(USER_1, SecurityConstants.READ_WRITE));
+        setPermissions(folder2, new ACE(USER_1, SecurityConstants.READ_WRITE));
 
         commitAndWaitForAsyncCompletion();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
 
         if (user1Session != null) {
             ((CloseableCoreSession) user1Session).close();
         }
         try (Session usersDir = directoryService.open("userDirectory")) {
-            usersDir.deleteEntry("user1");
+            usersDir.deleteEntry(USER_1);
         }
 
         // Disable deletion listener for the repository cleanup phase done in
@@ -148,14 +188,14 @@ public abstract class AbstractChangeFinderTestCase {
      * Gets the document changes for the given user's synchronization roots using the {@link AuditChangeFinder} and
      * updates {@link #lastEventLogId}.
      */
-    protected List<FileSystemItemChange> getChanges(NuxeoPrincipal principal) throws InterruptedException {
+    protected List<FileSystemItemChange> getChanges(NuxeoPrincipal principal) {
         return getChangeSummary(principal).getFileSystemChanges();
     }
 
     /**
      * Gets the document changes for the Administrator user.
      */
-    protected List<FileSystemItemChange> getChanges() throws InterruptedException {
+    protected List<FileSystemItemChange> getChanges() {
         return getChanges(session.getPrincipal());
     }
 
@@ -163,7 +203,7 @@ public abstract class AbstractChangeFinderTestCase {
      * Gets the document changes summary for the given user's synchronization roots using the {@link NuxeoDriveManager}
      * and updates {@link #lastEventLogId}.
      */
-    protected FileSystemChangeSummary getChangeSummary(NuxeoPrincipal principal) throws InterruptedException {
+    protected FileSystemChangeSummary getChangeSummary(NuxeoPrincipal principal) {
         Map<String, Set<IdRef>> lastSyncActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(
                 lastSyncActiveRootDefinitions);
         FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummary(principal, lastSyncActiveRootRefs,
@@ -177,11 +217,11 @@ public abstract class AbstractChangeFinderTestCase {
     @Inject
     TransactionalFeature txFeature;
 
-    protected void commitAndWaitForAsyncCompletion() throws Exception {
+    protected void commitAndWaitForAsyncCompletion() {
         txFeature.nextTransaction();
     }
 
-    protected void setPermissions(DocumentModel doc, ACE... aces) throws Exception {
+    protected void setPermissions(DocumentModel doc, ACE... aces) {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         for (int i = 0; i < aces.length; i++) {

@@ -53,7 +53,7 @@ public class MockChangeFinder implements FileSystemChangeFinder {
 
     private static final Logger log = LogManager.getLogger(MockChangeFinder.class);
 
-    protected Map<String, String> parameters = new HashMap<String, String>();
+    protected Map<String, String> parameters = new HashMap<>();
 
     @Override
     public void handleParameters(Map<String, String> parameters) {
@@ -63,9 +63,9 @@ public class MockChangeFinder implements FileSystemChangeFinder {
     @Override
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session, Set<IdRef> lastActiveRootRefs,
             SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound,
-            int limit) throws TooManyChangesException {
+            int limit) {
 
-        List<FileSystemItemChange> docChanges = new ArrayList<FileSystemItemChange>();
+        List<FileSystemItemChange> docChanges = new ArrayList<>();
         if (!activeRoots.paths.isEmpty()) {
             StringBuilder querySb = new StringBuilder();
             querySb.append("SELECT * FROM Document WHERE (%s) AND (%s) ORDER BY dc:modified DESC");
@@ -101,9 +101,8 @@ public class MockChangeFinder implements FileSystemChangeFinder {
                 sdf.format(new Date(lastSuccessfulSyncDate)), sdf.format(new Date(syncDate)));
     }
 
-    protected List<FileSystemItemChange> getDocumentChanges(CoreSession session, String query, int limit)
-            throws TooManyChangesException {
-        List<FileSystemItemChange> docChanges = new ArrayList<FileSystemItemChange>();
+    protected List<FileSystemItemChange> getDocumentChanges(CoreSession session, String query, int limit) {
+        List<FileSystemItemChange> docChanges = new ArrayList<>();
         DocumentModelList queryResult = session.query(query, limit);
         if (queryResult.size() >= limit) {
             throw new TooManyChangesException("Too many document changes found in the repository.");

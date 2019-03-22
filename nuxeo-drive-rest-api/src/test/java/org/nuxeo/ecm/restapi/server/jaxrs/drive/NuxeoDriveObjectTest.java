@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
@@ -52,7 +51,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class NuxeoDriveObjectTest extends BaseTest {
 
     @Test
-    public void testGetConfiguration() throws URISyntaxException, FileNotFoundException, IOException {
+    public void testGetConfiguration() throws URISyntaxException, IOException {
 
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/drive/configuration")) {
             assertEquals(404, response.getStatus());

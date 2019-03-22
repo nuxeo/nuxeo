@@ -28,6 +28,8 @@ import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.T
 import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.TEST_WORKSPACE_PARENT_NAME;
 import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.USER_WORKSPACE_PARENT_NAME;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
@@ -87,7 +89,7 @@ public class TestIntegrationTestOperations {
     protected ObjectMapper mapper;
 
     @Before
-    public void init() throws Exception {
+    public void init() {
 
         testWorkspacePath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session) + "/"
                 + TEST_WORKSPACE_PARENT_NAME + "/" + TEST_WORKSPACE_NAME;
@@ -98,7 +100,7 @@ public class TestIntegrationTestOperations {
     }
 
     @Test
-    public void testIntegrationTestsSetupAndTearDown() throws Exception {
+    public void testIntegrationTestsSetupAndTearDown() throws IOException {
 
         // ---------------------------------------------------------
         // Setup the integration tests environment as Administrator

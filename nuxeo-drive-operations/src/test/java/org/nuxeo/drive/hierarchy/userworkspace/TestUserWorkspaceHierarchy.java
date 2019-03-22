@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -91,15 +90,21 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 @Deploy("org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-userworkspace-contrib.xml")
 public class TestUserWorkspaceHierarchy {
 
-    private static final String TOP_LEVEL_ID_PREFIX = "org.nuxeo.drive.hierarchy.userworkspace.factory.UserWorkspaceTopLevelFactory#test#";
+    protected static final String CONTENT_PREFIX = "The content of file ";
 
-    private static final String SYNC_ROOT_PARENT_ID = "userWorkspaceSyncRootParentFactory#";
+    protected static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 
-    private static final String SYNC_ROOT_ID_PREFIX = "userWorkspaceSyncRootFactory#test#";
+    protected static final String FILE_TYPE = "File";
 
-    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
+    protected static final String FOLDER_TYPE = "Folder";
 
-    private static final String CONTENT_PREFIX = "The content of file ";
+    protected static final String SYNC_ROOT_ID_PREFIX = "userWorkspaceSyncRootFactory#test#";
+
+    protected static final String SYNC_ROOT_PARENT_ID = "userWorkspaceSyncRootParentFactory#";
+
+    protected static final String TOP_LEVEL_ID_PREFIX = "org.nuxeo.drive.hierarchy.userworkspace.factory.UserWorkspaceTopLevelFactory#test#";
+
+    protected static final String USER_1 = "user1";
 
     @Inject
     protected CoreFeature coreFeature;
@@ -128,8 +133,21 @@ public class TestUserWorkspaceHierarchy {
 
     protected DocumentModel userWorkspace1;
 
-    protected DocumentModel user1Folder1, user1File1, user1Folder2, user1File2, user1Folder3, user1File3, user1Folder4,
-            user1File4;
+    protected DocumentModel user1Folder1;
+
+    protected DocumentModel user1File1;
+
+    protected DocumentModel user1Folder2;
+
+    protected DocumentModel user1File2;
+
+    protected DocumentModel user1Folder3;
+
+    protected DocumentModel user1File3;
+
+    protected DocumentModel user1Folder4;
+
+    protected DocumentModel user1File4;
 
     protected String userWorkspace1ItemId;
 
@@ -162,18 +180,18 @@ public class TestUserWorkspaceHierarchy {
      * </pre>
      */
     @Before
-    public void init() throws Exception {
+    public void init() throws IOException {
 
         storageConfiguration = coreFeature.getStorageConfiguration();
 
         // Create test user
-        createUser("user1", "user1");
+        createUser(USER_1, USER_1);
 
         // Grant ReadWrite permission to test user on the root document
-        setPermission(session.getRootDocument(), "user1", SecurityConstants.READ_WRITE, true);
+        setPermission(session.getRootDocument(), USER_1, SecurityConstants.READ_WRITE, true);
 
         // Open a core session for test user
-        session1 = coreFeature.openCoreSession("user1");
+        session1 = coreFeature.openCoreSession(USER_1);
 
         // Create user workspace for test user
         userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(session1);
@@ -183,17 +201,17 @@ public class TestUserWorkspaceHierarchy {
         syncRootParentItemPath = userWorkspace1ItemPath + "/" + SYNC_ROOT_PARENT_ID;
 
         // Populate test user workspace
-        user1Folder1 = createFolder(session1, userWorkspace1.getPathAsString(), "user1Folder1", "Folder");
-        user1File1 = createFile(session1, user1Folder1.getPathAsString(), "user1File1", "File", "user1File1.txt",
+        user1Folder1 = createFolder(session1, userWorkspace1.getPathAsString(), "user1Folder1", FOLDER_TYPE);
+        user1File1 = createFile(session1, user1Folder1.getPathAsString(), "user1File1", FILE_TYPE, "user1File1.txt",
                 CONTENT_PREFIX + "user1File1");
-        user1Folder2 = createFolder(session1, user1Folder1.getPathAsString(), "user1Folder2", "Folder");
-        user1File2 = createFile(session1, userWorkspace1.getPathAsString(), "user1File2", "File", "user1File2.txt",
+        user1Folder2 = createFolder(session1, user1Folder1.getPathAsString(), "user1Folder2", FOLDER_TYPE);
+        user1File2 = createFile(session1, userWorkspace1.getPathAsString(), "user1File2", FILE_TYPE, "user1File2.txt",
                 CONTENT_PREFIX + "user1File2");
-        user1Folder3 = createFolder(session1, "/", "user1Folder3", "Folder");
-        user1File3 = createFile(session1, user1Folder3.getPathAsString(), "user1File3", "File", "user1File3.txt",
+        user1Folder3 = createFolder(session1, "/", "user1Folder3", FOLDER_TYPE);
+        user1File3 = createFile(session1, user1Folder3.getPathAsString(), "user1File3", FILE_TYPE, "user1File3.txt",
                 CONTENT_PREFIX + "user1File3");
-        user1Folder4 = createFolder(session1, "/", "user1Folder4", "Folder");
-        user1File4 = createFile(session1, user1Folder4.getPathAsString(), "user1File4", "File", "user1File4.txt",
+        user1Folder4 = createFolder(session1, "/", "user1Folder4", FOLDER_TYPE);
+        user1File4 = createFile(session1, user1Folder4.getPathAsString(), "user1File4", FILE_TYPE, "user1File4.txt",
                 CONTENT_PREFIX + "user1File4");
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
@@ -207,7 +225,7 @@ public class TestUserWorkspaceHierarchy {
         TransactionHelper.startTransaction();
 
         // Get an Automation client session for the test user
-        clientSession1 = automationClient.getSession("user1", "user1");
+        clientSession1 = automationClient.getSession(USER_1, USER_1);
 
         mapper = new ObjectMapper();
     }
@@ -228,10 +246,10 @@ public class TestUserWorkspaceHierarchy {
         session1.close();
 
         // Reset test user permissions on the root document
-        resetPermissions(session.getRootDocument(), "user1");
+        resetPermissions(session.getRootDocument(), USER_1);
 
         // Delete test user
-        deleteUser("user1");
+        deleteUser(USER_1);
     }
 
     /**
@@ -252,7 +270,7 @@ public class TestUserWorkspaceHierarchy {
      * </pre>
      */
     @Test
-    public void testClientSideUser1() throws Exception {
+    public void testClientSideUser1() throws IOException {
 
         // Temporarily ignore under MySQL waiting for https://jira.nuxeo.com/browse/NXP-15969 to be fixed
         if (storageConfiguration.isVCSMySQL()) {
@@ -287,8 +305,8 @@ public class TestUserWorkspaceHierarchy {
         assertEquals(userWorkspace1ItemPath, topLevelFolder.getPath());
         assertEquals("Nuxeo Drive", topLevelFolder.getName());
         assertTrue(topLevelFolder.isFolder());
-        assertEquals("user1", topLevelFolder.getCreator());
-        assertEquals("user1", topLevelFolder.getLastContributor());
+        assertEquals(USER_1, topLevelFolder.getCreator());
+        assertEquals(USER_1, topLevelFolder.getLastContributor());
         assertFalse(topLevelFolder.getCanRename());
         assertFalse(topLevelFolder.getCanDelete());
         assertTrue(topLevelFolder.getCanCreateChild());
@@ -360,7 +378,7 @@ public class TestUserWorkspaceHierarchy {
         // user1Folder3
         DefaultSyncRootFolderItem syncRootItem = syncRoots.get(0);
         checkFolderItem(syncRootItem, SYNC_ROOT_ID_PREFIX, user1Folder3, SYNC_ROOT_PARENT_ID, syncRootParentItemPath,
-                "user1Folder3", "user1", "user1");
+                "user1Folder3", USER_1, USER_1);
         Blob syncRootItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
                                                              .set("id", syncRootItem.getId())
                                                              .execute();
@@ -372,11 +390,11 @@ public class TestUserWorkspaceHierarchy {
         // user1File3
         DocumentBackedFileItem childFileItem = syncRootItemChildren.get(0);
         checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File3, syncRootItem.getId(),
-                syncRootItem.getPath(), "user1File3.txt", "user1", "user1");
+                syncRootItem.getPath(), "user1File3.txt", USER_1, USER_1);
         // user1Folder4
         syncRootItem = syncRoots.get(1);
         checkFolderItem(syncRootItem, SYNC_ROOT_ID_PREFIX, user1Folder4, SYNC_ROOT_PARENT_ID, syncRootParentItemPath,
-                "user1Folder4", "user1", "user1");
+                "user1Folder4", USER_1, USER_1);
         syncRootItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
                                                         .set("id", syncRootItem.getId())
                                                         .execute();
@@ -388,7 +406,7 @@ public class TestUserWorkspaceHierarchy {
         // user1File4
         childFileItem = syncRootItemChildren.get(0);
         checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File4, syncRootItem.getId(),
-                syncRootItem.getPath(), "user1File4.txt", "user1", "user1");
+                syncRootItem.getPath(), "user1File4.txt", USER_1, USER_1);
 
         // ---------------------------------------------
         // Check user workspace children
@@ -396,29 +414,28 @@ public class TestUserWorkspaceHierarchy {
         // user1File2
         DocumentBackedFileItem fileItem = readValue(topLevelChildrenNodes[1], DocumentBackedFileItem.class);
         checkFileItem(fileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File2, userWorkspace1ItemId,
-                userWorkspace1ItemPath, "user1File2.txt", "user1", "user1");
+                userWorkspace1ItemPath, "user1File2.txt", USER_1, USER_1);
         // user1Folder1
         DocumentBackedFolderItem folderItem = readValue(topLevelChildrenNodes[2], DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1Folder1, userWorkspace1ItemId,
-                userWorkspace1ItemPath, "user1Folder1", "user1", "user1");
+                userWorkspace1ItemPath, "user1Folder1", USER_1, USER_1);
         Blob folderItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
                                                            .set("id", folderItem.getId())
                                                            .execute();
         ArrayNode folderItemChildren = mapper.readValue(folderItemChildrenJSON.getStream(), ArrayNode.class);
         assertNotNull(folderItemChildren);
         assertEquals(2, folderItemChildren.size());
-        {
-            JsonNode[] folderItemChildrenNodes = sortNodeByName(folderItemChildren);
-            // user1File1
-            childFileItem = readValue(folderItemChildrenNodes[0], DocumentBackedFileItem.class);
-            checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File1, folderItem.getId(),
-                    folderItem.getPath(), "user1File1.txt", "user1", "user1");
-            // user1Folder2
-            DocumentBackedFolderItem childFolderItem = readValue(folderItemChildrenNodes[1],
-                    DocumentBackedFolderItem.class);
-            checkFolderItem(childFolderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1Folder2, folderItem.getId(),
-                    folderItem.getPath(), "user1Folder2", "user1", "user1");
-        }
+
+        JsonNode[] folderItemChildrenNodes = sortNodeByName(folderItemChildren);
+        // user1File1
+        childFileItem = readValue(folderItemChildrenNodes[0], DocumentBackedFileItem.class);
+        checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File1, folderItem.getId(),
+                folderItem.getPath(), "user1File1.txt", USER_1, USER_1);
+        // user1Folder2
+        DocumentBackedFolderItem childFolderItem = readValue(folderItemChildrenNodes[1],
+                DocumentBackedFolderItem.class);
+        checkFolderItem(childFolderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1Folder2, folderItem.getId(),
+                folderItem.getPath(), "user1Folder2", USER_1, USER_1);
 
         // ---------------------------------------------
         // Check registering user workspace as a
@@ -451,18 +468,14 @@ public class TestUserWorkspaceHierarchy {
     }
 
     protected JsonNode[] sortNodeByName(ArrayNode array) {
-        JsonNode nodes[] = new JsonNode[array.size()];
+        JsonNode[] nodes = new JsonNode[array.size()];
         for (int i = 0; i < array.size(); ++i) {
             nodes[i] = array.get(i);
         }
-        Arrays.sort(nodes, new Comparator<JsonNode>() {
-
-            @Override
-            public int compare(JsonNode o1, JsonNode o2) {
-                final String s1 = o1.get("name").asText();
-                final String s2 = o2.get("name").asText();
-                return s1.compareTo(s2);
-            }
+        Arrays.sort(nodes, (JsonNode o1, JsonNode o2) -> {
+            final String s1 = o1.get("name").asText();
+            final String s2 = o2.get("name").asText();
+            return s1.compareTo(s2);
         });
         return nodes;
     }
@@ -498,7 +511,7 @@ public class TestUserWorkspaceHierarchy {
     }
 
     protected DocumentModel createFile(CoreSession session, String path, String name, String type, String fileName,
-            String content) throws InterruptedException {
+            String content) {
 
         DocumentModel file = session.createDocumentModel(path, name, type);
         org.nuxeo.ecm.core.api.Blob blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(content);
@@ -508,8 +521,7 @@ public class TestUserWorkspaceHierarchy {
         return file;
     }
 
-    protected DocumentModel createFolder(CoreSession session, String path, String name, String type)
-            throws InterruptedException {
+    protected DocumentModel createFolder(CoreSession session, String path, String name, String type) {
 
         DocumentModel folder = session.createDocumentModel(path, name, type);
         folder = session.createDocument(folder);
@@ -518,7 +530,7 @@ public class TestUserWorkspaceHierarchy {
 
     protected void createUser(String userName, String password) {
         try (org.nuxeo.ecm.directory.Session userDir = directoryService.open("userDirectory")) {
-            Map<String, Object> user = new HashMap<String, Object>();
+            Map<String, Object> user = new HashMap<>();
             user.put("username", userName);
             user.put("password", password);
             userDir.createEntry(user);

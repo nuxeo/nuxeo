@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -60,7 +59,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
-import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -85,11 +83,17 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml")
 public class TestPermissionHierarchyFileSystemChanges {
 
-    private static final String USER_SYNC_ROOT_PARENT_ID_PREFIX = "userSyncRootParentFactory#test#";
+    protected static final String CONTENT_PREFIX = "The content of file ";
 
-    private static final String SYNC_ROOT_ID_PREFIX = "permissionSyncRootFactory#test#";
+    protected static final String FOLDER_TYPE = "Folder";
 
-    private static final String CONTENT_PREFIX = "The content of file ";
+    protected static final String USER_1 = "user1";
+
+    protected static final String USER_2 = "user2";
+
+    protected static final String USER_SYNC_ROOT_PARENT_ID_PREFIX = "userSyncRootParentFactory#test#";
+
+    protected static final String SYNC_ROOT_ID_PREFIX = "permissionSyncRootFactory#test#";
 
     @Inject
     protected EventServiceAdmin eventServiceAdmin;
@@ -124,17 +128,17 @@ public class TestPermissionHierarchyFileSystemChanges {
     protected long lastEventLogId;
 
     @Before
-    public void init() throws Exception {
+    public void init() {
         // Enable deletion listener because the tear down disables it
         eventServiceAdmin.setListenerEnabledFlag("nuxeoDriveFileSystemDeletionListener", true);
 
         // Create test users
-        createUser("user1", "user1");
-        createUser("user2", "user2");
+        createUser(USER_1, USER_1);
+        createUser(USER_2, USER_2);
 
         // Open a core session for each user
-        session1 = coreFeature.openCoreSession("user1");
-        session2 = coreFeature.openCoreSession("user2");
+        session1 = coreFeature.openCoreSession(USER_1);
+        session2 = coreFeature.openCoreSession(USER_2);
         principal1 = session1.getPrincipal();
         principal2 = session2.getPrincipal();
 
@@ -158,8 +162,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         }
 
         // Delete test users
-        deleteUser("user1");
-        deleteUser("user2");
+        deleteUser(USER_1);
+        deleteUser(USER_2);
 
         // Disable deletion listener for the repository cleanup phase done in
         // CoreFeature#afterTeardown to avoid exception due to no active
@@ -178,16 +182,18 @@ public class TestPermissionHierarchyFileSystemChanges {
      * @param path to start creating the tree
      * @param depth in number of folder
      */
-    private void createFolderTree(CoreSession session, String path, Integer depth) {
+    private void createFolderTree(CoreSession session, String initialPath, Integer depth) {
         Character letter = 'A';
+        StringBuilder path = new StringBuilder(initialPath);
         while (depth-- > 0) {
-            createFolder(session, path, "Folder " + letter, "Folder");
-            path += "/Folder " + letter++;
+            createFolder(session, path.toString(), "Folder " + letter, FOLDER_TYPE);
+            path.append("/Folder ");
+            path.append(letter++);
         }
     }
 
     @Test
-    public void testRegisteredSyncRootChildChange() throws InterruptedException {
+    public void testRegisteredSyncRootChildChange() {
 
         commitAndWaitForAsyncCompletion();
         DocumentModel folderA;
@@ -199,8 +205,8 @@ public class TestPermissionHierarchyFileSystemChanges {
             folderA = session1.getChild(userWorkspace1.getRef(), "Folder A");
             DocumentModel folderB = session1.getChild(folderA.getRef(), "Folder B");
             folderC = session1.getChild(folderB.getRef(), "Folder C");
-            setPermission(session1, folderA, "user2", SecurityConstants.EVERYTHING, true);
-            setPermission(session1, folderC, "user2", SecurityConstants.READ, true);
+            setPermission(session1, folderA, USER_2, SecurityConstants.EVERYTHING, true);
+            setPermission(session1, folderC, USER_2, SecurityConstants.READ, true);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -228,7 +234,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         }
 
         try {
-            resetPermissions(session1, folderA.getRef(), "user2");
+            resetPermissions(session1, folderA.getRef(), USER_2);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -277,7 +283,7 @@ public class TestPermissionHierarchyFileSystemChanges {
      * attribute, see https://jira.nuxeo.com/browse/NXP-16478.
      */
     @Test
-    public void testAdaptableUnregisteredSyncRootChange() throws InterruptedException {
+    public void testAdaptableUnregisteredSyncRootChange() {
 
         commitAndWaitForAsyncCompletion();
 
@@ -355,7 +361,7 @@ public class TestPermissionHierarchyFileSystemChanges {
      */
     @Test
     @Deploy("org.nuxeo.drive.operations.test:OSGI-INF/test-nuxeodrive-hierarchy-permission-adapter-contrib.xml")
-    public void testRootlessItems() throws Exception {
+    public void testRootlessItems() {
         commitAndWaitForAsyncCompletion();
 
         DocumentModel user1Folder1;
@@ -364,11 +370,11 @@ public class TestPermissionHierarchyFileSystemChanges {
 
         try {
             // Populate user1's personal workspace
-            user1Folder1 = createFolder(session1, userWorkspace1.getPathAsString(), "user1Folder1", "Folder");
-            user1Folder2 = createFolder(session1, userWorkspace1.getPathAsString(), "user1Folder2", "Folder");
+            user1Folder1 = createFolder(session1, userWorkspace1.getPathAsString(), "user1Folder1", FOLDER_TYPE);
+            user1Folder2 = createFolder(session1, userWorkspace1.getPathAsString(), "user1Folder2", FOLDER_TYPE);
             session1.save();
-            setPermission(session1, user1Folder1, "user2", SecurityConstants.EVERYTHING, true);
-            setPermission(session1, user1Folder2, "user2", SecurityConstants.READ_WRITE, true);
+            setPermission(session1, user1Folder1, USER_2, SecurityConstants.EVERYTHING, true);
+            setPermission(session1, user1Folder2, USER_2, SecurityConstants.READ_WRITE, true);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -435,10 +441,10 @@ public class TestPermissionHierarchyFileSystemChanges {
         // user1File2 => non accessible parent user1Folder2 so doesn't appear in
         // the file system changes
         try {
-            resetPermissions(session1, user1Folder2.getRef(), "user2");
+            resetPermissions(session1, user1Folder2.getRef(), USER_2);
             user1File2 = createFile(session1, user1Folder2.getPathAsString(), "user1File2", "File", "user1File2.txt",
                     CONTENT_PREFIX + "user1File2");
-            setPermission(session1, user1File2, "user2", SecurityConstants.READ, true);
+            setPermission(session1, user1File2, USER_2, SecurityConstants.READ, true);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -483,7 +489,7 @@ public class TestPermissionHierarchyFileSystemChanges {
 
     protected void createUser(String userName, String password) {
         try (Session userDir = directoryService.open("userDirectory")) {
-            Map<String, Object> user = new HashMap<String, Object>();
+            Map<String, Object> user = new HashMap<>();
             user.put("username", userName);
             user.put("password", password);
             userDir.createEntry(user);
@@ -526,7 +532,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         txFeature.nextTransaction();
     }
 
-    protected List<FileSystemItemChange> getChanges(NuxeoPrincipal principal) throws InterruptedException {
+    protected List<FileSystemItemChange> getChanges(NuxeoPrincipal principal) {
         FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummary(principal,
                 Collections.<String, Set<IdRef>> emptyMap(), lastEventLogId);
         assertNotNull(changeSummary);
@@ -537,13 +543,10 @@ public class TestPermissionHierarchyFileSystemChanges {
     protected void cleanUpAuditLog() {
         NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime()
                                                                             .getComponent(NXAuditEventsService.NAME);
-        ((DefaultAuditBackend) auditService.getBackend()).getOrCreatePersistenceProvider().run(true, new RunVoid() {
-            @Override
-            public void runWith(EntityManager em) {
-                em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
-                em.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
-                em.createNativeQuery("delete from nxp_logs").executeUpdate();
-            }
+        ((DefaultAuditBackend) auditService.getBackend()).getOrCreatePersistenceProvider().run(true, entityManager -> {
+            entityManager.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
+            entityManager.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
+            entityManager.createNativeQuery("delete from nxp_logs").executeUpdate();
         });
     }
 

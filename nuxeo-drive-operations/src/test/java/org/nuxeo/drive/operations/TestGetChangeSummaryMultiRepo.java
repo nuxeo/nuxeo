@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -90,7 +91,7 @@ public class TestGetChangeSummaryMultiRepo {
     protected ObjectMapper mapper;
 
     @Before
-    public void init() throws Exception {
+    public void init() {
 
         otherSession = CoreInstance.openCoreSession("other", "Administrator");
 
@@ -108,7 +109,7 @@ public class TestGetChangeSummaryMultiRepo {
     }
 
     @After
-    public void cleanUp() throws Exception {
+    public void cleanUp() {
 
         // Reset 'other' repository
         otherSession.removeChildren(new PathRef("/"));
@@ -119,7 +120,7 @@ public class TestGetChangeSummaryMultiRepo {
     }
 
     @Test
-    public void testGetDocumentChangesSummary() throws Exception {
+    public void testGetDocumentChangesSummary() throws IOException, InterruptedException {
 
         // Register 3 sync roots and create 3 documents: 2 in the 'test'
         // repository, 1 in the 'other' repository
@@ -179,7 +180,7 @@ public class TestGetChangeSummaryMultiRepo {
         assertEquals(3, docChanges.size());
     }
 
-    protected FileSystemChangeSummary getChangeSummary() throws Exception {
+    protected FileSystemChangeSummary getChangeSummary() throws IOException, InterruptedException {
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000); // NOSONAR
         Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChangeSummary.ID)

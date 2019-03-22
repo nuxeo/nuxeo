@@ -21,6 +21,8 @@ package org.nuxeo.drive.operations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import javax.mail.internet.ParseException;
+
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -33,14 +35,14 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 public class TestOperationHelper {
 
     @Test
-    public void testNormalizeMimeTypeAndEncoding() throws Exception {
+    public void testNormalizeMimeTypeAndEncoding() throws ParseException {
 
         Blob blob = new StringBlob("Joe's blob content.", null, null);
         NuxeoDriveOperationHelper.normalizeMimeTypeAndEncoding(blob);
         assertNull(blob.getMimeType());
         assertNull(blob.getEncoding());
 
-        blob.setMimeType("application/text");
+        blob.setMimeType("application/text"); // NOSONAR
         NuxeoDriveOperationHelper.normalizeMimeTypeAndEncoding(blob);
         assertEquals("application/text", blob.getMimeType());
         assertNull(blob.getEncoding());

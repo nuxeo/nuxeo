@@ -155,17 +155,21 @@ public class TestNuxeoDriveActions {
         assertEquals(expectedSecondBlobURL, secondBlobURL);
 
         try {
-            String invalidXPath = nuxeoDriveActions.getDriveEditURL(doc, "files:files/1/file");
+            nuxeoDriveActions.getDriveEditURL(doc, "files:files/1/file");
             fail("There is no blob at this xPath");
+        } catch (PropertyNotFoundException e) {
+            // Nothing to do here
         } catch (Exception e) {
-            assertTrue(e instanceof PropertyNotFoundException);
+            fail("Exception should be a PropertyNotFoundException instead of " + e);
         }
 
         try {
-            String nullXPath = nuxeoDriveActions.getDriveEditURL(doc, null);
+            nuxeoDriveActions.getDriveEditURL(doc, null);
             fail("The xPath should not be null");
+        } catch (PropertyNotFoundException e) {
+            // Nothing to do here
         } catch (Exception e) {
-            assertTrue(e instanceof PropertyNotFoundException);
+            fail("Exception should be a PropertyNotFoundException instead of " + e);
         }
     }
 

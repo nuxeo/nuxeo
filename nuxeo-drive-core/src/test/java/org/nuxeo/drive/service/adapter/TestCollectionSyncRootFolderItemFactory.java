@@ -77,7 +77,7 @@ public class TestCollectionSyncRootFolderItemFactory {
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
     @Test
-    public void testFactory() throws Exception {
+    public void testFactory() {
 
         FileSystemItemFactory collectionSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
                 "collectionSyncRootFolderItemFactory");

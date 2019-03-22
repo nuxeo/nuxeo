@@ -111,7 +111,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     private static final String DRIVE_METADATA_VIEW = "view_drive_metadata";
 
     @In(create = true, required = false)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true, required = false)
     protected UserCenterViewManager userCenterViews;
@@ -405,8 +405,8 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     protected FileSystemItem getFileSystemItem(DocumentModel doc) {
         // Force parentItem to null to avoid computing ancestors
         // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
-        FileSystemItem fileSystemItem = Framework.getService(FileSystemItemAdapterService.class).getFileSystemItem(doc,
-                null, false, false, false);
+        FileSystemItem fileSystemItem = Framework.getService(FileSystemItemAdapterService.class)
+                                                 .getFileSystemItem(doc, null, false, false, false);
         if (fileSystemItem == null) {
             log.debug("Document {} ({}) is not adaptable as a FileSystemItem.", doc::getPathAsString, doc::getId);
         }

@@ -62,6 +62,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(NuxeoDriveFeature.class)
 public class TestDefaultTopLevelFolderItemFactory {
 
+    protected static final String DEFAULT_FILE_SYSTEM_ITEM_FACTORY_ID = "org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory#";
+
+    protected static final String DEFAULT_TOP_LEVEL_FOLDER_ITEM_FACTORY_ID = "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#";
+
+    protected static final String DEFAULT_TOP_LEVEL_FOLDER_ITEM_FACTORY_ID_SUFFIX = "DefaultTopLevelFolderItemFactory#";
+
+    protected static final String FOLDER_TYPE = "Folder";
+
     @Inject
     protected CoreSession session;
 
@@ -78,11 +86,11 @@ public class TestDefaultTopLevelFolderItemFactory {
     protected TopLevelFolderItemFactory defaultTopLevelFolderItemFactory;
 
     @Before
-    public void createTestDocs() throws Exception {
+    public void createTestDocs() {
 
         // Create and register 2 synchronization roots for Administrator
-        syncRoot1 = session.createDocument(session.createDocumentModel("/", "syncRoot1", "Folder"));
-        syncRoot2 = session.createDocument(session.createDocumentModel("/", "syncRoot2", "Folder"));
+        syncRoot1 = session.createDocument(session.createDocumentModel("/", "syncRoot1", FOLDER_TYPE));
+        syncRoot2 = session.createDocument(session.createDocumentModel("/", "syncRoot2", FOLDER_TYPE));
         NuxeoPrincipal administrator = session.getPrincipal();
         nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot1, session);
         nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot2, session);
@@ -92,7 +100,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         Blob blob = new StringBlob("Content of Joe's file.");
         blob.setFilename("Joe.odt");
         syncRoot1Child.setPropertyValue("file:content", (Serializable) blob);
-        syncRoot1Child = session.createDocument(syncRoot1Child);
+        session.createDocument(syncRoot1Child);
 
         // Flush the session so that the other session instances from the
         // FileSystemManager service.
@@ -105,7 +113,7 @@ public class TestDefaultTopLevelFolderItemFactory {
     }
 
     @Test
-    public void testFactory() throws Exception {
+    public void testFactory() {
 
         // -------------------------------------------------------------
         // Check TopLevelFolderItemFactory#getTopLevelFolderItem(String
@@ -114,8 +122,8 @@ public class TestDefaultTopLevelFolderItemFactory {
         FolderItem topLevelFolderItem = defaultTopLevelFolderItemFactory.getTopLevelFolderItem(session.getPrincipal());
         assertNotNull(topLevelFolderItem);
         assertTrue(topLevelFolderItem instanceof DefaultTopLevelFolderItem);
-        assertTrue(topLevelFolderItem.getId().endsWith("DefaultTopLevelFolderItemFactory#"));
-        assertTrue(topLevelFolderItem.getPath().endsWith("DefaultTopLevelFolderItemFactory#"));
+        assertTrue(topLevelFolderItem.getId().endsWith(DEFAULT_TOP_LEVEL_FOLDER_ITEM_FACTORY_ID_SUFFIX));
+        assertTrue(topLevelFolderItem.getPath().endsWith(DEFAULT_TOP_LEVEL_FOLDER_ITEM_FACTORY_ID_SUFFIX));
         assertTrue(topLevelFolderItem.getPath().startsWith("/"));
         assertNull(topLevelFolderItem.getParentId());
         assertEquals("Nuxeo Drive", topLevelFolderItem.getName());
@@ -194,7 +202,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         FileSystemItem firstRootAsFsItem = children.get(0);
         assertTrue(firstRootAsFsItem instanceof DefaultSyncRootFolderItem);
         assertEquals("defaultSyncRootFolderItemFactory#test#" + syncRoot1.getId(), firstRootAsFsItem.getId());
-        assertTrue(firstRootAsFsItem.getParentId().endsWith("DefaultTopLevelFolderItemFactory#"));
+        assertTrue(firstRootAsFsItem.getParentId().endsWith(DEFAULT_TOP_LEVEL_FOLDER_ITEM_FACTORY_ID_SUFFIX));
         assertEquals("syncRoot1", firstRootAsFsItem.getName());
         assertTrue(firstRootAsFsItem.isFolder());
         assertEquals("Administrator", firstRootAsFsItem.getCreator());
@@ -212,7 +220,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         FileSystemItem secondRootAsFsItem = children.get(1);
         assertTrue(secondRootAsFsItem instanceof DefaultSyncRootFolderItem);
         assertEquals("defaultSyncRootFolderItemFactory#test#" + syncRoot2.getId(), secondRootAsFsItem.getId());
-        assertTrue(secondRootAsFsItem.getParentId().endsWith("DefaultTopLevelFolderItemFactory#"));
+        assertTrue(secondRootAsFsItem.getParentId().endsWith(DEFAULT_TOP_LEVEL_FOLDER_ITEM_FACTORY_ID_SUFFIX));
         assertEquals("syncRoot2", secondRootAsFsItem.getName());
 
         // Let's delete a Sync Root FS Item: this should result in a root
@@ -245,13 +253,12 @@ public class TestDefaultTopLevelFolderItemFactory {
         // #getFileSystemItem(DocumentModel doc)
         assertNull(defaultTopLevelFolderItemFactory.getFileSystemItem(fakeDoc));
         // #canHandleFileSystemItemId(String id)
-        assertTrue(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId(
-                "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#"));
-        assertFalse(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId(
-                "org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory#"));
+        assertTrue(
+                defaultTopLevelFolderItemFactory.canHandleFileSystemItemId(DEFAULT_TOP_LEVEL_FOLDER_ITEM_FACTORY_ID));
+        assertFalse(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId(DEFAULT_FILE_SYSTEM_ITEM_FACTORY_ID));
         // #exists(String id, NuxeoPrincipal principal)
-        assertTrue(defaultTopLevelFolderItemFactory.exists(
-                "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#", session.getPrincipal()));
+        assertTrue(defaultTopLevelFolderItemFactory.exists(DEFAULT_TOP_LEVEL_FOLDER_ITEM_FACTORY_ID,
+                session.getPrincipal()));
         try {
             defaultTopLevelFolderItemFactory.exists("testId", session.getPrincipal());
             fail("Should be unsupported.");
@@ -262,7 +269,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         }
         // #getFileSystemItemById(String id, NuxeoPrincipal principal)
         FileSystemItem topLevelFolderItem = defaultTopLevelFolderItemFactory.getFileSystemItemById(
-                "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#", session.getPrincipal());
+                DEFAULT_TOP_LEVEL_FOLDER_ITEM_FACTORY_ID, session.getPrincipal());
         assertNotNull(topLevelFolderItem);
         assertTrue(topLevelFolderItem instanceof DefaultTopLevelFolderItem);
         assertNull(topLevelFolderItem.getParentId());
@@ -278,7 +285,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         // #getFileSystemItemById(String id, String parentId, NuxeoPrincipal
         // principal)
         topLevelFolderItem = defaultTopLevelFolderItemFactory.getFileSystemItemById(
-                "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#", null, session.getPrincipal());
+                DEFAULT_TOP_LEVEL_FOLDER_ITEM_FACTORY_ID, null, session.getPrincipal());
         assertTrue(topLevelFolderItem instanceof DefaultTopLevelFolderItem);
     }
 }

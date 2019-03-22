@@ -21,6 +21,8 @@ package org.nuxeo.drive.operations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.junit.Before;
@@ -53,17 +55,18 @@ public class TestGetClientUpdateInfo {
     protected ObjectMapper mapper;
 
     @Before
-    public void init() throws Exception {
+    public void init() {
         mapper = new ObjectMapper();
 
         // Set Framework properties required for the client update
         Framework.getProperties().put(Environment.DISTRIBUTION_VERSION, "5.9.3");
-        Framework.getProperties().put(NuxeoDriveConstants.UPDATE_SITE_URL_PROP_KEY,
-                "https://community.nuxeo.com/static/drive-updates/");
+        Framework.getProperties()
+                 .put(NuxeoDriveConstants.UPDATE_SITE_URL_PROP_KEY,
+                         "https://community.nuxeo.com/static/drive-updates/");
     }
 
     @Test
-    public void testGetClientUpdateInfo() throws Exception {
+    public void testGetClientUpdateInfo() throws IOException {
 
         Blob clientUpdateInfoJSON = (Blob) clientSession.newRequest(NuxeoDriveGetClientUpdateInfo.ID).execute();
         assertNotNull(clientUpdateInfoJSON);

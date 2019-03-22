@@ -47,7 +47,7 @@ public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeF
     private static final Logger log = LogManager.getLogger(AuditChangeFinderClusteringEnabledTestSuite.class);
 
     @Test
-    public void testClusteringEnabled() throws Exception {
+    public void testClusteringEnabled() throws InterruptedException {
         List<FileSystemItemChange> changes;
         DocumentModel file1;
         DocumentModel file2;
@@ -71,7 +71,7 @@ public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeF
             // NXP-22284: Cannot expect to have no changes if the clustering delay is not expired since waiting for
             // async completion has an unknown duration
 
-            // Wait for (2 * clustering delay + 1 second) then check changes, expecting at least 2:
+            // Wait for (2 * clustering delay + 1 second) then check changes, expecting at least 2: // NOSONAR
             // - documentCreated for file1
             // - rootRegistered for folder1
             // The documentCreated event for folder1 might have already been "swallowed" by the first call to
@@ -101,7 +101,7 @@ public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeF
         // NXP-22284: Cannot expect to have no changes if the clustering delay is not expired since waiting for
         // async completion has an unknown duration
 
-        // Wait for (2 * clustering delay + 1 second) then check changes, expecting 2:
+        // Wait for (2 * clustering delay + 1 second) then check changes, expecting 2: // NOSONAR
         // - documentCreated for file2
         // - documentModified for file1
         Thread.sleep(3000); // NOSONAR

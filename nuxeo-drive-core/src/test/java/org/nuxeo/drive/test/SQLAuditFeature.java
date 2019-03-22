@@ -18,9 +18,6 @@
  */
 package org.nuxeo.drive.test;
 
-import javax.persistence.EntityManager;
-
-import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
@@ -48,14 +45,12 @@ public class SQLAuditFeature extends AuditFeature {
         if (!(auditBackend instanceof DefaultAuditBackend)) {
             return;
         }
-        ((DefaultAuditBackend) auditBackend).getOrCreatePersistenceProvider().run(true, new RunVoid() {
-            @Override
-            public void runWith(EntityManager em) {
-                em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
-                em.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
-                em.createNativeQuery("delete from nxp_logs").executeUpdate();
-            }
+        ((DefaultAuditBackend) auditBackend).getOrCreatePersistenceProvider().run(true, entityManager -> {
+            entityManager.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
+            entityManager.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
+            entityManager.createNativeQuery("delete from nxp_logs").executeUpdate();
         });
+
     }
 
 }

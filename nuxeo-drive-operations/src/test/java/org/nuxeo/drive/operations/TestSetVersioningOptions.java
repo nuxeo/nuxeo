@@ -21,6 +21,8 @@ package org.nuxeo.drive.operations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.junit.Before;
@@ -55,7 +57,7 @@ public class TestSetVersioningOptions {
     protected VersioningFileSystemItemFactory defaultFileSystemItemFactory;
 
     @Before
-    public void init() throws Exception {
+    public void init() {
 
         defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
                 "defaultFileSystemItemFactory");
@@ -63,7 +65,7 @@ public class TestSetVersioningOptions {
     }
 
     @Test
-    public void testSetVersioningOptions() throws Exception {
+    public void testSetVersioningOptions() throws IOException {
 
         // Default values
         assertEquals(3600.0, defaultFileSystemItemFactory.getVersioningDelay(), .01);

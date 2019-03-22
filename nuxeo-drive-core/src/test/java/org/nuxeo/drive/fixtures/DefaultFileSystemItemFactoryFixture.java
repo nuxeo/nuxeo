@@ -96,11 +96,17 @@ public class DefaultFileSystemItemFactoryFixture {
 
     private static final Logger log = LogManager.getLogger(DefaultFileSystemItemFactoryFixture.class);
 
-    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
+    protected static final String ADMINISTRATOR = "Administrator";
 
-    private static final String DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory#test#";
+    protected static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 
-    private static final int VERSIONING_DELAY = 1000; // ms
+    protected static final String DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory#test#";
+
+    protected static final String FILE_CONTENT = "file:content";
+
+    protected static final String FOLDER_TYPE = "Folder";
+
+    protected static final int VERSIONING_DELAY = 1000; // ms
 
     @Inject
     protected HotDeployer deployer;
@@ -155,9 +161,9 @@ public class DefaultFileSystemItemFactoryFixture {
     protected FileSystemItemFactory defaultSyncRootFolderItemFactory;
 
     @Before
-    public void createTestDocs() throws Exception {
+    public void createTestDocs() {
         principal = session.getPrincipal();
-        syncRootFolder = session.createDocumentModel("/", "syncRoot", "Folder");
+        syncRootFolder = session.createDocumentModel("/", "syncRoot", FOLDER_TYPE);
         syncRootFolder = session.createDocument(syncRootFolder);
         nuxeoDriveManager.registerSynchronizationRoot(principal, syncRootFolder, session);
 
@@ -166,9 +172,9 @@ public class DefaultFileSystemItemFactoryFixture {
 
         // File
         file = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFile", "File");
-        Blob blob = new StringBlob("Content of Joe's file.");
-        blob.setFilename("Joe.odt");
-        file.setPropertyValue("file:content", (Serializable) blob);
+        Blob blob = new StringBlob("Content of Joe's file."); // NOSONAR
+        blob.setFilename("Joe.odt"); // NOSONAR
+        file.setPropertyValue(FILE_CONTENT, (Serializable) blob);
         file = session.createDocument(file);
 
         // Note
@@ -179,12 +185,12 @@ public class DefaultFileSystemItemFactoryFixture {
         // Custom doc type with the "file" schema
         custom = session.createDocumentModel(syncRootFolder.getPathAsString(), "aCustomDoc", "Custom");
         blob = new StringBlob("Content of Bonnie's file.");
-        blob.setFilename("Bonnie's file.odt");
-        custom.setPropertyValue("file:content", (Serializable) blob);
+        blob.setFilename("Bonnie's file.odt"); // NOSONAR
+        custom.setPropertyValue(FILE_CONTENT, (Serializable) blob);
         custom = session.createDocument(custom);
 
         // Folder
-        folder = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFolder", "Folder");
+        folder = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFolder", FOLDER_TYPE);
         folder.setPropertyValue("dc:title", "Jack's folder");
         folder = session.createDocument(folder);
 
@@ -213,7 +219,7 @@ public class DefaultFileSystemItemFactoryFixture {
     }
 
     @Test
-    public void testGetFileSystemItem() throws Exception {
+    public void testGetFileSystemItem() throws IOException {
 
         // ------------------------------------------------------
         // Check downloadable FileSystemItems
@@ -227,8 +233,8 @@ public class DefaultFileSystemItemFactoryFixture {
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Joe.odt", fsItem.getName());
         assertFalse(fsItem.isFolder());
-        assertEquals("Administrator", fsItem.getCreator());
-        assertEquals("Administrator", fsItem.getLastContributor());
+        assertEquals(ADMINISTRATOR, fsItem.getCreator());
+        assertEquals(ADMINISTRATOR, fsItem.getLastContributor());
         Blob fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
@@ -240,10 +246,10 @@ public class DefaultFileSystemItemFactoryFixture {
         assertTrue(fsItem instanceof FileItem);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(), fsItem.getId());
         assertEquals(syncRootItemId, fsItem.getParentId());
-        assertEquals("aNote.txt", fsItem.getName());
+        assertEquals("aNote.txt", fsItem.getName()); // NOSONAR
         assertFalse(fsItem.isFolder());
-        assertEquals("Administrator", fsItem.getCreator());
-        assertEquals("Administrator", fsItem.getLastContributor());
+        assertEquals(ADMINISTRATOR, fsItem.getCreator());
+        assertEquals(ADMINISTRATOR, fsItem.getLastContributor());
         fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("aNote.txt", fileItemBlob.getFilename());
         assertEquals("Content of Bob's note.", fileItemBlob.getString());
@@ -257,14 +263,14 @@ public class DefaultFileSystemItemFactoryFixture {
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Bonnie's file.odt", fsItem.getName());
         assertFalse(fsItem.isFolder());
-        assertEquals("Administrator", fsItem.getCreator());
-        assertEquals("Administrator", fsItem.getLastContributor());
+        assertEquals(ADMINISTRATOR, fsItem.getCreator());
+        assertEquals(ADMINISTRATOR, fsItem.getLastContributor());
         fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("Bonnie's file.odt", fileItemBlob.getFilename());
         assertEquals("Content of Bonnie's file.", fileItemBlob.getString());
 
         // File without a blob => not adaptable as a FileSystemItem
-        file.setPropertyValue("file:content", null);
+        file.setPropertyValue(FILE_CONTENT, null);
         file = session.saveDocument(file);
         assertFalse(defaultFileSystemItemFactory.isFileSystemItem(file));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
@@ -312,8 +318,8 @@ public class DefaultFileSystemItemFactoryFixture {
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
-        assertEquals("Administrator", fsItem.getCreator());
-        assertEquals("Administrator", fsItem.getLastContributor());
+        assertEquals(ADMINISTRATOR, fsItem.getCreator());
+        assertEquals(ADMINISTRATOR, fsItem.getLastContributor());
         FolderItem folderItem = (FolderItem) fsItem;
         List<FileSystemItem> children = folderItem.getChildren();
         assertNotNull(children);
@@ -334,8 +340,8 @@ public class DefaultFileSystemItemFactoryFixture {
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Sarah's folderish file", fsItem.getName());
         assertTrue(fsItem.isFolder());
-        assertEquals("Administrator", fsItem.getCreator());
-        assertEquals("Administrator", fsItem.getLastContributor());
+        assertEquals(ADMINISTRATOR, fsItem.getCreator());
+        assertEquals(ADMINISTRATOR, fsItem.getLastContributor());
 
         // ------------------------------------------------------
         // Check not downloadable nor folderish
@@ -475,7 +481,7 @@ public class DefaultFileSystemItemFactoryFixture {
     }
 
     @Test
-    public void testExists() throws Exception {
+    public void testExists() {
 
         // Bad id
         try {
@@ -502,13 +508,13 @@ public class DefaultFileSystemItemFactoryFixture {
     }
 
     @Test
-    public void testGetFileSystemItemById() throws Exception {
+    public void testGetFileSystemItemById() throws IOException {
 
         // Non existent doc id, must return null
         assertNull(defaultFileSystemItemFactory.getFileSystemItemById(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + "nonExistentDocId", principal));
         // File without a blob
-        file.setPropertyValue("file:content", null);
+        file.setPropertyValue(FILE_CONTENT, null);
         file = session.saveDocument(file);
         session.save();
         FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
@@ -557,7 +563,7 @@ public class DefaultFileSystemItemFactoryFixture {
     }
 
     @Test
-    public void testFileItem() throws Exception {
+    public void testFileItem() throws IOException, InterruptedException {
 
         // ------------------------------------------------------
         // FileItem#getDownloadURL
@@ -630,7 +636,7 @@ public class DefaultFileSystemItemFactoryFixture {
             ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
+            Blob updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("New blob.txt", updatedBlob.getFilename());
             assertEquals("This is a new file.", updatedBlob.getString());
             // Check versioning => should not be versioned since same
@@ -644,7 +650,7 @@ public class DefaultFileSystemItemFactoryFixture {
             newBlob.setFilename("File name modified.txt");
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified.txt", updatedBlob.getFilename());
             // Check versioning => should be versioned since last
             // modification was done after the versioning delay
@@ -652,7 +658,7 @@ public class DefaultFileSystemItemFactoryFixture {
             List<DocumentModel> fileVersions = session.getVersions(file.getRef());
             assertEquals(1, fileVersions.size());
             DocumentModel lastFileVersion = fileVersions.get(0);
-            Blob versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            Blob versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("New blob.txt", versionedBlob.getFilename());
 
             // Update file with another contributor
@@ -662,7 +668,7 @@ public class DefaultFileSystemItemFactoryFixture {
             fileItem.setBlob(newBlob);
             // Re-fetch file with Administrator session
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified by Joe.txt", updatedBlob.getFilename());
             // Check versioning => should be versioned since updated by a
             // different contributor
@@ -670,7 +676,7 @@ public class DefaultFileSystemItemFactoryFixture {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(2, fileVersions.size());
             lastFileVersion = fileVersions.get(1);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified.txt", versionedBlob.getFilename());
 
             // ------------------------------------------------------
@@ -688,7 +694,7 @@ public class DefaultFileSystemItemFactoryFixture {
             ensureJustModified(file, session);
             fileItem.rename("Renamed file.txt");
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("Renamed file.txt", updatedBlob.getFilename());
             // Check versioning => should not be versioned since same
             // contributor and last modification was done before the
@@ -700,7 +706,7 @@ public class DefaultFileSystemItemFactoryFixture {
 
             fileItem.rename("Renamed again.txt");
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("Renamed again.txt", updatedBlob.getFilename());
             // Check versioning => should be versioned since last
             // modification was done after the versioning delay
@@ -708,7 +714,7 @@ public class DefaultFileSystemItemFactoryFixture {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(4, fileVersions.size());
             lastFileVersion = fileVersions.get(3);
-            updatedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            updatedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("Renamed file.txt", updatedBlob.getFilename());
 
             // Update file with another contributor
@@ -717,7 +723,7 @@ public class DefaultFileSystemItemFactoryFixture {
             fileItem.rename("File renamed by Joe.txt");
             // Re-fetch file with Administrator session
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File renamed by Joe.txt", updatedBlob.getFilename());
             // Check versioning => should be versioned since updated by a
             // different contributor
@@ -725,14 +731,14 @@ public class DefaultFileSystemItemFactoryFixture {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(5, fileVersions.size());
             lastFileVersion = fileVersions.get(4);
-            updatedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            updatedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("Renamed again.txt", updatedBlob.getFilename());
         }
         resetPermissions(rootDoc, "joe");
     }
 
     @Test
-    public void testFolderItem() throws Exception {
+    public void testFolderItem() throws IOException {
 
         // ------------------------------------------------------
         // FolderItem#canCreateChild
@@ -782,11 +788,11 @@ public class DefaultFileSystemItemFactoryFixture {
         folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
         // Note
         Blob childBlob = new StringBlob("This is the Note child.");
-        childBlob.setFilename("Note child.txt");
+        childBlob.setFilename("Note child.txt"); // NOSONAR
         folderItem.createFile(childBlob, false);
         // File
         childBlob = new StringBlob("This is the File child.");
-        childBlob.setFilename("File child.odt");
+        childBlob.setFilename("File child.odt"); // NOSONAR
         childBlob.setMimeType("application/vnd.oasis.opendocument.text");
         folderItem.createFile(childBlob, false);
         // Folder
@@ -796,21 +802,21 @@ public class DefaultFileSystemItemFactoryFixture {
                 "select * from Document where ecm:parentId = '%s' order by ecm:primaryType asc", folder.getId()));
         assertEquals(3, children.size());
         // Check File
-        DocumentModel file = children.get(0);
-        assertEquals("File", file.getType());
-        assertEquals("File child.odt", file.getTitle());
-        childBlob = (Blob) file.getPropertyValue("file:content");
+        DocumentModel fileChild = children.get(0);
+        assertEquals("File", fileChild.getType());
+        assertEquals("File child.odt", fileChild.getTitle());
+        childBlob = (Blob) fileChild.getPropertyValue(FILE_CONTENT);
         assertEquals("File child.odt", childBlob.getFilename());
         assertEquals("This is the File child.", childBlob.getString());
         // Check Folder
         DocumentModel subFolder = children.get(1);
-        assertEquals("Folder", subFolder.getType());
+        assertEquals(FOLDER_TYPE, subFolder.getType());
         assertEquals("Sub-folder", subFolder.getTitle());
         // Check Note
-        DocumentModel note = children.get(2);
-        assertEquals("Note", note.getType());
-        assertEquals("Note child.txt", note.getTitle());
-        childBlob = note.getAdapter(BlobHolder.class).getBlob();
+        DocumentModel noteChild = children.get(2);
+        assertEquals("Note", noteChild.getType());
+        assertEquals("Note child.txt", noteChild.getTitle());
+        childBlob = noteChild.getAdapter(BlobHolder.class).getBlob();
         assertEquals("Note child.txt", childBlob.getFilename());
         assertEquals("This is the Note child.", childBlob.getString());
 
@@ -823,7 +829,7 @@ public class DefaultFileSystemItemFactoryFixture {
         DocumentModel adaptableChild = session.createDocumentModel("/syncRoot/aFolder", "adaptableChild", "File");
         Blob adaptableChildBlob = new StringBlob("Content of another file.");
         adaptableChildBlob.setFilename("Another file.odt");
-        adaptableChild.setPropertyValue("file:content", (Serializable) adaptableChildBlob);
+        adaptableChild.setPropertyValue(FILE_CONTENT, (Serializable) adaptableChildBlob);
         adaptableChild = session.createDocument(adaptableChild);
         // Create another child not adaptable as a FileSystemItem => should
         // not be retrieved
@@ -835,7 +841,7 @@ public class DefaultFileSystemItemFactoryFixture {
         List<FileSystemItem> folderChildren = folderItem.getChildren();
         assertEquals(4, folderChildren.size());
         // Ordered
-        checkChildren(folderChildren, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
+        checkChildren(folderChildren, folder.getId(), noteChild.getId(), fileChild.getId(), subFolder.getId(),
                 adaptableChild.getId(), true);
 
         // Check scrollDescendants
@@ -846,7 +852,7 @@ public class DefaultFileSystemItemFactoryFixture {
         assertNotNull(scrollId);
         assertEquals(4, folderDescendants.size());
         // Order is not determined
-        checkChildren(folderDescendants, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
+        checkChildren(folderDescendants, folder.getId(), noteChild.getId(), fileChild.getId(), subFolder.getId(),
                 adaptableChild.getId(), false);
         // Check that next call to scrollDescendants returns an empty list
         assertTrue(folderItem.scrollDescendants(scrollId, 10, 1000).isEmpty());
@@ -856,13 +862,13 @@ public class DefaultFileSystemItemFactoryFixture {
         int batchSize = 2;
         scrollId = null;
         while (!(descendantsBatch = folderItem.scrollDescendants(scrollId, batchSize, 1000)).isEmpty()) {
-            assertTrue(descendantsBatch.size() > 0);
+            assertFalse(descendantsBatch.isEmpty());
             scrollId = descendantsBatch.getScrollId();
             folderDescendants.addAll(descendantsBatch);
         }
         assertEquals(4, folderDescendants.size());
         // Order is not determined
-        checkChildren(folderDescendants, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
+        checkChildren(folderDescendants, folder.getId(), noteChild.getId(), fileChild.getId(), subFolder.getId(),
                 adaptableChild.getId(), false);
 
         // Check batch size limit
@@ -1001,7 +1007,7 @@ public class DefaultFileSystemItemFactoryFixture {
         DocumentModel doc = session.createDocumentModel(session.getRootDocument().getPathAsString(), "testDoc", "File");
         Blob blob = new StringBlob("Content of Joe's file.");
         blob.setFilename("Joe.odt");
-        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc.setPropertyValue(FILE_CONTENT, (Serializable) blob);
         doc = session.createDocument(doc);
 
         log.trace("Try to adapt a document not member of any collection");
@@ -1045,8 +1051,9 @@ public class DefaultFileSystemItemFactoryFixture {
         DocumentModel userWorkspace = session.getParentDocument(userCollections.getRef());
 
         log.trace("Create \"testFolder\" in \"/default-domain/UserWorkspaces/Administrator\"");
-        DocumentModel testFolder = session.createDocumentModel(userWorkspace.getPathAsString(), "testFolder", "Folder");
-        testFolder = session.createDocument(testFolder);
+        DocumentModel testFolder = session.createDocumentModel(userWorkspace.getPathAsString(), "testFolder",
+                FOLDER_TYPE);
+        session.createDocument(testFolder);
 
         log.trace(
                 "Register \"/default-domain/UserWorkspaces/Administrator\" as a synchronization root for Administrator");
@@ -1097,7 +1104,7 @@ public class DefaultFileSystemItemFactoryFixture {
         DocumentModel placeless = session.createDocumentModel(folder.getPathAsString(), "placeless", "File");
         Blob blob = new StringBlob("This is a placeless file for joe.");
         blob.setFilename("Placeless.odt");
-        placeless.setPropertyValue("file:content", (Serializable) blob);
+        placeless.setPropertyValue(FILE_CONTENT, (Serializable) blob);
         session.createDocument(placeless);
 
         log.trace(
@@ -1130,7 +1137,7 @@ public class DefaultFileSystemItemFactoryFixture {
     @Test
     @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-blobholder-factory-contrib.xml")
     @LogCaptureFeature.FilterOn(logLevel = "ERROR")
-    public void testBlobException() throws Exception {
+    public void testBlobException() {
         logFeature.hideErrorFromConsoleLog();
         try {
             assertFalse(defaultFileSystemItemFactory.isFileSystemItem(file));
@@ -1199,7 +1206,7 @@ public class DefaultFileSystemItemFactoryFixture {
         session.save();
     }
 
-    protected void assertVersion(String expected, DocumentModel doc) throws Exception {
+    protected void assertVersion(String expected, DocumentModel doc) {
         assertEquals(expected, getMajor(doc) + "." + getMinor(doc));
     }
 
@@ -1213,7 +1220,7 @@ public class DefaultFileSystemItemFactoryFixture {
 
     protected long getVersion(DocumentModel doc, String prop) {
         Object propVal = doc.getPropertyValue(prop);
-        if (propVal == null || !(propVal instanceof Long)) {
+        if (!(propVal instanceof Long)) {
             return -1;
         } else {
             return ((Long) propVal).longValue();
@@ -1221,7 +1228,7 @@ public class DefaultFileSystemItemFactoryFixture {
     }
 
     protected void checkChildren(List<FileSystemItem> folderChildren, String folderId, String noteId, String fileId,
-            String subFolderId, String otherFileId, boolean ordered) throws Exception {
+            String subFolderId, String otherFileId, boolean ordered) throws IOException {
 
         boolean isNoteFound = false;
         boolean isFileFound = false;
@@ -1232,7 +1239,7 @@ public class DefaultFileSystemItemFactoryFixture {
         for (FileSystemItem fsItem : folderChildren) {
             // Check Note
             if (!isNoteFound && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + noteId).equals(fsItem.getId())) {
-                if (!ordered || ordered && childrenCount == 0) {
+                if (!ordered || childrenCount == 0) { // NOSONAR
                     assertTrue(fsItem instanceof FileItem);
                     assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId, fsItem.getParentId());
                     assertEquals("Note child.txt", fsItem.getName());
@@ -1246,7 +1253,7 @@ public class DefaultFileSystemItemFactoryFixture {
             }
             // Check File
             else if (!isFileFound && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + fileId).equals(fsItem.getId())) {
-                if (!ordered || ordered && childrenCount == 1) {
+                if (!ordered || childrenCount == 1) {
                     assertTrue(fsItem instanceof FileItem);
                     assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId, fsItem.getParentId());
                     assertEquals("File child.odt", fsItem.getName());
@@ -1260,7 +1267,7 @@ public class DefaultFileSystemItemFactoryFixture {
             }
             // Check sub-Folder
             else if (!isSubFolderFound && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolderId).equals(fsItem.getId())) {
-                if (!ordered || ordered && childrenCount == 2) {
+                if (!ordered || childrenCount == 2) {
                     assertTrue(fsItem instanceof FolderItem);
                     assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId, fsItem.getParentId());
                     assertEquals("Sub-folder", fsItem.getName());
@@ -1280,7 +1287,7 @@ public class DefaultFileSystemItemFactoryFixture {
             }
             // Check other File
             else if (!isOtherFileFound && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + otherFileId).equals(fsItem.getId())) {
-                if (!ordered || ordered && childrenCount == 3) {
+                if (!ordered || childrenCount == 3) {
                     assertTrue(fsItem instanceof FileItem);
                     assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId, fsItem.getParentId());
                     assertEquals("Another file.odt", fsItem.getName());

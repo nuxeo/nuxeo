@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -134,6 +135,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-policy-contrib.xml")
 public class TestDriveVersioning {
 
+    protected static final String FILE_CONTENT = "file:content";
+
+    protected static final String FOLDER_TYPE = "Folder";
+
     private static final int VERSIONING_DELAY = 1000; // ms
 
     @Inject
@@ -157,17 +162,17 @@ public class TestDriveVersioning {
     protected FileSystemItemFactory defaultFileSystemItemFactory;
 
     @Before
-    public void createTestDocs() throws Exception {
+    public void createTestDocs() {
         principal = session.getPrincipal();
-        syncRootFolder = session.createDocumentModel("/", "syncRoot", "Folder");
+        syncRootFolder = session.createDocumentModel("/", "syncRoot", FOLDER_TYPE);
         syncRootFolder = session.createDocument(syncRootFolder);
         nuxeoDriveManager.registerSynchronizationRoot(principal, syncRootFolder, session);
 
         // File
         file = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFile", "File");
-        Blob blob = new StringBlob("Content of Joe's file.");
-        blob.setFilename("Joe.odt");
-        file.setPropertyValue("file:content", (Serializable) blob);
+        Blob blob = new StringBlob("Content of Joe's file."); // NOSONAR
+        blob.setFilename("Joe.odt"); // NOSONAR
+        file.setPropertyValue(FILE_CONTENT, (Serializable) blob);
         file = session.createDocument(file);
 
         session.save();
@@ -178,7 +183,7 @@ public class TestDriveVersioning {
     }
 
     @Test
-    public void testDefaultConfiguration() throws Exception {
+    public void testDefaultConfiguration() throws IOException, InterruptedException {
 
         FileItem fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
 
@@ -219,12 +224,12 @@ public class TestDriveVersioning {
             // ------------------------------------------------------
             // 1. Change without delay
             // ------------------------------------------------------
-            Blob newBlob = new StringBlob("This is a new file.");
-            newBlob.setFilename("New blob.txt");
+            Blob newBlob = new StringBlob("This is a new file."); // NOSONAR
+            newBlob.setFilename("New blob.txt"); // NOSONAR
             ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
+            Blob updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("New blob.txt", updatedBlob.getFilename());
             assertEquals("This is a new file.", updatedBlob.getString());
             // Check versioning => should not be versioned since same contributor
@@ -238,10 +243,10 @@ public class TestDriveVersioning {
             // Wait for versioning delay
             Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
-            newBlob.setFilename("File name modified.txt");
+            newBlob.setFilename("File name modified.txt"); // NOSONAR
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified.txt", updatedBlob.getFilename());
             // Check versioning => should be versioned with a major increment by the "versioning-delay" policy
             // since last modification was done after the versioning delay
@@ -250,7 +255,7 @@ public class TestDriveVersioning {
             List<DocumentModel> fileVersions = session.getVersions(file.getRef());
             assertEquals(1, fileVersions.size());
             DocumentModel lastFileVersion = fileVersions.get(0);
-            Blob versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            Blob versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("New blob.txt", versionedBlob.getFilename());
 
             // ------------------------------------------------------
@@ -259,10 +264,10 @@ public class TestDriveVersioning {
             // Wait for versioning delay
             Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
-            newBlob.setFilename("File name modified again.txt");
+            newBlob.setFilename("File name modified again.txt"); // NOSONAR
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified again.txt", updatedBlob.getFilename());
             // Check versioning => should be versioned with a major increment by the "versioning-delay" policy
             // since last modification was done after the versioning delay
@@ -271,17 +276,17 @@ public class TestDriveVersioning {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(2, fileVersions.size());
             lastFileVersion = fileVersions.get(1);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified.txt", versionedBlob.getFilename());
 
             // ------------------------------------------------------
             // 4. Change without delay
             // ------------------------------------------------------
-            newBlob.setFilename("File name modified again as draft.txt");
+            newBlob.setFilename("File name modified again as draft.txt"); // NOSONAR
             ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified again as draft.txt", updatedBlob.getFilename());
             // Check versioning => should not be versioned since same contributor
             // and last modification was done before the versioning delay
@@ -290,7 +295,7 @@ public class TestDriveVersioning {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(2, fileVersions.size());
             lastFileVersion = fileVersions.get(1);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified.txt", versionedBlob.getFilename());
 
             // ------------------------------------------------------
@@ -298,11 +303,11 @@ public class TestDriveVersioning {
             // ------------------------------------------------------
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-            newBlob.setFilename("File name modified by Joe.txt");
+            newBlob.setFilename("File name modified by Joe.txt"); // NOSONAR
             fileItem.setBlob(newBlob);
             // Re-fetch file with Administrator session
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified by Joe.txt", updatedBlob.getFilename());
             // Check versioning => should be versioned with a major increment by the "collaborative-save" policy
             // since updated by a different contributor
@@ -311,7 +316,7 @@ public class TestDriveVersioning {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(3, fileVersions.size());
             lastFileVersion = fileVersions.get(2);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified again as draft.txt", versionedBlob.getFilename());
 
             // ------------------------------------------------------
@@ -322,11 +327,11 @@ public class TestDriveVersioning {
 
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-            newBlob.setFilename("File name modified by Joe again.txt");
+            newBlob.setFilename("File name modified by Joe again.txt"); // NOSONAR
             fileItem.setBlob(newBlob);
             // Re-fetch file with Administrator session
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified by Joe again.txt", updatedBlob.getFilename());
             // Check versioning => should be versioned with a major increment by the "versioning-delay" policy
             // since last modification was done after the versioning delay
@@ -335,7 +340,7 @@ public class TestDriveVersioning {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(4, fileVersions.size());
             lastFileVersion = fileVersions.get(3);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified by Joe.txt", versionedBlob.getFilename());
         }
         resetPermissions(rootDoc, "joe");
@@ -343,7 +348,7 @@ public class TestDriveVersioning {
 
     @Test
     @Deploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-file-policy-not-drive-contrib.xml" })
-    public void testAutomaticVersioning() throws Exception {
+    public void testAutomaticVersioning() throws IOException, InterruptedException {
 
         FileItem fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
 
@@ -392,7 +397,7 @@ public class TestDriveVersioning {
             ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
+            Blob updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("New blob.txt", updatedBlob.getFilename());
             assertEquals("This is a new file.", updatedBlob.getString());
             // Check versioning => should not be versioned since same contributor,
@@ -412,7 +417,7 @@ public class TestDriveVersioning {
             newBlob.setFilename("File name modified.txt");
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified.txt", updatedBlob.getFilename());
             // Check versioning => should be versioned with a major increment by the "versioning-delay" policy
             // since last modification was done after the versioning delay
@@ -422,13 +427,13 @@ public class TestDriveVersioning {
             List<DocumentModel> fileVersions = session.getVersions(file.getRef());
             assertEquals(3, fileVersions.size());
             DocumentModel firstMinorFileVersion = fileVersions.get(0);
-            Blob versionedBlob = (Blob) firstMinorFileVersion.getPropertyValue("file:content");
+            Blob versionedBlob = (Blob) firstMinorFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("Joe.odt", versionedBlob.getFilename());
             DocumentModel lastMajorFileVersion = fileVersions.get(1);
-            versionedBlob = (Blob) lastMajorFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastMajorFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("New blob.txt", versionedBlob.getFilename());
             DocumentModel lastFileVersion = fileVersions.get(2);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified.txt", versionedBlob.getFilename());
 
             // ------------------------------------------------------
@@ -440,7 +445,7 @@ public class TestDriveVersioning {
             newBlob.setFilename("File name modified again.txt");
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified again.txt", updatedBlob.getFilename());
             // Check versioning => no major increment by the "versioning-delay" policy
             // because the document is already checked in,
@@ -450,7 +455,7 @@ public class TestDriveVersioning {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(4, fileVersions.size());
             lastFileVersion = fileVersions.get(3);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified again.txt", versionedBlob.getFilename());
 
             // ------------------------------------------------------
@@ -460,7 +465,7 @@ public class TestDriveVersioning {
             ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified again as new draft.txt", updatedBlob.getFilename());
             // Check versioning => should not be versioned since same contributor,
             // last modification was done before the versioning delay
@@ -472,7 +477,7 @@ public class TestDriveVersioning {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(4, fileVersions.size());
             lastFileVersion = fileVersions.get(3);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified again.txt", versionedBlob.getFilename());
 
             // ------------------------------------------------------
@@ -484,7 +489,7 @@ public class TestDriveVersioning {
             fileItem.setBlob(newBlob);
             // Re-fetch file with Administrator session
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified by Joe.txt", updatedBlob.getFilename());
             // Check versioning => should be versioned with a major increment by the "collaborative-save" policy
             // since updated by a different contributor
@@ -494,10 +499,10 @@ public class TestDriveVersioning {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(6, fileVersions.size());
             lastMajorFileVersion = fileVersions.get(4);
-            versionedBlob = (Blob) lastMajorFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastMajorFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified again as new draft.txt", versionedBlob.getFilename());
             lastFileVersion = fileVersions.get(5);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified by Joe.txt", versionedBlob.getFilename());
 
             // ------------------------------------------------------
@@ -512,7 +517,7 @@ public class TestDriveVersioning {
             fileItem.setBlob(newBlob);
             // Re-fetch file with Administrator session
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified by Joe again.txt", updatedBlob.getFilename());
             // Check versioning => no major increment by the "versioning-delay" policy
             // because the document is already checked in,
@@ -522,7 +527,7 @@ public class TestDriveVersioning {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(7, fileVersions.size());
             lastFileVersion = fileVersions.get(6);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified by Joe again.txt", versionedBlob.getFilename());
         }
         resetPermissions(rootDoc, "joe");
@@ -530,7 +535,7 @@ public class TestDriveVersioning {
 
     @Test
     @Deploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-file-policy-contrib.xml" })
-    public void testAutomaticVersioningAndDriveForceVersionDisabled() throws Exception {
+    public void testAutomaticVersioningAndDriveForceVersionDisabled() throws InterruptedException, IOException {
 
         FileItem fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
 
@@ -579,7 +584,7 @@ public class TestDriveVersioning {
             ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
+            Blob updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("New blob.txt", updatedBlob.getFilename());
             assertEquals("This is a new file.", updatedBlob.getString());
             // Check versioning => should be versioned with a minor increment by the "version-file" policy
@@ -595,7 +600,7 @@ public class TestDriveVersioning {
             newBlob.setFilename("File name modified.txt");
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified.txt", updatedBlob.getFilename());
             // Check versioning => no major increment by the "versioning-delay" policy
             // because the document is already checked in,
@@ -605,13 +610,13 @@ public class TestDriveVersioning {
             List<DocumentModel> fileVersions = session.getVersions(file.getRef());
             assertEquals(3, fileVersions.size());
             DocumentModel firstMinorFileVersion = fileVersions.get(0);
-            Blob versionedBlob = (Blob) firstMinorFileVersion.getPropertyValue("file:content");
+            Blob versionedBlob = (Blob) firstMinorFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("Joe.odt", versionedBlob.getFilename());
             DocumentModel secondMinorFileVersion = fileVersions.get(1);
-            versionedBlob = (Blob) secondMinorFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) secondMinorFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("New blob.txt", versionedBlob.getFilename());
             DocumentModel lastFileVersion = fileVersions.get(2);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified.txt", versionedBlob.getFilename());
 
             // ------------------------------------------------------
@@ -623,7 +628,7 @@ public class TestDriveVersioning {
             newBlob.setFilename("File name modified again.txt");
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified again.txt", updatedBlob.getFilename());
             // Check versioning => no major increment by the "versioning-delay" policy
             // because the document is already checked in,
@@ -633,7 +638,7 @@ public class TestDriveVersioning {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(4, fileVersions.size());
             lastFileVersion = fileVersions.get(3);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified again.txt", versionedBlob.getFilename());
 
             // ------------------------------------------------------
@@ -643,7 +648,7 @@ public class TestDriveVersioning {
             ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified again as draft.txt", updatedBlob.getFilename());
             // Check versioning => should not be versioned since last modification was done before the versioning delay
             // but versioned with a minor increment because of the "version-file" policy
@@ -652,7 +657,7 @@ public class TestDriveVersioning {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(5, fileVersions.size());
             lastFileVersion = fileVersions.get(4);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified again as draft.txt", versionedBlob.getFilename());
 
             // ------------------------------------------------------
@@ -664,7 +669,7 @@ public class TestDriveVersioning {
             fileItem.setBlob(newBlob);
             // Re-fetch file with Administrator session
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified by Joe.txt", updatedBlob.getFilename());
             // Check versioning => no major increment by the "collaborative-save" policy
             // because the document is already checked in,
@@ -674,7 +679,7 @@ public class TestDriveVersioning {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(6, fileVersions.size());
             lastFileVersion = fileVersions.get(5);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified by Joe.txt", versionedBlob.getFilename());
 
             // ------------------------------------------------------
@@ -689,7 +694,7 @@ public class TestDriveVersioning {
             fileItem.setBlob(newBlob);
             // Re-fetch file with Administrator session
             file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
+            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified by Joe again.txt", updatedBlob.getFilename());
             // Check versioning => no major increment by the "versioning-delay" policy
             // because the document is already checked in,
@@ -699,14 +704,14 @@ public class TestDriveVersioning {
             fileVersions = session.getVersions(file.getRef());
             assertEquals(7, fileVersions.size());
             lastFileVersion = fileVersions.get(6);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
             assertEquals("File name modified by Joe again.txt", versionedBlob.getFilename());
         }
         resetPermissions(rootDoc, "joe");
     }
 
     @Test
-    public void testSyncRootVersioning() throws Exception {
+    public void testSyncRootVersioning() throws InterruptedException {
         // Expect no versions initially
         // Cannot use DocumentModel#getVersionLabel since it relies on the uid schema not held by the Folder type
         assertTrue(session.getVersions(syncRootFolder.getRef()).isEmpty());
@@ -724,9 +729,9 @@ public class TestDriveVersioning {
     }
 
     @Test
-    public void testFolderVersioning() throws Exception {
+    public void testFolderVersioning() throws InterruptedException {
         // Create a Folder in the synchronization root
-        DocumentModel folder = session.createDocumentModel("/syncRoot", "aFolder", "Folder");
+        DocumentModel folder = session.createDocumentModel("/syncRoot", "aFolder", FOLDER_TYPE);
         folder = session.createDocument(folder);
         session.save();
 
@@ -768,7 +773,7 @@ public class TestDriveVersioning {
 
     protected long getVersion(DocumentModel doc, String prop) {
         Object propVal = doc.getPropertyValue(prop);
-        if (propVal == null || !(propVal instanceof Long)) {
+        if (!(propVal instanceof Long)) {
             return -1;
         } else {
             return ((Long) propVal).longValue();

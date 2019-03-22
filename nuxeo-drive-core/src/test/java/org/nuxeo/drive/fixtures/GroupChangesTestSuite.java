@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.drive.service.NuxeoDriveEvents.SECURITY_UPDATED_EVENT;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -58,6 +59,14 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
 
     private static final Logger log = LogManager.getLogger(GroupChangesTestSuite.class);
 
+    protected static final String GROUP_1 = "group1";
+
+    protected static final String GROUP_2 = "group2";
+
+    protected static final String PARENT_GROUP = "parentGroup";
+
+    protected static final String SYNC_ROOT = "syncRoot";
+
     @Inject
     protected UserManager userManager;
 
@@ -65,7 +74,7 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
 
     @Override
     @Before
-    public void init() throws Exception {
+    public void init() {
         lastEventLogId = 0;
         lastSyncActiveRootDefinitions = "";
 
@@ -74,10 +83,10 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
         userManager.createUser(user);
 
         List<String> members = Arrays.asList("user");
-        createGroup("group1", members, null);
-        createGroup("group2", members, null);
-        createGroup("parentGroup", null, Arrays.asList("group1"));
-        createGroup("grandParentGroup", null, Arrays.asList("parentGroup"));
+        createGroup(GROUP_1, members, null);
+        createGroup(GROUP_2, members, null);
+        createGroup(PARENT_GROUP, null, Arrays.asList(GROUP_1));
+        createGroup("grandParentGroup", null, Arrays.asList(PARENT_GROUP));
 
         commitAndWaitForAsyncCompletion();
 
@@ -92,9 +101,9 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
         }
 
         deleteGroup("grandParentGroup");
-        deleteGroup("parentGroup");
-        deleteGroup("group2");
-        deleteGroup("group1");
+        deleteGroup(PARENT_GROUP);
+        deleteGroup(GROUP_2);
+        deleteGroup(GROUP_1);
 
         if (userManager.getUserModel("user") != null) {
             userManager.deleteUser("user");
@@ -136,12 +145,12 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
      * Tests changes on a group that has access to a synchronization root.
      */
     @Test
-    public void testGroupChangesOnSyncRoot() throws Exception {
+    public void testGroupChangesOnSyncRoot() {
         DocumentModel syncRoot;
         try {
-            syncRoot = session.createDocument(session.createDocumentModel("/", "syncRoot", "Folder"));
+            syncRoot = session.createDocument(session.createDocumentModel("/", SYNC_ROOT, FOLDER_TYPE));
             log.trace("Grant ReadWrite to group1 on syncRoot");
-            setPermissions(syncRoot, new ACE("group1", SecurityConstants.READ_WRITE));
+            setPermissions(syncRoot, new ACE(GROUP_1, SecurityConstants.READ_WRITE));
             nuxeoDriveManager.registerSynchronizationRoot(userSession.getPrincipal(), syncRoot, userSession);
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -153,24 +162,24 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
         } finally {
             commitAndWaitForAsyncCompletion();
         }
-        testGroupChanges(syncRoot, "defaultSyncRootFolderItemFactory", "group1", false);
+        testGroupChanges(syncRoot, "defaultSyncRootFolderItemFactory", GROUP_1, false);
     }
 
     /**
      * Tests changes on a group that has access to a child of a synchronization root.
      */
     @Test
-    public void testGroupChangesOnSyncRootChild() throws Exception {
+    public void testGroupChangesOnSyncRootChild() {
         DocumentModel child;
         try {
-            DocumentModel syncRoot = session.createDocument(session.createDocumentModel("/", "syncRoot", "Folder"));
-            child = session.createDocument(session.createDocumentModel("/syncRoot", "child", "Folder"));
+            DocumentModel syncRoot = session.createDocument(session.createDocumentModel("/", SYNC_ROOT, FOLDER_TYPE));
+            child = session.createDocument(session.createDocumentModel("/syncRoot", "child", FOLDER_TYPE));
             log.trace("Grant ReadWrite to group1 on syncRoot");
-            setPermissions(syncRoot, new ACE("group1", SecurityConstants.READ_WRITE));
+            setPermissions(syncRoot, new ACE(GROUP_1, SecurityConstants.READ_WRITE));
             log.trace("Block inheritance on child");
             setPermissions(child, ACE.BLOCK);
             log.trace("Grant ReadWrite to group2 on child");
-            setPermissions(child, new ACE("group2", SecurityConstants.READ_WRITE));
+            setPermissions(child, new ACE(GROUP_2, SecurityConstants.READ_WRITE));
             nuxeoDriveManager.registerSynchronizationRoot(userSession.getPrincipal(), syncRoot, userSession);
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -182,20 +191,20 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
         } finally {
             commitAndWaitForAsyncCompletion();
         }
-        testGroupChanges(child, "defaultFileSystemItemFactory", "group2", false);
+        testGroupChanges(child, "defaultFileSystemItemFactory", GROUP_2, false);
     }
 
     /**
      * Tests changes on a group that has access to the parent of a synchronization root.
      */
     @Test
-    public void testGroupChangesOnSyncRootParent() throws Exception {
+    public void testGroupChangesOnSyncRootParent() {
         DocumentModel syncRoot;
         try {
-            DocumentModel parent = session.createDocument(session.createDocumentModel("/", "parent", "Folder"));
-            syncRoot = session.createDocument(session.createDocumentModel("/parent", "syncRoot", "Folder"));
+            DocumentModel parent = session.createDocument(session.createDocumentModel("/", "parent", FOLDER_TYPE));
+            syncRoot = session.createDocument(session.createDocumentModel("/parent", SYNC_ROOT, FOLDER_TYPE));
             log.trace("Grant ReadWrite to group1 on parent");
-            setPermissions(parent, new ACE("group1", SecurityConstants.READ_WRITE));
+            setPermissions(parent, new ACE(GROUP_1, SecurityConstants.READ_WRITE));
             nuxeoDriveManager.registerSynchronizationRoot(userSession.getPrincipal(), syncRoot, userSession);
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -207,22 +216,22 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
         } finally {
             commitAndWaitForAsyncCompletion();
         }
-        testGroupChanges(syncRoot, "defaultSyncRootFolderItemFactory", "group1", false);
+        testGroupChanges(syncRoot, "defaultSyncRootFolderItemFactory", GROUP_1, false);
     }
 
     /**
      * Tests changes on the parent group of a group that has access to a synchronization root.
      */
     @Test
-    public void testChangesWithParentGroup() throws Exception {
-        testGroupChangesWithAncestorGroups("parentGroup");
+    public void testChangesWithParentGroup() {
+        testGroupChangesWithAncestorGroups(PARENT_GROUP);
     }
 
     /**
      * Tests changes on the grandparent group of a group that has access to a synchronization root.
      */
     @Test
-    public void testChangesWithGrandParentGroup() throws Exception {
+    public void testChangesWithGrandParentGroup() {
         testGroupChangesWithAncestorGroups("grandParentGroup");
     }
 
@@ -235,8 +244,7 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
      * <li>Create the group including the test user</li>
      * </ul>
      */
-    protected void testGroupChanges(DocumentModel doc, String factoryName, String groupName, boolean needsParentGroup)
-            throws Exception {
+    protected void testGroupChanges(DocumentModel doc, String factoryName, String groupName, boolean needsParentGroup) {
         List<FileSystemItemChange> changes;
         try {
             log.trace("Remove user from {}", groupName);
@@ -249,7 +257,8 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
             // securityUpdated on doc with a null FileSystemItem
             assertEquals(1, changes.size());
             FileSystemItemChange change = changes.get(0);
-            assertEquals(new SimpleFileSystemItemChange(doc.getId(), "securityUpdated", "test", "test#" + doc.getId()),
+            assertEquals(
+                    new SimpleFileSystemItemChange(doc.getId(), SECURITY_UPDATED_EVENT, "test", "test#" + doc.getId()),
                     toSimpleFileSystemItemChange(change));
             assertNull(change.getFileSystemItem());
             assertNull(change.getFileSystemItemName());
@@ -264,7 +273,7 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
             // securityUpdated on doc with a non-null FileSystemItem
             assertEquals(1, changes.size());
             FileSystemItemChange change = changes.get(0);
-            assertEquals(new SimpleFileSystemItemChange(doc.getId(), "securityUpdated", "test",
+            assertEquals(new SimpleFileSystemItemChange(doc.getId(), SECURITY_UPDATED_EVENT, "test",
                     factoryName + "#test#" + doc.getId()), toSimpleFileSystemItemChange(change));
             assertNotNull(change.getFileSystemItem());
             assertEquals(doc.getTitle(), change.getFileSystemItemName());
@@ -296,7 +305,7 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
                 assertTrue(changes.isEmpty());
 
                 log.trace("Add {} as a subgroup of parentGroup", groupName);
-                updateGroup("parentGroup", null, Arrays.asList(groupName));
+                updateGroup(PARENT_GROUP, null, Arrays.asList(groupName));
 
             } finally {
                 commitAndWaitForAsyncCompletion();
@@ -319,11 +328,11 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
     /**
      * Tests changes on a descendant group of the given group that has access to a synchronization root.
      */
-    protected void testGroupChangesWithAncestorGroups(String ancestorGroup) throws Exception {
+    protected void testGroupChangesWithAncestorGroups(String ancestorGroup) {
         List<FileSystemItemChange> changes;
         DocumentModel syncRoot;
         try {
-            syncRoot = session.createDocument(session.createDocumentModel("/", "syncRoot", "Folder"));
+            syncRoot = session.createDocument(session.createDocumentModel("/", SYNC_ROOT, FOLDER_TYPE));
             log.trace("Grant ReadWrite to {} on syncRoot", ancestorGroup);
             setPermissions(syncRoot, new ACE(ancestorGroup, SecurityConstants.READ_WRITE));
             nuxeoDriveManager.registerSynchronizationRoot(userSession.getPrincipal(), syncRoot, userSession);
@@ -338,7 +347,7 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
             commitAndWaitForAsyncCompletion();
         }
 
-        testGroupChanges(syncRoot, "defaultSyncRootFolderItemFactory", "group1", true);
+        testGroupChanges(syncRoot, "defaultSyncRootFolderItemFactory", GROUP_1, true);
     }
 
 }

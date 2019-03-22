@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -80,7 +81,7 @@ public class TestGetChangeSummary {
     protected String lastSyncActiveRoots;
 
     @Before
-    public void init() throws Exception {
+    public void init() {
 
         lastEventLogId = 0;
         lastSyncActiveRoots = "";
@@ -92,7 +93,7 @@ public class TestGetChangeSummary {
     }
 
     @Test
-    public void testGetChangesSummary() throws Exception {
+    public void testGetChangesSummary() throws IOException, InterruptedException {
 
         // No sync roots => shouldn't find any changes
         FileSystemChangeSummary changeSummary = getChangeSummary();
@@ -146,7 +147,7 @@ public class TestGetChangeSummary {
      * Gets the changes summary for the user bound to the {@link #session} using the {@link NuxeoDriveGetChangeSummary}
      * automation operation and updates the {@link #lastEventLogId}.
      */
-    protected FileSystemChangeSummary getChangeSummary() throws Exception {
+    protected FileSystemChangeSummary getChangeSummary() throws IOException, InterruptedException {
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000); // NOSONAR
         Blob changeSummaryJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChangeSummary.ID)

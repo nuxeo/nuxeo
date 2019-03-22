@@ -22,6 +22,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 public class MockNuxeoDriveActions extends NuxeoDriveActions {
 
+    private static final long serialVersionUID = 1L;
+
     public MockNuxeoDriveActions(CoreSession documentManager) {
         this.documentManager = documentManager;
     }
