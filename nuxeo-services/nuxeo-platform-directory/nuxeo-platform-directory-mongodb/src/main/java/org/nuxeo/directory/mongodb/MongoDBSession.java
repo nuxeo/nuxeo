@@ -152,7 +152,8 @@ public class MongoDBSession extends BaseSession {
 
         // Check if the entry already exists
         if (hasEntry(String.valueOf(id))) {
-            throw new DirectoryException(String.format("Entry with id %s already exists", id));
+            throw new DirectoryException(
+                    String.format("Entry with id %s already exists in directory %s", id, directory.getName()));
         }
 
         try {
