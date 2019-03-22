@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -66,9 +65,6 @@ public class DirectoryEntriesTest {
 
     @Inject
     protected DirectoryService directoryService;
-
-    @Inject
-    protected LocalConfigurationService localConfigurationService;
 
     @Inject
     AutomationService service;

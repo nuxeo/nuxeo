@@ -250,8 +250,10 @@ public class MongoDBSession extends BaseSession {
         String id = docModel.getId();
         Document bson = MongoDBSerializationHelper.fieldMapToBson(idFieldName, autoincrementId ? Long.valueOf(id) : id);
 
-        List<Bson> updates = fieldMap.entrySet().stream().map(e -> Updates.set(e.getKey(), e.getValue())).collect(
-                Collectors.toList());
+        List<Bson> updates = fieldMap.entrySet()
+                                     .stream()
+                                     .map(e -> Updates.set(e.getKey(), e.getValue()))
+                                     .collect(Collectors.toList());
 
         if (!updates.isEmpty()) {
             try {
@@ -585,7 +587,7 @@ public class MongoDBSession extends BaseSession {
         String storedPassword = user.getString(getPrefixedPasswordField());
         if (isMultiTenant()) {
             // check that the entry is from the current tenant, or no tenant at all
-            if(!checkEntryTenantId(user.getString(TENANT_ID_FIELD))) {
+            if (!checkEntryTenantId(user.getString(TENANT_ID_FIELD))) {
                 storedPassword = null;
             }
         }
