@@ -121,7 +121,8 @@ public class MemoryDirectorySession extends BaseSession {
         String id = String.valueOf(rawId);
         Map<String, Object> map = data.get(id);
         if (map != null) {
-            throw new DirectoryException(String.format("Entry with id %s already exists", id));
+            throw new DirectoryException(
+                    String.format("Entry with id %s already exists in directory %s", id, directory.getName()));
         }
         map = new HashMap<>();
         data.put(id, map);

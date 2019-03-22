@@ -197,7 +197,8 @@ public class DirectoryOperationsTest {
             service.run(ctx, chain);
             fail();
         } catch (DirectoryException e) {
-            assertEquals("Failed to invoke operation Directory.CreateEntries, Entry with id europe already exists",
+            assertEquals(
+                    "Failed to invoke operation Directory.CreateEntries, Entry with id europe already exists in directory continent",
                     e.getMessage());
         }
     }
@@ -356,9 +357,9 @@ public class DirectoryOperationsTest {
         params.put("directoryName", "countries");
 
         Properties filters = new Properties();
-        filters.put("parent","europe");
+        filters.put("parent", "europe");
 
-        params.put("filters",filters);
+        params.put("filters", filters);
 
         OperationParameters oparams = new OperationParameters(SuggestDirectoryEntries.ID, params);
 
@@ -378,6 +379,5 @@ public class DirectoryOperationsTest {
         assertNotNull(children);
         assertEquals(2, children.size());
     }
-
 
 }

@@ -44,5 +44,11 @@
       </references>
     </directory>
 
+    <directory name="continentDirectory" extends="template-directory">
+      <schema>vocabulary</schema>
+      <idField>id</idField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
   </extension>
 </component>
