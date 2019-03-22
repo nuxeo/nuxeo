@@ -25,17 +25,23 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.when;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_ID_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SECRET_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SESSION_TOKEN_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_PREFIX_PROPERTY;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.junit.After;
 import org.junit.Before;
@@ -45,10 +51,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.binary.Binary;
-import org.nuxeo.ecm.blob.AbstractTestCloudBinaryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
@@ -57,17 +63,16 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.SDKGlobalConfiguration;
+import com.amazonaws.SdkBaseException;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 /**
  * ***** NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!! *****
  * <p>
  * This test must be run with at least the following system properties set:
  * <ul>
- * <li>nuxeo.s3storage.bucket</li>
  * <li>nuxeo.s3storage.awsid (or AWS_ACCESS_KEY_ID environment variable)</li>
  * <li>nuxeo.s3storage.awssecret (or AWS_SECRET_ACCESS_KEY environment variable)</li>
  * </ul>
@@ -86,36 +91,23 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
     @BeforeClass
     public static void beforeClass() {
+
+        String envId = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.ACCESS_KEY_ENV_VAR),
+                System.getenv(SDKGlobalConfiguration.ALTERNATE_ACCESS_KEY_ENV_VAR));
+        String envSecret = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.SECRET_KEY_ENV_VAR),
+                System.getenv(SDKGlobalConfiguration.ALTERNATE_SECRET_KEY_ENV_VAR));
+        String envToken = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.AWS_SESSION_TOKEN_ENV_VAR),
+                "");
+
+        assumeTrue("AWS Credentials not set in the environment variables", StringUtils.isNoneBlank(envId, envSecret));
+
         PROPERTIES = new HashMap<>();
-        // this also checks in system properties for the configuration
-        String bucketName = Framework.getProperty("nuxeo.s3storage.bucket");
-        if (bucketName == null) {
-            // NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!!
-            // ********** NEVER COMMIT THE SECRET KEYS !!! **********
-            bucketName = "CHANGETHIS";
-            String idKey = "CHANGETHIS";
-            String secretKey = "CHANGETHIS";
-            // ********** NEVER COMMIT THE SECRET KEYS !!! **********
-            PROPERTIES.put(S3BinaryManager.BUCKET_NAME_PROPERTY, bucketName);
-            PROPERTIES.put(S3BinaryManager.BUCKET_PREFIX_PROPERTY, "testfolder/");
-            PROPERTIES.put(S3BinaryManager.AWS_ID_PROPERTY, idKey);
-            PROPERTIES.put(S3BinaryManager.AWS_SECRET_PROPERTY , secretKey);
-            boolean useKeyStore = false;
-            if (useKeyStore) {
-                // keytool -genkeypair -keystore /tmp/keystore.ks -alias unittest -storepass unittest -keypass unittest
-                // -dname "CN=AWS S3 Key, O=example, DC=com" -keyalg RSA
-                String keyStoreFile = "/tmp/keystore.ks";
-                String keyStorePassword = "unittest";
-                String privKeyAlias = "unittest";
-                String privKeyPassword = "unittest";
-                PROPERTIES.put(S3BinaryManager.KEYSTORE_FILE_PROPERTY , keyStoreFile);
-                PROPERTIES.put(S3BinaryManager.KEYSTORE_PASS_PROPERTY , keyStorePassword);
-                PROPERTIES.put(S3BinaryManager.PRIVKEY_ALIAS_PROPERTY , privKeyAlias);
-                PROPERTIES.put(S3BinaryManager.PRIVKEY_PASS_PROPERTY , privKeyPassword);
-            }
-        }
-        boolean disabled = bucketName.equals("CHANGETHIS");
-        assumeTrue("No AWS credentials configured", !disabled);
+        PROPERTIES.put(AWS_ID_PROPERTY, envId);
+        PROPERTIES.put(AWS_SECRET_PROPERTY, envSecret);
+        PROPERTIES.put(AWS_SESSION_TOKEN_PROPERTY, envToken);
+        PROPERTIES.put(BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload");
+        PROPERTIES.put(BUCKET_PREFIX_PROPERTY, "testfolder/");
+        PROPERTIES.put(S3BinaryManager.BUCKET_REGION_PROPERTY, "eu-west-3");
     }
 
     @Before
@@ -185,27 +177,6 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         o.close();
     }
 
-    @Override
-    @Test
-    public void testStoreFile() throws Exception {
-        // Run normal test
-        super.testStoreFile();
-        // Run corruption test
-        String key = binaryManager.bucketNamePrefix + CONTENT_MD5;
-        binaryManager.amazonS3.putObject(binaryManager.bucketName, key, "Georges Abitbol");
-        binaryManager.fileCache.clear();
-        Boolean exceptionOccured = false;
-        try {
-            binaryManager.getBinary(CONTENT_MD5).getStream();
-        } catch (RuntimeException e) {
-            // Should not be wrapped in a RuntimeException as it declare the IOException
-            if (e.getCause() instanceof IOException) {
-                exceptionOccured = true;
-            }
-        }
-        assertTrue("IOException should occured as content is corrupted", exceptionOccured);
-    }
-
     @Test
     public void testCopy() throws IOException {
         // put blob in first binary manager
@@ -253,6 +224,9 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(1);
+            if (binaryManager.useServerSideEncryption) {
+                metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+            }
             binaryManager.amazonS3.putObject(binaryManager.bucketName, digest, in, metadata);
         }
         // create a md5-looking extra file in a "subdirectory" of the bucket prefix
@@ -260,6 +234,9 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(1);
+            if (binaryManager.useServerSideEncryption) {
+                metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+            }
             binaryManager.amazonS3.putObject(binaryManager.bucketName, digest2, in, metadata);
         }
         // check that the files are here
@@ -272,6 +249,37 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         Set<String> res = listAllObjects();
         assertTrue(res.contains(digest));
         assertTrue(res.contains(digest2));
+    }
+
+    @Test
+    public void test1KB() throws SdkBaseException, InterruptedException, IOException {
+        test(1024);
+    }
+
+    @Test
+    public void test1MB() throws SdkBaseException, InterruptedException, IOException {
+        test(1024 * 1024);
+    }
+
+    @Test
+    public void test5MB() throws SdkBaseException, InterruptedException, IOException {
+        test(5 * 1024 * 1024);
+    }
+
+    @Test
+    public void test20MB() throws SdkBaseException, InterruptedException, IOException {
+        test(20 * 1024 * 1024);
+    }
+
+    protected void test(int size) throws SdkBaseException, InterruptedException, IOException {
+        Blob blob = new ByteArrayBlob(generateRandomBytes(size));
+        binaryManager.writeBlob(blob);
+    }
+
+    protected byte[] generateRandomBytes(int length) {
+        byte[] bytes = new byte[length];
+        new Random().nextBytes(bytes);
+        return bytes;
     }
 
     @Override
