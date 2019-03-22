@@ -3,7 +3,7 @@
 <component name="org.nuxeo.ecm.directory.storage">
 
   <extension target="org.nuxeo.ecm.directory.GenericDirectory"
-    point="directories">
+             point="directories">
 
     <directory name="userDirectory" extends="template-user">
       <schema>user</schema>
@@ -20,7 +20,7 @@
       <references>
         <reference field="groups" directory="groupDirectory"
                    name="user2group" source="userId"
-                   target="groupId" dataFile="test-user2group.csv"/>
+                   target="groupId" dataFile="test-user2group.csv" />
       </references>
     </directory>
 
@@ -35,12 +35,12 @@
       <dataFile>test-groups.csv</dataFile>
       <references>
         <inverseReference field="members" directory="userDirectory"
-                          dualReferenceField="groups"/>
+                          dualReferenceField="groups" />
         <reference field="subGroups" directory="groupDirectory"
-                        name="group2group" source="childGroupId"
-                        target="parentGroupId"/>
+                   name="group2group" source="childGroupId"
+                   target="parentGroupId" />
         <inverseReference field="parentGroups"
-                          directory="groupDirectory" dualReferenceField="subGroups"/>
+                          directory="groupDirectory" dualReferenceField="subGroups" />
       </references>
     </directory>
 

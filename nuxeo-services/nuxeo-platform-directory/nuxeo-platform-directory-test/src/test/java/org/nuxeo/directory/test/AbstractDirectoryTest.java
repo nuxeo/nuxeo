@@ -257,7 +257,8 @@ public abstract class AbstractDirectoryTest {
             DocumentModel dm = session.getEntry("user_1");
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
             assertEquals(3L, dm.getProperty(SCHEMA, "intField"));
-            assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0), (Calendar) dm.getProperty(SCHEMA, "dateField"));
+            assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0),
+                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
             assertNull(dm.getProperty(SCHEMA, "company"));
             List<String> groups = (List<String>) dm.getProperty(SCHEMA, "groups");
             assertEquals(2, groups.size());
@@ -295,7 +296,8 @@ public abstract class AbstractDirectoryTest {
             DocumentModel dm = entryMap.get("user_1");
             assertNotNull(dm);
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
-            assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0), (Calendar) dm.getProperty(SCHEMA, "dateField"));
+            assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0),
+                    (Calendar) dm.getProperty(SCHEMA, "dateField"));
             assertEquals(3L, dm.getProperty(SCHEMA, "intField"));
             assertTrue((Boolean) dm.getProperty(SCHEMA, "booleanField"));
             // XXX: getEntries does not fetch references anymore => groups is
@@ -312,7 +314,7 @@ public abstract class AbstractDirectoryTest {
             assertFalse((Boolean) dm.getProperty(SCHEMA, "booleanField"));
         }
 
-        try (Session session = directoryService.open(GROUP_DIR)){
+        try (Session session = directoryService.open(GROUP_DIR)) {
             DocumentModel doc = session.getEntry("administrators");
             assertEquals("administrators", doc.getPropertyValue("group:groupname"));
             assertEquals("Administrators group", doc.getPropertyValue("group:grouplabel"));
@@ -342,9 +344,9 @@ public abstract class AbstractDirectoryTest {
             session.updateEntry(dm);
         }
 
-            // retrieve entry again
-            // even if we tried to change the user id (username), it should
-            // not be changed
+        // retrieve entry again
+        // even if we tried to change the user id (username), it should
+        // not be changed
         try (Session session = getSession()) {
             DocumentModel dm = session.getEntry("user_1");
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
