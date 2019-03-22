@@ -22,6 +22,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_ID_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SECRET_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SESSION_TOKEN_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.SYSTEM_PROPERTY_PREFIX;
 
 import java.io.ByteArrayInputStream;
 import java.util.Map;
@@ -38,11 +43,15 @@ import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
 import org.nuxeo.ecm.automation.test.AutomationServerFeature;
-import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SDKGlobalConfiguration;
 import com.amazonaws.SdkBaseException;
 import com.amazonaws.auth.AWSCredentials;
@@ -52,11 +61,20 @@ import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 
+
+/**
+ * Tests S3DirectBatchHandler.
+ *
+ * @since 10.2
+ */
 @RunWith(FeaturesRunner.class)
 @Features(AutomationServerFeature.class)
 @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3")
@@ -64,13 +82,13 @@ public class TestS3DirectBatchHandler {
 
     public static final int MULTIPART_THRESHOLD = 5 * 1024 * 1024; // 5MB AWS minimum value
 
-    public static final String S3DIRECT_PREIX = "nuxeo.s3storage.transient.";
+    public static final String S3DIRECT_PREFIX = SYSTEM_PROPERTY_PREFIX + ".transient.";
 
-    private static String envId;
+    protected static String envId;
 
-    private static String envSecret;
+    protected static String envSecret;
 
-    private static String envToken;
+    protected static String envToken;
 
     @Inject
     public BatchManager batchManager;
@@ -82,11 +100,12 @@ public class TestS3DirectBatchHandler {
         envSecret = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.SECRET_KEY_ENV_VAR),
                 System.getenv(SDKGlobalConfiguration.ALTERNATE_SECRET_KEY_ENV_VAR));
         envToken = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.AWS_SESSION_TOKEN_ENV_VAR), "");
-        assumeTrue("AWS Credentials not set in the environment variables",
-                StringUtils.isNoneBlank(envId, envSecret));
-        System.setProperty(S3DIRECT_PREIX + S3BinaryManager.AWS_ID_PROPERTY, envId);
-        System.setProperty(S3DIRECT_PREIX + S3BinaryManager.AWS_SECRET_PROPERTY, envSecret);
-        System.setProperty(S3DIRECT_PREIX + S3BinaryManager.AWS_SESSION_TOKEN_PROPERTY, envToken);
+        assumeTrue("AWS Credentials not set in the environment variables", StringUtils.isNoneBlank(envId, envSecret));
+        System.setProperty(S3DIRECT_PREFIX + AWS_ID_PROPERTY, envId);
+        System.setProperty(S3DIRECT_PREFIX + AWS_SECRET_PROPERTY, envSecret);
+        System.setProperty(S3DIRECT_PREFIX + AWS_SESSION_TOKEN_PROPERTY, envToken);
+        System.setProperty(S3DIRECT_PREFIX + BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload-transient");
+        System.setProperty(SYSTEM_PROPERTY_PREFIX + "." + BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload");
     }
 
     @Test
@@ -125,6 +144,12 @@ public class TestS3DirectBatchHandler {
         test(MULTIPART_THRESHOLD + 2);
     }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
+    public void test20MB() throws SdkBaseException, InterruptedException {
+        test(20 * 1024 * 1024);
+    }
+
     public void test(int size) throws SdkBaseException, InterruptedException {
         // generate unique key and and random content of give size
         String key = "key" + System.nanoTime();
@@ -132,29 +157,18 @@ public class TestS3DirectBatchHandler {
         byte[] content = generateRandomBytes(size);
 
         // create and initialize batch
-        BatchHandler handler = batchManager.getHandler("s3");
+        S3DirectBatchHandler handler = (S3DirectBatchHandler) batchManager.getHandler("s3");
         Batch newBatch = handler.newBatch(null);
         Batch batch = handler.getBatch(newBatch.getKey());
 
-        // upload the content with our arbitrary key
         Map<String, Object> properties = batch.getProperties();
-        AmazonS3 s3Client = createS3Client(properties);
-        TransferManager tm = TransferManagerBuilder.standard()
-                                                   .withMultipartUploadThreshold(MULTIPART_THRESHOLD * 1L)
-                                                   .withS3Client(s3Client)
-                                                   .build();
+        String bucketName = (String) properties.get(S3DirectBatchHandler.INFO_BUCKET);
+        String bucketPrefix = (String) properties.get(S3DirectBatchHandler.INFO_BASE_KEY);
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("text/plain");
-        metadata.setContentLength(content.length);
+        String prefixedKey = bucketPrefix + key;
 
-        String bucket = (String) batch.getProperties().get(S3DirectBatchHandler.INFO_BUCKET);
-        String prefix = (String) batch.getProperties().get(S3DirectBatchHandler.INFO_BASE_KEY);
-
-        String prefixedKey = prefix + key;
-
-        tm.upload(new PutObjectRequest(bucket, prefixedKey, new ByteArrayInputStream(content), metadata))
-          .waitForUploadResult();
+        // client side upload
+        clientSideUpload(properties, content, key);
 
         // create priviledged client
         properties.put(S3DirectBatchHandler.INFO_AWS_SECRET_KEY_ID, envId);
@@ -163,27 +177,65 @@ public class TestS3DirectBatchHandler {
         AmazonS3 priviledgedS3Client = createS3Client(properties);
 
         // check the initial upload has been succesfull
-        assertNotNull(priviledgedS3Client.getObject(bucket, prefixedKey));
+        assertNotNull(priviledgedS3Client.getObject(bucketName, prefixedKey));
         BatchFileInfo info = new BatchFileInfo(prefixedKey, name, "text/plain", content.length, null);
         assertTrue(handler.completeUpload(batch.getKey(), key, info));
 
         // check the object has been renamed to its etag
         try {
-            priviledgedS3Client.getObject(bucket, prefixedKey);
+            priviledgedS3Client.getObject(bucketName, prefixedKey);
             fail("should throw 404");
         } catch (AmazonS3Exception e) {
             assertTrue(e.getMessage().contains("404"));
         }
 
-        Blob transientBlob = handler.getBatch(batch.getKey()).getBlob(key);
-        String digest = transientBlob.getDigest();
-        String lastEtag = digest.substring(digest.lastIndexOf(":") + 1);
+        ManagedBlob managedBlob = (ManagedBlob) handler.getBatch(batch.getKey()).getBlob(key);
+        S3BinaryManager s3BinaryManager = (S3BinaryManager) Framework.getService(BlobManager.class)
+                .getBlobProvider(managedBlob.getProviderId());
 
         // check the s3 object has been renamed to correct etag
-        assertNotNull(priviledgedS3Client.getObject(bucket, prefix + lastEtag));
+        assertNotNull(priviledgedS3Client.getObject(s3BinaryManager.getBucketName(),
+                s3BinaryManager.getBucketPrefix() + managedBlob.getDigest()));
 
         // cleanup
-        priviledgedS3Client.deleteObject(bucket, lastEtag);
+        removeAllFiles(priviledgedS3Client, bucketName, bucketPrefix);
+        removeAllFiles(priviledgedS3Client, s3BinaryManager.getBucketName(), s3BinaryManager.getBucketPrefix());
+    }
+
+    protected void removeAllFiles(AmazonS3 s3, String bucketName, String prefix) {
+        ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(prefix);
+        ObjectListing objectListing = s3.listObjects(listObjectsRequest);
+        while (true) {
+            for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
+                s3.deleteObject(bucketName, objectSummary.getKey());
+            }
+            if (objectListing.isTruncated()) {
+                objectListing = s3.listNextBatchOfObjects(objectListing);
+            } else {
+                break;
+            }
+        }
+    }
+
+    protected void clientSideUpload(Map<String, Object> properties, byte[] content, String key)
+            throws AmazonServiceException, AmazonClientException, InterruptedException {
+
+        // upload the content with our arbitrary key
+        AmazonS3 s3Client = createS3Client(properties);
+        TransferManager tm = TransferManagerBuilder.standard()
+                .withMultipartUploadThreshold(MULTIPART_THRESHOLD * 1L)
+                .withS3Client(s3Client)
+                .build();
+
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType("text/plain");
+        metadata.setContentLength(content.length);
+
+        String bucket = (String) properties.get(S3DirectBatchHandler.INFO_BUCKET);
+        String prefix = (String) properties.get(S3DirectBatchHandler.INFO_BASE_KEY);
+
+        tm.upload(new PutObjectRequest(bucket, prefix + key, new ByteArrayInputStream(content), metadata))
+        .waitForUploadResult();
     }
 
     protected AmazonS3 createS3Client(Map<String, Object> properties) {
@@ -193,12 +245,12 @@ public class TestS3DirectBatchHandler {
         String awsSecretAccessKey = (String) properties.get(S3DirectBatchHandler.INFO_AWS_SECRET_ACCESS_KEY);
         AWSCredentials credentials = awsSessionToken == null
                 ? new BasicAWSCredentials(awsSecretKeyId, awsSecretAccessKey)
-                : new BasicSessionCredentials(awsSecretKeyId, awsSecretAccessKey, awsSessionToken);
-        return AmazonS3ClientBuilder.standard()
-                                    .withAccelerateModeEnabled(accelerated)
-                                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                                    .withRegion((String) properties.get(S3DirectBatchHandler.INFO_AWS_REGION))
-                                    .build();
+                        : new BasicSessionCredentials(awsSecretKeyId, awsSecretAccessKey, awsSessionToken);
+                return AmazonS3ClientBuilder.standard()
+                        .withAccelerateModeEnabled(accelerated)
+                        .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                        .withRegion((String) properties.get(S3DirectBatchHandler.INFO_AWS_REGION))
+                        .build();
     }
 
     protected byte[] generateRandomBytes(int length) {
