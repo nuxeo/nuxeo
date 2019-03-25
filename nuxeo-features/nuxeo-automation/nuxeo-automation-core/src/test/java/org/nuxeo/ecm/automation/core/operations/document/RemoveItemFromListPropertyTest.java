@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,8 +46,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.google.inject.Inject;
 
 /**
  * @since 8.3
@@ -86,7 +86,7 @@ public class RemoveItemFromListPropertyTest {
 
         // Check there is no value already.
         assertNotNull(doc.getPropertyValue("ds:fields"));
-        assertEquals(((Collection) doc.getPropertyValue("ds:fields")).size(), 0);
+        assertEquals(0, ((Collection) doc.getPropertyValue("ds:fields")).size());
 
         // Get new fields from json file to String
         File fieldsAsJsonFile = FileUtils.getResourceFileFromContext("newFields.json");
@@ -123,14 +123,14 @@ public class RemoveItemFromListPropertyTest {
     @Test
     @SuppressWarnings("unchecked")
     public void removeFirstItemFromListPropertyTest() throws Exception {
-        //remove the first item
+        // remove the first item
         DocumentModel resultDoc = removeItemsFromListProperty(0);
 
         List<Map<String, String>> dbFields = (List<Map<String, String>>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
 
         Map<String, String> properties = dbFields.get(0);
-        assertEquals(properties.get("fieldType"), "unicTypeAdded2");
+        assertEquals("unicTypeAdded2", properties.get("fieldType"));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class RemoveItemFromListPropertyTest {
         assertEquals(1, dbFields.size());
 
         Map<String, String> properties = dbFields.get(0);
-        assertEquals(properties.get("fieldType"), "unicTypeAdded");
+        assertEquals("unicTypeAdded", properties.get("fieldType"));
     }
 
     @Test(expected = OperationException.class)
@@ -154,7 +154,7 @@ public class RemoveItemFromListPropertyTest {
         assertEquals(1, dbFields.size());
 
         Map<String, String> properties = dbFields.get(0);
-        assertEquals(properties.get("fieldType"), "unicTypeAdded");
+        assertEquals("unicTypeAdded", properties.get("fieldType"));
     }
 
     protected DocumentModel removeItemsFromListProperty(Integer index) throws OperationException {
@@ -166,7 +166,9 @@ public class RemoveItemFromListPropertyTest {
         String xpath = "ds:fields";
         OperationParameters parameters = chain.add(RemoveItemFromListProperty.ID).set("xpath", xpath);
 
-        if (index != null) parameters.set("index", index);
+        if (index != null) {
+            parameters.set("index", index);
+        }
 
         return (DocumentModel) service.run(ctx, chain);
     }
