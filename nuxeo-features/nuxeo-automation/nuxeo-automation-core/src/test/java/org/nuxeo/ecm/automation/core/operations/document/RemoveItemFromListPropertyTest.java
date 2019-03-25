@@ -19,12 +19,14 @@
 
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +41,6 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -86,8 +87,9 @@ public class RemoveItemFromListPropertyTest {
         doc = coreSession.getDocument(doc.getRef());
 
         // Check there is no value already.
-        assertNotNull(doc.getPropertyValue("ds:fields"));
-        assertEquals(0, ((Collection) doc.getPropertyValue("ds:fields")).size());
+        List fields = (List) doc.getPropertyValue("ds:fields");
+        assertNotNull(fields);
+        assertTrue(fields.isEmpty());
 
         // Get new fields from json file to String
         File fieldsAsJsonFile = FileUtils.getResourceFileFromContext("newFields.json");
@@ -117,7 +119,7 @@ public class RemoveItemFromListPropertyTest {
     @Test
     public void removeAllItemFromListPropertyTest() throws Exception {
         // Remove all the fields
-        DocumentModel resultDoc = removeItemsFromListProperty(null);
+        DocumentModel resultDoc = removeItemsFromListProperty("ds:fields", null);
         List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
         assertEquals(0, dbFields.size());
     }
@@ -125,7 +127,7 @@ public class RemoveItemFromListPropertyTest {
     @Test
     public void removeFirstItemFromListPropertyTest() throws Exception {
         // remove the first item
-        DocumentModel resultDoc = removeItemsFromListProperty(0);
+        DocumentModel resultDoc = removeItemsFromListProperty("ds:fields", 0);
 
         List<Map<String, String>> dbFields = (List<Map<String, String>>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
@@ -137,7 +139,7 @@ public class RemoveItemFromListPropertyTest {
     @Test
     public void removeLastItemFromListPropertyTest() throws Exception {
         // Remove the last item
-        DocumentModel resultDoc = removeItemsFromListProperty(1);
+        DocumentModel resultDoc = removeItemsFromListProperty("ds:fields", 1);
         List<Map<String, String>> dbFields = (List<Map<String, String>>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
 
@@ -148,7 +150,7 @@ public class RemoveItemFromListPropertyTest {
     @Test(expected = OperationException.class)
     public void removeNonExistentItemFromListPropertyTest() throws Exception {
         // Not possible to remove the index:2, because the list only have two items
-        DocumentModel resultDoc = removeItemsFromListProperty(2);
+        DocumentModel resultDoc = removeItemsFromListProperty("ds:fields", 2);
         List<Map<String, String>> dbFields = (List<Map<String, String>>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
 
@@ -156,22 +158,42 @@ public class RemoveItemFromListPropertyTest {
         assertEquals("unicTypeAdded", properties.get("fieldType"));
     }
 
-    protected DocumentModel removeItemsFromListProperty(Integer index) throws OperationException {
-        // Remove all the fields
+    protected DocumentModel removeItemsFromListProperty(String xpath, Integer index) throws OperationException {
         OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(doc);
-        OperationChain chain = new OperationChain("testRemoveItemFromPropertyChain");
 
-        String xpath = "ds:fields";
-        OperationParameters parameters = chain.add(RemoveItemFromListProperty.ID).set("xpath", xpath);
-
+        Map<String, Object> params = new HashMap<>();
+        params.put("xpath", xpath);
         if (index != null) {
-            parameters.set("index", index);
+            params.put("index", index);
         }
+        return (DocumentModel) service.run(ctx, RemoveItemFromListProperty.ID, params);
+    }
 
-        DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
+    @Test
+    public void removeFromArrayProperty() throws OperationException {
+        doc.setPropertyValue("dc:subjects", new String[] { "sub1", "sub2", "sub3", "sub4" });
+        doc = coreSession.saveDocument(doc);
+        String[] subjects = (String[]) doc.getPropertyValue("dc:subjects");
+        assertNotNull(subjects);
+        assertEquals(4, subjects.length);
 
-        return resultDoc;
+        // remove first item
+        DocumentModel res = removeItemsFromListProperty("dc:subjects", 0);
+        subjects = (String[]) res.getPropertyValue("dc:subjects");
+        assertNotNull(subjects);
+        assertArrayEquals(new String[] { "sub2", "sub3", "sub4" }, subjects);
+
+        // remove second item
+        res = removeItemsFromListProperty("dc:subjects", 1);
+        subjects = (String[]) res.getPropertyValue("dc:subjects");
+        assertNotNull(subjects);
+        assertArrayEquals(new String[] { "sub2", "sub4" }, subjects);
+
+        // clear remaining items
+        res = removeItemsFromListProperty("dc:subjects", null);
+        subjects = (String[]) res.getPropertyValue("dc:subjects");
+        assertEquals(0, subjects.length);
     }
 
 }
