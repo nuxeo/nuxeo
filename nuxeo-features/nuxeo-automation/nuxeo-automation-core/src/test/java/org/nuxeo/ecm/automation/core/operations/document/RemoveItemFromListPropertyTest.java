@@ -27,6 +27,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,8 +46,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import com.google.inject.Inject;
 
 /**
  * @since 8.3
@@ -86,7 +86,7 @@ public class RemoveItemFromListPropertyTest {
 
         // Check there is no value already.
         assertNotNull(doc.getPropertyValue("ds:fields"));
-        assertEquals(((Collection) doc.getPropertyValue("ds:fields")).size(), 0);
+        assertEquals(0, ((Collection) doc.getPropertyValue("ds:fields")).size());
 
         // Get new fields from json file to String
         File fieldsAsJsonFile = FileUtils.getResourceFileFromContext("newFields.json");
@@ -123,36 +123,36 @@ public class RemoveItemFromListPropertyTest {
 
     @Test
     public void removeFirstItemFromListPropertyTest() throws Exception {
-        //remove the first item
+        // remove the first item
         DocumentModel resultDoc = removeItemsFromListProperty(0);
 
-        List<?> dbFields = (List<?>) resultDoc.getPropertyValue("ds:fields");
+        List<Map<String, String>> dbFields = (List<Map<String, String>>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
 
-        Map<String, String> properties = (Map<String, String>) dbFields.get(0);
-        assertEquals(properties.get("fieldType"), "unicTypeAdded2");
+        Map<String, String> properties = dbFields.get(0);
+        assertEquals("unicTypeAdded2", properties.get("fieldType"));
     }
 
     @Test
     public void removeLastItemFromListPropertyTest() throws Exception {
         // Remove the last item
         DocumentModel resultDoc = removeItemsFromListProperty(1);
-        List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
+        List<Map<String, String>> dbFields = (List<Map<String, String>>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
 
-        Map<String, String> properties = (Map<String, String>) dbFields.get(0);
-        assertEquals(properties.get("fieldType"), "unicTypeAdded");
+        Map<String, String> properties = dbFields.get(0);
+        assertEquals("unicTypeAdded", properties.get("fieldType"));
     }
 
     @Test(expected = OperationException.class)
     public void removeNonExistentItemFromListPropertyTest() throws Exception {
         // Not possible to remove the index:2, because the list only have two items
         DocumentModel resultDoc = removeItemsFromListProperty(2);
-        List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
+        List<Map<String, String>> dbFields = (List<Map<String, String>>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
 
-        Map<String, String> properties = (Map<String, String>) dbFields.get(0);
-        assertEquals(properties.get("fieldType"), "unicTypeAdded");
+        Map<String, String> properties = dbFields.get(0);
+        assertEquals("unicTypeAdded", properties.get("fieldType"));
     }
 
     protected DocumentModel removeItemsFromListProperty(Integer index) throws OperationException {
@@ -164,7 +164,9 @@ public class RemoveItemFromListPropertyTest {
         String xpath = "ds:fields";
         OperationParameters parameters = chain.add(RemoveItemFromListProperty.ID).set("xpath", xpath);
 
-        if (index != null) parameters.set("index", index);
+        if (index != null) {
+            parameters.set("index", index);
+        }
 
         DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
 
