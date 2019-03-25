@@ -48,6 +48,8 @@
     value="#{nxu:test(empty widgetProperty_listTemplateItem, nxd:propertyDefaultValue(propValueForTemplate), widgetProperty_listTemplateItem)}" />
   <c:set var="showActions"
     value="#{isEditMode and (not widgetProperty_hideDeleteButton or widgetProperty_orderable)}" />
+  <nxu:set var="onchangeProperty" value="#{widgetProperty_onchange}">
+  <nxu:set var="onclickProperty" value="#{widgetProperty_onclick}">
 
   <a4j:region id="#{widget.id}_region">
     <a4j:outputPanel id="#{widget.id}_panel"
@@ -93,8 +95,16 @@
                   </c:if>
                   <nxl:subWidget>
                     <td class="fieldColumn">
+                      <nxu:set var="subWidgetOnchangeProperty"
+                        value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
+                        cache="true">
+                      <nxu:set var="subWidgetOnclickProperty"
+                        value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
+                        cache="true">
                       <nxl:widget widget="#{widget}" value="#{model.rowData}"
-                        onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
+                        onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
+                      </nxu:set>
+                      </nxu:set>
                     </td>
                   </nxl:subWidget>
                 </tr>
@@ -130,8 +140,16 @@
                       </td>
                     </c:if>
                     <td class="fieldColumn">
+                      <nxu:set var="subWidgetOnchangeProperty"
+                        value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
+                        cache="true">
+                      <nxu:set var="subWidgetOnclickProperty"
+                        value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
+                        cache="true">
                       <nxl:widget widget="#{widget}" value="#{model.rowData}"
-                        onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
+                        onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
+                      </nxu:set>
+                      </nxu:set>
                     </td>
                   </nxl:subWidget>
                 </tr>
@@ -173,8 +191,16 @@
                       </tr>
                       <tr>
                         <td class="fieldColumn">
+                          <nxu:set var="subWidgetOnchangeProperty"
+                            value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
+                            cache="true">
+                          <nxu:set var="subWidgetOnclickProperty"
+                            value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
+                            cache="true">
                           <nxl:widget widget="#{widget}" value="#{model.rowData}"
-                            onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
+                            onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
+                          </nxu:set>
+                          </nxu:set>
                         </td>
                       </tr>
                     </nxl:subWidget>
@@ -216,8 +242,16 @@
                           </td>
                         </c:if>
                         <td class="fieldColumn">
+                          <nxu:set var="subWidgetOnchangeProperty"
+                            value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
+                            cache="true">
+                          <nxu:set var="subWidgetOnclickProperty"
+                            value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
+                            cache="true">
                           <nxl:widget widget="#{widget}" value="#{model.rowData}"
-                            onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
+                            onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
+                          </nxu:set>
+                          </nxu:set>
                         </td>
                       </tr>
                     </nxl:subWidget>
@@ -255,6 +289,9 @@
     </a4j:status>
 
   </a4j:region>
+
+  </nxu:set>
+  </nxu:set>
 
 </c:if>
 </f:subview>
