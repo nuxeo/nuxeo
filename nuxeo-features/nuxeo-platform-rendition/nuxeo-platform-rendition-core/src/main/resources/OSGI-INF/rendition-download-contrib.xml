@@ -6,20 +6,14 @@
     <defaultRendition reason="download">
       <script language="JavaScript">
         function run() {
-          if (Document.getType() == "File") {
-            return 'mainBlob';
-          } else if (Document.getType() == 'Picture') {
-            return 'mainBlob';
-          } else if (Document.getType() == 'Video') {
-            return 'mainBlob';
-          } else if (Document.getType() == 'Audio') {
-            return 'mainBlob';
-          } else if (Document.getType() == 'Note') {
-            return 'pdf';
-          } else if (Document.getFacets().contains("Collection")) {
+          if (Document.getFacets().contains("Collection")) {
             return 'containerDefaultRendition';
           } else if (Document.getFacets().contains("Folderish")) {
             return 'containerDefaultRendition';
+          } else if (Document.hasSchema("file")) {
+            return 'mainBlob';
+          } else if (Document.getType() == 'Note') {
+            return 'pdf';
           } else {
             return 'xmlExport';
           }
