@@ -19,7 +19,9 @@
 
 package org.nuxeo.ecm.automation.core.operations.document;
 
-import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.nuxeo.ecm.automation.AutomationService;
@@ -40,7 +42,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 /**
  * @since 8.3
  */
-@Operation(id = RemoveItemFromListProperty.ID, category = Constants.CAT_DOCUMENT, label = "Removes an Entry From a Multivalued Complex Property", description = "This operation removes an entry from a multivalued complex property, specified using a xpath (e.g.: contract:customers). A specific entry can be removed using its index number. If the index parameter is left empty, all entries in the property are removed. Activating the save parameter forces the changes to be written in database immediately (at the cost of performance loss), otherwise changes made to the document will be written in bulk when the chain succeeds. <p>Save parameter has to be turned off when this operation is used in the context of the empty document created, about to create, before document modification, document modified events.</p>")
+@Operation(id = RemoveItemFromListProperty.ID, category = Constants.CAT_DOCUMENT, label = "Removes an Entry From a Multivalued Property", description = "This operation removes an entry from a multivalued property, specified using a xpath (e.g.: contract:customers). A specific entry can be removed using its index number. If the index parameter is left empty, all entries in the property are removed. Activating the save parameter forces the changes to be written in database immediately (at the cost of performance loss), otherwise changes made to the document will be written in bulk when the chain succeeds. <p>Save parameter has to be turned off when this operation is used in the context of the empty document created, about to create, before document modification, document modified events.</p>")
 public class RemoveItemFromListProperty {
 
     public static final String ID = "Document.RemoveItemFromListProperty";
@@ -64,35 +66,18 @@ public class RemoveItemFromListProperty {
     protected boolean save = true;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws OperationException, IOException {
+    public DocumentModel run(DocumentModel doc) throws OperationException {
+        Property property = doc.getProperty(xpath);
+        if (!property.isList()) {
+            throw new OperationException(String.format("Property: %s of type: %s is not supported by this operation",
+                    xpath, property.getType().getName()));
+        }
 
-        if (index != null) { // clear just the specific property
-            Property complexProperty = doc.getProperty(xpath);
-            ListType listType = (ListType) complexProperty.getField().getType();
-
-            if (!listType.getFieldType().isComplexType() && !listType.isListType()) {
-                throw new OperationException("Property type is not supported by this operation");
-            }
-
-            ListProperty listProperty = (ListProperty) complexProperty;
-            List<?> propertiesValues = (List<?>) listProperty.getValue();
-            // remove the desired property
-            propertiesValues.remove(index.intValue());
-
-            listProperty.clear();
-            // set the remaining properties
-            listProperty.setValue(propertiesValues);
-
-        } else { // clear all the properties
-            Property complexProperty = doc.getProperty(xpath);
-            ListType listType = (ListType) complexProperty.getField().getType();
-
-            if (!listType.getFieldType().isComplexType() && !listType.isListType()) {
-                throw new OperationException("Property type is not supported by this operation");
-            }
-
-            ListProperty listProperty = (ListProperty) complexProperty;
-            listProperty.clear();
+        ListType listType = (ListType) property.getType();
+        if (listType.isArray()) {
+            removeItemFromArrayProperty(doc, property);
+        } else {
+            removeItemFromListProperty(property);
         }
 
         doc = session.saveDocument(doc);
@@ -100,7 +85,26 @@ public class RemoveItemFromListProperty {
             session.save();
         }
         return doc;
+    }
 
+    protected void removeItemFromArrayProperty(DocumentModel doc, Property property) {
+        if (index != null) {
+            Serializable[] value = (Serializable[]) property.getValue();
+            List<Serializable> list = new ArrayList<>(Arrays.asList(value));
+            list.remove(index.intValue());
+            doc.setPropertyValue(xpath, (Serializable) list);
+        } else {
+            doc.setPropertyValue(xpath, null);
+        }
+    }
+
+    protected void removeItemFromListProperty(Property property) {
+        ListProperty listProperty = (ListProperty) property;
+        if (index != null) {
+            listProperty.remove(index.intValue());
+        } else {
+            listProperty.clear();
+        }
     }
 
 }
