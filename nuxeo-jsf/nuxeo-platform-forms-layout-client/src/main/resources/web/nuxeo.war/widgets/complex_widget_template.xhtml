@@ -17,6 +17,8 @@
 
   <c:set var="displaySubLabels" value="#{not widgetProperty_hideSubLabels}" />
   <c:set var="isEditMode" value="#{widget.mode == 'edit'}" />
+  <nxu:set var="onchangeProperty" value="#{widgetProperty_onchange}">
+  <nxu:set var="onclickProperty" value="#{widgetProperty_onclick}">
 
   <div class="table-overflow">
   <c:choose>
@@ -43,8 +45,16 @@
           <tr>
             <nxl:subWidget>
               <td class="fieldColumn">
+                <nxu:set var="subWidgetOnchangeProperty"
+                  value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
+                  cache="true">
+                <nxu:set var="subWidgetOnclickProperty"
+                  value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
+                  cache="true">
                 <nxl:widget widget="#{widget}" value="#{fieldOrValue}"
-                  onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
+                  onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
+                </nxu:set>
+                </nxu:set>
               </td>
             </nxl:subWidget>
           </tr>
@@ -63,8 +73,16 @@
                 </c:if>
               </td>
               <td class="fieldColumn">
+                <nxu:set var="subWidgetOnchangeProperty"
+                  value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
+                  cache="true">
+                <nxu:set var="subWidgetOnclickProperty"
+                  value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
+                  cache="true">
                 <nxl:widget widget="#{widget}" value="#{fieldOrValue}"
-                  onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
+                  onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
+                </nxu:set>
+                </nxu:set>
               </td>
             </nxl:subWidget>
           </tr>
@@ -85,8 +103,16 @@
             </c:if>
             <tr>
               <td class="fieldColumn">
+                <nxu:set var="subWidgetOnchangeProperty"
+                  value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
+                  cache="true">
+                <nxu:set var="subWidgetOnclickProperty"
+                  value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
+                  cache="true">
                 <nxl:widget widget="#{widget}" value="#{fieldOrValue}"
-                  onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
+                  onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
+                </nxu:set>
+                </nxu:set>
               </td>
             </tr>
           </nxl:subWidget>
@@ -105,8 +131,16 @@
                 </td>
               </c:if>
               <td class="fieldColumn">
+                <nxu:set var="subWidgetOnchangeProperty"
+                  value="#{empty widget.properties['onchange'] ? onchangeProperty : widget.properties['onchange']}"
+                  cache="true">
+                <nxu:set var="subWidgetOnclickProperty"
+                  value="#{empty widget.properties['onclick'] ? onclickProperty : widget.properties['onclick']}"
+                  cache="true">
                 <nxl:widget widget="#{widget}" value="#{fieldOrValue}"
-                  onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
+                  onclick="#{subWidgetOnclickProperty}" onchange="#{subWidgetOnchangeProperty}" />
+                </nxu:set>
+                </nxu:set>
               </td>
             </tr>
           </nxl:subWidget>
@@ -116,6 +150,9 @@
 
   </c:choose>
   </div>
+
+  </nxu:set>
+  </nxu:set>
 
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
