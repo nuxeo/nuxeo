@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.platform.dublincore.service;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 
 import java.security.Principal;
@@ -38,7 +39,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Service that writes Metadata.
@@ -73,7 +77,13 @@ public class DublinCoreStorageService extends DefaultComponent {
         if (principal instanceof SystemPrincipal) {
             SystemPrincipal nxp = (SystemPrincipal) principal;
             String originatingUser = nxp.getActingUser();
-            if (SYSTEM_USERNAME.equals(originatingUser) && !ABOUT_TO_CREATE.equals(event.getName())) {
+            String creationEventId = DOCUMENT_CREATED;
+            ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+            if (configurationService.isBooleanPropertyTrue(DublinCoreListener.TRIGGER_BEFORE_CREATION_PROPERTY)) {
+                // allow use of 10.10 behavior
+                creationEventId = ABOUT_TO_CREATE;
+            }
+            if (SYSTEM_USERNAME.equals(originatingUser) && !creationEventId.equals(event.getName())) {
                 return;
             } else {
                 principalName = originatingUser;
