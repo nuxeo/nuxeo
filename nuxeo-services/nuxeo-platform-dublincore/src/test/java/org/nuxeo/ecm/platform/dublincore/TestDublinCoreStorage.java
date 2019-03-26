@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 
@@ -424,6 +425,17 @@ public class TestDublinCoreStorage {
 
     @Test
     public void testListenerRunsAtCreationBeforeVersioning() throws Exception {
+        // activate 10.10 behavior
+        deployer.deploy("org.nuxeo.ecm.platform.dublincore.tests:OSGI-INF/trigger-before-creation-contrib.xml");
+        doTestListenerRunsAtCreation(true);
+    }
+
+    @Test
+    public void testListenerRunsAtCreationAfterVersioning() throws Exception {
+        doTestListenerRunsAtCreation(false);
+    }
+
+    protected void doTestListenerRunsAtCreation(boolean triggerBefore) throws Exception {
         // (Note is configured by default with auto-versioning)
         DocumentModel note = session.createDocumentModel("/", "note", "Note");
         note = session.createDocument(note);
@@ -441,9 +453,15 @@ public class TestDublinCoreStorage {
         assertEquals("0.1", version.getVersionLabel());
         // version's dublincore info was correctly filled in
         Calendar versionCreated = (Calendar) version.getPropertyValue("dc:created");
-        assertNotNull(versionCreated);
-        assertEquals(created.toInstant(), versionCreated.toInstant());
-        assertEquals("Administrator", version.getPropertyValue("dc:lastContributor"));
+        if (triggerBefore) {
+            // 10.10 behavior
+            assertNotNull(versionCreated);
+            assertEquals(created.toInstant(), versionCreated.toInstant());
+            assertEquals("Administrator", version.getPropertyValue("dc:lastContributor"));
+        } else {
+            assertNull(versionCreated);
+            assertNull(version.getPropertyValue("dc:lastContributor"));
+        }
     }
 
     protected void waitForAsyncCompletion() {

@@ -24,6 +24,7 @@ package org.nuxeo.ecm.platform.dublincore.listener;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PUBLISHED;
 import static org.nuxeo.ecm.core.schema.FacetNames.SYSTEM_DOCUMENT;
@@ -61,6 +62,9 @@ public class DublinCoreListener implements EventListener {
 
     private static final String RESET_CREATOR_PROPERTY = "nuxeo.dclistener.reset-creator-on-copy";
 
+    /** @since 9.10-HF30 */
+    public static final String TRIGGER_BEFORE_CREATION_PROPERTY = "nuxeo.dclistener.trigger-before-creation";
+
     /**
      * Core event notification.
      * <p>
@@ -79,7 +83,13 @@ public class DublinCoreListener implements EventListener {
         }
         String eventId = event.getName();
 
-        if (!eventId.equals(ABOUT_TO_CREATE) && !eventId.equals(BEFORE_DOC_UPDATE)
+        String creationEventId = DOCUMENT_CREATED;
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        if (configurationService.isBooleanPropertyTrue(TRIGGER_BEFORE_CREATION_PROPERTY)) {
+            // allow use of 10.10 behavior
+            creationEventId = ABOUT_TO_CREATE;
+        }
+        if (!eventId.equals(creationEventId) && !eventId.equals(BEFORE_DOC_UPDATE)
                 && !eventId.equals(TRANSITION_EVENT) && !eventId.equals(DOCUMENT_PUBLISHED)
                 && !eventId.equals(DOCUMENT_CREATED_BY_COPY)) {
             return;
@@ -128,20 +138,19 @@ public class DublinCoreListener implements EventListener {
                 return;
             }
             // live proxies may be updated normally, except at creation time (don't update the live doc)
-            if (eventId.equals(ABOUT_TO_CREATE)) {
+            if (eventId.equals(creationEventId)) {
                 return;
             }
         }
 
         Boolean resetCreator = (Boolean) event.getContext().getProperty(CoreEventConstants.RESET_CREATOR);
-        boolean resetCreatorProperty = Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(
-                RESET_CREATOR_PROPERTY);
+        boolean resetCreatorProperty = configurationService.isBooleanPropertyTrue(RESET_CREATOR_PROPERTY);
         Boolean dirty = (Boolean) event.getContext().getProperty(CoreEventConstants.DOCUMENT_DIRTY);
         if ((eventId.equals(BEFORE_DOC_UPDATE) && Boolean.TRUE.equals(dirty))
                 || (eventId.equals(TRANSITION_EVENT) && !doc.isImmutable())) {
             service.setModificationDate(doc, cEventDate, event);
             service.addContributor(doc, event);
-        } else if (eventId.equals(ABOUT_TO_CREATE)) {
+        } else if (eventId.equals(creationEventId)) {
             service.setCreationDate(doc, cEventDate, event);
             service.setModificationDate(doc, cEventDate, event);
             service.addContributor(doc, event);

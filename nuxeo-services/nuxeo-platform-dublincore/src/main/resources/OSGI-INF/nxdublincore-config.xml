@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.dublincore.config">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that defines whether the dublincore-related listener that sets
+      the creator and creation date is executed in event "aboutToCreate" or "documentCreated".
+
+      If false, it's done in event "documentCreated" which is compatible with previous behavior but prevents
+      the first version of auto-versioned documents from getting a proper creator and creation date.
+
+      If true, it's done in event "aboutToCreate", which corrects the behavior.
+    </documentation>
+    <property name="nuxeo.dclistener.trigger-before-creation">false</property>
+  </extension>
+
+</component>

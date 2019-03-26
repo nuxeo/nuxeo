@@ -9,7 +9,8 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.4.2.qualifier
-Nuxeo-Component: OSGI-INF/nxdublincore-service.xml
+Nuxeo-Component: OSGI-INF/nxdublincore-service.xml,
+ OSGI-INF/nxdublincore-config.xml
 Bundle-ManifestVersion: 2
 Import-Package: org.apache.commons.logging,
  org.nuxeo.ecm.core;api=split,
