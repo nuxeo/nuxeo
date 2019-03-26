@@ -2180,7 +2180,7 @@
       <dependency>
         <groupId>org.codelibs.elasticsearch.module</groupId>
         <artifactId>analysis-common</artifactId>
-	<version>${elasticsearch.version}</version>
+        <version>${elasticsearch.version}</version>
       </dependency>
 
       <!-- apache -->
@@ -5092,14 +5092,20 @@
         <!-- <version>1.0</version> -->
         <!-- </dependency> -->
         <!-- </dependencies> -->
-        <!-- <configuration> -->
-        <!-- <additionalConfig> -->
-        <!-- <file> -->
-        <!-- <name>.checkstyle</name> -->
-        <!-- <location>checkstyle/checkstyle.xml</location> -->
-        <!-- </file> -->
-        <!-- </additionalConfig> -->
-        <!-- </configuration> -->
+        <configuration>
+          <additionalBuildcommands>
+            <buildcommand>org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.8</buildcommand>
+            <buildcommand>eclipse.preferences.version=1</buildcommand>
+            <buildcommand>org.eclipse.jdt.core.compiler.source=1.8</buildcommand>
+            <buildcommand>org.eclipse.jdt.core.compiler.compliance=1.8</buildcommand>
+          </additionalBuildcommands>
+          <!-- <additionalConfig> -->
+          <!-- <file> -->
+          <!-- <name>.checkstyle</name> -->
+          <!-- <location>checkstyle/checkstyle.xml</location> -->
+          <!-- </file> -->
+          <!-- </additionalConfig> -->
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -5318,7 +5324,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.9</version>
+          <version>2.10</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
