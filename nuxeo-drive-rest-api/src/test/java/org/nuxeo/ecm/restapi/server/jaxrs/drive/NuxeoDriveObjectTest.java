@@ -31,6 +31,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
+import org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStoreFeature;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -46,7 +47,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @since 9.10
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class })
+@Features({ KeyValueBlobTransientStoreFeature.class, RestServerFeature.class })
 @Deploy("org.nuxeo.drive.rest.api")
 public class NuxeoDriveObjectTest extends BaseTest {
 

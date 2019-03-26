@@ -17,15 +17,16 @@
 package org.nuxeo.drive.test;
 
 import org.nuxeo.ecm.collections.core.test.CollectionFeature;
+import org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStoreFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 
-@Features({ PlatformFeature.class, CollectionFeature.class, SQLAuditFeature.class })
+@Features({ KeyValueBlobTransientStoreFeature.class, PlatformFeature.class, CollectionFeature.class,
+        SQLAuditFeature.class })
 @Deploy("org.nuxeo.drive.core")
 @Deploy("org.nuxeo.ecm.core.io")
-@Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.platform.types.core")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")

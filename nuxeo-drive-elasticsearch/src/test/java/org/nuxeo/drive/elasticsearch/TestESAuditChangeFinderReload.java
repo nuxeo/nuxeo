@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.test.ESAuditFeature;
+import org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -37,7 +38,7 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
  * @since 10.2
  */
 @RunWith(FeaturesRunner.class)
-@Features(ESAuditFeature.class)
+@Features({ KeyValueBlobTransientStoreFeature.class, ESAuditFeature.class })
 @Deploy("org.nuxeo.drive.core")
 @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml")
 public class TestESAuditChangeFinderReload {
