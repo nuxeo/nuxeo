@@ -25,6 +25,7 @@ import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
 
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
@@ -64,8 +65,12 @@ public class DeletionAction implements StreamProcessorTopology {
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
             Session internalSession = ((AbstractSession) session).getSession();
             for (String id : ids) {
-                Document doc = internalSession.getDocumentByUUID(id);
-                doc.removeSingleton();
+                try {
+                    Document doc = internalSession.getDocumentByUUID(id);
+                    doc.removeSingleton();
+                } catch (DocumentNotFoundException e) {
+                    // Document is already deleted
+                }
             }
         }
     }

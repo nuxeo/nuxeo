@@ -1431,7 +1431,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE_VERSION, docModel, options, null, null, true, true);
 
         }
-        doc.remove();
+        doc.remove(getPrincipal());
         if (doc.isVersion()) {
             if (sourceDoc != null) {
                 DocumentModel sourceDocModel = readModel(sourceDoc);

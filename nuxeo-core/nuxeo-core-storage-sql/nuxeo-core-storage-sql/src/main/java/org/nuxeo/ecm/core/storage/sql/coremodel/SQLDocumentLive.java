@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -161,6 +162,12 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     @Override
     public void remove() {
         session.remove(getNode());
+    }
+
+    @Override
+    public void remove(NuxeoPrincipal principal) {
+        // principal is not yet used in SQL document
+        remove();
     }
 
     @Override

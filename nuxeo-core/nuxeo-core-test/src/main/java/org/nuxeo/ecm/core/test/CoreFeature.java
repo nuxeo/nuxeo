@@ -259,6 +259,7 @@ public class CoreFeature implements RunnerFeature {
                 }
                 // remove non-proxies
                 session.removeChildren(new PathRef("/"));
+                waitForAsyncCompletion();
                 log.trace(
                         "remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");
                 // remove remaining placeless documents
@@ -266,6 +267,8 @@ public class CoreFeature implements RunnerFeature {
                         NXQL.NXQL)) {
                     batchRemoveDocuments(results);
                 }
+                waitForAsyncCompletion();
+
                 // set original ACP on root
                 DocumentModel root = session.getRootDocument();
                 root.setACP(rootAcp, true);
