@@ -31,6 +31,10 @@
       <artifactId>chronicle-bytes</artifactId>
     </dependency>
     <dependency>
+      <groupId>net.openhft</groupId>
+      <artifactId>chronicle-threads</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
