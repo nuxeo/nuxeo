@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStoreFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -56,7 +57,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
+@Features({ KeyValueBlobTransientStoreFeature.class, PlatformFeature.class })
 @Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.automation.server:OSGI-INF/auth-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.login.token")
