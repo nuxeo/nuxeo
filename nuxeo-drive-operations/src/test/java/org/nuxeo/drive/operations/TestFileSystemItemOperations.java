@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -448,8 +449,7 @@ public class TestFileSystemItemOperations {
 
         // Check descendants of sub-folder of sync root 1
         assertTrue(CollectionUtils.isEqualCollection(
-                Arrays.asList(file3, file4)
-                      .stream()
+                Stream.of(file3, file4)
                       .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
                       .collect(Collectors.toList()),
                 mapper.readValue(

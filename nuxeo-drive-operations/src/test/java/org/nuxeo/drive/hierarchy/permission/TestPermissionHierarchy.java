@@ -29,12 +29,14 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -405,9 +407,7 @@ public class TestPermissionHierarchy {
         // Check descendants
         assertTrue(userSyncRootParent.getCanScrollDescendants());
         assertTrue(CollectionUtils.isEqualCollection(
-                Arrays.asList(user1File2, user1Folder1, user1File1, user1Folder2, user1Folder3, user1File3,
-                        user1Folder4)
-                      .stream()
+                Stream.of(user1File2, user1Folder1, user1File1, user1Folder2, user1Folder3, user1File3, user1Folder4)
                       .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
                       .collect(Collectors.toList()),
                 mapper.readValue(((Blob) clientSession1.newRequest(NuxeoDriveScrollDescendants.ID)
@@ -779,11 +779,7 @@ public class TestPermissionHierarchy {
         for (int i = 0; i < array.size(); ++i) {
             nodes[i] = array.get(i);
         }
-        Arrays.sort(nodes, (JsonNode o1, JsonNode o2) -> {
-            final String s1 = o1.get("name").asText();
-            final String s2 = o2.get("name").asText();
-            return s1.compareTo(s2);
-        });
+        Arrays.sort(nodes, Comparator.comparing(node -> node.get("name").asText()));
         return nodes;
     }
 
