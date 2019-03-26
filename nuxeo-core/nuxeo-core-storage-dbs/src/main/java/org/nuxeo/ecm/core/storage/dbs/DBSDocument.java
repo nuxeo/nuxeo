@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -716,7 +717,12 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public void remove() {
-        session.remove(id);
+        remove(null);
+    }
+
+    @Override
+    public void remove(NuxeoPrincipal principal) {
+        session.remove(id, principal);
     }
 
     @Override

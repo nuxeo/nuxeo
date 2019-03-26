@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -184,6 +185,14 @@ public interface Document {
      * Removes this document and all its children, if any.
      */
     void remove();
+
+    /**
+     * Removes this document and all its children, if any.
+     *
+     * @param principal the caller
+     * @since 11.1
+     */
+    void remove(NuxeoPrincipal principal);
 
     /**
      * Removes this document only, without its children.

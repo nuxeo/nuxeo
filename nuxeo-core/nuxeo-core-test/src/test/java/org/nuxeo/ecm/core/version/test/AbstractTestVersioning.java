@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -53,6 +54,9 @@ public abstract class AbstractTestVersioning {
     protected EventService eventService;
 
     @Inject
+    protected TransactionalFeature transactionalFeature;
+
+    @Inject
     protected CoreSession session;
 
     protected void maybeSleepToNextSecond() {
@@ -60,15 +64,8 @@ public abstract class AbstractTestVersioning {
     }
 
     protected void waitForAsyncCompletion() {
-        nextTransaction();
+        transactionalFeature.nextTransaction();
         eventService.waitForAsyncCompletion();
-    }
-
-    protected void nextTransaction() {
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
     }
 
     protected long getMajor(DocumentModel doc) {

@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -139,6 +140,11 @@ public class SQLDocumentProxy implements SQLDocument {
     @Override
     public void remove() {
         proxy.remove();
+    }
+
+    @Override
+    public void remove(NuxeoPrincipal principal) {
+        proxy.remove(principal);
     }
 
     @Override

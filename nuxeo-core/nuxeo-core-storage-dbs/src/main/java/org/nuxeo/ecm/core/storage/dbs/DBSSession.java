@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.action.DeletionAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.api.AbstractSession.DISABLED_ISLATESTVERSION_PROPERTY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG_LABEL;
@@ -102,6 +103,7 @@ import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -114,6 +116,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Session;
@@ -840,7 +844,7 @@ public class DBSSession implements Session<QueryFilter> {
      * raise an error if a proxy still exists for that target.
      * </ul>
      */
-    protected void remove(String rootId) {
+    protected void remove(String rootId, NuxeoPrincipal principal) {
         transaction.save();
 
         State rootState = transaction.getStateForRead(rootId);
@@ -899,8 +903,16 @@ public class DBSSession implements Session<QueryFilter> {
             }
         }
 
-        // remove all docs
-        transaction.removeStates(removedIds);
+        // remove root doc
+        transaction.removeStates(Collections.singleton(rootId));
+        // Check that the ids to remove is not only the root id
+        if (removedIds.size() > 1) {
+            String nxql = String.format("SELECT * FROM Document, Relation WHERE ecm:ancestorId = '%s'", rootId);
+            BulkCommand command = new BulkCommand.Builder(ACTION_NAME, nxql, principal.getName())
+                                                 .repository(getRepositoryName())
+                                                 .build();
+            Framework.getService(BulkService.class).submit(command);
+        }
 
         // fix proxies back-pointers on proxy targets
         for (String targetId : targetIds) {

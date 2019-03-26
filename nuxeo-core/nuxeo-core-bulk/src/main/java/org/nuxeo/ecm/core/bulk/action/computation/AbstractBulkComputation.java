@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.bulk.action.computation;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
 
 import java.io.Serializable;
@@ -135,12 +136,16 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
         }
         TransactionHelper.runInTransaction(() -> {
             try {
-                LoginContext loginContext = Framework.loginAsUser(command.getUsername());
+                String username = command.getUsername();
+                LoginContext loginContext = SYSTEM_USERNAME.equals(username) ? Framework.login()
+                        : Framework.loginAsUser(username);
                 String repository = command.getRepository();
                 try (CloseableCoreSession session = CoreInstance.openCoreSession(repository)) {
                     compute(session, batch, command.getParams());
                 } finally {
-                    loginContext.logout();
+                    if (loginContext != null) {
+                        loginContext.logout();
+                    }
                 }
             } catch (LoginException e) {
                 throw new NuxeoException(e);

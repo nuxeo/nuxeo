@@ -127,6 +127,7 @@ import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule.IgnoreWindows;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -140,6 +141,9 @@ public class TestSQLRepositoryAPI {
 
     @Inject
     protected CoreFeature coreFeature;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
 
     @Inject
     protected EventService eventService;
@@ -1663,6 +1667,7 @@ public class TestSQLRepositoryAPI {
                 returnedChildDocs.get(2).getRef(), returnedChildDocs.get(3).getRef(),
                 returnedChildDocs.get(4).getRef() };
         session.removeDocuments(refs);
+        transactionalFeature.nextTransaction();
 
         assertFalse(session.exists(returnedChildDocs.get(0).getRef()));
         assertFalse(session.exists(returnedChildDocs.get(1).getRef()));
@@ -1718,6 +1723,7 @@ public class TestSQLRepositoryAPI {
                 returnedChildDocs.get(4).getRef(), returnedChildDocs.get(3).getRef(),
                 returnedChildDocs.get(2).getRef() };
         session.removeDocuments(refs);
+        transactionalFeature.nextTransaction();
 
         assertFalse(session.exists(returnedChildDocs.get(0).getRef()));
         assertFalse(session.exists(returnedChildDocs.get(1).getRef()));
