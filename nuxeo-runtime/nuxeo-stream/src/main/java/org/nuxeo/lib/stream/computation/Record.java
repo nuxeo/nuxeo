@@ -169,7 +169,15 @@ public class Record implements Externalizable {
     }
 
     public enum Flag {
-        DEFAULT, COMMIT, POISON_PILL;
+        // limited to 8 flags so it can be encoded as a byte
+        DEFAULT,
+        COMMIT,
+        POISON_PILL,
+        INTERNAL1, // Reserved for internal use
+        INTERNAL2,
+        INTERNAL3,
+        USER1, // Available for users
+        USER2;
 
         public static final EnumSet<Flag> ALL_OPTS = EnumSet.allOf(Flag.class);
     }
