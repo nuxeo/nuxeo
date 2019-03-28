@@ -1155,13 +1155,19 @@ public class ConnectBroker {
                 // Check if registration is required
                 DownloadablePackage downloadablePkg = getPackageManager().findRemotePackageById(pkg);
                 if (downloadablePkg != null && downloadablePkg.hasSubscriptionRequired() && !isRegistered) {
-                    log.info(String.format("Registration is required for package '%s'. Download skipped.", pkg));
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Registration is required for package '%s'. Download skipped.", pkg));
+                    }
                     packagesAlreadyDownloaded.add(pkg);
                     continue;
                 }
-                log.info(String.format("Download of '%s' will replace the one already in local cache.", pkg));
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Download of '%s' will replace the one already in local cache.", pkg));
+                }
             } else {
-                log.info(String.format("Package '%s' is already in local cache.", pkg));
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Package '%s' is already in local cache.", pkg));
+                }
                 packagesAlreadyDownloaded.add(pkg);
             }
         }
@@ -1171,7 +1177,9 @@ public class ConnectBroker {
             return true;
         }
         // Queue downloads
-        log.info("Downloading " + packagesToDownload + "...");
+        if (log.isInfoEnabled()) {
+            log.info("Downloading " + packagesToDownload + "...");
+        }
         boolean downloadOk = true;
         List<DownloadingPackage> pkgs = new ArrayList<>();
         for (String pkg : packagesToDownload) {
@@ -1200,7 +1208,9 @@ public class ConnectBroker {
                     cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Download failed (not found).");
                 }
             } catch (ConnectServerError e) {
-                log.debug(e, e);
+                if (log.isDebugEnabled()) {
+                    log.debug(e, e);
+                }
                 downloadOk = false;
                 cmdInfo.exitCode = 1;
                 cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Download failed: " + e.getMessage());
@@ -1714,15 +1724,11 @@ public class ConnectBroker {
                 sb.append("\nTarget platforms: ").append(ArrayUtils.toString(packageInfo.targetPlatforms));
                 appendIfNotEmpty(sb, "\nVendor: ", packageInfo.vendor);
                 sb.append("\nSupports hot-reload: ").append(packageInfo.supportsHotReload);
-                sb.append("\nSupported: ").append(packageInfo.supported);
-                sb.append("\nProduction state: ").append(packageInfo.productionState);
-                sb.append("\nValidation state: ").append(packageInfo.validationState);
                 appendIfNotEmpty(sb, "\nProvides: ", packageInfo.provides);
                 appendIfNotEmpty(sb, "\nDepends: ", packageInfo.dependencies);
                 appendIfNotEmpty(sb, "\nConflicts: ", packageInfo.conflicts);
                 appendIfNotEmpty(sb, "\nTitle: ", packageInfo.title);
                 appendIfNotEmpty(sb, "\nDescription: ", packageInfo.description);
-                appendIfNotEmpty(sb, "\nHomepage: ", packageInfo.homePage);
                 appendIfNotEmpty(sb, "\nLicense: ", packageInfo.licenseType);
                 appendIfNotEmpty(sb, "\nLicense URL: ", packageInfo.licenseUrl);
                 sb.append("\n****************************************");
