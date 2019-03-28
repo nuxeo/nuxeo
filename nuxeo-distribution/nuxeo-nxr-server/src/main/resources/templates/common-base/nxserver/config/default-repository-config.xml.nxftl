@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <blobprovider name="default">
       <class>${nuxeo.core.binarymanager}</class>
-      <property name="path">${repository.binary.store}</property>
+      <property name="path">${nuxeo.binarystores.root}/binaries</property>
       <property name="key">${nuxeo.core.binarymanager_key}</property>
     </blobprovider>
   </extension>
