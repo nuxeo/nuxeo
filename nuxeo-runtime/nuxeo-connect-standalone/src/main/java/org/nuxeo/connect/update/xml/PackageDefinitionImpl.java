@@ -25,11 +25,9 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.connect.data.PackageDescriptor;
-import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
-import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Validator;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.model.PackageDefinition;
@@ -63,21 +61,11 @@ public class PackageDefinitionImpl implements PackageDefinition {
     @XNode("vendor")
     protected String vendor;
 
-    @XNode("home-page")
-    protected String homePage;
-
-    @XNode("supported")
-    protected boolean supported = false;
-
     @XNode("hotreload-support")
     protected boolean hotReloadSupport = false;
 
     @XNode("require-terms-and-conditions-acceptance")
     protected boolean requireTermsAndConditionsAcceptance = false;
-
-    protected NuxeoValidationState validationState = NuxeoValidationState.NONE;
-
-    protected ProductionState productionState = ProductionState.TESTING;
 
     /**
      * The license name. E.g. LGPL, BSD etc.
@@ -141,22 +129,6 @@ public class PackageDefinitionImpl implements PackageDefinition {
      */
     @XNode("validator")
     protected String validator;
-
-    @XNode("nuxeo-validation")
-    protected void initNuxeoValidationState(String value) {
-        NuxeoValidationState targetState = NuxeoValidationState.getByValue(value);
-        if (targetState != null) {
-            validationState = targetState;
-        }
-    }
-
-    @XNode("production-state")
-    protected void initProductionState(String value) {
-        ProductionState targetState = ProductionState.getByValue(value);
-        if (targetState != null) {
-            productionState = targetState;
-        }
-    }
 
     @Override
     public String getId() {
@@ -226,16 +198,6 @@ public class PackageDefinitionImpl implements PackageDefinition {
     @Override
     public void setClassifier(String classifier) {
         this.classifier = classifier;
-    }
-
-    @Override
-    public String getHomePage() {
-        return homePage;
-    }
-
-    @Override
-    public void setHomePage(String homePage) {
-        this.homePage = homePage;
     }
 
     @Deprecated
@@ -384,23 +346,8 @@ public class PackageDefinitionImpl implements PackageDefinition {
     }
 
     @Override
-    public void setSupported(boolean supported) {
-        this.supported = supported;
-    }
-
-    @Override
     public void setHotReloadSupport(boolean hotReloadSupport) {
         this.hotReloadSupport = hotReloadSupport;
-    }
-
-    @Override
-    public void setValidationState(NuxeoValidationState validationState) {
-        this.validationState = validationState;
-    }
-
-    @Override
-    public void setProductionState(ProductionState productionState) {
-        this.productionState = productionState;
     }
 
     @Deprecated
@@ -420,15 +367,11 @@ public class PackageDefinitionImpl implements PackageDefinition {
         writer.element("description", description);
         writer.element("classifier", classifier);
         writer.element("vendor", vendor);
-        writer.element("home-page", homePage);
         writer.element("license", license);
         writer.element("license-url", licenseUrl);
         writer.element("hotreload-support", Boolean.valueOf(hotReloadSupport).toString());
-        writer.element("supported", Boolean.valueOf(supported).toString());
         writer.element("require-terms-and-conditions-acceptance",
                 Boolean.valueOf(requireTermsAndConditionsAcceptance).toString());
-        writer.element("production-state", productionState.toString());
-        writer.element("nuxeo-validation", validationState.toString());
         if (platforms != null) {
             writer.start("platforms");
             writer.startContent();
@@ -469,21 +412,6 @@ public class PackageDefinitionImpl implements PackageDefinition {
         }
         writer.element("validator", validator);
         writer.end("package");
-    }
-
-    @Override
-    public ProductionState getProductionState() {
-        return productionState;
-    }
-
-    @Override
-    public NuxeoValidationState getValidationState() {
-        return validationState;
-    }
-
-    @Override
-    public boolean isSupported() {
-        return supported;
     }
 
     @Override
