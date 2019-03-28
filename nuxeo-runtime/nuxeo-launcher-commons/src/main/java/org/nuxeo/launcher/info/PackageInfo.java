@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     mguillaume
+ *     Yannis JULIENNE
  */
 
 package org.nuxeo.launcher.info;
@@ -36,13 +37,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.connect.update.LocalPackage;
-import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
-import org.nuxeo.connect.update.ProductionState;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -50,9 +49,8 @@ import org.xml.sax.SAXException;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "package")
-@XmlType(propOrder = { "id", "state", "version", "name", "type", "targetPlatforms", "vendor",
-        "supportsHotReload", "supported", "productionState", "validationState", "provides", "dependencies",
-        "conflicts", "title", "description", "homePage", "licenseType", "licenseUrl", "templates" })
+@XmlType(propOrder = { "id", "state", "version", "name", "type", "targetPlatforms", "vendor", "supportsHotReload",
+        "provides", "dependencies", "conflicts", "title", "description", "licenseType", "licenseUrl", "templates" })
 public class PackageInfo {
 
     public String name;
@@ -67,15 +65,9 @@ public class PackageInfo {
 
     public String description;
 
-    public String homePage;
-
     public String licenseType;
 
     public String licenseUrl;
-
-    public ProductionState productionState;
-
-    public NuxeoValidationState validationState;
 
     public String[] targetPlatforms;
 
@@ -90,8 +82,6 @@ public class PackageInfo {
     public PackageDependency[] conflicts;
 
     public boolean supportsHotReload;
-
-    public boolean supported;
 
     public Set<String> templates;
 
@@ -119,18 +109,14 @@ public class PackageInfo {
         state = pkg.getPackageState();
         title = pkg.getTitle();
         description = pkg.getDescription();
-        homePage = pkg.getHomePage();
         licenseType = pkg.getLicenseType();
         licenseUrl = pkg.getLicenseUrl();
-        productionState = pkg.getProductionState();
-        validationState = pkg.getValidationState();
         targetPlatforms = pkg.getTargetPlatforms();
         type = pkg.getType();
         provides = pkg.getProvides();
         dependencies = pkg.getDependencies();
         conflicts = pkg.getConflicts();
         supportsHotReload = pkg.supportsHotReload();
-        supported = pkg.isSupported();
         templates = templates(pkg);
     }
 

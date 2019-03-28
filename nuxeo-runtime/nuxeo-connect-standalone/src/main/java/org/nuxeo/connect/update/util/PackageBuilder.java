@@ -35,10 +35,8 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
-import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageType;
-import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.model.PackageDefinition;
 import org.nuxeo.connect.update.model.TaskDefinition;
@@ -134,11 +132,6 @@ public class PackageBuilder {
         return this;
     }
 
-    public PackageBuilder homePage(String homePage) {
-        def.setHomePage(homePage);
-        return this;
-    }
-
     public PackageBuilder installer(TaskDefinition task) {
         def.setInstaller(task);
         return this;
@@ -156,36 +149,6 @@ public class PackageBuilder {
 
     public PackageBuilder uninstaller(String type, boolean restart) {
         def.setUninstaller(new TaskDefinitionImpl(type, restart));
-        return this;
-    }
-
-    public PackageBuilder validationState(NuxeoValidationState validationState) {
-        try {
-            def.getClass().getMethod("setValidationState", NuxeoValidationState.class);
-            def.setValidationState(validationState);
-        } catch (NoSuchMethodException e) {
-            // Ignore setValidationState with old Connect Client versions
-        }
-        return this;
-    }
-
-    public PackageBuilder productionState(ProductionState productionState) {
-        try {
-            def.getClass().getMethod("setProductionState", ProductionState.class);
-            def.setProductionState(productionState);
-        } catch (NoSuchMethodException e) {
-            // Ignore setProductionState with old Connect Client versions
-        }
-        return this;
-    }
-
-    public PackageBuilder supported(boolean supported) {
-        try {
-            def.getClass().getMethod("setSupported", boolean.class);
-            def.setSupported(supported);
-        } catch (NoSuchMethodException e) {
-            // Ignore setSupported with old Connect Client versions
-        }
         return this;
     }
 

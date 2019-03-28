@@ -312,12 +312,8 @@ public class TestConnectBroker {
                 "Type: addon\n" + //
                 "Target platforms: {server-8.3,server-8.4}\n" + //
                 "Supports hot-reload: false\n" + //
-                "Supported: true\n" + //
-                "Production state: production_ready\n" + //
-                "Validation state: nuxeo_certified\n" + //
                 "Title: Package A\n" + //
                 "Description: Description of A\n" + //
-                "Homepage: http://doc.nuxeo.com/x/7YGo\n" + //
                 "License: LGPL\n" + //
                 "License URL: http://www.gnu.org/licenses/lgpl.html\n" + //
                 "****************************************\n" + //
@@ -328,12 +324,8 @@ public class TestConnectBroker {
                 "Type: studio\n" + //
                 "Target platforms: {server-8.3,server-8.4}\n" + //
                 "Supports hot-reload: false\n" + //
-                "Supported: true\n" + //
-                "Production state: production_ready\n" + //
-                "Validation state: nuxeo_certified\n" + //
                 "Title: Studio A\n" + //
                 "Description: Description of studioA\n" + //
-                "Homepage: http://doc.nuxeo.com/x/7YGo\n" + //
                 "License: LGPL\n" + //
                 "License URL: http://www.gnu.org/licenses/lgpl.html\n" + //
                 "****************************************\n" + //
@@ -344,9 +336,6 @@ public class TestConnectBroker {
                 "Type: hotfix\n" + //
                 "Target platforms: {server-8.4}\n" + //
                 "Supports hot-reload: false\n" + //
-                "Supported: false\n" + //
-                "Production state: testing\n" + //
-                "Validation state: none\n" + //
                 "Title: Hot fix NXP\n" + //
                 "Description: Hot Fix for NXP\n" + //
                 "****************************************\n" + //
@@ -357,9 +346,6 @@ public class TestConnectBroker {
                 "Type: addon\n" + //
                 "Target platforms: {server-8.3,server-8.4}\n" + //
                 "Supports hot-reload: false\n" + //
-                "Supported: false\n" + //
-                "Production state: testing\n" + //
-                "Validation state: none\n" + //
                 "Title: Package M\n" + //
                 "Description: description of M\n" + //
                 "****************************************\n" + //
@@ -384,9 +370,6 @@ public class TestConnectBroker {
                 "Type: addon\n" + 
                 "Target platforms: {server-8.3,server-8.4}\n" + 
                 "Supports hot-reload: false\n" + 
-                "Supported: false\n" + 
-                "Production state: testing\n" + 
-                "Validation state: none\n" + 
                 "Title: Package privA\n" + 
                 "Description: description of privA\n" + 
                 "****************************************\n" + 
@@ -397,9 +380,6 @@ public class TestConnectBroker {
                 "Type: addon\n" + 
                 "Target platforms: {server-8.3,server-8.4}\n" + 
                 "Supports hot-reload: false\n" + 
-                "Supported: false\n" + 
-                "Production state: testing\n" + 
-                "Validation state: none\n" + 
                 "Title: Package M\n" + 
                 "Description: description of M\n" + 
                 "****************************************"; //
