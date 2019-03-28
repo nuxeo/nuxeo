@@ -67,7 +67,6 @@ public class PackageInfoTest {
         marshaller.marshal(packageInfo1, xml);
         log.debug(xml.toString());
         JSONObject entity = XML.toJSONObject(xml.toString()).getJSONObject("package");
-        assertEquals(false, entity.getBoolean("supported"));
         assertEquals("test", entity.getString("name"));
         assertEquals(PackageState.UNKNOWN, PackageState.getByLabel(entity.getString("state")));
         assertEquals(false, entity.getBoolean("supportsHotReload"));
