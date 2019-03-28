@@ -34,10 +34,8 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.LocalPackage;
-import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageState;
-import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 import org.nuxeo.runtime.api.Framework;
 
@@ -54,10 +52,7 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         PackageDefinitionImpl packageDef = (PackageDefinitionImpl) xmap.load(xmlIn);
         assertEquals("nuxeo-automation", packageDef.getName());
         assertEquals("Nuxeo", packageDef.getVendor());
-        assertEquals(NuxeoValidationState.INPROCESS, packageDef.getValidationState());
-        assertEquals(ProductionState.PRODUCTION_READY, packageDef.getProductionState());
         assertTrue(packageDef.requireTermsAndConditionsAcceptance());
-        assertTrue(packageDef.isSupported());
         assertTrue(packageDef.supportsHotReload());
         Set<String> expectedTargetPlatforms = new HashSet<>(Arrays.asList("dm-5.3.2", "dam-5.3.2"));
         if (cap) {
@@ -86,10 +81,7 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         assertEquals("You have to be crazy to use this package", pkg.getTermsAndConditionsContent());
         assertEquals("nuxeo-automation", pkg.getName());
         assertEquals("Nuxeo", pkg.getVendor());
-        assertEquals(NuxeoValidationState.INPROCESS, pkg.getValidationState());
-        assertEquals(ProductionState.PRODUCTION_READY, pkg.getProductionState());
         assertTrue(pkg.requireTermsAndConditionsAcceptance());
-        assertTrue(pkg.isSupported());
         assertTrue(pkg.supportsHotReload());
         assertEquals(expectedTargetPlatforms, new HashSet<>(Arrays.asList(pkg.getTargetPlatforms())));
         deps = new HashSet<>();
