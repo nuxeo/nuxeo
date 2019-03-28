@@ -51,8 +51,10 @@ opensocial.trusted.hosts=
 repository.clustering.enabled=false
 repository.clustering.id=
 repository.clustering.delay=1000
-# If clustering is activated, set repository.binary.store=/path/to/some/shared/folder/for/binaries
-repository.binary.store=
+# If clustering is activated, set nuxeo.binarystores.root=/path/to/some/shared/folder/for/binaries
+nuxeo.binarystores.root=${nuxeo.data.dir}
+# the following is defined for compatibility but is not used directly anymore
+repository.binary.store=${nuxeo.binarystores.root}/binaries
 
 nuxeo.plaintext_parsing_extensions=xml,properties,nx,html,js
 nuxeo.freemarker_parsing_extensions=nxftl
