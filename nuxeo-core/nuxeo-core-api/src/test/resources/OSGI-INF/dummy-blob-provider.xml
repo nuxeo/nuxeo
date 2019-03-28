@@ -3,6 +3,11 @@
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <blobprovider name="default">
       <class>org.nuxeo.ecm.core.blob.DummyBlobProvider</class>
+      <property name="kind">main</property>
+    </blobprovider>
+    <blobprovider name="otherdefault">
+      <class>org.nuxeo.ecm.core.blob.DummyBlobProvider</class>
+      <property name="kind">other</property>
     </blobprovider>
     <blobprovider name="dummy">
       <class>org.nuxeo.ecm.core.blob.DummyBlobProvider</class>

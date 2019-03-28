@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -51,7 +52,11 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.BinaryManager;
+import org.nuxeo.ecm.core.blob.binary.LocalBinaryManager;
 import org.nuxeo.ecm.core.blob.binary.LocalBinaryManager.DefaultBinaryGarbageCollector;
 import org.nuxeo.ecm.core.transientstore.api.MaximumTransientSpaceExceeded;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
@@ -109,6 +114,10 @@ public class TestKeyValueBlobTransientStore {
         assertTrue(def instanceof KeyValueBlobTransientStore);
         assertTrue(other1 instanceof KeyValueBlobTransientStore);
         assertTrue(other2 instanceof KeyValueBlobTransientStore);
+        // check that the binary store configuration uses the proper default
+        assertEquals("mytransientbinaries_transient_default", getBlobProviderStorageDir(def));
+        assertEquals("mytransientbinaries_transient_storeNotRegisteredInXML", getBlobProviderStorageDir(other1));
+        assertEquals("mytransientbinaries_transient_otherStoreNotRegisteredInXML", getBlobProviderStorageDir(other2));
         // put a key in the default one
         def.putParameter("foo", "A", "bar");
         assertEquals("bar", def.getParameter("foo", "A"));
@@ -119,6 +128,13 @@ public class TestKeyValueBlobTransientStore {
         // make sure there's no key collision
         assertNull(def.getParameter("gee", "B"));
         assertNull(other2.getParameter("gee", "B"));
+    }
+
+    protected String getBlobProviderStorageDir(TransientStore transientStore) {
+        BlobProvider blobProvider = ((KeyValueBlobTransientStore) transientStore).getBlobProvider();
+        BinaryManager binaryManager = ((BinaryBlobProvider) blobProvider).getBinaryManager();
+        File dir = ((LocalBinaryManager) binaryManager).getStorageDir();
+        return dir.getParentFile().getName();
     }
 
     @Test
