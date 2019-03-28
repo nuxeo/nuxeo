@@ -198,15 +198,15 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
     }
 
     @Override
-    public synchronized BlobProvider getBlobProviderWithNamespace(String providerId) {
+    public synchronized BlobProvider getBlobProviderWithNamespace(String providerId, String defaultId) {
         BlobProvider blobProvider = getBlobProvider(providerId);
         if (blobProvider != null) {
             return blobProvider;
         }
         // create and register a blob provider from the "default" configuration
-        BlobProviderDescriptor defaultDescr = blobProviderDescriptorsRegistry.getBlobProviderDescriptor(DEFAULT_ID);
+        BlobProviderDescriptor defaultDescr = blobProviderDescriptorsRegistry.getBlobProviderDescriptor(defaultId);
         if (defaultDescr == null) {
-            throw new NuxeoException("Missing configuration for default blob provider");
+            throw new NuxeoException("Missing configuration for blob provider: " + defaultId);
         }
         // copy
         BlobProviderDescriptor descr = new BlobProviderDescriptor(defaultDescr);

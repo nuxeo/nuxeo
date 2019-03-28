@@ -59,9 +59,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Transient Store storing properties in a Key/Value store, and storing blobs using a Blob Provider.
  * <p>
- * The key/value store used is the one with the same name as the transient store itself.
- * <p>
- * The blob provider used is the one with the same name as the transient store itself.
+ * This transient store is configured with the following properties:
+ * <ul>
+ * <li><em>keyValueStore</em>: the name of the key/value store to use. If not provided, it defaults to "transient_" +
+ * the transient store name.
+ * <li><em>blobProvider</em>: the name of the blob provider to use. If not provided, it defaults to "transient_" + the
+ * transient store name.
+ * <li><em>defaultBlobProvider</em>: if the configured or defaulted blob provider doesn't exist, a namespaced copy of
+ * this one will be used instead. The default is "default".
+ * </ul>
  * <p>
  * The storage format is the following:
  *
@@ -134,9 +140,17 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
 
     public static final String CONFIG_BLOB_PROVIDER = "blobProvider";
 
+    /** @since 11.1 */
+    public static final String CONFIG_DEFAULT_BLOB_PROVIDER = "defaultBlobProvider";
+
+    /** @since 11.1 */
+    public static final String CONFIG_DEFAULT_BLOB_PROVIDER_DEFAULT = "default";
+
     protected String keyValueStoreName;
 
     protected String blobProviderId;
+
+    protected String defaultBlobProviderId;
 
     /** Basic TTL for all entries. */
     protected int ttl;
@@ -164,6 +178,8 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         }
         keyValueStoreName = defaultIfBlank(properties.get(CONFIG_KEY_VALUE_STORE), defaultName);
         blobProviderId = defaultIfBlank(properties.get(CONFIG_BLOB_PROVIDER), defaultName);
+        defaultBlobProviderId = defaultIfBlank(properties.get(CONFIG_DEFAULT_BLOB_PROVIDER),
+                CONFIG_DEFAULT_BLOB_PROVIDER_DEFAULT);
         mapper = new ObjectMapper();
         ttl = config.getFirstLevelTTL() * 60;
         releaseTTL = config.getSecondLevelTTL() * 60;
@@ -177,7 +193,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
 
     protected BlobProvider getBlobProvider() {
         BlobProvider blobProvider = Framework.getService(BlobManager.class)
-                                             .getBlobProviderWithNamespace(blobProviderId);
+                                             .getBlobProviderWithNamespace(blobProviderId, defaultBlobProviderId);
         if (blobProvider == null) {
             throw new NuxeoException("No blob provider with id: " + blobProviderId);
         }

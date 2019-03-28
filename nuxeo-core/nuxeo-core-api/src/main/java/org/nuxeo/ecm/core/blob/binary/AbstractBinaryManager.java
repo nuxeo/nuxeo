@@ -61,7 +61,7 @@ public abstract class AbstractBinaryManager implements BinaryManager {
 
     public static final int DEFAULT_DEPTH = 2;
 
-    protected String blobProviderId;
+    public String blobProviderId;
 
     protected BinaryManagerRootDescriptor descriptor;
 
