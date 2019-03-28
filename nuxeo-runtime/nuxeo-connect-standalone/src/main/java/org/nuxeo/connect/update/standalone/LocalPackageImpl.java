@@ -29,13 +29,11 @@ import java.io.InputStream;
 import org.apache.commons.io.FileUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.LocalPackage;
-import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
-import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Validator;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.model.Form;
@@ -223,11 +221,6 @@ public class LocalPackageImpl implements LocalPackage {
     }
 
     @Override
-    public String getHomePage() {
-        return def.getHomePage();
-    }
-
-    @Override
     public Version getVersion() {
         return def.getVersion();
     }
@@ -340,21 +333,6 @@ public class LocalPackageImpl implements LocalPackage {
     @Override
     public boolean requireTermsAndConditionsAcceptance() {
         return def.requireTermsAndConditionsAcceptance();
-    }
-
-    @Override
-    public ProductionState getProductionState() {
-        return def.getProductionState();
-    }
-
-    @Override
-    public NuxeoValidationState getValidationState() {
-        return def.getValidationState();
-    }
-
-    @Override
-    public boolean isSupported() {
-        return def.isSupported();
     }
 
     @Override

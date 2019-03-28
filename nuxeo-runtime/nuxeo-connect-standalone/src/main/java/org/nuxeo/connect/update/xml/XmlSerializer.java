@@ -53,14 +53,10 @@ public class XmlSerializer extends XmlWriter {
         element("description", def.getDescription());
         element("vendor", def.getVendor());
         element("classifier", def.getClassifier());
-        element("home-page", def.getHomePage());
 
         element("hotreload-support", Boolean.valueOf(def.supportsHotReload()).toString());
-        element("supported", Boolean.valueOf(def.isSupported()).toString());
         element("require-terms-and-conditions-acceptance", Boolean.valueOf(def.requireTermsAndConditionsAcceptance())
                                                                   .toString());
-        element("production-state", def.getProductionState().toString());
-        element("nuxeo-validation", def.getValidationState().toString());
 
         if (def.getInstaller() != null) {
             start("installer");
