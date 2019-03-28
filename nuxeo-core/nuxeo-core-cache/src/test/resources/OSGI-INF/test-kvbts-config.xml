@@ -7,12 +7,17 @@
     <blobprovider name="default">
       <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
     </blobprovider>
+    <blobprovider name="mytransient">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
+      <property name="path">mytransientbinaries</property>
+    </blobprovider>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
     <store name="default" class="org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore">
       <targetMaxSizeMB>1</targetMaxSizeMB>
       <absoluteMaxSizeMB>1</absoluteMaxSizeMB>
+      <property name="defaultBlobProvider">mytransient</property>
     </store>
   </extension>
 
