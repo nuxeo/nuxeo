@@ -137,8 +137,9 @@ public class PackageListingProvider extends DefaultObject {
         } else {
             pkgs = pm.listLocalPackages(PackageType.getByValue(pkgType));
         }
-        return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg("showCommunityInfo", false).arg("source",
-                "local");
+        return getView("simpleListing").arg("pkgs", pm.sort(pkgs))
+                                       .arg("showCommunityInfo", false)
+                                       .arg("source", "local");
     }
 
     @GET
@@ -259,6 +260,9 @@ public class PackageListingProvider extends DefaultObject {
         return PackageState.DOWNLOADING == pkg.getPackageState();
     }
 
+    /**
+     * @since 11.1
+     */
     public boolean canDownload(DownloadablePackage pkg) {
         return pkg.getPackageState() == PackageState.REMOTE && (!pkg.hasSubscriptionRequired() //
                 || (ConnectStatusHolder.instance().isRegistred() //
@@ -279,7 +283,7 @@ public class PackageListingProvider extends DefaultObject {
     }
 
     /**
-     * @since 5.6
+     * @since 11.1
      * @return true if registration is required for download
      */
     public boolean registrationRequired(DownloadablePackage pkg) {
