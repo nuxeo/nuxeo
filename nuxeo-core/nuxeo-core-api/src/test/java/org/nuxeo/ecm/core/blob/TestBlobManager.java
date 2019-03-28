@@ -55,17 +55,20 @@ public class TestBlobManager {
     @Test
     public void testGetBlobProviders() throws Exception {
         Map<String, BlobProvider> providers = blobManager.getBlobProviders();
-        assertEquals(2, providers.size()); // default and dummy
+        assertEquals(3, providers.size()); // default, otherdefault and dummy
     }
 
     @Test
     public void testDefaultAndNamespace() throws Exception {
         BlobProvider def = blobManager.getBlobProvider("default");
-        BlobProvider other1 = blobManager.getBlobProviderWithNamespace("providerNotRegisteredInXML");
-        BlobProvider other2 = blobManager.getBlobProviderWithNamespace("otherProviderNotRegisteredInXML");
+        BlobProvider other1 = blobManager.getBlobProviderWithNamespace("providerNotRegisteredInXML", "default");
+        BlobProvider other2 = blobManager.getBlobProviderWithNamespace("otherProviderNotRegisteredInXML", "otherdefault");
         assertNotNull(def);
         assertEquals(def.getClass(), other1.getClass());
         assertEquals(def.getClass(), other2.getClass());
+        // check that the blob providers come from two different defaults
+        assertEquals("main", other1.getProperties().get("kind"));
+        assertEquals("other", other2.getProperties().get("kind"));
         // put a blob in the default one
         String key = def.writeBlob(new StringBlob("foo"));
         assertEquals("foo", readBlob(def, key));

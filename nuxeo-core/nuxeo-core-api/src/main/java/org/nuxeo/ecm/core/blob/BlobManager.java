@@ -67,8 +67,23 @@ public interface BlobManager {
      * @param id the blob provider id or namespace
      * @return the blob provider
      * @since 10.10
+     * @deprecated since 11.1, use {@link #getBlobProviderWithNamespace(String, String)} instead
      */
-    BlobProvider getBlobProviderWithNamespace(String id);
+    @Deprecated
+    default BlobProvider getBlobProviderWithNamespace(String id) {
+        return getBlobProviderWithNamespace(id, "default");
+    }
+
+    /**
+     * Gets the blob provider with the given id, or, if none has been registered, a namespaced version of the blob
+     * provider with the given default id.
+     *
+     * @param id the blob provider id or namespace
+     * @param defaultId the blob provider to use as a fallback to create a namespaced version
+     * @return the blob provider
+     * @since 11.1
+     */
+    BlobProvider getBlobProviderWithNamespace(String id, String defaultId);
 
     /**
      * Gets the blob provider for the given blob.
