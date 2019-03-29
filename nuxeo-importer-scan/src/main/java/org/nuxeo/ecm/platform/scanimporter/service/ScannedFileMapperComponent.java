@@ -37,9 +37,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.tree.DefaultElement;
-import org.jaxen.JaxenException;
-import org.jaxen.XPath;
-import org.jaxen.dom4j.Dom4jXPath;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.platform.scanimporter.processor.DocumentTypeMapper;
@@ -95,12 +92,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
         for (ScanFileFieldMapping fieldMap : mappingDesc.getFieldMappings()) {
 
             List<?> nodes;
-            try {
-                XPath xpath = new Dom4jXPath(fieldMap.getSourceXPath());
-                nodes = xpath.selectNodes(xmlDoc);
-            } catch (JaxenException e) {
-                throw new IOException(e);
-            }
+            nodes = xmlDoc.selectNodes(fieldMap.getSourceXPath());
             if (nodes.size() == 1) {
                 DefaultElement elem = (DefaultElement) nodes.get(0);
                 String value;
@@ -143,12 +135,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
 
         for (ScanFileBlobMapping blobMap : mappingDesc.getBlobMappings()) {
             List<?> nodes;
-            try {
-                XPath xpath = new Dom4jXPath(blobMap.getSourceXPath());
-                nodes = xpath.selectNodes(xmlDoc);
-            } catch (JaxenException e) {
-                throw new IOException(e);
-            }
+            nodes = xmlDoc.selectNodes(blobMap.getSourceXPath());
             for (Object node : nodes) {
                 DefaultElement elem = (DefaultElement) node;
                 String filePath = elem.attributeValue(blobMap.getSourcePathAttribute());
