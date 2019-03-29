@@ -36,6 +36,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -176,6 +177,21 @@ public class TestDefaultBinaryManager {
         File dir = binaryManager.getStorageDir();
         String path = dir.getPath().replace(File.separatorChar, '/');
         assertTrue(path, path.endsWith("/binaries_myns/data"));
+        binaryManager.close();
+    }
+
+    @Test
+    public void testPathDotDot() throws IOException {
+        // make sure the "binaries" base path doesn't exist
+        File oldbinaries = new File(Environment.getDefault().getData(), "binaries");
+        FileUtils.deleteDirectory(oldbinaries);
+        // put binaries at a path that has to be canonicalized
+        String pathProp = "binaries/../newbinaries";
+        DefaultBinaryManager binaryManager = new DefaultBinaryManager();
+        binaryManager.initialize("repo", Collections.singletonMap("path", pathProp));
+        File dir = binaryManager.getStorageDir();
+        String path = dir.getPath().replace(File.separatorChar, '/');
+        assertTrue(path, path.endsWith("/newbinaries/data"));
         binaryManager.close();
     }
 
