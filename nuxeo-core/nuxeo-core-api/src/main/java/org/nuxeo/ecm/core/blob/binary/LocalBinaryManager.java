@@ -91,6 +91,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
             // relative
             File home = Environment.getDefault().getData();
             base = new File(home, path);
+            base = base.getCanonicalFile(); // canonicalize /../ components
 
             // Backward compliance with versions before 5.4 (NXP-5370)
             File oldBase = new File(Framework.getRuntime().getHome().getPath(), path);

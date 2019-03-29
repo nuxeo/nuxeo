@@ -29,8 +29,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -135,6 +137,31 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
         assertFalse(originalFile.exists());
         assertTrue(source.getFile().exists());
 
+        binaryManager.close();
+    }
+
+    @Test
+    public void testPath() throws IOException {
+        DefaultBinaryManager binaryManager = new DefaultBinaryManager();
+        binaryManager.initialize("repo", Collections.emptyMap());
+        File dir = binaryManager.getStorageDir();
+        String path = dir.getPath().replace(File.separatorChar, '/');
+        assertTrue(path, path.endsWith("/binaries/data"));
+        binaryManager.close();
+    }
+
+    @Test
+    public void testPathDotDot() throws IOException {
+        // make sure the "binaries" base path doesn't exist
+        File oldbinaries = new File(Environment.getDefault().getData(), "binaries");
+        FileUtils.deleteDirectory(oldbinaries);
+        // put binaries at a path that has to be canonicalized
+        String pathProp = "binaries/../newbinaries";
+        DefaultBinaryManager binaryManager = new DefaultBinaryManager();
+        binaryManager.initialize("repo", Collections.singletonMap("path", pathProp));
+        File dir = binaryManager.getStorageDir();
+        String path = dir.getPath().replace(File.separatorChar, '/');
+        assertTrue(path, path.endsWith("/newbinaries/data"));
         binaryManager.close();
     }
 
