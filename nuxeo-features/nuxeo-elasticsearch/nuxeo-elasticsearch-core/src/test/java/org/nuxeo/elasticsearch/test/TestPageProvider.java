@@ -331,7 +331,9 @@ public class TestPageProvider {
         logFeature.restoreConsoleLog();
         assertNotNull(p);
         assertEquals(0, p.size());
-        assertEquals("Syntax error: Invalid token <ORDER BY> at offset 29", pp.getErrorMessage());
+        assertEquals(
+                "Query: SELECT * FROM Document WHERE ORDER BY dc:title, Syntax error: Invalid token <ORDER BY> at offset 29",
+                pp.getErrorMessage());
     }
 
     @Test
