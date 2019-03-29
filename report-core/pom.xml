@@ -122,10 +122,6 @@
       <artifactId>jersey-json</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-    </dependency>
-    <dependency>
       <!-- dependency of jersey-json -->
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>
