@@ -214,9 +214,7 @@ public final class NxqlQueryConverter {
         try {
             nxqlQuery = SQLQueryParser.parse(new StringReader(query));
         } catch (QueryParseException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(e.getMessage() + " for query:\n" + query);
-            }
+            e.addInfo("Query: " + query);
             throw e;
         }
         return nxqlQuery;
