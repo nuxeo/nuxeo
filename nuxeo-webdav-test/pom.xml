@@ -11,11 +11,6 @@
   <name>Nuxeo WebDAV Tests</name>
 
   <dependencies>
-    <!-- specific deps for this project -->
-    <dependency>
-      <groupId>net.java.dev.webdav</groupId>
-      <artifactId>webdav-jaxrs</artifactId>
-    </dependency>
 
     <!-- dependencies on Nuxeo -->
     <dependency>
@@ -131,10 +126,6 @@
     <dependency>
       <groupId>javax.resource</groupId>
       <artifactId>connector-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-beanutils</groupId>
