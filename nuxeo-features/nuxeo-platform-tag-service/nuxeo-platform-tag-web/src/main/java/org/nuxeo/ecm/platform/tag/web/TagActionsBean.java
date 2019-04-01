@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.tag.web;
 import static org.jboss.seam.ScopeType.APPLICATION;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
+import static org.nuxeo.ecm.platform.tag.TagService.Feature.TAGS_BELONG_TO_DOCUMENT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -340,6 +341,13 @@ public class TagActionsBean implements Serializable {
     @BypassInterceptors
     public void documentChanged() {
         addTag = false;
+    }
+
+    /**
+     * @since 11.1
+     */
+    public boolean canBrowseByTags() {
+        return isTagServiceEnabled() && !getTagService().hasFeature(TAGS_BELONG_TO_DOCUMENT);
     }
 
 }

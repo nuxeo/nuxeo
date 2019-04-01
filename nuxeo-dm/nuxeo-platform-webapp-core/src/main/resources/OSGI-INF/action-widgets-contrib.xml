@@ -148,7 +148,7 @@
       <properties mode="view">
         <property name="category">TREE_EXPLORER</property>
         <property name="actionsDisplay">icons</property>
-        <property name="hideSingleTab">true</property>
+        <property name="hideSingleTab">false</property>
         <property name="useAjaxForm">true</property>
       </properties>
     </widget>
