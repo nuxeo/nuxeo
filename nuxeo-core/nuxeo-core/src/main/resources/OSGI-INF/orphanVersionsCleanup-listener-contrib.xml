@@ -10,7 +10,7 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <listener name="orphanVersionsCleanup" async="true" postCommit="true"
+    <listener name="orphanVersionsCleanup" async="true" postCommit="true" enabled="false"
       class="org.nuxeo.ecm.core.versioning.OrphanVersionCleanupListener">
       <event>orphanVersionsCleanup</event>
     </listener>
