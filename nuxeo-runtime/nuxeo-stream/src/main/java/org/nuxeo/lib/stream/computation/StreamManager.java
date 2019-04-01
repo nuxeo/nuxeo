@@ -27,14 +27,23 @@ import org.nuxeo.lib.stream.log.LogOffset;
  */
 public interface StreamManager {
     /**
-     * Registers a processor
+     * Registers a processor and initialize the underlying streams, this is needed before creating a processor or
+     * appending record in source streams.
      */
     void register(String processorName, Topology topology, Settings settings);
 
     /**
-     * Creates a a registered processor without starting it
+     * Creates a registered processor without starting it
      */
     StreamProcessor createStreamProcessor(String processorName);
+
+    /**
+     * Registers and creates a processor without starting it
+     */
+    default StreamProcessor registerAndCreateProcessor(String processorName, Topology topology, Settings settings) {
+        register(processorName, topology, settings);
+        return createStreamProcessor(processorName);
+    }
 
     /**
      * Append record to a processor's source stream

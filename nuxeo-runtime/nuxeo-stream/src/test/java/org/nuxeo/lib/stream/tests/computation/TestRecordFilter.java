@@ -32,8 +32,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.nuxeo.lib.stream.computation.RecordFilter;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.RecordFilter;
 import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
@@ -115,12 +115,11 @@ public class TestRecordFilter {
 
         try (LogManager manager = getLogManager()) {
             StreamManager streamManager = new LogStreamManager(manager);
-            streamManager.register("processor", topology, settings);
-            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            StreamProcessor processor = streamManager.registerAndCreateProcessor("processor", topology, settings);
 
             processor.start();
-            LogOffset offset = streamManager.append("input", Record.of("keepMeLikeThis", null));
-            offset = streamManager.append("input", Record.of("skipMeOnAppend", null));
+            streamManager.append("input", Record.of("keepMeLikeThis", null));
+            streamManager.append("input", Record.of("skipMeOnAppend", null));
             streamManager.append("input", Record.of("changeMeOnAppend", null));
             streamManager.append("input", Record.of("skipMeOnRead", null));
             streamManager.append("input", Record.of("changeMeOnRead", null));
