@@ -18,9 +18,6 @@
  */
 package org.nuxeo.lib.stream.computation.internals;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.nuxeo.lib.stream.computation.RecordFilter;
 import org.nuxeo.lib.stream.computation.RecordFilterChain;
 
@@ -28,8 +25,6 @@ import org.nuxeo.lib.stream.computation.RecordFilterChain;
  * @since 11.1
  */
 public class NoFilterChain implements RecordFilterChain {
-
-    protected final List<RecordFilter> filters = new ArrayList<>();
 
     @Override
     public RecordFilterChain addFilter(RecordFilter filter) {
