@@ -63,10 +63,6 @@
       <groupId>com.beetstra.jutf7</groupId>
       <artifactId>jutf7</artifactId>
     </dependency>
-    <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
