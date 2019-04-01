@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -82,14 +81,6 @@ public class TestPictureConversions {
     @Inject
     protected TransactionalFeature txFeature;
 
-    protected List<String> getPictureConversionIds() {
-        List<String> ids = new ArrayList<>();
-        for (PictureConversion pictureConversion : imagingService.getPictureConversions()) {
-            ids.add(pictureConversion.getId());
-        }
-        return ids;
-    }
-
     @Test
     public void iHaveDefaultPictureConversionsOrder() {
         String[] defaultPictureConversionsOrder = new String[] { "Thumbnail", "Small", "Medium", "FullHD",
@@ -103,7 +94,7 @@ public class TestPictureConversions {
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-picture-conversions-override-more.xml")
-    public void iHavePictureConversionsOrder() throws Exception {
+    public void iHavePictureConversionsOrder() {
         String[] expectedPictureConversionsOrder = new String[] { "ThumbnailMini", "Tiny", "Wide", "ThumbnailWide",
                 "Small", "Medium", "FullHD" };
         List<PictureConversion> pictureConversions = imagingService.getPictureConversions();
@@ -117,7 +108,7 @@ public class TestPictureConversions {
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-picture-conversions-override.xml")
-    public void iCanMergePictureConversions() throws Exception {
+    public void iCanMergePictureConversions() {
         for (PictureConversion pictureConversion : imagingService.getPictureConversions()) {
             switch (pictureConversion.getId()) {
             case "Original":
@@ -140,7 +131,7 @@ public class TestPictureConversions {
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-picture-conversions-override-more.xml")
-    public void iCanMergeMorePictureConversions() throws Exception {
+    public void iCanMergeMorePictureConversions() {
         int count = 0;
         List<String> newPictureConversions = Arrays.asList("ThumbnailMini", "ThumbnailWide", "Tiny", "Wide");
 
