@@ -32,5 +32,10 @@ public interface StreamService {
     LogManager getLogManager(String configName);
 
 
+    /**
+     * Get a StreamManager that use a LogManager matching the config name.
+     *
+     * @since 11.1
+     */
     StreamManager getStreamManager(String configName);
 }

@@ -169,8 +169,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         }
         Settings settings = getSettings(descriptor);
         log.debug("Starting computation topology: {}\n{}", descriptor::getId, () -> topology.toPlantuml(settings));
-        streamManager.register(descriptor.getId(), topology, settings);
-        StreamProcessor streamProcessor = streamManager.createStreamProcessor(descriptor.getId());
+        StreamProcessor streamProcessor = streamManager.registerAndCreateProcessor(descriptor.getId(), topology, settings);
         processors.put(descriptor.getId(), streamProcessor);
     }
 

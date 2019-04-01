@@ -185,6 +185,15 @@ nuxeo.stream.work.log.config=work
 nuxeo.stream.work.log.codec=legacy
 nuxeo.stream.work.over.provisioning.factor=3
 
+# Filter big work to be stored outside of the stream
+nuxeo.stream.work.computation.filter.enabled=false
+nuxeo.stream.work.computation.filter.thresholdSize=1000000
+nuxeo.stream.work.computation.filter.class=org.nuxeo.ecm.core.transientstore.computation.TransientStorageOverflowRecordFilter
+#nuxeo.stream.work.computation.filter.class=org.nuxeo.ecm.core.work.KVOverflowRecordFilter
+nuxeo.stream.work.computation.filter.storeName=default
+# TTL is only taken in account with the KV impl for TS you need to configure in the TS
+nuxeo.stream.work.computation.filter.storeTTL=4d
+
 # Stream AuditWriter
 nuxeo.stream.audit.enabled=true
 nuxeo.stream.audit.log.config=audit

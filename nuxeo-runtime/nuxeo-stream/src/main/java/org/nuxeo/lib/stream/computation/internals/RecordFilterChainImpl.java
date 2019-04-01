@@ -29,7 +29,7 @@ import org.nuxeo.lib.stream.log.LogOffset;
 
 /**
  * Chain multiple record filter.
- * 
+ *
  * @since 11.1
  */
 public class RecordFilterChainImpl implements RecordFilterChain {
@@ -47,9 +47,6 @@ public class RecordFilterChainImpl implements RecordFilterChain {
 
     @Override
     public Record beforeAppend(Record record) {
-        if (filters.isEmpty()) {
-            return record;
-        }
         for (RecordFilter filter : filters) {
             if (record != null) {
                 record = filter.beforeAppend(record);
@@ -60,9 +57,6 @@ public class RecordFilterChainImpl implements RecordFilterChain {
 
     @Override
     public void afterAppend(Record record, LogOffset offset) {
-        if (filters.isEmpty()) {
-            return;
-        }
         for (RecordFilter filter : filters) {
             filter.afterAppend(record, offset);
         }
@@ -70,9 +64,6 @@ public class RecordFilterChainImpl implements RecordFilterChain {
 
     @Override
     public Record afterRead(Record record, LogOffset offset) {
-        if (filters.isEmpty()) {
-            return record;
-        }
         for (RecordFilter filter : filters) {
             if (record != null) {
                 record = filter.afterRead(record, offset);

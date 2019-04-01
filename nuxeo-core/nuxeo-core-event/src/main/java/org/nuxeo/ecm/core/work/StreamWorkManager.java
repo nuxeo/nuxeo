@@ -239,22 +239,12 @@ public class StreamWorkManager extends WorkManagerImpl {
     protected Map<String, String> getRecordFilterOptions() {
         Map<String, String> ret = new HashMap<>();
         ConfigurationService configuration = Framework.getService(ConfigurationService.class);
-        String value = configuration.getString(COMPUTATION_FILTER_STORE_KEY).orElse(null);
-        if (value != null) {
-            ret.put(STORE_NAME_OPTION, value);
-        }
-        value = configuration.getString(COMPUTATION_FILTER_PREFIX_KEY).orElse(null);
-        if (value != null) {
-            ret.put(PREFIX_OPTION, value);
-        }
-        Integer intValue = configuration.getInteger(COMPUTATION_FILTER_THRESHOLD_SIZE_KEY).orElse(null);
-        if (intValue != null) {
-            ret.put(THRESHOLD_SIZE_OPTION, intValue.toString());
-        }
-        Duration duration = configuration.getDuration(COMPUTATION_FILTER_STORE_TTL_KEY).orElse(null);
-        if (duration != null) {
-            ret.put(STORE_TTL_OPTION, Long.toString(duration.toSeconds()));
-        }
+        configuration.getString(COMPUTATION_FILTER_STORE_KEY).ifPresent(value -> ret.put(STORE_NAME_OPTION, value));
+        configuration.getString(COMPUTATION_FILTER_PREFIX_KEY).ifPresent(value -> ret.put(PREFIX_OPTION, value));
+        configuration.getInteger(COMPUTATION_FILTER_THRESHOLD_SIZE_KEY)
+                     .ifPresent(value -> ret.put(THRESHOLD_SIZE_OPTION, value.toString()));
+        configuration.getDuration(COMPUTATION_FILTER_STORE_TTL_KEY)
+                     .ifPresent(value -> ret.put(STORE_TTL_OPTION, Long.toString(value.toSeconds())));
         return ret;
     }
 
@@ -281,8 +271,7 @@ public class StreamWorkManager extends WorkManagerImpl {
             logManager = getLogManager();
             streamManager = getStreamManager();
             streamManager.register("SWMDisable", topologyDisabled, settings);
-            streamManager.register("SWM", topology, settings);
-            streamProcessor = streamManager.createStreamProcessor("SWM");
+            streamProcessor = streamManager.registerAndCreateProcessor("SWM", topology, settings);
             started = true;
             new ComponentListener().install();
             log.info("Initialized");

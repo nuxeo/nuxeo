@@ -67,7 +67,6 @@ public class StreamProcessorDescriptor implements Descriptor {
             return name;
         }
 
-        // To provide a custom retry policy
         @XNode("@class")
         public Class<? extends RecordFilter> klass;
 
@@ -89,7 +88,6 @@ public class StreamProcessorDescriptor implements Descriptor {
         }
 
     }
-
 
     @XObject(value = "stream")
     public static class StreamDescriptor implements Descriptor {
