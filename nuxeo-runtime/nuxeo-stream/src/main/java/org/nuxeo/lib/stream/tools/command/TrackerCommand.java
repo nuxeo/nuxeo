@@ -154,8 +154,7 @@ public class TrackerCommand extends Command {
     protected boolean runProcessor(LogManager manager) {
         StreamManager streamManager = new LogStreamManager(manager);
         Settings settings = new Settings(1, 1, getRecordCodec(codec));
-        streamManager.register("tracker", topology, settings);
-        processor = streamManager.createStreamProcessor("tracker");
+        processor = streamManager.registerAndCreateProcessor("tracker", topology, settings);
         processor.start();
         while (!processor.isTerminated()) {
             try {

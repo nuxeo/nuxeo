@@ -151,8 +151,7 @@ public class BulkAdminServiceImpl implements BulkAdminService {
         int scrollSize = confService.getInteger(BULK_SCROLL_SIZE_PROPERTY, DEFAULT_SCROLL_SIZE);
         int scrollKeepAlive = confService.getInteger(BULK_SCROLL_KEEP_ALIVE_PROPERTY, DEFAULT_SCROLL_KEEP_ALIVE);
         boolean scrollProduceImmediate = confService.isBooleanTrue(BULK_SCROLL_PRODUCE_IMMEDIATE_PROPERTY);
-        streamManager.register("bulk", getTopology(scrollSize, scrollKeepAlive, scrollProduceImmediate), settings);
-        streamProcessor = streamManager.createStreamProcessor("bulk");
+        streamProcessor = streamManager.registerAndCreateProcessor("bulk", getTopology(scrollSize, scrollKeepAlive, scrollProduceImmediate), settings);
     }
 
     protected Topology getTopology(int scrollBatchSize, int scrollKeepAlive, boolean scrollProduceImmediate) {

@@ -190,8 +190,7 @@ public class MonitorCommand extends Command {
     protected boolean runProcessor(LogManager manager) {
         StreamManager streamManager = new LogStreamManager(manager);
         Settings settings = new Settings(1, 1, getRecordCodec(codec));
-        streamManager.register("monitor", topology, settings);
-        processor = streamManager.createStreamProcessor("monitor");
+        processor = streamManager.registerAndCreateProcessor("monitor", topology, settings);
         processor.start();
         while (!processor.isTerminated()) {
             try {
