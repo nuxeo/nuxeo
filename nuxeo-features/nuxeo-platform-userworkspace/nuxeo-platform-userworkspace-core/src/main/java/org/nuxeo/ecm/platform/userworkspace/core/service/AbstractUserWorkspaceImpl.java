@@ -480,12 +480,11 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService,
      * @since 10.3
      */
     protected Locale getLocale(final CoreSession session) {
-        Locale locale = null;
-        locale = Framework.getService(LocaleProvider.class).getLocale(session);
+        Locale locale = Framework.getService(LocaleProvider.class).getLocale(session);
         if (locale == null) {
             locale = Locale.getDefault();
         }
-        return new Locale(Locale.getDefault().getLanguage());
+        return new Locale(locale.getLanguage());
     }
 
     /**
