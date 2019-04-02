@@ -154,7 +154,7 @@ public class TestMultiTenantDirectories {
                 try {
                     sessionDir.createEntry(newEntry);
                 } catch (DirectoryException e) {
-                    assertThat(e.getMessage()).isEqualTo("Entry with id tenant_domain0_key0 already exists in directory 'testDirectory'");
+                    assertThat(e.getMessage()).isEqualTo("Entry with id tenant_domain0_key0 already exists in directory testDirectory");
                 }
             }
         }
