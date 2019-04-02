@@ -4,10 +4,10 @@
   <require>org.nuxeo.ecm.platform.actions</require>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-    point="actions">
+             point="actions">
 
     <action id="triggerContentViewSlideshow" order="70"
-      label="label.contentview.trigger.slideshow" type="template">
+            label="label.contentview.trigger.slideshow" type="template">
       <category>CONTENT_VIEW_ACTIONS</category>
       <properties>
         <property name="template">
@@ -18,15 +18,15 @@
     </action>
 
     <action id="pictureRotate90left" order="100" type="link"
-      link="#{pictureManager.rotate90left}"
-      icon="/icons/page_rotateleft.gif" label="action.picture.rotateLeft">
+            link="#{pictureManager.rotate90left}"
+            icon="/icons/page_rotateleft.gif" label="action.picture.rotateLeft">
       <category>IMAGE_PROCESSING</category>
       <filter-id>hasPictureFacet</filter-id>
     </action>
 
     <action id="pictureRotate90right" order="200" type="link"
-      link="#{pictureManager.rotate90right}"
-      icon="/icons/page_rotateright.gif" label="action.picture.rotateRight">
+            link="#{pictureManager.rotate90right}"
+            icon="/icons/page_rotateright.gif" label="action.picture.rotateRight">
       <category>IMAGE_PROCESSING</category>
       <filter-id>hasPictureFacet</filter-id>
     </action>
@@ -49,7 +49,7 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-    point="filters">
+             point="filters">
 
     <filter id="grantpicturebook">
       <rule grant="true">
