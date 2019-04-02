@@ -44,6 +44,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.core.Manager;
 import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -72,6 +73,9 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 public class RestHelper implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    // copied from EventNames#USER_SESSION_STARTED located in nuxeo-platform-webapp-base
+    public static final String USER_SESSION_STARTED = "org.nuxeo.ecm.web.userSessionStarted";
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -115,6 +119,10 @@ public class RestHelper implements Serializable {
                 outcome = docView.getViewId();
             }
         }
+
+        // trigger setup of time zone and locale
+        // see LocaleStartup#handleUserSessionStarted located in nuxeo-platform-webapp-base
+        Events.instance().raiseEvent(USER_SESSION_STARTED, navigationContext.getOrCreateDocumentManager());
 
         return outcome;
     }
