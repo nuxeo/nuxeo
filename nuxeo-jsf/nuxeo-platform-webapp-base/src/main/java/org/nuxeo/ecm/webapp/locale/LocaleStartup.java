@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -70,6 +71,8 @@ public class LocaleStartup implements Serializable {
 
     protected String tzId;
 
+    protected boolean hasHandledSessionStarted = false;
+
     public String getTzId() {
         return tzId;
     }
@@ -80,8 +83,11 @@ public class LocaleStartup implements Serializable {
 
     @Observer(EventNames.USER_SESSION_STARTED)
     public void handleUserSessionStarted(CoreSession session) {
-        setupTimeZone(session);
-        setupLocale(session);
+        if (!hasHandledSessionStarted) {
+            setupTimeZone(session);
+            setupLocale(session);
+            hasHandledSessionStarted = true;
+        }
     }
 
     /**
@@ -152,6 +158,11 @@ public class LocaleStartup implements Serializable {
             localeSelector.setCookieEnabled(true);
             localeSelector.select();
         }
+    }
+
+    @Destroy
+    public void destroy() {
+        hasHandledSessionStarted = false;
     }
 
 }
