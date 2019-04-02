@@ -22,6 +22,7 @@
       icon="/icons/page_rotateleft.gif" label="action.picture.rotateLeft">
       <category>IMAGE_PROCESSING</category>
       <filter-id>hasPictureFacet</filter-id>
+      <filter-id>canRotatePicture</filter-id>
     </action>
 
     <action id="pictureRotate90right" order="200" type="link"
@@ -29,6 +30,7 @@
       icon="/icons/page_rotateright.gif" label="action.picture.rotateRight">
       <category>IMAGE_PROCESSING</category>
       <filter-id>hasPictureFacet</filter-id>
+      <filter-id>canRotatePicture</filter-id>
     </action>
 
     <action id="recomputePictureViews" enabled="false" order="-100"
@@ -89,6 +91,12 @@
     </filter>
 
     <filter id="canRecomputePictureViews">
+      <rule grant="true">
+        <permission>Write</permission>
+      </rule>
+    </filter>
+
+    <filter id="canRotatePicture">
       <rule grant="true">
         <permission>Write</permission>
       </rule>
