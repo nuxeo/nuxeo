@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -123,18 +124,40 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
     /**
      * A binary backed by GridFS.
      */
-    protected class GridFSBinary extends Binary {
+    protected static class GridFSBinary extends Binary {
 
         private static final long serialVersionUID = 1L;
 
-        protected GridFSBinary(String digest, String blobProviderId) {
+        // transient to be Serializable
+        protected transient GridFSBinaryManager bm;
+
+        protected GridFSBinary(String digest, String blobProviderId, GridFSBinaryManager bm) {
             super(digest, blobProviderId);
+            this.bm = bm;
+        }
+
+        // because the class is Serializable, re-acquire the BinaryManager if needed
+        protected GridFSBinaryManager getBinaryManager() {
+            if (bm == null) {
+                if (blobProviderId == null) {
+                    throw new UnsupportedOperationException("Cannot find binary manager, no blob provider id");
+                }
+                BlobManager blobManager = Framework.getService(BlobManager.class);
+                BlobProvider bp = blobManager.getBlobProvider(blobProviderId);
+                bm = (GridFSBinaryManager) bp.getBinaryManager();
+            }
+            return bm;
         }
 
         @Override
         public InputStream getStream() {
-            GridFSDBFile dbFile = gridFS.findOne(digest);
+            GridFSDBFile dbFile = getBinaryManager().getGridFS().findOne(digest);
             return dbFile == null ? null : dbFile.getInputStream();
+        }
+
+        @Override
+        protected File recomputeFile() {
+            return null; // no file to recompute
         }
     }
 
@@ -157,7 +180,7 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
                 inputFile.save();
             }
         }
-        return new GridFSBinary(digest, blobProviderId);
+        return new GridFSBinary(digest, blobProviderId, this);
     }
 
     @Override
@@ -177,14 +200,14 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
             // file already existed, no need for the temporary one
             gridFS.remove(inputFile);
         }
-        return new GridFSBinary(digest, blobProviderId);
+        return new GridFSBinary(digest, blobProviderId, this);
     }
 
     @Override
     public Binary getBinary(String digest) {
         GridFSDBFile dbFile = gridFS.findOne(digest);
         if (dbFile != null) {
-            return new GridFSBinary(digest, blobProviderId);
+            return new GridFSBinary(digest, blobProviderId, this);
         }
         return null;
     }

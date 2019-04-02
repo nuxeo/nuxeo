@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,17 +35,23 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.storage.mongodb.GridFSBinaryManager.GridFSBinary;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mockito.MockitoFeature;
+import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
@@ -54,7 +61,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.MongoServerException;
 
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, MockitoFeature.class })
 public class TestGridFSBinaryManager {
 
     protected static final String CONTENT = "this is a file au caf\u00e9";
@@ -70,6 +77,10 @@ public class TestGridFSBinaryManager {
     protected static final String CONTENT3_MD5 = "025e4da7edac35ede583f5e8d51aa7ec";
 
     protected static GridFSBinaryManager BINARY_MANAGER;
+
+    @Mock
+    @RuntimeService
+    protected BlobManager blobManager;
 
     // TODO test should be activated only on explicit system property, not by detecting a default instance
     @BeforeClass
@@ -88,6 +99,11 @@ public class TestGridFSBinaryManager {
             BINARY_MANAGER.close();
             BINARY_MANAGER = null;
         }
+    }
+
+    @Before
+    public void doBefore() throws IOException {
+        when(blobManager.getBlobProvider("test")).thenReturn(BINARY_MANAGER);
     }
 
     protected GridFSBinaryManager getBinaryManager() {
@@ -122,6 +138,21 @@ public class TestGridFSBinaryManager {
         } catch (MongoServerException e) {
             Assume.assumeNoException("MongoDB server is not reachable", e);
         }
+    }
+
+    @Test
+    public void testSerialization() throws Exception {
+        GridFSBinaryManager binaryManager = getBinaryManager();
+        Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
+        assertTrue(binary instanceof GridFSBinary);
+        byte[] ser = SerializationUtils.serialize(binary);
+        Binary binary2 = SerializationUtils.deserialize(ser);
+        assertEquals(binary.getDigest(), binary2.getDigest());
+        String content;
+        try (InputStream in = binary2.getStream()) {
+            content = IOUtils.toString(in, "UTF-8");
+        }
+        assertEquals(CONTENT, content);
     }
 
     @Test
