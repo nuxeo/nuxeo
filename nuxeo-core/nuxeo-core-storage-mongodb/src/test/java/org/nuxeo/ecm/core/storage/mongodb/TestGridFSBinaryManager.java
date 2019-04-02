@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,15 +35,22 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.storage.mongodb.GridFSBinaryManager.GridFSBinary;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mockito.MockitoFeature;
+import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.mongodb.MongoDBFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -50,7 +58,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 @RunWith(FeaturesRunner.class)
-@Features(MongoDBFeature.class)
+@Features({ MongoDBFeature.class, MockitoFeature.class })
 public class TestGridFSBinaryManager {
 
     protected static final String CONTENT = "this is a file au caf\u00e9";
@@ -66,6 +74,10 @@ public class TestGridFSBinaryManager {
     protected static final String CONTENT3_MD5 = "025e4da7edac35ede583f5e8d51aa7ec";
 
     protected static GridFSBinaryManager BINARY_MANAGER;
+
+    @Mock
+    @RuntimeService
+    protected BlobManager blobManager;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -83,6 +95,11 @@ public class TestGridFSBinaryManager {
         }
     }
 
+    @Before
+    public void doBefore() throws IOException {
+        when(blobManager.getBlobProvider("test")).thenReturn(BINARY_MANAGER);
+    }
+
     protected GridFSBinaryManager getBinaryManager() {
         return BINARY_MANAGER;
     }
@@ -91,6 +108,21 @@ public class TestGridFSBinaryManager {
         Set<String> res = new HashSet<>();
         getBinaryManager().getGridFSBucket().find().map(GridFSFile::getFilename).into(res);
         return res;
+    }
+
+    @Test
+    public void testSerialization() throws Exception {
+        GridFSBinaryManager binaryManager = getBinaryManager();
+        Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
+        assertTrue(binary instanceof GridFSBinary);
+        byte[] ser = SerializationUtils.serialize(binary);
+        Binary binary2 = SerializationUtils.deserialize(ser);
+        assertEquals(binary.getDigest(), binary2.getDigest());
+        String content;
+        try (InputStream in = binary2.getStream()) {
+            content = IOUtils.toString(in, "UTF-8");
+        }
+        assertEquals(CONTENT, content);
     }
 
     @Test
