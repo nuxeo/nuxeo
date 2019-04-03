@@ -29,6 +29,7 @@ import static org.nuxeo.runtime.mongodb.MongoDBSerializationHelper.MONGODB_ID;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -197,6 +198,10 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
             String leftName = getFieldName.apply(predicate.lvalue);
             Operator operator = predicate.operator;
             Object rightValue = Literals.valueOf(predicate.rvalue);
+            if (rightValue instanceof ZonedDateTime) {
+                // The ZonedDateTime representation is not compatible with MongoDB query
+                rightValue = Date.from(((ZonedDateTime) rightValue).toInstant());
+            }
             if (Operator.EQ.equals(operator)) {
                 filterList.add(Filters.eq(leftName, rightValue));
             } else if (Operator.NOTEQ.equals(operator)) {
