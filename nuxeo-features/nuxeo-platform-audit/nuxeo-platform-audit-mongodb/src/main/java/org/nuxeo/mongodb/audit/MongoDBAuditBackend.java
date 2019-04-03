@@ -207,7 +207,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
             } else if (Operator.NOTEQ.equals(operator)) {
                 filterList.add(Filters.ne(leftName, rightValue));
             } else if (Operator.LT.equals(operator)) {
-                filterList.add(Filters.lt(leftName, predicate.rvalue));
+                filterList.add(Filters.lt(leftName, rightValue));
             } else if (Operator.LTEQ.equals(operator)) {
                 filterList.add(Filters.lte(leftName, rightValue));
             } else if (Operator.GTEQ.equals(operator)) {

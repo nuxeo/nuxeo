@@ -180,6 +180,12 @@ public abstract class AbstractAuditStorageTest {
         AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> logs = reader.queryLogs(dateBuilder);
         assertTrue(logs.isEmpty());
+
+        // test LT predicate too
+        dateBuilder = new AuditQueryBuilder();
+        dateBuilder.predicate(Predicates.lt(LOG_EVENT_DATE, Calendar.getInstance()));
+        reader = Framework.getService(AuditReader.class);
+        reader.queryLogs(dateBuilder);
     }
 
 }
