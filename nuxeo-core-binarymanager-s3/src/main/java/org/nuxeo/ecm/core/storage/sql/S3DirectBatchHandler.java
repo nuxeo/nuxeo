@@ -161,7 +161,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
             bucketPrefix += "/";
         }
 
-        blobProviderId = properties.get(BLOB_PROVIDER_ID_PROPERTY);
+        blobProviderId = defaultString(properties.get(BLOB_PROVIDER_ID_PROPERTY), transientStoreName);
     }
 
     protected AWSSecurityTokenService initializeSTSClient(AWSCredentialsProvider credentials) {
