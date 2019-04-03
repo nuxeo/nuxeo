@@ -18,18 +18,21 @@
  */
 package org.nuxeo.ecm.core.work;
 
+import java.time.Duration;
 import java.util.EnumSet;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.RecordFilter;
 import org.nuxeo.lib.stream.log.LogOffset;
 
 /**
- * Base for filter that save long value record in an alternative storage. A record is marked with an internal flag and
- * the value is set to null.
+ * Base for filter that saves long record's value in an alternate storage. The record is then marked with an internal
+ * flag and contains an empty value.
  *
  * @since 11.1
  */
@@ -40,9 +43,9 @@ public abstract class BaseOverflowRecordFilter implements RecordFilter {
 
     public static final String DEFAULT_STORE_NAME = "default";
 
-    public static final String STORE_TTL_OPTION = "storeTTLSeconds";
+    public static final String STORE_TTL_OPTION = "storeTTL";
 
-    public static final int DEFAULT_STORE_TTL = 3600;
+    public static final String DEFAULT_STORE_TTL = "1h";
 
     public static final String THRESHOLD_SIZE_OPTION = "thresholdSize";
 
@@ -56,7 +59,7 @@ public abstract class BaseOverflowRecordFilter implements RecordFilter {
 
     protected int thresholdSize;
 
-    protected int storeTTLSeconds;
+    protected Duration storeTTL;
 
     protected String storeName;
 
@@ -66,7 +69,7 @@ public abstract class BaseOverflowRecordFilter implements RecordFilter {
     protected abstract void storeValue(String key, byte[] data);
 
     /**
-     * Fetch a value previously stored by {@link #storeValue(String, byte[])}
+     * Fetches a value previously stored by {@link #storeValue(String, byte[])}
      *
      * @return the value, or {@code null} if there is no value
      */
@@ -76,14 +79,19 @@ public abstract class BaseOverflowRecordFilter implements RecordFilter {
     public void init(Map<String, String> options) {
         storeName = options.getOrDefault(STORE_NAME_OPTION, DEFAULT_STORE_NAME);
         thresholdSize = parseIntOrDefault(options.get(THRESHOLD_SIZE_OPTION), DEFAULT_THRESHOLD_SIZE);
-        storeTTLSeconds = parseIntOrDefault(options.get(STORE_TTL_OPTION), DEFAULT_STORE_TTL);
+        storeTTL = DurationUtils.parse(options.getOrDefault(STORE_TTL_OPTION, DEFAULT_STORE_TTL));
     }
 
     protected int parseIntOrDefault(String valueAsString, int defaultValue) {
-        if (valueAsString == null || valueAsString.isEmpty()) {
+        if (StringUtils.isEmpty(valueAsString)) {
             return defaultValue;
         }
-        return Integer.parseInt(valueAsString);
+        try {
+            return Integer.parseInt(valueAsString);
+        } catch (NumberFormatException e) {
+            log.error("Invalid number for RecordFilter option: " + valueAsString, e);
+            return defaultValue;
+        }
     }
 
     @Override
@@ -91,21 +99,26 @@ public abstract class BaseOverflowRecordFilter implements RecordFilter {
         if (record.getData().length <= getThresholdSize()) {
             return record;
         }
-        log.debug("Record: {} overflow value of size: {}", record.getKey(), record.getData().length);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Record: %s overflow value of size: %d", record.getKey(), record.getData().length));
+        }
         EnumSet<Record.Flag> flags = EnumSet.copyOf(record.getFlags());
-        flags.add(Record.Flag.INTERNAL1);
+        flags.add(Record.Flag.EXTERNAL_VALUE);
         storeValue(record.getKey(), record.getData());
         return new Record(record.getKey(), null, record.getWatermark(), flags);
     }
 
     @Override
     public Record afterRead(Record record, LogOffset offset) {
-        if (record.getFlags().contains(Record.Flag.INTERNAL1) && record.getData().length == 0) {
+        if (record.getFlags().contains(Record.Flag.EXTERNAL_VALUE) && record.getData().length == 0) {
             byte[] value = fetchValue(record.getKey());
-            log.debug("Record: {} retrieve value of size: {}", record.getKey(), record.getData().length);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Record: %s retrieve value of size: %d", record.getKey(),
+                        record.getData().length));
+            }
             if (value == null || value.length == 0) {
-                log.error("Record {} offset {} value not found, the record is lost, skipping", record.toString(),
-                        offset);
+                log.error(String.format("Record %s offset %s value not found, the record is lost, skipping",
+                        record.toString(), offset));
                 return null;
             }
             EnumSet<Record.Flag> flags = record.getFlags();
@@ -131,12 +144,12 @@ public abstract class BaseOverflowRecordFilter implements RecordFilter {
         this.storeName = storeName;
     }
 
-    public int getStoreTTLSeconds() {
-        return storeTTLSeconds;
+    public Duration getStoreTTL() {
+        return storeTTL;
     }
 
-    public void setStoreTTLSeconds(int storeTTLSeconds) {
-        this.storeTTLSeconds = storeTTLSeconds;
+    public void setStoreTTL(Duration storeTTL) {
+        this.storeTTL = storeTTL;
     }
 
     public String getPrefix() {

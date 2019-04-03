@@ -38,8 +38,8 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 11.1
  */
-public class TransientStorageOverflowRecordFilter extends BaseOverflowRecordFilter {
-    private static final Logger log = LogManager.getLogger(TransientStorageOverflowRecordFilter.class);
+public class TransientStoreOverflowRecordFilter extends BaseOverflowRecordFilter {
+    private static final Logger log = LogManager.getLogger(TransientStoreOverflowRecordFilter.class);
 
     @Override
     public void init(Map<String, String> options) {
