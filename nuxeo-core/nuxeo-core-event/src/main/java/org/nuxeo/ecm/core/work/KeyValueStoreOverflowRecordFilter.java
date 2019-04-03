@@ -26,11 +26,11 @@ import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 
 /**
- * Filter that use a KVStore to pass big record value
+ * Filter that use a KeyValueStore to pass big record value
  *
  * @since 11.1
  */
-public class KVOverflowRecordFilter extends BaseOverflowRecordFilter {
+public class KeyValueStoreOverflowRecordFilter extends BaseOverflowRecordFilter {
 
     private static final String INIT_KEY = "_init_";
 
@@ -48,7 +48,7 @@ public class KVOverflowRecordFilter extends BaseOverflowRecordFilter {
     @Override
     protected void storeValue(String recordKey, byte[] data) {
         String key = getPrefixedKey(recordKey);
-        getKeyValueStore().put(key, data, getStoreTTLSeconds());
+        getKeyValueStore().put(key, data, getStoreTTL().toSeconds());
     }
 
     @Override

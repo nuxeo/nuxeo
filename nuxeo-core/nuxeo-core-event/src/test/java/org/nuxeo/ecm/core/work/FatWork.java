@@ -60,7 +60,7 @@ public class FatWork extends AbstractWork {
 
     @Override
     public void work() {
-        log.warn(getTitle() + " is running");
+        log.debug(getTitle() + " is running");
         if (veryLongString.length() != size) {
             throw new IllegalStateException("Invalid string size: " + veryLongString.length() + " instead of: " + size);
         }

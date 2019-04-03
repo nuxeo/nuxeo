@@ -20,8 +20,8 @@ package org.nuxeo.runtime.stream.tests;
 
 import java.util.Map;
 
-import org.nuxeo.lib.stream.computation.RecordFilter;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.RecordFilter;
 
 /**
  * Change the record key that match a pattern.
@@ -29,9 +29,9 @@ import org.nuxeo.lib.stream.computation.Record;
  * @since 11.1
  */
 public class ChangeFilter implements RecordFilter {
-    String match;
+    protected String match;
 
-    String replace;
+    protected String replace;
 
     @Override
     public void init(Map<String, String> options) {

@@ -251,9 +251,9 @@ public class Record implements Externalizable {
         DEFAULT,
         COMMIT,
         POISON_PILL,
+        EXTERNAL_VALUE, // The record value is stored outside of the record
         INTERNAL1, // Reserved for internal use
         INTERNAL2,
-        INTERNAL3,
         USER1, // Available for users
         USER2;
 

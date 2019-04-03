@@ -57,9 +57,10 @@
   <#if "${nuxeo.stream.work.computation.filter.enabled}" == "true">
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
     <property name="nuxeo.stream.work.computation.filter.class">${nuxeo.stream.work.computation.filter.class}</property>
+    <property name="nuxeo.stream.work.computation.filter.thresholdSize">${nuxeo.stream.work.computation.filter.thresholdSize}</property>
     <property name="nuxeo.stream.work.computation.filter.storeName">${nuxeo.stream.work.computation.filter.storeName}</property>
     <property name="nuxeo.stream.work.computation.filter.storeTTL">${nuxeo.stream.work.computation.filter.storeTTL}</property>
-    <property name="nuxeo.stream.work.computation.filter.thresholdSize">${nuxeo.stream.work.computation.filter.thresholdSize}</property>
+    <property name="nuxeo.stream.work.computation.filter.storeKeyPrefix">${nuxeo.stream.work.computation.filter.storeKeyPrefix}</property>
   </extension>
   </#if>
 </#if>
