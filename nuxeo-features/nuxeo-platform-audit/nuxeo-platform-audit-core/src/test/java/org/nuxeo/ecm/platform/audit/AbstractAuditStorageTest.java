@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_PATH;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,11 +39,13 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
+import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Predicates;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.AbstractAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
+import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -165,6 +169,16 @@ public abstract class AbstractAuditStorageTest {
                 Predicates.in(LOG_EVENT_ID, Arrays.asList(ID_FOR_AUDIT_STORAGE_TESTS, "no-such-event-id")));
         List<LogEntry> list = auditBackend.queryLogs(builder);
         assertEquals(NUM_OF_EVENTS, list.size());
+    }
+
+    @Test
+    public void testQueryWithDate() {
+        // check that a query with a date doesn't raise any error
+        AuditQueryBuilder dateBuilder = new AuditQueryBuilder();
+        dateBuilder.predicates(Predicates.gte(LOG_EVENT_DATE, Calendar.getInstance()));
+        AuditReader reader = Framework.getService(AuditReader.class);
+        List<LogEntry> logs = reader.queryLogs(dateBuilder);
+        assertTrue(logs.isEmpty());
     }
 
 }

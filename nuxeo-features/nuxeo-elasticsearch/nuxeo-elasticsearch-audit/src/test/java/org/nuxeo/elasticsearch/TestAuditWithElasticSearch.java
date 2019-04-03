@@ -23,9 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,9 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.audit.api.Predicates;
 import org.nuxeo.ecm.platform.audit.AbstractAuditStorageTest;
-import org.nuxeo.ecm.platform.audit.api.AuditQueryBuilder;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
@@ -261,16 +257,6 @@ public class TestAuditWithElasticSearch extends AbstractAuditStorageTest {
         // A partial match is not supported by Elastic
         assertStartsWithCount(0, "/is/eve");
         assertStartsWithCount(0, "/is/od");
-    }
-
-    @Test
-    public void testQueryWithDate() {
-        // Check that a query with a Calendar date don't raise any elastic error
-        AuditQueryBuilder dateBuilder = new AuditQueryBuilder();
-        dateBuilder.predicates(Predicates.gte(LOG_EVENT_DATE, Calendar.getInstance()));
-        AuditReader reader = Framework.getService(AuditReader.class);
-        List<LogEntry> logs = reader.queryLogs(dateBuilder);
-        assertTrue(logs.isEmpty());
     }
 
     @Override
