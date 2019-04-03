@@ -19,7 +19,7 @@
 package org.nuxeo.lib.stream.computation;
 
 /**
- * A chain of record filters.
+ * A chain of record filters. Appender hooks are applied in the order of the filters, reader hooks in the reverse order.
  *
  * @since 11.1
  */
