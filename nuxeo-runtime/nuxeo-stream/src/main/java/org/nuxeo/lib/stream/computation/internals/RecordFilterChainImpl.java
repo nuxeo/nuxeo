@@ -18,8 +18,9 @@
  */
 package org.nuxeo.lib.stream.computation.internals;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Iterator;
 import java.util.Objects;
 
 import org.nuxeo.lib.stream.computation.Record;
@@ -28,7 +29,7 @@ import org.nuxeo.lib.stream.computation.RecordFilterChain;
 import org.nuxeo.lib.stream.log.LogOffset;
 
 /**
- * Chain multiple record filter.
+ * Chains multiple record filters.
  *
  * @since 11.1
  */
@@ -36,7 +37,7 @@ public class RecordFilterChainImpl implements RecordFilterChain {
 
     public static final RecordFilterChain NONE = new NoFilterChain();
 
-    protected final List<RecordFilter> filters = new ArrayList<>();
+    protected final Deque<RecordFilter> filters = new ArrayDeque<>();
 
     @Override
     public RecordFilterChain addFilter(RecordFilter filter) {
@@ -47,27 +48,26 @@ public class RecordFilterChainImpl implements RecordFilterChain {
 
     @Override
     public Record beforeAppend(Record record) {
-        for (RecordFilter filter : filters) {
-            if (record != null) {
-                record = filter.beforeAppend(record);
-            }
+        for (Iterator iterator = filters.iterator(); record != null && iterator.hasNext();) {
+            RecordFilter filter = (RecordFilter) iterator.next();
+            record = filter.beforeAppend(record);
         }
         return record;
     }
 
     @Override
     public void afterAppend(Record record, LogOffset offset) {
-        for (RecordFilter filter : filters) {
+        for (Iterator iterator = filters.iterator(); record != null && iterator.hasNext();) {
+            RecordFilter filter = (RecordFilter) iterator.next();
             filter.afterAppend(record, offset);
         }
     }
 
     @Override
     public Record afterRead(Record record, LogOffset offset) {
-        for (RecordFilter filter : filters) {
-            if (record != null) {
-                record = filter.afterRead(record, offset);
-            }
+        for (Iterator iterator = filters.descendingIterator(); record != null && iterator.hasNext();) {
+            RecordFilter filter = (RecordFilter) iterator.next();
+            record = filter.afterRead(record, offset);
         }
         return record;
     }

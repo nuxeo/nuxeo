@@ -117,13 +117,25 @@ public class StreamWorkManager extends WorkManagerImpl {
      */
     public static final String COMPUTATION_FILTER_CLASS_KEY = "nuxeo.stream.work.computation.filter.class";
 
+    /**
+     * @since 11.1
+     */
     public static final String COMPUTATION_FILTER_STORE_KEY = "nuxeo.stream.work.computation.filter.storeName";
 
+    /**
+     * @since 11.1
+     */
     public static final String COMPUTATION_FILTER_STORE_TTL_KEY = "nuxeo.stream.work.computation.filter.storeTTL";
 
+    /**
+     * @since 11.1
+     */
     public static final String COMPUTATION_FILTER_THRESHOLD_SIZE_KEY = "nuxeo.stream.work.computation.filter.thresholdSize";
 
-    public static final String COMPUTATION_FILTER_PREFIX_KEY = "nuxeo.stream.work.computation.filter.store.prefix";
+    /**
+     * @since 11.1
+     */
+    public static final String COMPUTATION_FILTER_PREFIX_KEY = "nuxeo.stream.work.computation.filter.storeKeyPrefix";
 
     protected Topology topology;
 
@@ -243,8 +255,7 @@ public class StreamWorkManager extends WorkManagerImpl {
         configuration.getString(COMPUTATION_FILTER_PREFIX_KEY).ifPresent(value -> ret.put(PREFIX_OPTION, value));
         configuration.getInteger(COMPUTATION_FILTER_THRESHOLD_SIZE_KEY)
                      .ifPresent(value -> ret.put(THRESHOLD_SIZE_OPTION, value.toString()));
-        configuration.getDuration(COMPUTATION_FILTER_STORE_TTL_KEY)
-                     .ifPresent(value -> ret.put(STORE_TTL_OPTION, Long.toString(value.toSeconds())));
+        configuration.getString(COMPUTATION_FILTER_STORE_TTL_KEY).ifPresent(value -> ret.put(STORE_TTL_OPTION, value));
         return ret;
     }
 
@@ -270,8 +281,8 @@ public class StreamWorkManager extends WorkManagerImpl {
             initTopology();
             logManager = getLogManager();
             streamManager = getStreamManager();
-            streamManager.register("SWMDisable", topologyDisabled, settings);
-            streamProcessor = streamManager.registerAndCreateProcessor("SWM", topology, settings);
+            streamManager.register("StreamWorkManagerDisable", topologyDisabled, settings);
+            streamProcessor = streamManager.registerAndCreateProcessor("StreamWorkManager", topology, settings);
             started = true;
             new ComponentListener().install();
             log.info("Initialized");
