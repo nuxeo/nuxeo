@@ -38,7 +38,7 @@
       <policy name="myComputation2" class="org.nuxeo.runtime.stream.tests.MyPolicy" />
       <computation name="myComputation" concurrency="1" />
       <stream name="input" partitions="1" codec="avro" />
-      <stream name="s1">
+      <stream name="s1" partitions="1">
         <filter name="skip" class="org.nuxeo.runtime.stream.tests.SkipFilter">
           <option name="keyMatch">skipMe</option>
         </filter>
