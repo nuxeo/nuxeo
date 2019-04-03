@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.audit.service;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -334,6 +335,10 @@ public class LogEntryProvider implements BaseLogEntryProvider {
             String leftName = getFieldName.apply(predicate.lvalue);
             Operator operator = predicate.operator;
             Object rightValue = Literals.valueOf(predicate.rvalue);
+            if (rightValue instanceof ZonedDateTime) {
+                // The ZonedDateTime representation is not compatible with Hibernate query
+                rightValue = Date.from(((ZonedDateTime) rightValue).toInstant());
+            }
             if (Operator.LIKE.equals(operator)) {
                 rightValue = "%" + rightValue + "%";
             } else if (Operator.STARTSWITH.equals(operator)) {
