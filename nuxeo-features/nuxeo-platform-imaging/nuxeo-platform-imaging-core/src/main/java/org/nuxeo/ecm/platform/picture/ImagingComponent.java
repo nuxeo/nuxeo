@@ -264,7 +264,13 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         }
         List<PictureView> views = new ArrayList<>();
         for (PictureConversion pictureConversion : pictureConversions) {
-            views.add(computeView(blob, pictureConversion, imageInfo, convert));
+            try {
+                views.add(computeView(blob, pictureConversion, imageInfo, convert));
+            } catch (NuxeoException e) {
+                log.warn(String.format("Unable to compute view: %s exception message: %s", pictureConversion.getId(),
+                        e.getMessage()));
+                log.debug(e, e);
+            }
         }
         return views;
     }
@@ -472,8 +478,14 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
 
         for (PictureConversion pictureConversion : pictureConversions) {
             if (canApplyPictureConversion(pictureConversion, doc)) {
-                PictureView pictureView = computeView(doc, blob, pictureConversion, imageInfo, convert);
-                pictureViews.add(pictureView);
+                try {
+                    PictureView pictureView = computeView(doc, blob, pictureConversion, imageInfo, convert);
+                    pictureViews.add(pictureView);
+                } catch (NuxeoException e) {
+                    log.warn(String.format("Unable to compute view: %s for document: %s exception message: %s",
+                            pictureConversion.getId(), doc, e.getMessage()));
+                    log.debug(e, e);
+                }
             }
         }
 
