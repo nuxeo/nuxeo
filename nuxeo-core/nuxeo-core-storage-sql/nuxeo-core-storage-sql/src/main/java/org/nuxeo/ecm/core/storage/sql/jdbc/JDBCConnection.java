@@ -181,7 +181,9 @@ public class JDBCConnection {
      */
     protected void checkConcurrentUpdate(Throwable e) throws ConcurrentUpdateException {
         if (dialect.isConcurrentUpdateException(e)) {
-            throw new ConcurrentUpdateException(e);
+            log.debug(e, e);
+            // don't keep the original message, as it may reveal database-level info
+            throw new ConcurrentUpdateException("Concurrent update", e);
         }
     }
 
