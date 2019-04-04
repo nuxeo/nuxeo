@@ -247,7 +247,12 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         }
         List<PictureView> views = new ArrayList<>();
         for (PictureConversion pictureConversion : pictureConversions) {
-            views.add(computeView(blob, pictureConversion, imageInfo, convert));
+            try {
+                views.add(computeView(blob, pictureConversion, imageInfo, convert));
+            } catch (NuxeoException e) {
+                log.warn("Unable to compute view: {} exception message: {}", pictureConversion::getId, e::getMessage);
+                log.debug(e, e);
+            }
         }
         return views;
     }
@@ -371,8 +376,14 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
 
         for (PictureConversion pictureConversion : pictureConversions) {
             if (canApplyPictureConversion(pictureConversion, doc)) {
-                PictureView pictureView = computeView(doc, blob, pictureConversion, imageInfo, convert);
-                pictureViews.add(pictureView);
+                try {
+                    PictureView pictureView = computeView(doc, blob, pictureConversion, imageInfo, convert);
+                    pictureViews.add(pictureView);
+                } catch (NuxeoException e) {
+                    log.warn("Unable to compute view: {} for document: {} exception message: {}",
+                            pictureConversion::getId, doc::toString, e::getMessage);
+                    log.debug(e, e);
+                }
             }
         }
 
