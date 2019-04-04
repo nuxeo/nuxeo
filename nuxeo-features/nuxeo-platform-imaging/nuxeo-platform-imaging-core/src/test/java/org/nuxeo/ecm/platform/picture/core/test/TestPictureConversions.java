@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.picture.core.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -197,10 +198,7 @@ public class TestPictureConversions {
     public void pictureConversionsAlwaysHaveExtensions() throws IOException {
         DocumentModel picture = session.createDocumentModel("/", "picture", "Picture");
         // Use a small image so the biggest conversions will have the same result and it will be fetched from the cache
-        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/cat.gif"));
-        blob.setFilename("Cat.gif");
-        blob.setMimeType("image/gif");
-        picture.setPropertyValue("file:content", (Serializable) blob);
+        picture.setPropertyValue("file:content", (Serializable) getCatBlob());
         picture = session.createDocument(picture);
         txFeature.nextTransaction();
 
@@ -211,6 +209,43 @@ public class TestPictureConversions {
         MultiviewPicture multiviewPicture = picture.getAdapter(MultiviewPicture.class);
         assertEquals(5, multiviewPicture.getViews().length);
         for (PictureView pictureView : multiviewPicture.getViews()) {
+            assertEquals("jpg", FilenameUtils.getExtension(pictureView.getFilename()));
+            assertTrue(StringUtils.containsIgnoreCase(pictureView.getFilename(), "cat"));
+        }
+    }
+
+    protected Blob getCatBlob() throws IOException {
+        return Blobs.createBlob(FileUtils.getResourceFileFromContext("images/cat.gif"), "image/gif", null, "cat.gif");
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-picture-conversion-error.xml")
+    public void testPictureConversionError() throws IOException {
+        DocumentModel picture = session.createDocumentModel("/", "picture", "Picture");
+        picture = session.createDocument(picture);
+        // make sure the document is created for baf
+        txFeature.nextTransaction();
+
+        // default picture views + "withError" one
+        MultiviewPicture multiviewPicture = picture.getAdapter(MultiviewPicture.class);
+        assertEquals(6, multiviewPicture.getViews().length);
+
+        // trigger the generation of picture views
+        picture.setPropertyValue("file:content", (Serializable) getCatBlob());
+        picture = session.saveDocument(picture);
+
+        // wait for baf
+        txFeature.nextTransaction();
+
+        picture = session.getDocument(picture.getRef());
+        multiviewPicture = picture.getAdapter(MultiviewPicture.class);
+        // only 5 picture conversions passed, "withError" did not
+        assertEquals(5, multiviewPicture.getViews().length);
+        for (PictureView pictureView : multiviewPicture.getViews()) {
+            assertNotEquals("withError", pictureView.getTitle());
             assertEquals("jpg", FilenameUtils.getExtension(pictureView.getFilename()));
             assertTrue(StringUtils.containsIgnoreCase(pictureView.getFilename(), "cat"));
         }
