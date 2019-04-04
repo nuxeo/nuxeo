@@ -1290,6 +1290,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
             Throwable[] suppressed = e.getSuppressed();
             assertNotNull(suppressed);
             assertTrue(suppressed[0].toString(), suppressed[0] instanceof ConcurrentUpdateException);
+            // the message does not reveal database-level info
+            assertEquals("Concurrent update", suppressed[0].getMessage());
         }
     }
 
