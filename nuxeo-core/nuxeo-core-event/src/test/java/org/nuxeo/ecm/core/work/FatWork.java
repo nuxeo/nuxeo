@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.work;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A fat job that cannot be serialized in a stream
@@ -25,6 +27,7 @@ package org.nuxeo.ecm.core.work;
  * @since 11.1
  */
 public class FatWork extends AbstractWork {
+    private Log log = LogFactory.getLog(FatWork.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -56,7 +59,7 @@ public class FatWork extends AbstractWork {
 
     @Override
     public void work() {
-        log.warn(getTitle() + " is running");
+        log.debug(getTitle() + " is running");
         if (veryLongString.length() != size) {
             throw new IllegalStateException("Invalid string size: " + veryLongString.length() + " instead of: " + size);
         }

@@ -31,10 +31,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
@@ -114,13 +113,25 @@ public class StreamWorkManager extends WorkManagerImpl {
      */
     public static final String COMPUTATION_FILTER_CLASS_KEY = "nuxeo.stream.work.computation.filter.class";
 
+    /**
+     * @since 11.1
+     */
     public static final String COMPUTATION_FILTER_STORE_KEY = "nuxeo.stream.work.computation.filter.storeName";
 
+    /**
+     * @since 11.1
+     */
     public static final String COMPUTATION_FILTER_STORE_TTL_KEY = "nuxeo.stream.work.computation.filter.storeTTL";
 
+    /**
+     * @since 11.1
+     */
     public static final String COMPUTATION_FILTER_THRESHOLD_SIZE_KEY = "nuxeo.stream.work.computation.filter.thresholdSize";
 
-    public static final String COMPUTATION_FILTER_PREFIX_KEY = "nuxeo.stream.work.computation.filter.store.prefix";
+    /**
+     * @since 11.1
+     */
+    public static final String COMPUTATION_FILTER_PREFIX_KEY = "nuxeo.stream.work.computation.filter.storeKeyPrefix";
 
     protected Topology topology;
 
@@ -227,28 +238,28 @@ public class StreamWorkManager extends WorkManagerImpl {
     protected Map<String, String> getRecordFilterOptions() {
         Map<String, String> ret = new HashMap<>();
         ConfigurationService configuration = Framework.getService(ConfigurationService.class);
-        String value = configuration.getString(COMPUTATION_FILTER_STORE_KEY).orElse(null);
+        String value = configuration.getProperty(COMPUTATION_FILTER_STORE_KEY);
         if (value != null) {
             ret.put(STORE_NAME_OPTION, value);
         }
-        value = configuration.getString(COMPUTATION_FILTER_PREFIX_KEY).orElse(null);
+        value = configuration.getProperty(COMPUTATION_FILTER_PREFIX_KEY);
         if (value != null) {
             ret.put(PREFIX_OPTION, value);
         }
-        Integer intValue = configuration.getInteger(COMPUTATION_FILTER_THRESHOLD_SIZE_KEY).orElse(null);
-        if (intValue != null) {
-            ret.put(THRESHOLD_SIZE_OPTION, intValue.toString());
+        value = configuration.getProperty(COMPUTATION_FILTER_THRESHOLD_SIZE_KEY);
+        if (value != null) {
+            ret.put(THRESHOLD_SIZE_OPTION, value);
         }
-        Duration duration = configuration.getDuration(COMPUTATION_FILTER_STORE_TTL_KEY).orElse(null);
-        if (duration != null) {
-            ret.put(STORE_TTL_OPTION, Long.toString(duration.toSeconds()));
+        value = configuration.getProperty(COMPUTATION_FILTER_STORE_TTL_KEY);
+        if (value != null) {
+            ret.put(STORE_TTL_OPTION, value);
         }
         return ret;
     }
 
     protected String getRecordFilterClass() {
         ConfigurationService configuration = Framework.getService(ConfigurationService.class);
-        return configuration.getString(COMPUTATION_FILTER_CLASS_KEY).orElse(null);
+        return configuration.getProperty(COMPUTATION_FILTER_CLASS_KEY);
     }
 
     @Override
@@ -269,9 +280,8 @@ public class StreamWorkManager extends WorkManagerImpl {
             initTopology();
             logManager = getLogManager();
             streamManager = getStreamManager();
-            streamManager.register("SWMDisable", topologyDisabled, settings);
-            streamManager.register("SWM", topology, settings);
-            streamProcessor = streamManager.createStreamProcessor("SWM");
+            streamManager.register("StreamWorkManagerDisable", topologyDisabled, settings);
+            streamProcessor = streamManager.registerAndCreateProcessor("StreamWorkManager", topology, settings);
             started = true;
             new ComponentListener().install();
             log.info("Initialized");
@@ -374,8 +384,8 @@ public class StreamWorkManager extends WorkManagerImpl {
 
         RecordFilterChain filter = getRecordFilter();
         settings = new Settings(DEFAULT_CONCURRENCY, getPartitions(DEFAULT_CONCURRENCY), filter);
-        descriptors.forEach(item -> settings.setConcurrency(item.getId(), item.getMaxThreads()));
-        descriptors.forEach(item -> settings.setPartitions(item.getId(), getPartitions(item.getMaxThreads())));
+        descriptors.forEach(item -> settings.setConcurrency(item.name, item.getMaxThreads()));
+        descriptors.forEach(item -> settings.setPartitions(item.name, getPartitions(item.getMaxThreads())));
     }
 
     protected int getPartitions(int maxThreads) {

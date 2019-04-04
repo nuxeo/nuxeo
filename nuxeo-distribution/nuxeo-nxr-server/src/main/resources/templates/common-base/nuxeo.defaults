@@ -183,6 +183,15 @@ nuxeo.stream.chronicle.retention.duration=4d
 nuxeo.stream.work.enabled=false
 nuxeo.stream.work.log.config=work
 nuxeo.stream.work.over.provisioning.factor=3
+# Filter big work to be stored outside of the stream
+nuxeo.stream.work.computation.filter.enabled=false
+nuxeo.stream.work.computation.filter.thresholdSize=1000000
+nuxeo.stream.work.computation.filter.class=org.nuxeo.ecm.core.transientstore.computation.TransientStoreOverflowRecordFilter
+#nuxeo.stream.work.computation.filter.class=org.nuxeo.ecm.core.work.KeyValueStoreOverflowRecordFilter
+nuxeo.stream.work.computation.filter.storeName=default
+nuxeo.stream.work.computation.filter.storeKeyPrefix=bigRecord:
+# TTL is only taken in account with the KV impl, in seconds for 9.10, for TS you need to configure in the TS
+nuxeo.stream.work.computation.filter.storeTTL=86400
 
 # Stream AuditWriter
 nuxeo.stream.audit.enabled=true

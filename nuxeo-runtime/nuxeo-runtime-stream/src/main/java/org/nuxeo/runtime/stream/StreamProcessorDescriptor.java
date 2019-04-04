@@ -49,7 +49,6 @@ public class StreamProcessorDescriptor {
             return name;
         }
 
-        // To provide a custom retry policy
         @XNode("@class")
         public Class<? extends RecordFilter> klass;
 
@@ -75,6 +74,7 @@ public class StreamProcessorDescriptor {
     @SuppressWarnings("CanBeFinal")
     @XObject(value = "computation")
     public static class ComputationDescriptor {
+
         @XNode("@name")
         public String name;
 

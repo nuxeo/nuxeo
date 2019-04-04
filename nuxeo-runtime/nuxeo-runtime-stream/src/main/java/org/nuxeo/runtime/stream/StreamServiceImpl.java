@@ -167,8 +167,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         if (log.isDebugEnabled()) {
             log.debug("Starting computation topology: " + descriptor.getName() + "\n" + topology.toPlantuml(settings));
         }
-        streamManager.register(descriptor.getName(), topology, settings);
-        StreamProcessor streamProcessor = streamManager.createStreamProcessor(descriptor.getName());
+        StreamProcessor streamProcessor = streamManager.registerAndCreateProcessor(descriptor.getName(), topology, settings);
         processors.put(descriptor.getName(), streamProcessor);
     }
 

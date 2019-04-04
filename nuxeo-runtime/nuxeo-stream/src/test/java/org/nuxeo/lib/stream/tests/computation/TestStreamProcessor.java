@@ -76,8 +76,7 @@ public abstract class TestStreamProcessor {
         // System.out.println(topology.toPlantuml(settings));
         try (LogManager manager = getLogManager()) {
             StreamManager streamManager = new LogStreamManager(manager);
-            streamManager.register("processor", topology, settings);
-            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            StreamProcessor processor = streamManager.registerAndCreateProcessor("processor", topology, settings);
             processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             long start = System.currentTimeMillis();
@@ -171,8 +170,7 @@ public abstract class TestStreamProcessor {
         // System.out.println(topology.toPlantuml(settings));
         try (LogManager manager = getLogManager()) {
             StreamManager streamManager = new LogStreamManager(manager);
-            streamManager.register("processor", topology, settings);
-            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            StreamProcessor processor = streamManager.registerAndCreateProcessor("processor", topology, settings);
             long start = System.currentTimeMillis();
             processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
@@ -271,8 +269,7 @@ public abstract class TestStreamProcessor {
         // 1. run generators
         try (LogManager manager = getLogManager()) {
             StreamManager streamManager = new LogStreamManager(manager);
-            streamManager.register("processor1", topology1, settings1);
-            StreamProcessor processor = streamManager.createStreamProcessor("processor1");
+            StreamProcessor processor = streamManager.registerAndCreateProcessor("processor1", topology1, settings1);
             long start = System.currentTimeMillis();
             processor.start();
             // This is needed because drainAndStop might consider the source generator as terminated
@@ -289,8 +286,7 @@ public abstract class TestStreamProcessor {
         for (int i = 0; i < 10; i++) {
             try (LogManager manager = getSameLogManager()) {
                 StreamManager streamManager = new LogStreamManager(manager);
-                streamManager.register("processor2", topology2, settings2);
-                StreamProcessor processor = streamManager.createStreamProcessor("processor2");
+                StreamProcessor processor = streamManager.registerAndCreateProcessor("processor2", topology2, settings2);
                 log.info("RESUME computations");
                 processor.start();
                 assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
@@ -307,8 +303,7 @@ public abstract class TestStreamProcessor {
         log.info("Now draining without interruption");
         try (LogManager manager = getSameLogManager()) {
             StreamManager streamManager = new LogStreamManager(manager);
-            streamManager.register("processor2", topology2, settings2);
-            StreamProcessor processor = streamManager.createStreamProcessor("processor2");
+            StreamProcessor processor = streamManager.registerAndCreateProcessor("processor2", topology2, settings2);
             long start = System.currentTimeMillis();
             processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
@@ -341,8 +336,7 @@ public abstract class TestStreamProcessor {
 
         try (LogManager manager = getLogManager()) {
             StreamManager streamManager = new LogStreamManager(manager);
-            streamManager.register("processor1", topology1, settings1);
-            StreamProcessor processor = streamManager.createStreamProcessor("processor1");
+            StreamProcessor processor = streamManager.registerAndCreateProcessor("processor1", topology1, settings1);
             long start = System.currentTimeMillis();
             processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
@@ -370,8 +364,7 @@ public abstract class TestStreamProcessor {
         Settings settings = new Settings(2, 1).setConcurrency("GENERATOR", 2).setPartitions("s1", 1);
         try (LogManager manager = getLogManager()) {
             StreamManager streamManager = new LogStreamManager(manager);
-            streamManager.register("processor", topology, settings);
-            StreamProcessor processor = streamManager.createStreamProcessor("processor");
+            StreamProcessor processor = streamManager.registerAndCreateProcessor("processor", topology, settings);
             processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             // source computation will start on assignment, let them work a bit
