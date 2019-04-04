@@ -48,10 +48,10 @@ import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 public class LogStreamManager implements StreamManager {
     private static final Log log = LogFactory.getLog(LogStreamManager.class);
 
-    protected final LogManager manager;
+    protected final LogManager logManager;
 
-    public LogStreamManager(LogManager manager) {
-        this.manager = manager;
+    public LogStreamManager(LogManager logManager) {
+        this.logManager = logManager;
     }
 
     protected final Map<String, Topology> topologies = new HashMap<>();
@@ -83,7 +83,7 @@ public class LogStreamManager implements StreamManager {
     }
 
     public LogManager getLogManager() {
-        return manager;
+        return logManager;
     }
 
     @Override
@@ -93,24 +93,24 @@ public class LogStreamManager implements StreamManager {
         if (record == null) {
             return new LogOffsetImpl(stream, 0, 0);
         }
-        LogOffset offset = manager.getAppender(stream).append(record.key, record);
+        LogOffset offset = logManager.getAppender(stream).append(record.key, record);
         filter.afterAppend(record, offset);
         return offset;
     }
 
     public boolean supportSubscribe() {
-        return manager.supportSubscribe();
+        return logManager.supportSubscribe();
     }
 
     public LogTailer<Record> subscribe(String computationName, Collection<String> streams, RebalanceListener listener) {
-        return manager.subscribe(computationName, streams, listener);
+        return logManager.subscribe(computationName, streams, listener);
     }
 
     public LogTailer<Record> createTailer(String computationName, Collection<LogPartition> streamPartitions) {
         if (streamPartitions.isEmpty()) {
-            return manager.createTailer(computationName, streamPartitions);
+            return logManager.createTailer(computationName, streamPartitions);
         }
-        return manager.createTailer(computationName, streamPartitions);
+        return logManager.createTailer(computationName, streamPartitions);
     }
 
     public RecordFilter getFilter(String stream) {
@@ -120,8 +120,8 @@ public class LogStreamManager implements StreamManager {
     protected void initStreams(Topology topology, Settings settings) {
         log.debug("Initializing streams");
         topology.streamsSet().forEach(streamName -> {
-            if (manager.exists(streamName)) {
-                int size = manager.getAppender(streamName).size();
+            if (logManager.exists(streamName)) {
+                int size = logManager.getAppender(streamName).size();
                 if (settings.getPartitions(streamName) != size) {
                     log.debug(String.format(
                             "Update settings for stream: %s defined with %d partitions but exists with %d partitions",
@@ -129,7 +129,7 @@ public class LogStreamManager implements StreamManager {
                     settings.setPartitions(streamName, size);
                 }
             } else {
-                manager.createIfNotExists(streamName, settings.getPartitions(streamName));
+                logManager.createIfNotExists(streamName, settings.getPartitions(streamName));
             }
             streams.add(streamName);
         });
@@ -137,7 +137,7 @@ public class LogStreamManager implements StreamManager {
 
     protected void initAppenders(Topology topology, Settings settings) {
         log.debug("Initializing source appenders so we ensure they use codec defined in the processor");
-        topology.streamsSet().forEach(stream -> manager.getAppender(stream));
+        topology.streamsSet().forEach(stream -> logManager.getAppender(stream));
     }
 
     protected void registerFilters(Topology topology, Settings settings) {

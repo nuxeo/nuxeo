@@ -19,7 +19,8 @@
 package org.nuxeo.lib.stream.computation;
 
 /**
- * A chain of record filters.
+ * A chain of record filters. Before hooks are applied in the order of the filters, after hooks are applied in the
+ * reverse order.
  *
  * @since 11.1
  */

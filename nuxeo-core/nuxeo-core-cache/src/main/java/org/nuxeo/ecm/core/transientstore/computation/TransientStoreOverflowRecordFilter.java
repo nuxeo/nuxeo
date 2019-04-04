@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
@@ -38,8 +38,8 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 11.1
  */
-public class TransientStorageOverflowRecordFilter extends BaseOverflowRecordFilter {
-    private static final Logger log = LogManager.getLogger(TransientStorageOverflowRecordFilter.class);
+public class TransientStoreOverflowRecordFilter extends BaseOverflowRecordFilter {
+    private static final Log log = LogFactory.getLog(TransientStoreOverflowRecordFilter.class);
 
     @Override
     public void init(Map<String, String> options) {
@@ -68,13 +68,13 @@ public class TransientStorageOverflowRecordFilter extends BaseOverflowRecordFilt
         List<Blob> blobs = getTransientStore().getBlobs(key);
         Blob blob = blobs == null || blobs.isEmpty() ? null : blobs.get(0);
         if (blob == null) {
-            log.error("Blob value not found for record: {}", recordKey);
+            log.error("Blob value not found for record: " + recordKey);
             return null;
         }
         try {
             return blob.getByteArray();
         } catch (IOException e) {
-            log.error("Cannot get bytes of blob value for record: {}", recordKey, e);
+            log.error("Cannot get bytes of blob value for record: " + recordKey, e);
             return null;
         }
     }

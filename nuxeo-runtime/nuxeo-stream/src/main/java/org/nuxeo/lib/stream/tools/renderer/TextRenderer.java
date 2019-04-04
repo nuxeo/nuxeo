@@ -30,7 +30,8 @@ public class TextRenderer extends Renderer {
     public void accept(LogRecord<Record> record) {
         Record rec = record.message();
         System.out.println(String.format("|%s|%s|%s|%d|%s|%s|", record.offset(), rec.key,
-                watermarkString(rec.watermark), rec.data.length, rec.flags, binaryString(rec.data)));
+                watermarkString(rec.watermark), rec.data == null ? 0 : rec.data.length, rec.flags,
+                binaryString(rec.data)));
     }
 
     @Override
