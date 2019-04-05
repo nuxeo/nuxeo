@@ -32,15 +32,19 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
+import org.nuxeo.elasticsearch.api.ESHintQueryBuilder;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.config.ESHintQueryBuilderDescriptor;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
@@ -68,6 +72,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     protected final Map<String, ElasticSearchIndexConfig> indexConfig;
 
+    protected Map<String, ESHintQueryBuilder> hints;
+
     protected final ElasticSearchEmbeddedServerConfig embeddedServerConfig;
 
     protected final ElasticSearchClientConfig clientConfig;
@@ -91,10 +97,14 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
      * @since 9.1
      */
     public ElasticSearchAdminImpl(ElasticSearchEmbeddedServerConfig embeddedServerConfig,
-            ElasticSearchClientConfig clientConfig, Map<String, ElasticSearchIndexConfig> indexConfig) {
+            ElasticSearchClientConfig clientConfig, Map<String, ElasticSearchIndexConfig> indexConfig,
+            Collection<ESHintQueryBuilderDescriptor> hintDescriptors) {
         this.embeddedServerConfig = embeddedServerConfig;
         this.indexConfig = indexConfig;
         this.clientConfig = clientConfig;
+        this.hints = hintDescriptors.stream()
+                                    .collect(Collectors.toMap(ESHintQueryBuilderDescriptor::getName,
+                                            ESHintQueryBuilderDescriptor::newInstance));
         checkConfig();
         connect();
         initializeIndexes();
@@ -548,5 +558,10 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
      */
     public List<String> getInitializedRepositories() {
         return repositoryInitialized;
+    }
+
+    @Override
+    public Optional<ESHintQueryBuilder> getHintByOperator(String name) {
+        return Optional.ofNullable(hints.get(name));
     }
 }
