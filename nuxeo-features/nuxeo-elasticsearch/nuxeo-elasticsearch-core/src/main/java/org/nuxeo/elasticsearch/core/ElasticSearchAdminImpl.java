@@ -32,15 +32,19 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
+import org.nuxeo.elasticsearch.api.ESHintQueryBuilder;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.config.ESHintQueryBuilderDescriptor;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
@@ -67,6 +71,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     protected final Map<String, String> writeIndexNames = new HashMap<>();
 
     protected final Map<String, ElasticSearchIndexConfig> indexConfig;
+
+    protected Map<String, ESHintQueryBuilder> hints;
 
     protected final ElasticSearchEmbeddedServerConfig embeddedServerConfig;
 
@@ -548,5 +554,21 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
      */
     public List<String> getInitializedRepositories() {
         return repositoryInitialized;
+    }
+
+    @Override
+    public Optional<ESHintQueryBuilder> getHintByOperator(String name) {
+        return Optional.ofNullable(hints.get(name));
+    }
+
+    /**
+     * Sets the {@link #hints} from the hint descriptors
+     * 
+     * @since 10.10-HF17
+     */
+    public void setHints(Collection<ESHintQueryBuilderDescriptor> hintDescriptors) {
+        hints = hintDescriptors.stream()
+                               .collect(Collectors.toMap(ESHintQueryBuilderDescriptor::getName,
+                                       ESHintQueryBuilderDescriptor::newInstance));
     }
 }

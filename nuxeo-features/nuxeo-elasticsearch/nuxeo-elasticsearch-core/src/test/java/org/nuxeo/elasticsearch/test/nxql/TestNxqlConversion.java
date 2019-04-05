@@ -19,6 +19,9 @@
 
 package org.nuxeo.elasticsearch.test.nxql;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -57,6 +60,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features({RepositoryElasticSearchFeature.class})
 @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-hints-contrib.xml")
 public class TestNxqlConversion {
 
     private static final String IDX_NAME = "nxutest";
@@ -1732,6 +1736,48 @@ public class TestNxqlConversion {
                 "  }\n" +
                 "}", es);
 
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: OPERATOR(testTermQuery) */ ecm:uuid = '1234'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"term\" : {\n" + //
+                "    \"ecm:uuid\" : {\n" + //
+                "      \"value\" : \"1234\",\n" + //
+                "      \"boost\" : 1.0\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+
+
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: OPERATOR(testBoolQuery) */ ecm:uuid = '1234'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"bool\" : {\n" + //
+                "    \"must\" : [\n" + //
+                "      {\n"+ //
+                "        \"fuzzy\" : {\n" + //
+                "          \"ecm:uuid\" : {\n" + //
+                "            \"value\" : \"1234\",\n" + //
+                "            \"fuzziness\" : \"AUTO\",\n" + //
+                "            \"prefix_length\" : 0,\n" + //
+                "            \"max_expansions\" : 50,\n" + //
+                "            \"transpositions\" : false,\n" + //
+                "            \"boost\" : 1.0\n" + //
+                "          }\n" + //
+                "        }\n" + //
+                "      },\n" + //
+                "      {\n" + //
+                "        \"wildcard\" : {\n" + //
+                "          \"ecm:uuid\" : {\n" + //
+                "            \"wildcard\" : \"1234\",\n" + //
+                "            \"boost\" : 1.0\n" + //
+                "          }\n" + //
+                "        }\n" + //
+                "      }\n" + //
+                "    ],\n" + //
+                "    \"adjust_pure_negative\" : true,\n" + //
+                "    \"boost\" : 1.0\n" + //
+                "  }\n" + //
+                "}", es);
     }
 
     @Test
@@ -1907,5 +1953,16 @@ public class TestNxqlConversion {
                 "  }\n" +
                 "}", es);
 
+    }
+
+    @Test
+    public void shouldFailWhenESHintOperatorIsUnknown() {
+        try {
+            String es = NxqlQueryConverter.toESQueryBuilder(
+                    "select * from Document where /*+ES: OPERATOR(unExitingHint) */ ecm:uuid = '1234'").toString();
+            fail("Should raise an UnsupportedOperationException");
+        } catch (UnsupportedOperationException uso) {
+            assertEquals("Operator: unExitingHint is unknown", uso.getMessage());
+        }
     }
 }

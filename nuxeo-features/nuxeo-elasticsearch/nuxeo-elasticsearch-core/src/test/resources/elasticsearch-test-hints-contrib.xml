@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.test.hints.contrib">
+  <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
+
+  <extension point="elasticSearchHints" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
+    <hint name="testTermQuery" class="org.nuxeo.elasticsearch.test.hint.TestTermESHintQueryBuilder" />
+    <hint name="testBoolQuery" class="org.nuxeo.elasticsearch.test.hint.TestBoolQueryESHintQueryBuilder" />
+    <hint name="anyESHintToRemove" class="org.nuxeo.elasticsearch.test.hint.AnyESHintQueryBuilder" />
+  </extension>
+
+</component>

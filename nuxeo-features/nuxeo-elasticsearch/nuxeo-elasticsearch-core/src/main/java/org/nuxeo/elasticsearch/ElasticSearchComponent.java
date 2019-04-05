@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -50,12 +51,14 @@ import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ESClient;
+import org.nuxeo.elasticsearch.api.ESHintQueryBuilder;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.api.EsScrollResult;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.config.ESHintQueryBuilderDescriptor;
 import org.nuxeo.elasticsearch.config.ElasticSearchClientConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchDocWriterDescriptor;
 import org.nuxeo.elasticsearch.config.ElasticSearchEmbeddedServerConfig;
@@ -92,6 +95,11 @@ public class ElasticSearchComponent extends DefaultComponent
     protected static final String EP_INDEX = "elasticSearchIndex";
 
     protected static final String EP_DOC_WRITER = "elasticSearchDocWriter";
+
+    /**
+     * @since 11.1
+     */
+    protected static final String EP_HINTS = "elasticSearchHints";
 
     protected static final long REINDEX_TIMEOUT = 20;
 
@@ -155,6 +163,10 @@ public class ElasticSearchComponent extends DefaultComponent
                 throw new NuxeoException(e);
             }
             break;
+        case EP_HINTS:
+            ESHintQueryBuilderDescriptor esHintDescriptor = (ESHintQueryBuilderDescriptor) contribution;
+            register(EP_HINTS, esHintDescriptor);
+            break;
         default:
             throw new IllegalStateException("Invalid EP: " + extensionPoint);
         }
@@ -167,6 +179,7 @@ public class ElasticSearchComponent extends DefaultComponent
             return;
         }
         esa = new ElasticSearchAdminImpl(embeddedServerConfig, clientConfig, indexConfig);
+        esa.setHints(getDescriptors(EP_HINTS));
         esi = new ElasticSearchIndexingImpl(esa, jsonESDocumentWriter);
         ess = new ElasticSearchServiceImpl(esa);
         initListenerThreadPool();
@@ -558,4 +571,8 @@ public class ElasticSearchComponent extends DefaultComponent
         }
     }
 
+    @Override
+    public Optional<ESHintQueryBuilder> getHintByOperator(String name) {
+        return esa.getHintByOperator(name);
+    }
 }
