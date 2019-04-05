@@ -125,4 +125,16 @@
   </extension-point>
 
 
+  <extension-point name="elasticSearchHints">
+    <documentation>
+      Extension point used to define the NXQL hints which enables the use of Elasticsearch operators.
+      Must implement the ESHintQueryBuilder interface.
+
+      @see https://doc.nuxeo.com/nxdoc/nxql/#elasticsearch-nxql-hints to have the available ES hints.
+
+    </documentation>
+    <object class="org.nuxeo.elasticsearch.config.ESHintQueryBuilderDescriptor" />
+  </extension-point>
+
+
 </component>

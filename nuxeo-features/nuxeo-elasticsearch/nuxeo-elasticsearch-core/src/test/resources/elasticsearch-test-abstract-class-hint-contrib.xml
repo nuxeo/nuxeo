@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.test.error.hints.contrib">
+  <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
+
+  <extension point="elasticSearchHints" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
+    <hint name="testAbstractGeoQuery" class="org.nuxeo.elasticsearch.hint.AbstractGeoESHintQueryBuilder" />
+  </extension>
+
+</component>

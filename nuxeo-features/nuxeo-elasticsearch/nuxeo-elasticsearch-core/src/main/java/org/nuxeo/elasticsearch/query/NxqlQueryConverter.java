@@ -19,13 +19,9 @@
  */
 package org.nuxeo.elasticsearch.query;
 
-import static org.elasticsearch.common.xcontent.DeprecationHandler.THROW_UNSUPPORTED_OPERATION;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_SCORE_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,23 +36,11 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.common.geo.GeoPoint;
-import org.elasticsearch.common.geo.GeoUtils;
-import org.elasticsearch.common.geo.ShapeRelation;
-import org.elasticsearch.common.xcontent.NamedXContentRegistry;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentParser;
-import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.CommonTermsQueryBuilder;
 import org.elasticsearch.index.query.MatchPhrasePrefixQueryBuilder;
-import org.elasticsearch.index.query.MatchPhraseQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.NXCore;
@@ -66,7 +50,6 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.api.trash.TrashService.Feature;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -96,6 +79,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.hint.MoreLikeThisESHintQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -111,11 +95,23 @@ public final class NxqlQueryConverter {
 
     private static final String SIMPLE_QUERY_PREFIX = "es: ";
 
-    protected static final int MORE_LIKE_THIS_MIN_TERM_FREQ = 1;
+    /**
+     * @deprecated since 11.1. Use {@link MoreLikeThisESHintQueryBuilder#MORE_LIKE_THIS_MIN_TERM_FREQ} instead.
+     */
+    @Deprecated
+    protected static final int MORE_LIKE_THIS_MIN_TERM_FREQ = MoreLikeThisESHintQueryBuilder.MORE_LIKE_THIS_MIN_TERM_FREQ;
 
-    protected static final int MORE_LIKE_THIS_MIN_DOC_FREQ = 3;
+    /**
+     * @deprecated since 11.1. Use {@link MoreLikeThisESHintQueryBuilder#MORE_LIKE_THIS_MIN_DOC_FREQ} instead.
+     */
+    @Deprecated
+    protected static final int MORE_LIKE_THIS_MIN_DOC_FREQ = MoreLikeThisESHintQueryBuilder.MORE_LIKE_THIS_MIN_DOC_FREQ;
 
-    protected static final int MORE_LIKE_THIS_MAX_QUERY_TERMS = 12;
+    /**
+     * @deprecated since 11.1. Use {@link MoreLikeThisESHintQueryBuilder#MORE_LIKE_THIS_MAX_QUERY_TERMS} instead.
+     */
+    @Deprecated
+    protected static final int MORE_LIKE_THIS_MAX_QUERY_TERMS = MoreLikeThisESHintQueryBuilder.MORE_LIKE_THIS_MAX_QUERY_TERMS;
 
     private NxqlQueryConverter() {
     }
@@ -270,7 +266,7 @@ public final class NxqlQueryConverter {
         String name = getFieldName(nxqlName, hint);
         if (hint != null && hint.operator != null) {
             if (hint.operator.startsWith("geo")) {
-                filter = makeHintFilter(name, values, hint);
+                filter = makeHintQuery(name, values, hint);
             } else {
                 query = makeHintQuery(name, value, hint);
             }
@@ -411,188 +407,20 @@ public final class NxqlQueryConverter {
         return filter;
     }
 
-    private static QueryBuilder makeHintFilter(String name, Object[] values, EsHint hint) {
-        QueryBuilder ret;
-        switch (hint.operator) {
-        case "geo_bounding_box":
-            if (values.length != 2) {
-                throw new IllegalArgumentException(String.format(
-                        "Operator: %s requires 2 parameters: bottomLeft " + "and topRight point", hint.operator));
-            }
-            GeoPoint bottomLeft = parseGeoPointString((String) values[0]);
-            GeoPoint topRight = parseGeoPointString((String) values[1]);
-            ret = QueryBuilders.geoBoundingBoxQuery(name).setCornersOGC(bottomLeft, topRight);
-            break;
-        case "geo_distance":
-            if (values.length != 2) {
-                throw new IllegalArgumentException(
-                        String.format("Operator: %s requires 2 parameters: point and " + "distance", hint.operator));
-            }
-            GeoPoint center = parseGeoPointString((String) values[0]);
-            String distance = (String) values[1];
-            ret = QueryBuilders.geoDistanceQuery(name).point(center.lat(), center.lon()).distance(distance);
-            break;
-        case "geo_distance_range":
-            throw new UnsupportedOperationException(
-                    "Operator: '" + hint.operator + "' is deprecated since Elasticsearch 6.1");
-        case "geo_hash_cell":
-            throw new UnsupportedOperationException(
-                    "Operator: '" + hint.operator + "' is deprecated since Elasticsearch 6.2");
-        case "geo_shape":
-            if (values.length != 4) {
-                throw new IllegalArgumentException(String.format(
-                        "Operator: %s requires 4 parameters: shapeId, type, " + "index and path", hint.operator));
-            }
-            String shapeId = (String) values[0];
-            String shapeType = (String) values[1];
-            String shapeIndex = (String) values[2];
-            String shapePath = (String) values[3];
-
-            ret = QueryBuilders.geoShapeQuery(name, shapeId, shapeType)
-                               .relation(ShapeRelation.WITHIN)
-                               .indexedShapeIndex(shapeIndex)
-                               .indexedShapePath(shapePath);
-            break;
-        default:
-            throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
-        }
-        return ret;
-
+    protected static QueryBuilder makeHintQuery(String name, Object value, EsHint hint) {
+        return Framework.getService(ElasticSearchAdmin.class)
+                        .getHintByOperator(hint.operator)
+                        .orElseThrow(() -> new UnsupportedOperationException(
+                                String.format("Operator: %s is unknown", hint.operator)))
+                        .make(hint, name, value);
     }
 
-    private static GeoPoint parseGeoPointString(String value) {
-        try {
-            XContentBuilder content = JsonXContent.contentBuilder();
-            content.value(value);
-            content.flush();
-            content.close();
-            try (XContentParser parser = JsonXContent.jsonXContent.createParser(NamedXContentRegistry.EMPTY,
-                    THROW_UNSUPPORTED_OPERATION, ((ByteArrayOutputStream) content.getOutputStream()).toByteArray())) {
-                parser.nextToken();
-                return GeoUtils.parseGeoPoint(parser);
-            }
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Invalid value for geopoint: " + e.getMessage());
-        }
-    }
-
-    private static QueryBuilder makeHintQuery(String name, Object value, EsHint hint) {
-        QueryBuilder ret;
-        switch (hint.operator) {
-        case "match":
-            MatchQueryBuilder matchQuery = QueryBuilders.matchQuery(name, value);
-            if (hint.analyzer != null) {
-                matchQuery.analyzer(hint.analyzer);
-            }
-            ret = matchQuery;
-            break;
-        case "match_phrase":
-            MatchPhraseQueryBuilder matchPhraseQuery = QueryBuilders.matchPhraseQuery(name, value);
-            if (hint.analyzer != null) {
-                matchPhraseQuery.analyzer(hint.analyzer);
-            }
-            ret = matchPhraseQuery;
-            break;
-        case "match_phrase_prefix":
-            String valueString = (String) value;
-            if (valueString.endsWith("*") && valueString.length() > 2) {
-                // remove useless trailing *, this is not mandatory but cleaner
-                value = valueString.substring(0, valueString.length() - 1);
-            }
-            MatchPhrasePrefixQueryBuilder matchPhrasePrefixQuery = QueryBuilders.matchPhrasePrefixQuery(name, value);
-            if (hint.analyzer != null) {
-                matchPhrasePrefixQuery.analyzer(hint.analyzer);
-            }
-            ret = matchPhrasePrefixQuery;
-            break;
-        case "multi_match":
-            // multiMatchQuery requires at least 1 field on creation, so we set them twice, incase there's a field boost
-            MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(value, hint.getIndexFieldNames());
-            hint.getIndex().forEach(fieldHint -> multiMatchQuery.field(fieldHint.getField(), fieldHint.getBoost()));
-            if (hint.analyzer != null) {
-                multiMatchQuery.analyzer(hint.analyzer);
-            }
-            ret = multiMatchQuery;
-            break;
-        case "regex":
-            ret = QueryBuilders.regexpQuery(name, (String) value);
-            break;
-        case "fuzzy":
-            ret = QueryBuilders.fuzzyQuery(name, (String) value);
-            break;
-        case "wildcard":
-            ret = QueryBuilders.wildcardQuery(name, (String) value);
-            break;
-        case "common":
-            CommonTermsQueryBuilder commonQuery = QueryBuilders.commonTermsQuery(name, value);
-            if (hint.analyzer != null) {
-                commonQuery.analyzer(hint.analyzer);
-            }
-            ret = commonQuery;
-            break;
-        case "query_string":
-            QueryStringQueryBuilder queryString = QueryBuilders.queryStringQuery((String) value);
-            if (hint.index != null) {
-                for (EsHint.FieldHint fieldHint : hint.getIndex()) {
-                    queryString.field(fieldHint.getField(), fieldHint.getBoost());
-                }
-            } else {
-                queryString.defaultField(name);
-            }
-            if (hint.analyzer != null) {
-                queryString.analyzer(hint.analyzer);
-            }
-            ret = queryString;
-            break;
-        case "simple_query_string":
-            SimpleQueryStringBuilder querySimpleString = QueryBuilders.simpleQueryStringQuery((String) value);
-            if (hint.index != null) {
-                for (EsHint.FieldHint fieldHint : hint.getIndex()) {
-                    querySimpleString.field(fieldHint.getField(), fieldHint.getBoost());
-                }
-            } else {
-                querySimpleString.field(name);
-            }
-            if (hint.analyzer != null) {
-                querySimpleString.analyzer(hint.analyzer);
-            }
-            ret = querySimpleString;
-            break;
-        case "more_like_this":
-            String[] indexFields = hint.getIndexFieldNames();
-            String[] fields = indexFields.length > 0 ? indexFields : new String[] { name };
-            MoreLikeThisQueryBuilder moreLikeThisBuilder = QueryBuilders.moreLikeThisQuery(fields, null,
-                    getItems(value));
-            if (hint.analyzer != null) {
-                moreLikeThisBuilder.analyzer(hint.analyzer);
-            }
-            moreLikeThisBuilder.minDocFreq(MORE_LIKE_THIS_MIN_DOC_FREQ);
-            moreLikeThisBuilder.minTermFreq(MORE_LIKE_THIS_MIN_TERM_FREQ);
-            moreLikeThisBuilder.maxQueryTerms(MORE_LIKE_THIS_MAX_QUERY_TERMS);
-            ret = moreLikeThisBuilder;
-            break;
-        default:
-            throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
-        }
-        return ret;
-    }
-
+    /**
+     * @deprecated since 11.1. Use {@link MoreLikeThisESHintQueryBuilder#getItems(Object)} instead.
+     */
+    @Deprecated
     protected static MoreLikeThisQueryBuilder.Item[] getItems(Object value) {
-        RepositoryManager rm = Framework.getService(RepositoryManager.class);
-        String repo = rm.getDefaultRepository().getName();
-        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-        String esIndex = esa.getIndexNameForRepository(repo);
-        String[] values;
-        if (value instanceof Object[]) {
-            values = (String[]) value;
-        } else {
-            values = new String[] { (String) value };
-        }
-        MoreLikeThisQueryBuilder.Item[] ret = new MoreLikeThisQueryBuilder.Item[values.length];
-        for (int i = 0; i < values.length; i++) {
-            ret[i] = new MoreLikeThisQueryBuilder.Item(esIndex, DOC_TYPE, values[i]);
-        }
-        return ret;
+        return MoreLikeThisESHintQueryBuilder.getItems(value);
     }
 
     public static QueryBuilder makeStartsWithQuery(String name, Object value) {
