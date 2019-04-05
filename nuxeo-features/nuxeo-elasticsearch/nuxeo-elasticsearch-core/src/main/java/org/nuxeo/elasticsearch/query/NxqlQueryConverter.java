@@ -37,8 +37,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.geo.GeoUtils;
 import org.elasticsearch.common.geo.ShapeRelation;
@@ -98,13 +96,12 @@ import org.nuxeo.runtime.api.Framework;
  * visitor to build the ES request.
  */
 public final class NxqlQueryConverter {
-    private static final Log log = LogFactory.getLog(NxqlQueryConverter.class);
 
-    private static final String SELECT_ALL = "SELECT * FROM Document";
+    protected static final String SELECT_ALL = "SELECT * FROM Document";
 
-    private static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";
+    protected static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";
 
-    private static final String SIMPLE_QUERY_PREFIX = "es: ";
+    protected static final String SIMPLE_QUERY_PREFIX = "es: ";
 
     protected static final int MORE_LIKE_THIS_MIN_TERM_FREQ = 1;
 
@@ -388,7 +385,7 @@ public final class NxqlQueryConverter {
         return filter;
     }
 
-    private static QueryBuilder makeHintFilter(String name, Object[] values, EsHint hint) {
+    protected static QueryBuilder makeHintFilter(String name, Object[] values, EsHint hint) {
         QueryBuilder ret;
         switch (hint.operator) {
         case "geo_bounding_box":
@@ -437,7 +434,7 @@ public final class NxqlQueryConverter {
 
     }
 
-    private static GeoPoint parseGeoPointString(String value) {
+    protected static GeoPoint parseGeoPointString(String value) {
         try {
             XContentBuilder content = JsonXContent.contentBuilder();
             content.value(value);
@@ -453,7 +450,7 @@ public final class NxqlQueryConverter {
         }
     }
 
-    private static QueryBuilder makeHintQuery(String name, Object value, EsHint hint) {
+    protected static QueryBuilder makeHintQuery(String name, Object value, EsHint hint) {
         QueryBuilder ret;
         switch (hint.operator) {
         case "match":
@@ -600,7 +597,7 @@ public final class NxqlQueryConverter {
         return filter;
     }
 
-    private static QueryBuilder makeAncestorIdFilter(String value, CoreSession session) {
+    protected static QueryBuilder makeAncestorIdFilter(String value, CoreSession session) {
         String path;
         if (session == null) {
             return QueryBuilders.existsQuery("ancestorid-without-session");
@@ -615,7 +612,7 @@ public final class NxqlQueryConverter {
         return makeStartsWithQuery(NXQL.ECM_PATH, path);
     }
 
-    private static QueryBuilder makeLikeQuery(String op, String name, String value, EsHint hint) {
+    protected static QueryBuilder makeLikeQuery(String op, String name, String value, EsHint hint) {
         String fieldName = name;
         if (op.contains("ILIKE")) {
             // ILIKE will work only with a correct mapping
@@ -691,7 +688,7 @@ public final class NxqlQueryConverter {
         return wildcard.toString();
     }
 
-    private static QueryBuilder makeFulltextQuery(String nxqlName, String value, EsHint hint) {
+    protected static QueryBuilder makeFulltextQuery(String nxqlName, String value, EsHint hint) {
         String name = nxqlName.replace(NXQL.ECM_FULLTEXT, "");
         if (name.startsWith(".")) {
             name = name.substring(1) + ".fulltext";
@@ -723,7 +720,7 @@ public final class NxqlQueryConverter {
         return query;
     }
 
-    private static String getFieldName(String name, EsHint hint) {
+    protected static String getFieldName(String name, EsHint hint) {
         if (hint != null && hint.index != null) {
             return hint.index;
         }
