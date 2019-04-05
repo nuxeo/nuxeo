@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,7 +135,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         }
 
         ancestors.forEach(ancestor -> updateCount(session, ancestor,
-                                                  DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY, count));
+                DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY, count));
         session.save();
     }
 
@@ -178,25 +178,19 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     protected Map<String, String> getFolders(CoreSession session) {
-        IterableQueryResult res = session.queryAndFetch(
-                "SELECT ecm:uuid, ecm:parentId FROM Document WHERE ecm:mixinType = 'Folderish'", "NXQL");
-        try {
+        try (IterableQueryResult res = session.queryAndFetch(
+                "SELECT ecm:uuid, ecm:parentId FROM Document WHERE ecm:mixinType = 'Folderish'", "NXQL")) {
             Map<String, String> folders = new HashMap<>();
 
             for (Map<String, Serializable> r : res) {
                 folders.put((String) r.get("ecm:uuid"), (String) r.get("ecm:parentId"));
             }
             return folders;
-        } finally {
-            if (res != null) {
-                res.close();
-            }
         }
     }
 
     protected Map<String, Count> computeDocumentsCountByFolder(CoreSession session, Map<String, String> folders) {
-        IterableQueryResult res = session.queryAndFetch("SELECT ecm:uuid, ecm:parentId FROM Document", "NXQL");
-        try {
+        try (IterableQueryResult res = session.queryAndFetch("SELECT ecm:uuid, ecm:parentId FROM Document", "NXQL")) {
             Map<String, Count> foldersCount = new HashMap<>();
             for (Map<String, Serializable> r : res) {
                 String uuid = (String) r.get("ecm:uuid");
@@ -216,10 +210,6 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
                 updateParentsDocumentsCount(folders, foldersCount, folderId);
             }
             return foldersCount;
-        } finally {
-            if (res != null) {
-                res.close();
-            }
         }
     }
 
@@ -278,7 +268,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         // do not send notifications
         QuotaUtils.disableListeners(folder);
         DocumentModel origFolder = folder;
-        session.saveDocument(folder);
+        folder = session.saveDocument(folder);
         QuotaUtils.clearContextData(origFolder);
     }
 

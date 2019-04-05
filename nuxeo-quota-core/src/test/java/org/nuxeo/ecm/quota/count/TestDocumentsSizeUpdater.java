@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -49,7 +48,6 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -85,9 +83,6 @@ public class TestDocumentsSizeUpdater {
     protected CoreFeature coreFeature;
 
     @Inject
-    protected EventService eventService;
-
-    @Inject
     protected UserWorkspaceService uwm;
 
     @Inject
@@ -107,13 +102,6 @@ public class TestDocumentsSizeUpdater {
 
     protected DocumentRef secondFileRef;
 
-    protected void next() {
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-        eventService.waitForAsyncCompletion(TimeUnit.MINUTES.toMillis(1));
-        coreFeature.waitForAsyncCompletion();
-    }
-
     @Test
     public void testQuotaOnAddContent() {
 
@@ -125,7 +113,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0L, 300L);
         assertQuota(getFirstFolder(), 0L, 300L);
         assertQuota(getWorkspace(), 0L, 300L);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -139,7 +127,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0L, 300L);
         assertQuota(getFirstFolder(), 0L, 300L);
         assertQuota(getWorkspace(), 0L, 300L);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         doUpdateContent();
 
@@ -149,7 +137,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0L, 580L);
         assertQuota(getFirstFolder(), 0L, 580L);
         assertQuota(getWorkspace(), 50L, 630L);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -163,7 +151,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0, 300, 0, 0);
         assertQuota(getFirstFolder(), 0, 300, 0, 0);
         assertQuota(getWorkspace(), 0, 300, 0, 0);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         doCheckIn();
 
@@ -179,7 +167,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0, 400, 0, 100);
         assertQuota(getFirstFolder(), 0, 400, 0, 100);
         assertQuota(getWorkspace(), 0, 400, 0, 100);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         // checkout the doc
         doCheckOut();
@@ -193,7 +181,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0, 400, 0, 100);
         assertQuota(getFirstFolder(), 0, 400, 0, 100);
         assertQuota(getWorkspace(), 0, 400, 0, 100);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -202,7 +190,7 @@ public class TestDocumentsSizeUpdater {
         addContent();
 
         dump();
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         doCheckIn();
 
@@ -215,7 +203,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0, 400, 0, 100);
         assertQuota(getFirstFolder(), 0, 400, 0, 100);
         assertQuota(getWorkspace(), 0, 400, 0, 100);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         // checkout the doc
         doCheckOut();
@@ -229,7 +217,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0, 400, 0, 100);
         assertQuota(getFirstFolder(), 0, 400, 0, 100);
         assertQuota(getWorkspace(), 0, 400, 0, 100);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -243,7 +231,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0, 300, 0, 0);
         assertQuota(getFirstFolder(), 0, 300, 0, 0);
         assertQuota(getWorkspace(), 0, 300, 0, 0);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         // update and create a version
         doUpdateAndVersionContent();
@@ -259,7 +247,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstFolder(), 0, 960, 0, 380);
         assertQuota(getWorkspace(), 50, 1010, 0, 380);
 
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         // create another version
         doSimpleVersion();
@@ -273,7 +261,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0, 1340, 0, 760);
         assertQuota(getFirstFolder(), 0, 1340, 0, 760);
         assertQuota(getWorkspace(), 50, 1390, 0, 760);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         // remove a version
         doRemoveFirstVersion();
@@ -287,12 +275,11 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0, 960, 0, 380);
         assertQuota(getFirstFolder(), 0, 960, 0, 380);
         assertQuota(getWorkspace(), 50, 1010, 0, 380);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         // remove doc and associated version
-
         doRemoveContent();
-        eventService.waitForAsyncCompletion();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         dump();
         assertFalse(session.exists(firstFileRef));
@@ -300,7 +287,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0, 200, 0, 0);
         assertQuota(getFirstFolder(), 0, 200, 0, 0);
         assertQuota(getWorkspace(), 50, 250, 0, 0);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -320,7 +307,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getSecondSubFolder(), 0L, 100L);
         assertQuota(getFirstFolder(), 0L, 300L);
         assertQuota(getWorkspace(), 0L, 300L);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -335,7 +322,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0L, 200L);
         assertQuota(getFirstFolder(), 0L, 200L);
         assertQuota(getWorkspace(), 0L, 200L);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -356,7 +343,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getSecondSubFolder(), 0L, 100L);
         assertQuota(getFirstFolder(), 0L, 400L);
         assertQuota(getWorkspace(), 0L, 400L);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -381,7 +368,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(copiedFirstFile, 100L, 100L);
         assertQuota(copiedSecondFile, 200L, 200L);
         assertQuota(getWorkspace(), 0L, 600L);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -396,7 +383,7 @@ public class TestDocumentsSizeUpdater {
         assertFalse(session.exists(firstSubFolderRef));
         assertQuota(getFirstFolder(), 0L, 0L);
         assertQuota(getWorkspace(), 0L, 0L);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -416,7 +403,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0L, 300L);
         assertQuota(getFirstFile(), 100L, 100L);
         assertQuota(getSecondFile(), 200L, 200L);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -434,23 +421,22 @@ public class TestDocumentsSizeUpdater {
         // set the quota to 400
         qa.setMaxQuota(400);
         qa.save();
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         dump();
-        boolean canNotExceedQuota = false;
         try {
             // now try to update one
             DocumentModel firstFile = session.getDocument(firstFileRef);
             firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(250));
-            firstFile = session.saveDocument(firstFile);
+            session.saveDocument(firstFile);
+            fail("Should have failed due to quota exceeded");
         } catch (Exception e) {
-            if (QuotaExceededException.isQuotaExceededException(e)) {
-                canNotExceedQuota = true;
-            }
+            assertTrue(QuotaExceededException.isQuotaExceededException(e));
+            // rollback the transaction
             TransactionHelper.setTransactionRollbackOnly();
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
-        assertTrue(canNotExceedQuota);
-        next();
 
         dump();
         assertQuota(getFirstFile(), 100L, 100L);
@@ -462,23 +448,14 @@ public class TestDocumentsSizeUpdater {
         // set the quota to -1 / unlimited
         qa.setMaxQuota(-1);
         qa.save();
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         dump();
-        canNotExceedQuota = false;
-        try {
-            // now try to update one
-            DocumentModel firstFile = session.getDocument(firstFileRef);
-            firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(250));
-            firstFile = session.saveDocument(firstFile);
-        } catch (Exception e) {
-            if (QuotaExceededException.isQuotaExceededException(e)) {
-                canNotExceedQuota = true;
-            }
-            TransactionHelper.setTransactionRollbackOnly();
-        }
-        assertFalse(canNotExceedQuota);
-        next();
+        // now try to update one
+        DocumentModel firstFile = session.getDocument(firstFileRef);
+        firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(250));
+        session.saveDocument(firstFile);
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -495,45 +472,25 @@ public class TestDocumentsSizeUpdater {
         // set the quota to 300
         qa.setMaxQuota(500);
         qa.save();
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         dump();
-        boolean quotaExceeded = false;
-        try {
-
-            DocumentModel doc = session.copy(firstFileRef, firstSubFolderRef, "newCopy");
-            doc.setPropertyValue("file:content", (Serializable) getFakeBlob(100));
-            doc = session.createDocument(doc);
-            session.save();
-        } catch (Exception e) {
-            if (QuotaExceededException.isQuotaExceededException(e)) {
-                quotaExceeded = true;
-            }
-            TransactionHelper.setTransactionRollbackOnly();
-        }
-        assertFalse(quotaExceeded);
-        next();
+        DocumentModel doc = session.copy(firstFileRef, firstSubFolderRef, "newCopy");
+        doc.setPropertyValue("file:content", (Serializable) getFakeBlob(100));
+        session.createDocument(doc);
+        session.save();
 
         // TODO
         session.removeChildren(firstFolderRef);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         dump();
-        quotaExceeded = false;
-        try {
-            DocumentModel doc = session.createDocumentModel("File");
-            doc.setPropertyValue("file:content", (Serializable) getFakeBlob(299));
-            doc.setPropertyValue("dc:title", "Other file");
-            doc.setPathInfo(getWorkspace().getPathAsString(), "otherfile");
-            doc = session.createDocument(doc);
-        } catch (Exception e) {
-            if (QuotaExceededException.isQuotaExceededException(e)) {
-                quotaExceeded = true;
-            }
-            TransactionHelper.setTransactionRollbackOnly();
-        }
-        assertFalse(quotaExceeded);
-        next();
+        doc = session.createDocumentModel("File");
+        doc.setPropertyValue("file:content", (Serializable) getFakeBlob(299));
+        doc.setPropertyValue("dc:title", "Other file");
+        doc.setPathInfo(getWorkspace().getPathAsString(), "otherfile");
+        session.createDocument(doc);
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -546,7 +503,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0L, 300L);
         assertQuota(getFirstFolder(), 0L, 300L);
         assertQuota(getWorkspace(), 0L, 300L);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         final String title = "MassCopyDoc";
         final int nbrDocs = 20;
@@ -560,15 +517,14 @@ public class TestDocumentsSizeUpdater {
             doc.setPropertyValue("file:content", (Serializable) blob);
             doc.setPropertyValue("dc:title", title);
             doc.setPathInfo(getSecondFolder().getPathAsString(), "myfile" + i);
-            doc = session.createDocument(doc);
+            session.createDocument(doc);
         }
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         final long maxSize = 455L;
         QuotaAware qa = getFirstSubFolder().getAdapter(QuotaAware.class);
         assertNotNull(qa);
         final long firstSubFolderTotalSize = qa.getTotalSize();
-        final long expectedNbrDocsCopied = (maxSize - firstSubFolderTotalSize) / fileSize;
 
         assertEquals(nbrDocs, session.getChildren(secondFolderRef, "File").size());
         dump();
@@ -582,7 +538,7 @@ public class TestDocumentsSizeUpdater {
         assertNotNull(qa);
         qa.setMaxQuota(maxSize);
         qa.save();
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         qa = getFirstSubFolder().getAdapter(QuotaAware.class);
         assertNotNull(qa);
@@ -593,18 +549,17 @@ public class TestDocumentsSizeUpdater {
         for (DocumentModel doc : docsToCopy) {
             refsToCopy.add(doc.getRef());
         }
-        boolean quotaExceeded = false;
         try {
             session.move(refsToCopy, firstSubFolderRef);
+            fail("Should have failed due to quota exceeded");
         } catch (Exception e) {
-            if (QuotaExceededException.isQuotaExceededException(e)) {
-                quotaExceeded = true;
-            }
-            // Rollback all copy operations
+            assertTrue(QuotaExceededException.isQuotaExceededException(e));
+            // rollback the transaction
             TransactionHelper.setTransactionRollbackOnly();
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
-        assertTrue(quotaExceeded);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         qa = getFirstSubFolder().getAdapter(QuotaAware.class);
         assertNotNull(qa);
@@ -614,24 +569,14 @@ public class TestDocumentsSizeUpdater {
         DocumentModelList children = session.getChildren(firstSubFolderRef, "File");
         // assertEquals(firstSubFolderExistingFilesNbr + expectedNbrDocsCopied, children.size());
         assertEquals(firstSubFolderExistingFilesNbr, children.size());
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         DocumentModel doc = session.createDocumentModel("File");
         doc.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
         doc.setPropertyValue("dc:title", "Other file");
         doc.setPathInfo(getFirstSubFolder().getPathAsString(), "otherfile");
-        quotaExceeded = false;
-        try {
-            doc = session.createDocument(doc);
-        } catch (Exception e) {
-            if (QuotaExceededException.isQuotaExceededException(e)) {
-                quotaExceeded = true;
-            }
-            TransactionHelper.setTransactionRollbackOnly();
-        }
-        assertFalse(quotaExceeded);
-        eventService.waitForAsyncCompletion();
-        next();
+        session.createDocument(doc);
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -648,24 +593,24 @@ public class TestDocumentsSizeUpdater {
         // set the quota to 350
         qa.setMaxQuota(350);
         qa.save();
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         dump();
         // create a version
         DocumentModel firstFile = session.getDocument(firstFileRef);
         firstFile.checkIn(VersioningOption.MINOR, null);
-        boolean canNotExceedQuota = false;
         try {
             // now try to checkout
             firstFile.checkOut();
+            fail("Should have failed due to quota exceeded");
         } catch (Exception e) {
-            if (QuotaExceededException.isQuotaExceededException(e)) {
-                canNotExceedQuota = true;
-            }
+            assertTrue(QuotaExceededException.isQuotaExceededException(e));
+            // rollback the transaction
             TransactionHelper.setTransactionRollbackOnly();
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
-        assertTrue(canNotExceedQuota);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -684,7 +629,7 @@ public class TestDocumentsSizeUpdater {
         String updaterName = "documentsSizeUpdater";
         quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName(), null);
         workManager.getCategoryQueueId(QuotaStatsInitialWork.CATEGORY_QUOTA_INITIAL);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         dump();
         assertQuota(getFirstFile(), 100L, 200L, 0L, 100L);
@@ -701,7 +646,7 @@ public class TestDocumentsSizeUpdater {
         firstFile = session.saveDocument(firstFile);
         session.save(); // process invalidations
         assertTrue(firstFile.isCheckedOut());
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         assertQuota(getFirstFile(), 100L, 200L, 0L, 100L);
         assertQuota(getSecondFile(), 200L, 200L, 200L, 0L);
@@ -719,18 +664,18 @@ public class TestDocumentsSizeUpdater {
         addContent(true);
         doDeleteFileContent(firstFileRef);
 
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
         dump();
         assertQuota(getFirstFile(), 100L, 200L, 100L, 100L);
         assertQuota(getSecondFile(), 200L, 200L, 0L, 0L);
         assertQuota(getFirstSubFolder(), 0L, 400L, 100L, 100L);
         assertQuota(getFirstFolder(), 0L, 400L, 100L, 100L);
         assertQuota(getWorkspace(), 0L, 400L, 100L, 100L);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         String updaterName = "documentsSizeUpdater";
         quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName(), null);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         dump();
         assertQuota(getFirstFile(), 100L, 200L, 100L, 100L);
@@ -738,7 +683,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0L, 400L, 100L, 100L);
         assertQuota(getFirstFolder(), 0L, 400L, 100L, 100L);
         assertQuota(getWorkspace(), 0L, 400L, 100L, 100L);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     @Test
@@ -750,8 +695,8 @@ public class TestDocumentsSizeUpdater {
         // also add a blob on the workspace above the one for which we're recomputing
         DocumentModel ws = getWorkspace();
         ws.setPropertyValue("file:content", (Serializable) getFakeBlob(1000));
-        ws = session.saveDocument(ws);
-        next();
+        session.saveDocument(ws);
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         // correct quotas
         dump();
@@ -783,7 +728,7 @@ public class TestDocumentsSizeUpdater {
         String updaterName = "documentsSizeUpdater";
         quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName(),
                 firstSubFolder.getPathAsString());
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         // quotas are correct again
         dump();
@@ -860,7 +805,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getWorkspace(), 50, 1010, 380, 380);
 
         doRemoveContent();
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
         dump();
         assertFalse(session.exists(firstFileRef));
         assertQuota(getSecondFile(), 200, 200, 0, 0);
@@ -884,7 +829,7 @@ public class TestDocumentsSizeUpdater {
         assertQuota(getFirstSubFolder(), 0, 300, 0, 0);
         assertQuota(getFirstFolder(), 0, 300, 0, 0);
         assertQuota(getWorkspace(), 0, 300, 0, 0);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         // update and create a version
         doUpdateAndVersionContent();
@@ -975,33 +920,33 @@ public class TestDocumentsSizeUpdater {
         QuotaAware qaFSF = firstSubFolder.getAdapter(QuotaAware.class);
         qaFSF.setMaxQuota(200);
         qaFSF.save();
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         DocumentModel secondFolder = session.getDocument(secondFolderRef);
         QuotaAware qaSecFolder = secondFolder.getAdapter(QuotaAware.class);
         try {
             qaSecFolder.setMaxQuota(300);
-            fail();
+            fail("Should have failed due to quota exceeded");
         } catch (QuotaExceededException e) {
             // ok
         }
         qaSecFolder.setMaxQuota(200);
         qaSecFolder.save();
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         qaSecFolder = getSecondFolder().getAdapter(QuotaAware.class);
         assertEquals(200L, qaSecFolder.getMaxQuota());
         QuotaAware qaFirstFolder = getFirstFolder().getAdapter(QuotaAware.class);
         try {
             qaFirstFolder.setMaxQuota(50);
-            fail();
+            fail("Should have failed due to quota exceeded");
         } catch (QuotaExceededException e) {
             // ok
         }
         QuotaAware qaSecSubFolder = getSecondSubFolder().getAdapter(QuotaAware.class);
         try {
             qaSecSubFolder.setMaxQuota(50);
-            fail();
+            fail("Should have failed due to quota exceeded");
         } catch (QuotaExceededException e) {
             // ok
         }
@@ -1053,7 +998,7 @@ public class TestDocumentsSizeUpdater {
             }
         }
         firstFileRef = firstFile.getRef();
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         dump();
         firstFile = getFirstFile();
@@ -1071,18 +1016,18 @@ public class TestDocumentsSizeUpdater {
         addContent();
 
         try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
-            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
             assertNotNull(uw);
             userSession.save();
         }
         try (CloseableCoreSession userSession = coreFeature.openCoreSession("titi")) {
-            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
             assertNotNull(uw);
             userSession.save();
         }
         quotaStatsService.activateQuotaOnUserWorkspaces(300L, session);
         quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(300L, session.getRootDocument(), session);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         assertEquals(0, workManager.getQueueSize("quota", null));
 
@@ -1099,14 +1044,14 @@ public class TestDocumentsSizeUpdater {
         DocumentModel firstFile = session.createDocumentModel(totoUW.getPathAsString(), "file1", "File");
         firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
         firstFile = session.createDocument(firstFile);
-        firstFile = session.saveDocument(firstFile);
+        session.saveDocument(firstFile);
 
         DocumentModel secondFile = session.createDocumentModel(titiUW.getPathAsString(), "file2", "File");
         secondFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
         secondFile = session.createDocument(secondFile);
-        secondFile = session.saveDocument(secondFile);
+        session.saveDocument(secondFile);
 
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         totoUW = uwm.getUserPersonalWorkspace("toto", session.getDocument(new PathRef("/default-domain/")));
         totoUWQuota = totoUW.getAdapter(QuotaAware.class);
@@ -1119,7 +1064,7 @@ public class TestDocumentsSizeUpdater {
             secondFile = session.createDocumentModel(titiUW.getPathAsString(), "file2", "File");
             secondFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
             secondFile = session.createDocument(secondFile);
-            secondFile = session.saveDocument(secondFile);
+            session.saveDocument(secondFile);
             fail("Should have failed due to quota exceeded");
         } catch (Exception e) {
             assertTrue("Should have failed with a QuotaExceededException cause",
@@ -1130,7 +1075,7 @@ public class TestDocumentsSizeUpdater {
             firstFile = session.createDocumentModel(totoUW.getPathAsString(), "file1", "File");
             firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
             firstFile = session.createDocument(firstFile);
-            firstFile = session.saveDocument(firstFile);
+            session.saveDocument(firstFile);
             fail("Should have failed due to quota exceeded");
         } catch (Exception e) {
             assertTrue("Should have failed with a QuotaExceededException cause",
@@ -1191,22 +1136,22 @@ public class TestDocumentsSizeUpdater {
         DocumentModel secondFolder = session.createDocumentModel(ws.getPathAsString(), "folder2", "Folder");
         secondFolder = session.createDocument(secondFolder);
         secondFolderRef = secondFolder.getRef();
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doMoveContent() {
         session.move(firstFileRef, secondSubFolderRef, null);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doMoveFolderishContent() {
         session.move(firstSubFolderRef, secondFolderRef, null);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doMoveFileContent() {
         session.move(firstFileRef, secondFolderRef, null);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doUpdateContent() {
@@ -1214,7 +1159,7 @@ public class TestDocumentsSizeUpdater {
         DocumentModel firstFile = session.getDocument(firstFileRef);
 
         ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
-        ws = session.saveDocument(ws);
+        session.saveDocument(ws);
 
         List<Map<String, Serializable>> files = new ArrayList<>();
 
@@ -1225,20 +1170,20 @@ public class TestDocumentsSizeUpdater {
         }
 
         firstFile.setPropertyValue("files:files", (Serializable) files);
-        firstFile = session.saveDocument(firstFile);
-        next();
+        session.saveDocument(firstFile);
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doCheckIn() {
         DocumentModel firstFile = session.getDocument(firstFileRef);
         firstFile.checkIn(VersioningOption.MINOR, null);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doCheckOut() {
         DocumentModel firstFile = session.getDocument(firstFileRef);
         firstFile.checkOut();
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doUpdateAndVersionContent() {
@@ -1246,7 +1191,7 @@ public class TestDocumentsSizeUpdater {
         DocumentModel firstFile = session.getDocument(firstFileRef);
 
         ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
-        ws = session.saveDocument(ws);
+        session.saveDocument(ws);
 
         List<Map<String, Serializable>> files = new ArrayList<>();
 
@@ -1259,61 +1204,61 @@ public class TestDocumentsSizeUpdater {
         firstFile.setPropertyValue("files:files", (Serializable) files);
         // create minor version
         firstFile.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
-        firstFile = session.saveDocument(firstFile);
-        next();
+        session.saveDocument(firstFile);
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doSimpleVersion() {
         DocumentModel firstFile = session.getDocument(firstFileRef);
         firstFile.setPropertyValue("dc:title", "a version");
         firstFile.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
-        firstFile = session.saveDocument(firstFile);
-        next();
+        session.saveDocument(firstFile);
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doRemoveFirstVersion() {
         List<DocumentModel> versions = session.getVersions(firstFileRef);
         session.removeDocument(versions.get(0).getRef());
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doRemoveContent() {
         session.removeDocument(firstFileRef);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doRemoveFolderishContent() {
         session.removeDocument(firstSubFolderRef);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doDeleteFileContent() {
         List<DocumentModel> docs = new ArrayList<>();
         docs.add(session.getDocument(firstFileRef));
         Framework.getService(TrashService.class).trashDocuments(docs);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doDeleteFileContent(final DocumentRef fileRef) {
         DocumentModel doc = session.getDocument(fileRef);
         Framework.getService(TrashService.class).trashDocument(doc);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doUndeleteFileContent() {
         DocumentModel doc = session.getDocument(firstFileRef);
         Framework.getService(TrashService.class).untrashDocument(doc);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doCopyContent() {
         session.copy(firstFileRef, secondSubFolderRef, null);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void doCopyFolderishContent() {
         session.copy(firstSubFolderRef, secondFolderRef, null);
-        next();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
 
     protected void dump() {

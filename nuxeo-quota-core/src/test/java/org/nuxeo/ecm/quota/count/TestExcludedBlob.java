@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -42,15 +41,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaSizeService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * NXP-11558 : Test that blob can be exclude by their path
@@ -63,27 +59,16 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TestExcludedBlob {
 
     @Inject
-    protected QuotaStatsService qs;
+    protected QuotaSizeService sus;
 
     @Inject
-    QuotaSizeService sus;
+    protected CoreSession session;
 
     @Inject
-    CoreSession session;
-
-    @Inject
-    EventService eventService;
-
-    protected DocumentRef fileRef;
-
-    protected void next() {
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-        eventService.waitForAsyncCompletion(TimeUnit.MINUTES.toMillis(1));
-    }
+    protected TransactionalFeature txFeature;
 
     @Test
-    public void quotaServiceCanGiveTheListOfXpathPropsExcludedFromQuotaComputation() throws Exception {
+    public void quotaServiceCanGiveTheListOfXpathPropsExcludedFromQuotaComputation() {
         Collection<String> paths = sus.getExcludedPathList();
         assertThat(paths, is(notNullValue()));
         assertThat(paths.size(), is(1));
@@ -91,40 +76,31 @@ public class TestExcludedBlob {
     }
 
     @Test
-    public void quotaComputationDontTakeFilesSchemaIntoAccount() throws Exception {
+    public void quotaComputationDontTakeFilesSchemaIntoAccount() {
 
         // Given a document with a blob in the file schema
         DocumentModel doc = session.createDocumentModel("/", "file1", "File");
         doc.setPropertyValue("file:content", (Serializable) getFakeBlob(100));
         doc = session.createDocument(doc);
-        fileRef = doc.getRef();
-        next();
+        txFeature.nextTransaction();
 
-        doc = getDocument();
+        doc = session.getDocument(doc.getRef());
         assertQuota(doc, 100, 100);
 
         // When I add some Blob in the files content
-        doc = getDocument();
-        List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+        List<Map<String, Serializable>> files = new ArrayList<>();
         for (int i = 1; i < 5; i++) {
-            Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
+            Map<String, Serializable> files_entry = new HashMap<>();
             files_entry.put("file", (Serializable) getFakeBlob(70));
             files.add(files_entry);
         }
         doc.setPropertyValue("files:files", (Serializable) files);
-        doc = session.saveDocument(doc);
-        next();
+        session.saveDocument(doc);
+        txFeature.nextTransaction();
 
         // Then quota should not change
-        doc = getDocument();
+        doc = session.getDocument(doc.getRef());
         assertQuota(doc, 100, 100);
-    }
-
-    /**
-     * @return
-     */
-    protected DocumentModel getDocument() {
-        return session.getDocument(fileRef);
     }
 
     protected Blob getFakeBlob(int size) {

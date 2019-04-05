@@ -37,9 +37,6 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_TRASHED;
 import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_UNTRASHED;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.event.Event;
@@ -56,10 +53,10 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class QuotaStatsListener implements EventListener {
 
-    public static final Set<String> EVENTS_TO_HANDLE = Collections.unmodifiableSet(new HashSet<>(
-            Arrays.asList(DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY, DOCUMENT_UPDATED, DOCUMENT_MOVED, ABOUT_TO_REMOVE,
-                    BEFORE_DOC_UPDATE, ABOUT_TO_REMOVE_VERSION, DOCUMENT_CHECKEDIN, DOCUMENT_CHECKEDOUT,
-                    TRANSITION_EVENT, BEFORE_DOC_RESTORE, DOCUMENT_RESTORED, DOCUMENT_TRASHED, DOCUMENT_UNTRASHED)));
+    public static final Set<String> EVENTS_TO_HANDLE = Set.of(DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY,
+            DOCUMENT_UPDATED, DOCUMENT_MOVED, ABOUT_TO_REMOVE, BEFORE_DOC_UPDATE, ABOUT_TO_REMOVE_VERSION,
+            DOCUMENT_CHECKEDIN, DOCUMENT_CHECKEDOUT, TRANSITION_EVENT, BEFORE_DOC_RESTORE, DOCUMENT_RESTORED,
+            DOCUMENT_TRASHED, DOCUMENT_UNTRASHED);
 
     @Override
     public void handleEvent(Event event) {
@@ -78,8 +75,9 @@ public class QuotaStatsListener implements EventListener {
         quotaStatsService.updateStatistics(docCtx, event);
     }
 
+    @SuppressWarnings("deprecation")
     protected boolean isTrashOpEvent(DocumentEventContext eventContext) {
         String transition = (String) eventContext.getProperties().get(TRANSTION_EVENT_OPTION_TRANSITION);
-        return transition != null && (DELETE_TRANSITION.equals(transition) || UNDELETE_TRANSITION.equals(transition));
+        return (DELETE_TRANSITION.equals(transition) || UNDELETE_TRANSITION.equals(transition));
     }
 }
