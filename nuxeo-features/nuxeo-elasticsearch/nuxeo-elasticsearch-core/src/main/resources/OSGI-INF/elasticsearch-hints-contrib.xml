@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.hint.contrib">
+  <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
+
+  <extension point="elasticSearchHints" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
+    <hint name="match" class="org.nuxeo.elasticsearch.hint.MatchESHintQueryBuilder" />
+    <hint name="match_phrase" class="org.nuxeo.elasticsearch.hint.MatchPhraseESHintQueryBuilder" />
+    <hint name="match_phrase_prefix" class="org.nuxeo.elasticsearch.hint.MatchPhrasePrefixESHintQueryBuilder" />
+    <hint name="multi_match" class="org.nuxeo.elasticsearch.hint.MultiMatchESHintQueryBuilder" />
+    <hint name="regex" class="org.nuxeo.elasticsearch.hint.RegexESHintQueryBuilder" />
+    <hint name="fuzzy" class="org.nuxeo.elasticsearch.hint.FuzzyESHintQueryBuilder" />
+    <hint name="wildcard" class="org.nuxeo.elasticsearch.hint.WildcardESHintQueryBuilder" />
+    <hint name="common" class="org.nuxeo.elasticsearch.hint.CommonESHintQueryBuilder" />
+    <hint name="query_string" class="org.nuxeo.elasticsearch.hint.QueryStringESHintQueryBuilder" />
+    <hint name="simple_query_string" class="org.nuxeo.elasticsearch.hint.SimpleQueryStringESHintQueryBuilder" />
+    <hint name="more_like_this" class="org.nuxeo.elasticsearch.hint.MoreLikeThisESHintQueryBuilder" />
+    <hint name="geo_bounding_box" class="org.nuxeo.elasticsearch.hint.GeoBoundingBoxESHintQueryBuilder" />
+    <hint name="geo_distance" class="org.nuxeo.elasticsearch.hint.GeoDistanceESHintQueryBuilder" />
+    <hint name="geo_shape" class="org.nuxeo.elasticsearch.hint.GeoShapeESHintQueryBuilder" />
+  </extension>
+
+</component>
