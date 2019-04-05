@@ -78,6 +78,7 @@ public abstract class BaseOverflowRecordFilter implements RecordFilter {
     @Override
     public void init(Map<String, String> options) {
         storeName = options.getOrDefault(STORE_NAME_OPTION, DEFAULT_STORE_NAME);
+        prefix = options.getOrDefault(PREFIX_OPTION, DEFAULT_PREFIX);
         thresholdSize = parseIntOrDefault(options.get(THRESHOLD_SIZE_OPTION), DEFAULT_THRESHOLD_SIZE);
         storeTTL = DurationUtils.parse(options.getOrDefault(STORE_TTL_OPTION, DEFAULT_STORE_TTL));
     }
@@ -122,7 +123,7 @@ public abstract class BaseOverflowRecordFilter implements RecordFilter {
                 return null;
             }
             EnumSet<Record.Flag> flags = record.getFlags();
-            flags.remove(Record.Flag.USER1);
+            flags.remove(Record.Flag.EXTERNAL_VALUE);
             return new Record(record.getKey(), value, record.getWatermark(), flags);
         }
         return record;

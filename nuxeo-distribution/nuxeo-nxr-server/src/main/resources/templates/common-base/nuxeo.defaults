@@ -189,10 +189,10 @@ nuxeo.stream.work.over.provisioning.factor=3
 nuxeo.stream.work.computation.filter.enabled=false
 nuxeo.stream.work.computation.filter.thresholdSize=1000000
 nuxeo.stream.work.computation.filter.class=org.nuxeo.ecm.core.transientstore.computation.TransientStoreOverflowRecordFilter
-#nuxeo.stream.work.computation.filter.class=org.nuxeo.ecm.core.work.KVOverflowRecordFilter
+#nuxeo.stream.work.computation.filter.class=org.nuxeo.ecm.core.work.KeyValueStoreOverflowRecordFilter
 nuxeo.stream.work.computation.filter.storeName=default
-nuxeo.stream.work.computation.filter.storeKeyPrefix=bigvalue:
-# TTL is only taken in account with the KV impl for TS you need to configure in the TS
+nuxeo.stream.work.computation.filter.storeKeyPrefix=bigRecord:
+# TTL is only taken in account with the KV impl, for TS impl you need to configure TS garbage collector
 nuxeo.stream.work.computation.filter.storeTTL=4d
 
 # Stream AuditWriter
