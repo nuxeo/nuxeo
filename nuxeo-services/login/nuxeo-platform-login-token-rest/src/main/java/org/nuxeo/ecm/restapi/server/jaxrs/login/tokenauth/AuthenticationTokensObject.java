@@ -18,18 +18,16 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.login.tokenauth;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.tokenauth.io.AuthenticationToken;
-import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
-import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
-import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
-import org.nuxeo.runtime.api.Framework;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -37,10 +35,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.tokenauth.io.AuthenticationToken;
+import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
+import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Token Object
@@ -65,12 +70,20 @@ public class AuthenticationTokensObject extends AbstractResource<ResourceTypeImp
     }
 
     @POST
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
     public Response createToken(@QueryParam("application") String applicationName,
             @QueryParam("deviceId") String deviceId, @QueryParam("deviceDescription") String deviceDescription,
-            @QueryParam("permission") String permission) {
+            @QueryParam("permission") String permission, @HeaderParam("accept") String acceptType) {
         String username = getCurrentUser().getName();
         String token = service.acquireToken(username, applicationName, deviceId, deviceDescription, permission);
-        return Response.ok(token).status(Response.Status.CREATED).build();
+        String body = token;
+        MediaType cType = MediaType.TEXT_PLAIN_TYPE;
+        List<MediaType> acceptList = accepts(acceptType);
+        if (acceptList.isEmpty() || acceptList.stream().anyMatch(type -> MediaType.APPLICATION_JSON_TYPE.isCompatible(type))) {
+           body = String.format("\"%s\"", token);
+           cType = MediaType.APPLICATION_JSON_TYPE;
+        }
+        return Response.ok(body).type(cType).status(Response.Status.CREATED).build();
     }
 
     @DELETE
@@ -97,5 +110,27 @@ public class AuthenticationTokensObject extends AbstractResource<ResourceTypeImp
                 (String) props.get("permission"));
         token.setCreationDate((Calendar) props.get("creationDate"));
         return token;
+    }
+
+    private List<MediaType> accepts(String value) {
+        // if there is no Accept header it means that all media types are
+        // acceptable
+        if (StringUtils.isBlank(value)) {
+            return Collections.singletonList(MediaType.WILDCARD_TYPE);
+        }
+        List<MediaType> list = new LinkedList<MediaType>();
+        String[] mediaTypes = StringUtils.split(value, ",");
+        for (String mediaRange : mediaTypes) {
+            mediaRange = mediaRange.trim();
+            if (mediaRange.length() == 0) {
+                continue;
+            }
+            try {
+                list.add(MediaType.valueOf(mediaRange));
+            } catch (IllegalArgumentException iex) {
+                // pass
+            }
+        }
+        return list;
     }
 }
