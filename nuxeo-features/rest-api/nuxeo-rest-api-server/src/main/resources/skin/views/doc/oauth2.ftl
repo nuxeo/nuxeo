@@ -91,7 +91,7 @@
   },
 
   {
-    "path": "/oauth2/token/provider/{oauth2ProviderId}/user/{username}",
+    "path": "/oauth2/token/provider/{oauth2ProviderId}/user/{userName}",
     "description": "Gets, updates and deletes OAuth2 provider tokens.",
     "operations" : [
       {
@@ -135,7 +135,7 @@
   },
 
   {
-    "path": "/oauth2/token/client/{oauth2ClientId}/user/{username}",
+    "path": "/oauth2/token/client/{oauth2ClientId}/user/{userName}",
     "description": "Retrieves updates, and deletes OAuth2 client tokens.",
     "operations" : [
       {
