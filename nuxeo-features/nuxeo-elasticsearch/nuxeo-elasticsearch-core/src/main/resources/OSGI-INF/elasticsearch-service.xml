@@ -20,7 +20,7 @@
 
       <code>
         <elasticSearchLocal clusterName="MyCluster" httpEnabled="true" indexStoreType="mmapfs" nodeName="MyNuxeo"
-          pathData="/var/lib/nuxeo/elasticsearch/" />
+                            pathData="/var/lib/nuxeo/elasticsearch/" />
       </code>
 
       Please refer to the Elasticsearch node configuration
