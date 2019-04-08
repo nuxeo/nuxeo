@@ -312,6 +312,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
         // TODO configure these from somewhere else
         coll.createIndex(Indexes.descending("dc:modified"));
         coll.createIndex(Indexes.ascending("rend:renditionName"));
+        coll.createIndex(Indexes.ascending("rend:sourceId"));
+        coll.createIndex(Indexes.ascending("rend:sourceVersionableId"));
         coll.createIndex(Indexes.ascending("drv:subscriptions.enabled"));
         coll.createIndex(Indexes.ascending("collectionMember:collectionIds"));
         coll.createIndex(Indexes.ascending("nxtag:tags"));
