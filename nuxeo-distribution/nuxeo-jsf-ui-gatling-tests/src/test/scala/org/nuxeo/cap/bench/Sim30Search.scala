@@ -1,7 +1,5 @@
-package org.nuxeo.cap.bench
-
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +16,7 @@ package org.nuxeo.cap.bench
  * Contributors:
  *     Delbosc Benoit
  */
+package org.nuxeo.cap.bench
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
@@ -49,11 +48,11 @@ object ScnSearch {
 class Sim30Search extends Simulation {
 
   val httpProtocol = http
-    .baseURL(Parameters.getBaseUrl())
+    .baseUrl(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connectionHeader("keep-alive")
   val scn = ScnSearch.get(Parameters.getSimulationDuration(), Parameters.getPause())
-  setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
+  setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).during(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
 }
