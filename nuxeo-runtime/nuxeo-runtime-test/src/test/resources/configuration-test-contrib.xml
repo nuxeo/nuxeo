@@ -6,6 +6,13 @@
     <property name="nuxeo.test.anotherDummyBooleanProperty">false</property>
     <property name="nuxeo.test.dummyStringProperty">dummyValue</property>
 
+    <property name="nuxeo.test.dummyIntegerProperty">10</property>
+    <property name="nuxeo.test.dummyLongProperty">20</property>
+    <property name="nuxeo.test.dummyDurationProperty">30m</property>
+
+    <property name="nuxeo.test.dummyEmptyProperty"></property>
+    <property name="nuxeo.test.dummyBlankProperty">  </property>
+
   </extension>
 
 </component>
