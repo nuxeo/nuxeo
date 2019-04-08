@@ -5557,7 +5557,7 @@
                 <version>[3.1.1,)</version>
               </requireMavenVersion>
               <requireJavaVersion>
-                <version>[1.8,)</version>
+                <version>[1.8,9)</version>
               </requireJavaVersion>
               <!-- <dependencyConvergence /> -->
               <bannedDependencies>
