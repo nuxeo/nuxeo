@@ -76,7 +76,7 @@ public class JSONDocumentObject extends DocumentObject {
     public Response doPut(DocumentModel inputDoc, @Context HttpHeaders headers) {
         DocumentModelJsonReader.applyPropertyValues(inputDoc, doc);
         CoreSession session = ctx.getCoreSession();
-        versioningDocFromHeaderIfExists(headers);
+        versioningDocFromHeaderIfExists(doc, headers);
         updateCommentFromHeader(headers);
         try {
             doc = session.saveDocument(doc);
@@ -90,16 +90,15 @@ public class JSONDocumentObject extends DocumentObject {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response doPost(DocumentModel inputDoc) {
+    public Response doPost(DocumentModel inputDoc, @Context HttpHeaders headers) {
         CoreSession session = ctx.getCoreSession();
-
         if (StringUtils.isBlank(inputDoc.getType()) || StringUtils.isBlank(inputDoc.getName())) {
             return Response.status(Status.BAD_REQUEST).entity("type or name property is missing").build();
         }
-
         DocumentModel createdDoc = session.createDocumentModel(doc.getPathAsString(), inputDoc.getName(),
                 inputDoc.getType());
         DocumentModelJsonReader.applyPropertyValues(inputDoc, createdDoc);
+        versioningDocFromHeaderIfExists(createdDoc, headers);
         createdDoc = session.createDocument(createdDoc);
         session.save();
         return Response.ok(createdDoc).status(Status.CREATED).build();
@@ -140,7 +139,7 @@ public class JSONDocumentObject extends DocumentObject {
      *
      * @param headers X-Versioning-Option or Source (for automatic versioning) Header
      */
-    private void versioningDocFromHeaderIfExists(HttpHeaders headers) {
+    private void versioningDocFromHeaderIfExists(DocumentModel doc, HttpHeaders headers) {
         isVersioning = false;
         List<String> versionHeader = headers.getRequestHeader(RestConstants.X_VERSIONING_OPTION);
         List<String> sourceHeader = headers.getRequestHeader(RestConstants.SOURCE);
