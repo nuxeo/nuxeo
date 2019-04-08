@@ -5,15 +5,15 @@ all: inject setup import-folders import-docs
 
 import-docs:
 	$(info ### Creating documents...)
-	mvn -f ../pom.xml -nsu gatling:execute -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim20CreateDocuments
+	mvn -f ../pom.xml -nsu gatling:test -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim20CreateDocuments
 
 import-folders:
 	$(info ### Creating folder layout...)
-	mvn -f ../pom.xml -nsu gatling:execute -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim10CreateFolders
+	mvn -f ../pom.xml -nsu gatling:test -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim10CreateFolders
 
 setup:
 	$(info ### Setup Nuxeo users...)
-	mvn -f ../pom.xml -nsu gatling:execute -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim00Setup
+	mvn -f ../pom.xml -nsu gatling:test -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim00Setup
 
 inject:
 	$(info ### Injecting all data into Redis...)

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ object ScnBulkUpdateFolders {
           // TODO: when NXP-25940 is done use random user
           .feed(Feeders.admins)
           .exec(NuxeoBulk.bulkUpdateDocument("SELECT * FROM Document WHERE ecm:path = '" + Constants.GAT_WS_PATH + "/${parentPath}'", "dc:description", "bulk folder")
-            .asJSON.check(jsonPath("$.commandId").saveAs("commandId")))
+            .asJson.check(jsonPath("$.commandId").saveAs("commandId")))
           .exec(NuxeoBulk.waitForAction("${commandId}"))
           .pause(pause)
       }
@@ -44,13 +44,13 @@ object ScnBulkUpdateFolders {
 // Run a bulk update command on a parent folder of a document
 class Sim25BulkUpdateFolders extends Simulation {
   val httpProtocol = http
-    .baseURL(Parameters.getBaseUrl())
+    .baseUrl(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connectionHeader("keep-alive")
   val documents = Feeders.createRandomDocFeeder()
   val scn = ScnBulkUpdateFolders.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
-  setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
+  setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).during(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
     .assertions(global.successfulRequests.percent.gte(90))
 }

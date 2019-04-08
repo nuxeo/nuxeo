@@ -1,12 +1,28 @@
+/*
+ * (C) Copyright 2015-2019 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Delbosc Benoit
+ */
 import io.gatling.recorder.GatlingRecorder
 import io.gatling.recorder.config.RecorderPropertiesBuilder
 
 object Recorder extends App {
 
 	val props = new RecorderPropertiesBuilder
-	props.simulationOutputFolder(IDEPathHelper.recorderOutputDirectory.toString)
+	props.simulationsFolder(IDEPathHelper.recorderOutputDirectory.toString)
 	props.simulationPackage("computerdatabase")
-	props.bodiesFolder(IDEPathHelper.bodiesDirectory.toString)
+	props.resourcesFolder(IDEPathHelper.mavenResourcesDirectory.toString)
 
 	GatlingRecorder.fromMap(props.build, Some(IDEPathHelper.recorderConfigFile))
 }

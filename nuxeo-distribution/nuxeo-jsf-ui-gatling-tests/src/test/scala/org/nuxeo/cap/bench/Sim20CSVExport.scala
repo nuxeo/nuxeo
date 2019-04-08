@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Funsho David
  */
-
 package org.nuxeo.cap.bench
 
 import io.gatling.core.Predef._
@@ -27,7 +26,8 @@ object ScnBulkCsvExport {
   def get = () => {
     scenario("BulkCsvExport")
       .feed(Feeders.admins)
-      .exec(NuxeoBulk.bulkCsvExport("SELECT * FROM File WHERE ecm:isVersion = 0 AND ecm:isTrashed = 0").asJSON.check(jsonPath("$.commandId").saveAs("commandId")))
+      .exec(NuxeoBulk.bulkCsvExport("SELECT * FROM File WHERE ecm:isVersion = 0 AND ecm:isTrashed = 0")
+        .asJson.check(jsonPath("$.commandId").saveAs("commandId")))
       .exec(NuxeoBulk.waitForAction("${commandId}"))
   }
 
@@ -35,7 +35,7 @@ object ScnBulkCsvExport {
 
 class Sim20CSVExport extends Simulation {
   val httpProtocol = http
-    .baseURL(Parameters.getBaseUrl())
+    .baseUrl(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connectionHeader("keep-alive")
