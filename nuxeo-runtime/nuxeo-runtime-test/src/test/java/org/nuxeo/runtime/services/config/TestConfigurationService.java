@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
+import java.time.Duration;
 
 import javax.inject.Inject;
 
@@ -59,12 +60,19 @@ public class TestConfigurationService {
         assertNull(cs.getProperty("nuxeo.test.dummyBooleanProperty"));
         assertNull(cs.getProperty("nuxeo.test.anotherDummyBooleanProperty"));
         assertNull(cs.getProperty("nuxeo.test.dummyStringProperty"));
+        assertFalse(cs.getString("nuxeo.test.dummyBooleanProperty").isPresent());
+        assertFalse(cs.getString("nuxeo.test.anotherDummyBooleanProperty").isPresent());
+        assertFalse(cs.getString("nuxeo.test.dummyStringProperty").isPresent());
         // Deploy contribution with properties
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml");
         assertNotNull(cs.getProperty("nuxeo.test.dummyBooleanProperty"));
         assertNotNull(cs.getProperty("nuxeo.test.anotherDummyBooleanProperty"));
         assertNotNull(cs.getProperty("nuxeo.test.dummyStringProperty"));
         assertNull(cs.getProperty("nuxeo.test.invalidDummyProperty"));
+        assertTrue(cs.getString("nuxeo.test.dummyBooleanProperty").isPresent());
+        assertTrue(cs.getString("nuxeo.test.anotherDummyBooleanProperty").isPresent());
+        assertTrue(cs.getString("nuxeo.test.dummyStringProperty").isPresent());
+        assertFalse(cs.getString("nuxeo.test.invalidDummyProperty").isPresent());
     }
 
     @Test
@@ -73,6 +81,9 @@ public class TestConfigurationService {
         assertTrue(cs.isBooleanPropertyTrue("nuxeo.test.dummyBooleanProperty"));
         assertFalse(cs.isBooleanPropertyTrue("nuxeo.test.anotherDummyBooleanProperty"));
         assertEquals("dummyValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
+        assertTrue(cs.getBoolean("nuxeo.test.dummyBooleanProperty").orElseThrow(AssertionError::new));
+        assertFalse(cs.getBoolean("nuxeo.test.anotherDummyBooleanProperty").orElseThrow(AssertionError::new));
+        assertEquals("dummyValue", cs.getString("nuxeo.test.dummyStringProperty", null));
     }
 
     @Test
@@ -80,28 +91,39 @@ public class TestConfigurationService {
     public void testOverride() throws Exception {
         // Assert property has overridden value
         assertEquals("dummyValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
+        assertEquals("dummyValue", cs.getString("nuxeo.test.dummyStringProperty", null));
         // Assert property don't exist
         assertNull(cs.getProperty("nuxeo.test.overrideContribDummyProperty"));
+        assertFalse(cs.getString("nuxeo.test.overrideContribDummyProperty").isPresent());
         // Deploy another contrib with a new property and override existing properties
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:configuration-override-contrib.xml");
         // Assert new property was added
         assertEquals("overrideContrib", cs.getProperty("nuxeo.test.overrideContribDummyProperty"));
+        assertEquals("overrideContrib", cs.getString("nuxeo.test.overrideContribDummyProperty", null));
         // Assert framework property does not takes precedence
         assertEquals("dummyStringValueOverridden", cs.getProperty("nuxeo.test.dummyStringProperty"));
+        assertEquals("dummyStringValueOverridden", cs.getString("nuxeo.test.dummyStringProperty", null));
         Framework.getProperties().setProperty("nuxeo.test.dummyStringProperty", "anotherDummyValue");
         assertEquals("dummyStringValueOverridden", cs.getProperty("nuxeo.test.dummyStringProperty"));
+        assertEquals("dummyStringValueOverridden", cs.getString("nuxeo.test.dummyStringProperty", null));
         Framework.getProperties().remove("nuxeo.test.dummyStringProperty");
         // Assert old properties have overridden values
         assertEquals("dummyStringValueOverridden", cs.getProperty("nuxeo.test.dummyStringProperty"));
         assertTrue(cs.isBooleanPropertyFalse("nuxeo.test.dummyBooleanProperty"));
 
+        assertEquals("dummyStringValueOverridden", cs.getString("nuxeo.test.dummyStringProperty", null));
+        assertFalse(cs.getBoolean("nuxeo.test.dummyBooleanProperty").orElseThrow(AssertionError::new));
+
         // Undeploy contrib
         hotDeployer.undeploy("org.nuxeo.runtime.test.tests:configuration-override-contrib.xml");
         // Assert property was removed
         assertNull(cs.getProperty("nuxeo.test.overrideContribDummyProperty"));
+        assertFalse(cs.getString("nuxeo.test.overrideContribDummyProperty").isPresent());
         // Assert overridden values were restored
         assertEquals("dummyValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
         assertTrue(cs.isBooleanPropertyTrue("nuxeo.test.dummyBooleanProperty"));
+        assertEquals("dummyValue", cs.getString("nuxeo.test.dummyStringProperty", null));
+        assertTrue(cs.getBoolean("nuxeo.test.dummyBooleanProperty").orElseThrow(AssertionError::new));
     }
 
     @Test
@@ -127,14 +149,21 @@ public class TestConfigurationService {
         assertEquals("dummyValue", cs.getProperty("nuxeo.test.listStringProperty"));
         assertEquals("anotherDummyValue", cs.getProperty("nuxeo.test.notListStringProperty"));
         assertEquals("newValue", cs.getProperty("nuxeo.test.listStringPropertytoBeReplaced"));
+        assertEquals("dummyValue", cs.getString("nuxeo.test.listStringProperty", null));
+        assertEquals("anotherDummyValue", cs.getString("nuxeo.test.notListStringProperty", null));
+        assertEquals("newValue", cs.getString("nuxeo.test.listStringPropertytoBeReplaced", null));
         // Deploy another contrib merging existing and overriding properties
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:configuration-merge-contrib.xml");
         // Assert new property was merged
         assertEquals("dummyValue,mergedValue,anotherMergedValue", cs.getProperty("nuxeo.test.listStringProperty"));
+        assertEquals("dummyValue,mergedValue,anotherMergedValue", cs.getString("nuxeo.test.listStringProperty", null));
         // Assert new property was not merged
         assertEquals("notMergedValue", cs.getProperty("nuxeo.test.notListStringProperty"));
+        assertEquals("notMergedValue", cs.getString("nuxeo.test.notListStringProperty", null));
         assertEquals("newValue,thisPropertyWasOverridenButIsStillAList",
                 cs.getProperty("nuxeo.test.listStringPropertytoBeReplaced"));
+        assertEquals("newValue,thisPropertyWasOverridenButIsStillAList",
+                cs.getString("nuxeo.test.listStringPropertytoBeReplaced", null));
     }
 
     /**
@@ -189,6 +218,80 @@ public class TestConfigurationService {
                         "\"truc\":[\"foo\",\"bar\"]}}}}";
         String json = cs.getPropertiesAsJson("nuxeo");
         JSONAssert.assertEquals(expected, json, false);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    @Deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml")
+    public void testGetInteger() {
+        assertEquals(10, cs.getInteger("nuxeo.test.dummyIntegerProperty", 0));
+        assertFalse(cs.getInteger("nuxeo.test.dummyStringProperty").isPresent());
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    @Deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml")
+    public void testGetLong() {
+        assertEquals(20, cs.getLong("nuxeo.test.dummyLongProperty", 0));
+        assertFalse(cs.getLong("nuxeo.test.dummyStringProperty").isPresent());
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    @Deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml")
+    public void testGetDuration() {
+        assertEquals(Duration.ofMinutes(30), cs.getDuration("nuxeo.test.dummyDurationProperty", null));
+        assertFalse(cs.getDuration("nuxeo.test.dummyStringProperty").isPresent());
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    @Deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml")
+    public void testBlankPropertyValue() {
+        assertBlankPropertyValue("nuxeo.test.dummyEmptyProperty");
+        assertBlankPropertyValue("nuxeo.test.dummyBlankProperty");
+    }
+
+    protected void assertBlankPropertyValue(String key) {
+        assertFalse(cs.getString(key).isPresent());
+        assertFalse(cs.getInteger(key).isPresent());
+        assertFalse(cs.getLong(key).isPresent());
+        assertFalse(cs.getDuration(key).isPresent());
+        assertFalse(cs.getBoolean(key).isPresent());
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    @Deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml")
+    public void testIsBooleanTrue() {
+        assertTrue(cs.isBooleanTrue("nuxeo.test.dummyBooleanProperty"));
+        assertFalse(cs.isBooleanTrue("nuxeo.test.anotherDummyBooleanProperty"));
+        assertFalse(cs.isBooleanTrue("nuxeo.test.dummyEmptyProperty"));
+        assertFalse(cs.isBooleanTrue("nuxeo.test.dummyBlankProperty"));
+        assertFalse(cs.isBooleanTrue("nuxeo.test.dummyStringProperty"));
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    @Deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml")
+    public void testIsBooleanFalse() {
+        assertFalse(cs.isBooleanFalse("nuxeo.test.dummyBooleanProperty"));
+        assertTrue(cs.isBooleanFalse("nuxeo.test.anotherDummyBooleanProperty"));
+        assertFalse(cs.isBooleanFalse("nuxeo.test.dummyEmptyProperty"));
+        assertFalse(cs.isBooleanFalse("nuxeo.test.dummyBlankProperty"));
+        assertFalse(cs.isBooleanFalse("nuxeo.test.dummyStringProperty"));
     }
 
 }

@@ -27,9 +27,8 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import org.nuxeo.common.utils.DurationUtils;
 import org.w3c.dom.Node;
 
 /**
@@ -223,44 +222,11 @@ public abstract class XValueFactory {
         }
     };
 
-    public static final Pattern DURATION_SIMPLE_FORMAT = Pattern.compile(
-            "(?:(\\d+)d)?(?:(\\d+)h)?(?:(\\d+)m)?(?:(\\d+)s)?(?:(\\d+)ms)?");
-
     public static final XValueFactory DURATION = new XValueFactory() {
 
         @Override
         public Object deserialize(Context context, String value) {
-            if (value.startsWith("P") || value.startsWith("-P")) {
-                // Duration JDK format
-                return Duration.parse(value);
-            }
-            Matcher matcher = DURATION_SIMPLE_FORMAT.matcher(value);
-            if (matcher.matches()) {
-
-                long days = 0;
-                long hours = 0;
-                long minutes = 0;
-                long seconds = 0;
-                long millis = 0;
-                if (matcher.group(1) != null) {
-                    days = Long.parseLong(matcher.group(1));
-                }
-                if (matcher.group(2) != null) {
-                    hours = Long.parseLong(matcher.group(2));
-                }
-                if (matcher.group(3) != null) {
-                    minutes = Long.parseLong(matcher.group(3));
-                }
-                if (matcher.group(4) != null) {
-                    seconds = Long.parseLong(matcher.group(4));
-                }
-                if (matcher.group(5) != null) {
-                    millis = Long.parseLong(matcher.group(5));
-                }
-                return Duration.ofDays(days).plusHours(hours).plusMinutes(minutes).plusSeconds(seconds).plusMillis(
-                        millis);
-            }
-            throw new RuntimeException("Unable to read Duration=" + value);
+            return DurationUtils.parse(value);
         }
 
         @Override
