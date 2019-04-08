@@ -1,9 +1,5 @@
-package org.nuxeo.drive.bench
-
-import scala.concurrent.duration.{Duration, FiniteDuration}
-
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2019 Nuxeo (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +14,12 @@ import scala.concurrent.duration.{Duration, FiniteDuration}
  * limitations under the License.
  *
  * Contributors:
- *     Delbosc Benoit, Taillefer Antoine
+ *     Delbosc Benoit
+ *     Antoine Taillefer
  */
+package org.nuxeo.drive.bench
 
+import scala.concurrent.duration.{Duration, FiniteDuration}
 
 object Parameters {
 

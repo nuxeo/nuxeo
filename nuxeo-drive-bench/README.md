@@ -118,7 +118,7 @@ Default options: see below.
 
 ### Running a Single Simulation on an Running Nuxeo Instance
 
-    mvn -nsu gatling:execute -Dgatling.simulationClass
+    mvn -nsu gatling:test -Dgatling.simulationClass
     ...
     Choose a simulation number:
          [0] org.nuxeo.drive.bench.Sim00SetupPolling
@@ -168,7 +168,7 @@ Note that you may need to edit the administrator account if it is not the defaul
 
 You can also bypass the interactive mode and execute a given simulation:
 
-    mvn -nsu gatling:execute -Dgatling.simulationClass=org.nuxeo.drive.bench.Sim00SetupPolling
+    mvn -nsu gatling:test -Dgatling.simulationClass=org.nuxeo.drive.bench.Sim00SetupPolling
 
 ## Resources
 
