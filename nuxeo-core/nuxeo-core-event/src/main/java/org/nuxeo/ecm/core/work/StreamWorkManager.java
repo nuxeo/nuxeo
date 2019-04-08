@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
@@ -346,7 +345,7 @@ public class StreamWorkManager extends WorkManagerImpl {
         // create a topology for the disabled work pools in order to init their input streams
         Topology.Builder builderDisabled = Topology.builder();
         descriptors.stream()
-                   .filter(Predicate.not(WorkQueueDescriptor::isProcessingEnabled))
+                   .filter(d -> !d.isProcessingEnabled())
                    .forEach(d -> builderDisabled.addComputation(() -> new WorkComputation(d.getId()),
                            Collections.singletonList("i1:" + d.getId())));
         topologyDisabled = builderDisabled.build();

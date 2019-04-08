@@ -48,7 +48,7 @@ public class KeyValueStoreOverflowRecordFilter extends BaseOverflowRecordFilter 
     @Override
     protected void storeValue(String recordKey, byte[] data) {
         String key = getPrefixedKey(recordKey);
-        getKeyValueStore().put(key, data, getStoreTTL().toSeconds());
+        getKeyValueStore().put(key, data, getStoreTTL().getSeconds());
     }
 
     @Override
