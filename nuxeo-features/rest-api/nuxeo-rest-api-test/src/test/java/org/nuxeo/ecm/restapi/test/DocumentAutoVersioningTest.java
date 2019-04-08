@@ -204,4 +204,38 @@ public class DocumentAutoVersioningTest extends BaseTest {
             assertEquals("0.1", doc.getVersionLabel());
         }
     }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.platform.restapi.test.test:creation-versioning-contrib.xml")
+    public void iCanCreateDocumentWithVersioningPolicy() throws Exception {
+
+        DocumentModel folder1 = RestServerInit.getFolder(1, session);
+        DocumentModel folder2 = RestServerInit.getFolder(2, session);
+
+        String data =
+                "{ " + "     \"entity-type\": \"document\"," + "     \"type\": \"File\"," + "     \"name\":\"myFile\","
+                        + "     \"properties\": {" + "         \"dc:title\":\"My title\"" + "     }" + "}";
+        Map<String, String> headers = new HashMap<>();
+        headers.put(RestConstants.X_VERSIONING_OPTION, "MINOR");
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "path" + folder1.getPathAsString(), data,
+                headers)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            String id = node.get("uid").getValueAsText();
+            DocumentRef idRef = new IdRef(id);
+            DocumentModel doc = session.getDocument(idRef);
+            assertEquals("0.1", doc.getVersionLabel());
+        }
+
+        headers.put(RestConstants.X_VERSIONING_OPTION, "MAJOR");
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "path" + folder2.getPathAsString(), data,
+                headers)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            String id = node.get("uid").getValueAsText();
+            DocumentRef idRef = new IdRef(id);
+            DocumentModel doc = session.getDocument(idRef);
+            assertEquals("1.0", doc.getVersionLabel());
+        }
+    }
 }

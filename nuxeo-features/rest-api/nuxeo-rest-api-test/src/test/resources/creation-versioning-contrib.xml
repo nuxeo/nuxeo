@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.creation.versioning" version="1.0">
+
+  <require>org.nuxeo.ecm.platform.el.service</require>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="versioning-delay-minor" increment="MINOR" beforeUpdate="false" order="1">
+      <filter-id>minor-version</filter-id>
+    </policy>
+    <policy id="versioning-delay-major" increment="MAJOR" beforeUpdate="false" order="2">
+      <filter-id>major-version</filter-id>
+    </policy>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <filter id="minor-version">
+      <condition>#{currentDocument.contextData.VersioningOption == "MINOR"}</condition>
+    </filter>
+    <filter id="major-version">
+      <condition>#{currentDocument.contextData.VersioningOption == "MAJOR"}</condition>
+    </filter>
+  </extension>
+
+</component>
