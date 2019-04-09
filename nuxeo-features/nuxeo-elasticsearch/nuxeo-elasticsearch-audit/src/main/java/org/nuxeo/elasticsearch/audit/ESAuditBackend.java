@@ -308,7 +308,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 Object rightValue = Literals.valueOf(predicate.rvalue);
                 if (rightValue instanceof ZonedDateTime) {
                     // The ZonedDateTime representation is not compatible with Elasticsearch query
-                    rightValue = ((ZonedDateTime) rightValue).toOffsetDateTime();
+                    rightValue = ((ZonedDateTime) rightValue).toEpochSecond();
                 }
                 if (Operator.EQ.equals(operator)) {
                     boolQuery.must(QueryBuilders.termQuery(leftName, rightValue));
