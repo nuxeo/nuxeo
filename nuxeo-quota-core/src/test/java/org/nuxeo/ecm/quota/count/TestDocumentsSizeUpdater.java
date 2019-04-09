@@ -59,6 +59,7 @@ import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaAwareDocument;
 import org.nuxeo.ecm.quota.size.QuotaExceededException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -440,6 +441,7 @@ public class TestDocumentsSizeUpdater {
             DocumentModel firstFile = session.getDocument(firstFileRef);
             firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(250));
             firstFile = session.saveDocument(firstFile);
+            fail("Should have failed due to quota exceeded");
         } catch (Exception e) {
             if (QuotaExceededException.isQuotaExceededException(e)) {
                 canNotExceedQuota = true;
@@ -632,7 +634,16 @@ public class TestDocumentsSizeUpdater {
 
     @Test
     public void testQuotaExceededOnVersion() throws Exception {
+        testQuotaExceededOnVersion(false);
+    }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.quota.core.test:OSGI-INF/quotastats-override-about-check-in-test-contrib.xml")
+    public void testQuotaExceededOnVersionWhenCheckIsDoneOnAboutToCheckIn() throws Exception {
+        testQuotaExceededOnVersion(true);
+    }
+
+    protected void testQuotaExceededOnVersion(boolean checkOnAboutTo) throws Exception {
         addContent();
 
         // now add quota limit
@@ -647,13 +658,15 @@ public class TestDocumentsSizeUpdater {
         next();
 
         dump();
-        // create a version
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        firstFile.checkIn(VersioningOption.MINOR, null);
         boolean canNotExceedQuota = false;
         try {
-            // now try to checkout
-            firstFile.checkOut();
+            // create a version
+            DocumentModel firstFile = session.getDocument(firstFileRef);
+            firstFile.checkIn(VersioningOption.MINOR, null);
+            if (!checkOnAboutTo) {
+                firstFile.checkOut();
+            }
+            fail("Should have failed due to quota exceeded");
         } catch (Exception e) {
             if (QuotaExceededException.isQuotaExceededException(e)) {
                 canNotExceedQuota = true;

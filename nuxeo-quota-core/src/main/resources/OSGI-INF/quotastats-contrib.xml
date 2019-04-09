@@ -59,4 +59,15 @@
     <property name="nuxeo.quota.init.scroll.keepAliveSeconds">120</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property controlling either:
+      - quota computation and check is done on aboutToCheckIn
+      - quota computation is done on checkedIn and check is done on checkOut
+
+      @since 9.10-HF to 10.10-HF
+    </documentation>
+    <property name="nuxeo.quota.size.check.on.aboutToCheckIn">false</property>
+  </extension>
+
 </component>

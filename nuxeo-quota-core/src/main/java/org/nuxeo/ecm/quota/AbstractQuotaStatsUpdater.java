@@ -23,6 +23,8 @@ import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CHECKIN;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CHECKOUT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_RESTORE;
@@ -144,8 +146,14 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
             case DOCUMENT_CHECKEDIN:
                 processDocumentCheckedIn(session, doc);
                 break;
+            case ABOUT_TO_CHECKIN:
+                processDocumentBeforeCheckedIn(session, doc);
+                break;
             case DOCUMENT_CHECKEDOUT:
                 processDocumentCheckedOut(session, doc);
+                break;
+            case ABOUT_TO_CHECKOUT:
+                processDocumentBeforeCheckedOut(session, doc);
                 break;
             case BEFORE_DOC_RESTORE:
                 processDocumentBeforeRestore(session, doc);
@@ -179,7 +187,21 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
 
     protected abstract void processDocumentCheckedIn(CoreSession session, DocumentModel doc);
 
+    /**
+     * @since 11.1
+     */
+    protected void processDocumentBeforeCheckedIn(CoreSession session, DocumentModel doc) {
+        // to override - not abstract due to backport
+    }
+
     protected abstract void processDocumentCheckedOut(CoreSession session, DocumentModel doc);
+
+    /**
+     * @since 11.1
+     */
+    protected void processDocumentBeforeCheckedOut(CoreSession session, DocumentModel doc) {
+        // to override - not abstract due to backport
+    }
 
     protected abstract void processDocumentUpdated(CoreSession session, DocumentModel doc);
 

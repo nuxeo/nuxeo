@@ -21,6 +21,7 @@ package org.nuxeo.ecm.quota.size;
 
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETED_STATE;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
+import static org.nuxeo.ecm.core.versioning.VersioningService.VERSIONING_OPTION;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -81,6 +82,9 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
 
     /** @since 11.1 */
     public static final String DEFAULT_INIT_SCROLL_KEEP_ALIVE = "120";
+
+    /** @since 9.10-HF to 10.10-HF */
+    public static final String CHECK_QUOTA_ON_ABOUT_TO_CHECK_IN = "nuxeo.quota.size.check.on.aboutToCheckIn";
 
     @Override
     public void computeInitialStatistics(CoreSession session, QuotaStatsInitialWork currentWorker, String path) {
@@ -226,18 +230,40 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
 
     @Override
     protected void processDocumentCheckedIn(CoreSession session, DocumentModel doc) {
-        // on checkin the versions size is incremented (and also the total)
-        long size = getBlobsSize(doc);
-        // no constraints check as total size is not impacted
-        updateDocumentAndAncestors(session, doc, 0, size, 0, size);
+        if (Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(CHECK_QUOTA_ON_ABOUT_TO_CHECK_IN)) {
+            // on checkin the versions size is incremented (and also the total)
+            long size = getBlobsSize(doc);
+            // no constraints check as total size is not impacted
+            updateDocumentAndAncestors(session, doc, 0, size, 0, size);
+        }
+    }
+
+    @Override
+    protected void processDocumentBeforeCheckedIn(CoreSession session, DocumentModel doc) {
+        if (Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(CHECK_QUOTA_ON_ABOUT_TO_CHECK_IN)) {
+            // on checkin the versions size is incremented (and also the total)
+            long size = getBlobsSize(doc);
+            checkQuota(session, doc, size);
+            // detect if we're currently saving the document or just checking it in
+            boolean allowSave = doc.getContextData().containsKey(VERSIONING_OPTION);
+            updateDocument(doc, 0, size, 0, size, allowSave);
+            updateAncestors(session, doc, size, 0, size);
+        }
     }
 
     @Override
     protected void processDocumentCheckedOut(CoreSession session, DocumentModel doc) {
-        // on checkout we account in the total for the last version size
-        long size = getBlobsSize(doc);
-        checkQuota(session, doc, size);
-        // all quota computation handled on checkin
+        if (Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(CHECK_QUOTA_ON_ABOUT_TO_CHECK_IN)) {
+            // on checkout we account in the total for the last version size
+            long size = getBlobsSize(doc);
+            checkQuota(session, doc, size);
+            // all quota computation handled on checkin
+        }
+    }
+
+    @Override
+    protected void processDocumentBeforeCheckedOut(CoreSession session, DocumentModel doc) {
+        // nothing to do, checking out the document doesn't change size
     }
 
     @Override
