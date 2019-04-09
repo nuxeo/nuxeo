@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -43,6 +44,7 @@ import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
 import org.nuxeo.ecm.automation.test.AutomationServerFeature;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.runtime.api.Framework;
@@ -68,7 +70,6 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
-
 
 /**
  * Tests S3DirectBatchHandler.
@@ -123,9 +124,20 @@ public class TestS3DirectBatchHandler {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-fail-contrib.xml")
+    public void testFailsOnCopyToTransientStore() throws SdkBaseException, InterruptedException {
+        try {
+            test("s3fail", 1024);
+            fail("should fail on putBlobs");
+        } catch (NuxeoException e) {
+            assertEquals("putBlobs failed", e.getMessage());
+        }
+    }
+
+    @Test
     @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
     public void testWithoutMultipart() throws SdkBaseException, InterruptedException {
-        test(1024);
+        test("s3", 1024);
     }
 
     @Test
@@ -133,7 +145,7 @@ public class TestS3DirectBatchHandler {
     public void testClientSideMultipartUpload() throws SdkBaseException, InterruptedException {
         // MULTIPART_THRESHOLD is the limit for the client-side multipart upload
         // MULTIPART_THRESHOLD + 1 is the limit for the server-side multipart copy
-        test(MULTIPART_THRESHOLD + 1);
+        test("s3", MULTIPART_THRESHOLD + 1);
     }
 
     @Test
@@ -141,23 +153,23 @@ public class TestS3DirectBatchHandler {
     public void testServerSideMultipartCopy() throws SdkBaseException, InterruptedException {
         // MULTIPART_THRESHOLD is the limit for the client-side multipart upload
         // MULTIPART_THRESHOLD + 1 is the limit for the server-side multipart copy
-        test(MULTIPART_THRESHOLD + 2);
+        test("s3", MULTIPART_THRESHOLD + 2);
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
     public void test20MB() throws SdkBaseException, InterruptedException {
-        test(20 * 1024 * 1024);
+        test("s3", 20 * 1024 * 1024);
     }
 
-    public void test(int size) throws SdkBaseException, InterruptedException {
+    public void test(String handlerName, int size) throws SdkBaseException, InterruptedException {
         // generate unique key and and random content of give size
         String key = "key" + System.nanoTime();
         String name = "name" + System.nanoTime();
         byte[] content = generateRandomBytes(size);
 
         // create and initialize batch
-        S3DirectBatchHandler handler = (S3DirectBatchHandler) batchManager.getHandler("s3");
+        S3DirectBatchHandler handler = (S3DirectBatchHandler) batchManager.getHandler(handlerName);
         Batch newBatch = handler.newBatch(null);
         Batch batch = handler.getBatch(newBatch.getKey());
 
