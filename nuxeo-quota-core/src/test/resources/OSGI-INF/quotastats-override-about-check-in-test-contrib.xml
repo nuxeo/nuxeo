@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.quota.enable.aboutToCheckIn.contrib.test">
+  <require>org.nuxeo.ecm.quota.contrib</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.quota.size.check.on.aboutToCheckIn">true</property>
+  </extension>
+
+</component>

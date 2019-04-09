@@ -80,7 +80,17 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
+    protected void processDocumentBeforeCheckedIn(CoreSession session, DocumentModel doc) {
+        // NOP
+    }
+
+    @Override
     protected void processDocumentCheckedOut(CoreSession session, DocumentModel doc) {
+        // NOP
+    }
+
+    @Override
+    protected void processDocumentBeforeCheckedOut(CoreSession session, DocumentModel doc) {
         // NOP
     }
 
