@@ -24,7 +24,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.quota.count.QuotaFeature.createFakeBlob;
 import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
+import static org.nuxeo.ecm.quota.count.QuotaFeature.assertQuota;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -427,7 +429,7 @@ public class TestDocumentsSizeUpdater {
         try {
             // now try to update one
             DocumentModel firstFile = session.getDocument(firstFileRef);
-            firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(250));
+            firstFile.setPropertyValue("file:content", createFakeBlob(250));
             session.saveDocument(firstFile);
             fail("Should have failed due to quota exceeded");
         } catch (Exception e) {
@@ -453,7 +455,7 @@ public class TestDocumentsSizeUpdater {
         dump();
         // now try to update one
         DocumentModel firstFile = session.getDocument(firstFileRef);
-        firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(250));
+        firstFile.setPropertyValue("file:content", createFakeBlob(250));
         session.saveDocument(firstFile);
         coreFeature.waitForAsyncCompletion(); // commit the transaction
     }
@@ -476,7 +478,7 @@ public class TestDocumentsSizeUpdater {
 
         dump();
         DocumentModel doc = session.copy(firstFileRef, firstSubFolderRef, "newCopy");
-        doc.setPropertyValue("file:content", (Serializable) getFakeBlob(100));
+        doc.setPropertyValue("file:content", createFakeBlob(100));
         session.createDocument(doc);
         session.save();
 
@@ -486,7 +488,7 @@ public class TestDocumentsSizeUpdater {
 
         dump();
         doc = session.createDocumentModel("File");
-        doc.setPropertyValue("file:content", (Serializable) getFakeBlob(299));
+        doc.setPropertyValue("file:content", createFakeBlob(299));
         doc.setPropertyValue("dc:title", "Other file");
         doc.setPathInfo(getWorkspace().getPathAsString(), "otherfile");
         session.createDocument(doc);
@@ -511,7 +513,7 @@ public class TestDocumentsSizeUpdater {
         final int firstSubFolderExistingFilesNbr = session.getChildren(firstSubFolderRef, "File").size();
         assertEquals(2, firstSubFolderExistingFilesNbr);
 
-        Blob blob = getFakeBlob(fileSize);
+        Blob blob = createFakeBlob(fileSize);
         for (int i = 0; i < nbrDocs; i++) {
             DocumentModel doc = session.createDocumentModel("File");
             doc.setPropertyValue("file:content", (Serializable) blob);
@@ -572,7 +574,7 @@ public class TestDocumentsSizeUpdater {
         coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         DocumentModel doc = session.createDocumentModel("File");
-        doc.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
+        doc.setPropertyValue("file:content", createFakeBlob(50));
         doc.setPropertyValue("dc:title", "Other file");
         doc.setPathInfo(getFirstSubFolder().getPathAsString(), "otherfile");
         session.createDocument(doc);
@@ -596,12 +598,10 @@ public class TestDocumentsSizeUpdater {
         coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         dump();
-        // create a version
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        firstFile.checkIn(VersioningOption.MINOR, null);
         try {
-            // now try to checkout
-            firstFile.checkOut();
+            // create a version
+            DocumentModel firstFile = session.getDocument(firstFileRef);
+            firstFile.checkIn(VersioningOption.MINOR, null);
             fail("Should have failed due to quota exceeded");
         } catch (Exception e) {
             assertTrue(QuotaExceededException.isQuotaExceededException(e));
@@ -694,7 +694,7 @@ public class TestDocumentsSizeUpdater {
         doDeleteFileContent(secondFileRef);
         // also add a blob on the workspace above the one for which we're recomputing
         DocumentModel ws = getWorkspace();
-        ws.setPropertyValue("file:content", (Serializable) getFakeBlob(1000));
+        ws.setPropertyValue("file:content", createFakeBlob(1000));
         session.saveDocument(ws);
         coreFeature.waitForAsyncCompletion(); // commit the transaction
 
@@ -1042,12 +1042,12 @@ public class TestDocumentsSizeUpdater {
 
         // create content in the 2 user workspaces
         DocumentModel firstFile = session.createDocumentModel(totoUW.getPathAsString(), "file1", "File");
-        firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
+        firstFile.setPropertyValue("file:content", createFakeBlob(200));
         firstFile = session.createDocument(firstFile);
         session.saveDocument(firstFile);
 
         DocumentModel secondFile = session.createDocumentModel(titiUW.getPathAsString(), "file2", "File");
-        secondFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
+        secondFile.setPropertyValue("file:content", createFakeBlob(200));
         secondFile = session.createDocument(secondFile);
         session.saveDocument(secondFile);
 
@@ -1062,7 +1062,7 @@ public class TestDocumentsSizeUpdater {
 
         try {
             secondFile = session.createDocumentModel(titiUW.getPathAsString(), "file2", "File");
-            secondFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
+            secondFile.setPropertyValue("file:content", createFakeBlob(200));
             secondFile = session.createDocument(secondFile);
             session.saveDocument(secondFile);
             fail("Should have failed due to quota exceeded");
@@ -1073,7 +1073,7 @@ public class TestDocumentsSizeUpdater {
 
         try {
             firstFile = session.createDocumentModel(totoUW.getPathAsString(), "file1", "File");
-            firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
+            firstFile.setPropertyValue("file:content", createFakeBlob(200));
             firstFile = session.createDocument(firstFile);
             session.saveDocument(firstFile);
             fail("Should have failed due to quota exceeded");
@@ -1081,16 +1081,6 @@ public class TestDocumentsSizeUpdater {
             assertTrue("Should have failed with a QuotaExceededException cause",
                     e.getCause() instanceof QuotaExceededException);
         }
-    }
-
-    protected Blob getFakeBlob(int size) {
-        StringBuilder sb = new StringBuilder(size);
-        for (int i = 0; i < size; i++) {
-            sb.append('a');
-        }
-        Blob blob = Blobs.createBlob(sb.toString());
-        blob.setFilename("FakeBlob_" + size + ".txt");
-        return blob;
     }
 
     protected void addContent() {
@@ -1114,7 +1104,7 @@ public class TestDocumentsSizeUpdater {
         firstSubFolderRef = firstSubFolder.getRef();
 
         DocumentModel firstFile = session.createDocumentModel(firstSubFolder.getPathAsString(), "file1", "File");
-        firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(100));
+        firstFile.setPropertyValue("file:content", createFakeBlob(100));
         firstFile = session.createDocument(firstFile);
         if (checkInFirstFile) {
             firstFile.checkIn(VersioningOption.MINOR, null);
@@ -1123,7 +1113,7 @@ public class TestDocumentsSizeUpdater {
         firstFileRef = firstFile.getRef();
 
         DocumentModel secondFile = session.createDocumentModel(firstSubFolder.getPathAsString(), "file2", "File");
-        secondFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
+        secondFile.setPropertyValue("file:content", createFakeBlob(200));
 
         secondFile = session.createDocument(secondFile);
         secondFileRef = secondFile.getRef();
@@ -1158,14 +1148,14 @@ public class TestDocumentsSizeUpdater {
         DocumentModel ws = session.getDocument(wsRef);
         DocumentModel firstFile = session.getDocument(firstFileRef);
 
-        ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
+        ws.setPropertyValue("file:content", createFakeBlob(50));
         session.saveDocument(ws);
 
         List<Map<String, Serializable>> files = new ArrayList<>();
 
         for (int i = 1; i < 5; i++) {
             Map<String, Serializable> files_entry = new HashMap<>();
-            files_entry.put("file", (Serializable) getFakeBlob(70));
+            files_entry.put("file", createFakeBlob(70));
             files.add(files_entry);
         }
 
@@ -1190,14 +1180,14 @@ public class TestDocumentsSizeUpdater {
         DocumentModel ws = session.getDocument(wsRef);
         DocumentModel firstFile = session.getDocument(firstFileRef);
 
-        ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
+        ws.setPropertyValue("file:content", createFakeBlob(50));
         session.saveDocument(ws);
 
         List<Map<String, Serializable>> files = new ArrayList<>();
 
         for (int i = 1; i < 5; i++) {
             Map<String, Serializable> files_entry = new HashMap<>();
-            files_entry.put("file", (Serializable) getFakeBlob(70));
+            files_entry.put("file", createFakeBlob(70));
             files.add(files_entry);
         }
 
@@ -1286,31 +1276,6 @@ public class TestDocumentsSizeUpdater {
             }
         }
 
-    }
-
-    protected void assertQuota(DocumentModel doc, long innerSize, long totalSize) {
-        assertTrue(doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET));
-        QuotaAware qa = doc.getAdapter(QuotaAware.class);
-        assertNotNull(qa);
-        assertEquals("inner:", innerSize, qa.getInnerSize());
-        assertEquals("total:", totalSize, qa.getTotalSize());
-    }
-
-    protected void assertQuota(DocumentModel doc, long innerSize, long totalSize, long trashSize) {
-        QuotaAware qa = doc.getAdapter(QuotaAware.class);
-        assertNotNull(qa);
-        assertEquals("inner:", innerSize, qa.getInnerSize());
-        assertEquals("total:", totalSize, qa.getTotalSize());
-        assertEquals("trash:", trashSize, qa.getTrashSize());
-    }
-
-    protected void assertQuota(DocumentModel doc, long innerSize, long totalSize, long trashSize, long versionsSize) {
-        QuotaAware qa = doc.getAdapter(QuotaAware.class);
-        assertNotNull(qa);
-        assertEquals("inner:", innerSize, qa.getInnerSize());
-        assertEquals("total:", totalSize, qa.getTotalSize());
-        assertEquals("trash:", trashSize, qa.getTrashSize());
-        assertEquals("versions: ", versionsSize, qa.getVersionsSize());
     }
 
     protected DocumentModel getWorkspace() {

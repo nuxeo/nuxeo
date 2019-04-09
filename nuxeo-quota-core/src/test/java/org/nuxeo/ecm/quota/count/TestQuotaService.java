@@ -20,6 +20,8 @@ package org.nuxeo.ecm.quota.count;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.core.api.versioning.VersioningService.VERSIONING_OPTION;
+import static org.nuxeo.ecm.quota.count.QuotaFeature.createFakeBlob;
 
 import javax.inject.Inject;
 
@@ -30,10 +32,11 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.quota.QuotaStatsService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -61,48 +64,35 @@ public class TestQuotaService {
     protected CoreSession session;
 
     @Inject
-    protected TransactionalFeature txFeature;
+    protected CoreFeature coreFeature;
 
     @Test
     public void testSetQuotaOnUserWorkspaces() {
-        DocumentRef uwRef1;
-        DocumentRef uwRef2;
-        txFeature.nextTransaction(); // make sure nothing is currently running
-
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
-            assertNotNull(uwm);
-            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
-            assertNotNull(uw);
-            uwRef1 = uw.getRef();
-
-            // check creator
-            String creator = (String) uw.getProperty("dublincore", "creator");
-            assertEquals(creator, "jdoe");
-        }
-        txFeature.nextTransaction();
-
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jack")) {
-            uwm = Framework.getService(UserWorkspaceService.class);
-            assertNotNull(uwm);
-
-            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
-            assertNotNull(uw);
-            uwRef2 = uw.getRef();
-
-            // check creator
-            String creator = (String) uw.getProperty("dublincore", "creator");
-            assertEquals(creator, "jack");
-        }
-        txFeature.nextTransaction();
+        DocumentRef uwRef1 = createUserWorkspace("jdoe");
+        DocumentRef uwRef2 = createUserWorkspace("jack");
 
         quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(100L, session.getRootDocument(), session);
-        txFeature.nextTransaction();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
         DocumentModel uw1 = session.getDocument(uwRef1);
         DocumentModel uw2 = session.getDocument(uwRef2);
         assertEquals(uw1.getProperty("dss:maxSize").getValue(Long.class), Long.valueOf(100L));
         assertEquals(uw2.getProperty("dss:maxSize").getValue(Long.class), Long.valueOf(100L));
-        txFeature.nextTransaction();
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
+    }
+
+    protected DocumentRef createUserWorkspace(String username) {
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession(username)) {
+            DocumentModel userWS = uwm.getCurrentUserPersonalWorkspace(userSession);
+            assertNotNull(userWS);
+            coreFeature.waitForAsyncCompletion(); // commit the transaction
+
+            // check creator
+            String creator = (String) userWS.getProperty("dublincore", "creator");
+            assertEquals(username, creator);
+
+            return userWS.getRef();
+        }
     }
 
 }

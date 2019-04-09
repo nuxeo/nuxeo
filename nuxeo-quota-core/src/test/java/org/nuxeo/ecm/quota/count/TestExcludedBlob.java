@@ -20,11 +20,9 @@ package org.nuxeo.ecm.quota.count;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
+import static org.nuxeo.ecm.quota.count.QuotaFeature.assertQuota;
+import static org.nuxeo.ecm.quota.count.QuotaFeature.createFakeBlob;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,11 +35,8 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaSizeService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -80,7 +75,7 @@ public class TestExcludedBlob {
 
         // Given a document with a blob in the file schema
         DocumentModel doc = session.createDocumentModel("/", "file1", "File");
-        doc.setPropertyValue("file:content", (Serializable) getFakeBlob(100));
+        doc.setPropertyValue("file:content", createFakeBlob(100));
         doc = session.createDocument(doc);
         txFeature.nextTransaction();
 
@@ -91,7 +86,7 @@ public class TestExcludedBlob {
         List<Map<String, Serializable>> files = new ArrayList<>();
         for (int i = 1; i < 5; i++) {
             Map<String, Serializable> files_entry = new HashMap<>();
-            files_entry.put("file", (Serializable) getFakeBlob(70));
+            files_entry.put("file", createFakeBlob(70));
             files.add(files_entry);
         }
         doc.setPropertyValue("files:files", (Serializable) files);
@@ -101,24 +96,6 @@ public class TestExcludedBlob {
         // Then quota should not change
         doc = session.getDocument(doc.getRef());
         assertQuota(doc, 100, 100);
-    }
-
-    protected Blob getFakeBlob(int size) {
-        StringBuilder sb = new StringBuilder(size);
-        for (int i = 0; i < size; i++) {
-            sb.append('a');
-        }
-        Blob blob = Blobs.createBlob(sb.toString());
-        blob.setFilename("FakeBlob_" + size + ".txt");
-        return blob;
-    }
-
-    protected void assertQuota(DocumentModel doc, long innerSize, long totalSize) {
-        assertTrue(doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET));
-        QuotaAware qa = doc.getAdapter(QuotaAware.class);
-        assertNotNull(qa);
-        assertEquals("inner:" + innerSize + " total:" + totalSize,
-                "inner:" + qa.getInnerSize() + " total:" + qa.getTotalSize());
     }
 
 }

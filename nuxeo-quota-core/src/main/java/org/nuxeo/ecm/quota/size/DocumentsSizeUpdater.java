@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.quota.size;
 
+import static org.nuxeo.ecm.core.api.versioning.VersioningService.VERSIONING_OPTION;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -213,18 +215,28 @@ public class DocumentsSizeUpdater extends AbstractQuotaStatsUpdater {
 
     @Override
     protected void processDocumentCheckedIn(CoreSession session, DocumentModel doc) {
+        // nothing to do, we do things at aboutToCheckIn time
+    }
+
+    @Override
+    protected void processDocumentBeforeCheckedIn(CoreSession session, DocumentModel doc) {
         // on checkin the versions size is incremented (and also the total)
         long size = getBlobsSize(doc);
-        // no constraints check as total size is not impacted
-        updateDocumentAndAncestors(session, doc, 0, size, 0, size);
+        checkQuota(session, doc, size);
+        // detect if we're currently saving the document or just checking it in
+        boolean allowSave = doc.getContextData().containsKey(VERSIONING_OPTION);
+        updateDocument(doc, 0, size, 0, size, allowSave);
+        updateAncestors(session, doc, size, 0, size);
     }
 
     @Override
     protected void processDocumentCheckedOut(CoreSession session, DocumentModel doc) {
-        // on checkout we account in the total for the last version size
-        long size = getBlobsSize(doc);
-        checkQuota(session, doc, size);
-        // all quota computation handled on checkin
+        // nothing to do, checking out the document doesn't change size
+    }
+
+    @Override
+    protected void processDocumentBeforeCheckedOut(CoreSession session, DocumentModel doc) {
+        // nothing to do, checking out the document doesn't change size
     }
 
     @Override

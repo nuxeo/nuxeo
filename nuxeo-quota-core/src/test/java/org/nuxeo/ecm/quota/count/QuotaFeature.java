@@ -18,7 +18,16 @@
  */
 package org.nuxeo.ecm.quota.count;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.Serializable;
+
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
@@ -34,5 +43,34 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.quota.core.test")
 @Deploy("org.nuxeo.ecm.platform.content.template")
 public class QuotaFeature implements RunnerFeature {
+
+    @SuppressWarnings("unchecked")
+    public static <B extends Blob & Serializable> B createFakeBlob(int size) {
+        StringBuilder sb = new StringBuilder(size);
+        for (int i = 0; i < size; i++) {
+            sb.append('a');
+        }
+        Blob blob = Blobs.createBlob(sb.toString());
+        blob.setFilename("FakeBlob_" + size + ".txt");
+        return (B) blob;
+    }
+
+    public static void assertQuota(DocumentModel doc, long innerSize, long totalSize) {
+        assertQuota(doc, innerSize, totalSize, 0, 0);
+    }
+
+    public static void assertQuota(DocumentModel doc, long innerSize, long totalSize, long trashSize) {
+        assertQuota(doc, innerSize, totalSize, trashSize, 0);
+    }
+
+    public static void assertQuota(DocumentModel doc, long innerSize, long totalSize, long trashSize,
+            long versionsSize) {
+        QuotaAware qa = doc.getAdapter(QuotaAware.class);
+        assertNotNull(qa);
+        assertEquals("inner:", innerSize, qa.getInnerSize());
+        assertEquals("total:", totalSize, qa.getTotalSize());
+        assertEquals("trash:", trashSize, qa.getTrashSize());
+        assertEquals("versions: ", versionsSize, qa.getVersionsSize());
+    }
 
 }
