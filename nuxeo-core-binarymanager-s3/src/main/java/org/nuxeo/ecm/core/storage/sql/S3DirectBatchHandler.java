@@ -255,7 +255,12 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         Binary binary = new LazyBinary(digest, blobProviderId, null);
         Blob blob = new BinaryBlob(binary, digest, filename, mimeType, encoding, digest, length);
         Batch batch = getBatch(batchId);
-        batch.addFile(fileIndex, blob, filename, mimeType);
+        try {
+            batch.addFile(fileIndex, blob, filename, mimeType);
+        } catch (NuxeoException e) {
+            amazonS3.deleteObject(bucket, newMetadata.getETag());
+            throw e;
+        }
 
         return true;
     }
