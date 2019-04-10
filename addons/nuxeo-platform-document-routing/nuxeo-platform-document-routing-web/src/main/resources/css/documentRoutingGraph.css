@@ -1,0 +1,91 @@
+.node,
+multiple_task {
+  border: 3px solid #96a7bd;
+  border-radius: 2px;
+  height: 60px;
+  width: 60px;
+  z-index: 100;
+  color: #555;
+  font-family: Arial, sans-serif;
+  padding-top: .9em;
+  font-size: .9em;
+  text-align: center;
+  background-color: white }
+
+.multiple_task { 
+  border: 5px double #96a7bd }
+
+.start_node,
+.end_node {
+  width: 40px;
+  height: 40px;
+  -moz-border-radius: 40px;
+  -webkit-border-radius: 40px;
+  border-radius: 40px;
+  border-color: #00aa60;
+  z-index: 100;
+  color: #fff;
+  line-height: 40px;
+  font-family: arial;
+  font-size: .9em;
+  font-style: normal;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  background: #00aa60 }
+  
+.end_node {
+  background: #e5001b;
+  border-color: #e5001b }
+
+.fork_node,
+.merge_node {
+  width: 0;
+  height: 0;
+  border-bottom: 40px solid #dededd;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  z-index: 100;
+  line-height: 100%;
+  font-family: serif;
+  font-style: italic;
+  font-size: .9em;
+  text-align: center }
+
+.merge_node {
+  border-top: 40px solid #dededd;
+  border-bottom: 0;
+  line-height: 0 }
+
+.subworkflow_task {
+  border-color: #004fb9;
+  background: url("../icons/subworkflow_bg_node.png") no-repeat scroll right bottom white }
+
+.simple_node {
+  background-color: #fff;
+  border-color: #adbed4;
+  color: #7a899d }
+
+
+.node_suspended {
+  background-color: #e1f0ff;
+  font-weight: bold }
+
+.node_connection_label {
+  background-color: #eff4f8;
+  border: 1px solid #b7c6d5;
+  border-radius: 2px;
+  color: #1f3c59;
+  font: bold 12px sans-serif;
+  max-width: 170px;
+  padding: 0.05em 0.15em !important;
+  word-wrap: break-word;
+  z-index: 120 }
+
+.targetDiv {
+  position: relative;
+  width: 880px;
+  height: 720px }
+
+._jsPlumb_endpoint { z-index: 110 }
+._jsPlumb_overlay { z-index: 6 }

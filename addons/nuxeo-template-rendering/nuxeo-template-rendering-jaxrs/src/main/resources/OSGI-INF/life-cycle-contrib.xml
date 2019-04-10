@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.platform.TemplateSources.jxrs.lifecycle.contrib">
+
+  <require>org.nuxeo.platform.TemplateSources.lifecycle.contrib</require>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="WebTemplateSource">default</type>
+    </types>
+  </extension>
+
+</component>
