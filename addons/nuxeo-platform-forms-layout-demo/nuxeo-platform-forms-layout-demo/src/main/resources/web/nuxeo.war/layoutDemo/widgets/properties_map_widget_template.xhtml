@@ -1,0 +1,79 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  id="#{widget.id}">
+<c:if test="#{widget.mode == 'edit'}">
+
+  <a4j:region renderRegionOnly="true" id="#{widget.id}_region">
+    <a4j:outputPanel id="#{widget.id}_panel" layout="block">
+
+      <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
+        template="#{layoutValue.newCustomProperty}"
+        required="#{widgetProperty_required}" diff="#{widget.properties['diff']}"
+        validator="#{layoutValue.validateCustomProperties}">
+
+        <h:panelGrid columns="2">
+          <a4j:commandLink immediate="true"
+            actionListener="#{editableListBean.performAction}"
+            id="#{widget.id}_delete" render="#{widget.id}_panel"
+            bypassUpdates="true">
+            <h:graphicImage value="/icons/delete.png" />
+            <f:param name="for" value="#{widget.id}_input" />
+            <f:param name="index" value="#{model.rowIndex}" />
+            <f:param name="type" value="remove" />
+          </a4j:commandLink>
+
+          <h:panelGroup>
+            <h:panelGrid columns="1">
+              <nxl:subWidget>
+                <h:outputText value="#{messages[widget.label]}"
+                  styleClass="labelColumn #{nxu:test(widget.required, 'required', '')}" />
+                <nxl:widget widget="#{widget}"
+                  value="#{model.rowData}" />
+              </nxl:subWidget>
+            </h:panelGrid>
+          </h:panelGroup>
+        </h:panelGrid>
+
+      </nxu:inputList>
+      <h:message styleClass="errorMessage" for="#{widget.id}_input"
+        id="#{widget.id}_message" />
+    </a4j:outputPanel>
+
+    <a4j:commandLink immediate="true"
+      actionListener="#{editableListBean.performAction}" id="#{widget.id}_add"
+      render="#{widget.id}_panel">
+      <f:param name="for" value="#{widget.id}_input" />
+      <f:param name="type" value="add" />
+      <h:graphicImage value="/widgets/img/action_add.gif" />
+      <h:outputText value="#{messages['command.add']}" />
+    </a4j:commandLink>
+
+  </a4j:region>
+
+</c:if>
+<c:if test="#{widget.mode != 'edit'}">
+
+  <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
+    template="#{layoutValue.newCustomProperty}"
+    required="#{widgetProperty_required}" diff="#{widget.properties['diff']}"
+    validator="#{layoutValue.validateCustomProperties}">
+
+    <h:panelGrid columns="1">
+      <nxl:subWidget>
+        <h:outputText value="#{messages[widget.label]}"
+          styleClass="labelColumn #{nxu:test(widget.required, 'required', '')}" />
+        <nxl:widget widget="#{widget}"
+          value="#{model.rowData}" />
+      </nxl:subWidget>
+    </h:panelGrid>
+
+  </nxu:inputList>
+
+</c:if>
+</f:subview>
