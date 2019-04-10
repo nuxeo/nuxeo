@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.versioning.policy.test" version="1.0">
+
+  <require>org.nuxeo.drive.versioning</require>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <!-- We want to override the increment -->
+    <policy id="collaborative-save" increment="MAJOR" beforeUpdate="true" order="100">
+      <filter-id>last-contributor-different-filter</filter-id>
+    </policy>
+    <!-- We want to override the increment -->
+    <policy id="versioning-delay" increment="MAJOR" beforeUpdate="true" order="150">
+      <filter-id>versioning-delay</filter-id>
+      <filter-id>drive-filter</filter-id>
+    </policy>
+  </extension>
+
+</component>

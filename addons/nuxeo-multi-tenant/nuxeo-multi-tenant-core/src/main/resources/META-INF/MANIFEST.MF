@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Multi Tenant Core
+Bundle-SymbolicName: org.nuxeo.ecm.multi.tenant;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
+ OSGI-INF/computedgroups-contrib.xml,
+ OSGI-INF/multi-tenant-service.xml,
+ OSGI-INF/multi-tenant-contrib.xml,
+ OSGI-INF/listeners-contrib.xml,
+ OSGI-INF/directories-contrib.xml,
+ OSGI-INF/directories-cache-contrib.xml,
+ OSGI-INF/usermanager-contrib.xml,
+ OSGI-INF/userworkspace-contrib.xml
