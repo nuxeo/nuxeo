@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="test-other-repository-config">
+
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="other" label="Other Repository" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="other"
+      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+      <repository>
+        <indexing>
+          <fulltext disabled="true" />
+        </indexing>
+        <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
+        <property name="URL">jdbc:h2:target/other</property>
+        <property name="User">sa</property>
+        <property name="Password"></property>
+      </repository>
+    </repository>
+  </extension>
+
+</component>
