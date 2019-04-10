@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Live Connect for OneDrive
+Bundle-SymbolicName: org.nuxeo.ecm.liveconnect.onedrive;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/onedrive-config.xml,
+ OSGI-INF/theme-contrib.xml,
+ OSGI-INF/cache-config.xml,
+ OSGI-INF/onedrive-pageprovider-contrib.xml
