@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.registration.actions.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+             point="actions">
+
+    <action id="UserRegistration" link="view_admin-fragment.xhtml" label="admcommand.userregistration"
+            order="55">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="UserRegistrationRequests" link="/incl/userregistration/requests_listing_all.xhtml"
+            label="tab.userregistration.requests" order="10">
+      <category>UserRegistration_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="UserRegistrationRequestsWorkspace"
+            link="/incl/userregistration/requests_create.xhtml"
+            order="220" label="tab.userregistration.requests.create"
+            icon="/icons/file.gif">
+      <category>TAB_MANAGE_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter-id>mutable_document</filter-id>
+    </action>
+
+  </extension>
+
+</component>

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forms.layoutDemo.fileWidget.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="fileWidgetLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>fileWidget</widget>
+        </row>
+      </rows>
+      <widget name="fileWidget" type="file">
+        <labels>
+          <label mode="any">File widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:fileField</field>
+          <field>lds:fileField/filename</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+    </layout>
+  </extension>
+
+</component>

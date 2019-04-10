@@ -1,0 +1,55 @@
+<project name="nuxeo-assembly"
+         default="integration-test"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+  <target name="init" unless="init.done">
+    <property name="integration.dir"
+              value="${maven.project.build.directory}/integration" />
+    <property name="selenium.dir" value="ftest/selenium" />
+    <property name="tomcat" value="${integration.dir}/nuxeo-cap-tomcat" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="integration-test" depends="init">
+    <echo>Start integration tests...</echo>
+    <antcall target="prepare-distribution" />
+    <antcall target="run-selenium-tests" />
+  </target>
+
+  <target name="prepare-distribution"
+          description="Prepare distribution to test">
+    <delete failonerror="false" dir="${tomcat}" />
+    <unzip dest="${integration.dir}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-tomcat:${nuxeo.distribution.version}:zip"
+                            classifier="nuxeo-cap" />
+    </unzip>
+    <move tofile="${tomcat}"
+          file="${integration.dir}/nuxeo-cap-${nuxeo.distribution.version}-tomcat" />
+    <chmod dir="${tomcat}/bin" perm="u+x" includes="*.sh,*ctl" />
+
+    <copy todir="${tomcat}/nxserver/plugins/" overwrite="true" flatten="true">
+      <fileset dir="${maven.project.build.directory}">
+        <include name="${maven.project.artifactId}*.jar" />
+        <exclude name="*-sources.jar" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="run-selenium-tests" description="Run Selenium tests">
+    <copy tofile="${integration.dir}/selenium-server.jar" overwrite="true">
+      <artifact:resolveFile key="org.seleniumhq.selenium:selenium-server:2.0b1"
+                            classifier="standalone" />
+    </copy>
+    <chmod dir="${selenium.dir}" perm="u+x" includes="*.sh,*ctl" />
+
+    <exec executable="${selenium.dir}/hudson-run.sh" failonerror="true">
+      <arg value="${tomcat}" />
+      <arg value="${integration.dir}" />
+    </exec>
+  </target>
+
+</project>
