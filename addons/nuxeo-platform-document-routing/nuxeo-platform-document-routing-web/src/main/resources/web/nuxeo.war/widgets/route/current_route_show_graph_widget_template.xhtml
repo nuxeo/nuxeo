@@ -1,0 +1,39 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <script type="text/javascript">
+    <h:outputText  value="var routeDocId='#{value.document.id}'" />
+    function showGraph() {
+      loadGraph(routeDocId);
+      jQuery('&lt;a href="##{widget.id}_graphView_box"&gt;&lt;/a&gt;').fancybox({
+        'autoScale': true,
+        'autoDimensions': false,
+        'type': 'inline',
+        'width': '90%',
+        'height': '90%',
+        'transitionIn': 'none',
+        'transitionOut': 'none',
+        'enableEscapeButton': true,
+        'centerOnScroll': true
+      }).click();
+      return false;
+    }
+  </script>
+
+  <a href="#" onclick="showGraph();return false;" class="button">
+    #{messages['label.document.routing.show.graph']}
+  </a>
+
+  <div style="display:none">
+    <div id="#{widget.id}_graphView_box">
+      <!-- div container for the graph -->
+      <div id="target" class="targetDiv"></div>
+    </div>
+  </div>
+
+</c:if>

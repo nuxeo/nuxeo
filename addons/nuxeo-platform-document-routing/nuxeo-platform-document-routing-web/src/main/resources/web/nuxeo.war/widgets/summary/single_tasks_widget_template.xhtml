@@ -1,0 +1,166 @@
+<div class="single_tasks_block"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+  <a4j:outputPanel id="#{widget.id}_panel">
+
+    <nxu:set var="currentDashBoardItemsExceptPublishingTasks" value="#{taskActions.getCurrentDashBoardItemsExceptPublishingTasks()}"
+      cache="true">
+    <nxu:set var="showFirstForm" value="#{currentDashBoardItemsExceptPublishingTasks.size() == 1}" cache="true">
+
+      <c:if test="#{!empty currentDashBoardItemsExceptPublishingTasks}">
+        <h3 class="summaryTitle">
+          <h:outputText value="#{messages['label.document.routing.your.tasks']}" />
+        </h3>
+
+        <c:forEach var="dashboardItem" items="#{currentDashBoardItemsExceptPublishingTasks}"
+          varStatus="status">
+
+          <nxu:set var="task" value="#{routingTaskActions.setCurrentTask(dashboardItem.task)}" cache="true">
+          <nxu:set var="idPrefix" value="#{task.name}#{status.index}" cache="true">
+
+            <div>
+
+            <nxu:valueHolder
+              id="#{idPrefix}_valueHolder"
+              var="actionClicked"
+              defaultValue="false">
+
+              <f:subview id="#{idPrefix}_subview">
+                <h:outputFormat value="#{messages['label.route.task.type']} ">
+                  <f:param value="#{messages[task.type]}" />
+                </h:outputFormat>
+                <h:outputText value="#{messages['label.route.task.assigned.to']} " />
+                <c:forEach var="actor" items="#{task.actors}">
+                  <c:choose>
+                    <c:when test="#{fn:startsWith(actor,'group:')}">
+                      <nxu:set var="user" value="#{fn:split(actor, ':')[1]}">
+                      <span class="tag group creator">
+                        <a href="#{baseURL}group/#{group}">
+                          #{group}
+                        </a>
+                      </span>
+                      </nxu:set>
+                    </c:when>
+                    <c:when test="#{fn:startsWith(actor, 'user:')}">
+                      <nxu:set var="user" value="#{fn:split(actor, ':')[1]}">
+                      <span class="tag user creator">
+                        <a href="#{baseURL}user/#{user}">
+                          #{nxu:userFullName(user)}
+                        </a>
+                      </span>
+                      </nxu:set>
+                    </c:when>
+                    <c:otherwise>
+                      <span class="tag user creator">
+                        #{actor}
+                      </span>
+                    </c:otherwise>
+                  </c:choose>
+                </c:forEach>
+                <span class="dueDate">
+                  <h:outputText value=" #{messages['label.route.task.due.date']} " />
+                  <h:outputText value="#{task.dueDate}" />
+                </span>
+                <span class="directive">
+                  <h:outputText value="#{messages[task.directive]}" />
+                </span>
+                <a4j:commandButton id="#{idPrefix}_link"
+                  value="#{messages['label.document.routing.process.task']}"
+                  ajaxSingle="true"
+                  ignoreDupResponses="true" requestDelay="100"
+                  styleClass="button"
+                  reRender="#{idPrefix}_ajax_panel">
+                  <f:setPropertyActionListener value="true"
+                    target="#{selectionActions.selectedValue}" />
+                  <f:setPropertyActionListener
+                    value="#{idPrefix}_valueHolder"
+                    target="#{selectionActions.selectedValueHolder}" />
+                  <nxu:actionListenerMethod
+                    value="#{selectionActions.onClick}" />
+                </a4j:commandButton>
+              </f:subview>
+
+              <a4j:outputPanel id="#{idPrefix}_ajax_panel">
+                <c:if test="#{actionClicked or showFirstForm}">
+                  <div>
+                    <div id="#{idPrefix}_box">
+                      <nxu:set var="isRoutingTask" value="#{routingTaskActions.isRoutingTask(task)}">
+                        <c:if test="#{isRoutingTask}">
+                          <h3>#{routingActions.getRouteInstanceFor(task).title} - #{task.type}</h3>
+                          <nxl:layout name="#{routingTaskActions.getTaskLayout(task)}" mode="edit" value="#{routingTaskActions.formVariables}"/>
+                          <p class="buttonsGadget">
+                            <nxu:set var="actions"  value="#{routingTaskActions.getTaskButtons(task)}" cache="true">
+                              <nxu:dataList var="btn_action" value="#{actions}" id="versionActionsTable">
+                                <span id="#{sel_action.id}">
+                                  <a4j:commandLink action="#{routingTaskActions.endTask(task)}"
+                                    value="#{messages[btn_action.label]}" styleClass="button"
+                                    reRender="#{widget.id}_panel" onclick="jQuery.fancybox.close();">
+                                    <f:param name="button" value="#{btn_action.name}" />
+                                  </a4j:commandLink>
+                                </span>
+                              </nxu:dataList>
+                            </nxu:set>
+                          </p>
+                        </c:if>
+
+                        <c:if test="#{not isRoutingTask}">
+                          <h3>#{dashboardItem.i18nTaskName}</h3>
+                          <table class="dataInput">
+                            <tr>
+                              <td class="labelColumn">
+                                <h:outputText class="required"
+                                  value="#{messages['label.review.user.comment']}" />
+                              </td>
+                              <td>
+                                <h:inputTextarea id="#{widget.id}_taskActionComment" rows="5"
+                                  cols="50" value="#{taskActions.comment}" />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td colspan="6">
+                                <h:message styleClass="errorMessage"
+                                  for="#{widget.id}_taskActionComment" />
+                              </td>
+                            </tr>
+                          </table>
+                          <p class="buttonsGadget">
+                            <a4j:commandLink value="#{messages['label.review.end.task']}"
+                              styleClass="button"
+                              action="#{taskActions.acceptTask(dashboardItem.task)}"
+                              rendered="#{taskService.canEndTask(currentUser, dashboardItem.task)}"
+                              reRender="#{widget.id}_panel" onclick="jQuery.fancybox.close();"/>
+                            <a4j:commandLink value="#{messages['label.review.reject.task']}"
+                              styleClass="button"
+                              action="#{taskActions.rejectTask(dashboardItem.task)}"
+                              rendered="#{taskService.canEndTask(currentUser, dashboardItem.task)}"
+                              reRender="#{widget.id}_panel" onclick="jQuery.fancybox.close();"/>
+                          </p>
+                        </c:if>
+                      </nxu:set>
+                    </div>
+                  </div>
+                </c:if>
+              </a4j:outputPanel>
+
+            </nxu:valueHolder>
+
+            </div>
+          </nxu:set>
+          </nxu:set>
+
+        </c:forEach>
+
+      </c:if>
+
+    </nxu:set>
+    </nxu:set>
+
+  </a4j:outputPanel>
+</div>
