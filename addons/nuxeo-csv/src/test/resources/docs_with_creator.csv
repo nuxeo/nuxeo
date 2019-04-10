@@ -1,0 +1,3 @@
+"name","type","dc:description","dc:title","dc:creator","dc:contributors"
+"myfile","File","a simple file","My File","leela",""
+"myfile2","File","a simple file 2","My File 2","leela","contributor1|contributor2"

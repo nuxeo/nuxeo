@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.automation.server.bindings"
+  version="1.0">
+
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
+    point="bindings">
+    <!-- Protect Nuxeo Drive integration test operations -->
+    <binding name="NuxeoDrive.SetupIntegrationTests">
+      <administrator>true</administrator>
+    </binding>
+    <binding name="NuxeoDrive.TearDownIntegrationTests">
+      <administrator>true</administrator>
+    </binding>
+    <binding name="NuxeoDrive.WaitForAsyncCompletion">
+      <administrator>true</administrator>
+    </binding>
+    <binding name="NuxeoDrive.SetVersioningOptions">
+      <administrator>true</administrator>
+    </binding>
+    <binding name="NuxeoDrive.CreateTestDocuments">
+      <administrator>true</administrator>
+    </binding>
+    <binding name="NuxeoDrive.SetActiveFactories">
+      <administrator>true</administrator>
+    </binding>
+  </extension>
+
+</component>

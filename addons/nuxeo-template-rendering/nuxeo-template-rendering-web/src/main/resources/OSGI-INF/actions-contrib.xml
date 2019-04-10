@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.platform.TemplateSources.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+
+    <action id="CREATE_DOCUMENT">
+      <filter-id>is_not_creating_template</filter-id>
+    </action>
+
+    <action id="CREATE_DOCUMENT_TEMPLATE" link="#{templateActions.createTemplate}"
+      order="0" label="command.create">
+      <category>CREATE_DOCUMENT_FORM</category>
+      <filter-id>is_creating_template</filter-id>
+    </action>
+
+    <action id="TAB_TEMPLATE_PARAMS" link="/incl/tabs/template_tab.xhtml"
+      enabled="true" label="tab.template.parameters" order="55" type="rest_document_link">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="view_template_params">
+        <rule grant="true">
+          <permission>Write</permission>
+          <facet>Template</facet>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_TEMPLATEBASED_PARAMS" link="/incl/tabs/templatebased_tab.xhtml"
+      enabled="true" label="tab.template.associated" order="55" type="rest_document_link">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="view_templatebased_params">
+        <rule grant="true">
+          <facet>TemplateBased</facet>
+        </rule>
+      </filter>
+    </action>
+
+  <action id="associateTemplate" order="20" label="action.template.associate" type="fancybox"
+       icon="/icons/doctemplate.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <properties>
+        <property name="include">/associateTemplate.xhtml</property>
+      </properties>
+      <filter id="canAssociateTemplate">
+        <rule grant="false">
+          <facet>Template</facet>
+          <facet>TemplateBased</facet>
+          <facet>Folderish</facet>
+        </rule>
+      </filter>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="is_creating_template">
+      <rule grant="true">
+        <condition>#{changeableDocument.type == 'TemplateSource'}</condition>
+      </rule>
+    </filter>
+
+    <filter id="is_creating_template_instance">
+      <rule grant="true">
+        <condition>#{changeableDocument.hasFacet('TemplateBased')}</condition>
+      </rule>
+    </filter>
+
+    <filter id="is_not_creating_template">
+      <rule grant="false">
+        <condition>#{changeableDocument.type == 'TemplateSource'}</condition>
+      </rule>
+      <rule grant="false">
+        <condition>#{changeableDocument.hasFacet('TemplateBased')}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>
