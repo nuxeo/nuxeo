@@ -1,0 +1,16 @@
+POST /_vti_bin/_vti_aut/author.dll HTTP/1.1
+Date: Fri, 04 Sep 2009 13:51:45 GMT
+MIME-Version: 1.0
+User-Agent: MSFrontPage/6.0
+Host: vm2k3
+Accept: auth/sicily
+Content-Length: 58
+Content-Type: application/x-www-form-urlencoded
+X-Vermeer-Content-Type: application/x-www-form-urlencoded
+Connection: Keep-Alive
+Cache-Control: no-cache
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=
+
+method=open+service%3a6%2e0%2e2%2e5523&service%5fname=%2f
+
+

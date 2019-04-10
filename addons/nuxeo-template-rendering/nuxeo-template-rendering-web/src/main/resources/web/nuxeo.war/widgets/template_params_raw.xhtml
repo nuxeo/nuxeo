@@ -1,0 +1,16 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <c:set var="namespace" value="#{widget.properties.namespace}" />
+  <table>
+      <nxu:repeat value="#{templateActions.getTemplateEditableInputs()}" var="templateInput">
+      <tr>
+       <td> #{templateInput.toString()} </td>
+      </tr>
+     </nxu:repeat>
+  </table>
+</div>
