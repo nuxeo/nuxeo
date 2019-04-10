@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>testRouteModification</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">testRouteModification</td></tr>
+</thead><tbody>
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Workspaces</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=routeTest</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Route</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>routeToModify</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Step</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>B</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=routeToModify</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Route</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>dm_route_elements:nxl_document_routing_route_content:nxw_dr_listing_add_step:before_0</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Step</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>A</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_1:nxw_dr_listing_add_step_1:after_1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Fork</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_2:nxw_dr_listing_add_step_2:in_2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Step</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C1</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_2:nxw_dr_listing_add_step_2:after_2</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Step</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>D</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_3:nxw_dr_listing_add_step_3:before_3</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Step</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C0</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_4:nxw_dr_listing_add_step_4:after_4</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>Link=Step</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>document_create:nxl_heading:nxw_title</td>
+	<td>C2</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>dm_route_elements:nxl_document_routing_route_content:nxw_dr_listing_document_route_element_type:type_0</td>
+	<td>DocumentRouteStep </td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_1:nxw_dr_listing_document_route_element_type_1:type_1</td>
+	<td>DocumentRouteStep</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_2:nxw_dr_listing_document_route_element_type_2:type_2</td>
+	<td>StepFolder</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_3:nxw_dr_listing_document_route_element_type_3:type_3</td>
+	<td>__DocumentRouteStep</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_4:nxw_dr_listing_document_route_element_type_4:type_4</td>
+	<td>__DocumentRouteStep</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_5:nxw_dr_listing_document_route_element_type_5:type_5</td>
+	<td>__DocumentRouteStep</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_6:nxw_dr_listing_document_route_element_type_6:type_6</td>
+	<td>DocumentRouteStep</td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

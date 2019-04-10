@@ -1,0 +1,55 @@
+<component name="org.nuxeo.ecm.platform.routing.CoreExtensions"
+  version="1.0">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="schema">
+    <schema name="base" src="schemas/base.xsd" />
+    <schema name="document_route_instance" prefix="docri"
+      src="schemas/document_route_instance.xsd" />
+    <schema name="document_route_model" prefix="docrm"
+      src="schemas/document_route_model.xsd" />
+    <schema name="step_folder" prefix="stepf" src="schemas/step_folder.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+
+    <doctype name="DocumentRouteInstancesRoot" extends="Folder">
+      <subtypes>
+        <type>Folder</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="Domain" extends="Folder">
+      <subtypes>
+        <type>DocumentRouteInstancesRoot</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="DocumentRoute" extends="StepFolder">
+      <schema name="document_route_instance" />
+      <schema name="document_route_model" />
+      <subtypes>
+        <type>StepFolder</type>
+        <type>DocumentRouteStep</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="StepFolder" extends="OrderedFolder">
+      <schema name="step_folder" />
+      <subtypes>
+        <type>StepFolder</type>
+        <type>DocumentRouteStep</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="DocumentRouteStep" extends="Document">
+      <schema name="dublincore" />
+      <facet name ="RouteStep"/>
+    </doctype>
+
+  </extension>
+
+</component>  

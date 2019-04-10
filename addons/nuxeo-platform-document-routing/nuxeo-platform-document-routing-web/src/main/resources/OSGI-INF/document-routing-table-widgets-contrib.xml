@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+
+<component name="com.nuxeo.document.routing.table.widget">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.listing</require>
+  
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="remove_step">
+      <documentation>
+        This remove_step widget displays a link to delete a step.
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+           The step document Id.
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/remove_step_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="add_step">
+      <documentation>
+        This add_step widget displays three different links.
+        <br />
+        Add before will add a new step before the selected step.
+        Add in will add a new step at the end of the container.
+        Add after will add a new step after the selected step.
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+           The step document Id.
+          </li>
+          <li>
+           A Boolean used to render the Add In Button if true.
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/add_step_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_document_route_element_type">
+      <documentation>
+        This widget type displays Step is a the current document is a Step or
+        "Serial" or "Parallel "
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+           the documentRouteElement
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_document_route_element_type_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_edit_document_route_element">
+      <documentation>
+        This widget type allows to edit a route element
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+            the documentRouteElement
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_edit_document_route_element_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension> 
+  
+   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+    
+     <widget name="dr_listing_document_route_element_type" type="listing_document_route_element_type">
+      <labels>
+        <label mode="any">label.document.route.content.header.type</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+    
+    <widget name="dr_listing_title_link" type="listing_title_link">
+      <labels>
+        <label mode="any">label.content.header.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.document</field>
+        <field>data.document.id</field>
+      </fields>
+    </widget>
+    
+    <widget name="dr_listing_title_description" type="text">
+      <labels>
+        <label mode="any">label.content.header.description</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.document.dc.description</field>
+      </fields>
+    </widget>
+
+     <widget name="dr_listing__edit_document_route_element" type="listing_edit_document_route_element">
+       <labels>
+         <label mode="any">label.document.route.content.header.update</label>
+       </labels>
+       <translated>true</translated>
+       <fields>
+         <field>data.document</field>
+       </fields>
+     </widget>
+
+    <widget name="dr_listing_add_step" type="add_step">
+      <translated>true</translated>
+      <fields>
+        <field>data.document.id</field>
+        <field>data.document.hasFacet('Folderish')</field>
+      </fields>
+    </widget>
+
+    <widget name="dr_listing_remove_step" type="remove_step">
+      <translated>true</translated>
+      <fields>
+        <field>data.document.id</field>
+      </fields>
+    </widget>
+    
+  </extension>
+
+</component>    

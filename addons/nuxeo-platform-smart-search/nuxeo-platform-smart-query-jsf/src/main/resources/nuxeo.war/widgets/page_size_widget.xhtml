@@ -1,0 +1,27 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:if test="#{widget.mode == 'view'}">
+    <h:outputText value="#{field}" id="#{widget.id}" />  
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <h:selectOneMenu value="#{field}"
+      id="#{widget.id}"
+      required="#{widget.required}"
+      styleClass="#{widgetProperty_styleClass}">
+      <f:convertNumber />
+      <f:selectItem itemValue="5" itemLabel="5" />
+      <f:selectItem itemValue="10" itemLabel="10" />
+      <f:selectItem itemValue="20" itemLabel="20" />
+      <f:selectItem itemValue="30" itemLabel="30" />
+      <f:selectItem itemValue="40" itemLabel="40" />
+      <f:selectItem itemValue="50" itemLabel="50" />
+    </h:selectOneMenu>
+    <h:message for="#{widget.id}" styleClass="errorMessage" />
+      
+  </c:if>
+
+</div>
