@@ -1,0 +1,20 @@
+<component name="org.nuxeo.ecm.csv.jsf.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="csvImportActions" order="40" label="label.csv.import" type="fancybox"
+      icon="/icons/action_add_file.gif">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <properties>
+        <property name="include">/incl/csv_import_box.xhtml</property>
+        <property name="autoDimensions">false</property>
+        <property name="width">90%</property>
+        <property name="height">90%</property>
+        <property name="modal">true</property>
+      </properties>
+      <filter-id>importFile</filter-id>
+    </action>
+
+  </extension>
+</component>

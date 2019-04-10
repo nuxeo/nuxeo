@@ -1,0 +1,82 @@
+{
+   "markedViewedByMeDate" : "2013-02-12T12:39:47.826Z",
+   "lastModifyingUserName" : "Tester Tester",
+   "thumbnailLink" : "http://example.com/thumbnailnative/12341234",
+   "iconLink" : "https://ssl.gstatic.com/docs/doclist/images/icon_11_document_list.png",
+   "alternateLink" : "https://docs.google.com/a/example.com/document/d/56785678/edit?usp=drivesdk",
+   "shared" : true,
+   "lastViewedByMeDate" : "2013-02-12T12:39:48.423Z",
+   "selfLink" : "https://www.googleapis.com/drive/v2/files/56785678",
+   "kind" : "drive#file",
+   "appDataContents" : false,
+   "owners" : [
+      {
+         "permissionId" : "18093776961422815682",
+         "kind" : "drive#user",
+         "isAuthenticatedUser" : true,
+         "emailAddress" : "tester@example.com",
+         "picture" : {
+            "url" : "http://example.com/picture/tester@example.com/photo.jpg"
+         },
+         "displayName" : "Tester Tester"
+      }
+   ],
+   "userPermission" : {
+      "etag" : "\"tlWfk03TbBHKoqyGbIYE6wA918U/WwSMl6PpXy7ZBX2AXKiJdNMkJKY\"",
+      "selfLink" : "https://www.googleapis.com/drive/v2/files/56785678/permissions/me",
+      "kind" : "drive#permission",
+      "type" : "user",
+      "id" : "me",
+      "role" : "owner"
+   },
+   "quotaBytesUsed" : "0",
+   "id" : "56785678",
+   "labels" : {
+      "starred" : false,
+      "viewed" : true,
+      "trashed" : false,
+      "hidden" : false,
+      "restricted" : false
+   },
+   "modifiedDate" : "2012-04-25T10:19:13.149Z",
+   "exportLinks" : {
+      "application/pdf" : "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&exportFormat=pdf",
+      "application/rtf" : "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&exportFormat=rtf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" : "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&exportFormat=docx",
+      "text/plain" : "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&exportFormat=txt",
+      "text/html" : "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&exportFormat=html",
+      "application/vnd.oasis.opendocument.text" : "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&exportFormat=odt"
+   },
+   "version" : "6459",
+   "writersCanShare" : true,
+   "lastModifyingUser" : {
+      "permissionId" : "18093776961422815682",
+      "kind" : "drive#user",
+      "isAuthenticatedUser" : true,
+      "emailAddress" : "tester@example.com",
+      "picture" : {
+         "url" : "http://example.com/picture/tester@example.com/photo.jpg"
+      },
+      "displayName" : "Tester Tester"
+   },
+   "etag" : "\"tlWfk03TbBHKoqyGbIYE6wA918U/MTMzNTM0OTE1MzE0OQ\"",
+   "copyable" : true,
+   "modifiedByMeDate" : "2012-04-25T10:19:13.149Z",
+   "editable" : true,
+   "title" : "Test Document",
+   "ownerNames" : [
+      "Tester Tester"
+   ],
+   "mimeType" : "application/vnd.google-apps.document",
+   "createdDate" : "2012-04-25T09:40:49.672Z",
+   "embedLink" : "https://docs.google.com/a/example.com/document/d/56785678/preview",
+   "parents" : [
+      {
+         "selfLink" : "https://www.googleapis.com/drive/v2/files/56785678/parents/01010101",
+         "kind" : "drive#parentReference",
+         "parentLink" : "https://www.googleapis.com/drive/v2/files/01010101",
+         "isRoot" : true,
+         "id" : "01010101"
+      }
+   ]
+}

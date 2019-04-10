@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.jetty.test">
+
+  <extension target="org.nuxeo.runtime.server" point="webapp">
+    <webapp name="nuxeo" path="/">
+      <root>web/root.war</root>
+    </webapp>
+  </extension>
+
+</component>
