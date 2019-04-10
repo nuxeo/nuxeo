@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactoryManager"
+  version="1.0.0">
+
+  <documentation>
+    The nuxeo CMIS service factory manages the NuxeoCmisServiceFactory
+    class and parameters to be extended.
+
+    <code>
+      <extension
+        target="org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactoryManager"
+        point="factory">
+        <factory
+          class="org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactory">
+          <parameter name="servicewrapper.1">com.example.my.SimpleWrapper
+          </parameter>
+          <parameter name="servicewrapper.2">com.example.my.AdvancedWrapper,1,cmis:documents
+          </parameter>
+          <parameter name="servicewrapper.3">com.example.my.DebuggingWrapper,testRepositoryId
+          </parameter>
+          <parameter name="service.tempDirectory">/tmp</parameter>
+          <parameter name="service.encryptTempFiles">false</parameter>
+          <parameter name="service.memoryThreshold">4194304</parameter>
+          <parameter name="service.maxContentSize">4294967296</parameter>
+          <parameter name="service.defaultTypesMaxItems">100</parameter>
+          <parameter name="service.defaultTypesDepth">-1</parameter>
+          <parameter name="service.defaultMaxItems">100</parameter>
+          <parameter name="service.defaultDepth">2</parameter>
+        </factory>
+      </extension>
+    </code>
+
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactoryManager" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactoryManager" />
+  </service>
+
+  <extension-point name="factory">
+    <documentation>
+      This service provides an extension point to override
+      the NuxeoCmisServiceFactory
+      class and parameters.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactoryDescriptor" />
+  </extension-point>
+
+</component>
