@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.error.web.anonymous">
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+    <documentation>
+      Contribution of anonymous user to test login redirection pages when
+      anonymous user is set and a DocumentSecurityException is thrown.
+    </documentation>
+    <userManager>
+      <users>
+        <anonymousUser id="Guest">
+          <property name="firstName">Guest</property>
+          <property name="lastName">User</property>
+        </anonymousUser>
+      </users>
+    </userManager>
+  </extension>
+</component>

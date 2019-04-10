@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.quota.listeners">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="quotaStatsListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.quota.QuotaStatsListener" order="100">
+      <event>documentCreated</event>
+      <event>aboutToRemove</event>
+      <event>documentCreatedByCopy</event>
+      <event>documentMoved</event>
+      <event>documentModified</event>
+      <event>beforeDocumentModification</event>
+      <event>aboutToRemoveVersion</event>
+      <event>lifecycle_transition_event</event>
+    </listener>
+
+    <listener name="quotaProcessor" async="true"
+      class="org.nuxeo.ecm.quota.size.QuotaComputerProcessor" order="100">
+      <event>quotaUpdateNeeded</event>
+    </listener>
+
+  </extension>
+
+</component>
