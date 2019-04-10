@@ -1,0 +1,149 @@
+<fragment version="1">
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+
+    <navigation-case>
+      <from-outcome>error_index</from-outcome>
+      <to-view-id>/error_test_web/error_index.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_invalid_html</from-outcome>
+      <to-view-id>/error_test_web/error_invalid_html.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_ui_include_not_found</from-outcome>
+      <to-view-id>/error_test_web/error_ui_include_not_found.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_ui_include_relative_not_found</from-outcome>
+      <to-view-id>/error_test_web/error_ui_include_relative_not_found.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_ui_decorate_not_found</from-outcome>
+      <to-view-id>/error_test_web/error_ui_decorate_not_found.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_ui_composition_not_found</from-outcome>
+      <to-view-id>/error_test_web/error_ui_composition_not_found.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_ui_include_invalid_included</from-outcome>
+      <to-view-id>/error_test_web/error_ui_include_invalid_included.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_ui_include_relative_invalid_included</from-outcome>
+      <to-view-id>/error_test_web/error_ui_include_relative_invalid_included.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_jsf_function_checked</from-outcome>
+      <to-view-id>/error_test_web/error_jsf_function_checked.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_jsf_function_unchecked</from-outcome>
+      <to-view-id>
+        /error_test_web/error_jsf_function_unchecked.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_seam_getter_checked</from-outcome>
+      <to-view-id>/error_test_web/error_seam_getter_checked.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_seam_getter_unchecked</from-outcome>
+      <to-view-id>/error_test_web/error_seam_getter_unchecked.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_seam_getter_security</from-outcome>
+      <to-view-id>/error_test_web/error_seam_getter_security.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_seam_factory_checked</from-outcome>
+      <to-view-id>/error_test_web/error_seam_factory_checked.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_seam_factory_unchecked</from-outcome>
+      <to-view-id>
+        /error_test_web/error_seam_factory_unchecked.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>error_seam_factory_security</from-outcome>
+      <to-view-id>/error_test_web/error_seam_factory_security.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>test_seam_concurrency</from-outcome>
+      <to-view-id>/error_test_web/test_seam_concurrency.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>test_seam_page_scope</from-outcome>
+      <to-view-id>/error_test_web/test_seam_page_scope.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>test_distributed_transaction</from-outcome>
+      <to-view-id>/error_test_web/test_distributed_transaction.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+  </extension>
+
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>Nuxeo Error Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.platform.error.web.ErrorServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Error Servlet</servlet-name>
+      <url-pattern>/nxerror/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+
+  <install>
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+</fragment>

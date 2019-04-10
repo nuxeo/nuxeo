@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.liveconnect.google.drive.jsf.GoogleDriveComponent"
+  version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.component.file.JSFBlobUploaderService" point="uploader">
+    <uploader id="googledrive" order="20" class="org.nuxeo.ecm.liveconnect.google.drive.GoogleDriveBlobUploader" />
+  </extension>
+
+</component>

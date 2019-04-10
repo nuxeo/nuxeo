@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Bundle-Name: Nuxeo JSF To Web UI
+Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.jsf.to.web.ui;singleton=true
+Nuxeo-Component: OSGI-INF/codecs-contrib.xml
