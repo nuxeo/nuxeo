@@ -1,0 +1,67 @@
+<ui:composition template="global_page_template.xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <ui:define name="page title">
+    <h:outputText
+      value="#{messages['label.layoutDemo.shortTitle']} - #{currentWidgetType.label}"/>
+  </ui:define>
+
+  <ui:define name="content">
+
+    <h3>#{currentWidgetType.label}</h3>
+
+    <div class="tabsBar">
+
+      <ul>
+        <li class="#{nxu:test(layoutDemoCurrentTabId == 'reference', 'selected', '')}">
+          <a href="#{baseURL}#{currentWidgetType.url}/reference">
+            #{messages['label.layoutDemo.widgetDemo.reference']}
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div style="clear:both"></div>
+    <div class="tabsContent">
+
+      <c:if test="#{not empty currentWidgetTypeDef.configuration.description}">
+        <ui:decorate template="/widgets/incl/foldable_box_template.xhtml">
+          <ui:param name="foldable" value="true" />
+          <ui:param name="foldedByDefault" value="false" />
+          <ui:define name="foldable_box_header_content">
+            <h:outputText
+              value="#{messages['label.layoutDemo.widgetDemo.description']}" />
+          </ui:define>
+          <ui:define name="foldable_box_content">
+            <h:outputText value="#{currentWidgetTypeDef.configuration.description}"
+              escape="false" styleClass="currentDocumentDescription" />
+          </ui:define>
+        </ui:decorate>
+      </c:if>
+
+      <nxl:layout name="layout_demo_reference_general_information" mode="view"
+        value="#{currentWidgetTypeDef}"
+        template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
+        title="#{messages['label.layoutDemo.reference.information']}"
+        foldedByDefault="true" />
+
+      <div>
+        <c:forEach var="layoutDef" items="#{currentWidgetTypeDef.configuration.getPropertyLayouts('view', null)}">
+          <nxl:layout definition="#{layoutDef}" mode="view_reference"
+            value="#{viewPreviewLayoutDef.properties}"
+            template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
+            showLayoutDefinition="true"
+            title="#{messages['label.layoutDemo.reference.actionProperties']}"
+            defaultPropertyValues="#{currentWidgetTypeDef.configuration.getDefaultPropertyValues('view')}" />
+        </c:forEach>
+      </div>
+
+    </div>
+
+  </ui:define>
+
+</ui:composition>

@@ -1,0 +1,204 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.complexListWidget.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="complexListWidgetLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>complexListWidget</widget>
+        </row>
+      </rows>
+      <widget name="complexListWidget" type="list">
+        <labels>
+          <label mode="any">Complex List widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:complexList</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+        <properties widgetMode="any">
+          <property name="display">#{not empty param.display ? param.display : 'table'}</property>
+        </properties>
+        <subWidgets>
+          <widget name="stringComplexItem" type="text">
+            <fields>
+              <field>stringComplexItem</field>
+            </fields>
+            <labels>
+              <label mode="any">String item</label>
+            </labels>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+          <widget name="dateComplexItem" type="datetime">
+            <fields>
+              <field>dateComplexItem</field>
+            </fields>
+            <labels>
+              <label mode="any">Date item</label>
+            </labels>
+            <properties widgetMode="view">
+              <property name="pattern">#{nxu:basicDateFormatter()}</property>
+            </properties>
+            <properties widgetMode="edit">
+              <property name="format">
+                #{nxu:basicDateAndTimeFormatter()}
+              </property>
+            </properties>
+          </widget>
+          <widget name="intComplexItem" type="int">
+            <fields>
+              <field>intComplexItem</field>
+            </fields>
+            <labels>
+              <label mode="any">Int item</label>
+            </labels>
+          </widget>
+          <widget name="booleanComplexItem" type="checkbox">
+            <fields>
+              <field>booleanComplexItem</field>
+            </fields>
+            <labels>
+              <label mode="any">Boolean item</label>
+            </labels>
+          </widget>
+          <widget name="2fieldsWidget" type="template">
+            <fields>
+              <field>stringComplexItem2</field>
+              <field>stringComplexItem3</field>
+            </fields>
+            <labels>
+              <label mode="any">2 fields</label>
+            </labels>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+            <properties mode="any">
+              <property name="label1">First field:</property>
+              <property name="label2">Second field:</property>
+              <property name="template">
+                /layoutDemo/widgets/2fields_widget_template.xhtml
+              </property>
+            </properties>
+          </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <!-- old definition, using a complex item as intermediate, deprecated to handle
+      a nice rendering when using the "table" display property -->
+
+    <widget name="oldComplexListWidgetExample" type="list">
+      <labels>
+        <label mode="any">Complex List widget</label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>lds:complexList</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="complexListItem" type="complex">
+          <labels>
+            <label mode="any">Complex List item</label>
+          </labels>
+          <properties mode="any">
+            <property name="display">block_left</property>
+            <!-- since 5.6, using a widget of type 'complex' is enough -->
+            <!--
+              <property name="template">
+              /widgets/complex_list_item_widget_template.xhtml
+              </property>
+            -->
+          </properties>
+          <!-- subwidgets for complex -->
+          <subWidgets>
+            <widget name="stringComplexItem" type="text">
+              <fields>
+                <field>stringComplexItem</field>
+              </fields>
+              <labels>
+                <label mode="any">String item</label>
+              </labels>
+              <properties widgetMode="edit">
+                <property name="required">true</property>
+              </properties>
+            </widget>
+            <widget name="dateComplexItem" type="datetime">
+              <fields>
+                <field>dateComplexItem</field>
+              </fields>
+              <labels>
+                <label mode="any">Date item</label>
+              </labels>
+              <properties widgetMode="view">
+                <property name="pattern">#{nxu:basicDateFormatter()}</property>
+              </properties>
+              <properties widgetMode="edit">
+                <property name="format">
+                  #{nxu:basicDateAndTimeFormatter()}
+                </property>
+              </properties>
+            </widget>
+            <widget name="intComplexItem" type="int">
+              <fields>
+                <field>intComplexItem</field>
+              </fields>
+              <labels>
+                <label mode="any">Int item</label>
+              </labels>
+            </widget>
+            <widget name="booleanComplexItem" type="checkbox">
+              <fields>
+                <field>booleanComplexItem</field>
+              </fields>
+              <labels>
+                <label mode="any">Boolean item</label>
+              </labels>
+            </widget>
+            <widget name="2fieldsWidget" type="template">
+              <fields>
+                <field>stringComplexItem2</field>
+                <field>stringComplexItem3</field>
+              </fields>
+              <labels>
+                <label mode="any">2 fields</label>
+              </labels>
+              <properties widgetMode="edit">
+                <property name="required">true</property>
+              </properties>
+              <properties mode="any">
+                <property name="label1">First field:</property>
+                <property name="label2">Second field:</property>
+                <property name="template">
+                  /layoutDemo/widgets/2fields_widget_template.xhtml
+                </property>
+              </properties>
+            </widget>
+          </subWidgets>
+        </widget>
+      </subWidgets>
+    </widget>
+
+  </extension>
+
+</component>

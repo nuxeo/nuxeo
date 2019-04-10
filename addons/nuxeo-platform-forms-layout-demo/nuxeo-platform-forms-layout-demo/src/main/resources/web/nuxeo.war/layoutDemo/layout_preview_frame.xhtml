@@ -1,0 +1,40 @@
+<ui:composition template="/pages/basic_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxr="http://nuxeo.org/nxweb/resources">
+<ui:remove>
+  Generates a preview given a layout definition in request parameters.
+</ui:remove>
+
+  <ui:param name="pageName" value="layoutDemo/default" />
+
+  <ui:define name="page title">
+    <h:outputText
+      value="#{messages['label.layoutDemo.shortTitle']} - #{messages['label.layoutDemo.widgetPreview.title']}"/>
+  </ui:define>
+
+  <ui:define name="basic body">
+
+    <h:form id="previewLayoutForm">
+      <nxu:set var="jsonLayoutDef" value="#{request.getParameter('layoutDefinition')}">
+      <nxu:set var="layoutDef" value="#{layoutPreviewActions.getDecodedLayoutDefinition(jsonLayoutDef)}">
+      <nxu:set var="layoutMode" value="#{request.getParameter('layoutMode')}">
+      <nxu:set var="layoutTemplate" value="#{request.getParameter('layoutTemplate')}">
+        <nxl:layout
+          definition="#{layoutDef}"
+          value="#{layoutPreviewDocument}"
+          mode="#{layoutMode}"
+          template="#{layoutTemplate}" />
+      </nxu:set>
+      </nxu:set>
+      </nxu:set>
+      </nxu:set>
+    </h:form>
+
+  </ui:define>
+
+</ui:composition>
