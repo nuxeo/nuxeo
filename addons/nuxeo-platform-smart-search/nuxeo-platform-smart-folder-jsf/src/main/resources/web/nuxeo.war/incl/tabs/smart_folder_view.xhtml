@@ -1,0 +1,17 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <a4j:region id="documentViewRegion">
+    <a4j:outputPanel id="documentViewPanel">
+      <nxl:documentLayout mode="view" value="#{currentDocument}" />
+    </a4j:outputPanel>
+  </a4j:region>
+  
+</div>
