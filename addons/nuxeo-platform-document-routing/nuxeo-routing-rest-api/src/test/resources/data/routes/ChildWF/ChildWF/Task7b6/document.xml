@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="Task7b6">
+  <system>
+    <type>RouteNode</type>
+    <path>ChildWF/Task7b6</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>facet-var_Task7b6</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:var_Task7b6="http://www.nuxeo.org/ecm/project/schemas/pabgrall-sandbox-92-nuxe/var_Task7b6" name="var_Task7b6"></schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common"></schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:description><![CDATA[Thank you for aknowledging]]></dc:description>
+    <dc:title><![CDATA[Multiple Tasks]]></dc:title>
+  </schema>
+  <schema xmlns:rnode="http://www.nuxeo.org/ecm/schemas/route_node/" name="route_node">
+    <rnode:taskDocType><![CDATA[TaskDoc]]></rnode:taskDocType>
+    <rnode:taskButtons>
+      <button>
+        <filter><![CDATA[]]></filter>
+        <name><![CDATA[approve]]></name>
+        <label><![CDATA[approve]]></label>
+      </button>
+      <button>
+        <filter><![CDATA[]]></filter>
+        <name><![CDATA[reject]]></name>
+        <label><![CDATA[reject]]></label>
+      </button>
+    </rnode:taskButtons>
+    <rnode:transitions>
+      <transition>
+        <path>
+          <pathpoint>
+            <x><![CDATA[80.0]]></x>
+            <y><![CDATA[0.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[80.0]]></x>
+            <y><![CDATA[90.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[90.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[150.0]]></y>
+          </pathpoint>
+        </path>
+        <condition><![CDATA[NodeVariables["button"] =="approve"]]></condition>
+        <chain><![CDATA[]]></chain>
+        <targetId><![CDATA[stop-node]]></targetId>
+        <name><![CDATA[approveTask7b6]]></name>
+        <label><![CDATA[approve]]></label>
+      </transition>
+      <transition>
+        <path>
+          <pathpoint>
+            <x><![CDATA[100.0]]></x>
+            <y><![CDATA[0.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[100.0]]></x>
+            <y><![CDATA[90.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[90.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[150.0]]></y>
+          </pathpoint>
+        </path>
+        <condition><![CDATA[NodeVariables["button"] =="reject"]]></condition>
+        <chain><![CDATA[ChildWFAction]]></chain>
+        <targetId><![CDATA[stop-node]]></targetId>
+        <name><![CDATA[rejectTask7b6]]></name>
+        <label><![CDATA[reject]]></label>
+      </transition>
+    </rnode:transitions>
+    <rnode:taskLayout><![CDATA[Task7b6@taskLayout]]></rnode:taskLayout>
+    <rnode:taskY><![CDATA[260]]></rnode:taskY>
+    <rnode:variablesFacet><![CDATA[facet-var_Task7b6]]></rnode:variablesFacet>
+    <rnode:taskX><![CDATA[280]]></rnode:taskX>
+    <rnode:inputChain><![CDATA[]]></rnode:inputChain>
+    <rnode:executeOnlyFirstTransition><![CDATA[true]]></rnode:executeOnlyFirstTransition>
+    <rnode:hasMultipleTasks><![CDATA[true]]></rnode:hasMultipleTasks>
+    <rnode:allowTaskReassignment><![CDATA[false]]></rnode:allowTaskReassignment>
+    <rnode:stop><![CDATA[false]]></rnode:stop>
+    <rnode:taskAssignees>
+      <item><![CDATA[user1]]></item>
+      <item><![CDATA[user2]]></item>
+    </rnode:taskAssignees>
+    <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
+    <rnode:escalationRules/>
+    <rnode:outputChain><![CDATA[]]></rnode:outputChain>
+    <rnode:taskDirective><![CDATA[Multiple]]></rnode:taskDirective>
+    <rnode:nodeId><![CDATA[Task7b6]]></rnode:nodeId>
+    <rnode:start><![CDATA[false]]></rnode:start>
+    <rnode:taskAssigneesPermission><![CDATA[ReadWrite]]></rnode:taskAssigneesPermission>
+  </schema>
+</document>

@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.targetplatforms.core.framework">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <implementation
+    class="org.nuxeo.targetplatforms.core.service.TargetPlatformServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.targetplatforms.api.service.TargetPlatformService" />
+  </service>
+
+  <extension-point name="platforms">
+    <documentation>
+      Example of a target platform registration:
+
+      <code>
+        <platform id="cap-5.8">
+          <name>cap</name>
+          <version>5.8</version>
+          <label>Nuxeo Platform</label>
+          <status>supported</status>
+          <description>
+            This target platform is the last LTS.
+          </description>
+          <testVersions>
+            <version>5.8.0-HF07-SNAPSHOT</version>
+            <version>5.8</version>
+          </testVersions>
+          <downloadLink>
+            http://community.nuxeo.com/static/releases/nuxeo-5.8/nuxeo-cap-5.8-tomcat.zip
+          </downloadLink>
+          <releaseDate>2013/09/23</releaseDate>
+        </platform>
+      </code>
+
+    </documentation>
+    <object
+      class="org.nuxeo.targetplatforms.core.descriptors.TargetPlatformDescriptor" />
+  </extension-point>
+
+  <extension-point name="packages">
+    <documentation>
+      Example of a target package registration:
+
+      <code>
+        <package id="nuxeo-dm-5.8">
+          <name>nuxeo-dm</name>
+          <version>5.8</version>
+          <label>DM</label>
+          <targetPlatforms>
+            <platform>cap-5.8</platform>
+          </targetPlatforms>
+          <status>supported</status>
+          <downloadLink>
+            https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-dm?version=5.8.0
+          </downloadLink>
+          <description>My desc</description>
+        </package>
+      </code>
+
+    </documentation>
+    <object class="org.nuxeo.targetplatforms.core.descriptors.TargetPackageDescriptor" />
+  </extension-point>
+
+  <extension-point name="configuration">
+    <documentation>
+      Example of a target platform service configuration:
+
+      <code>
+        <configuration>
+          <defaultTargetPlatform>cap-5.8</defaultTargetPlatform>
+        </configuration>
+      </code>
+
+    </documentation>
+    <object
+      class="org.nuxeo.targetplatforms.core.descriptors.ServiceConfigurationDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <documentation>
+      Default override directory used to change some target
+      platforms values live.
+    </documentation>
+
+    <directory name="targetPlatformOverrides" extends="template-directory">
+      <schema>target_platform_override</schema>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+    </directory>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="target_platform_override" src="schemas/target_platform_override.xsd" />
+  </extension>
+
+</component>

@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.platform.TemplateSources.layouts.contrib">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="fileWithTemplate" type="template">
+      <labels>
+        <label mode="any">label.file.content</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>file:content</field>
+        <field>file:content/name</field>
+        <field>contextData['templateId']</field>
+      </fields>
+      <widgetModes>
+        <mode value="create">create</mode>
+        <mode value="edit">edit</mode>
+        <mode value="view">view</mode>
+        <mode value="view">preview</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="template">
+          /widgets/filewithtemplate_widget.xhtml
+        </property>
+        <property name="availableTemplates">
+          #{templateActions.getAvailableOfficeTemplates(value.type)}
+        </property>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="templateChooser">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>template</widget>
+        </row>
+      </rows>
+
+      <widget name="template" type="template">
+        <labels>
+          <label mode="any">label.template.template</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>nxts:templateId</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/filetemplate_selectone.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="linkedTemplateBasedDocs">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>linkedTemplateBasedDocs</widget>
+        </row>
+      </rows>
+      <widget name="linkedTemplateBasedDocs" type="template">
+        <labels>
+          <label mode="any">label.template.linkedTemplateBasedDocs</label>
+        </labels>
+        <translated>true</translated>
+        <properties mode="any">
+          <property name="template">
+            /widgets/linkedTemplateBasedDocs.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="templateParams">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>paramsAsString</widget>
+        </row>
+      </rows>
+      <widget name="paramsAsString" type="template">
+        <labels>
+          <label mode="any">label.template.parameters</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:templateData</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/template_params_raw.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="rawXMLparams" type="textarea">
+        <labels>
+          <label mode="any">label.template.parameters</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:templateData</field>
+        </fields>
+      </widget>
+    </layout>
+
+    <layout name="templateOptionsWizard">
+      <templates>
+        <template mode="any">/layouts/wizard_layout_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="wizardAdvancedLayout">templateOptions</property>
+        <property name="wizardMapping">
+          { "officeTemplate":
+          [{
+          "id": "useAsMainContent",
+          "checked": "checked"
+          },
+          {
+          "id": "rendition",
+          "val": "delivery"
+          }
+          ],
+          "officeTemplatePDF":
+          [{
+          "id": "useAsMainContent",
+          "checked": "checked"
+          },
+          {
+          "id": "converter",
+          "val": "application/pdf"
+          },
+          {
+          "id": "rendition",
+          "val": "delivery"
+          }],
+          "rendition":
+          [{
+          "id": "processorSelector",
+          "val": "Freemarker"
+          },
+          {
+          "id": "rendition",
+          "val": "webView"
+          }]
+          }
+        </property>
+      </properties>
+      <rows>
+        <row>
+          <widget>useCaseSelector</widget>
+        </row>
+      </rows>
+      <widget name="useCaseSelector" type="template">
+        <labels>
+          <label mode="any">label.wizard.usecase.select</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/usecaseSelector.xhtml
+          </property>
+          <propertyList name="wizardOptions">
+            <value>officeTemplate</value>
+            <value>officeTemplatePDF</value>
+            <value>rendition</value>
+          </propertyList>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="toggaledTemplateOptions">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+     <rows>
+      <row>
+        <widget>toggle</widget>
+      </row>
+     </rows>
+      <widget name="toggle" type="toggleableLayoutWithForms">
+        <labels>
+          <label mode="any"> </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field></field>
+        </fields>
+        <properties mode="any">
+          <property name="initialLayoutName">templateOptions</property>
+          <property name="toggledLayoutName">templateOptions</property>
+          <property name="canToggleMode">true</property>
+          <property name="actionsDisplay">buttons</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="templateOptions">
+      <templates>
+        <template mode="create">/layouts/hiddable_layout_template.xhtml
+        </template>
+        <template mode="edit">/layouts/layout_default_template.xhtml
+        </template>
+        <template mode="view">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>nature</widget>
+          <widget>rendition</widget>
+        </row>
+        <row>
+          <widget>targetTypes</widget>
+          <widget>forcedTypes</widget>
+        </row>
+        <row>
+          <widget>allowOverride</widget>
+          <widget>useAsMainContent</widget>
+        </row>
+        <row>
+          <widget>processorSelector</widget>
+          <widget>converter</widget>
+        </row>
+      </rows>
+      <widget name="rendition" type="template">
+        <labels>
+          <label mode="any">label.template.rendition</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:targetRenditionName</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/rendition_selectone.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="allowOverride" type="checkbox">
+        <labels>
+          <label mode="any">label.template.override</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:allowOverride</field>
+        </fields>
+      </widget>
+      <widget name="useAsMainContent" type="checkbox">
+        <labels>
+          <label mode="any">label.template.useAsMainContent</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:useAsMainContent</field>
+        </fields>
+      </widget>
+      <widget name="converter" type="template">
+        <labels>
+          <label mode="any">label.template.outputFormat</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:outputFormat</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/converter_selectone.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="targetTypes" type="template">
+        <labels>
+          <label mode="any">label.template.targetTypes</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:applicableTypes</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/doctypes_selectmanyornone.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="processorSelector" type="template">
+        <labels>
+          <label mode="any">label.template.processor</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:templateType</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/templateprocessor_selectone.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="forcedTypes" type="template">
+        <labels>
+          <label mode="any">label.template.forcedTypes</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tmpl:forcedTypes</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/doctypes_selectmanyornoneforce.xhtml
+          </property>
+        </properties>
+      </widget>
+
+    </layout>
+
+    <!-- override the default file layout -->
+    <layout name="file">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>fileWithTemplate</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="fileWithoutTemplate">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>file</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="Task38e">
+  <system>
+    <type>RouteNode</type>
+    <path>SerialDocumentReview/Task38e</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>facet-var_Task38e</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common"></schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:description><![CDATA[Thank you for validating the document]]></dc:description>
+    <dc:title><![CDATA[wf.serialDocumentReview.chooseParticipants]]></dc:title>
+  </schema>
+  <schema xmlns:rnode="http://www.nuxeo.org/ecm/schemas/route_node/" name="route_node">
+    <rnode:taskDocType><![CDATA[TaskDoc]]></rnode:taskDocType>
+    <rnode:taskButtons>
+      <button>
+        <filter><![CDATA[]]></filter>
+        <name><![CDATA[cancel]]></name>
+        <label><![CDATA[wf.serialDocumentReview.cancel]]></label>
+        <validate><![CDATA[false]]></validate>
+      </button>
+      <button>
+        <filter><![CDATA[]]></filter>
+        <name><![CDATA[start_review]]></name>
+        <label><![CDATA[wf.serialDocumentReview.startReview]]></label>
+        <validate><![CDATA[true]]></validate>
+      </button>
+    </rnode:taskButtons>
+    <rnode:transitions>
+      <transition>
+        <condition><![CDATA[NodeVariables["button"] =="cancel"]]></condition>
+        <chain><![CDATA[]]></chain>
+        <targetId><![CDATA[Task5c1]]></targetId>
+        <name><![CDATA[sdr_cancelationTask38e]]></name>
+        <label><![CDATA[sdr_cancelation]]></label>
+      </transition>
+      <transition>
+        <path>
+          <pathpoint>
+            <x><![CDATA[180.0]]></x>
+            <y><![CDATA[0.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[180.0]]></x>
+            <y><![CDATA[24.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[24.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[100.0]]></y>
+          </pathpoint>
+        </path>
+        <condition><![CDATA[NodeVariables["button"] =="start_review"]]></condition>
+        <chain><![CDATA[]]></chain>
+        <targetId><![CDATA[Task6d8]]></targetId>
+        <name><![CDATA[sdr_start_reviewTask38e]]></name>
+        <label><![CDATA[sdr_start_review]]></label>
+      </transition>
+    </rnode:transitions>
+    <rnode:taskLayout><![CDATA[Task38e@taskLayout]]></rnode:taskLayout>
+    <rnode:taskY><![CDATA[100]]></rnode:taskY>
+    <rnode:variablesFacet><![CDATA[facet-var_Task38e]]></rnode:variablesFacet>
+    <rnode:taskX><![CDATA[420]]></rnode:taskX>
+    <rnode:inputChain><![CDATA[]]></rnode:inputChain>
+    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
+    <rnode:hasMultipleTasks><![CDATA[false]]></rnode:hasMultipleTasks>
+    <rnode:allowTaskReassignment><![CDATA[false]]></rnode:allowTaskReassignment>
+    <rnode:stop><![CDATA[false]]></rnode:stop>
+    <rnode:taskAssignees/>
+    <rnode:taskDueDateExpr><![CDATA[CurrentDate.days(5)]]></rnode:taskDueDateExpr>
+    <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
+    <rnode:escalationRules/>
+    <rnode:outputChain><![CDATA[initInitiatorComment]]></rnode:outputChain>
+    <rnode:taskDirective><![CDATA[wf.serialDocumentReview.pleaseSelect]]></rnode:taskDirective>
+    <rnode:taskAssigneesExpr><![CDATA[workflowInitiator]]></rnode:taskAssigneesExpr>
+    <rnode:nodeId><![CDATA[Task38e]]></rnode:nodeId>
+    <rnode:start><![CDATA[false]]></rnode:start>
+  </schema>
+  <schema xmlns:var_Task38e="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_Task38e" name="var_Task38e"></schema>
+</document>

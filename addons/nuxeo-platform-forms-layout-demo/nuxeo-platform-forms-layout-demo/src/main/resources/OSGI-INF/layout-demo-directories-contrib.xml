@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.directories">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="layout_demo_crew" extends="template-vocabulary">
+      <dataFile>directories/layout_demo_crew.csv</dataFile>
+    </directory>
+
+    <directory name="l10ncoverage_small" extends="template-l10nxvocabulary">
+      <table>l</table>
+      <dataFile>directories/l10ncoverage_small.csv</dataFile>
+    </directory>
+
+  </extension>
+
+</component>

@@ -1,0 +1,124 @@
+<!--
+(C) Copyright 2017 Nuxeo (http://nuxeo.com/) and contributors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+`nuxeo-templatesource-view-layout`
+@group Nuxeo UI
+@element nuxeo-templatesource-view-layout
+-->
+<dom-module id="nuxeo-templatesource-view-layout">
+  <template>
+    <style>
+      .ellipsis {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        display: block;
+        width: calc(100% - 38px);
+      }
+
+      .queue-thumbnail {
+        height: 32px;
+        width: 32px;
+        border-radius: 20px;
+        box-sizing: border-box;
+        margin-right: 8px;
+      }
+
+      nuxeo-document-viewer {
+        @apply --paper-card;
+      }
+    </style>
+
+    <nuxeo-connection id="nxcon"></nuxeo-connection>
+    <nuxeo-page-provider id="templateBasedDocs"
+                         provider="template_based"
+                         page-size="10"
+                         enrichers="thumbnail"
+                         params="[[_buildParams(document)]]">
+    </nuxeo-page-provider>
+
+    <nuxeo-document-viewer role="widget" document="[[document]]"></nuxeo-document-viewer>
+    <nuxeo-card heading="[[i18n('templateSourceViewLayout.templateBasedDocuments.heading')]]">
+      <div class="vertical layout">
+        <nuxeo-data-table id="templateBasedDatatable"
+                          nx-provider="templateBasedDocs"
+                          empty-label="[[i18n('templateSourceViewLayout.templateBasedDocuments.noDocument')]]"
+                          empty-label-when-filtered="[[i18n('templateSourceViewLayout.templateBasedDocuments.noDocumentWhenFiltered')]]"
+                          on-row-clicked="_navigate">
+          <nuxeo-data-table-column name="[[i18n('documentContentView.datatable.header.title')]]" flex="100">
+            <template>
+              <img class="queue-thumbnail" src="[[_thumbnail(item)]]">
+              <a class="ellipsis" href$="[[urlFor('browse', item.path)]]">[[item.title]]</a>
+            </template>
+          </nuxeo-data-table-column>
+          <nuxeo-data-table-column name="[[i18n('recentDocumentsTable.type')]]" flex="50">
+            <template>
+              [[item.type]]
+            </template>
+          </nuxeo-data-table-column>
+          <nuxeo-data-table-column name="[[i18n('recentDocumentsTable.lastViewed')]]" flex="50">
+            <template>
+              <nuxeo-date datetime="[[item.lastViewed]]"></nuxeo-date>
+            </template>
+          </nuxeo-data-table-column>
+        </nuxeo-data-table>
+      </div>
+    </nuxeo-card>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-templatesource-view-layout',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        /**
+         * @doctype TemplateSource
+         */
+        document: {
+          type: Object,
+          observer: '_documentChanged'
+        }
+      },
+
+      _documentChanged: function() {
+        if (this.document) {
+          this.$.templateBasedDatatable.fetch();
+        }
+      },
+
+      _buildParams: function() {
+        return ['"' + this.document.uid + '"', 0];
+      },
+
+      _thumbnail: function(doc) {
+        if (doc && doc.uid) {
+          if (doc.contextParameters && doc.contextParameters.thumbnail.url) {
+            return doc.contextParameters.thumbnail.url;
+          } else {
+            var baseUrl = this.$.nxcon.url;
+            return baseUrl + '/api/v1/id/' + doc.uid + '/@rendition/thumbnail';
+          }
+        }
+      },
+
+      _navigate: function(e) {
+        window.location = this.urlFor('browse', e.detail.item.path);
+      }
+    });
+  </script>
+
+</dom-module>

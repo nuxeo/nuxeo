@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.easyshare.auth.contrib">
+
+ <extension point="openUrl"
+  target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+  <openUrl name="EasyShare">
+   <grantPattern>${org.nuxeo.ecm.contextPath}/site/easyshare/.*</grantPattern>
+  </openUrl>
+  <openUrl name="EasyShareSkins">
+   <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/easyshare/.*</grantPattern>
+  </openUrl>
+  <openUrl name="EasyShareCss">
+   <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/easyshare/css/.*</grantPattern>
+  </openUrl>
+  <openUrl name="EasyShareImages">
+   <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/easyshare/image/.*</grantPattern>
+  </openUrl>
+ </extension>
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
+    <coreQueryPageProvider name="EASYSHARE_FOLDER_CONTENT_PP">
+      <pattern>
+      <!-- Note: we want proxies.
+       Parameter is the EasyFolder id -->
+        SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isVersion = 0 AND
+        ecm:mixinType != 'HiddenInNavigation'
+        AND ecm:isTrashed = 0
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+  </extension>
+
+  <extension point="sanitizer" target="org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService">
+    <sanitizer name="easyshare">
+      <field>easysharefolder:shareComment</field>
+    </sanitizer>
+  </extension>
+
+</component>

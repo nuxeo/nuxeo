@@ -1,0 +1,232 @@
+/* ======= Global rules */
+.clearfix:before,.clearfix:after {
+  content: " ";
+  display: table;
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+.clearfix {
+  *zoom: 1;
+}
+
+/* ======= Layout */
+body {
+  background: white url(../img/nuxeo-background.jpg) top right no-repeat;
+  background-size: cover;
+}
+
+.header {
+  background-color: #fff;
+}
+
+.nuxeo-logo {
+  background: white url(../img/nuxeo_logo.png) 20% center no-repeat;
+  background-size: 200px 38px;
+  height: 77px;
+  width: 100%;
+}
+
+.wrapper {
+  width: 65%;
+  margin: 1em auto 5em;
+}
+
+/* ======= Share box */
+.share-box {
+  background-color: #fff;
+  border-radius: 7px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.25);
+  font-family: 'Open sans', 'Lucida Grande', Arial, sans-serif;
+  padding: 0 60px 60px;
+  color: #203A65;
+}
+
+.share-box a {
+  color: #00AAF1;
+  text-decoration: none;
+}
+
+header {
+  padding: 2em 0 1.5em;
+}
+
+header h2 {
+  color: #0066ff;
+  font-family: sans-serif;
+  font-size: 1.7em;
+  margin: 0;
+}
+
+header button {
+  background-color: #ff9e00;
+  border: medium none;
+  border-radius: 3px;
+  color: #fff;
+  display: inline-block;
+  float: right;
+  font-family: sans-serif;
+  font-size: 0.9em;
+  font-weight: bold;
+  padding: 0.6em 0.8em 0.6em 0.6em;
+  text-transform: uppercase;
+  transition: all 0.1s ease 0.1s;
+}
+
+header button:hover {
+  background-color: #ffae00;
+  box-shadow: 0 0 5px rgba(255, 228, 0, 0.3);
+}
+
+.empty i,.denied i,header button i {
+  margin-right: .3em;
+}
+
+header detail {
+  color: #a3abbe;
+  display: block;
+  font-size: 0.8em;
+  margin: 0;
+}
+
+.share-box .comment {
+  background-color: #fff;
+  margin: 0 -60px 5px;
+  padding: 20px 60px;
+}
+
+.comment i {
+  background-color: #1f28bf;
+  border-radius: 50px;
+  color: #fff;
+  float: left;
+  height: 2em;
+  line-height: 200%;
+  text-align: center;
+  width: 2em;
+}
+
+.comment blockquote:before {
+  border-color: rgb(255,255,255) #ddd;
+  border-style: solid;
+  border-width: 8px 8px 8px 0;
+  content: "";
+  display: block;
+  left: -8px;
+  position: absolute;
+  top: 7px;
+  width: 0;
+  z-index: 1;
+}
+
+.comment blockquote {
+  background: none repeat scroll 0 0 #fff;
+  border-radius: 3px;
+  border: 1px solid #ddd;
+  margin: 0 0 0 3em;
+  padding: .7em 1em 1em;
+  position: relative;
+  vertical-align: top;
+}
+
+.share-box .item {
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  display: block;
+  margin: 0 0 -0.1em;
+  padding: 1em;
+}
+
+.share-box .item:hover {
+  background-color: #f3f4f5;
+  color: #00aded;
+}
+
+.item .icon-download {
+  color: #ff9e00;
+  float: right;
+  font-size: 1.3em;
+  visibility: hidden;
+}
+
+.item:hover .icon-download {
+  visibility: visible;
+}
+
+.shared-items a {
+  color: #444;
+}
+
+.shared-items .empty {
+  background-color: #f6f6f6;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  color: #bbb;
+  font-size: 1.3em;
+  padding: 5em;
+  text-align: center;
+}
+
+.denied {
+  color: #aaa;
+  font-size: 1.3em;
+  min-height: 8em;
+  padding: 4em 1em 3em;
+  text-align: center;
+}
+
+.item .icon-file {
+  margin-right: .5em;
+}
+
+.pageNavigationControls {
+  border: medium none;
+  margin: 1em;
+  padding: 0;
+  text-align: center;
+}
+
+.currentPageStatus {
+    color: #777;
+    padding-top: .3em;
+    vertical-align: top;
+    font-weight: bold;
+    margin: 0 .5em;
+    font-size: .9em;
+    display: inline-block;
+}
+
+.pageNavigationControls input[type="image"] {
+    border: 1px solid #ddd !important;
+    background-color: #fff;
+    margin: 0;
+    padding: .3em;
+    border-radius: 2px;
+}
+
+.pageNavigationControls a[disabled=disabled] input {
+    opacity: .2;
+    filter: alpha(opacity=20);
+    background-color: transparent;
+    border-color: transparent !important;
+    cursor: default;
+}
+
+.action_bar {
+  background: none #fff;
+  border-radius: 2px;
+  text-decoration: none;
+  margin: .6em 0;
+  border: 1px solid;
+  color: #000;
+  font-size: .9em;
+  line-height: 1.3em;
+  font-weight: bold;
+  display: inline-block;
+  border-color: #c9c9c9;
+  padding: .3em .7em .4em;
+  white-space: nowrap;
+  cursor: pointer;
+}

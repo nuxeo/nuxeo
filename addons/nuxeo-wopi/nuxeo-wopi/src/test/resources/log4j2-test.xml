@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="CONSOLE" target="SYSTEM_OUT">
+      <ThresholdFilter level="WARN" onMatch="ACCEPT" />
+      <PatternLayout pattern="%d{DEFAULT} [%t] %-5p [%C{1}] %m%n" />
+    </Console>
+    <File name="FILE" fileName="target/trace.log" append="false">
+      <ThresholdFilter level="DEBUG" onMatch="ACCEPT" />
+      <PatternLayout pattern="%d{DEFAULT} [%t] %-5p [%C{1}] %m%n" />
+    </File>
+  </Appenders>
+  <Loggers>
+    <Logger name="org.nuxeo" level="info" />
+
+    <!-- Hide warnings/errors related to the WOPI discovery URL and fetching -->
+    <Logger name="org.nuxeo.wopi.WOPIServiceImpl" level="warn">
+      <Filters>
+        <RegexFilter regex="No WOPI discovery URL configured, cannot fetch discovery.*" onMatch="DENY"
+          onMismatch="NEUTRAL" />
+        <RegexFilter regex="Cannot load WOPI discovery: WOPI disabled" onMatch="DENY" onMismatch="NEUTRAL" />
+      </Filters>
+    </Logger>
+    <Logger name="org.nuxeo.wopi.WOPIDiscoveryRefreshListener" level="error">
+      <RegexFilter regex="Cannot refresh WOPI discovery" onMatch="DENY" onMismatch="NEUTRAL" />
+    </Logger>
+
+    <!-- Hide warning due to the authentication chain only including the BASIC_AUTH plugin -->
+    <Logger name="org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter" level="warn">
+      <RegexFilter regex="No auth plugin can be found to do the Login Prompt" onMatch="DENY" onMismatch="NEUTRAL" />
+    </Logger>
+
+    <Root level="warn">
+      <AppenderRef ref="CONSOLE" />
+      <AppenderRef ref="FILE" />
+    </Root>
+  </Loggers>
+</Configuration>
