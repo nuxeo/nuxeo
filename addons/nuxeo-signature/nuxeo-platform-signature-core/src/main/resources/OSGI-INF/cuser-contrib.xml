@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.signature.api.user.CUserService.config">
+  <extension target="org.nuxeo.ecm.platform.signature.api.user.CUserService"  point="cuserdescriptor">
+	<!-- default values for new certificates -->
+	<userDescriptor>
+	  <countryCode>PL</countryCode>
+	  <organization>Warsaw Summer Jazz Days Sp. z o.o.</organization>
+	  <organizationalUnit>Reservation</organizationalUnit>
+	</userDescriptor>
+  </extension>
+</component>
