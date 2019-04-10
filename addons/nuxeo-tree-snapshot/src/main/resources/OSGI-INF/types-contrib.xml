@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.snapshot.ecmtypes.contrib">
+
+  <require>org.nuxeo.ecm.platform.types.TypeService</require>
+  <require>org.nuxeo.ecm.platform.types</require>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService"
+    point="types">
+
+     <type id="SnapshotableFolder" coretype="SnapshotableFolder">
+      <label>Versionable Folder</label>
+      <icon>/icons/VFolder.png</icon>
+      <bigIcon>/icons/VFolder_100.png</bigIcon>
+      <category>Collaborative</category>
+      <description>Versionable Folder</description>
+      <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Folder</type>
+        <type>File</type>
+        <type>Note</type>
+        <type>SnapshotableFolder</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+    </type>
+
+    <type id="Workspace" coretype="Workspace">
+      <subtypes>
+        <type>SnapshotableFolder</type>
+      </subtypes>
+    </type>
+
+    <type id="Folder" coretype="Folder">
+      <subtypes>
+        <type>SnapshotableFolder</type>
+      </subtypes>
+    </type>
+
+  </extension>
+
+</component>
