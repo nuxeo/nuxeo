@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fragment version="1">
+
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <require>all</require>
+
+  <install>
+    <delete path="${bundle.fileName}.tmp" />
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
+    <copy from="${bundle.fileName}.tmp/web/nuxeo.war" to="/" />
+
+    <append
+            from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en.properties"
+            to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true"/>
+    <append
+            from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_fr.properties"
+            to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true"/>
+
+    <delete path="${bundle.fileName}.tmp" />
+  </install>
+
+</fragment>
