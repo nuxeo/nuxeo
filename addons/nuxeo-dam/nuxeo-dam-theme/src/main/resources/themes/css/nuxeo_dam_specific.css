@@ -1,0 +1,234 @@
+/*
+Specific styles for the Digital Asset Management View
+=Grid -> custom styles for the main grid
+=Faceted Search -> styles for the search in the left colum
+=Assets list -> styles for the center colum asset listing
+=Assets View -> styles for the selected asset details in the right colum
+author: lkemen@nuxeo.com
+*/
+
+/* =Grid */
+.nxMainContainer {
+  background-color: "neutral.lighter (__FLAVOR__ background)" }
+
+.nxDamSearchForm {
+  background-color: #fff;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 1em .5em;
+  width: 19% }
+
+.nxDamSearchResults {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0 .5em;
+  text-align: center;
+  width: 48% }
+
+.nxDamAssetView {
+  background-color: #fff;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0 .3em;
+  width: 33% }
+
+/* Widgets and Containers specific styles */
+.nxMainContainer .widgetPanel { padding: 0 }
+.nxMainContainer .containerSubWidget { margin: 0 }
+
+/* =Faceted Search */
+.nxDamSearchForm { font-size: .82em }
+
+/* =Assets list */
+.nxDamSearchResults { background-color: "neutral.lighter (__FLAVOR__ background)"; }
+
+.nxDamSearchResults .globalActionBar,
+.nxDamAssetView .globalActionBar {
+  border-bottom: 1px solid;
+  border-color: "neutral.light (__FLAVOR__ border)"; }
+
+.nxDamAssetView .globalActionBar {
+  padding: .2em }
+
+.nxDamSearchResults .globalActionBar {
+  text-align: left }
+
+.nxDamSearchResults .globalActionBar .button {
+  font-size: .9em;
+  margin: .5em .5em .5em 0;
+  padding: .2em .4em }
+
+.nxDamSearchResults .listingLayoutSelector {
+  font-size: .9em }
+
+.nxDamSearchResults .pageNavigationControls {
+  border-style: solid none }
+
+.nxDamSearchResults .detail {
+  clear: both;
+  text-align: right }
+
+.nxDamSearchResults .detail span {
+  margin-right: .3em }
+
+.nxDamSearchResults .bubbleBox {
+  background-color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-size: .9em;
+  margin: .1em .3em .6em;
+  min-height: 170px;
+  text-align: left;
+  position: relative;
+  vertical-align: top;
+  width: 130px }
+
+.nxDamSearchResults .bubbleBox:hover {
+  background-color: "color.major.light (__FLAVOR__ background)";
+  box-shadow: 0 1px 2px 2px #fff }
+.nxDamSearchResults .bubbleBox:hover .fieldColumn { color: "black (__FLAVOR__ color)" }
+
+.nxDamSearchResults .bubbleBox .bubbleHeader input {
+  margin-right: .3em }
+
+  /* Reduce padding between widgets in the box*/
+  .nxDamSearchResults .bubbleBox .fieldColumn {
+    color: "gray.medium (__FLAVOR__ color)";
+    font-size: .9em;
+    padding: 0 }
+
+.nxDamSearchResults .bubbleBox .thumbViewPicture { display: block;
+    margin: 0 auto }
+
+/* Styles when an asset is selected */
+.nxDamSearchResults .selectedItem,
+.nxDamSearchResults .selectedItem:hover {
+  background-color: "color.major.stronger (__FLAVOR__ background)";
+  color: #fff }
+.nxDamSearchResults .selectedItem .fieldColumn,
+.nxDamSearchResults .selectedItem:hover .fieldColumn { color: #fff }
+
+/* Pictures and video thumbnails in bubbleBoxes */
+.thumbnailContainer { text-align: center;
+  height: 75px }
+.thumbnailContainer img {
+  max-height: 70px }
+.bubbleBox:hover .thumbnailContainer img {
+	background-color: #fff }
+
+.bubbleBox .tag {
+  border-radius: 0;
+  display: inline-block;
+  font-size: .9em;
+  line-height: 130%;
+  margin: 0;
+  padding: 0 .2em .1em;
+  position: absolute;
+  right: 10px;
+  text-transform: lowercase }
+
+.bubbleBox .tag.picture {
+  background-color: #00b4e1 }
+.bubbleBox .tag.video {
+  background-color: #00896e }
+.bubbleBox .tag.audio {
+  background-color: #871900 }
+.bubbleBox .tag.other {
+	background-color: #a99d9a }
+
+.bubbleBox.selectedItem .tag,
+.bubbleBox:hover .tag {
+    background-color: #000 }
+
+/* =Assets View */
+.widgetPanel .description_block {
+  font-size: .9em;
+  margin: 1em .4em }
+
+/* Smaller tables display in foldableBox, apply .dataTableLine styles */
+.nxDamAssetView .dataInput {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: .9em;
+  margin: 0 0 .5em }
+.nxDamAssetView .dataInput td {
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-spacing: 0;
+  border-style: solid none;
+  border-width: 1px;
+  padding: .1em .3em .2em;
+  text-align: left;
+  vertical-align: top }
+.nxDamAssetView .dataInput tr:hover {
+  background-color: "color.major.light (__FLAVOR__ background)" }
+.nxDamAssetView .widgetTable table {
+  width: 100% }
+.nxDamAssetView .widgetPanel .labelColumn {
+  text-align: left }
+
+.nxDamAssetView .summaryTitle {
+  background-color: "neutral.medium (__FLAVOR__ background)";
+  border-bottom: 0 none;
+  font-size: 1em;
+  padding: .3em;
+  text-transform: none }
+
+.nxDamAssetView .containerWidgetPanel {
+  display: block }
+
+/* smaller buttons in Foldable boxes*/
+.foldableBox .buttonsGadget {
+  margin: .1em 0 0.2em;
+  text-align: right }
+.foldableBox .buttonsGadget .button {
+  font-size: .8em;
+  margin: .2em 0 0 .3em;
+  padding: .1em .4em }
+
+
+/* Picture View -> TODO: move it to imaging styles ? */
+.pictureContainer {
+  border: 1px solid #eee;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  margin: .2em 0 .5em;
+  min-height: 200px;
+  padding: 3px;
+  text-align: center }
+
+.documentTitle {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  font-size: 1.3em;
+  font-weight: bold;
+  margin: 0 0 -0.3em;
+  overflow: hidden;
+  padding: .3em;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100% }
+
+/* Test to center img */
+.pictureContainer:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle }
+.pictureContainer img {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: middle }
+
+/* TODO: move to box styles */
+.bubbleBox .bubbleHeader .documentTitle {
+  font-size: 1.1em;
+  display: inline;
+  padding: 0;
+  text-align: left }
+
+.listingLayoutSelector { font-size: .9em }

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.core.types">
+
+  <require>org.nuxeo.ecm.core.schema.TypeService</require>
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <require>org.nuxeo.ecm.platform.picture.coreTypes</require>
+  <require>org.nuxeo.nuxeo.ecm.platform.audio.doctype</require>
+  <require>org.nuxeo.nuxeo.ecm.platform.video.doctype</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="dam_common" prefix="damc" src="schemas/dam_common.xsd" />
+    <schema name="ip_rights" prefix="ipr" src="schemas/ip_rights.xsd"/>
+    <schema name="dam_search" prefix="dams" src="schemas/dam_search.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <facet name="Asset">
+      <schema name="dam_common"/>
+      <schema name="ip_rights"/>
+    </facet>
+
+    <facet name="DamSearch">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="uid" />
+    </facet>
+
+    <doctype name="AssetLibrary" extends="Domain">
+    </doctype>
+
+    <doctype name="File" append="true">
+      <facet name="Asset"/>
+    </doctype>
+
+    <doctype name="Picture" append="true">
+      <facet name="Asset"/>
+    </doctype>
+
+    <doctype name="Video" append="true">
+      <facet name="Asset" />
+    </doctype>
+
+    <doctype name="Audio" append="true">
+      <facet name="Asset" />
+    </doctype>
+
+    <!-- For default DAM search -->
+    <doctype name="DamSearch" extends="Document">
+      <facet name="DamSearch" />
+      <facet name="ContentViewDisplay" />
+      <facet name="HiddenInNavigation" />
+      <schema name="dam_search" />
+    </doctype>
+
+    <!--
+      Keep ImportRoot, ImportFolder and ImportSet for compatibility.
+    -->
+    <doctype name="ImportRoot" extends="Domain">
+    </doctype>
+
+    <doctype name="ImportFolder" extends="Folder">
+      <facet name="SuperSpace"/>
+    </doctype>
+
+    <doctype name="ImportSet" extends="Folder">
+      <schema name="file"/>
+      <schema name="dam_common"/>
+    </doctype>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="DamSearch">default</type>
+    </types>
+  </extension>
+
+</component>

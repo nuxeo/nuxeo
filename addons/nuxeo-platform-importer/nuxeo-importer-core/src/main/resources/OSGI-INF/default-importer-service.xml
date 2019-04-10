@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent">
+
+  <documentation>
+    This allows to configure the default importer by contributing a specific
+    documentFactory and sourceNode implementations
+
+    <code>
+      <extension target="org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent" point="importerConfiguration">
+ 	      <importerConfig>
+          <sourceNode sourceNodeClass="org.nuxeo.ecm.platform.importer.source.FileSourceNode" />
+          <documentModelFactory  leafType="File" folderishType="Folder" documentModelFactoryClass="org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory" />
+ 	      </importerConfig>
+      </extension>
+    </code>
+
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.importer.service.DefaultImporterService" />
+  </service>
+
+  <extension-point name="importerConfiguration">
+    <object class="org.nuxeo.ecm.platform.importer.service.ImporterConfigurationDescriptor" />
+  </extension-point>
+
+</component>
+
