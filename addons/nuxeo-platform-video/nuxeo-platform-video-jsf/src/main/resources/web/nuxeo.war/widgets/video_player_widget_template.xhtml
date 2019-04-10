@@ -1,0 +1,88 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:nxh="http://nuxeo.org/nxweb/html"
+    xmlns:nxl="http://nuxeo.org/nxforms/layout"
+    xmlns:nxd="http://nuxeo.org/nxweb/document"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:a4j="http://richfaces.org/a4j">
+
+  <c:if test="#{fieldOrValue.hasFacet('Video')}">
+
+    <c:if test="#{!empty widget.label and widget.handlingLabels}">
+      <ui:include src="/widgets/incl/widget_label_template.xhtml">
+        <ui:param name="labelStyleClass" value="summaryTitle" />
+      </ui:include>
+    </c:if>
+
+    <c:set var="width" value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, 550)}" />
+    <c:set var="height" value="#{nxu:test(!empty widgetProperty_height, widgetProperty_height, 310)}" />
+
+    <nxu:set var="staticPreview" value="#{videoActions.getURLForStaticPreview(fieldOrValue)}">
+      <nxu:set var="mp4URL" value="#{videoActions.getTranscodedVideoURL(fieldOrValue, 'MP4 480p')}">
+        <nxu:set var="webmURL" value="#{videoActions.getTranscodedVideoURL(fieldOrValue, 'WebM 480p')}">
+          <nxu:set var="safariHTML5" value="#{videoActions.safariHTML5}">
+            <nxu:set var="chromeHTML5" value="#{videoActions.chromeHTML5}">
+              <nxu:set var="firefoxHTML5" value="#{videoActions.firefoxHTML5}">
+                <nxu:set var="HTML5Available" value="#{safariHTML5 or chromeHTML5 or firefoxHTML5}">
+
+                  <c:if test="#{empty mp4URL}">
+                    <nxu:set var="conversionStatus"
+                        value="#{videoActions.getVideoConversionStatus(fieldOrValue, 'MP4 480p')}">
+                      <c:if test="#{not empty conversionStatus}">
+                        <p class="tips">
+                          #{videoActions.getStatusMessageFor(conversionStatus)}
+                        </p>
+                      </c:if>
+                    </nxu:set>
+                  </c:if>
+
+                  <c:if test="#{(not empty mp4URL) or (not empty webmURL and (chromeHTML5 or firefoxHTML5))}">
+                    <div class="video-js-box">
+                      <!-- Unless using the CDN hosted version, update the URL to the Flash SWF -->
+                      <h:outputScript target="#{pageJsTarget}">
+                        videojs.options.flash.swf = "#{baseURL}swf/video-js.swf";
+                      </h:outputScript>
+                      <video id="videoJs" width="#{width}" height="#{height}" class="video-js vjs-default-skin" controls="controls" preload="auto"
+                          poster="#{staticPreview}">
+                        <c:if test="#{not empty mp4URL}">
+                          <source src="#{mp4URL}" type='video/mp4' />
+                        </c:if>
+                        <c:if test="#{not empty webmURL}">
+                          <source src="#{webmURL}" type='video/webm' />
+                        </c:if>
+                      </video>
+                    </div>
+
+                    <h:outputScript target="#{pageJsTarget}">
+                      (function() {
+                        var v;
+                        if (typeof vjs !== 'undefined') {
+                          v = vjs;
+                        }
+                        if (typeof _V_ !== 'undefined') {
+                          v = _V_;
+                        }
+
+                        if (v.players['videoJs']) {
+                          var player = v('videoJs');
+                          player.dispose();
+                        }
+                        v('videoJs');
+                      })()
+                    </h:outputScript>
+
+                  </c:if>
+
+                </nxu:set>
+              </nxu:set>
+            </nxu:set>
+          </nxu:set>
+        </nxu:set>
+      </nxu:set>
+    </nxu:set>
+  </c:if>
+
+</div>

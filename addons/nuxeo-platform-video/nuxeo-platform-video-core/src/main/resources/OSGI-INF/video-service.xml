@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.video.service.VideoService">
+
+  <implementation
+    class="org.nuxeo.ecm.platform.video.service.VideoServiceImpl" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.video.service.VideoService" />
+  </service>
+
+  <documentation>
+    The VideoService provides extension points to register
+    named video conversions and default conversions to run
+    when importing a video.
+  </documentation>
+
+  <extension-point name="videoConversions">
+    <documentation>
+      Extension point to contribute available video conversions
+      <p>
+        Since 7.2, 2 new attributes are available:
+        <ul>
+          <li>rendition: true if this video conversion should be exposed as a rendition, false otherwise.</li>
+          <li>renditionVisible: equivalent of the 'visible' attribute on a rendition definition,
+            true if this video conversion is a rendition and should be visible in the UI, false otherwise</li>
+        </ul>
+      </p>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.video.service.VideoConversion" />
+  </extension-point>
+
+  <extension-point name="automaticVideoConversions">
+    <documentation>
+      Extension point to contribute default video conversions
+      launched after the creation of a Video document.
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.video.service.AutomaticVideoConversion" />
+  </extension-point>
+
+  <extension-point name="configuration">
+    <documentation>
+      <p>Since 7.4.</p>
+      <p>
+      Extension point to configure the VideoService, such as:
+        <ul>
+          <li>When to take the preview screenshot (percentage of the video duration)</li>
+          <li>Storyboard thumbnails count</li>
+          <li>Minimum duration of the video to generate storyboard (0 means always, &lt; 0 means never)</li>
+        </ul>
+      </p>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.video.service.Configuration" />
+  </extension-point>
+
+</component>

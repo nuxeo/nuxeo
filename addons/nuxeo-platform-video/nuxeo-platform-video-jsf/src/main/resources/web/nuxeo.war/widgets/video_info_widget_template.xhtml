@@ -1,0 +1,18 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <c:if test="#{fieldOrValue.hasFacet('Video')}">
+
+    <c:if test="#{!empty widget.label and widget.handlingLabels}">
+      <ui:include src="/widgets/incl/widget_label_template.xhtml">
+        <ui:param name="labelStyleClass" value="summaryTitle" />
+      </ui:include>
+    </c:if>
+
+    <nxl:layout value="#{fieldOrValue}" name="video_info" mode="view" />
+
+  </c:if>
+
+</div>

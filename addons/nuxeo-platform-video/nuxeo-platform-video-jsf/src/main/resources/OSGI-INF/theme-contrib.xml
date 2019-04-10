@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.video.theme">
+
+  <require>org.nuxeo.theme.nuxeo.webapp</require>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
+    <bundle name="nuxeo_includes">
+      <resources append="true">
+        <resource>video-js.css</resource>
+        <resource>video-js.nx.css</resource>
+        <resource>videojs.thumbnails.css</resource>
+        <resource>video-js.js</resource>
+        <resource>video-player-util.js</resource>
+        <resource>videojs.thumbnails.js</resource>
+        <resource>platform_video.css</resource>
+      </resources>
+    </bundle>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+    <resource name="popup-utils.js">
+      <uri>/scripts/popup-utils.js</uri>
+    </resource>
+    <resource name="video-js.css">
+      <uri>/css/video-js.css</uri>
+    </resource>
+    <resource name="video-js.nx.css">
+      <uri>/css/video-js.nx.css</uri>
+      <require>video-js.css</require>
+    </resource>
+    <resource name="videojs.thumbnails.css">
+      <uri>/css/videojs.thumbnails.css</uri>
+    </resource>
+
+    <resource name="video-js.js">
+      <uri>/scripts/video.js</uri>
+    </resource>
+    <resource name="video-player-util.js">
+      <uri>/scripts/video-player-util.js</uri>
+      <require>video-js.js</require>
+    </resource>
+    <resource name="videojs.thumbnails.js">
+      <uri>/scripts/videojs.thumbnails.js</uri>
+      <require>video-js.js</require>
+    </resource>
+
+    <resource name="platform_video.css">
+      <path>themes/css/platform_video.css</path>
+    </resource>
+  </extension>
+
+</component>

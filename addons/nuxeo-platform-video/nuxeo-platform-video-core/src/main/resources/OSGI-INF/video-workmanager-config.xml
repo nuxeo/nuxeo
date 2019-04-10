@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.video.workmanager" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="videoConversion">
+      <maxThreads>1</maxThreads>
+      <category>videoConversion</category>
+    </queue>
+  </extension>
+
+</component>

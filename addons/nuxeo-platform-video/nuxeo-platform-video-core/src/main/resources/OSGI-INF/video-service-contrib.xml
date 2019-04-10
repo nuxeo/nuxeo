@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.video.service.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.video.service.VideoService"
+    point="videoConversions">
+
+    <videoConversion name="MP4 480p" converter="convertToMP4" height="480"
+      rendition="true" />
+    <videoConversion name="WebM 480p" converter="convertToWebM" height="480"
+      rendition="true" />
+    <videoConversion name="Ogg 480p" converter="convertToOgg" height="480"
+      rendition="true" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.video.service.VideoService"
+    point="automaticVideoConversions">
+
+    <automaticVideoConversion name="MP4 480p" order="0" />
+    <automaticVideoConversion name="WebM 480p" order="10" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.video.service.VideoService"
+    point="configuration">
+
+    <configuration>
+      <previewScreenshotInDurationPercent>10.0</previewScreenshotInDurationPercent>
+      <storyboardMinDuration>10</storyboardMinDuration>
+      <storyboardThumbnailCount>9</storyboardThumbnailCount>
+    </configuration>
+
+  </extension>
+
+</component>
