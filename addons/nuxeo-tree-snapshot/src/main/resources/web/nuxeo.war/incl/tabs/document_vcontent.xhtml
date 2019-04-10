@@ -1,0 +1,18 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+    <ui:include src="/incl/document_actions.xhtml" />
+
+    <nxu:set var="contentViewId" value="vfolder_content">
+    <nxu:set var="contentViewName" value="vfolder_content">
+      <ui:decorate template="/incl/content_view.xhtml" />
+    </nxu:set>
+    </nxu:set>
+
+</div>
