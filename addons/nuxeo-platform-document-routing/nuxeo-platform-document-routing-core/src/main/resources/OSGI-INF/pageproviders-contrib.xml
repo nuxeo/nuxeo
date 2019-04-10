@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.routing.pageproviders">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS">
+      <pattern>
+        SELECT * FROM DocumentRoute WHERE ecm:currentLifeCycleState =
+        'validated' AND dc:title ILIKE ?
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType != 'Folderish' AND
+        ecm:currentLifeCycleState != 'deleted' AND dc:title ILIKE ?
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="SEARCH_ROUTE_BY_ATTACHED_DOC">
+      <pattern>
+        SELECT * FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'running'
+        OR ecm:currentLifeCycleState = 'ready') AND docri:participatingDocuments
+        IN (?)
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
+
+  </extension>
+
+</component>
