@@ -1,0 +1,4 @@
+username, password, firstName, lastName, company, email
+"Administrator","Administrator","","","","Administrator@example.com"
+"bob","bob","Bob","Bobby","Nuxeo",bbobby@nuxeo.com
+
