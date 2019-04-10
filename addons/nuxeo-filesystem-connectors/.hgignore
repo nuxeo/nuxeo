@@ -1,0 +1,10 @@
+syntax:glob
+.DS_Store
+.classpath
+.project
+.svn
+bin
+target
+*~
+nxserver*
+nuxeo-webdav/data

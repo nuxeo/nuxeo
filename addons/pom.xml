@@ -1,0 +1,82 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.nuxeo</groupId>
+  <artifactId>nuxeo-addons-list</artifactId>
+  <name>Nuxeo Addons list</name>
+  <packaging>pom</packaging>
+  <description>Nuxeo Addons list</description>
+  <version>5.4.0.1-SNAPSHOT</version>
+
+  <scm>
+    <connection>scm:hg:https://hg.nuxeo.org/addons</connection>
+    <developerConnection>
+      scm:hg:https://hg.nuxeo.org/addons
+    </developerConnection>
+    <url>https://hg.nuxeo.org/addons</url>
+  </scm>
+
+  <modules>
+    <module>nuxeo-platform-lang-ext</module>
+    <module>nuxeo-chemistry</module>
+    <module>nuxeo-correspondence-marianne</module>
+    <module>nuxeo-http-client</module>
+    <module>nuxeo-platform-classification</module>
+    <module>nuxeo-platform-high-availability</module>
+    <module>nuxeo-platform-importer</module>
+    <module>nuxeo-platform-login</module>
+    <module>nuxeo-platform-document-routing</module>
+    <module>nuxeo-platform-faceted-search</module>
+    <module>nuxeo-platform-error-web</module>
+    <module>nuxeo-platform-forms-layout-demo</module>
+    <module>nuxeo-platform-smart-search</module>
+    <module>nuxeo-platform-sync</module>
+    <module>nuxeo-platform-audio</module>
+    <module>nuxeo-platform-video</module>
+    <!--
+      deactivated since 5.3.2 release; reactivate modules after alignment on 5.4
+      <module>nuxeo-platform-audit-web-access</module>
+      <module>nuxeo-platform-categorization</module>
+      <module>nuxeo-platform-categorization/nuxeo-platform-categorization-language</module>
+      <module>nuxeo-platform-categorization/nuxeo-platform-categorization-coverage</module>
+      <module>nuxeo-platform-categorization/nuxeo-platform-categorization-subjects</module>
+      <module>nuxeo-platform-exalead-connector</module>
+      <module>nuxeo-platform-flex</module>
+      <module>nuxeo-platform-indexing-gateway</module>
+      <module>nuxeo-platform-mail-dispatcher</module>
+      <module>nuxeo-platform-replication</module>
+      <module>nuxeo-platform-seam-pdf</module>
+      <module>nuxeo-platform-splitpane</module>
+      <module>nuxeo-platform-sync</module>
+      <module>nuxeo-platform-userdata</module>
+      <module>nuxeo-platform-userdata-core-contrib</module>
+      <module>nuxeo-platform-webdav-server</module>
+      <module>nuxeo-platform-xmlrpc-connector</module>
+      <module>nuxeo-samples</module>
+    -->
+  </modules>
+
+  <distributionManagement>
+    <site>
+      <id>maven-website</id>
+      <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
+    </site>
+    <repository>
+      <id>public-releases</id>
+      <url>
+        http://maven.in.nuxeo.com/nexus/content/repositories/public-releases
+      </url>
+    </repository>
+    <snapshotRepository>
+      <id>public-snapshots</id>
+      <url>
+        http://maven.in.nuxeo.com/nexus/content/repositories/public-snapshots
+      </url>
+      <uniqueVersion>true</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
+
+</project>

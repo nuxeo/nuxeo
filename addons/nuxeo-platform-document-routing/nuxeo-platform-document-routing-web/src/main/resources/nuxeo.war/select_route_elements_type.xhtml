@@ -1,0 +1,79 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+  
+  <h:form id="selectRouteElementsTypeForCreationForm">
+
+  <a4j:region id="selectRouteElementsTypeForCreationRegion">
+
+    <h:inputHidden id="hiddenSourceDocId" value="#{routingActions.hiddenSourceDocId}" />
+    <h:inputHidden id="hiddenDocOrder" value="#{routingActions.hiddenDocOrder}" />
+
+    <rich:modalPanel id="selectRouteElementsTypePanel"  autosized="true"
+      onmaskclick="Richfaces.hideModalPanel('selectRouteElementsTypePanel')">
+  
+      <f:facet name="header">
+        <h:outputText value="#{messages['title.availableDocumentTypes']}" />
+      </f:facet>
+  
+      <f:facet name="controls">
+        <h:panelGroup>
+          <h:graphicImage value="/icons/action_delete_mini.gif"
+            id="hideRouteElementsTypePanel" />
+          <rich:componentControl for="selectRouteElementsTypePanel"
+            attachTo="hideRouteElementsTypePanel" operation="hide" event="onclick" />
+        </h:panelGroup>
+      </f:facet>
+  
+      <h:outputText value="#{messages['help.chooseDocumentType']}" />
+
+
+      <table cellspacing="2">
+  
+        <nxu:dataList var="typesList" value="#{typesTool.getOrganizedTypeMapForDocumentType('DocumentRoute').entrySet}"
+          id="selectRouteElementsTypeForCreationTable">
+          <td style="vertical-align : top;width : 300px; padding:0px 20px 0px 0px;">
+            <div>
+              <h3 class="documentTypes">
+                <h:outputText value="#{messages[typesList.key]}" />
+              </h3>
+              <table>
+                <tr>
+                  <nxu:dataList value="#{typesList.value}" var="typeColumn"
+                    id="selectRouteElementTypeForCreationCategory">
+                    <td valign="top">
+                      <nxu:dataList value="#{typeColumn}" var="type"
+                        id="selectRouteElementsTypeForCreationCategoryTable">
+                        <div class="documentType">
+                          <h:commandLink action="#{routingActions.createRouteElement(type.id)}"
+                            id="selectRouteElementsTypeForCreationCategoryImageLink" >
+                            <h:graphicImage height="32" width="32" value="#{type.bigIcon}"
+                              rendered="#{!empty type.bigIcon}" />
+                          </h:commandLink>
+                          <h:commandLink class="documentTypeLink"
+                            action="#{routingActions.createRouteElement(type.id)}"
+                            id="selectRouteElementsTypeForCreationCategoryTitleLink">
+                            <h:outputText value="#{messages[type.label]}" />
+                          </h:commandLink>
+                          <div style="clear: both;"></div>
+                        </div>
+                      </nxu:dataList>
+                    </td>
+                  </nxu:dataList>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </nxu:dataList>
+  
+      </table>
+     </rich:modalPanel>
+
+  </a4j:region>
+  </h:form>
+
+</div>
