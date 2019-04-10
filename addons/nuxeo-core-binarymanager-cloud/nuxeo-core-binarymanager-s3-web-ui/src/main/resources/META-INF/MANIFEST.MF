@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.binarymanager.s3.webui;singleton:=true
+Nuxeo-Component: OSGI-INF/nuxeo-s3-direct-upload-webresources-contrib.xml

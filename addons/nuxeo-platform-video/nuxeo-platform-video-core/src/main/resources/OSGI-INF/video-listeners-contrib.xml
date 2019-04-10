@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.platform.video.core.listeners">
+
+  <require>org.nuxeo.ecm.core.event.EventServiceComponent</require>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <listener name="videoChangedListener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.platform.video.listener.VideoChangedListener" priority="20">
+      <event>documentCreated</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+
+  </extension>
+
+</component>
