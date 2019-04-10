@@ -1,0 +1,3 @@
+"id","label","obsolete","ordering"
+"validation","wf.serialDocumentReview.workflowType.validation","0","0"
+"simpleReview","wf.serialDocumentReview.workflowType.simpleReview","0","0"
