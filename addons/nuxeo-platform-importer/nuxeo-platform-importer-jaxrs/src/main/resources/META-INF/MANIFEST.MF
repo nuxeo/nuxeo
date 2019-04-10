@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM JAXRS Importer
+Bundle-SymbolicName: org.nuxeo.ecm.platform.importer.jaxrs;singleton:=true
+Bundle-Version: 1.0.0
+Require-Bundle: org.nuxeo.ecm.webengine.core
+Nuxeo-WebModule:  org.nuxeo.ecm.platform.importer.executor.jaxrs.ImporterApp
