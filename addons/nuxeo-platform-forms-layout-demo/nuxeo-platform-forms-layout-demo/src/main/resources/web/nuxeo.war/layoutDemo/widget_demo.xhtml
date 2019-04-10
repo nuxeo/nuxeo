@@ -1,0 +1,157 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<c:if test="false">
+Displays a widget demo in edit and view modes, with sources.
+
+Needed parameters:
+- layoutDemoDocument
+- demoLayout  
+</c:if>
+
+<c:if test="#{not demoLayout.listing}">
+
+  <a4j:region id="#{demoLayout.name}_region">
+    <table class="dataOutput">
+      <thead>
+        <tr>
+          <th>
+            #{messages['label.layoutDemo.widgetDemo.editMode']}
+          </th>
+          <th>
+            #{messages['label.layoutDemo.widgetDemo.viewMode']}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td width="50%" valign="top">
+            <c:if test="#{useMultipartForm}">
+              <h:form id="#{demoLayout.name}_edit_form"
+                enctype="multipart/form-data">
+                <span class="infoMessage">
+                  Fill the form and click on 'Submit' to display the widget
+                  rendering in view mode.
+                </span>
+                <nxl:layout value="#{layoutDemoDocument}"
+                  mode="edit"
+                  name="#{demoLayout.name}" />
+                <p class="buttonsGadget">
+                  <h:commandButton
+                    value="#{messages['label.layoutDemo.widgetDemo.submit']}"
+                    styleClass="button"
+                    id="#{demoLayout.name}_edit_form_submitButton" />
+                </p>
+              </h:form>
+            </c:if>
+            <c:if test="#{not useMultipartForm}">
+              <a4j:form id="#{demoLayout.name}_edit_form"
+                ajaxSubmit="true">
+                <span class="infoMessage">
+                  Fill the form and click on 'Submit' to display the widget
+                  rendering in view mode.
+                </span>
+                <nxl:layout value="#{layoutDemoDocument}"
+                  mode="edit"
+                  name="#{demoLayout.name}" />
+                <p class="buttonsGadget">
+                  <a4j:commandButton
+                    value="#{messages['label.layoutDemo.widgetDemo.submit']}"
+                    styleClass="button"
+                    id="#{demoLayout.name}_edit_form_submitButton"
+                    reRender="#{demoLayout.name}_view_form, #{demoLayout.name}_edit_form" />
+                  <a4j:status>
+                    <f:facet name="start">
+                      <h:graphicImage value="/img/standart_waiter.gif" />
+                    </f:facet>
+                  </a4j:status>
+                </p>
+              </a4j:form>
+            </c:if>
+          </td>
+          <td width="50%" valign="top">
+            <c:if test="#{useMultipartForm}">
+              <h:form id="#{demoLayout.name}_view_form"
+                enctype="multipart/form-data">
+                <nxl:layout value="#{layoutDemoDocument}" mode="view"
+                  name="#{demoLayout.name}" />
+              </h:form>
+            </c:if>
+            <c:if test="#{not useMultipartForm}">
+              <a4j:form id="#{demoLayout.name}_view_form"
+                ajaxSubmit="true">
+                <nxl:layout value="#{layoutDemoDocument}" mode="view"
+                  name="#{demoLayout.name}" />
+              </a4j:form>
+            </c:if>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </a4j:region>
+
+</c:if>
+  
+<c:if test="#{demoLayout.listing}">
+
+  <c:if test="#{currentWidgetType.category != 'listing'}">
+    #{messages['label.layoutDemo.widgetDemo.alsoUsedInListings']}
+  </c:if>
+
+  <a4j:region id="#{demoLayout.name}_region">
+    <table class="dataOutput">
+      <thead>
+        <tr>
+          <th>
+            #{messages['label.layoutDemo.widgetDemo.viewMode']}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td width="100px" valign="top">
+            <c:if test="#{useMultipartForm}">
+              <h:form id="#{demoLayout.name}_view_form"
+                enctype="multipart/form-data" width="100px">
+                <table class="dataOutput">
+                  <c:forEach var="row" items="#{layoutDemoDocuments.entries}"
+                    varStatus="layoutListingStatus">
+                    <c:set var="showListingHeader" 
+                      value="#{layoutListingStatus.index == 0}" />
+                    <nxl:layout name="#{demoLayout.name}"
+                      value="#{row}" mode="view" />
+                  </c:forEach>
+                </table>
+              </h:form>
+            </c:if>
+            <c:if test="#{not useMultipartForm}">
+              <a4j:form id="#{demoLayout.name}_view_form"
+                ajaxSubmit="true">
+                <table class="dataOutput">
+                  <c:forEach var="row" items="#{layoutDemoDocuments.entries}"
+                    varStatus="layoutListingStatus">
+                    <c:set var="showListingHeader" 
+                      value="#{layoutListingStatus.index == 0}" />
+                    <nxl:layout name="#{demoLayout.name}"
+                      value="#{row}" mode="view" />
+                  </c:forEach>
+                </table>
+              </a4j:form>
+            </c:if>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </a4j:region>
+
+</c:if>
+
+  <ui:include src="/layoutDemo/show_xml_source_template.xhtml">
+    <ui:param name="sourcePath" value="#{demoLayout.sourcePath}" />
+  </ui:include>
+
+</div>
