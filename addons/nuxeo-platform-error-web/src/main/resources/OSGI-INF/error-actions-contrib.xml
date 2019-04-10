@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.error.web.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="ERROR_PAGE_DISPLAY" link="error_index"
+      label="Go to error page">
+      <category>USER_SERVICES</category>
+    </action>
+
+    <action id="CHECKED_ERROR_CREATE_WORKSPACE"
+      link="#{errorSeamComponent.checkedErrorAfterCreation}"
+      label="checked error after creation">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter-id>error_workspacesroot</filter-id>
+    </action>
+
+    <action id="UNCHECKED_ERROR_CREATE_WORKSPACE"
+      link="#{errorSeamComponent.uncheckedErrorAfterCreation}"
+      label="unchecked error after creation">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter-id>error_workspacesroot</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="error_workspacesroot">
+      <rule grant="true">
+        <type>WorkspaceRoot</type>
+      </rule>
+    </filter>
+  </extension>
+
+
+</component>
