@@ -1,0 +1,88 @@
+<html xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<title>Test errors in nuxeo jsf</title>
+<body>
+
+<h3>Test errors in nuxeo jsf</h3>
+
+<h:messages globalOnly="true"/>
+
+<h:form disableDoubleClickShield="true">
+  <ul>
+    <li><h:commandLink action="error_invalid_html"
+      value="Error invalid html" /></li>
+    <li><h:commandLink action="error_ui_include_not_found"
+      value="Error ui:include not found" /></li>
+    <li><h:commandLink action="error_jsf_function_checked"
+      value="JSF checked error" /></li>
+    <li><h:commandLink action="error_jsf_function_unchecked"
+      value="JSF unchecked error" /></li>
+  </ul>
+</h:form>
+
+<h3>Test errors in nuxeo seam</h3>
+
+<h:form disableDoubleClickShield="true">
+  <ul>
+    <li><h:commandLink action="error_seam_getter_checked"
+      value="Seam getter checked error" /></li>
+    <li><h:commandLink action="error_seam_getter_unchecked"
+      value="Seam getter unchecked error" /></li>
+    <li><h:commandLink action="error_seam_getter_security"
+      value="Seam getter security error" /></li>
+    <li><h:commandLink action="error_seam_factory_checked"
+      value="Seam factory checked error" /></li>
+    <li><h:commandLink action="error_seam_factory_unchecked"
+      value="Seam factory unchecked error" /></li>
+    <li><h:commandLink action="error_seam_factory_security"
+      value="Seam factory security error" /></li>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performCheckedError}"
+      value="Seam action checked error" /></li>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performUncheckedError}"
+      value="Seam action unchecked error" /></li>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performSecurityError}"
+      value="Seam action security error" /></li>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performRecoverableClientException}"
+      value="Seam action Rollback via RecoverableClientException" /></li>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performPureRollback}"
+      value="Seam action simple Rollback" /></li>
+  </ul>
+</h:form>
+
+<h3>Test Seam concurrency issues </h3>
+
+<h:form disableDoubleClickShield="true">
+  <ul>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performConcurrentRequestTimeoutException}"
+      value="Seam long blocking call" /> (increment a counter)
+      -- current value of counter is #{errorSeamComponent.counterValue}
+    </li>
+    <li>
+      <h:outputLink value ="/nuxeo/error_test_web/error_index.faces?conversationId=#{nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId)}">Refresh this page</h:outputLink> (simple GET)
+    </li>
+    <li>
+      <nxd:restDocumentLink document="#{currentDocument}" pattern="home" view="view_home">Rest link</nxd:restDocumentLink>
+    </li>
+  </ul>
+</h:form>
+
+<h3>Test Seam page scope</h3>
+
+<h:form disableDoubleClickShield="true">
+  <ul>
+    <li><h:commandLink action="error_seam_page_scope"
+        value="Seam page scope" /></li>
+  </ul>
+</h:form>
+
+</body>
+
+</html>
