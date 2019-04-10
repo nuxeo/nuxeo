@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="rg.nuxeo.ecm.quota.automation.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+    <operation
+      class="org.nuxeo.ecm.quota.automation.GetQuotaInfoOperation" />
+    <operation
+      class="org.nuxeo.ecm.quota.automation.SetQuotaInfoOperation" />
+
+  </extension>
+
+</component>
