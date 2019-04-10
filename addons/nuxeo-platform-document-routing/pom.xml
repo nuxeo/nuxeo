@@ -1,0 +1,63 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-addons-parent</artifactId>
+    <version>8.10-HF14</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.routing</groupId>
+  <artifactId>parent</artifactId>
+  <name>Nuxeo Routing Parent</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-routing-api</module>
+    <module>nuxeo-routing-core</module>
+    <module>nuxeo-routing-web</module>
+    <module>nuxeo-routing-dm</module>
+    <module>nuxeo-routing-dashboard</module>
+    <module>nuxeo-routing-default</module>
+    <module>nuxeo-routing-default-jsf</module>
+    <module>nuxeo-routing-test</module>
+    <module>nuxeo-routing-rest-api</module>
+  </modules>
+
+  <developers>
+    <developer>
+      <name>Atlantis</name>
+      <email>atlantis@lists.nuxeo.com</email>
+    </developer>
+  </developers>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-platform-document-routing.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-platform-document-routing.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-platform-document-routing</url>
+  </scm>
+
+</project>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource>
+  <title>MyTitle</title>
+  <description>MyDesc</description>
+  <number>12</number>
+  <double>1.2</double>
+  <date>2005-03-17T11:00:00.000Z</date>
+  <date2>2005-03-17</date2>
+  <boolean1>true</boolean1>
+  <boolean2>false</boolean2>
+  <files>
+      <mainFile path="$TMP/test1/files/testFile.txt" name="file1"/>
+      <file path="$TMP/test1/files/testFile2.txt" name="file2"/>
+      <file path="$TMP/test1/files/testFile3.txt" name="file3"/>
+  </files>
+</resource>
