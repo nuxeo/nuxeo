@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/document_route_model"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/document_route_model/">
+
+   <xs:include schemaLocation="base.xsd" />
+
+</xs:schema>
