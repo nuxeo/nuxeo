@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.video.layouts">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.summary</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="video_player">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Video player</title>
+        <description>
+          <p>
+            This widget displays a HTML5 video player for browsers
+            supporting
+            it, and fallback on a Flash player for others.
+            It uses the WebM or
+            MP4 conversion (in 480p) of
+            a document having the facet 'Video'.
+          </p>
+          <p>
+            It requires the following fields configuration: first field maps
+            the document model.
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="view">
+            <layout name="video_player_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>width</widget>
+                </row>
+                <row>
+                  <widget>height</widget>
+                </row>
+              </rows>
+              <widget name="width" type="text">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The width attribute of the Video player, eg. 100%, 550px or 450.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+              <widget name="height" type="text">
+                <labels>
+                  <label mode="any">Height</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The height attribute of the Video player, eg. 550px, 450.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>height</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/video_player_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="video_storyboard">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Video storyboard</title>
+        <description>
+          <p>
+            This widget displays the story board of
+            a document having the facet
+            'Video'.
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/video_storyboard_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="video_conversions">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Video conversions</title>
+        <description>
+          <p>
+            This widget displays the list of available
+            video conversions for the
+            given Video document.
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/video_conversions_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="video_info">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Video info</title>
+        <description>
+          <p>
+            This widget displays the information of the main video of
+            a document
+            having the facet 'Video'.
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/video_info_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="video_file">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Video File</title>
+        <description>
+          <p>
+            The video widget displays a file uploader/editor in create or edit
+            mode, with additional message tag for errors.
+          </p>
+        </description>
+        <properties>
+          <layouts mode="edit">
+            <layout name="video_file_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget>acceptedExtensions</widget>
+                </row>
+              </rows>
+              <widget name="acceptedExtensions" type="text">
+                <labels>
+                  <label mode="any">Accepted extensions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    A comma separated list of supported file
+                    extensions. Default value: '.mpg, .mpe, .mpeg, .wmv, .swf,
+                    .ogg, .ogv, .mkv, .mov, .qt, .avi, .mp4, .m4v, .flv, .fla'.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>acceptedExtensions</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>blob</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/video_file_widget_template.xhtml</property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="summary_video_player" type="video_player">
+      <properties widgetMode="any">
+        <property name="width">100%</property>
+        <property name="height">380</property>
+      </properties>
+    </widget>
+
+    <widget name="summary_video_storyboard" type="video_storyboard">
+      <labels>
+        <label mode="any">heading.storyboard</label>
+      </labels>
+      <translated>true</translated>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
+      <widgetModes>
+        <mode value="any">#{not empty currentDocumentAsBlobHolder.blob ? 'view' : 'hidden'}</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="summary_video_conversions" type="video_conversions">
+      <labels>
+        <label mode="any">heading.videoConversions</label>
+      </labels>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
+      </controls>
+      <widgetModes>
+        <mode value="any">#{not empty  currentDocumentAsBlobHolder.blob ? 'view' : 'hidden'}</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="summary_video_info" type="video_info">
+      <labels>
+        <label mode="any">heading.video.info</label>
+      </labels>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
+    </widget>
+
+    <widget name="video_info_duration" type="text">
+      <labels>
+        <label mode="any">label.widget.video.duration</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vid:info/duration</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="video_info_width" type="int">
+      <labels>
+        <label mode="any">label.widget.video.width</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vid:info/width</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="video_info_height" type="int">
+      <labels>
+        <label mode="any">label.widget.video.height</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vid:info/height</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="video_info_format" type="text">
+      <labels>
+        <label mode="any">label.widget.video.format</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vid:info/format</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="video_info_frameRate" type="text">
+      <labels>
+        <label mode="any">label.widget.video.frameRate</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vid:info/frameRate</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="video_info_streams" type="list">
+      <labels>
+        <label mode="any">label.widget.video.streams</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>vid:info/streams</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="listItem" type="text">
+          <fields>
+            <field>streamInfo</field>
+          </fields>
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <widgetModes>
+            <mode value="any">view</mode>
+          </widgetModes>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="videoFile" type="video_file">
+      <labels>
+        <label mode="any">label.file.content</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>file:content</field>
+        <field>file:content/name</field>
+      </fields>
+    </widget>
+
+    <widget name="infoViewVideoPlayer" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewDocContainer</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="videoPlayer" type="video_player">
+          <properties widgetMode="any">
+            <property name="width">100%</property>
+            <property name="height">600</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="summary_video_player" type="widget" order="50">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_video_player</property>
+      </properties>
+      <filter-id>hasVideo</filter-id>
+    </action>
+
+    <action id="summary_current_document_view">
+      <filter-id>notHasVideo</filter-id>
+    </action>
+
+    <action id="summary_video_conversions" type="widget" order="300">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_video_conversions</property>
+      </properties>
+      <filter-id>hasVideo</filter-id>
+    </action>
+
+    <action id="summary_video_storyboard" type="widget" order="340">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_video_storyboard</property>
+      </properties>
+      <filter-id>hasVideo</filter-id>
+    </action>
+
+    <action id="summary_video_info" type="widget" order="350">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_video_info</property>
+      </properties>
+      <filter-id>hasVideo</filter-id>
+    </action>
+
+    <action id="infoViewVideoPlayer" type="widget" order="100">
+      <category>INFO_VIEW_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">infoViewVideoPlayer</property>
+      </properties>
+      <filter-id>hasVideo</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="notHasVideo">
+      <rule grant="false">
+        <facet>Video</facet>
+      </rule>
+    </filter>
+
+    <filter id="denyInfoViewPreview" append="true">
+      <rule grant="false">
+        <facet>Video</facet>
+      </rule>
+    </filter>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="video_file">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>videoFile</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <!-- deprecated since 5.6, here for compat -->
+    <layout name="video_summary_layout">
+      <templates>
+        <template mode="any">/layouts/layout_summary_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>summary_video_player</widget>
+          <widget>summary_current_document_files</widget>
+          <widget>summary_video_conversions</widget>
+          <widget>summary_current_document_comments</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_description</widget>
+          <widget>summary_current_document_states</widget>
+          <widget>summary_current_document_contributors</widget>
+          <widget>summary_video_storyboard</widget>
+          <widget>summary_video_info</widget>
+          <widget>summary_current_document_tagging</widget>
+          <widget>summary_current_document_relations</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_publications</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_single_tasks</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="video_info">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>video_info_format</widget>
+        </row>
+        <row>
+          <widget>video_info_duration</widget>
+        </row>
+        <row>
+          <widget>video_info_width</widget>
+        </row>
+        <row>
+          <widget>video_info_height</widget>
+        </row>
+        <row>
+          <widget>video_info_frameRate</widget>
+        </row>
+      </rows>
+    </layout>
+  </extension>
+
+</component>

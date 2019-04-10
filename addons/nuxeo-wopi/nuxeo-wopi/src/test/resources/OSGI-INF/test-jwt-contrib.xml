@@ -1,0 +1,9 @@
+<component name="org.nuxeo.wopi.jwt.test">
+
+  <extension target="org.nuxeo.ecm.jwt.JWTService" point="configuration">
+    <configuration>
+      <secret>abracadabra</secret>
+    </configuration>
+  </extension>
+
+</component>

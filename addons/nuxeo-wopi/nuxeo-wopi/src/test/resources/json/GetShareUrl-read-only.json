@@ -1,0 +1,3 @@
+{
+  "ShareUrl": "http://localhost:18090/wopi/view/${REPOSITORY}/${DOC_ID}/${XPATH}"
+}

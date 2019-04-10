@@ -1,0 +1,36 @@
+{
+  "properties": {
+    "file:content": {
+      "wopi": {
+        "appName": "Word",
+        "edit": "http://fake-url.nuxeo.com/wopi/edit/${REPOSITORY}/${DOC_ID}/file:content"
+      }
+    },
+    "files:files": [
+      {
+        "file": {
+          "name": "one.docx",
+          "wopi": {
+            "appName": "Word",
+            "view": "http://fake-url.nuxeo.com/wopi/view/${REPOSITORY}/${DOC_ID}/files:files/0/file"
+          }
+        }
+      },
+      {
+        "file": {
+          "name": "two.bin"
+        }
+      },
+      {
+        "file": {
+          "name": "three.xlsx",
+          "wopi": {
+            "appName": "Excel",
+            "view": "http://fake-url.nuxeo.com/wopi/view/${REPOSITORY}/${DOC_ID}/files:files/2/file",
+            "edit": "http://fake-url.nuxeo.com/wopi/edit/${REPOSITORY}/${DOC_ID}/files:files/2/file"
+          }
+        }
+      }
+    ]
+  }
+}

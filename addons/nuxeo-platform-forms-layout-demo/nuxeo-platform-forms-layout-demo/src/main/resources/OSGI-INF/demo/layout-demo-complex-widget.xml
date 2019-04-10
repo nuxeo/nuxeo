@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.complexWidget.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="complexWidgetLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>complexWidget</widget>
+        </row>
+      </rows>
+      <widget name="complexWidget" type="complex">
+        <labels>
+          <label mode="any">Complex widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:complexField</field>
+        </fields>
+        <properties mode="any">
+          <property name="display">block_left</property>
+          <!-- since 5.6, using a widget of type 'complex' is enough -->
+          <!--
+            <property name="template">
+            /widgets/complex_widget_template.xhtml
+            </property>
+          -->
+        </properties>
+        <subWidgets>
+          <widget name="stringComplexItem" type="text">
+            <fields>
+              <field>stringComplexItem</field>
+            </fields>
+            <labels>
+              <label mode="any">String item</label>
+            </labels>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+          <widget name="dateComplexItem" type="datetime">
+            <fields>
+              <field>dateComplexItem</field>
+            </fields>
+            <labels>
+              <label mode="any">Date item</label>
+            </labels>
+            <properties widgetMode="view">
+              <property name="pattern">#{nxu:basicDateFormatter()}</property>
+            </properties>
+            <properties widgetMode="edit">
+              <property name="format">
+                #{nxu:basicDateAndTimeFormatter()}
+              </property>
+            </properties>
+          </widget>
+          <widget name="intComplexItem" type="int">
+            <fields>
+              <field>intComplexItem</field>
+            </fields>
+            <labels>
+              <label mode="any">Int item</label>
+            </labels>
+          </widget>
+          <widget name="booleanComplexItem" type="checkbox">
+            <fields>
+              <field>booleanComplexItem</field>
+            </fields>
+            <labels>
+              <label mode="any">Boolean item</label>
+            </labels>
+          </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+  </extension>
+
+</component>

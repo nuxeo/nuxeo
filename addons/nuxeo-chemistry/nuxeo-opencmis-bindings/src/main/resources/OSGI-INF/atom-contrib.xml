@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.opencmis.atom.config">
+
+  <!-- the /atom/cmis part is defined in the servlet mapping in deployment-fragment.xml -->
+
+  <extension
+    target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="filterConfig">
+    <filterConfig name="cmis-atom" transactional="true">
+      <pattern>${org.nuxeo.ecm.contextPath}/atom/cmis(/.*)?(\?.*)?</pattern>
+    </filterConfig>
+    <filterConfig name="cmis10-atom" transactional="true">
+      <pattern>${org.nuxeo.ecm.contextPath}/atom/cmis10(/.*)?(\?.*)?</pattern>
+    </filterConfig>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="specificChains">
+
+    <specificAuthenticationChain name="ATOM_CMIS">
+
+      <urlPatterns>
+        <url>(.*)/atom/cmis(/.*)?</url>
+        <url>(.*)/atom/cmis10(/.*)?</url>
+      </urlPatterns>
+      <replacementChain>
+        <plugin>AUTOMATION_BASIC_AUTH</plugin>
+        <plugin>TOKEN_AUTH</plugin>
+        <plugin>OAUTH2_AUTH</plugin>
+        <plugin>JWT_AUTH</plugin>
+      </replacementChain>
+    </specificAuthenticationChain>
+
+  </extension>
+
+</component>
