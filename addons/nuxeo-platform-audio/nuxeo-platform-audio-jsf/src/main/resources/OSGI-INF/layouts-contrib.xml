@@ -1,0 +1,213 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.audio.layouts">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.summary</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="audio_player">
+      <configuration>
+        <sinceVersion>5.5</sinceVersion>
+        <title>Audio Player</title>
+        <description>
+          <p>This widgets displays a html5 or flash audio player</p>
+        </description>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/audio_player_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="audio_file">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Audio File</title>
+        <description>
+          <p>
+            The audio widget displays a file uploader/editor in create or edit
+            mode, with additional message tag for errors.
+          </p>
+          <li>
+            duration: the duration of the audio file in view mode.
+          </li>
+        </description>
+        <properties>
+          <layouts mode="view">
+            <layout name="audio_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>duration</widget>
+                </row>
+              </rows>
+              <widget name="duration" type="int">
+                <labels>
+                  <label mode="any">Duration</label>
+                </labels>
+                <fields>
+                  <field>duration</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="audio_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget>acceptedExtensions</widget>
+                </row>
+              </rows>
+              <widget name="acceptedExtensions" type="text">
+                <labels>
+                  <label mode="any">Accepted extensions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    A comma separated list of supported file
+                    extensions. Default value: '.mp3, .ogg, .oga, .flac, .m4a, .aac, .ac3, .aif, .aiff, .aifc, .au, .snd, .asf, .wav'.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>acceptedExtensions</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>blob</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/audio_file_widget_template.xhtml</property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="summary_audio_player" type="audio_player">
+      <fields>
+        <field>file:content</field>
+      </fields>
+    </widget>
+
+    <widget name="audioFile" type="audio_file">
+      <labels>
+        <label mode="any">label.file.content</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>file:content</field>
+        <field>file:filename</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="summary_audio_player" type="widget" order="50">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_audio_player</property>
+      </properties>
+      <filter-id>hasAudio</filter-id>
+    </action>
+
+    <action id="summary_current_document_view">
+      <filter-id>notHasAudio</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="hasAudio">
+      <rule grant="true">
+        <schema>audio</schema>
+      </rule>
+    </filter>
+
+    <filter id="notHasAudio">
+      <rule grant="false">
+        <schema>audio</schema>
+      </rule>
+    </filter>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="audio_file">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>audioFile</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <!-- deprecated since 5.6, here for compat -->
+    <layout name="audio_summary_layout">
+      <templates>
+        <template mode="any">/layouts/layout_summary_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>summary_audio_player</widget>
+          <widget>summary_current_document_files</widget>
+          <widget>summary_current_document_comments</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_description</widget>
+          <widget>summary_current_document_states</widget>
+          <widget>summary_current_document_contributors</widget>
+          <widget>summary_current_document_custom_actions</widget>
+          <widget>summary_current_document_tagging</widget>
+          <widget>summary_current_document_relations</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_publications</widget>
+        </row>
+        <row>
+          <widget>summary_current_document_single_tasks</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>

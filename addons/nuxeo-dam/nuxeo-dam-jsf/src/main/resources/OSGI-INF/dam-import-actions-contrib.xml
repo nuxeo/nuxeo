@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.import.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="dndAssets" link=""
+      order="10" label="label.smart.import"
+      help="desc.smart.import.file">
+      <category>DAM_DND</category>
+      <filter-id>canCreateInAssetLibrary</filter-id>
+      <properties>
+        <property name="chainId">Dam.ImportInSeam</property>
+      </properties>
+    </action>
+
+    <action id="dndDamBulkImportAssets" link=""
+      order="10" label="label.smart.import"
+      help="desc.smart.import.file">
+      <category>DAM_IMPORT_ASSETS</category>
+      <filter-id>canCreateInAssetLibrary</filter-id>
+      <properties>
+        <property name="chainId">Dam.ImportWithMetaDataInSeam</property>
+        <property name="layout">damBulkImport@create</property>
+      </properties>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="chains">
+
+    <chain id="Dam.ImportInSeam">
+      <operation id="Dam.Import">
+        <param type="boolean" name="overwrite">true</param>
+      </operation>
+      <operation id="Seam.InitContext" />
+      <operation id="Seam.AddMessage">
+        <param type="string" name="severity">INFO</param>
+        <param type="string" name="message">label.dam.assets.imported</param>
+      </operation>
+      <operation id="Seam.Refresh" />
+      <operation id="Seam.DestroyContext" />
+    </chain>
+
+    <chain id="Dam.ImportWithMetaDataInSeam">
+      <operation id="Dam.Import">
+        <param type="boolean" name="overwrite">true</param>
+      </operation>
+      <operation id="Document.Update">
+        <param type="properties" name="properties">expr:Context.get("docMetaData")
+        </param>
+      </operation>
+      <operation id="Seam.RunOperation">
+        <param type="string" name="id">Seam.Refresh</param>
+      </operation>
+    </chain>
+
+  </extension>
+
+</component>
