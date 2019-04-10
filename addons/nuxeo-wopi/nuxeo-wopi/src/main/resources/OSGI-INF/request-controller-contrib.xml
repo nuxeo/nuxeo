@@ -1,0 +1,12 @@
+<component name="org.nuxeo.wopi.request.controller">
+
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="filterConfig">
+
+    <filterConfig name="wopi" transactional="true" synchonize="false">
+      <pattern>${org.nuxeo.ecm.contextPath}/wopi/.*</pattern>
+    </filterConfig>
+
+  </extension>
+
+</component>

@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Target Platforms JAXRS
+Bundle-SymbolicName: org.nuxeo.targetplatforms.jaxrs;singleton:=true
+Bundle-Version: 0.1.0
+Bundle-Vendor: Nuxeo
+Fragment-Host: org.nuxeo.ecm.platform.restapi.server
+Nuxeo-WebModule: org.nuxeo.targetplatforms.jaxrs.Application
+Nuxeo-Component: OSGI-INF/openurl-contrib.xml

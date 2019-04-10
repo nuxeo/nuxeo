@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.liveconnect</groupId>
+    <artifactId>nuxeo-liveconnect-parent</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-liveconnect-box-jsf</artifactId>
+  <name>Nuxeo Live Connect JSF for Box</name>
+
+  <dependencies>
+
+    <!-- Nuxeo -->
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.liveconnect</groupId>
+      <artifactId>nuxeo-liveconnect-jsf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.liveconnect</groupId>
+      <artifactId>nuxeo-liveconnect-box-core</artifactId>
+    </dependency>
+
+    <!-- Box libraries -->
+
+    <dependency>
+      <groupId>com.box</groupId>
+      <artifactId>box-java-sdk</artifactId>
+    </dependency>
+
+    <!-- other libraries -->
+
+    <dependency>
+      <groupId>com.sun.faces</groupId>
+      <artifactId>jsf-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+
+    <!-- test -->
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+</project>

@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-addons-parent</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-forms-layout-demo-parent</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo forms layout demo parent</name>
+
+  <modules>
+    <module>nuxeo-platform-forms-layout-demo</module>
+  </modules>
+
+  <profiles>
+    <profile>
+      <!-- Activate to unzip a Nuxeo and run IT tests against it -->
+      <id>itest</id>
+      <modules>
+        <module>ftest/webdriver</module>
+        <module>ftest/webdriver/pom-list-widget.xml</module>
+      </modules>
+    </profile>
+    <profile>
+      <!-- Additional profile to select these tests to be run during test&push -->
+      <id>itestplatform</id>
+      <modules>
+        <module>ftest/webdriver</module>
+        <module>ftest/webdriver/pom-list-widget.xml</module>
+      </modules>
+    </profile>
+  </profiles>
+
+  <developers>
+    <developer>
+      <id>Nuxeo</id>
+      <name>Nuxeo Developers Team</name>
+      <email>nuxeo-dev@lists.nuxeo.com</email>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-platform-forms-layout-demo.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-platform-forms-layout-demo.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-platform-forms-layout-demo</url>
+  </scm>
+
+</project>

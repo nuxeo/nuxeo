@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sample extracted from https://onenote.officeapps-df.live.com/hosting/discovery -->
+<wopi-discovery>
+  <net-zone name="external-https">
+    <app name="Excel" favIconUrl="https://excel.officeapps-df.live.com/x/_layouts/resources/FavIcon_Excel.ico" bootstrapperUrl="https://c1-excel-df.cdn.office.net/x/s/_layouts/app_scripts/excel-boot.min.js" staticResourceOrigin="https://c1-excel-df.cdn.office.net" checkLicense="true">
+      <action name="view" ext="xlsx" default="true" urlsrc="https://excel.officeapps-df.live.com/x/_layouts/xlviewerinternal.aspx?&lt;ui=UI_LLCC&amp;&gt;&lt;rs=DC_LLCC&amp;&gt;&lt;dchat=DISABLE_CHAT&amp;&gt;&lt;hid=HOST_SESSION_ID&amp;&gt;&lt;IsLicensedUser=BUSINESS_USER&amp;&gt;&lt;actnavid=ACTIVITY_NAVIGATION_ID&amp;&gt;" />
+      <action name="edit" ext="xlsx" requires="update" urlsrc="https://excel.officeapps-df.live.com/x/_layouts/xlviewerinternal.aspx?edit=1&amp;&lt;ui=UI_LLCC&amp;&gt;&lt;rs=DC_LLCC&amp;&gt;&lt;dchat=DISABLE_CHAT&amp;&gt;&lt;hid=HOST_SESSION_ID&amp;&gt;&lt;IsLicensedUser=BUSINESS_USER&amp;&gt;&lt;actnavid=ACTIVITY_NAVIGATION_ID&amp;&gt;" />
+      <action name="convert" ext="xls" targetext="xlsx" requires="update" urlsrc="https://excel.officeapps-df.live.com/x/_layouts/ExcelConvertAndEdit.aspx?&lt;ui=UI_LLCC&amp;&gt;&lt;rs=DC_LLCC&amp;&gt;&lt;dchat=DISABLE_CHAT&amp;&gt;&lt;hid=HOST_SESSION_ID&amp;&gt;&lt;sc=SESSION_CONTEXT&amp;&gt;&lt;wopisrc=WOPI_SOURCE&amp;&gt;"/>
+    </app>
+    <app name="Word" favIconUrl="https://word-view.officeapps-df.live.com/wv/resources/1033/FavIcon_Word.ico" bootstrapperUrl="https://c1-word-view-df.cdn.office.net/wv/s/App_Scripts/word.boot.js" staticResourceOrigin="https://c1-word-view-df.cdn.office.net" checkLicense="true">
+      <action name="view" ext="docx" default="true" urlsrc="https://word-view.officeapps-df.live.com/wv/wordviewerframe.aspx?&lt;ui=UI_LLCC&amp;&gt;&lt;rs=DC_LLCC&amp;&gt;&lt;dchat=DISABLE_CHAT&amp;&gt;&lt;hid=HOST_SESSION_ID&amp;&gt;&lt;showpagestats=PERFSTATS&amp;&gt;&lt;IsLicensedUser=BUSINESS_USER&amp;&gt;&lt;actnavid=ACTIVITY_NAVIGATION_ID&amp;&gt;" />
+      <action name="edit" ext="rtf" requires="locks,update" urlsrc="https://word-edit.officeapps-df.live.com/we/wordeditorframe.aspx?&lt;ui=UI_LLCC&amp;&gt;&lt;rs=DC_LLCC&amp;&gt;&lt;dchat=DISABLE_CHAT&amp;&gt;&lt;hid=HOST_SESSION_ID&amp;&gt;&lt;showpagestats=PERFSTATS&amp;&gt;&lt;IsLicensedUser=BUSINESS_USER&amp;&gt;&lt;actnavid=ACTIVITY_NAVIGATION_ID&amp;&gt;" />
+    </app>
+    <app name="WordPdf" favIconUrl="https://word-view.officeapps-df.live.com/wv/resources/1033/FavIcon_Word.ico" checkLicense="true">
+      <action name="view" ext="pdf" default="true" urlsrc="https://word-view.officeapps-df.live.com/wv/wordviewerframe.aspx?PdfMode=1&amp;&lt;ui=UI_LLCC&amp;&gt;&lt;rs=DC_LLCC&amp;&gt;&lt;dchat=DISABLE_CHAT&amp;&gt;&lt;hid=HOST_SESSION_ID&amp;&gt;&lt;showpagestats=PERFSTATS&amp;&gt;"/>
+    </app>
+  </net-zone>
+  <proof-key
+    oldmodulus="u/ppb/da4jeKQ+XzKr69VJTqR7wgQp2jzDIaEPQVzfwod+pc1zvO7cwjNgfzF/KQGkltoOi9KdtMzR0qmX8C5wZI6wGpS8S4pTFAZPhXg5w4EpyR8fAagrnlOgaVLs0oX5UuBqKndCQyM7Vj5nFd+r53giS0ch7zDW0uB1G+ZWqTZ1TwbtV6dmlpVuJYeIPonOJgo2iuh455KuS2gvxZKOKR27Uq7W949oM8sqRjvfaVf4xDmyor++98XX0zadnf4pMWfPr3XE+bCXtB9jIPAxxMrALf5ncNRhnx0Wyf8zfM7Rfq+omp/HxCgusF5MC2/Ffnn7me/628zzioAMy5pQ=="
+    oldexponent="AQAB"
+    modulus="0HOWUPFFgmSYHbLZZzdWO/HUOr8YNfx5NAl7GUytooHZ7B9QxQKTJpj0NIJ4XEskQW8e4dLzRrPbNOOJ+KpWHttXz8HoQXkkZV/gYNxaNHJ8/pRXGMZzfVM5vchhx/2C7ULPTrpBsSpmfWQ6ShaVoQzfThFUd0MsBvIN7HVtqzPx9jbSV04wAqyNjcro7F3iu9w7AEsMejHbFlWoN+J05dP5ixryF7+2U5RVmjMt7/dYUdCoiXvCMt2CaVr0XEG6udHU4iDKVKZjmUBc7cTWRzhqEL7lZ1yQfylp38Nd2xxVJ0sSU7OkC1bBDlePcYGaF3JjJgsmp/H5BNnlW9gSxQ=="
+    exponent="AQAB"/>
+</wopi-discovery>

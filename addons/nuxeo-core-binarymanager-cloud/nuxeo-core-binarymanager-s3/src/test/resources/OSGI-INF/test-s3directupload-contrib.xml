@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<component name="s3DirectUpload" version="1.0.0">
+
+  <!-- this is the blobProvider pointing to the transient bucket -->
+  <!-- it is the source blobProvider -->
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="s3DUBlobProviderSource">
+      <class>org.nuxeo.ecm.core.storage.sql.S3BinaryManager</class>
+      <property name="awsid">${nuxeo.s3storage.transient.awsid}</property>
+      <property name="awssecret">${nuxeo.s3storage.transient.awssecret}</property>
+      <property name="awstoken">${nuxeo.s3storage.transient.awstoken}</property>
+      <property name="crypt.serverside">${nuxeo.s3storage.transient.crypt.serverside}</property>
+      <property name="bucket">${nuxeo.s3storage.transient.bucket}</property>
+      <property name="region">eu-west-3</property>
+      <property name="bucket_prefix">unit-test-transient-prefix/</property>
+      <property name="cachesize">100MB</property>
+      <property name="connection.max">50</property>
+      <property name="connection.retry">3</property>
+      <property name="connection.timeout">50000</property>
+      <property name="socket.timeout">50000</property>
+      <!-- this blob provider is used for transient storage -->
+      <property name="transient">true</property>
+    </blobprovider>
+  </extension>
+
+  <!-- this is the blobProvider backing the transientStore used by the batchHandler -->
+  <!-- it is the destination blobProvider -->
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="s3DUBlobProviderDestination">
+      <class>org.nuxeo.ecm.core.storage.sql.S3BinaryManager</class>
+      <property name="awsid">${nuxeo.s3storage.transient.awsid}</property>
+      <property name="awssecret">${nuxeo.s3storage.transient.awssecret}</property>
+      <property name="awstoken">${nuxeo.s3storage.transient.awstoken}</property>
+      <property name="crypt.serverside">${nuxeo.s3storage.transient.crypt.serverside}</property>
+      <property name="bucket">${nuxeo.s3storage.bucket}</property>
+      <property name="region">eu-west-3</property>
+      <property name="bucket_prefix">unit-test-final-prefix/</property>
+      <property name="cachesize">100MB</property>
+      <property name="connection.max">50</property>
+      <property name="connection.retry">3</property>
+      <property name="connection.timeout">50000</property>
+      <property name="socket.timeout">50000</property>
+      <!-- this blob provider is used for transient storage -->
+      <property name="transient">true</property>
+    </blobprovider>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
+    <store name="s3DUTransientStore"
+      class="org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore">
+      <property name="blobProvider">s3DUBlobProviderDestination</property> <!-- this is the destination bolb provider -->
+      <property name="keyValueStore">s3DUKeyValueStore</property> <!-- not defined there, fallback on default -->
+      <targetMaxSizeMB>100</targetMaxSizeMB>
+      <absoluteMaxSizeMB>-1</absoluteMaxSizeMB>
+      <firstLevelTTL>120</firstLevelTTL>
+      <secondLevelTTL>10</secondLevelTTL>
+    </store>
+  </extension>
+
+  <!-- the transient bucket and prefix are used to retrieve the file uploaded by the client -->
+  <extension target="org.nuxeo.ecm.automation.server.BatchManager" point="handlers">
+    <batchHandler>
+      <name>s3</name>
+      <class>org.nuxeo.ecm.core.storage.sql.MockedS3DirectBatchHandler</class>
+      <property name="transientStore">s3DUTransientStore</property>
+      <!-- this is the name of the source blobProvider used to create the lazy binary -->
+      <property name="blobProvider">s3DUBlobProviderSource</property>
+      <property name="awsid">${nuxeo.s3storage.transient.awsid}</property>
+      <property name="awssecret">${nuxeo.s3storage.transient.awssecret}</property>
+      <property name="awstoken">${nuxeo.s3storage.transient.awstoken}</property>
+      <property name="crypt.serverside">${nuxeo.s3storage.transient.crypt.serverside}</property>
+      <property name="bucket">${nuxeo.s3storage.transient.bucket}</property>
+      <property name="region">eu-west-3</property>
+      <property name="bucket_prefix">unit-test-transient-prefix/</property>
+      <property name="roleArn">arn:aws:iam::783725821734:role/nuxeo-s3directupload-role</property>
+      <property name="policyTemplate">{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:PutObject","Resource":["arn:aws:s3:::${nuxeo.s3storage.transient.bucket}/*"]}]}
+      </property>
+    </batchHandler>
+  </extension>
+
+</component>

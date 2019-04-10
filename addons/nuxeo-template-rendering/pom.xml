@@ -1,0 +1,85 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-addons-parent</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+  <groupId>org.nuxeo.template.rendering</groupId>
+  <artifactId>nuxeo-template-rendering-parent</artifactId>
+  <name>Nuxeo Template Rendering Parent</name>
+  <description>Nuxeo Template Rendering Module</description>
+  <packaging>pom</packaging>
+
+  <properties>
+    <template.rendering.studio.version>10.10.0</template.rendering.studio.version>
+  </properties>
+
+  <modules>
+    <module>nuxeo-template-rendering-api</module>
+    <module>nuxeo-template-rendering-core</module>
+    <module>nuxeo-template-rendering-xdocreport</module>
+    <module>nuxeo-template-rendering-jxls</module>
+    <module>nuxeo-template-rendering-jod</module>
+    <module>nuxeo-template-rendering-sandbox</module>
+    <module>nuxeo-template-rendering-jsf</module>
+    <module>nuxeo-template-rendering-jaxrs</module>
+    <module>nuxeo-template-rendering-samples</module>
+    <module>nuxeo-template-rendering-samples-jsf</module>
+    <module>nuxeo-template-rendering-deckjs</module>
+    <module>nuxeo-template-rendering-core-dependencies</module>
+    <module>nuxeo-template-rendering-jsf-dependencies</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>nuxeo-studio</groupId>
+        <artifactId>template-module-demo</artifactId>
+        <version>${template.rendering.studio.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>nuxeo-studio</id>
+      <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-template-rendering.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-template-rendering.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-template-rendering</url>
+  </scm>
+
+</project>
