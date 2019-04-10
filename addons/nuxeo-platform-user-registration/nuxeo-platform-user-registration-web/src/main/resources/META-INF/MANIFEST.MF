@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo User Registration Web
+Bundle-SymbolicName: org.nuxeo.ecm.user.registration.web;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=registration;extends=invite;headless=true
+Nuxeo-Component: OSGI-INF/user-registration-actions-contrib.xml,
+ OSGI-INF/user-registration-contentviews-contrib.xml,
+ OSGI-INF/user-registration-contrib.xml,
+ OSGI-INF/user-registration-layouts-contrib.xml
