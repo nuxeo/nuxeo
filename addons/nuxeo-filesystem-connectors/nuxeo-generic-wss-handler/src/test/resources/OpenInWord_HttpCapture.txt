@@ -1,0 +1,1126 @@
+interface: wlan0 (192.168.2.0/255.255.255.0)
+filter: (ip or ip6) and ( port 80 )
+####
+T 192.168.2.119:36495 -> 192.168.2.75:80 [AP]
+GET /_vti_inf.html HTTP/1.1.
+Date: Fri, 04 Sep 2009 13:51:37 GMT.
+MIME-Version: 1.0.
+Accept: */*.
+User-Agent: Mozilla/4.0 (compatible; MS FrontPage 6.0).
+Host: vm2k3.
+Accept: auth/sicily.
+Content-Length: 0.
+Connection: Keep-Alive.
+Cache-Control: no-cache.
+Cookie: MSOWebPartPage_AnonymousAccessCookie=80.
+.
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:36495 [A]
+HTTP/1.1 401 Unauthorized.
+Content-Length: 1656.
+Content-Type: text/html.
+Server: Microsoft-IIS/6.0.
+WWW-Authenticate: Basic realm="vm2k3".
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+Date: Fri, 04 Sep 2009 13:51:33 GMT.
+.
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">.
+<HTML><HEAD><TITLE>You are not authorized to view this page</TITLE>.
+<META HTTP-EQUIV="Content-Type" Content="text/html; charset=Windows-1252">.
+<STYLE type="text/css">.
+  BODY { font: 8pt/12pt verdana }.
+  H1 { font: 13pt/15pt verdana }.
+  H2 { font: 8pt/12pt verdana }.
+  A:link { color: red }.
+  A:visited { color: maroon }.
+</STYLE>.
+</HEAD><BODY><TABLE width=500 border=0 cellspacing=10><TR><TD>.
+.
+<h1>You are not authorized to view this page</h1>.
+You do not have permission to view this directory or page using the credentials that you supplied because your Web browser is sending a WWW-Authenticate header field that the Web server is not configured to accept..
+<hr>.
+<p>Please try the following:</p>.
+<ul>.
+<li>Contact the Web site administrator if you believe you should be able to view this directory or page.</li>.
+<li>Click the <a href="javascript:location.reload()">Refresh</a> button to try again with different credentials.</li>.
+</ul>.
+<h2>HTTP Error 401.2 - Unauthorized: Access is denied due to server configuration.<br>Internet Information Services (IIS)</h2>.
+<hr>.
+<p>Technical Informa
+##
+T 192.168.2.75:80 -> 192.168.2.119:36495 [AP]
+tion (for support personnel)</p>.
+<ul>.
+<li>Go to <a href="http://go.microsoft.com/fwlink/?linkid=8180">Microsoft Product Support Services</a> and perform a title search for the words <b>HTTP</b> and <b>401</b>.</li>.
+<li>Open <b>IIS Help</b>, which is accessible in IIS Manager (inetmgr),.
+ and search for topics titled <b>About Security</b>, <b>Authentication</b>, and <b>About Custom Error Messages</b>.</li>.
+</ul>.
+.
+</TD></TR></TABLE></BODY></HTML>.
+
+###
+T 192.168.2.119:36495 -> 192.168.2.75:80 [AP]
+GET /_vti_inf.html HTTP/1.1.
+Date: Fri, 04 Sep 2009 13:51:37 GMT.
+MIME-Version: 1.0.
+Accept: */*.
+User-Agent: Mozilla/4.0 (compatible; MS FrontPage 6.0).
+Host: vm2k3.
+Accept: auth/sicily.
+Content-Length: 0.
+Connection: Keep-Alive.
+Cache-Control: no-cache.
+Cookie: MSOWebPartPage_AnonymousAccessCookie=80.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:36495 [AP]
+HTTP/1.1 200 OK.
+Date: Fri, 04 Sep 2009 13:51:41 GMT.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+Exires: Thu, 20 Aug 2009 13:51:41 GMT.
+Cache-Control: private,max-age=0.
+Content-Length: 246.
+Public-Extension: http://schemas.microsoft.com/repl-2.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+.
+
+##
+T 192.168.2.75:80 -> 192.168.2.119:36495 [AP]
+<!-- FrontPage Configuration Information
+FPVersion="12.0.0.000"
+FPShtmlScriptUrl="_vti_bin/shtml.dll/_vti_rpc"
+FPAuthorScriptUrl="_vti_bin/_vti_aut/author.dll"
+FPAdminScriptUrl="_vti_bin/_vti_adm/admin.dll"
+TPScriptUrl="_vti_bin/owssvr.dll"
+-->
+
+##
+T 192.168.2.119:36495 -> 192.168.2.75:80 [AP]
+POST /_vti_bin/shtml.dll/_vti_rpc HTTP/1.1.
+Date: Fri, 04 Sep 2009 13:51:45 GMT.
+MIME-Version: 1.0.
+User-Agent: MSFrontPage/6.0.
+Host: vm2k3.
+Accept: auth/sicily.
+Content-Length: 41.
+Content-Type: application/x-www-form-urlencoded.
+X-Vermeer-Content-Type: application/x-www-form-urlencoded.
+Connection: Keep-Alive.
+Cache-Control: no-cache.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+method=server+version%3a6%2e0%2e2%2e5523
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:36495 [AP]
+HTTP/1.1 200 OK.
+Connection: close.
+Date: Fri, 04 Sep 2009 13:51:41 GMT.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:36495 [AP]
+Content-type: application/x-vermeer-rpc.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+.
+<html><head><title>vermeer RPC packet</title></head>
+<body>
+<p>method=server version:6.0.2.5523
+<p>server version=
+<ul>
+<li>major ver=12
+<li>minor ver=0
+<li>phase ver=0
+<li>ver incr=6219
+</ul>
+<p>source control=1
+</body>
+</html>
+
+########
+T 192.168.2.119:36496 -> 192.168.2.75:80 [AP]
+POST /_vti_bin/_vti_aut/author.dll HTTP/1.1.
+Date: Fri, 04 Sep 2009 13:51:45 GMT.
+MIME-Version: 1.0.
+User-Agent: MSFrontPage/6.0.
+Host: vm2k3.
+Accept: auth/sicily.
+Content-Length: 58.
+Content-Type: application/x-www-form-urlencoded.
+X-Vermeer-Content-Type: application/x-www-form-urlencoded.
+Connection: Keep-Alive.
+Cache-Control: no-cache.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+method=open+service%3a6%2e0%2e2%2e5523&service%5fname=%2f
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:36496 [AP]
+HTTP/1.1 200 OK.
+Connection: close.
+Date: Fri, 04 Sep 2009 13:51:41 GMT.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+
+##
+T 192.168.2.75:80 -> 192.168.2.119:36496 [A]
+Content-type: application/x-vermeer-rpc.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+.
+<html><head><title>vermeer RPC packet</title></head>
+<body>
+<p>method=open service:6.0.2.5523
+<p>service=
+<ul>
+<li>service_name=
+<li>meta_info=
+<ul>
+<li>vti_defaultlanguage
+<li>SW|en-us
+<li>vti_usernames
+<li>VR|
+<li>vti_servercharsets
+<li>VX|windows-1257 iso-8859-5 big5 windows-1252 iso-8859-9 windows-874 utf-8 windows-1251 windows-1256 iso-8859-4 gb2312 windows-1253 windows-1258 koi8-r iso-8859-1 iso-8859-6 iso-8859-8 ks_c_5601-1987 gb18030 iso-2022-jp windows-1250 windows-1255 us-ascii euc-jp unicode unicodeFFFE windows-1254 iso-8859-2 iso-8859-7 iso-8859-15 shift_jis euc-kr
+<li>vti_scnoprompt
+<li>IX|1
+<li>vti_toolpaneurl
+<li>SX|http://vm2k3/_layouts/toolpane.aspx
+<li>vti_assemblyversion
+<li>SX|Microsoft.SharePoint, Version&#61;12.0.0.0, Culture&#61;neutral, PublicKeyToken&#61;71e9bce111e9429c
+<li>vti_webtemplate
+<li>IR|1
+<li>vti_custommasterurl
+<li>SX|/_catalogs/masterpage/default.master
+<li>vti_associatevisitorgroup
+<li>SW|4
+<li>vti_hasonetlayoutfiles
+<li>BR|true
+<li>vti_associategroups
+<li>SW|5&#59;4&#59;3
+<li>vti_casesensitiveurls
+<li>IX|0
+<li>vti_htmlextensions
+<li>SX|.html.htm.shtml.shtm.stm.htt.htx.asp.aspx.alx.asa.hta.htc.jsp.cfm.odc.dwt.php.phtml.php2.php3.php4.master.
+<li>vti_masterurl
+<li>SX|/_catalogs/masterpage/default.master
+<li>vti_approvallevels
+<li>VR|Approved Rejected Pending&#92; Review
+<li>vti_welcomenames
+<li>VX|default.htm default.aspx
+<li>vti_servertz
+<li>SX|+0200
+<li>vti_adminurl
+<li>SX|http://vm2k3/_layouts/settings.aspx
+<li>vti_showhiddenpages
+<li>IW|1
+<li>vti_categories
+<li>VR|Business Competition Expense&#92; Report Goals/Objectives Ideas In&#92; Process Miscellaneous Planning Schedule Travel VIP Waiting
+<li>vti_createdassociategroups
+<li>SW|3&#59;4&#59;5
+<li>vti_featurelist
+<li>VX|vti_RulesScript vti_ServerIndexServer vti_TimedDocEvents vti_ServiceMarkUrlDirExec vti_DocSaveToDB vti_ServiceMarkUrlDirBrowse vti_ACAll vti_ServerODBC vti_ServerASP vti_ServiceMarkUrlDirScript
+<li>vti_hasfulltextsearch
+<li>IX|0
+<li>vti_httpdversion
+<li>SX|Microsoft-IIS/6.0
+<li>vti_serverlanguages
+<li>VX|en-us
+<li>vti_sourcecontrolproject
+<li>SX|&#60;STS-based Locking&#62;
+<li>vti_doclibwebviewenabled
+<li>IX|1
+<li>vti_disablewebdesignfeatures
+<li>SX|wdfopensite
+<li>vti_extenderversion
+<li>SR|12.0.0.6219
+<li>vti_associateownergroup
+<li>SW|3
+<li>vti_longfilenames
+<li>IX|1
+<li>vti_sourcecontrolsystem
+<li>SX|lw
+<li>vti_username
+<li>SX|VM2K3&#92;nuxeo
+<li>vti_associatemembergroup
+<li>SW|5
+<li>vti_sourcecontrolcookie
+<li>SX|fp_internal
+<li>vti_sitecollectionurl
+<li>SX|/
+<li>vti_language
+<li>IR|1033
+</ul>
+</ul>
+</body>
+</html>
+
+########
+T 192.168.2.119:36497 -> 192.168.2.75:80 [AP]
+HEAD /_vti_bin/owssvr.dll?location=&dialogview=FileOpen HTTP/1.1.
+User-Agent: Test for Web Form Existence.
+Host: vm2k3.
+Content-Length: 0.
+Connection: Keep-Alive.
+Cookie: MSOWebPartPage_AnonymousAccessCookie=80; WSS_KeepSessionAuthenticated=80.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:36497 [AP]
+HTTP/1.1 200 OK.
+Date: Fri, 04 Sep 2009 13:51:41 GMT.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+Cache-Control: no-cache.
+Content-Length: 0.
+Content-type: text/html.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+.
+
+##
+T 192.168.2.119:36497 -> 192.168.2.75:80 [AP]
+GET /_vti_bin/owssvr.dll?location=&dialogview=FileOpen&FileDialogFilterValue=*.doc;*.dot;*.htm;*.html;*.url;*.rtf;*.mht;*.mhtml;*.xml; HTTP/1.1.
+Accept: */*.
+Accept-Language: en-us.
+Accept-Encoding: gzip, deflate.
+User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727).
+Host: vm2k3.
+Connection: Keep-Alive.
+Cookie: MSOWebPartPage_AnonymousAccessCookie=80; WSS_KeepSessionAuthenticated=80.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:36497 [AP]
+HTTP/1.1 200 OK.
+Cache-Control: no-cache.
+Content-Length: 4883.
+Content-Type: text/html.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+Set-Cookie: MSOWebPartPage_AnonymousAccessCookie=80; expires=Fri, 04-Sep-2009 14:21:41 GMT; path=/.
+Date: Fri, 04 Sep 2009 13:51:41 GMT.
+.
+
+##
+T 192.168.2.75:80 -> 192.168.2.119:36497 [A]
+<!-- _lcid="1033" _version="12.0.4518" _dal="1" -->.
+<!-- _LocalBinding -->.
+<html dir="ltr">.
+<HEAD>.
+    <META Name="GENERATOR" Content="Microsoft SharePoint">.
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">.
+    <META HTTP-EQUIV="Expires" content="0">.
+    .
+    <Title ID=onetidTitle><SharePoint:EncodedLiteral runat="server" text="<%$Resources:pagetitle_sharepoint%>" EncodeMethod='HtmlEncode'/></Title>.
+    <BASE HREF="http://vm2k3/_layouts/1033/">.
+<LINK REL="stylesheet" HREF="styles/core.css">.
+<script src="init.js"></script>.
+<script src="core.js"></script>.
+.
+.
+</HEAD>.
+<script language="JavaScript">.
+L_tooltipfile_Text = "";.
+L_tooltipfolder_Text = "Double-click to open this location";.
+selectedElement = null.
+inChangeSelection = false.
+slElem = null;.
+oldSelection = "";.
+bIsFileDialogView = true;.
+function selectrow().
+{.
+    if (slElem) {.
+.    slElem.className=oldSelection;.
+.    slElem.title="";.
+.    }.
+    selectedElement = window.event.srcElement;.
+    while (selectedElement.tagName!="TR") {.
+    .   selectedElement=selectedElement.parentElement;.
+           }.
+    slElem = selectedElement;.
+    oldSelection=slElem.className;...
+    slElem.className="ms-selected";.
+    if (slElem.getAttribute("fileattribute") == "file").
+        slElem.title=L_tooltipfile_Text;.
+    else.
+        slElem.title=L_tooltipfolder_Text;.
+    document.selection.empty();.
+}.
+function checkScroll().
+{.
+    if (
+##
+T 192.168.2.75:80 -> 192.168.2.119:36497 [A]
+document.body.scrollHeight > document.body.offsetHeight ||.
+..document.body.scrollWidth > document.body.offsetWidth).
+       document.body.scroll="yes";.
+}.
+</script>.
+<BODY topmargin=5 leftmargin=5 scroll=no serverType=OWS doclibsList=1.
+    onload="checkScroll()" onresize="checkScroll()">.
+..
+<!-- Banner -->.
+<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH="100%">.
+. <TR>.
+.     <TD valign=top class='ms-pagetitleareaframe' style="height: 0" nowrap>.
+...<table cellpadding=0 cellspacing=0 width=100% border="0">.
+....<tr>.
+....<td valign="top" class="ms-titlearea" style="padding-left: 4px;">.
+......Team Site.
+....</td>.
+....</tr>.
+....<tr>.
+....<td height=100% valign=top class="ms-pagetitle" style="padding-left: 4px;">.
+....<h2 class="ms-pagetitle">.
+.....Site Content.
+....</h2>.
+.... </td>.
+.... </tr>.
+...</table>.
+.  </TD>.
+. </TR>.
+<TR><TD>.
+.<TABLE ID="FileDialogViewTable" cellpadding=2 width=100% style="border-collapse: collapse; cursor: default;" cellspacing=0 border=0>.
+..<TR>.
+...<TH class="ms-vh2-nofilter" nowrap>.
+....&nbsp;.
+...</TH>.
+...<TH class="ms-vh2-nofilter" nowrap>.
+....Name.
+...</TH>.
+...<TH class="ms-vh2-nofilter" nowrap>.
+....Description.
+...</TH>.
+..</TR>.
+...<TR ID="LibrarySection" >.
+....<TD ID=onetidPageTitle nowrap class="ms-gb" colspan="3">.
+.....<img src="/_layouts/images/blank.gif" alt="" height=1 width=1>.
+.....Document Libraries.
+....</TD>.
+...</TR>.
+....
+...<TR class="" fileattribute=folder
+##
+T 192.168.2.75:80 -> 192.168.2.119:36497 [A]
+ID="http://vm2k3/MyDocList" onmousedown="selectrow()" onclick="selectrow()"><TD valign="top" class="ms-vb2" width="16"><Img width="16" height="16" SRC="/_layouts/images/itdl.gif">&nbsp;</TD>.
+                  .
+                              <TD valign="top" Class="ms-vb2">.
+                           MyDocList.
+                              </TD>.
+                           .
+                              <TD valign="top" Class="ms-vb2">.
+                           <div dir="">This is my first DocList</div>.
+                              </TD>.
+                           .
+                     </TR>.
+                  .
+...<TR class="ms-alternating" fileattribute=folder ID="http://vm2k3/Shared%20Documents" onmousedown="selectrow()" onclick="selectrow()"><TD valign="top" class="ms-vb2" width="16"><Img width="16" height="16" SRC="/_layouts/images/itdl.gif">&nbsp;</TD>.
+                  .
+                              <TD valign="top" Class="ms-vb2">.
+                           Shared Documents.
+                              </TD>.
+                           .
+                              <TD valign="top" Class="ms-vb2">.
+                           <div dir="">Share a document with the team by adding it to this document library.</div>.
+                              </TD>.
+                           .
+                     </TR>.
+                  .
+...<TR  ID="SitesSection" >.
+....<TD ID=onetidPageTitle nowrap class="ms-gb" c
+##
+T 192.168.2.75:80 -> 192.168.2.119:36497 [AP]
+olspan="3">.
+.....<img src="/_layouts/images/blank.gif" alt="" height=1 width=1>.
+.....Sites and Workspaces.
+....</TD>.
+...</TR>.
+..        .
+                       <TR><TD colspan=3><TABLE class="ms-summarycustombody" cellpadding=0 cellspacing=0 border=0><TR><TD class="ms-vb">There are no additional locations to show in this view..
+                        </TD></TR><tr><td height="5"><IMG SRC="/_layouts/images/blank.gif" width=1 height=5 alt=""></td></tr></TABLE></tr></td>.
+        .
+.</TABLE>.
+</TD></TR></TABLE>.
+</BODY>.
+</HTML>.
+
+##
+T 192.168.2.119:36497 -> 192.168.2.75:80 [AP]
+HEAD /_vti_bin/owssvr.dll?location=MyDocList&dialogview=FileOpen HTTP/1.1.
+User-Agent: Test for Web Form Existence.
+Host: vm2k3.
+Content-Length: 0.
+Connection: Keep-Alive.
+Cookie: MSOWebPartPage_AnonymousAccessCookie=80; WSS_KeepSessionAuthenticated=80.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:36497 [AP]
+HTTP/1.1 200 OK.
+Date: Fri, 04 Sep 2009 13:51:47 GMT.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+Cache-Control: no-cache.
+Content-Length: 0.
+Content-type: text/html.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+.
+
+##
+T 192.168.2.119:36497 -> 192.168.2.75:80 [AP]
+GET /_vti_bin/owssvr.dll?location=MyDocList&dialogview=FileOpen&FileDialogFilterValue=*.doc;*.dot;*.htm;*.html;*.url;*.rtf;*.mht;*.mhtml;*.xml; HTTP/1.1.
+Accept: application/x-shockwave-flash, image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/msword, */*.
+Accept-Language: en-us.
+Accept-Encoding: gzip, deflate.
+User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727).
+Host: vm2k3.
+Connection: Keep-Alive.
+Cookie: MSOWebPartPage_AnonymousAccessCookie=80; WSS_KeepSessionAuthenticated=80.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:36497 [AP]
+HTTP/1.1 200 OK.
+Cache-Control: no-cache.
+Content-Length: 5440.
+Content-Type: text/html.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+Set-Cookie: MSOWebPartPage_AnonymousAccessCookie=80; expires=Fri, 04-Sep-2009 14:21:47 GMT; path=/.
+Date: Fri, 04 Sep 2009 13:51:47 GMT.
+.
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:36497 [A]
+<html dir="ltr">.
+<HEAD>.
+    <META Name="GENERATOR" Content="Microsoft SharePoint">.
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">.
+    <META HTTP-EQUIV="Expires" content="0">.
+    <!-- _locID="id_PageTitle" _locComment="{StringCategory=TTL}" -->.
+    <Title ID=onetidTitle>File Properties</Title>.
+<Link REL="stylesheet" Type="text/css" HREF="/_layouts/1033/styles/core.css">.
+    <META Name="Microsoft Theme" Content="default">.
+    <META Name="Microsoft Border" Content="none">.
+<script src="/_layouts/1033/init.js"></script>.
+<script src="/_layouts/1033/core.js"></script>.
+.
+.
+</HEAD>.
+<script language="JavaScript">.
+L_tooltipfile_Text = "Double-click to open this document";.
+L_tooltipfolder_Text = "";.
+selectedElement = null.
+inChangeSelection = false.
+slElem = null;.
+oldSelection = "";.
+bIsFileDialogView = true;.
+function selectrow().
+{.
+    if (slElem) {.
+.    slElem.className=oldSelection;.
+.    slElem.title="";.
+.    }.
+    selectedElement = window.event.srcElement;.
+    while (selectedElement.tagName!="TR") {.
+    .   selectedElement=selectedElement.parentElement;.
+           }.
+    slElem = selectedElement;.
+    oldSelection=slElem.className;...
+    slElem.className="ms-selected";.
+    if (slElem.getAttribute("fileattribute") == "file").
+        slElem.title=L_tooltipfile_Text;.
+    else.
+        slElem.title=L_tooltipfolder_Text;.
+    document.selection.empty();.
+}.
+function checkScroll().
+{.
+##
+T 192.168.2.75:80 -> 192.168.2.119:36497 [A]
+
+    if (document.body.scrollHeight > document.body.offsetHeight ||.
+..document.body.scrollWidth > document.body.offsetWidth).
+       document.body.scroll="yes";.
+}.
+</script>.
+<BODY topmargin=5 leftmargin=5 scroll=no serverType=OWS.
+        onload="checkScroll()" onresize="checkScroll()">.
+<!-- Banner -->.
+<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH="100%">.
+. <TR>.
+.     <TD valign=top class='ms-pagetitleareaframe' style="height: 0" nowrap>.
+...<table cellpadding=0 cellspacing=0 width=100% border="0">.
+....<tr>.
+....<td valign="top" class="ms-titlearea" style="padding-left: 4px;">.
+......Team Site.
+....</td>.
+....</tr>.
+....<tr>.
+....<td height=100% valign=top class="ms-pagetitle" style="padding-left: 4px;">.
+....<h2 class="ms-pagetitle">.
+...... MyDocList.
+....</h2>.
+.... </td>.
+.... </tr>.
+...</table>.
+.  </TD>.
+. </TR>.
+    <TR>.
+     <TD>.
+      <!-- View table -->.
+          .
+            <TABLE ID="FileDialogViewTable" width="100%" style="cursor: default;" border=0 rules=rows cellspacing=0 cellpadding=2>.
+                <TR>.
+        <TH Class="ms-vh2-nofilter"><A ID="diidSortDocIcon" onfocus="OnFocusFilter(this)" TITLE="Sort by Type" HREF="javascript:" OnClick="javascript:return OnClickFilter(this,event);"  SORTINGFIELDS="RootFolder=%2fMyDocList&amp;SortField=DocIcon&amp;SortDir=Asc&amp;View=FileDialog">Type<img src="/_layouts/images/blank.gif" class="ms-hidden" border=0 width=1 height=1 alt="Use SHIFT+ENTER to open the menu (new window)."></A>
+        <IMG SRC="/_layouts/images/blank.gif" ALT="" BORDER=0><IMG SRC="/_layouts/images/blank.gif" BORDER=0 ALT=""></TH>
+        <TH Class="ms-vh2-nofilter"><A ID="diidSortBaseName" onfocus="OnFocusFilter(this)" TITLE="Sort by Name" HREF="javascript:" OnClick="javascript:return OnClickFilter(this,event);"  SORTINGFIELDS="RootFolder=%2fMyDocList&amp;SortField=BaseName&amp;SortDir=Asc&amp;View=FileDialog">Name<img src="/_layouts/images/blank.gif" class="ms-hidden" border=0 width=1 height=1 alt="Use SHIFT+ENTER to open the menu (new window)."></A><IMG SRC="/_layouts/images/blank.gif" ALT="" BORDER=0></TH>
+        <TH Class="ms-vh2-nofilter"><A ID="diidSortEditor" onfocus="OnFocusFilter(this)" TITLE="Sort by Modified By" HREF="javascript:" OnClick="javascript:return OnClickFilter(this,event);"  SORTINGFIELDS="RootFolder=%2fMyDocList&amp;SortField=Editor&amp;SortDir=Asc&amp;View=FileDialog">Modified By<img src="/_layouts/images/blank.gif" class="ms-hidden" border=0 width=1 height=1 alt="Use SHIFT+ENTER to open the menu (new window)."></A><IMG SRC="/_layouts/images/blank.gif" ALT="" BORDER=0><IMG SRC="/_layouts/images/blank.gif" BORDER=0 ALT=""></TH>
+        <TH Class="ms-vh2-nofilter"><A ID="diidSortModified" onfocus="OnFocusFilter(this)" TITLE="Sort by Modified" HREF="javascript:" OnClick="javascript:return OnClickFilter(this,event);"  SORTINGFIELDS="RootFolder=%2fMyDocList&amp;SortField=Modified&amp;SortDir=Asc&amp;View=FileDialog">Modified<img src="/_layouts/images/blank.gif" class="ms-hidden" border=0 width=1 height=1 alt="Use SHIFT+ENTER to open the menu (new window)."></A><IMG SRC="/_layouts/images/blank.gif" ALT="" BORDER=0><IMG SRC="/_layouts/images/blank.gif" BORDER=0 ALT=""></TH>
+        </TR>
+        <TR fileattribute=file ID="http://vm2k3/MyDocList/Nuxeo%20Annotation%20Service.doc" class="ms-alternating" onmousedown="selectrow()" onclick="selectrow()">
+        <TD class="ms-vb" style="padding-left: 4px"><A TABINDEX=-1 HREF="/MyDocList/Nuxeo%20Annotation%20Service.doc" onclick="return DispEx(this,event,'TRUE','FALSE','TRUE','SharePoint.OpenDocuments.3','0','SharePoint.OpenDocuments','','','','1','0','0','0x7fffffffffffffff')"><IMG BORDER=0 ALT="Nuxeo Annotation Service.doc" title="Nuxeo Annotation Service.doc" SRC="/_layouts/images/icdoc.gif"></A></TD>
+        <TD class="ms-vb" style="padding-left: 4px">Nuxeo Annotation Service</TD><TD class="ms-vb" style="padding-left: 4px">Nuxeo</TD><TD class="ms-vb" style="padding-left: 4px"><NOBR>9/4/2009 3:26 PM</NOBR></TD></TR>
+        </TABLE>.
+     </TD>.
+    </TR>.
+</TABLE>.
+</BODY>.
+</HTML>.
+
+##
+T 192.168.2.119:36497 -> 192.168.2.75:80 [AP]
+POST /_vti_bin/_vti_aut/author.dll HTTP/1.1.
+Date: Fri, 04 Sep 2009 13:51:54 GMT.
+MIME-Version: 1.0.
+User-Agent: MSFrontPage/6.0.
+Host: vm2k3.
+Accept: auth/sicily.
+Content-Length: 206.
+Content-Type: application/x-www-form-urlencoded.
+X-Vermeer-Content-Type: application/x-www-form-urlencoded.
+Connection: Keep-Alive.
+Cache-Control: no-cache.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+method=get+document%3a6%2e0%2e2%2e5523&service%5fname=&document%5fname=MyDocList%2fNuxeo+Annotation+Service%2edoc&old%5ftheme%5fhtml=false&force=false&get%5foption=chkoutExclusive&doc%5fversion=&timeout=10
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:36497 [AP]
+HTTP/1.1 200 OK.
+Connection: close.
+Date: Fri, 04 Sep 2009 13:51:49 GMT.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+
+##
+T 192.168.2.75:80 -> 192.168.2.119:36497 [A]
+Content-type: application/x-vermeer-rpc.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+.
+<html><head><title>vermeer RPC packet</title></head>
+<body>
+<p>method=get document:6.0.2.5523
+<p>message=successfully retrieved document 'MyDocList/Nuxeo Annotation Service.doc' from 'MyDocList/Nuxeo Annotation Service.doc'
+<p>document=
+<ul>
+<li>document_name=MyDocList/Nuxeo Annotation Service.doc
+<li>meta_info=
+<ul>
+<li>Subject
+<li>SW|
+<li>vti_sourcecontrollockexpires
+<li>TR|04 Sep 2009 14:01:50 -0000
+<li>vti_rtag
+<li>SW|rt:A4FCD7B8-6D6B-4FE3-B825-5262D2AEAF8A@00000000003
+<li>vti_etag
+<li>SW|&#34;&#123;A4FCD7B8-6D6B-4FE3-B825-5262D2AEAF8A&#125;,3&#34;
+<li>vti_parserversion
+<li>SR|12.0.0.6219
+<li>vti_timecreated
+<li>TR|04 Sep 2009 09:34:49 -0000
+<li>_Category
+<li>SW|
+<li>vti_canmaybeedit
+<li>BX|true
+<li>vti_linkinfo
+<li>VX|UHHS|http://www.w3.org/2001/03/thread UHHS|http://www.w3.org/2001/12/replyType UHHS|http://www.w3.org/2001/Annotea/User/Protocol.html
+<li>vti_author
+<li>SR|VM2K3&#92;nuxeo
+<li>_Comments
+<li>SW|
+<li>vti_sourcecontrolcheckedoutby
+<li>SR|VM2K3&#92;nuxeo
+<li>vti_sourcecontroltimecheckedout
+<li>TR|04 Sep 2009 13:51:50 -0000
+<li>vti_sourcecontrolversion
+<li>SR|V1.0
+<li>vti_sourcecontrolcookie
+<li>SR|fp_internal
+<li>vti_approvallevel
+<li>SR|
+<li>vti_categories
+<li>VW|
+<li>vti_level
+<li>IR|1
+<li>vti_assignedto
+<li>SR|
+<li>Keywords
+<li>SW|
+<li>vti_modifiedby
+<li>SR|VM2K3&#92;nuxeo
+<li>vti_filesize
+<li>IR|492032
+<li>Conte
+##
+T 192.168.2.75:80 -> 192.168.2.119:36497 [AP]
+ntTypeId
+<li>SW|0x0101003C97D20C47E1C3498214C5297D0BA161
+<li>vti_nexttolasttimemodified
+<li>TR|04 Sep 2009 10:18:34 -0000
+<li>vti_title
+<li>SR|
+<li>_Author
+<li>SW|Florent Guillaume
+<li>vti_timelastmodified
+<li>TR|04 Sep 2009 13:26:59 -0000
+<li>vti_sourcecontrolmultiuserchkoutby
+<li>VR|VM2K3&#92;&#92;nuxeo
+<li>vti_candeleteversion
+<li>BR|true
+</ul>
+</ul>
+</body>
+</html>
+
+##
+T 192.168.2.75:80 -> 192.168.2.119:36497 [A]
+........................>...........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................q`.......................$....bjbjqPqP...........................:...:................................................................................................................</......</......</..D............0...
+..(T......(T......(T.......T.......T..d....:......0z..$...,U..^....U..(....U.......U.......U.......[.......[.......
+
+***************** BINARY PART REMOVED ***************************
+
+FormTemplates>.....................................<?xml version="1.0" encoding="UTF-8" standalone="no"?>.
+<ds:datastoreItem ds:itemID="{EB67D0BC-0A02-4778-BB69-38EDA5E05155}" xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml"/>.......................................................................................................................................................................................................................................................
+#######
+T 192.168.2.119:58823 -> 192.168.2.75:80 [AP]
+POST /_vti_bin/_vti_aut/author.dll HTTP/1.1.
+Date: Fri, 04 Sep 2009 13:51:55 GMT.
+MIME-Version: 1.0.
+User-Agent: MSFrontPage/6.0.
+Host: vm2k3.
+Accept: auth/sicily.
+Content-Length: 163.
+Content-Type: application/x-www-form-urlencoded.
+X-Vermeer-Content-Type: application/x-www-form-urlencoded.
+Connection: Keep-Alive.
+Cache-Control: no-cache.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+method=getDocsMetaInfo%3a6%2e0%2e2%2e5523&url%5flist=%5bhttp%3a%2f%2fvm2k3%2fMyDocList%2fNuxeo+Annotation+Service%2edoc%5d&listHiddenDocs=false&listLinkInfo=false
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:58823 [AP]
+HTTP/1.1 200 OK.
+Connection: close.
+Date: Fri, 04 Sep 2009 13:51:50 GMT.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+
+##
+T 192.168.2.75:80 -> 192.168.2.119:58823 [A]
+Content-type: application/x-vermeer-rpc.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+.
+<html><head><title>vermeer RPC packet</title></head>
+<body>
+<p>method=getDocsMetaInfo:6.0.2.5523
+<p>document_list=
+<ul>
+<ul>
+<li>document_name=MyDocList/Nuxeo Annotation Service.doc
+<li>meta_info=
+<ul>
+<li>Subject
+<li>SW|
+<li>vti_sourcecontrollockexpires
+<li>TR|04 Sep 2009 14:01:50 -0000
+<li>vti_rtag
+<li>SW|rt:A4FCD7B8-6D6B-4FE3-B825-5262D2AEAF8A@00000000003
+<li>vti_etag
+<li>SW|&#34;&#123;A4FCD7B8-6D6B-4FE3-B825-5262D2AEAF8A&#125;,3&#34;
+<li>vti_parserversion
+<li>SR|12.0.0.6219
+<li>vti_timecreated
+<li>TR|04 Sep 2009 09:34:49 -0000
+<li>_Category
+<li>SW|
+<li>vti_canmaybeedit
+<li>BX|true
+<li>vti_author
+<li>SR|VM2K3&#92;nuxeo
+<li>_Comments
+<li>SW|
+<li>vti_sourcecontrolcheckedoutby
+<li>SR|VM2K3&#92;nuxeo
+<li>vti_sourcecontroltimecheckedout
+<li>TR|04 Sep 2009 13:51:50 -0000
+<li>vti_sourcecontrolversion
+<li>SR|V1.0
+<li>vti_sourcecontrolcookie
+<li>SR|fp_internal
+<li>vti_approvallevel
+<li>SR|
+<li>vti_categories
+<li>VW|
+<li>vti_level
+<li>IR|1
+<li>vti_assignedto
+<li>SR|
+<li>Keywords
+<li>SW|
+<li>vti_modifiedby
+<li>SR|VM2K3&#92;nuxeo
+<li>vti_filesize
+<li>IR|492032
+<li>ContentTypeId
+<li>SW|0x0101003C97D20C47E1C3498214C5297D0BA161
+<li>vti_nexttolasttimemodified
+<li>TR|04 Sep 2009 10:18:34 -0000
+<li>vti_title
+<li>SR|
+<li>_Author
+<li>SW|Florent Guillaume
+<li>vti_timelastmodified
+<li>TR|04 Sep 2009 13:26:59 -0000
+<li>vti_sourcecontrolmultiuserchkou
+##
+T 192.168.2.75:80 -> 192.168.2.119:58823 [AP]
+tby
+<li>VR|VM2K3&#92;&#92;nuxeo
+<li>vti_candeleteversion
+<li>BR|true
+</ul>
+</ul>
+</ul>
+</body>
+</html>
+
+########
+T 192.168.2.119:58824 -> 192.168.2.75:80 [AP]
+POST /_vti_bin/webs.asmx HTTP/1.1.
+Content-Type: text/xml; charset=utf-8.
+SOAPAction: http://schemas.microsoft.com/sharepoint/soap/WebUrlFromPageUrl.
+X-Office-Version: 11.0.5606.
+User-Agent: Microsoft Office/11.0 (Windows NT 5.1; Microsoft Office Word 11.0.5606; Std).
+Host: vm2k3.
+Content-Length: 283.
+Connection: Keep-Alive.
+Cache-Control: no-cache.
+Cookie: MSOWebPartPage_AnonymousAccessCookie=80; WSS_KeepSessionAuthenticated=80.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+<?xml version='1.0' ?><s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><WebUrlFromPageUrl xmlns="http://schemas.microsoft.com/sharepoint/soap/"><pageUrl>http://vm2k3/MyDocList/Nuxeo%20Annotation%20Service.doc</pageUrl></WebUrlFromPageUrl></s:Body></s:Envelope>
+#
+T 192.168.2.75:80 -> 192.168.2.119:58824 [AP]
+HTTP/1.1 200 OK.
+Date: Fri, 04 Sep 2009 13:51:52 GMT.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+X-AspNet-Version: 2.0.50727.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+Cache-Control: private, max-age=0.
+Content-Type: text/xml; charset=utf-8.
+Content-Length: 418.
+.
+<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><WebUrlFromPageUrlResponse xmlns="http://schemas.microsoft.com/sharepoint/soap/"><WebUrlFromPageUrlResult>http://vm2k3</WebUrlFromPageUrlResult></WebUrlFromPageUrlResponse></soap:Body></soap:Envelope>
+##
+T 192.168.2.119:58824 -> 192.168.2.75:80 [AP]
+POST /_vti_bin/dws.asmx HTTP/1.1.
+Content-Type: text/xml; charset=utf-8.
+SOAPAction: http://schemas.microsoft.com/sharepoint/soap/dws/GetDwsMetaData.
+X-Office-Version: 11.0.5606.
+User-Agent: Microsoft Office/11.0 (Windows NT 5.1; Microsoft Office Word 11.0.5606; Std).
+Host: vm2k3.
+Content-Length: 315.
+Connection: Keep-Alive.
+Cache-Control: no-cache.
+Cookie: MSOWebPartPage_AnonymousAccessCookie=80; WSS_KeepSessionAuthenticated=80.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+<?xml version='1.0' ?><s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><GetDwsMetaData xmlns="http://schemas.microsoft.com/sharepoint/soap/dws/"><document>http://vm2k3/MyDocList/Nuxeo%20Annotation%20Service.doc</document><id></id><minimal>true</minimal></GetDwsMetaData></s:Body></s:Envelope>
+#
+T 192.168.2.75:80 -> 192.168.2.119:58824 [A]
+HTTP/1.1 200 OK.
+Date: Fri, 04 Sep 2009 13:51:52 GMT.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+X-AspNet-Version: 2.0.50727.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+Cache-Control: private, max-age=0.
+Content-Type: text/xml; charset=utf-8.
+Content-Length: 2421.
+.
+<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><GetDwsMetaDataResponse xmlns="http://schemas.microsoft.com/sharepoint/soap/dws/"><GetDwsMetaDataResult>&lt;Results&gt;&lt;MtgInstance /&gt;&lt;SettingUrl&gt;http://vm2k3/_layouts/settings.aspx&lt;/SettingUrl&gt;&lt;PermsUrl&gt;http://vm2k3/_layouts/EditPrms.aspx&lt;/PermsUrl&gt;&lt;UserInfoUrl&gt;http://vm2k3/_layouts/UserEdit.aspx&lt;/UserInfoUrl&gt;&lt;Roles&gt;&lt;Role Name="Full Control" Type="Administrator" Description="Has full control." /&gt;&lt;Role Name="Design" Type="WebDesigner" Description="Can view, add, update, delete, approve, and customize." /&gt;&lt;Role Name="Contribute" Type="Contributor" Description="Can view, add, update, and delete." /&gt;&lt;Role Name="Read" Type="Reader" Description="Can view only." /&gt;&lt;/Roles&gt;&lt;Permissions&gt;&lt;ManageSubwebs /&gt;&lt;ManageWeb /&gt;&lt;ManageRoles /&gt;&lt;ManageLists /&gt;&lt;InsertListItems /&gt;&lt;EditListItems /
+##
+T 192.168.2.75:80 -> 192.168.2.119:58824 [AP]
+&gt;&lt;DeleteListItems /&gt;&lt;/Permissions&gt;&lt;HasUniquePerm&gt;True&lt;/HasUniquePerm&gt;&lt;WorkspaceType /&gt;&lt;IsADMode&gt;False&lt;/IsADMode&gt;&lt;DocUrl&gt;http://vm2k3/MyDocList/Nuxeo%20Annotation%20Service.doc&lt;/DocUrl&gt;&lt;Minimal&gt;True&lt;/Minimal&gt;&lt;Results&gt;&lt;Title&gt;Team Site&lt;/Title&gt;&lt;LastUpdate&gt;633876691128006250&lt;/LastUpdate&gt;&lt;User&gt;&lt;ID&gt;1&lt;/ID&gt;&lt;Name&gt;Nuxeo&lt;/Name&gt;&lt;LoginName&gt;VM2K3\nuxeo&lt;/LoginName&gt;&lt;Email&gt;someone@example.com&lt;/Email&gt;&lt;IsDomainGroup&gt;False&lt;/IsDomainGroup&gt;&lt;IsSiteAdmin&gt;True&lt;/IsSiteAdmin&gt;&lt;/User&gt;&lt;Members&gt;&lt;Member&gt;&lt;ID&gt;5&lt;/ID&gt;&lt;Name&gt;Team Site Members&lt;/Name&gt;&lt;Email /&gt;&lt;LoginName /&gt;&lt;IsDomainGroup&gt;True&lt;/IsDomainGroup&gt;&lt;/Member&gt;&lt;Member&gt;&lt;ID&gt;3&lt;/ID&gt;&lt;Name&gt;Team Site Owners&lt;/Name&gt;&lt;Email /&gt;&lt;LoginName /&gt;&lt;IsDomainGroup&gt;True&lt;/IsDomainGroup&gt;&lt;/Member&gt;&lt;Member&gt;&lt;ID&gt;4&lt;/ID&gt;&lt;Name&gt;Team Site Visitors&lt;/Name&gt;&lt;Email /&gt;&lt;LoginName /&gt;&lt;IsDomainGroup&gt;True&lt;/IsDomainGroup&gt;&lt;/Member&gt;&lt;/Members&gt;&lt;/Results&gt;&lt;/Results&gt;</GetDwsMetaDataResult></GetDwsMetaDataResponse></soap:Body></soap:Envelope>
+###
+T 192.168.2.119:58824 -> 192.168.2.75:80 [AP]
+HEAD /_vti_bin/owssvr.dll?location=MyDocList/Nuxeo%20Annotation%20Service.doc&dialogview=SaveForm HTTP/1.1.
+User-Agent: Test for Web Form Existence.
+Host: vm2k3.
+Content-Length: 0.
+Connection: Keep-Alive.
+Cookie: MSOWebPartPage_AnonymousAccessCookie=80; WSS_KeepSessionAuthenticated=80.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:58824 [AP]
+HTTP/1.1 410 Gone.
+Date: Fri, 04 Sep 2009 13:51:56 GMT.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+Cache-Control: no-cache.
+Content-Length: 0.
+Content-type: text/html.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+.
+
+##
+T 192.168.2.119:58824 -> 192.168.2.75:80 [AP]
+POST /_vti_bin/_vti_aut/author.dll HTTP/1.1.
+Date: Fri, 04 Sep 2009 13:52:01 GMT.
+MIME-Version: 1.0.
+User-Agent: MSFrontPage/6.0.
+Host: vm2k3.
+Accept: auth/sicily.
+Content-Length: 487694.
+Content-Type: application/x-vermeer-urlencoded.
+X-Vermeer-Content-Type: application/x-vermeer-urlencoded.
+Connection: Keep-Alive.
+Cache-Control: no-cache.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+
+#
+T 192.168.2.119:58824 -> 192.168.2.75:80 [A]
+method=put+document%3a6%2e0%2e2%2e5523&service%5fname=&document=%5bdocument%5fname%3dMyDocList%2fNuxeo+Annotation+Service%2edoc%3bmeta%5finfo%3d%5bvti%5ftimelastmodified%3bTW%7c04+Sep+2009+13%3a26%3a59+%2d0000%5d%5d&put%5foption=edit&comment=&keep%5fchecked%5fout=false
+........................>...........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................q`.......................%....bjbjqPqP...........................:...:................................................................................................................</......</......</..D............0...
+..xT......xT......xT.......T.......U..d....:......J{..$...|U..^....U..(....V.......V.......V.......[.......[.......[.......t.......t.......t.......t..)....t.......w.......z..$...n...h.......T....z......................</.......[......................2[..|....[..@....[.......[.......z...............................V...............V..0....{.......d.......d.......d.......[..........R....V......</.......V.......t...............d..............
+#
+T 192.168.2.119:58824 -> 192.168.2.75:80 [A]
+
+***************** BINARY PART REMOVED ***************************
+.........................................
+(.................................................................D.o.c.u.m.e.n.t.S.u.m.m.a.r.y.I.n.f.o.r.m.a.t.i.o.n...........8.................................................................C.o.m.p.O.b.j.................................................
+#
+T 192.168.2.119:58824 -> 192.168.2.75:80 [AP]
+........................................................q............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+.....................F....Document Microsoft Office Word.
+...MSWordDoc.....Word.Document.8..9.q...........................................................................................................................................................................................................................................................................................................................................................................................................................
+########
+T 192.168.2.75:80 -> 192.168.2.119:58824 [AP]
+HTTP/1.1 200 OK.
+Connection: close.
+Date: Fri, 04 Sep 2009 13:52:52 GMT.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+
+##
+T 192.168.2.75:80 -> 192.168.2.119:58824 [A]
+Content-type: application/x-vermeer-rpc.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+.
+<html><head><title>vermeer RPC packet</title></head>
+<body>
+<p>method=put document:6.0.2.5523
+<p>message=successfully put document 'MyDocList/Nuxeo Annotation Service.doc' as 'MyDocList/Nuxeo Annotation Service.doc'
+<p>document=
+<ul>
+<li>document_name=MyDocList/Nuxeo Annotation Service.doc
+<li>meta_info=
+<ul>
+<li>vti_sourcecontrollockexpires
+<li>TR|04 Sep 2009 14:01:50 -0000
+<li>Subject
+<li>SW|
+<li>vti_rtag
+<li>SW|rt:A4FCD7B8-6D6B-4FE3-B825-5262D2AEAF8A@00000000004
+<li>vti_etag
+<li>SW|&#34;&#123;A4FCD7B8-6D6B-4FE3-B825-5262D2AEAF8A&#125;,4&#34;
+<li>vti_parserversion
+<li>SR|12.0.0.6219
+<li>vti_timecreated
+<li>TR|04 Sep 2009 09:34:49 -0000
+<li>vti_canmaybeedit
+<li>BX|true
+<li>_Category
+<li>SW|
+<li>vti_author
+<li>SR|VM2K3&#92;nuxeo
+<li>vti_sourcecontrolcookie
+<li>SR|fp_internal
+<li>vti_sourcecontrolcheckedoutby
+<li>SR|VM2K3&#92;nuxeo
+<li>vti_sourcecontroltimecheckedout
+<li>TR|04 Sep 2009 13:51:50 -0000
+<li>vti_sourcecontrolversion
+<li>SR|V1.0
+<li>_Comments
+<li>SW|
+<li>vti_linkinfo
+<li>VX|UHHS|http://www.w3.org/2001/03/thread UHHS|http://www.w3.org/2001/12/replyType UHHS|http://www.w3.org/2001/Annotea/User/Protocol.html
+<li>vti_level
+<li>IR|1
+<li>vti_approvallevel
+<li>SR|
+<li>vti_categories
+<li>VW|
+<li>vti_filesize
+<li>IR|492544
+<li>vti_assignedto
+<li>SR|
+<li>Keywords
+<li>SW|
+<li>vti_modifiedby
+<li>SR|VM2K3&#92;nuxeo
+<li>ContentTypeId
+##
+T 192.168.2.75:80 -> 192.168.2.119:58824 [AP]
+
+<li>SW|0x0101003C97D20C47E1C3498214C5297D0BA161
+<li>vti_nexttolasttimemodified
+<li>TR|04 Sep 2009 10:18:34 -0000
+<li>vti_timelastmodified
+<li>TR|04 Sep 2009 13:52:52 -0000
+<li>vti_candeleteversion
+<li>BR|true
+<li>vti_sourcecontrolmultiuserchkoutby
+<li>VR|VM2K3&#92;&#92;nuxeo
+<li>vti_title
+<li>SR|
+<li>_Author
+<li>SW|Florent Guillaume
+</ul>
+</ul>
+</body>
+</html>
+
+########
+T 192.168.2.119:58826 -> 192.168.2.75:80 [AP]
+POST /_vti_bin/_vti_aut/author.dll HTTP/1.1.
+Date: Fri, 04 Sep 2009 13:53:00 GMT.
+MIME-Version: 1.0.
+User-Agent: MSFrontPage/6.0.
+Host: vm2k3.
+Accept: auth/sicily.
+Content-Length: 151.
+Content-Type: application/x-www-form-urlencoded.
+X-Vermeer-Content-Type: application/x-www-form-urlencoded.
+Connection: Keep-Alive.
+Cache-Control: no-cache.
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=.
+.
+method=uncheckout+document%3a6%2e0%2e2%2e5523&service%5fname=&document%5fname=MyDocList%2fNuxeo+Annotation+Service%2edoc&force=false&rlsshortterm=true
+
+#
+T 192.168.2.75:80 -> 192.168.2.119:58826 [AP]
+HTTP/1.1 200 OK.
+Connection: close.
+Date: Fri, 04 Sep 2009 13:52:55 GMT.
+Server: Microsoft-IIS/6.0.
+X-Powered-By: ASP.NET.
+MicrosoftSharePointTeamServices: 12.0.0.6219.
+
+##
+T 192.168.2.75:80 -> 192.168.2.119:58826 [AP]
+Content-type: application/x-vermeer-rpc.
+Set-Cookie: WSS_KeepSessionAuthenticated=80; path=/.
+.
+<html><head><title>vermeer RPC packet</title></head>
+<body>
+<p>method=uncheckout document:6.0.2.5523
+<p>meta_info=
+<ul>
+<li>Subject
+<li>SW|
+<li>vti_rtag
+<li>SW|rt:A4FCD7B8-6D6B-4FE3-B825-5262D2AEAF8A@00000000004
+<li>vti_etag
+<li>SW|&#34;&#123;A4FCD7B8-6D6B-4FE3-B825-5262D2AEAF8A&#125;,4&#34;
+<li>vti_parserversion
+<li>SR|12.0.0.6219
+<li>vti_timecreated
+<li>TR|04 Sep 2009 09:34:49 -0000
+<li>_Category
+<li>SW|
+<li>vti_canmaybeedit
+<li>BX|true
+<li>vti_linkinfo
+<li>VX|UHHS|http://www.w3.org/2001/03/thread UHHS|http://www.w3.org/2001/12/replyType UHHS|http://www.w3.org/2001/Annotea/User/Protocol.html
+<li>vti_author
+<li>SR|VM2K3&#92;nuxeo
+<li>_Comments
+<li>SW|
+<li>vti_sourcecontrolversion
+<li>SR|V1.0
+<li>vti_sourcecontrolcookie
+<li>SR|fp_internal
+<li>vti_approvallevel
+<li>SR|
+<li>vti_categories
+<li>VW|
+<li>vti_level
+<li>IR|1
+<li>vti_assignedto
+<li>SR|
+<li>Keywords
+<li>SW|
+<li>vti_modifiedby
+<li>SR|VM2K3&#92;nuxeo
+<li>vti_filesize
+<li>IR|492544
+<li>ContentTypeId
+<li>SW|0x0101003C97D20C47E1C3498214C5297D0BA161
+<li>vti_nexttolasttimemodified
+<li>TR|04 Sep 2009 13:26:59 -0000
+<li>vti_title
+<li>SR|
+<li>_Author
+<li>SW|Florent Guillaume
+<li>vti_timelastmodified
+<li>TR|04 Sep 2009 13:52:52 -0000
+<li>vti_candeleteversion
+<li>BR|true
+</ul>
+</body>
+</html>
+
+####exit
+1165 received, 0 dropped
