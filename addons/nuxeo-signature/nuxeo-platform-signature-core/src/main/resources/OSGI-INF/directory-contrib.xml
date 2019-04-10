@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="digital.signature.directory">
+	<require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <directory name="certificate">
+      <schema>cert</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>certificate</table>
+      <idField>userid</idField>
+      <passwordField>keypassword</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+  </extension>
+</component>
