@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://nuxeo.com/schemas/validationSample"
+  xmlns:nxv="http://nuxeo.com/schemas/validationSample"
+  xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/">
+
+  <xs:element name="groupCode" type="xs:string" nillable="false"
+    nxsv:nillable="false">
+    <xs:simpleType>
+      <xs:restriction base="xs:integer">
+        <xs:minExclusive value="0" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="roles" type="nxv:rolesType" />
+
+  <xs:complexType name="rolesType">
+    <xs:sequence>
+      <xs:element name="role" minOccurs="0" maxOccurs="unbounded"
+        nillable="false" nxsv:nillable="false">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z0-9]+"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="users">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="user" type="nxv:user" minOccurs="0"
+          maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="manager" type="nxv:user" />
+
+  <xs:complexType name="user">
+    <xs:sequence>
+      <xs:element name="firstname" nillable="false" nxsv:nillable="false"
+        type="nxv:fnType" />
+      <xs:element name="lastname" nillable="false" nxsv:nillable="false"
+        type="nxv:lnType" />
+      <!-- nok for now -->
+      <!-- <xs:element name="groups" type="nxv:lnType" /> -->
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="fnType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value=".*\S.*" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="lnType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Z][a-z '-]+" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="listOfLists" type="nxv:vlistOfListsType" />
+
+  <xs:complexType name="vlistOfListsType">
+    <xs:sequence>
+      <xs:element name="listOfListsItem" type="nxv:vlistOfListsItemType"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="vlistOfListsItemType">
+    <xs:sequence>
+      <xs:element name="stringItem" type="xs:string" />
+      <xs:element name="stringListItem" type="nxv:vstringList" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="vstringList">
+    <xs:list itemType="nxv:lnType" />
+  </xs:simpleType>
+
+</xs:schema>

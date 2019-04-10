@@ -1,0 +1,9 @@
+syntax:glob
+.classpath
+.project
+.settings
+build.properties
+bin
+target
+*~
+*.iml

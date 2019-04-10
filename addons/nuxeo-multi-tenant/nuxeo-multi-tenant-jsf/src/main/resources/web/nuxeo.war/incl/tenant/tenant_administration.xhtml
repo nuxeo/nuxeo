@@ -1,0 +1,33 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+  <h:form>
+    <c:if test="#{multiTenantActions.tenantIsolationEnabled}">
+      <p>
+        <h:outputText value="#{messages['label.multi.tenant.administration']} " />
+        <h:outputText value="#{messages['label.multi.tenant.enabled']}" styleClass="success" />
+      </p>
+      <p>
+        <h:commandButton value="#{messages['label.local.configuration.disable']}"
+          action="#{multiTenantActions.disableTenantIsolation()}"
+          styleClass="button" />
+      </p>
+    </c:if>
+    <c:if test="#{not multiTenantActions.tenantIsolationEnabled}">
+      <p>
+        <h:outputText value="#{messages['label.multi.tenant.administration']} " />
+        <h:outputText value="#{messages['label.multi.tenant.disabled']}" styleClass="warning" />
+      </p>
+      <p>
+      <h:commandButton value="#{messages['label.local.configuration.enable']}"
+        action="#{multiTenantActions.enableTenantIsolation()}"
+        styleClass="button" />
+      </p>
+    </c:if>
+  </h:form>
+
+</div>
