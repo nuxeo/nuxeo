@@ -1,0 +1,45 @@
+<f:subview id="#{widget.id}_add"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:if test="#{isEmptyFork}">
+   <nxu:set var="actions" value="#{routingWebActions.getAddStepInActions(field_0)}" cache="true">
+      <c:if test="#{!empty actions}">
+        <div class="action_bar">
+          <nxu:dataList styleClass="ctxMenuStyle" layout="unorderedList" var="action" value="#{actions}" id ="addStepInForkActionList" rowIndexVar="rowIndex" rowCountVar="rowCount">
+          <a4j:commandLink onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_1}';#{action.getLink()}" reRender="selectRouteElementsTypeForCreationRegion" >
+              <nxu:graphicImage value="#{action.icon}"/>
+            </a4j:commandLink>
+            <a4j:commandLink  id="step_#{rowCount%1}" onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_1}';#{action.getLink()}"  value="#{messages[action.label]}"
+              reRender="selectRouteElementsTypeForCreationRegion" >
+              <f:param name="stepId" value="#{field_1}" />
+            </a4j:commandLink>
+          </nxu:dataList>
+        </div>
+      </c:if>
+    </nxu:set>
+  </c:if>
+  <c:if test="#{isEditableRouteElement}">
+   <nxu:set var="actions" value="#{routingWebActions.getAddStepActions(field_0)}" cache="true">
+      <c:if test="#{!empty actions}">
+        <div class="action_bar">
+          <nxu:dataList styleClass="ctxMenuStyle" layout="unorderedList" var="action" value="#{actions}" id ="addStepInForActionList" rowIndexVar="rowIndex">
+            <a4j:commandLink onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_1}';#{action.getLink()}"
+               reRender="selectRouteElementsTypeForCreationRegion">
+              <h:graphicImage value="#{action.icon}"/>
+               <f:param name="stepId" value="#{field_1}" />
+            </a4j:commandLink>
+            <a4j:commandLink  id="step_#{rowCount%2}" onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_1}';#{action.getLink()}"  value="#{messages[action.label]}"
+               reRender="selectRouteElementsTypeForCreationRegion">
+               <f:param name="stepId" value="#{field_1}" />
+            </a4j:commandLink>
+          </nxu:dataList>
+        </div>
+      </c:if>
+    </nxu:set>
+  </c:if>    
+
+</f:subview>
