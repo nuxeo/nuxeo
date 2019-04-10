@@ -1,0 +1,108 @@
+<div xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  id="#{widget.id}">
+
+<nxu:set var="rangeMinSize" value="#{nxu:test(empty widgetProperty_rangeMinSize, quotaStatsActions.getMinQuotaSliderValue(), widgetProperty_rangeMinSize)}" cache="true">
+<script>
+jQuery.noConflict();
+
+<h:outputText  value="var currentSliderValue_min='#{field_0}';" />
+<h:outputText  value="var currentSliderValue_max='#{field_1}';" />
+<h:outputText  value="var minQuotaSliderValue='#{rangeMinSize}';" />
+<h:outputText  value="var maxQuotaSliderValue='#{quotaStatsActions.getMaxQuotaSliderValue()}';" />
+
+ var GB_label = "#{messages['label.unit.GB']}";
+ var MB_label = "#{messages['label.unit.MB']}";
+ var KB_label = "#{messages['label.unit.KB']}";
+ var B_label = "#{messages['label.unit.B']}";
+
+ 
+ function expon(value){
+    value = Number(value);
+    value = Math.exp(value);
+    value = Math.round(value / 1000)*1000;
+    return value;
+    
+ }
+ function logposition(val){
+    return Math.log(val);
+ }
+
+ function getCurrentSliderValueMin(){
+  if(Number(currentSliderValue_min) == 0){
+  	return logposition(minQuotaSliderValue);
+  }
+  return logposition(currentSliderValue_min);
+  }
+ 
+ function getCurrentSliderValueMax(){
+  if(Number(currentSliderValue_max) == 0){
+  	return logposition(maxQuotaSliderValue);
+  }
+  return logposition(currentSliderValue_max);
+  }
+ 
+  function formatQuotaSize(value) {
+    var gb = 1024*1024*1024;
+    var mb = 1024*1024;
+    var kb = 1024;
+    var label = "";
+    value = Number(value);
+    value = Math.exp(value);
+    value = Math.round(value / 1000)*1000;
+    var label;
+    if (value > gb) {
+      label = Math.round(value/gb) + " " + GB_label;
+    } else if (value > mb) {
+      label = Math.round(value/mb) + " " + MB_label;
+    } else if (value >=1000) {
+      label = Math.round(value/kb) + " " + KB_label;
+    } else {
+     label = value + " " + B_label;
+    }
+    return label;
+  } 
+ 
+  jQuery(document).ready(function() {
+
+    jQuery( "#slider-range" ).slider({
+    range: true,
+    values: [Number(getCurrentSliderValueMin()), Number(getCurrentSliderValueMax())],
+    min: Number(logposition(minQuotaSliderValue)),
+    max: Number(logposition(maxQuotaSliderValue)),
+    step: 0.001,
+    slide: function( event, ui ) {
+     jQuery("#sliderRangeValue").text(formatQuotaSize(ui.values[0]) +" - " + formatQuotaSize(ui.values[1]));
+     jQuery("input[id$='maxTotal']").val(expon(ui.values[1]));
+     jQuery("input[id$='minTotal']").val(expon(ui.values[0]));
+   }
+   });
+ 
+  jQuery("#sliderRangeValue").text(formatQuotaSize(jQuery("#slider-range").slider( "values",0)) + " - " + formatQuotaSize(jQuery("#slider-range").slider("values", 1)));
+  jQuery("#limitMin").text(formatQuotaSize(Number(logposition(minQuotaSliderValue))));
+  jQuery("#limitMax").text(formatQuotaSize(Number(logposition(maxQuotaSliderValue))));
+ 
+ });
+</script>
+<table class="dataTableNoBorder">
+  <tbody>
+      <tr>
+      <td class="eightyPercent"><p><span id="sliderRangeValue" class="warning"></span></p></td>
+      <td />
+    </tr>
+    <tr>
+      <td class="eightyPercent"><span id="limitMin"></span><div id="slider-range"></div></td>
+      <td><span id="limitMax"></span></td>
+    </tr>
+  </tbody>
+</table>
+ <h:inputText id="maxTotal" value="#{field_1}" style="visibility:hidden"/>
+ <h:inputText id="minTotal" value="#{field_0}" style="visibility:hidden"/>
+</nxu:set>
+</div>
