@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="studio.extensions.nuxeo-routing-default" version="1.0.0">
+
+  <extension target="org.nuxeo.runtime.services.resource.ResourceService" point="resources">
+    <resource name="NRD-PR-TasksInfo">data/templates/NRD-PR-TasksInfo</resource>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="event-handlers">
+    <handler chainId="cancelWorkflow">
+      <event>workflowCanceled</event>
+    </handler>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="NRD-AC-PR-ChooseParticipants-Output">
+      <operation id="Context.FetchDocument"/>
+      <operation id="RunOperation">
+        <param type="string" name="id">NRD-AC-PR-LockDocument</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+      <operation id="Context.SetWorkflowVar">
+        <param type="string" name="name">initiatorComment</param>
+        <param type="object" name="value">expr:NodeVariables["comment"]</param>
+      </operation>
+    </chain>
+    <chain id="NRD-AC-PR-LockDocument">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Auth.LoginAs">
+        <param type="string" name="name">expr:workflowInitiator</param>
+      </operation>
+      <operation id="RunOperation">
+        <param type="string" name="id">expr:Document.isLocked()?"voidChain":"Document.Lock"</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+    </chain>
+    <chain id="NRD-AC-PR-UnlockDocument">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.Unlock"/>
+    </chain>
+    <chain id="NRD-AC-PR-ValidateNode-Output">
+      <operation id="Context.FetchDocument"/>
+      <operation id="RunOperation">
+        <param type="string" name="id">NRD-AC-PR-UnlockDocument</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+      <operation id="RunOperation">
+        <param type="string" name="id">logInAudit</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+    </chain>
+    <chain id="NRD-AC-PR-force-validate">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Auth.LoginAs">
+        <param type="string" name="name">expr:Context["workflowInitiator"]</param>
+      </operation>
+      <operation id="Audit.LogEvent">
+        <param type="string" name="event">Consultation time excedeed</param>
+        <param type="string" name="category">Review workflow</param>
+        <param type="string" name="comment">Some consultation tasks were aborted by the system as they received no feedback message.</param>
+      </operation>
+      <operation id="Workflow.ResumeNode"/>
+    </chain>
+    <chain id="NRD-AC-PR-storeTaskInfo">
+      <operation id="Context.FetchDocument"/>
+      <operation id="RunScript">
+        <param type="string" name="script">This[0]</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">tasksInfo</param>
+        <param type="object" name="value">expr:NodeVariables["tasks"]</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">numberNA</param>
+        <param type="object" name="value">expr:NodeVariables["tasks"].getNumberEndedWithStatus("NA")</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">numberRejected</param>
+        <param type="object" name="value">expr:NodeVariables["tasks"].getNumberEndedWithStatus("reject")</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">numberApproved</param>
+        <param type="object" name="value">expr:NodeVariables["tasks"].getNumberEndedWithStatus("approve")</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">numberOfTasks</param>
+        <param type="object" name="value">expr:NodeVariables["numberOfTasks"]</param>
+      </operation>
+      <operation id="Render.Document">
+        <param type="string" name="template">template:NRD-PR-TasksInfo</param>
+        <param type="string" name="filename">output.ftl</param>
+        <param type="string" name="mimetype">text/xml</param>
+        <param type="string" name="type">ftl</param>
+      </operation>
+      <operation id="Context.SetWorkflowVar">
+        <param type="string" name="name">review_result_file</param>
+        <param type="object" name="value">expr:This.get(0)</param>
+      </operation>
+      <operation id="Context.SetWorkflowVar">
+        <param type="string" name="name">review_result</param>
+        <param type="object" name="value">expr:This.get(0).getString()</param>
+      </operation>
+    </chain>
+    <chain id="cancelWorkflow">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">isParallelWF</param>
+        <param type="object" name="value">expr:Event.context.getProperty("wfName").equals("wf.parallelDocumentReview.ParallelDocumentReview")?true:false</param>
+      </operation>
+      <operation id="RunOperation">
+        <param type="string" name="id">expr:isParallelWF?"Document.Unlock":"voidChain"</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+    </chain>
+    <chain id="initInitiatorComment">
+      <operation id="RunScript">
+        <param type="string" name="script">if((NodeVariables["comment"] != "") AND (NodeVariables["comment"] != null)){
+WorkflowVariables["initiatorComment"]= NodeVariables["comment"];}</param>
+      </operation>
+    </chain>
+    <chain id="logInAudit">
+      <operation id="Audit.LogEvent">
+        <param type="string" name="event">expr:NodeVariables["button"] =="reject"?"chain.document.refused":"chain.document.validated"</param>
+        <param type="string" name="category">Review workflow</param>
+        <param type="string" name="comment">expr:@{nodeLastActor} @{NodeVariables["button"] =="reject"?"chain.document.refused":"chain.document.validated"} the document with the following comment: @{NodeVariables["comment"]}</param>
+      </operation>
+    </chain>
+    <chain id="nextAssignee">
+      <operation id="RunScript">
+        <param type="string" name="script">if (NodeVariables["button"] == "validate") {
+  WorkflowVariables["index"] = WorkflowVariables["index"] + 1;
+}
+else if (NodeVariables["button"] == "reject") {
+  WorkflowVariables["index"] = WorkflowVariables["index"] - 1;
+}
+else if (NodeVariables["button"] == "submit") {
+  WorkflowVariables["index"] = 0;
+}</param>
+      </operation>
+    </chain>
+    <chain id="notifyInitiatorEndOfWorkflow">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.Mail">
+        <param type="string" name="from">expr:Env["mail.from"]</param>
+        <param type="string" name="message">The document was approved by every participant.</param>
+        <param type="string" name="subject">expr:@{Env["nuxeo.notification.eMailSubjectPrefix"]} Document approved</param>
+        <param type="stringlist" name="to">expr:Fn.getEmail(workflowInitiator)</param>
+        <param type="boolean" name="HTML">false</param>
+        <param type="boolean" name="rollbackOnError">true</param>
+        <param type="string" name="viewId">view_documents</param>
+      </operation>
+    </chain>
+    <chain id="reinitAssigneeComment">
+      <operation id="RunScript">
+        <param type="string" name="script">if((NodeVariables["comment"] != "") AND (NodeVariables["comment"] != null)){
+NodeVariables["comment"]= null;}</param>
+      </operation>
+    </chain>
+    <chain id="terminateWorkflow">
+      <operation id="Context.FetchDocument"/>
+      <operation id="RunOperation">
+        <param type="string" name="id">logInAudit</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+      <operation id="Context.RunDocumentOperationInNewTx">
+        <param type="string" name="id">notifyInitiatorEndOfWorkflow</param>
+        <param type="boolean" name="isolate">false</param>
+        <param type="boolean" name="rollbackGlobalOnError">false</param>
+      </operation>
+      <operation id="RunOperation">
+        <param type="string" name="id">expr:WorkflowVariables["validationOrReview"] == "validation"?"validateDocument":"voidChain"</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+      <operation id="Audit.LogEvent">
+        <param type="string" name="event">Review completed successfully</param>
+        <param type="string" name="category">Review workflow</param>
+        <param type="string" name="comment">All the participants of the review have approved the document.</param>
+      </operation>
+    </chain>
+    <chain id="validateDocument">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.FollowLifecycleTransition">
+        <param type="string" name="value">approve</param>
+      </operation>
+      <operation id="Document.CheckIn">
+        <param type="string" name="version">minor</param>
+        <param type="string" name="comment">Automatic checkin after validation</param>
+      </operation>
+    </chain>
+    <chain id="voidChain">
+      <operation id="Context.FetchDocument"/>
+    </chain>
+  </extension>
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+    <directory name="WorkflowType" extends="template-vocabulary">
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <table>studio_vocabulary_WorkflowType</table>
+      <dataFile>data/vocabularies/WorkflowType.csv</dataFile>
+      <cacheEntryName>vocab-WorkflowType-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>vocab-WorkflowType-cache-without-references</cacheEntryWithoutReferencesName>
+    </directory>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
+    <cache name="vocab-WorkflowType-cache">
+      <option name="maxSize">1000</option>
+      <option name="concurrencyLevel">500</option>
+      <ttl>60</ttl>
+    </cache>
+    <cache name="vocab-WorkflowType-cache-without-references">
+      <option name="maxSize">1000</option>
+      <option name="concurrencyLevel">500</option>
+      <ttl>60</ttl>
+    </cache>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="var_global_Task2169" prefix="var_global_Task2169" override="true" src="data/schemas/var_global_Task2169.xsd"/>
+    <schema name="var_Task2169" prefix="var_Task2169" override="true" src="data/schemas/var_Task2169.xsd"/>
+    <schema name="var_Task21a0" prefix="var_Task21a0" override="true" src="data/schemas/var_Task21a0.xsd"/>
+    <schema name="var_Task2225" prefix="var_Task2225" override="true" src="data/schemas/var_Task2225.xsd"/>
+    <schema name="var_Task22b4" prefix="var_Task22b4" override="true" src="data/schemas/var_Task22b4.xsd"/>
+    <schema name="var_Task232e" prefix="var_Task232e" override="true" src="data/schemas/var_Task232e.xsd"/>
+    <schema name="var_global_Task2556" prefix="var_global_Task2556" override="true" src="data/schemas/var_global_Task2556.xsd"/>
+    <schema name="var_Task2556" prefix="var_Task2556" override="true" src="data/schemas/var_Task2556.xsd"/>
+    <schema name="var_global_Task328d" prefix="var_global_Task328d" override="true" src="data/schemas/var_global_Task328d.xsd"/>
+    <schema name="var_Task328d" prefix="var_Task328d" override="true" src="data/schemas/var_Task328d.xsd"/>
+    <schema name="var_ParallelDocumentReview" prefix="var_ParallelDocumentReview" override="true" src="data/schemas/var_ParallelDocumentReview.xsd"/>
+    <schema name="var_Task375f" prefix="var_Task375f" override="true" src="data/schemas/var_Task375f.xsd"/>
+    <schema name="var_global_Task38e" prefix="var_global_Task38e" override="true" src="data/schemas/var_global_Task38e.xsd"/>
+    <schema name="var_Task38e" prefix="var_Task38e" override="true" src="data/schemas/var_Task38e.xsd"/>
+    <schema name="var_Task542" prefix="var_Task542" override="true" src="data/schemas/var_Task542.xsd"/>
+    <schema name="var_Task5c1" prefix="var_Task5c1" override="true" src="data/schemas/var_Task5c1.xsd"/>
+    <schema name="var_global_Task6d8" prefix="var_global_Task6d8" override="true" src="data/schemas/var_global_Task6d8.xsd"/>
+    <schema name="var_Task6d8" prefix="var_Task6d8" override="true" src="data/schemas/var_Task6d8.xsd"/>
+    <schema name="var_SerialDocumentReview" prefix="var_SerialDocumentReview" override="true" src="data/schemas/var_SerialDocumentReview.xsd"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <facet name="facet-var_global_Task2169">
+      <schema name="var_global_Task2169"/>
+    </facet>
+    <facet name="facet-var_Task2169">
+      <schema name="var_Task2169"/>
+    </facet>
+    <facet name="facet-var_Task21a0">
+      <schema name="var_Task21a0"/>
+    </facet>
+    <facet name="facet-var_Task2225">
+      <schema name="var_Task2225"/>
+    </facet>
+    <facet name="facet-var_Task22b4">
+      <schema name="var_Task22b4"/>
+    </facet>
+    <facet name="facet-var_Task232e">
+      <schema name="var_Task232e"/>
+    </facet>
+    <facet name="facet-var_global_Task2556">
+      <schema name="var_global_Task2556"/>
+    </facet>
+    <facet name="facet-var_Task2556">
+      <schema name="var_Task2556"/>
+    </facet>
+    <facet name="facet-var_global_Task328d">
+      <schema name="var_global_Task328d"/>
+    </facet>
+    <facet name="facet-var_Task328d">
+      <schema name="var_Task328d"/>
+    </facet>
+    <facet name="facet-var_ParallelDocumentReview">
+      <schema name="var_ParallelDocumentReview"/>
+    </facet>
+    <facet name="facet-var_Task375f">
+      <schema name="var_Task375f"/>
+    </facet>
+    <facet name="facet-var_global_Task38e">
+      <schema name="var_global_Task38e"/>
+    </facet>
+    <facet name="facet-var_Task38e">
+      <schema name="var_Task38e"/>
+    </facet>
+    <facet name="facet-var_Task542">
+      <schema name="var_Task542"/>
+    </facet>
+    <facet name="facet-var_Task5c1">
+      <schema name="var_Task5c1"/>
+    </facet>
+    <facet name="facet-var_global_Task6d8">
+      <schema name="var_global_Task6d8"/>
+    </facet>
+    <facet name="facet-var_Task6d8">
+      <schema name="var_Task6d8"/>
+    </facet>
+    <facet name="facet-var_SerialDocumentReview">
+      <schema name="var_SerialDocumentReview"/>
+    </facet>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.routing.service" point="routeModelImporter">
+    <template-resource id="ParallelDocumentReview" path="data/ParallelDocumentReview.zip"/>
+    <template-resource id="SerialDocumentReview" path="data/SerialDocumentReview.zip"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+    <filter id="filter@wf@ParallelDocumentReview">
+      <rule grant="true">
+        <permission>ReadWrite</permission>
+        <type>Audio</type>
+        <type>File</type>
+        <type>Note</type>
+        <type>Picture</type>
+        <type>Video</type>
+        <condition>#{!currentDocument.locked and currentDocument.currentLifeCycleState != 'approved' and !currentDocument.trashed}</condition>
+      </rule>
+      <rule grant="false">
+        <condition>document.isImmutable()</condition>
+      </rule>
+    </filter>
+    <filter id="filter@SerialDocumentReview">
+      <rule grant="true">
+        <permission>ReadWrite</permission>
+        <type>Audio</type>
+        <type>File</type>
+        <type>Note</type>
+        <type>Picture</type>
+        <type>Video</type>
+        <condition>#{currentDocument.currentLifeCycleState != 'approved' and !currentDocument.trashed}</condition>
+      </rule>
+      <rule grant="false">
+        <condition>document.isImmutable()</condition>
+      </rule>
+    </filter>
+  </extension>
+</component>

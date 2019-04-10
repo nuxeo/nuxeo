@@ -1,0 +1,84 @@
+<!--
+(C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+    Tiago Cardoso <tcardoso@nuxeo.com>
+    Miguel Nixo <mnixo@nuxeo.com>
+-->
+
+<!--
+`threed-view-layout`
+@group Nuxeo UI
+@element threed-view-layout
+-->
+<dom-module id="nuxeo-threed-view-layout">
+
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .attachments {
+        border-top: 1px dashed #ddd;
+        background-color: #fafafd;
+      }
+
+      .card-section {
+        @apply --paper-card;
+        padding: 1em;
+        margin: 0 22px 22px 0;
+      }
+    </style>
+
+    <nuxeo-3d-preview class="card-section" document="{{document}}"></nuxeo-3d-preview>
+    <nuxeo-3d-render-views class="card-section" document="{{document}}"></nuxeo-3d-render-views>
+    <nuxeo-3d-transmission-formats class="card-section" document="{{document}}"></nuxeo-3d-transmission-formats>
+    <nuxeo-document-attachments class="card-section attachments" document="{{document}}"></nuxeo-document-attachments>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-threed-view-layout',
+      properties: {
+        document: {
+          type: Object,
+          notify: true
+        }
+      },
+
+      behaviors: [Nuxeo.I18nBehavior],
+
+      listeners: {
+        '3d-viewer-coords-change': '_onViewerCoordsChange',
+        '3d-viewer-content-change': '_onViewerContentChange'
+      },
+
+      _getViewer: function() {
+        return !this.shadowRoot ? this.querySelector('#threedViewer') :
+          this.shadowRoot.querySelector('nuxeo-3d-preview').shadowRoot.querySelector('#threedViewer');
+      },
+
+      _onViewerCoordsChange: function(e) {
+        this._getViewer().set('sphericalCoords', [e.detail.azimuth, e.detail.zenith]);
+      },
+
+      _onViewerContentChange: function(e) {
+        this._getViewer().set('src', e.detail.content);
+      }
+    });
+  </script>
+
+</dom-module>

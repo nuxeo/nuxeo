@@ -1,0 +1,302 @@
+/*
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     Florent Guillaume
+ */
+package org.nuxeo.ecm.core.storage.sql;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
+import static org.mockito.Mockito.when;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_ID_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SECRET_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SESSION_TOKEN_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_PREFIX_PROPERTY;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.conn.ConnectionPoolTimeoutException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.blob.BlobInfo;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.binary.Binary;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mockito.MockitoFeature;
+import org.nuxeo.runtime.mockito.RuntimeService;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
+
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.SDKGlobalConfiguration;
+import com.amazonaws.SdkBaseException;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+
+/**
+ * ***** NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!! *****
+ * <p>
+ * This test must be run with at least the following system properties set:
+ * <ul>
+ * <li>nuxeo.s3storage.awsid (or AWS_ACCESS_KEY_ID environment variable)</li>
+ * <li>nuxeo.s3storage.awssecret (or AWS_SECRET_ACCESS_KEY environment variable)</li>
+ * </ul>
+ * <p>
+ * ***** NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!! *****
+ */
+@RunWith(FeaturesRunner.class)
+@Features({ RuntimeFeature.class, MockitoFeature.class })
+public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
+
+    @Mock
+    @RuntimeService
+    protected BlobManager blobManager;
+
+    protected S3BinaryManager binaryManager2;
+
+    @BeforeClass
+    public static void beforeClass() {
+
+        String envId = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.ACCESS_KEY_ENV_VAR),
+                System.getenv(SDKGlobalConfiguration.ALTERNATE_ACCESS_KEY_ENV_VAR));
+        String envSecret = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.SECRET_KEY_ENV_VAR),
+                System.getenv(SDKGlobalConfiguration.ALTERNATE_SECRET_KEY_ENV_VAR));
+        String envToken = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.AWS_SESSION_TOKEN_ENV_VAR),
+                "");
+
+        assumeTrue("AWS Credentials not set in the environment variables", StringUtils.isNoneBlank(envId, envSecret));
+
+        PROPERTIES = new HashMap<>();
+        PROPERTIES.put(AWS_ID_PROPERTY, envId);
+        PROPERTIES.put(AWS_SECRET_PROPERTY, envSecret);
+        PROPERTIES.put(AWS_SESSION_TOKEN_PROPERTY, envToken);
+        PROPERTIES.put(BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload");
+        PROPERTIES.put(BUCKET_PREFIX_PROPERTY, "testfolder/");
+        PROPERTIES.put(S3BinaryManager.BUCKET_REGION_PROPERTY, "eu-west-3");
+    }
+
+    @Before
+    public void doBefore() throws IOException {
+        binaryManager2 = getBinaryManager2();
+        when(blobManager.getBlobProvider("repo")).thenReturn(binaryManager);
+        when(blobManager.getBlobProvider("repo2")).thenReturn(binaryManager2);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        removeObjects();
+    }
+
+    @Override
+    public boolean isStorageSizeSameAsOriginalSize() {
+        return !binaryManager.isEncrypted;
+    }
+
+    @Test
+    public void testS3BinaryManagerOverwrite() throws Exception {
+        // store binary
+        Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
+        assertNotNull(binary);
+        assertEquals(CONTENT, toString(binary.getStream()));
+        assertNull(Framework.getProperty("cachedBinary"));
+
+        // store the same content again
+        Binary binary2 = binaryManager.getBinary(Blobs.createBlob(CONTENT));
+        assertNotNull(binary2);
+        assertEquals(CONTENT, toString(binary.getStream()));
+        // check that S3 bucked was not called for no valid reason
+        assertEquals(binary2.getDigest(), Framework.getProperty("cachedBinary"));
+    }
+
+    @Test
+    public void testS3MaxConnections() throws Exception {
+        PROPERTIES.put(S3BinaryManager.CONNECTION_MAX_PROPERTY, "1");
+        PROPERTIES.put(S3BinaryManager.CONNECTION_RETRY_PROPERTY, "0");
+        PROPERTIES.put(S3BinaryManager.CONNECTION_TIMEOUT_PROPERTY, "5000"); // 5s
+        try {
+            binaryManager = new S3BinaryManager();
+            binaryManager.initialize("repo", PROPERTIES);
+            doTestS3MaxConnections();
+        } finally {
+            PROPERTIES.remove(S3BinaryManager.CONNECTION_MAX_PROPERTY);
+            PROPERTIES.remove(S3BinaryManager.CONNECTION_RETRY_PROPERTY);
+            PROPERTIES.remove(S3BinaryManager.CONNECTION_TIMEOUT_PROPERTY);
+        }
+    }
+
+    protected void doTestS3MaxConnections() throws Exception {
+        // store binary
+        binaryManager.getBinary(Blobs.createBlob(CONTENT));
+
+        String key = binaryManager.bucketNamePrefix + CONTENT_MD5;
+        S3Object o = binaryManager.amazonS3.getObject(binaryManager.bucketName, key);
+        try {
+            binaryManager.amazonS3.getObject(binaryManager.bucketName, key);
+            fail("Should throw AmazonClientException");
+        } catch (AmazonClientException e) {
+            Throwable c = e.getCause();
+            assertTrue(c.getClass().getName(), c instanceof ConnectionPoolTimeoutException);
+        }
+        // abort reading stream to avoid WARN about incomplete read since AWS SDK 1.11.99
+        o.getObjectContent().abort();
+        o.close();
+    }
+
+    @Test
+    public void testCopy() throws IOException {
+        // put blob in first binary manager
+        Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
+        binary = binaryManager.getBinary(CONTENT_MD5);
+        try (InputStream stream = binary.getStream()) {
+            assertNotNull(stream);
+            assertEquals(CONTENT, toString(stream));
+        }
+        // check it's not visible in second binary manager
+        Binary binary2 = binaryManager2.getBinary(CONTENT_MD5);
+        try (InputStream stream2 = binary2.getStream()) {
+            assertNull(stream2);
+        }
+        // do copy into second binary manager
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = CONTENT_MD5;
+        Blob blob = binaryManager.readBlob(blobInfo);
+        binaryManager2.writeBlob(blob);
+        // check it's now been copied into second binary manager
+        binary2 = binaryManager2.getBinary(CONTENT_MD5);
+        try (InputStream stream2 = binary2.getStream()) {
+            assertNotNull(stream2);
+            assertEquals(CONTENT, toString(stream2));
+        }
+        // and it's still in the first binary manager
+        binary = binaryManager.getBinary(CONTENT_MD5);
+        try (InputStream stream = binary.getStream()) {
+            assertNotNull(stream);
+            assertEquals(CONTENT, toString(stream));
+        }
+    }
+
+    @Override
+    @Test
+    public void testBinaryManagerGC() throws Exception {
+        if (binaryManager.bucketNamePrefix.isEmpty()) {
+            // no additional test if no bucket name prefix
+            super.testBinaryManagerGC();
+            return;
+        }
+
+        // create a md5-looking extra file at the root
+        String digest = "12345678901234567890123456789012";
+        try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(1);
+            if (binaryManager.useServerSideEncryption) {
+                metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+            }
+            binaryManager.amazonS3.putObject(binaryManager.bucketName, digest, in, metadata);
+        }
+        // create a md5-looking extra file in a "subdirectory" of the bucket prefix
+        String digest2 = binaryManager.bucketNamePrefix + "subfolder/12345678901234567890123456789999";
+        try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(1);
+            if (binaryManager.useServerSideEncryption) {
+                metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+            }
+            binaryManager.amazonS3.putObject(binaryManager.bucketName, digest2, in, metadata);
+        }
+        // check that the files are here
+        assertEquals(new HashSet<>(Arrays.asList(digest, digest2)), listAllObjects());
+
+        // run base test with the bucket name prefix
+        super.testBinaryManagerGC();
+
+        // check that the extra files are still here
+        Set<String> res = listAllObjects();
+        assertTrue(res.contains(digest));
+        assertTrue(res.contains(digest2));
+    }
+
+    @Test
+    public void test1KB() throws SdkBaseException, InterruptedException, IOException {
+        test(1024);
+    }
+
+    @Test
+    public void test1MB() throws SdkBaseException, InterruptedException, IOException {
+        test(1024 * 1024);
+    }
+
+    @Test
+    public void test5MB() throws SdkBaseException, InterruptedException, IOException {
+        test(5 * 1024 * 1024);
+    }
+
+    @Test
+    public void test20MB() throws SdkBaseException, InterruptedException, IOException {
+        test(20 * 1024 * 1024);
+    }
+
+    protected void test(int size) throws SdkBaseException, InterruptedException, IOException {
+        Blob blob = new ByteArrayBlob(generateRandomBytes(size));
+        binaryManager.writeBlob(blob);
+    }
+
+    protected byte[] generateRandomBytes(int length) {
+        byte[] bytes = new byte[length];
+        new Random().nextBytes(bytes);
+        return bytes;
+    }
+
+    @Override
+    protected S3BinaryManager getBinaryManager() throws IOException {
+        S3BinaryManager binaryManager = new S3BinaryManager();
+        binaryManager.initialize("repo", PROPERTIES);
+        return binaryManager;
+    }
+
+    /** Other binary manager storing in a subfolder of the main one. */
+    protected S3BinaryManager getBinaryManager2() throws IOException {
+        Map<String, String> properties2 = new HashMap<>(PROPERTIES);
+        String prefix = properties2.get(S3BinaryManager.BUCKET_PREFIX_PROPERTY);
+        properties2.put(S3BinaryManager.BUCKET_PREFIX_PROPERTY, prefix + "transient/");
+        S3BinaryManager binaryManager2 = new S3BinaryManager();
+        binaryManager2.initialize("repo2", properties2);
+        return binaryManager2;
+    }
+
+}

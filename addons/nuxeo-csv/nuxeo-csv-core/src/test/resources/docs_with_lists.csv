@@ -1,0 +1,2 @@
+"name","type","dc:description","dc:title","listTest:string","listTest:double","listTest:date","listTest:integer","listTest:boolean"
+"mylistfile","ListFile","a list file","My List File","item1|item2","1.1|2.2","2013-12-21T00:00:00.000Z|2014-12-21T00:00:00.000Z","1|2","true|false"

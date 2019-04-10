@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.platform.TemplateSources.doctypes">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="documenttemplate" src="schemas/documenttemplate.xsd"
+      prefix="tmpl" />
+    <schema name="templatesupport" src="schemas/templatesupport.xsd"
+      prefix="nxts" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <facet name="Template" />
+
+    <facet name="TemplateBased">
+      <schema name="templatesupport" />
+    </facet>
+
+    <doctype name="TemplateSource" extends="Document">
+      <schema name="common"/>
+      <schema name="file"/>
+      <schema name="dublincore"/>
+      <schema name="uid"/>
+      <schema name="documenttemplate" />
+      <facet name="Downloadable"/>
+      <facet name="Versionable"/>
+      <facet name="Commentable"/>
+      <facet name="HasRelatedText"/>
+      <facet name="Template" />
+    </doctype>
+
+    <doctype name="TemplateBasedFile" extends="File">
+      <facet name="TemplateBased" />
+    </doctype>
+
+    <doctype name="Folder" append="true">
+      <subtypes>
+        <type>TemplateSource</type>
+      </subtypes>
+    </doctype>
+    <doctype name="Workspace" append="true">
+      <subtypes>
+        <type>TemplateSource</type>
+      </subtypes>
+    </doctype>
+    <doctype name="TemplateRoot" append="true">
+      <subtypes>
+        <type>TemplateSource</type>
+      </subtypes>
+    </doctype>
+
+  </extension>
+
+</component>

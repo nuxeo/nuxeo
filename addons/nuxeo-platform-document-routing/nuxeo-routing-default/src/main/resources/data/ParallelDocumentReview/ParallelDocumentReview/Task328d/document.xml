@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="Task328d">
+  <system>
+    <type>RouteNode</type>
+    <path>ParallelDocumentReview/Task328d</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>facet-var_Task328d</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:var_Task328d="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_Task328d" name="var_Task328d"></schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common"></schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:description><![CDATA[Thank you for aknowledging]]></dc:description>
+    <dc:title><![CDATA[wf.parallelDocumentReview.give_opinion.title]]></dc:title>
+  </schema>
+  <schema xmlns:rnode="http://www.nuxeo.org/ecm/schemas/route_node/" name="route_node">
+    <rnode:taskDocType><![CDATA[TaskDoc]]></rnode:taskDocType>
+    <rnode:taskButtons>
+      <button>
+        <filter><![CDATA[]]></filter>
+        <name><![CDATA[NA]]></name>
+        <label><![CDATA[wf.parallelDocumentReview.NA]]></label>
+        <validate><![CDATA[true]]></validate>
+      </button>
+      <button>
+        <filter><![CDATA[]]></filter>
+        <name><![CDATA[approve]]></name>
+        <label><![CDATA[wf.parallelDocumentReview.approve]]></label>
+        <validate><![CDATA[true]]></validate>
+      </button>
+      <button>
+        <filter><![CDATA[]]></filter>
+        <name><![CDATA[reject]]></name>
+        <label><![CDATA[wf.parallelDocumentReview.reject]]></label>
+        <validate><![CDATA[true]]></validate>
+      </button>
+    </rnode:taskButtons>
+    <rnode:transitions>
+      <transition>
+        <condition><![CDATA[true]]></condition>
+        <chain><![CDATA[NRD-AC-PR-storeTaskInfo]]></chain>
+        <targetId><![CDATA[Task2169]]></targetId>
+        <name><![CDATA[automaticTask328d]]></name>
+        <label><![CDATA[automatic]]></label>
+      </transition>
+    </rnode:transitions>
+    <rnode:taskLayout><![CDATA[Task328d@taskLayout]]></rnode:taskLayout>
+    <rnode:taskY><![CDATA[240]]></rnode:taskY>
+    <rnode:variablesFacet><![CDATA[facet-var_Task328d]]></rnode:variablesFacet>
+    <rnode:taskX><![CDATA[140]]></rnode:taskX>
+    <rnode:inputChain><![CDATA[]]></rnode:inputChain>
+    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
+    <rnode:hasMultipleTasks><![CDATA[true]]></rnode:hasMultipleTasks>
+    <rnode:taskNotificationTemplate><![CDATA[workflowTaskAssigned]]></rnode:taskNotificationTemplate>
+    <rnode:allowTaskReassignment><![CDATA[true]]></rnode:allowTaskReassignment>
+    <rnode:stop><![CDATA[false]]></rnode:stop>
+    <rnode:taskAssignees/>
+    <rnode:taskDueDateExpr><![CDATA[WorkflowVariables["end_date"]]]></rnode:taskDueDateExpr>
+    <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
+    <rnode:escalationRules>
+      <escalation_rule>
+        <condition><![CDATA[Fn.date(WorkflowVariables["end_date"]).days(1).calendar.compareTo(CurrentDate.calendar)<0]]></condition>
+        <chain><![CDATA[NRD-AC-PR-force-validate]]></chain>
+        <name><![CDATA[forceNext]]></name>
+        <multipleExecution><![CDATA[false]]></multipleExecution>
+      </escalation_rule>
+    </rnode:escalationRules>
+    <rnode:outputChain><![CDATA[]]></rnode:outputChain>
+    <rnode:taskDirective><![CDATA[wf.parallelDocumentReview.give_opinion.directive]]></rnode:taskDirective>
+    <rnode:taskAssigneesExpr><![CDATA[WorkflowVariables["participants"]]]></rnode:taskAssigneesExpr>
+    <rnode:nodeId><![CDATA[Task328d]]></rnode:nodeId>
+    <rnode:start><![CDATA[false]]></rnode:start>
+    <rnode:taskAssigneesPermission><![CDATA[Read]]></rnode:taskAssigneesPermission>
+  </schema>
+</document>
