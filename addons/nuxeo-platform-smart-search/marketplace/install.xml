@@ -1,0 +1,20 @@
+<install>
+  <copy file="${package.root}/nuxeo-platform-smart-query-api-5.4.2-SNAPSHOT.jar"
+    todir="${env.bundles}" overwrite="true" />
+  <deploy
+    file="${env.bundles}/nuxeo-platform-smart-query-api-5.4.2-SNAPSHOT.jar" />
+  <copy file="${package.root}/nuxeo-platform-smart-query-jsf-5.4.2-SNAPSHOT.jar"
+    todir="${env.bundles}" overwrite="true" />
+  <deploy
+    file="${env.bundles}/nuxeo-platform-smart-query-jsf-5.4.2-SNAPSHOT.jar" />
+  <copy
+    file="${package.root}/nuxeo-platform-smart-folder-core-5.4.2-SNAPSHOT.jar"
+    todir="${env.bundles}" overwrite="true" />
+  <deploy
+    file="${env.bundles}/nuxeo-platform-smart-folder-core-5.4.2-SNAPSHOT.jar" />
+  <copy
+    file="${package.root}/nuxeo-platform-smart-folder-jsf-5.4.2-SNAPSHOT.jar"
+    todir="${env.bundles}" overwrite="true" />
+  <deploy
+    file="${env.bundles}/nuxeo-platform-smart-folder-jsf-5.4.2-SNAPSHOT.jar" />
+</install>
