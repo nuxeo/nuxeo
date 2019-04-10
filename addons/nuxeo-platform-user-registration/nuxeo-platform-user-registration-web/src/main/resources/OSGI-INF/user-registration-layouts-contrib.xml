@@ -1,0 +1,508 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.registration.layouts.contrib">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.base</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+             point="layouts">
+
+    <layout name="user_requests_listing_layout">
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <templates>
+        <template mode="any">/layouts/layout_listing_ajax_template.xhtml</template>
+      </templates>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="isListingSelectionBoxWithCurrentDocument">
+              true
+            </property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="isHidden">false</property>
+          </properties>
+          <widget>listing_ajax_selection_box_with_current_document</widget>
+        </column>
+
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">userinfo:login</property>
+          </properties>
+          <widget>user_request_login</widget>
+        </column>
+
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">userinfo:email</property>
+          </properties>
+          <widget>user_request_email</widget>
+        </column>
+
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">userinfo:firstName</property>
+          </properties>
+          <widget>user_request_firstName</widget>
+        </column>
+
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">userinfo:lastName</property>
+          </properties>
+          <widget>user_request_lastName</widget>
+        </column>
+
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">userinfo:groups</property>
+          </properties>
+          <widget>user_request_groups</widget>
+        </column>
+
+        <column name="creation_date">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:created</property>
+            <property name="label">label.dublincore.created</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_creation_date</widget>
+        </column>
+
+        <column name="ace_begin">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">docinfo:begin</property>
+            <property name="label">label.permissions.from</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_ace_begin</widget>
+        </column>
+
+        <column name="ace_end">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">docinfo:end</property>
+            <property name="label">label.permissions.to</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_ace_end</widget>
+        </column>
+
+        <column name="lifecycle">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">
+              ecm:currentLifeCycleState
+            </property>
+            <property name="label">
+              label.content.header.currentLifecycleState
+            </property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_lifecycle</widget>
+        </column>
+
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+          </properties>
+          <widget>user_request_accept</widget>
+        </column>
+
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+          </properties>
+          <widget>user_request_reject</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="multiple_user_invitation_info">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>multiple_request_emails</widget>
+        </row>
+        <row>
+          <widget>doc_request_permission</widget>
+        </row>
+        <row>
+          <widget>user_request_comment</widget>
+        </row>
+        <row>
+          <widget>user_request_copy_owner</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="user_invitation_info">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>user_request_email</widget>
+        </row>
+        <row>
+          <widget>user_request_login</widget>
+        </row>
+        <row>
+          <widget>user_request_firstName</widget>
+        </row>
+        <row>
+          <widget>user_request_lastName</widget>
+        </row>
+        <row>
+          <widget>doc_request_permission</widget>
+        </row>
+        <row>
+          <widget>doc_request_date_range</widget>
+        </row>
+        <row>
+          <widget>user_request_group</widget>
+        </row>
+        <row>
+          <widget>user_request_comment</widget>
+        </row>
+        <row>
+          <widget>user_request_copy_owner</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="user_request_configuration">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>request_config_allowUserCreation</widget>
+        </row>
+        <row>
+          <widget>request_config_forceRight</widget>
+        </row>
+        <row>
+          <widget>request_config_allowDirectValidationForExistingUser</widget>
+        </row>
+        <row>
+          <widget>request_config_displayLocalRegistration</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+             point="widgets">
+
+    <widget name="listing_ace_begin" type="datetime">
+      <labels>
+        <label mode="any">label.permissions.from</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.docinfo.begin</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
+      </properties>
+      <properties mode="csv">
+        <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
+        <property name="csv_forceType">date</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_ace_end" type="datetime">
+      <labels>
+        <label mode="any">label.permissions.to</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.docinfo.end</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
+      </properties>
+      <properties mode="csv">
+        <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
+        <property name="csv_forceType">date</property>
+      </properties>
+    </widget>
+
+    <widget name="request_config_allowUserCreation" type="checkbox">
+      <labels>
+        <label mode="any">label.registration.config.allowUserCreation</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.registration.config.help.allowUserCreation</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>registrationconfiguration:allowUserCreation</field>
+      </fields>
+    </widget>
+
+    <widget name="request_config_allowDirectValidationForExistingUser" type="checkbox">
+      <labels>
+        <label mode="any">label.registration.config.allowDirectValidationForExistingUser</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.registration.config.help.allowDirectValidationForExistingUser</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>registrationconfiguration:allowDirectValidationForExistingUser</field>
+      </fields>
+    </widget>
+
+    <widget name="request_config_forceRight" type="checkbox">
+      <labels>
+        <label mode="any">label.registration.config.forceRightAssignment</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.registration.config.help.forceRightAssignment</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>registrationconfiguration:forceRightAssignment</field>
+      </fields>
+    </widget>
+
+    <widget name="request_config_displayLocalRegistration" type="checkbox">
+      <labels>
+        <label mode="any">label.registration.config.displayLocalRegistrationTab</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.registration.config.help.displayLocalRegistrationTab</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>registrationconfiguration:displayLocalRegistrationTab</field>
+      </fields>
+    </widget>
+
+    <widget name="user_request_login" type="text">
+      <labels>
+        <label mode="any">label.userinfo.login</label>
+      </labels>
+      <fields>
+        <field>data.userinfo.login</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+        <property name="validator">
+          #{userRegistrationActions.validateUsernameEmail}
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="user_request_firstName" type="text">
+      <labels>
+        <label mode="any">label.userinfo.firstName</label>
+      </labels>
+      <fields>
+        <field>data.userinfo.firstName</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="user_request_lastName" type="text">
+      <labels>
+        <label mode="any">label.userinfo.lastName</label>
+      </labels>
+      <fields>
+        <field>data.userinfo.lastName</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="user_request_groups" type="multipleUsersSuggestion">
+      <labels>
+        <label mode="any">label.userinfo.groups</label>
+      </labels>
+      <fields>
+        <field>data.userinfo.groups</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="user_request_email" type="text">
+      <labels>
+        <label mode="any">label.userinfo.email</label>
+      </labels>
+      <fields>
+        <field>data.userinfo.email</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="doc_request_permission" type="template">
+      <labels>
+        <label mode="any">label.docinfo.permission</label>
+      </labels>
+      <fields>
+        <field>data.docinfo.permission</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+      <properties widgetMode="any">
+        <property name="template">/widgets/user_request_rights_widget_template.xhtml</property>
+      </properties>
+    </widget>
+
+    <widget name="doc_request_date_range" type="datetimeRange">
+      <labels>
+        <label mode="any">label.request.date.range</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.request.help.range</label>
+      </helpLabels>
+      <fields>
+        <field>data.docinfo.begin</field>
+        <field>data.docinfo.end</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="multiple_request_emails" type="textarea">
+      <labels>
+        <label mode="any">label.request.multiple.emails</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.request.help.multiple.emails</label>
+      </helpLabels>
+      <fields>
+        <field>data.multipleEmails</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+        <property name="required">true</property>
+        <property name="validator">
+          #{userRegistrationActions.validateMultipleUser}
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="user_request_copy_owner" type="checkbox">
+      <labels>
+        <label mode="any">label.request.copyOwner</label>
+      </labels>
+      <fields>
+        <field>data.copyOwner</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="user_request_group" type="multipleUsersSuggestion">
+      <labels>
+        <label mode="any">label.request.groups</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.userinfo.groups</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit">
+          #{nxu:test(webActions.checkFilter('usersGroupsManagementAccess'),
+          'edit', 'view')}
+        </mode>
+        <mode value="editPassword">hidden</mode>
+      </widgetModes>
+      <properties widgetMode="any">
+        <property name="userSuggestionSearchType">GROUP_TYPE</property>
+        <property name="hideAdminGroups">true</property>
+        <property name="hidePowerUsersGroup">true</property>
+      </properties>
+    </widget>
+
+    <widget name="user_request_comment" type="textarea">
+      <labels>
+        <label mode="any">label.request.comment</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.request.help.comment</label>
+      </helpLabels>
+      <fields>
+        <field>data.comment</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="user_request_accept" type="template">
+      <labels>
+        <label mode="any">command.userrequest.accept</label>
+      </labels>
+      <widgetModes>
+        <mode value="any">#{currentUser.isAdministrator() ? 'edit' : 'hidden'}</mode>
+      </widgetModes>
+      <fields>
+        <field>data</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/user_request_accept_widget_template.xhtml</property>
+      </properties>
+    </widget>
+
+    <widget name="user_request_reject" type="template">
+      <labels>
+        <label mode="any">command.userrequest.reject</label>
+      </labels>
+      <widgetModes>
+        <mode value="any">#{currentUser.isAdministrator() ? 'edit' : 'hidden'}</mode>
+      </widgetModes>
+      <fields>
+        <field>data</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/user_request_reject_widget_template.xhtml</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+</component>
