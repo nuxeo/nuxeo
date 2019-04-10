@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent.testContrib4">
+
+  <extension target="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent"
+    point="mapping">
+
+    <mapping>
+
+        <targetContainerType>Workspace</targetContainerType>
+        <targetLeafType>Picture</targetLeafType>
+
+        <fieldMappings>
+            <fieldMapping sourceXPath="//string[@name='Devise']" sourceAttribute="value" targetXPath="invoice:currency" targetType="string"/>
+            <fieldMapping sourceXPath="//float[@name='TotalTtc']" sourceAttribute="value" targetXPath="invoice:amount" targetType="double"/>
+        </fieldMappings>
+
+        <blobMappings>
+            <blobMapping sourceXPath="//file/content" sourcePathAttribute="filepath" sourceFilenameAttribute="name" ></blobMapping>
+        </blobMappings>
+    </mapping>
+
+  </extension>
+
+</component>

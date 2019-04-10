@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.opencmis.tests.securitypolicy3">
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="policies">
+    <policy name="testTitleFiltering"
+      class="org.nuxeo.ecm.core.opencmis.impl.TitleFilteringSecurityPolicy3" />
+  </extension>
+
+</component>

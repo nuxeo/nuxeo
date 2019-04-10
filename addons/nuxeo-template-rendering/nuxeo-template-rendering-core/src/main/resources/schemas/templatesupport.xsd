@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/nxts/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxts="http://www.nuxeo.org/ecm/schemas/nxts/"
+  >
+
+  <xs:element name="bindings" type="nxts:templates"/>
+
+  <xs:simpleType name="longString">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="65536" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="template">
+    <xs:sequence>
+      <xs:element name="templateName" type="xs:string"/>
+      <xs:element name="templateId" type="xs:string"/>
+      <xs:element name="templateData" type="nxts:longString"/>
+      <xs:element name="useMainContentAsTemplate" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="templates">
+    <xs:sequence>
+      <xs:element name="templateEntry" type="nxts:template" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
+
+  <filter>
+    <display-name>Nuxeo Authentication Filter</display-name>
+    <filter-name>NuxeoAuthenticationFilter</filter-name>
+    <filter-class>org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>NuxeoAuthenticationFilter</filter-name>
+    <url-pattern>/api/v1/drive/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+  </filter-mapping>
+
+  <servlet>
+    <servlet-name>Nuxeo Drive Configuration Servlet</servlet-name>
+    <servlet-class>org.nuxeo.drive.servlet.NuxeoDriveConfigurationServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Nuxeo Drive Configuration Servlet</servlet-name>
+    <url-pattern>/api/v1/drive/configuration</url-pattern>
+  </servlet-mapping>
+
+</web-app>
