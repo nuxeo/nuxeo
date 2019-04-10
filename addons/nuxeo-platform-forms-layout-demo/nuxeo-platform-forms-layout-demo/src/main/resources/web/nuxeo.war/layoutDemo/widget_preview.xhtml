@@ -1,0 +1,61 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<c:if test="#{not currentWidgetType.previewEnabled}">
+  Preview is not enabled for this widget type.
+</c:if>
+
+<c:if test="#{currentWidgetType.previewEnabled}">
+
+  <div class="tabsBar subtabsBar">
+
+    <ul>
+      <c:if test="#{not currentWidgetType.previewHideViewMode}">
+        <li class="#{nxu:test(empty layoutDemoCurrentSubTabId, 'selected', '')}">
+          <a href="#{baseURL}#{currentWidgetType.url}/preview">
+            #{messages['label.layoutDemo.widgetDemo.viewMode']}
+          </a>
+        </li>
+      </c:if>
+      <c:if test="#{not currentWidgetType.previewHideEditMode}">
+      <li class="#{nxu:test(layoutDemoCurrentSubTabId == 'edit_mode', 'selected', '')}">
+        <a href="#{baseURL}#{currentWidgetType.url}/preview/edit_mode">
+          #{messages['label.layoutDemo.widgetDemo.editMode']}
+        </a>
+      </li>
+      </c:if>
+    </ul>
+  </div>
+  <div style="clear:both"></div>
+  <div class="tabsContent">
+
+    <c:if test="#{empty layoutDemoCurrentSubTabId and not currentWidgetType.previewHideViewMode}">
+
+      <ui:decorate template="/layoutDemo/widget_preview_template.xhtml">
+        <ui:param name="widgetPreviewMode" value="view" />
+        <ui:param name="widgetPreviewLayoutDef" value="#{viewPreviewLayoutDef}" />
+      </ui:decorate>
+
+    </c:if>
+
+    <c:if test="#{not currentWidgetType.previewHideEditMode}">
+    <c:if test="#{(empty layoutDemoCurrentSubTabId and currentWidgetType.previewHideViewMode) or layoutDemoCurrentSubTabId == 'edit_mode'}">
+
+      <ui:decorate template="/layoutDemo/widget_preview_template.xhtml">
+        <ui:param name="widgetPreviewMode" value="edit" />
+        <ui:param name="widgetPreviewLayoutDef" value="#{editPreviewLayoutDef}" />
+      </ui:decorate>
+
+    </c:if>
+    </c:if>
+
+  </div>
+
+</c:if>
+
+</div>
