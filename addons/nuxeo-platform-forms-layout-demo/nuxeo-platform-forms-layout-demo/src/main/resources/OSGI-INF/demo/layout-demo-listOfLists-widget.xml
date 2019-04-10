@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.listOfListsWidget.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="listOfListsWidgetLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>listOfListsWidget</widget>
+        </row>
+      </rows>
+      <widget name="listOfListsWidget" type="list">
+        <labels>
+          <label mode="any">List of lists</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:listOfLists</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="diff">true</property>
+          <property name="orderable">true</property>
+        </properties>
+        <properties widgetMode="any">
+          <property name="display">#{param.display}</property>
+        </properties>
+        <!-- subwidgets for complex -->
+        <subWidgets>
+          <widget name="stringItem" type="text">
+            <fields>
+              <field>stringItem</field>
+            </fields>
+            <helpLabels>
+              <label mode="any">String item help</label>
+            </helpLabels>
+            <labels>
+              <label mode="any">String item</label>
+            </labels>
+          </widget>
+          <widget name="stringArrayItem" type="selectManyDirectory">
+            <fields>
+              <field>stringArrayItem</field>
+            </fields>
+            <labels>
+              <label mode="any">String array item</label>
+            </labels>
+            <properties mode="any">
+              <property name="directoryName">layout_demo_crew</property>
+            </properties>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+              <property name="styleClass">dataInputText</property>
+            </properties>
+          </widget>
+          <widget name="stringListItem" type="list">
+            <fields>
+              <field>stringListItem</field>
+            </fields>
+            <labels>
+              <label mode="any">String list item</label>
+            </labels>
+            <properties mode="any">
+              <!-- Since 5.6, use the standard "list" widget type, but
+                add the sub property name as template to allow resolving the
+                new item to add -->
+              <!--
+                <property name="template">
+                /widgets/list_subwidget_template.xhtml
+                </property>
+              -->
+              <property name="listTemplateItem">
+                #{nxd:propertyDefaultValue('lds:listOfLists/stringListItem')}
+              </property>
+            </properties>
+            <properties widgetMode="any">
+              <property name="hideSubLabels">true</property>
+              <property name="orderable">true</property>
+            </properties>
+            <subWidgets>
+              <widget name="stringListSubItem" type="text">
+                <fields>
+                  <field>#{value}</field>
+                  <!-- equivalent field definition alternative:
+                    <field></field>
+                  -->
+                </fields>
+              </widget>
+            </subWidgets>
+          </widget>
+          <widget name="stringListItem2" type="list">
+            <fields>
+              <field>stringListItem2</field>
+            </fields>
+            <labels>
+              <label mode="any">String list item 2</label>
+            </labels>
+            <properties mode="any">
+              <property name="listTemplateItem">
+                #{nxd:propertyDefaultValue('lds:listOfLists/stringListItem2')}
+              </property>
+            </properties>
+            <properties widgetMode="any">
+              <property name="display">table</property>
+              <property name="hideSubLabels">true</property>
+              <property name="orderable">true</property>
+            </properties>
+            <subWidgets>
+              <widget name="stringListSubItem2" type="text">
+                <fields>
+                  <field></field>
+                </fields>
+              </widget>
+            </subWidgets>
+          </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>

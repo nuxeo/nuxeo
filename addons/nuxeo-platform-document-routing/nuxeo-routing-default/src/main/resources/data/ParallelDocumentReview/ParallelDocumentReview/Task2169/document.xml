@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="Task2169">
+  <system>
+    <type>RouteNode</type>
+    <path>ParallelDocumentReview/Task2169</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>facet-var_Task2169</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:creator/>
+    <dc:source/>
+    <dc:nature/>
+    <dc:contributors/>
+    <dc:created/>
+    <dc:description><![CDATA[Thank you for validating the document]]></dc:description>
+    <dc:rights/>
+    <dc:subjects/>
+    <dc:publisher/>
+    <dc:valid/>
+    <dc:format/>
+    <dc:issued/>
+    <dc:modified/>
+    <dc:language/>
+    <dc:coverage/>
+    <dc:expired/>
+    <dc:lastContributor/>
+    <dc:title><![CDATA[wf.parallelDocumentReview.consolidate.title]]></dc:title>
+  </schema>
+  <schema xmlns:var_Task2169="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_Task2169" name="var_Task2169">
+    <var_Task2169:assignees/>
+    <var_Task2169:comment/>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon/>
+    <common:icon-expanded/>
+  </schema>
+  <schema xmlns:rnode="http://www.nuxeo.org/ecm/schemas/route_node/" name="route_node">
+    <rnode:lastActor/>
+    <rnode:canceled/>
+    <rnode:taskLayout><![CDATA[Task2169@taskLayout]]></rnode:taskLayout>
+    <rnode:taskButtons>
+      <button>
+        <name><![CDATA[reject]]></name>
+        <label><![CDATA[wf.parallelDocumentReview.reject]]></label>
+        <filter><![CDATA[]]></filter>
+      </button>
+      <button>
+        <name><![CDATA[validate]]></name>
+        <label><![CDATA[wf.parallelDocumentReview.approve]]></label>
+        <filter><![CDATA[]]></filter>
+      </button>
+    </rnode:taskButtons>
+    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
+    <rnode:stop><![CDATA[false]]></rnode:stop>
+    <rnode:button/>
+    <rnode:taskDocType><![CDATA[TaskDoc]]></rnode:taskDocType>
+    <rnode:start><![CDATA[false]]></rnode:start>
+    <rnode:startDate/>
+    <rnode:taskNotificationTemplate><![CDATA[workflowTaskAssigned]]></rnode:taskNotificationTemplate>
+    <rnode:transitions>
+      <transition>
+        <chain><![CDATA[validateDocument]]></chain>
+        <condition><![CDATA[NodeVariables["button"] =="validate"]]></condition>
+        <name><![CDATA[prl_validateTask2169]]></name>
+        <targetId><![CDATA[Task22b4]]></targetId>
+        <label><![CDATA[prl_validate]]></label>
+      </transition>
+      <transition>
+        <chain><![CDATA[]]></chain>
+        <condition><![CDATA[NodeVariables["button"] =="reject"]]></condition>
+        <name><![CDATA[prl_rejectTask2169]]></name>
+        <targetId><![CDATA[Task232e]]></targetId>
+        <label><![CDATA[prl_reject]]></label>
+      </transition>
+    </rnode:transitions>
+    <rnode:nodeId><![CDATA[Task2169]]></rnode:nodeId>
+    <rnode:hasMultipleTasks><![CDATA[false]]></rnode:hasMultipleTasks>
+    <rnode:outputChain><![CDATA[NRD-AC-PR-ValidateNode-Output]]></rnode:outputChain>
+    <rnode:merge/>
+    <rnode:subRouteVariables/>
+    <rnode:taskAssignees/>
+    <rnode:taskAssigneesExpr><![CDATA[workflowInitiator]]></rnode:taskAssigneesExpr>
+    <rnode:taskY><![CDATA[320]]></rnode:taskY>
+    <rnode:count/>
+    <rnode:taskX><![CDATA[360]]></rnode:taskX>
+    <rnode:taskAssigneesPermission><![CDATA[ReadWrite]]></rnode:taskAssigneesPermission>
+    <rnode:subRouteInstanceId/>
+    <rnode:taskDueDateExpr><![CDATA[CurrentDate.days(5)]]></rnode:taskDueDateExpr>
+    <rnode:variablesFacet><![CDATA[facet-var_Task2169]]></rnode:variablesFacet>
+    <rnode:tasksInfo/>
+    <rnode:endDate/>
+    <rnode:allowTaskReassignment><![CDATA[true]]></rnode:allowTaskReassignment>
+    <rnode:taskDueDate/>
+    <rnode:inputChain><![CDATA[]]></rnode:inputChain>
+    <rnode:taskDescription/>
+    <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
+    <rnode:taskDirective><![CDATA[wf.parallelDocumentReview.consolidate.directive]]></rnode:taskDirective>
+    <rnode:subRouteModelExpr/>
+    <rnode:escalationRules/>
+  </schema>
+</document>

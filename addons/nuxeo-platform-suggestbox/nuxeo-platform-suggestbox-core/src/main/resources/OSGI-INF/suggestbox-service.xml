@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.suggestbox.service.SuggestionService">
+  <require>org.nuxeo.ecm.core.api.repository.RepositoryManager</require>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.suggestbox.service.SuggestionServiceImpl" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.suggestbox.service.SuggestionService" />
+  </service>
+
+  <documentation>
+    The SuggestionService provides a pluggable way to
+    generate explicit suggestions for user actions / intents based on
+    contextual text user input and the content of repositories and user
+    directories for instance.
+
+    The default use-case is to implement the
+    auto-suggest feature in the top right search box of the Nuxeo DM
+    user interface for quick keyboard based navigation in the
+    repository.
+  </documentation>
+
+  <extension-point name="suggesters">
+
+    <documentation>
+      Extension point for registering named suggester
+      implementations and
+      their parameters.
+
+      Suggester implementations
+      should implement the
+      "org.nuxeo.ecm.platform.suggestbox.service.Suggester" interface.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor" />
+
+  </extension-point>
+
+  <extension-point name="suggesterGroups">
+
+    <documentation>
+      Extension point for assembling several named
+      suggesters into a named aggregate user interface element.
+
+      For instance the top right search box can use a specific
+      global search-centric SuggesterGroup.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterGroupDescriptor" />
+  </extension-point>
+
+  <extension-point name="suggestionHandlers">
+
+    <documentation>
+      Extension point for registering Content Automation
+      Operations or Chains as handler for the suggestion selected by the
+      user (for a given group and suggestion type).
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggestionHandlerDescriptor" />
+  </extension-point>
+
+</component>
