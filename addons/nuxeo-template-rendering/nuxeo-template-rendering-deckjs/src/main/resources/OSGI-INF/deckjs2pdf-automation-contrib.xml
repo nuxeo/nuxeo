@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.template.deckjs.automation.contrib">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+    <operation
+      class="org.nuxeo.template.deckjs.DeckJSPDFOperation" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="deckJs2PDF">
+      <operation id="Blob.DeckJSToPDF"/>
+    </chain>
+  </extension>
+
+</component>
