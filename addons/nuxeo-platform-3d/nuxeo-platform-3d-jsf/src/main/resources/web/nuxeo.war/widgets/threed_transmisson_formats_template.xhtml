@@ -1,0 +1,154 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:nxu="http://nuxeo.org/nxweb/util"
+     class="content_block">
+
+  <c:if test="#{fieldOrValue.hasFacet('ThreeD')}">
+    <style type="text/css">
+      #tf-icon {
+        height: 16px;
+        color: #eee;
+      }
+
+      .format {
+        display: inline-block;
+        width: 100%;
+      }
+
+      .format-name {
+        float: left;
+        width: 25%;
+      }
+
+      .format-limits {
+        float: left;
+        height: 100%;
+        width: 38%;
+      }
+
+      .format-sizes {
+        float: left;
+        height: 100%;
+        width: 28%;
+      }
+
+      .format-button {
+        float: left;
+        width: 4%;
+      }
+    </style>
+    <c:if test="#{!empty widget.label and widget.handlingLabels}">
+      <ui:include src="/widgets/incl/widget_label_template.xhtml">
+        <ui:param name="labelStyleClass" value="summaryTitle"/>
+      </ui:include>
+    </c:if>
+
+    <nxu:set var="isConverting" value="#{transmissionFormatActions.isConvertingFormats(fieldOrValue)}"/>
+    <nxu:set var="hasTransmissionFormats" value="#{!transmissionFormatActions.getItems(fieldOrValue).isEmpty()}"/>
+    <c:choose>
+      <c:when test="#{isConverting}">
+        <p>#{messages['label.widget.threed.transmission_formats.converting']}</p>
+      </c:when>
+      <c:when test="#{!hasTransmissionFormats}">
+        <p>#{messages['label.widget.threed.transmission_formats.none']}</p>
+      </c:when>
+      <c:otherwise>
+        <table width="100%" cellspacing="0">
+          <tbody>
+          <c:forEach var="item" items="#{transmissionFormatActions.getItems(fieldOrValue)}"
+                     varStatus="status">
+            <tr class="format">
+
+              <td class="format-name">
+                <strong>#{item.name}</strong>
+              </td>
+              <td class="format-limits">
+                <h:panelGrid columns="1">
+                  <h:panelGrid columns="4">
+                    <h:graphicImage class="tf-icon" url="/icons/ic_details_black_24px.svg"/>
+                    <c:if test="#{!empty item.percPoly}">
+                      #{item.percPoly} %
+                    </c:if>
+                    <c:if test="#{!empty item.maxPoly and !empty item.percPoly}">
+                      <pre>|</pre>
+                    </c:if>
+                    <c:if test="#{!empty item.maxPoly}">
+                      &lt; #{item.maxPoly} #{messages['label.widget.threed.unit.polygons']}
+                    </c:if>
+                  </h:panelGrid>
+                  <c:choose>
+                    <c:when test="#{item.hasTextures}">
+                      <h:panelGrid columns="4">
+                        <h:graphicImage class="tf-icon" url="/icons/ic_image_black_24px.svg"/>
+                        <c:if test="#{!empty item.percTex}">
+                          #{item.percTex} %
+                        </c:if>
+                        <c:if test="#{!empty item.maxTex and !empty item.percTex}">
+                          <pre>|</pre>
+                        </c:if>
+                        <c:if test="#{!empty item.maxTex}">
+                          &lt; #{item.maxTex}
+                        </c:if>
+                      </h:panelGrid>
+                    </c:when>
+                  </c:choose>
+                </h:panelGrid>
+              </td>
+              <td class="format-sizes">
+                <h:panelGrid columns="1">
+                  <h:panelGrid columns="2">
+                    <c:choose>
+                      <c:when test="#{item.geometryLodSuccess}">
+                        <h:graphicImage class="tf-icon" url="/icons/ic_done_black_24px.svg"/>
+                      </c:when>
+                      <c:otherwise>
+                        <h:graphicImage class="tf-icon" url="/icons/ic_warning_black_24px.svg"/>
+                      </c:otherwise>
+                    </c:choose>
+                    #{item.polygons} #{messages['label.widget.threed.unit.polygons']}
+                  </h:panelGrid>
+                  <c:choose>
+                    <c:when test="#{item.hasTextures}">
+                      <h:panelGrid columns="2">
+                        <c:choose>
+                          <c:when test="#{item.textureLodSuccess}">
+                            <h:graphicImage class="tf-icon" url="/icons/ic_done_black_24px.svg"/>
+                          </c:when>
+                          <c:otherwise>
+                            <h:graphicImage class="tf-icon" url="/icons/ic_warning_black_24px.svg"/>
+                          </c:otherwise>
+                        </c:choose>
+                        #{item.textureSize}
+                      </h:panelGrid>
+                    </c:when>
+                  </c:choose>
+                </h:panelGrid>
+              </td>
+              <td class="format-button">
+                <h:outputLink value="javascript:NX3D.show3DFormat('#{item.src}')">
+                  <h:graphicImage url="/icons/contextual_menu/preview.png"/>
+                </h:outputLink>
+              </td>
+              <td class="format-button">
+                <h:outputLink value="#{item.src}">
+                  <h:graphicImage url="/icons/download.png"/>
+                </h:outputLink>
+              </td>
+
+            </tr>
+          </c:forEach>
+          </tbody>
+        </table>
+        <h:outputScript target="#{pageJsTarget}">
+          NX3D = {
+            show3DFormat: function (src) {
+              document.querySelector('nuxeo-3d-viewer').setAttribute('src', src);
+            }
+          }
+        </h:outputScript>
+      </c:otherwise>
+    </c:choose>
+
+  </c:if>
+</div>

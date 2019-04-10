@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.threed.jsf.types">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <type id="ThreeD">
+      <label>3D</label>
+      <default-view>view_documents</default-view>
+      <icon>/icons/3d.png</icon>
+      <bigIcon>/icons/3d_big.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>ThreeD.description</description>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="drive">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+    </type>
+    
+  </extension>
+
+</component>

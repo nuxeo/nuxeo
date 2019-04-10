@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.liveconnect.onedrive.jsf.theme">
+
+  <require>org.nuxeo.theme.nuxeo.webapp</require>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
+    <bundle name="nuxeo_includes">
+      <resources append="true">
+        <resource>onedrive-file-picker.js</resource>
+        <resource>onedrive-file-picker.css</resource>
+        <resource>onedriveclient.js</resource>
+      </resources>
+    </bundle>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+    <resource name="onedrive-file-picker.js">
+      <path>nxthemes/html/scripts/onedrive-file-picker.js</path>
+    </resource>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+    <resource name="onedrive-file-picker.css">
+      <path>nxthemes/html/styles/onedrive-file-picker.css</path>
+    </resource>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+    <resource name="onedriveclient.js">
+      <path>nxthemes/html/scripts/onedriveclient.js</path>
+    </resource>
+  </extension>
+
+</component>
