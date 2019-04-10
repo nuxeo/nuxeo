@@ -1,0 +1,22 @@
+<component name="org.nuxeo.ecm.platform.routing.audit"
+  version="1.0">
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+    point="event">
+    <event name="auditLogRoute" />
+  </extension>
+  <extension point="extendedInfo"
+    target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
+    <extendedInfo expression="#{message.properties.attachDocumentID}"
+      key="attachDocumentID" />
+    <extendedInfo expression="#{source.name}" key="workflowName" />
+    <extendedInfo expression="#{source.description}" key="workflowDescription" />
+    <extendedInfo expression="#{source.getDocument().dublincore.creator}"
+      key="workflowInitiator" />
+    <extendedInfo
+      expression="#{source.getDocument().getPropertyValue('rnode:startDate')}"
+      key="workflowStartDate" />
+    <extendedInfo
+      expression="#{source.getDocument().getPropertyValue('rnode:endDate')}"
+      key="workflowEndDate" />
+  </extension>
+</component>
