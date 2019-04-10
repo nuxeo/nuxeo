@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo DAM Importer JAXRS
+Bundle-SymbolicName: org.nuxeo.dam.importer.jaxrs;singleton=true
+Bundle-Localization: plugin
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.dam.importer.core,
+ org.nuxeo.ecm.platform.importer.jaxrs
+Nuxeo-WebModule: org.nuxeo.dam.importer.jaxrs.DamImporterApp
