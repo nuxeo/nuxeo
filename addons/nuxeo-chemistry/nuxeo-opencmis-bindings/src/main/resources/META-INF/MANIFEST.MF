@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Core OpenCMIS Bindings
+Bundle-SymbolicName: org.nuxeo.ecm.core.opencmis.bindings;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Export-Package: org.nuxeo.ecm.core.opencmis.bindings
+Eclipse-LazyStart: true
+Eclipse-ExtensibleAPI: true
+Require-Bundle: org.nuxeo.ecm.core.api;visibility:=reexport
+Nuxeo-Component: OSGI-INF/atom-contrib.xml,
+ OSGI-INF/soap-contrib.xml
