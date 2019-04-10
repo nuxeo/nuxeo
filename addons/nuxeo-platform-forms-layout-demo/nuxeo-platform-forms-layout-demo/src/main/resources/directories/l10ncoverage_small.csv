@@ -1,0 +1,9 @@
+id, label_en, label_fr, parent, obsolete
+"europe","Europe","Europe","","0"
+"africa","Africa","Afrique","","0"
+"north-america","North-america","Amérique du nord","","0"
+"south-america","South-america","Amérique du sud","","0"
+"asia","Asia","Asie","","0"
+"oceania","Oceania","Oceanie","","0"
+"antarctica","Antarctica","Antarctique","","0"
+"Afghanistan","Afghanistan","Afghanistan","asia","0"
