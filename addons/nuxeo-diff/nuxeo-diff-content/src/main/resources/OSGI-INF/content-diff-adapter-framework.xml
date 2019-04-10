@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManagerComponent">
+  <implementation
+    class="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManagerComponent" />
+
+  <documentation>
+    @author Antoine Taillefer (ataillefer@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManager" />
+  </service>
+
+  <extension-point name="adapterFactory">
+    <documentation>
+    @author Antoine Taillefer (ataillefer@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterFactoryDescriptor" />
+  </extension-point>
+
+  <extension-point name="mimeTypeContentDiffer">
+    <documentation>
+      Allows to contribute default implementation of content diff according to the mime type.
+    </documentation>
+    <object class="org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDifferDescriptor"/>
+  </extension-point>
+
+</component>
