@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.platform.TemplateSources.types.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService"
+    point="types">
+
+    <type id="TemplateSource" coretype="TemplateSource">
+      <label>TemplateSource</label>
+      <icon>/icons/sourcetemplate.png</icon>
+      <bigIcon>/icons/sourcetemplate_100.png</bigIcon>
+      <default-view>view_documents</default-view>
+      <category>SimpleDocument</category>
+     <layouts mode="create">
+       <layout>heading</layout>
+       <layout>templateOptionsWizard</layout>
+       <layout>templateOptions</layout>
+       <layout>fileWithoutTemplate</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>heading</layout>
+        <layout>templateOptions</layout>
+        <layout>templateParams</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <!-- <layout>templateOptions</layout>  -->
+        <layout>fileWithoutTemplate</layout>
+      </layouts>
+    </type>
+
+  </extension>
+
+</component>

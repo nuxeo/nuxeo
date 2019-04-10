@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.platform.TemplateSources.listener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="documenttemplate-init" async="false"
+      postCommit="false" priority="500"
+      class="org.nuxeo.template.listeners.TemplateInitListener">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+
+    <listener name="documenttemplate-deletionguard" async="false"
+      postCommit="false" priority="500"
+      class="org.nuxeo.template.listeners.TemplateDeletionGuard">
+      <event>aboutToRemove</event>
+    </listener>
+
+    <listener name="documenttemplate-type-binding" async="true" priority="500"
+      class="org.nuxeo.template.listeners.TemplateTypeBindingListener">
+      <event>documentCreated</event>
+      <event>documentModified</event>
+    </listener>
+
+  </extension>
+</component>
