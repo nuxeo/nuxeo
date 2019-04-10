@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.routing.contentView.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="route_past_steps">
+      <title>label.document.routing.past.steps</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>true</showTitle>
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <parameter>#{currentDocument.id}</parameter>
+        <whereClause docType="TaskDoc">
+          <fixedPart>
+            nt:targetDocumentId = ? AND
+            ecm:currentLifeCycleState = 'ended'
+          </fixedPart>
+        </whereClause>
+        <pageSize>0</pageSize>
+      </coreQueryPageProvider>
+      <showFilterForm>false</showFilterForm>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentCreated</event>
+      </refresh>
+      <cacheSize>10</cacheSize>
+      <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
+      </cacheKey>
+      <resultLayouts>
+        <layout name="route_content_view_layout" title=""
+          translateTitle="" iconPath="" showCSVExport="false"
+          showPDFExport="false" />
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="previous_routes">
+      <title>Previous Routes</title>
+      <translateTitle>false</translateTitle>
+      <showTitle>true</showTitle>
+      <genericPageProvider
+        class="org.nuxeo.ecm.platform.routing.web.PreviousRoutesPageProvider">
+        <property name="coreSession">#{documentManager}</property>
+        <property name="generateUIComments">false</property>
+        <property name="documentID">#{currentDocument.id}</property>
+        <whereClause docType="BasicAuditSearch">
+          <fixedPart>
+            log.category = 'eventDocumentCategory' AND log.eventId='auditLogRoute' AND
+            log.extendedInfos['attachDocumentID'].stringValue = '?'
+          </fixedPart>
+        </whereClause>
+        <sort column="log.eventDate" ascending="false" />
+        <pageSize>10</pageSize>
+        <maxPageSize>1000</maxPageSize>
+      </genericPageProvider>
+      <showFilterForm>false</showFilterForm>
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentCreated</event>
+      </refresh>
+      <cacheSize>10</cacheSize>
+      <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
+      </cacheKey>
+      <resultLayouts>
+        <layout name="previous_routes_content_view_layout" title="Previous Routes"
+          translateTitle="true" showCSVExport="false" showPDFExport="false" />
+      </resultLayouts>
+    </contentView>
+  </extension>
+</component>
