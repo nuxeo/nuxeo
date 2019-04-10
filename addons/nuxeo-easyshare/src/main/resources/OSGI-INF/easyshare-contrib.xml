@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.easyshare.auth.contrib">
+ <extension point="openUrl"
+  target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+  <openUrl name="EasyShare">
+   <grantPattern>/nuxeo/site/easyshare/.*</grantPattern>
+  </openUrl>
+  <openUrl name="EasyShareSkins">
+   <grantPattern>/nuxeo/site/skin/easyshare/.*</grantPattern>
+  </openUrl>
+  <openUrl name="EasyShareCss">
+   <grantPattern>/nuxeo/site/skin/easyshare/css/.*</grantPattern>
+  </openUrl>
+  <openUrl name="EasyShareImages">
+   <grantPattern>/nuxeo/site/skin/easyshare/image/.*</grantPattern>
+  </openUrl>
+ </extension>
+ 
+ <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+  point="actions">
+  <action id="showEasyShareURL" label="Public URL"
+   icon="/icons/contextual_menu/share.png" order="20" type="fancybox">
+   <filter id="easyShareFolderFilter">
+    <rule grant="true">
+     <type>EasyShareFolder</type>
+    </rule>
+   </filter>
+   <properties>
+    <property name="include">/incl/easyshare_url_box.xhtml</property>
+    <property name="ajaxSupport">true</property>
+   </properties>
+  </action>
+ </extension>
+</component>
