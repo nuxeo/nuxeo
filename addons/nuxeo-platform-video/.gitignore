@@ -1,0 +1,15 @@
+.checkstyle
+.classpath
+.metadata
+.mylar
+.pmd
+.project
+.settings
+bin
+build.properties
+target
+*~
+*.orig
+*.iml
+*.ipr
+*.iws
