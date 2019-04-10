@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <prerequisites>
+    <maven>2.0.9</maven>
+  </prerequisites>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.core</groupId>
+    <artifactId>nuxeo-core-parent</artifactId>
+    <version>1.6.1</version>
+  </parent>
+
+  <artifactId>nuxeo-chemistry</artifactId>
+  <name>Nuxeo Chemistry</name>
+  <description>Nuxeo Core: Chemistry</description>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-chemistry-impl</module>
+    <module>nuxeo-chemistry-bindings</module>
+    <module>nuxeo-chemistry-tests</module>
+  </modules>
+
+  <properties>
+    <chemistry.version>0.5-SNAPSHOT</chemistry.version>
+    <nuxeo.webengine.version>5.3.1</nuxeo.webengine.version>
+    <metro.version>1.4</metro.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-chemistry-impl</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-chemistry-bindings</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-core</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>metro.webservices</groupId>
+        <artifactId>webservices-api</artifactId>
+        <version>${metro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>metro.webservices</groupId>
+        <artifactId>webservices-rt</artifactId>
+        <version>${metro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>metro.webservices</groupId>
+        <artifactId>webservices-tools</artifactId>
+        <version>${metro.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty</artifactId>
+        <version>6.1.5</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-util</artifactId>
+        <version>6.1.5</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.3.0</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>1.3.0</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.13</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-chemistry</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-chemistry</developerConnection>
+    <url>http://hg.nuxeo.org/addons/nuxeo-chemistry</url>
+  </scm>
+
+</project>

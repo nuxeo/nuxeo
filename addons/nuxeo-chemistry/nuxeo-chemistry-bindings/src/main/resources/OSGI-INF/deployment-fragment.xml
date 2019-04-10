@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <extension target="jaxws#ENDPOINT">
+    <endpoint name="RepositoryService"
+        implementation="org.apache.chemistry.soap.server.RepositoryServicePortImpl"
+        url-pattern="/webservices/cmis/RepositoryService">
+      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+        <handler-chain>
+          <handler>
+            <handler-class>org.nuxeo.ecm.core.chemistry.bindings.NuxeoAuthHandler</handler-class>
+          </handler>
+        </handler-chain>
+      </handler-chains>
+    </endpoint>
+    <endpoint name="DiscoveryService"
+        implementation="org.apache.chemistry.soap.server.DiscoveryServicePortImpl"
+        url-pattern="/webservices/cmis/DiscoveryService">
+      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+        <handler-chain>
+          <handler>
+            <handler-class>org.nuxeo.ecm.core.chemistry.bindings.NuxeoAuthHandler</handler-class>
+          </handler>
+        </handler-chain>
+      </handler-chains>
+    </endpoint>
+  </extension>
+
+</fragment>

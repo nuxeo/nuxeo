@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Chemistry AtomPub/SOAP Bindings
+Bundle-SymbolicName: org.nuxeo.ecm.core.chemistry.bindings;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Provide-Package: org.nuxeo.ecm.core.chemistry.bindings
+Eclipse-LazyStart: true
+Eclipse-ExtensibleAPI: true
+Require-Bundle: org.nuxeo.ecm.webengine.core;visibility:=reexport,
+ org.nuxeo.ecm.core.chemistry.impl;visibility:=reexport
+Nuxeo-Component: OSGI-INF/base-contrib.xml,
+ OSGI-INF/jaxrs-contrib.xml,
+ OSGI-INF/jaxws-contrib.xml
+Nuxeo-WebModule: org.apache.chemistry.atompub.server.jaxrs.CMISApplication

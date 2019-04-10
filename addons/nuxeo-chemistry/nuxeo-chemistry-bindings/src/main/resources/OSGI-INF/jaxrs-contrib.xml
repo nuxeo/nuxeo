@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.chemistry.jaxrs.config">
+
+  <!-- CMISApplication registered through MANIFEST.MF -->
+
+  <extension
+    target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="filterConfig">
+    <filterConfig name="cmis-jaxrs" transactional="true">
+      <pattern>/nuxeo/site/cmis/.*</pattern>
+    </filterConfig>
+  </extension>
+
+  <!-- make sure no redirect for authentication happens -->
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="BASIC_AUTH" enabled="true"
+        class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
+      <parameters>
+        <parameter name="ForcePromptURL_CMISAtomPub">site/cmis/</parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+
+</component>
