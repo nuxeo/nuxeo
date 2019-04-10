@@ -1,0 +1,8 @@
+target
+bin
+.project
+.classpath
+.settings
+build.properties
+deploy.sh
+TODO*
