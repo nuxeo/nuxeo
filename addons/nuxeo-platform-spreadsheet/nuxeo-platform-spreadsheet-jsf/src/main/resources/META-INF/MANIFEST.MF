@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-Category: web
+Bundle-Localization: plugin
+Bundle-Name: nuxeo-platform-spreadsheet-jsf
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.spreadsheet.jsf;singleton:=true
+Nuxeo-Component: OSGI-INF/actions-contrib.xml,
+ OSGI-INF/authentication-contrib.xml,
+ OSGI-INF/layouts-contrib.xml

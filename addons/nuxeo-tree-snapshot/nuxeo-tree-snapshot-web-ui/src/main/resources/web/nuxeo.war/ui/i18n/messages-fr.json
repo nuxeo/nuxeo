@@ -1,0 +1,5 @@
+{
+  "app.document.snapshotCreated": "La dossier a été versionné.",
+  "label.document.type.snapshotablefolder": "Dossier versionnable",
+  "snapshotButton.tooltip": "Créer une version du dossier"
+}
