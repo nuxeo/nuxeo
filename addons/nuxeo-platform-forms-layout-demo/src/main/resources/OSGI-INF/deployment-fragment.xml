@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+
+    <navigation-case>
+      <from-outcome>layoutDemoIntroduction</from-outcome>
+      <to-view-id>/layoutDemo/introduction.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <!-- pages mapping -->
+    <navigation-case>
+      <from-outcome>textWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/textWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>textareaWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/textareaWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>intWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/intWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>secretWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/secretWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>datetimeWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/datetimeWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>fileWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/fileWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>htmltextWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/htmltextWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>selectOneDirectoryWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/widgets/selectOneDirectoryWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>selectManyDirectoryWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/widgets/selectManyDirectoryWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/listWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>checkboxWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/checkboxWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>templateWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/templateWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>complexWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/complexWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+  </extension>
+
+  <install>
+    <!-- unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+    <!--  make some extension sources available for demo -->
+    <unzip from="${bundle.fileName}" to="/nuxeo.war/layoutDemo/sources/">
+      <include>OSGI-INF/demo/**</include>
+      <include>schemas/**</include>
+    </unzip>
+  </install>
+
+</fragment>
+
