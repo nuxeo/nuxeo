@@ -1,0 +1,124 @@
+<c:if test="true" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+  <c:if test="false">
+    Template copied from 'user_suggestion_widget_template.xhtml' to modify it
+    by adding a validator to the valueHolder used by the Select2 widget.
+  </c:if>
+  <c:set var="firstLabelField"
+    value="#{nxu:test(!empty widgetProperty_firstLabelField, widgetProperty_firstLabelField, 'firstName')}" />
+  <c:set var="secondLabelField"
+    value="#{nxu:test(!empty widgetProperty_secondLabelField, widgetProperty_secondLabelField, 'lastName')}" />
+  <c:set var="thirdLabelField"
+    value="#{nxu:test(!empty widgetProperty_thirdLabelField, widgetProperty_thirdLabelField, 'email')}" />
+  <c:set var="hideFirstLabel"
+    value="#{nxu:test(!empty widgetProperty_hideFirstLabel, widgetProperty_hideFirstLabel, false)}" />
+  <c:set var="hideSecondLabel"
+    value="#{nxu:test(!empty widgetProperty_hideSecondLabel, widgetProperty_hideSecondLabel, false)}" />
+  <c:set var="hideThirdLabel"
+    value="#{nxu:test(!empty widgetProperty_hideThirdLabel, widgetProperty_hideThirdLabel, false)}" />
+  <c:set var="showEmail"
+    value="#{nxu:test(!empty widgetProperty_displayEmailInSuggestion, widgetProperty_displayEmailInSuggestion, false)}" />
+  <c:set var="firstNameField"
+    value="#{nxu:test(hideFirstLabel, null, firstLabelField)}" />
+  <c:set var="lastNameField"
+    value="#{nxu:test(hideSecondLabel, null, secondLabelField)}" />
+  <c:set var="emailField"
+    value="#{nxu:test(hideThirdLabel, null, thirdLabelField)}" />
+  <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+    <nxu:inputList value="#{field}" model="model">
+      <nxu:set var="info"
+        value="#{userSuggestionActions.getUserInfo(model.rowData)}">
+        <nxu:set var="hideIcon" value="true">
+          <ui:include src="user_group_display_template.xhtml">
+            <ui:param name="data" value="#{model.rowData}" />
+          </ui:include>
+        </nxu:set>
+      </nxu:set>
+      <h:outputText rendered="#{model.rowIndex != model.rowCount -1}"
+        value=", " />
+    </nxu:inputList>
+  </c:if>
+  <c:if test="#{widget.mode == 'pdf'}">
+    <nxp:html>
+      <h:dataTable value="#{field}" var="item"
+        rendered="#{not empty field}">
+        <h:column>
+          <nxu:set var="info"
+            value="#{userSuggestionActions.getUserInfo(item)}"
+            cache="true">
+            <ui:include src="user_group_display_template.xhtml">
+              <ui:param name="data" value="#{item}" />
+            </ui:include>
+          </nxu:set>
+        </h:column>
+      </h:dataTable>
+    </nxp:html>
+  </c:if>
+  <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+    <c:set var="displayAction"
+      value="#{nxu:test(!empty widgetProperty_displayAction, widgetProperty_displayAction, 'view')}" />
+    <c:set var="hideIcon" value="#{widgetProperty_hideIcon}" />
+
+    <div class="UserSuggestionInput">
+      <h:dataTable value="#{field}" var="item"
+        rendered="#{not empty field}">
+        <h:column>
+          <nxu:set var="info"
+            value="#{userSuggestionActions.getUserInfo(item)}">
+            <ui:include src="user_group_display_template.xhtml">
+              <ui:param name="data" value="#{item}" />
+            </ui:include>
+          </nxu:set>
+        </h:column>
+      </h:dataTable>
+    </div>
+
+  </c:if>
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <nxu:set var="helpLabel"
+      value="#{nxu:test(empty widgetProperty_helpLabel, messages['label.suggestion.help.minChars'], nxu:test(widget.translated, messages[widgetProperty_helpLabel], widgetProperty_helpLabel))}"
+      cache="true">
+
+      <ui:include src="/incl/select2_js.xhtml" />
+
+      <a4j:region>
+        <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
+          immediate="true" execute="@this"
+          required="#{widgetProperty_required}" var="currentValue"
+          validator="#{multiTenantActions.validateTenantAdministrators}">
+          <f:converter converterId="select2Converter"></f:converter>
+          <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
+            value="#{select2Actions.resolveMultipleUserReference(currentValue, widgetProperty_prefixed, widgetProperty_firstLabelField, widgetProperty_secondLabelField, widgetProperty_thirdLabelField,  widgetProperty_hideFirstLabel,  widgetProperty_hideSecondLabel, widgetProperty_hideThirdLabel, widgetProperty_displayEmailInSuggestion, widgetProperty_hideIcon)}" />
+        </nxu:valueHolder>
+
+        <c:if test="#{not empty widgetProperty_ajaxReRender}">
+          <a4j:jsFunction name="#{widget.id}_reRender"
+            render="#{widgetProperty_ajaxReRender}" />
+        </c:if>
+
+      </a4j:region>
+
+
+      <c:if test="#{widget.mode == 'edit' and !widgetProperty_hideHelpLabel}">
+        <p class="detail">
+          <h:outputFormat value="#{helpLabel}">
+            <f:param value="#{widgetProperty_minChars}" />
+          </h:outputFormat>
+        </p>
+      </c:if>
+
+      <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
+        value="#{select2Actions.encodeParametersForUserSuggestion(widget, widgetProperties)}" />
+      <h:message for="#{widget.id}_select2" styleClass="errorMessage" />
+
+    </nxu:set>
+  </c:if>
+</c:if>

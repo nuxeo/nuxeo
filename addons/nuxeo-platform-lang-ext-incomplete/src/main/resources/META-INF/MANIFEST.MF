@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Language Extensions pack for incomplete translations
+Bundle-SymbolicName: org.nuxeo.ecm.platform.lang.ext.incomplete
+Bundle-Vendor: Nuxeo
+Bundle-Category: stateless,web
+Nuxeo-Component: OSGI-INF/login-screen-config.xml
