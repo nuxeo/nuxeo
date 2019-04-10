@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="test.importer.service.contrib">
+  <extension target="org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent" point="importerConfiguration">
+    <importerConfig sourceNodeClass="org.nuxeo.ecm.platform.importer.source.FileWithIndividualMetadasSourceNode">
+      <documentModelFactory documentModelFactoryClass="org.nuxeo.ecm.platform.importer.factories.FileManagerDocumentModelFactory"/>
+    </importerConfig>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+    <type id="Workspace">
+      <subtypes>
+        <type>Folder</type>
+      </subtypes>
+    </type>
+  </extension>
+</component>
+

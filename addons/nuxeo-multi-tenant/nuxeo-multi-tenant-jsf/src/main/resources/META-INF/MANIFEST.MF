@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Multi Tenant JSF
+Bundle-SymbolicName: org.nuxeo.ecm.multi.tenant.jsf;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/actions-contrib.xml,
+ OSGI-INF/contentviews-contrib.xml,
+ OSGI-INF/contentviews-es-contrib.xml,
+ OSGI-INF/doctypes-config-contrib.xml,
+ OSGI-INF/layouts-contrib.xml,
+ OSGI-INF/ui-types-contrib.xml,
+ OSGI-INF/directories-ui-contrib.xml
