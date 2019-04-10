@@ -1,0 +1,14 @@
+<#if (Context['numberApproved']>0)>${Context['numberApproved']}/${Context['numberOfTasks']} OK <br/></#if>
+<#if ( Context['numberRejected']>0)>${Context['numberRejected']}  KO<br/></#if>
+<#if (Context['numberNA']>0)>${Context['numberNA']} N/A<br/></#if>
+<br/>
+<br/>
+<table class=".dataTableLine" style="width:100%">
+<#list Context['tasksInfo'] as taskInfo>
+<tr>
+<td style="text-align:left; vertical-align:center;width:35%">${Fn.getPrincipal(taskInfo.actor).firstName} ${Fn.getPrincipal(taskInfo.actor).lastName} 
+<#if (Fn.getPrincipal(taskInfo.actor).firstName?? &&Fn.getPrincipal(taskInfo.actor).lastName??)>${taskInfo.actor}</#if>
+</td><td style="text-align:left; vertical-align:center;width:15%"><#if taskInfo.status =="approve">OK<#elseif taskInfo.status =="reject" >KO<#else>N/A</#if></td><td style="text-align:left; vertical-align:center;width:50%"><i>${taskInfo.comment}</i></td>
+</tr>
+</#list>
+</table>

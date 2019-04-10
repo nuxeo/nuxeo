@@ -1,0 +1,32 @@
+<div class="relation_block"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+<c:if test="#{!empty associatedRenderableTemplates}">
+
+  <h3 class="summaryTitle">
+    <h:outputText value="#{messages['label.summary.template.rendition.title']}" />
+  </h3>
+
+  <p>
+    <h:outputText value="#{messages['label.summary.template.rendition.header']}" />
+  </p>
+
+  <nxu:dataTable value="#{associatedRenderableTemplates}"
+    var="template" styleClass="dataOutput">
+    <nxu:column styleClass="iconColumn">
+      <nxu:graphicImage value="#{template.adaptedDoc.common.icon}" />
+    </nxu:column>
+    <nxu:column>
+      <nxd:restDocumentLink document="#{currentDocument}" view="#{template.name}" pattern="template">
+        <h:outputText value="#{template.title}" />
+      </nxd:restDocumentLink>
+    </nxu:column>
+  </nxu:dataTable>
+
+</c:if>
+</div>
