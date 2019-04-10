@@ -1,0 +1,23 @@
+<component name="org.nuxeo.binary.metadata.contribs.tests.pdf">
+
+  <extension target="org.nuxeo.binary.metadata"
+             point="metadataMappings">
+    <metadataMapping id="PDF" processor="exifTool" blobXPath="file:content"
+                     ignorePrefix="false">
+      <metadata name="PDF:Language" xpath="dc:title"/>
+      <metadata name="PDF:Producer" xpath="dc:source"/>
+      <metadata name="PDF:Keywords" xpath="dc:subjects"/>
+    </metadataMapping>
+    <metadataMapping id="PDFBIS" processor="exifTool" blobXPath="file:content"
+                     ignorePrefix="false">
+      <metadata name="PDF:Author" xpath="dc:creator"/>
+      <metadata name="PDF:Linearized" xpath="dc:description"/>
+    </metadataMapping>
+    <metadataMapping id="PDFTRIS" processor="exifTool" blobXPath="file:content"
+                     ignorePrefix="false">
+      <metadata name="PDF:Creator" xpath="dc:coverage"/>
+      <metadata name="PDF:Producer" xpath="dc:description"/>
+    </metadataMapping>
+  </extension>
+
+</component>

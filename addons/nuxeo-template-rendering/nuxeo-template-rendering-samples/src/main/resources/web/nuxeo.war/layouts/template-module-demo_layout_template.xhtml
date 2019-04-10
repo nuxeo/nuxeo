@@ -1,0 +1,96 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:a4j="http://richfaces.org/a4j"
+  id="#{layout.id}">
+
+  <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
+
+  <table class="dataInput">
+    <tbody>
+
+      <nxl:layoutRow>
+        <tr>
+          <nxl:layoutRowWidget>
+
+            <c:set var="colspanName" value="nxl_colspan_#{widgetIndex}" />
+            <c:set var="colspan" value="#{layoutRow.properties[colspanName]}" />
+            <c:set var="renderingColspan" value="#{2*colspan*layout.columns}" />
+            <c:set var="renderingColspanMin" value="#{2*1*layout.columns}" />
+            <c:set var="renderingColspanMax" value="#{2*layout.columns*(2*colspan -1)}" />
+            <c:set var="headerRenderingColspan" value="#{2*renderingColspan}" />
+
+            <c:choose>
+
+              <c:when test="${widget.type == 'template_rendering_header'}">
+                <td style="vertical-align:top;"
+                  colspan="#{headerRenderingColspan}">
+                  <h:outputText value="#{widget.label}"
+                    rendered="#{!widget.translated}"
+                    styleClass="#{widget.properties['styleClass']}"
+                    style="#{widget.properties['style']}" />
+                  <h:outputText value="#{messages[widget.label]}"
+                    rendered="#{widget.translated}"
+                    styleClass="#{widget.properties['styleClass']}"
+                    style="#{widget.properties['style']}" />
+                </td>
+              </c:when>
+
+              <c:otherwise>
+                <c:choose>
+                  <c:when test="#{widget.translated}">
+                    <td style="#{nxu:test(widgetIndex!=0, 'vertical-align: top; font-weight: bold', '')}"
+                      class="#{nxu:test(widgetIndex==0, 'labelColumn', '')}"
+                      colspan="#{nxu:test(widgetIndex==0, renderingColspanMin, renderingColspan)}">
+                      <c:if test="#{empty widget.helpLabel}">
+                        <h:outputText value="#{messages[widget.label]}"
+                          styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                      </c:if>
+                      <c:if test="#{!empty widget.helpLabel}">
+                        <div class="widgetHelpLabel">
+                          <h:outputText value="#{messages[widget.label]}"
+                            style="padding-right:8px; display:block;"
+                            title="#{messages[widget.helpLabel]}"
+                            styleClass="tipsyShow #{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                        </div>
+                      </c:if>
+                    </td>
+                  </c:when>
+                  <c:otherwise>
+                    <td style="#{nxu:test(widgetIndex!=0, 'vertical-align: top; font-weight: bold', '')}"
+                      class="#{nxu:test(widgetIndex==0, 'labelColumn', '')}"
+                      colspan="#{nxu:test(widgetIndex==0, renderingColspanMin, renderingColspan)}">
+                      <c:if test="#{empty widget.helpLabel}">
+                        <h:outputText value="#{widget.label}"
+                          styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                      </c:if>
+                      <c:if test="#{!empty widget.helpLabel}">
+                        <div class="widgetHelpLabel">
+                          <h:outputText value="#{widget.label}"
+                            style="padding-right:8px; display:block;"
+                            title="#{widget.helpLabel}"
+                            styleClass="tipsyShow #{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                        </div>
+                      </c:if>
+                    </td>
+                  </c:otherwise>
+                </c:choose>
+                <td style="vertical-align:top;"
+                  colspan="#{nxu:test(widgetIndex==0, renderingColspanMax, renderingColspan)}">
+                  <nxl:widget widget="#{widget}" value="#{value}" />
+                </td>
+              </c:otherwise>
+
+            </c:choose>
+          </nxl:layoutRowWidget>
+        </tr>
+      </nxl:layoutRow>
+
+    </tbody>
+  </table>
+
+</f:subview>
