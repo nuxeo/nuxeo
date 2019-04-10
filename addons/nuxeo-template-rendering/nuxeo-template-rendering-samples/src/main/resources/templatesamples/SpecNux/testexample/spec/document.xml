@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document repository="default" id="efeba508-39c4-4ca0-a140-54805aab67a0">
+  <system>
+    <type>File</type>
+    <path>default-domain/workspaces/templatesamples/rawsamples/Spec</path>
+    <lifecycle-state>project</lifecycle-state>
+    <lifecycle-policy>default</lifecycle-policy>
+    <facet>Downloadable</facet>
+    <facet>TemplateBased</facet>
+    <facet>Commentable</facet>
+    <facet>Versionable</facet>
+    <facet>Publishable</facet>
+    <facet>HasRelatedText</facet>
+    <access-control>
+      <acl name="inherited">
+        <entry principal="Administrator" permission="Everything"
+          grant="true" />
+        <entry principal="members" permission="Read" grant="true" />
+      </acl>
+    </access-control>
+  </system>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/"
+    name="dublincore">
+    <dc:creator>Administrator</dc:creator>
+    <dc:source />
+    <dc:contributors>
+      <item>Administrator</item>
+    </dc:contributors>
+    <dc:nature />
+    <dc:created>2012-04-17T15:53:18.83Z</dc:created>
+    <dc:description />
+    <dc:rights />
+    <dc:subjects />
+    <dc:publisher />
+    <dc:valid />
+    <dc:format />
+    <dc:issued />
+    <dc:modified>2012-04-17T15:53:18.00Z</dc:modified>
+    <dc:language />
+    <dc:coverage />
+    <dc:expired />
+    <dc:lastContributor>Administrator</dc:lastContributor>
+    <dc:title>Spec</dc:title>
+  </schema>
+  <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/"
+    name="uid">
+    <uid:uid />
+    <uid:minor_version>0</uid:minor_version>
+    <uid:major_version>0</uid:major_version>
+  </schema>
+  <schema xmlns:files="http://www.nuxeo.org/ecm/schemas/files/"
+    name="files">
+    <files:files />
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/"
+    name="common">
+    <common:icon>/icons/file.gif</common:icon>
+    <common:icon-expanded />
+  </schema>
+  <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/"
+    name="file">
+    <file:content>
+      <encoding />
+      <mime-type>application/vnd.oasis.opendocument.text</mime-type>
+      <filename>Spec_ModelNux.odt</filename>
+      <data>specNux.odt</data>
+    </file:content>
+  </schema>
+  <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/"
+    name="relatedtext">
+    <relatedtext:relatedtextresources />
+  </schema>
+  <schema xmlns:nxts="http://www.nuxeo.org/ecm/schemas/nxts/"
+    name="templatesupport">
+    <nxts:bindings>
+      <templateEntry>
+        <templateId>a7a2e87c-e0c2-4c30-9b12-d2b0e85bdc94</templateId>
+        <templateData>
+          <nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate" />
+        </templateData>
+        <templateName>SpecNux</templateName>
+        <useMainContentAsTemplate>true</useMainContentAsTemplate>
+      </templateEntry>
+    </nxts:bindings>
+  </schema>
+</document>

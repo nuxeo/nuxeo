@@ -1,0 +1,36 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <c:set var="namespace" value="#{widget.properties.namespace}" />
+
+  <c:if test="#{widget.mode == 'view' }">
+   <c:choose>
+     <c:when test="#{field_0 == null or fn:length(field_0) == 0 or field_0[0] == 'all'}">
+       <h:outputText value="#{messages['label.typebinding.all']}" />
+     </c:when>
+     <c:otherwise>
+      <nxu:repeat value="#{field_0}" var="targetType">
+        <h:outputText value="#{messages[targetType]}"/> <br/>
+      </nxu:repeat>
+     </c:otherwise>
+   </c:choose>
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit' }">
+    <h:selectManyListbox value="#{field_0}" collectionType="java.util.ArrayList"
+      styleClass="#{widget.properties['styleClass']}"
+      required="#{widget.properties['required']}"
+      id="#{widget.id}" size="5">
+      <f:selectItem id="noneType" itemLabel="All" itemValue="all" />
+      <nxu:selectItems var="doc" value="#{templateActions.getAllTypes()}"
+        itemValue="#{doc.id}"
+        itemLabel="#{messages[doc.label]}" />
+    </h:selectManyListbox>
+    <h:message for="#{widget.id}" styleClass="errorMessage" />
+  </c:if>
+</div>
