@@ -1,0 +1,62 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <c:if test="false">
+    This template is overriden to insert a new excel export button
+  </c:if>
+
+  <!-- groups listing -->
+  <a4j:outputPanel id="groupsListingPanel" layout="block">
+
+    <nxu:set var="listingMode"
+      value="#{nxu:test(groupManagementActions.listingMode == 'all', 'search_only', groupManagementActions.listingMode)}">
+      <nxu:set var="contentViewName"
+        value="groups_listing_#{listingMode}">
+        <nxu:set var="useAjaxForm" value="true">
+          <nxu:set var="useAjaxPagination" value="true">
+            <ui:decorate template="/incl/content_view.xhtml">
+              <ui:define name="content_view_header">
+                <!-- create button -->
+                <h:form
+                  rendered="#{groupManagementActions.allowCreateGroup and notReadOnly}"
+                  id="createGroupActionsForm">
+                  <div class="action_bar">
+                    <ul>
+                      <li class="selected"><a4j:commandLink
+                          action="#{groupManagementActions.toggleShowCreateForm}"
+                          immediate="true" id="createGroupButton"
+                          render="groupsPanel">
+                          <h:graphicImage
+                            value="/icons/action_add_group.png" />
+                          <h:outputText
+                            value="#{messages['command.createGroup']}" />
+                        </a4j:commandLink></li>
+                      <li><h:commandButton styleClass="button"
+                          action="#{exportGroupManagementActions.downloadExcelAllGroupsExport}"
+                          value="#{messages['action.groups.audit.export']}">
+                        </h:commandButton></li>
+                      <li><h:commandButton styleClass="button"
+                          action="#{exportGroupManagementActions.downloadExcelListedGroupsExport}"
+                          value="#{messages['action.groups.audit.export.list']}"></h:commandButton></li>
+                    </ul>
+                  </div>
+                </h:form>
+                <div style="clear: both" />
+
+                <ui:insert name="groups_search_method" />
+              </ui:define>
+            </ui:decorate>
+          </nxu:set>
+        </nxu:set>
+      </nxu:set>
+    </nxu:set>
+
+  </a4j:outputPanel>
+
+</div>
