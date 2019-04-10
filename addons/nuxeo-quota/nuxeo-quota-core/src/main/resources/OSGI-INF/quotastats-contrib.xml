@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.quota.contrib">
+
+  <documentation>
+    Default contribution to the QuotaStatsService registering a
+    QuotaStatsUpdater to count non-folderish documents.
+
+    @author Thomas Roger (troger@nuxeo.com)
+    @since 5.5
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.quota.QuotaStatsService" point="quotaStatsUpdaters">
+
+    <quotaStatsUpdater name="documentsCountUpdater"
+      class="org.nuxeo.ecm.quota.count.DocumentsCountUpdater"
+      label="label.quota.documentsCountUpdater"
+      descriptionLabel="label.quota.documentsCountUpdater.description"/>
+
+    <quotaStatsUpdater name="documentsSizeUpdater"
+      class="org.nuxeo.ecm.quota.size.QuotaSyncListenerChecker"
+      label="label.quota.documentsCountSizeUpdater"
+      descriptionLabel="label.quota.documentsCountAndSizeUpdater.description"/>
+
+  </extension>
+
+</component>
