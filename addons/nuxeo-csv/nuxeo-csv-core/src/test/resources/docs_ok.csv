@@ -1,0 +1,4 @@
+"name","type","dc:description","dc:title","dc:contributors","dc:issued","note:note","complexTest:complexItem","complexTest:listItem"
+"myfile","File","a simple file","My File","contributor1|contributor2|contributor3","10/01/2010","","",""
+"mynote","Note","a simple note","My Note","bender|leela|fry","12/12/2012","note content","",""
+"mycomplexfile","ComplexFile","a complex file","My Complex File","joe","12/21/2013","","{\"arrayProp\":[\"1\"],\"boolProp\":true,\"stringProp\":\"testString1\"}","[{\"arrayProp\":[\"1\"],\"boolProp\":true,\"stringProp\":\"testString1\"},{\"arrayProp\":[\"1\"],\"boolProp\":true,\"stringProp\":\"testString2\"}]"
