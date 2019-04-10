@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.opencmis.tests.servicefactorymanager">
+
+  <extension target="org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactoryManager"
+      point="factory">
+    <factory>
+      <parameter name="servicewrapper.1">
+        org.nuxeo.ecm.core.opencmis.impl.LastModifiedServiceWrapper</parameter>
+    </factory>
+  </extension>
+
+</component>

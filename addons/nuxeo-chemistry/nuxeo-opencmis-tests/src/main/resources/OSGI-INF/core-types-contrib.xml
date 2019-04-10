@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.opencmis.tests.core-types">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="myschema" src="schemas/myschema.xsd" prefix="my" />
+    <schema name="myschema2" src="schemas/myschema2.xsd" prefix="my2" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="MyDocType" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="myschema" />
+    </doctype>
+    <doctype name="UserWorkspaceRoot" extends="Folder">
+      <facet name="SuperSpace"/>
+      <facet name="HiddenInNavigation"/>
+    </doctype>
+    <!-- facet tests -->
+    <facet name="CustomFacetWithoutSchema" />
+    <facet name="CustomFacetWithMySchema2">
+      <schema name="myschema2" />
+    </facet>
+  </extension>
+</component>

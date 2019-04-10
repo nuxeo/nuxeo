@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.opencmis.configuration.override">
+
+  <require>org.nuxeo.ecm.core.opencmis.configuration</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.cmis.errorOnCancelCheckOutOfDraftVersion">true</property>
+  </extension>
+
+</component>

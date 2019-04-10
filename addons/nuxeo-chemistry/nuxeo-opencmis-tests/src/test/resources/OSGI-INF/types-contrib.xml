@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.opencmis.tests.types">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="complexTest" src="schemas/complexTest.xsd" prefix="complexTest" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+
+    <!-- Extends Document but Folderish -->
+    <doctype name="MyForum" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <facet name="Folderish" />
+    </doctype>
+
+    <!-- Extends File (which extends Document) but Folderish -->
+    <doctype name="MyForum2" extends="File">
+      <facet name="Folderish" />
+    </doctype>
+
+    <facet name="ComplexTest">
+      <schema name="complexTest"/>
+    </facet>
+
+    <doctype name="ComplexFile" extends="File">
+      <facet name="ComplexTest" />
+    </doctype>
+
+    <!-- Extends Relation but marked HiddenInNavigation -->
+    <doctype name="HiddenRelation" extends="Relation">
+      <facet name="HiddenInNavigation" />
+    </doctype>
+
+  </extension>
+
+</component>
