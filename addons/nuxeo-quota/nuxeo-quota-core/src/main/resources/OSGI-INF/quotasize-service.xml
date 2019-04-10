@@ -1,0 +1,39 @@
+<component name="org.nuxeo.ecm.quota.size.QuotaSizeService">
+
+  <documentation>
+    Component to holds config for the size quota computation
+
+    @author Damien METZLER
+    @since 5.7
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.quota.size.QuotaSizeServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.quota.size.QuotaSizeService" />
+  </service>
+
+
+  <extension-point name="exclusions">
+    <documentation>
+      Extension point to exclude some blob paths for quota computation.
+      When computing the total blobs size of a document it can be useful
+      to exclude some blob that could be not relevant to end user. For
+      instance for a document of type Picture, one perhaps don't want
+      to see the blobs for the differents views (thumbnail, medium)
+      to be included in the total size computation.
+
+      <code>
+        <extension target="org.nuxeo.ecm.quota.size.QuotaSizeService"
+          point="exclusions">
+          <exclude path="files/*/file"></exclude>
+          <exclude path="views/*/content"></exclude>
+          <exclude path="prefix:attached/*/content"></exclude>
+        </extension>
+      </code>
+
+    </documentation>
+    <object class="org.nuxeo.ecm.quota.size.BlobExcludeDescriptor" />
+  </extension-point>
+
+</component>

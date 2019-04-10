@@ -1,0 +1,88 @@
+<project name="vcs-tests" default="vcs-tests-setup" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="out.dir" value="${maven.project.build.directory}" />
+
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+
+  <property name="vcsprops" value="${user.home}/nuxeo-test-vcs.properties" />
+
+  <target name="vcs-tests-setup" depends="vcs-tests-teardown,_initdb">
+    <!-- create default empty file -->
+    <echo file="${vcsprops}" append="false" />
+    <propertyfile file="${vcsprops}">
+      <entry key="nuxeo.test.core" value="${nuxeo.test.core}" />
+    </propertyfile>
+    <nx:profile name="pgsql">
+      <propertyfile file="${vcsprops}">
+        <entry key="nuxeo.test.vcs.db" value="PostgreSQL" />
+        <entry key="nuxeo.test.vcs.server" value="${nuxeo.db.host}" />
+        <entry key="nuxeo.test.vcs.port" value="${nuxeo.db.port}" />
+        <entry key="nuxeo.test.vcs.database" value="${nuxeo.db.name}" />
+        <entry key="nuxeo.test.vcs.user" value="${nuxeo.db.user}" />
+        <entry key="nuxeo.test.vcs.password" value="${nuxeo.db.pass}" />
+      </propertyfile>
+    </nx:profile>
+    <nx:profile name="mssql">
+      <propertyfile file="${vcsprops}">
+        <entry key="nuxeo.test.vcs.db" value="SQLServer" />
+        <entry key="nuxeo.test.vcs.server" value="${nuxeo.db.host}" />
+        <entry key="nuxeo.test.vcs.port" value="${nuxeo.db.port}" />
+        <entry key="nuxeo.test.vcs.database" value="${nuxeo.db.name}" />
+        <entry key="nuxeo.test.vcs.user" value="${nuxeo.db.user}" />
+        <entry key="nuxeo.test.vcs.password" value="${nuxeo.db.pass}" />
+      </propertyfile>
+    </nx:profile>
+    <!-- virtual profile covering oracle10g, oracle11g and oracle12c profiles -->
+    <nx:profile name="oracle">
+      <propertyfile file="${vcsprops}">
+        <entry key="nuxeo.test.vcs.db" value="Oracle" />
+        <entry key="nuxeo.test.vcs.url"
+               value="jdbc:oracle:thin:@//${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}" />
+        <entry key="nuxeo.test.vcs.user" value="${nuxeo.db.user}" />
+        <entry key="nuxeo.test.vcs.password" value="${nuxeo.db.pass}" />
+      </propertyfile>
+    </nx:profile>
+    <nx:profile name="mysql">
+      <propertyfile file="${vcsprops}">
+        <entry key="nuxeo.test.vcs.db" value="MySQL" />
+        <entry key="nuxeo.test.vcs.url" value="jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}" />
+        <entry key="nuxeo.test.vcs.user" value="${nuxeo.db.user}" />
+        <entry key="nuxeo.test.vcs.password" value="${nuxeo.db.pass}" />
+      </propertyfile>
+    </nx:profile>
+    <nx:profile name="mariadb">
+      <propertyfile file="${vcsprops}">
+        <entry key="nuxeo.test.vcs.db" value="MySQL" />
+        <entry key="nuxeo.test.vcs.url" value="jdbc:mariadb://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}" />
+        <entry key="nuxeo.test.vcs.user" value="${nuxeo.db.user}" />
+        <entry key="nuxeo.test.vcs.password" value="${nuxeo.db.pass}" />
+      </propertyfile>
+    </nx:profile>
+    <nx:profile name="mongodb">
+      <propertyfile file="${vcsprops}">
+        <entry key="nuxeo.test.mongodb.server" value="${nuxeo.mongodb.server}" />
+        <entry key="nuxeo.test.mongodb.dbname" value="${nuxeo.mongodb.dbname}" />
+      </propertyfile>
+    </nx:profile>
+    <nx:profile name="marklogic">
+      <propertyfile file="${vcsprops}">
+        <entry key="nuxeo.test.marklogic.host" value="${nuxeo.marklogic.host}" />
+        <entry key="nuxeo.test.marklogic.port" value="${nuxeo.marklogic.port}" />
+        <entry key="nuxeo.test.marklogic.dbname" value="${nuxeo.marklogic.dbname}" />
+        <entry key="nuxeo.test.marklogic.user" value="${nuxeo.marklogic.user}" />
+        <entry key="nuxeo.test.marklogic.password" value="${nuxeo.marklogic.pass}" />
+      </propertyfile>
+    </nx:profile>
+  </target>
+
+  <target name="vcs-tests-teardown">
+    <delete file="${vcsprops}" failonerror="false" />
+  </target>
+
+</project>

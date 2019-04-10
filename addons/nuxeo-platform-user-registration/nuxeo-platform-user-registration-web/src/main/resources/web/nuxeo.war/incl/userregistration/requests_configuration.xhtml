@@ -1,0 +1,40 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:nxl="http://nuxeo.org/nxforms/layout"
+        xmlns:c="http://java.sun.com/jstl/core"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:a4j="http://richfaces.org/a4j">
+  <h:form id="workspace_requests_create">
+    <h:panelGrid styleClass="dataInput"
+            columnClasses="labelColumn, fieldColumn" columns="2">
+      <h:panelGroup>
+        <h:outputText value="#{messages['label.userregistration.select.configuration']}" />
+      </h:panelGroup>
+
+      <h:panelGroup>
+        <h:selectOneMenu id="directoriesList" styleClass="dataInputText"
+                value="#{userRegistrationConfigurationActions.selectedConfiguration}">
+          <c:forEach var="confName"
+                  items="#{userRegistrationConfigurationActions.configurationsName}">
+            <f:selectItem itemLabel="#{confName}"
+                    itemValue="#{confName}" />
+          </c:forEach>
+          <a4j:ajax event="change" render="workspace_requests_create,facesStatusMessagePanel" execute="@this">
+          </a4j:ajax>
+        </h:selectOneMenu>
+      </h:panelGroup>
+    </h:panelGrid>
+
+    <br /><br />
+
+    <nxl:layout name="user_request_configuration" mode="edit"
+            value="#{userRegistrationConfigurationActions.configurationDocument}" />
+
+    <p class="buttonsGadget">
+      <a4j:commandButton type="submit" value="#{messages['command.save']}"
+              styleClass="button"
+              action="#{userRegistrationConfigurationActions.saveConfiguration}"
+              render="workspace_requests_create,facesStatusMessagePanel" />
+    </p>
+  </h:form>
+</div>
