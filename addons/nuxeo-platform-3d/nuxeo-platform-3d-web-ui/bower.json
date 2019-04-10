@@ -1,0 +1,11 @@
+{
+  "name": "nuxeo-platform-3d-web-ui",
+  "private": true,
+  "dependencies": {
+    "nuxeo-3d-elements": "../nuxeo-platform-3d-elements"
+  },
+  "resolutions": {
+    "nuxeo-elements": "master",
+    "nuxeo": "master"
+  }
+}
