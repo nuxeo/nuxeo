@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Live Connect JSF
+Bundle-SymbolicName: org.nuxeo.ecm.liveconnect.jsf;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/actions-contrib.xml
