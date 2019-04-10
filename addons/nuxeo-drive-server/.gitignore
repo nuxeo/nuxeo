@@ -1,0 +1,15 @@
+*.swp
+*~
+target
+pojo-bin
+seam-bin
+bin
+.DS_Store
+.classpath
+.project
+.settings
+.idea
+*.iml
+nuxeo-drive-bench/src/test/resources/bodies
+nuxeo-drive-bench/src/test/scala/org/nuxeo/drive/bench/RecordedSimulation*
+.cache
