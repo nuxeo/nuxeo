@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:nxthemes="http://nuxeo.org/nxthemes"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:nxl="http://nuxeo.org/nxforms/layout"
+    xmlns:nxu="http://nuxeo.org/nxweb/util"
+    xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:a4j="http://richfaces.org/a4j">
+
+  <div class="foldableBox">
+    <h3 class="folded">
+		  <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
+		    <h:outputText value="#{messages['label.template.config.title']}"/>
+		  </a>
+    </h3>
+    <div class="boxBody" style="display:none">
+      <nxl:layout name="toggaledTemplateOptions" mode="edit" value="#{currentDocument}" />
+    </div>
+  </div>
+
+  <div class="foldableBox">
+    <c:if test="#{!templateActions.showParamEditor}">
+      <h3 class="folded">
+        <a class="foldableHeaderLink" href="#nogo" onclick="initContentWidgets();return toggleBox(this)">
+          <h:outputText value="#{messages['label.template.params.title']}"/>
+        </a>
+      </h3>
+      <div class="boxBody" style="display:none">
+        <ui:include src="/incl/tabs/templates/params_editor.xhtml">
+          <ui:param name="targetTemplate" value="null" />
+          <ui:param name="bean" value="#{templateActions}" />
+        </ui:include>
+     </div>
+   </c:if>
+   <c:if test="#{templateActions.showParamEditor}">
+     <h3 class="folded">
+       <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
+         <h:outputText value="#{messages['label.template.params.title']}"/>
+       </a>
+     </h3>
+     <div class="boxBody">
+        <ui:include src="/incl/tabs/templates/params_editor.xhtml">
+         <ui:param name="targetTemplate" value="null" />
+         <ui:param name="bean" value="#{templateActions}" />
+        </ui:include>
+     </div>
+   </c:if>
+  </div>
+
+  <h:panelGroup id="templateUsageListingPanel">
+    <div class="foldableBox">
+      <h:form>
+        <c:if test="#{templateActions.showUsageListing}">
+          <h3 class="folded">
+            <a4j:commandLink
+              action="#{templateActions.setShowUsageListing(false)}"
+              immediate="true" render="templateUsageListingPanel"
+              styleClass="foldableHeaderLink" >
+              <h:outputText
+                value="#{messages['label.template.usage.title']}" />
+            </a4j:commandLink>
+          </h3>
+        </c:if>
+        <c:if test="#{!templateActions.showUsageListing}">
+          <h3 class="folded">
+            <a4j:commandLink
+              action="#{templateActions.setShowUsageListing(true)}"
+              immediate="true" render="templateUsageListingPanel"
+              styleClass="foldableHeaderLink">
+              <h:outputText
+                value="#{messages['label.template.usage.title']}" />
+            </a4j:commandLink>
+          </h3>
+        </c:if>
+      </h:form>
+      <c:if test="#{templateActions.showUsageListing}">
+        <div class="boxBody">
+          <h:form>
+            <h:selectBooleanCheckbox
+              value="#{templateActions.showVersions}">
+              <a4j:ajax event="click"
+                render="templateUsageListing" />
+            </h:selectBooleanCheckbox>
+            <h:outputText
+              value="#{messages['label.template.usage.showVersions']}" />
+            <br />
+            <h:selectBooleanCheckbox
+              value="#{templateActions.checkedInVersion}">
+              <a4j:ajax event="click"
+                render="templateUsageListing" />
+            </h:selectBooleanCheckbox>
+            <h:outputText
+              value="#{messages['label.template.usage.isCheckInVersions']}" />
+          </h:form>
+          <h:panelGroup id="templateUsageListing">
+            <nxu:set var="contentViewName" value="TEMPLATE_USAGE">
+              <ui:decorate template="/incl/content_view.xhtml">
+                <ui:define name="content_view_title" />
+                <ui:define name="content_view_syndication_buttons" />
+                <ui:define name="content_view_compat_actions" />
+              </ui:decorate>
+            </nxu:set>
+          </h:panelGroup>
+        </div>
+      </c:if>
+    </div>
+  </h:panelGroup>
+
+</div>
