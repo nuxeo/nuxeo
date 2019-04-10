@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.video.theme">
+
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view name="nuxeo5 includes" template-engine="jsf-facelets" merge="true">
+      <format-type>widget</format-type>
+      <resource>video-js.css</resource>
+      <resource>video-js.nx.css</resource>
+      <resource>videojs.thumbnails.css</resource>
+
+      <resource>video-js.js</resource>
+      <resource>video-player-util.js</resource>
+      <resource>videojs.thumbnails.js</resource>
+    </view>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <resource name="video-js.css">
+      <path>css/video-js.css</path>
+    </resource>
+    <resource name="video-js.nx.css">
+      <path>css/video-js.nx.css</path>
+      <require>video-js.css</require>
+    </resource>
+    <resource name="videojs.thumbnails.css">
+      <path>css/videojs.thumbnails.css</path>
+    </resource>
+
+    <resource name="video-js.js">
+      <path>scripts/video.js</path>
+    </resource>
+    <resource name="video-player-util.js">
+      <path>scripts/video-player-util.js</path>
+      <require>video-js.js</require>
+    </resource>
+    <resource name="videojs.thumbnails.js">
+      <path>scripts/videojs.thumbnails.js</path>
+      <require>video-js.js</require>
+    </resource>
+  </extension>
+
+  <!-- mapping between theme pages and resources -->
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+    <themePage name="galaxy/default">
+      <styles append="true">
+        <style>platform_video</style>
+      </styles>
+    </themePage>
+  </extension>
+
+  <!-- CSS path declaration -->
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <style name="platform_video">
+      <src>themes/css/platform_video.css</src>
+    </style>
+  </extension>
+
+</component>
