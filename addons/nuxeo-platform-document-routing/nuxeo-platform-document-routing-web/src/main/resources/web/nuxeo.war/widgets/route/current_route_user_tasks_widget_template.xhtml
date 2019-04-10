@@ -1,0 +1,88 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+  <a4j:outputPanel id="#{widget.id}_panel">
+
+  <nxu:set var="tasks" value="#{routingActions.getCurrentRouteCurrentUserTasks()}"
+    cache="true">
+  <nxu:set var="showFirstForm" value="#{currentDashBoardItemsExceptPublishingTasks.size() == 1}" cache="true">
+
+    <c:if test="#{!empty tasks}">
+      <h3 class="summaryTitle">
+        <h:outputText value="#{messages['label.document.routing.your.tasks']}" />
+      </h3>
+
+      <c:forEach var="task" items="#{tasks}" varStatus="status">
+
+        <nxu:set var="idPrefix" value="task_#{task.id}" cache="true">
+
+        <div>
+
+          <nxu:valueHolder
+            id="#{idPrefix}_valueHolder"
+            var="actionClicked"
+            defaultValue="false">
+
+          <h:outputFormat styleClass="boldLabel" value="#{messages['label.route.task.type']} ">
+            <f:param value="#{messages[routingActions.getRouteInstanceFor(task).title]} - #{messages[task.name]}" />
+          </h:outputFormat>
+          <h:outputText value="#{messages['label.route.task.assigned.to']} " />
+          <c:forEach var="actor" items="#{task.actors}">
+            <nxl:widgetType name="template" mode="view"
+              template="/document_routing_widgets/route_assignee_widget_template.xhtml"
+              value="#{actor}" />
+          </c:forEach>
+          <div class="dueDate warningLabel">
+            <h:outputText value=" #{messages['label.route.task.due.date']} " />
+            <h:outputText value="#{task.dueDate}" />
+          </div>
+          <div class="directive quote">
+            <h:outputText value="#{messages[task.directive]}" />
+          </div>
+
+          <a4j:outputPanel id="#{idPrefix}_ajax_panel">
+            <c:if test="#{actionClicked or showFirstForm}">
+              <div>
+                <div id="#{idPrefix}_box">
+                  <nxu:set var="isRoutingTask" value="#{routingTaskActions.isRoutingTask(task)}">
+                    <nxl:layout name="#{routingTaskActions.getTaskLayout(task)}" mode="edit" value="#{routingTaskActions.formVariables}"/>
+                    <p class="buttonsGadget">
+                      <nxu:set var="actions"  value="#{routingTaskActions.getTaskButtons(task)}" cache="true">
+                        <nxu:dataList var="btn_action" value="#{actions}" id="versionActionsTable">
+                          <span id="#{sel_action.id}">
+                            <h:commandLink action="#{routingTaskActions.endTask(task)}"
+                              value="#{messages[btn_action.label]}" styleClass="button">
+                              <f:param name="button" value="#{btn_action.id}" />
+                            </h:commandLink>
+                          </span>
+                        </nxu:dataList>
+                      </nxu:set>
+                    </p>
+                  </nxu:set>
+                </div>
+              </div>
+            </c:if>
+          </a4j:outputPanel>
+
+          </nxu:valueHolder>
+
+        </div>
+
+        </nxu:set>
+
+      </c:forEach>
+
+    </c:if>
+
+  </nxu:set>
+  </nxu:set>
+
+  </a4j:outputPanel>
+
+</c:if>

@@ -1,0 +1,2361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="studio.extensions.template-module-demo" version="1.0.0">
+  <require>org.nuxeo.runtime.started</require>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="customer_reference" prefix="cr" src="data/schemas/customer_reference.xsd"/>
+    <schema name="InterventionStatement" prefix="is" src="data/schemas/InterventionStatement.xsd"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="CustomerReference" extends="File">
+      <schema name="customer_reference"/>
+    </doctype>
+    <doctype name="InterventionStatement" extends="File">
+      <schema name="InterventionStatement"/>
+    </doctype>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="types">
+    <types>
+      <type name="CustomerReference">default</type>
+    </types>
+    <types>
+      <type name="InterventionStatement">default</type>
+    </types>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+    <type id="CustomerReference">
+      <label>Customer Reference</label>
+      <description></description>
+      <default-view>view_documents</default-view>
+      <layouts mode="create">
+        <layout>layout@CustomerReference-create</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>layout@CustomerReference-edit</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>layout@CustomerReference-view</layout>
+      </layouts>
+    </type>
+    <type id="Folder">
+      <subtypes>
+        <type>CustomerReference</type>
+      </subtypes>
+    </type>
+    <type id="Workspace">
+      <subtypes>
+        <type>CustomerReference</type>
+      </subtypes>
+    </type>
+    <type id="InterventionStatement">
+      <label>Intervention Statement</label>
+      <description>Statement that consultants have to bring back signed after an intervention at client's site</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="create">
+        <layout>layout@InterventionStatement-create</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>layout@InterventionStatement-edit</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>layout@InterventionStatement-view</layout>
+      </layouts>
+    </type>
+    <type id="Folder">
+      <subtypes>
+        <type>InterventionStatement</type>
+      </subtypes>
+    </type>
+    <type id="Workspace">
+      <subtypes>
+        <type>InterventionStatement</type>
+      </subtypes>
+    </type>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions"/>
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="layouts">
+    <layout name="layout@CustomerReference-create">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>description</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>project_name</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>abstract</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>date_of_delivery</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>industry</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>project_duration</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>resources</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>total_cost</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>content</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>quote</widget>
+        </row>
+      </rows>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="description" type="textarea">
+        <labels>
+          <label mode="any">Description</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:description</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="project_name" type="text">
+        <labels>
+          <label mode="any">Project name</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:project_name</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="abstract" type="htmltext">
+        <labels>
+          <label mode="any">Abstract</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:abstract</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="date_of_delivery" type="datetime">
+        <labels>
+          <label mode="any">Date of delivery</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:date_of_delivery</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="industry" type="selectOneDirectory">
+        <labels>
+          <label mode="any">Industry</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:industry</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="localize">false</property>
+          <property name="directoryName">Industry</property>
+          <property name="displayIdAndLabel">false</property>
+          <property name="ordering">label</property>
+          <property name="notDisplayDefaultOption">false</property>
+          <property name="displayObsoleteEntries">false</property>
+          <property name="required">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="project_duration" type="text">
+        <labels>
+          <label mode="any">Project duration</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:project_duration</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="resources" type="text">
+        <labels>
+          <label mode="any">Resources</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:resources</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="total_cost" type="text">
+        <labels>
+          <label mode="any">Total cost</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:total_cost</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="content" type="file">
+        <labels>
+          <label mode="any">Picture</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>file:content</field>
+          <field>file:filename</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="iconRendered">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="quote" type="textarea">
+        <labels>
+          <label mode="any">Quote</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:quote</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+    </layout>
+    <layout name="layout@CustomerReference-edit">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>description</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>project_name</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>abstract</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>date_of_delivery</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>industry</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>project_duration</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>resources</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>total_cost</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>content</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>quote</widget>
+        </row>
+      </rows>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="description" type="textarea">
+        <labels>
+          <label mode="any">Description</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:description</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="project_name" type="text">
+        <labels>
+          <label mode="any">Project name</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:project_name</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="abstract" type="htmltext">
+        <labels>
+          <label mode="any">Abstract</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:abstract</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="date_of_delivery" type="datetime">
+        <labels>
+          <label mode="any">Date of delivery</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:date_of_delivery</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="industry" type="selectOneDirectory">
+        <labels>
+          <label mode="any">Industry</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:industry</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="localize">false</property>
+          <property name="directoryName">Industry</property>
+          <property name="displayIdAndLabel">false</property>
+          <property name="ordering">label</property>
+          <property name="notDisplayDefaultOption">false</property>
+          <property name="displayObsoleteEntries">false</property>
+          <property name="required">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="project_duration" type="text">
+        <labels>
+          <label mode="any">Project duration</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:project_duration</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="resources" type="text">
+        <labels>
+          <label mode="any">Resources</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:resources</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="total_cost" type="text">
+        <labels>
+          <label mode="any">Total cost</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:total_cost</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="content" type="file">
+        <labels>
+          <label mode="any">Picture</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>file:content</field>
+          <field>file:filename</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="iconRendered">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="quote" type="textarea">
+        <labels>
+          <label mode="any">Quote</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:quote</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+    </layout>
+    <layout name="layout@CustomerReference-view">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>description</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>project_name</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>abstract</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>date_of_delivery</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>industry</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>project_duration</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>resources</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>total_cost</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+      </rows>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="description" type="textarea">
+        <labels>
+          <label mode="any">Description</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:description</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="project_name" type="text">
+        <labels>
+          <label mode="any">Project name</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:project_name</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="abstract" type="htmltext">
+        <labels>
+          <label mode="any">Abstract</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:abstract</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="date_of_delivery" type="datetime">
+        <labels>
+          <label mode="any">Date of delivery</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:date_of_delivery</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="industry" type="selectOneDirectory">
+        <labels>
+          <label mode="any">Industry</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:industry</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="localize">false</property>
+          <property name="directoryName">Industry</property>
+          <property name="displayIdAndLabel">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="project_duration" type="text">
+        <labels>
+          <label mode="any">Project duration</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:project_duration</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="resources" type="text">
+        <labels>
+          <label mode="any">Resources</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:resources</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="total_cost" type="text">
+        <labels>
+          <label mode="any">Total cost</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>cr:total_cost</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+    </layout>
+    <layout name="layout@InterventionStatement-create">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>content</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>studio_header</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>client_name</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>client_adress</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>client_zip</widget>
+          <widget>client_city</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>client_pm</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>client_tech_guy</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>invoice_number</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>studio_header_1</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>subject</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>description</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>date</widget>
+          <widget>days</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>site</widget>
+          <widget>consultant</widget>
+        </row>
+      </rows>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="content" type="file">
+        <labels>
+          <label mode="any">Attached File</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>file:content</field>
+          <field>file:filename</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="iconRendered">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="studio_header" type="studio_header">
+        <handlingLabels>true</handlingLabels>
+        <labels>
+          <label mode="any">Client Information</label>
+        </labels>
+        <translated>false</translated>
+        <widgetModes>
+          <mode value="create">view</mode>
+        </widgetModes>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_name" type="text">
+        <labels>
+          <label mode="any">Name</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">Name of the client</label>
+        </helpLabels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_name</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_adress" type="text">
+        <labels>
+          <label mode="any">Adress</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_adress</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_zip" type="int">
+        <labels>
+          <label mode="any">Zip Code</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_zip</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_city" type="text">
+        <labels>
+          <label mode="any">City</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_city</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_pm" type="text">
+        <labels>
+          <label mode="any">Project Manager</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_pm</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_tech_guy" type="text">
+        <labels>
+          <label mode="any">Technical Contact</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_tech_guy</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="invoice_number" type="text">
+        <labels>
+          <label mode="any">Invoice number</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:invoice_number</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="studio_header_1" type="studio_header">
+        <handlingLabels>true</handlingLabels>
+        <labels>
+          <label mode="any">Intervention Details</label>
+        </labels>
+        <translated>false</translated>
+        <widgetModes>
+          <mode value="create">view</mode>
+        </widgetModes>
+        <properties mode="any"/>
+      </widget>
+      <widget name="subject" type="text">
+        <labels>
+          <label mode="any">Subject</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:subject</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="description" type="textarea">
+        <labels>
+          <label mode="any">Description</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:description</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="date" type="datetime">
+        <labels>
+          <label mode="any">Date</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:date</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="showsTime">false</property>
+          <property name="required">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="days" type="text">
+        <labels>
+          <label mode="any">NUmber of days</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:days</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="site" type="text">
+        <labels>
+          <label mode="any">Location</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:site</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="consultant" type="singleUserSuggestion">
+        <labels>
+          <label mode="any">Nuxeo Consultant</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:consultant</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="displayEmailInSuggestion">false</property>
+          <property name="userSuggestionSearchType">USER_TYPE</property>
+          <property name="required">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+    </layout>
+    <layout name="layout@InterventionStatement-edit">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>content</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>studio_header</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>client_name</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>client_adress</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>client_zip</widget>
+          <widget>client_city</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>client_pm</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>client_tech_guy</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>invoice_number</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>studio_header_1</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>subject</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>description</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>date</widget>
+          <widget>days</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>site</widget>
+          <widget>consultant</widget>
+        </row>
+      </rows>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="content" type="file">
+        <labels>
+          <label mode="any">Attached File</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>file:content</field>
+          <field>file:filename</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="iconRendered">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="studio_header" type="studio_header">
+        <handlingLabels>true</handlingLabels>
+        <labels>
+          <label mode="any">Client Information</label>
+        </labels>
+        <translated>false</translated>
+        <widgetModes>
+          <mode value="edit">view</mode>
+        </widgetModes>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_name" type="text">
+        <labels>
+          <label mode="any">Name</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">Name of the client</label>
+        </helpLabels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_name</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_adress" type="text">
+        <labels>
+          <label mode="any">Adress</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_adress</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_zip" type="int">
+        <labels>
+          <label mode="any">Zip Code</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_zip</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_city" type="text">
+        <labels>
+          <label mode="any">City</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_city</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_pm" type="text">
+        <labels>
+          <label mode="any">Project Manager</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_pm</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_tech_guy" type="text">
+        <labels>
+          <label mode="any">Technical Contact</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_tech_guy</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="invoice_number" type="text">
+        <labels>
+          <label mode="any">Invoice number</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:invoice_number</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="studio_header_1" type="studio_header">
+        <handlingLabels>true</handlingLabels>
+        <labels>
+          <label mode="any">Intervention Details</label>
+        </labels>
+        <translated>false</translated>
+        <widgetModes>
+          <mode value="edit">view</mode>
+        </widgetModes>
+        <properties mode="any"/>
+      </widget>
+      <widget name="subject" type="text">
+        <labels>
+          <label mode="any">Subject</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:subject</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="description" type="textarea">
+        <labels>
+          <label mode="any">Description</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:description</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="date" type="datetime">
+        <labels>
+          <label mode="any">Date</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:date</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="showsTime">false</property>
+          <property name="required">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="days" type="text">
+        <labels>
+          <label mode="any">NUmber of days</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:days</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="site" type="text">
+        <labels>
+          <label mode="any">Location</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:site</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="consultant" type="singleUserSuggestion">
+        <labels>
+          <label mode="any">Nuxeo Consultant</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:consultant</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="displayEmailInSuggestion">false</property>
+          <property name="userSuggestionSearchType">USER_TYPE</property>
+          <property name="required">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+    </layout>
+    <layout name="layout@InterventionStatement-view">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>studio_header</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>client_name</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>client_adress</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>client_zip</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>client_city</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>client_pm</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>client_tech_guy</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>invoice_number</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>studio_header_1</widget>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>subject</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">2</property>
+          </properties>
+          <widget>description</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>date</widget>
+          <widget>days</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>site</widget>
+          <widget>consultant</widget>
+        </row>
+      </rows>
+      <widget name="studio_header" type="studio_header">
+        <handlingLabels>true</handlingLabels>
+        <labels>
+          <label mode="any">Client Information</label>
+        </labels>
+        <translated>false</translated>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_name" type="text">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <helpLabels>
+          <label mode="any">Name of the client</label>
+        </helpLabels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_name</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="localize">false</property>
+          <property name="escape">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_adress" type="text">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_adress</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="localize">false</property>
+          <property name="escape">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_zip" type="int">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_zip</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_city" type="text">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_city</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="localize">false</property>
+          <property name="escape">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_pm" type="text">
+        <labels>
+          <label mode="any">Project Manager</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_pm</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="client_tech_guy" type="text">
+        <labels>
+          <label mode="any">Technical Contact</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:client_tech_guy</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="invoice_number" type="text">
+        <labels>
+          <label mode="any">Invoice number</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:invoice_number</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="studio_header_1" type="studio_header">
+        <handlingLabels>true</handlingLabels>
+        <labels>
+          <label mode="any">Intervention Details</label>
+        </labels>
+        <translated>false</translated>
+        <properties mode="any"/>
+      </widget>
+      <widget name="subject" type="text">
+        <labels>
+          <label mode="any">Subject</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:subject</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+      <widget name="description" type="textarea">
+        <labels>
+          <label mode="any">Description</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:description</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="date" type="datetime">
+        <labels>
+          <label mode="any">Date</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:date</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="showsTime">false</property>
+          <property name="required">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="days" type="text">
+        <labels>
+          <label mode="any">NUmber of days</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:days</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="site" type="text">
+        <labels>
+          <label mode="any">Location</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:site</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="disabled">false</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="consultant" type="singleUserSuggestion">
+        <labels>
+          <label mode="any">Nuxeo Consultant</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>is:consultant</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="displayEmailInSuggestion">false</property>
+          <property name="userSuggestionSearchType">USER_TYPE</property>
+          <property name="required">false</property>
+        </properties>
+        <properties widgetMode="view">
+          <property name="displayEmailInSuggestion">false</property>
+          <property name="userSuggestionSearchType">USER_TYPE</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+    </layout>
+  </extension>
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
+    <directory name="Industry">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <table>studio_vocabulary_Industry</table>
+      <dataFile>data/vocabularies/Industry.csv</dataFile>
+    </directory>
+  </extension>
+  <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager" point="directories">
+    <directory name="Industry" layout="vocabulary" sortField="label"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+    <filter id="create" append="true">
+      <rule grant="false">
+        <type>CustomerReference</type>
+        <type>InterventionStatement</type>
+      </rule>
+    </filter>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="versioningRules">
+    <versioningRule typeName="CustomerReference">
+      <initialState major="0" minor="0"/>
+      <options lifeCycleState="*">
+        <none default="true"/>
+        <minor/>
+        <major/>
+      </options>
+    </versioningRule>
+    <versioningRule typeName="InterventionStatement">
+      <initialState major="0" minor="0"/>
+      <options lifeCycleState="*">
+        <none default="true"/>
+        <minor/>
+        <major/>
+      </options>
+    </versioningRule>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes">
+
+
+    <documentation>Widget types declared in studio</documentation>
+
+
+    <widgetType name="path">
+
+      <configuration>
+
+        <title>Path</title>
+
+        <description>
+          The path widget displays a popup browser in the document
+          hierarchy.
+        </description>
+
+        <supportedModes>
+
+          <mode>edit</mode>
+
+        </supportedModes>
+
+        <fields>
+
+          <list>false</list>
+
+          <complex>false</complex>
+
+          <supportedTypes>
+
+            <type>string</type>
+
+            <type>path</type>
+
+          </supportedTypes>
+
+          <defaultTypes>
+
+            <type>path</type>
+
+          </defaultTypes>
+
+        </fields>
+
+        <categories>
+
+          <category>document</category>
+
+          <category>studio</category>
+
+        </categories>
+
+        <!-- no properties to configure -->
+
+      </configuration>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+
+      <property name="template">/widgets/search_path_widget.xhtml</property>
+
+    </widgetType>
+
+
+    <widgetType name="studio_header">
+
+      <configuration>
+
+        <title>Header</title>
+
+        <description>
+          The header widget just displays the widget label.
+        </description>
+
+        <supportedModes>
+
+          <mode>edit</mode>
+
+          <mode>view</mode>
+
+        </supportedModes>
+
+        <fields>
+
+          <list>false</list>
+
+          <complex>false</complex>
+
+          <supportedTypes/>
+
+          <defaultTypes/>
+
+        </fields>
+
+        <categories>
+
+          <category>document</category>
+
+          <category>studio</category>
+
+        </categories>
+
+        <properties>
+
+          <layouts mode="any">
+
+            <layout name="studio_header_widget_type_properties_any">
+
+              <rows>
+
+                <row>
+
+                  <widget>styleClass</widget>
+
+                </row>
+
+                <row>
+
+                  <widget>style</widget>
+
+                </row>
+
+              </rows>
+
+              <widget name="styleClass" type="text">
+
+                <labels>
+
+                  <label mode="any">Style class</label>
+
+                </labels>
+
+                <fields>
+
+                  <field>styleClass</field>
+
+                </fields>
+
+              </widget>
+
+              <widget name="style" type="text">
+
+                <labels>
+
+                  <label mode="any">Style</label>
+
+                </labels>
+
+                <fields>
+
+                  <field>style</field>
+
+                </fields>
+
+              </widget>
+
+            </layout>
+
+          </layouts>
+
+        </properties>
+
+      </configuration>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+
+      <property name="template">
+        /widgets/studio_header_widget.xhtml
+      </property>
+
+    </widgetType>
+
+
+    <widgetType name="chainedDirectory">
+
+      <configuration>
+
+        <title>Chained Vocabulary</title>
+
+        <supportedModes>
+
+          <mode>view</mode>
+
+          <mode>edit</mode>
+
+        </supportedModes>
+
+        <fields>
+
+          <list>false</list>
+
+          <complex>false</complex>
+
+          <supportedTypes>
+
+            <type>string</type>
+
+          </supportedTypes>
+
+        </fields>
+
+        <categories>
+
+          <category>document</category>
+
+          <category>studio</category>
+
+        </categories>
+
+        <properties>
+
+          <layouts mode="any">
+
+            <layout name="chainedDirectory_widget_type_properties_any">
+
+              <rows>
+
+                <row>
+
+                  <widget>childDirectory</widget>
+
+                </row>
+
+                <row>
+
+                  <widget>localize</widget>
+
+                </row>
+
+              </rows>
+
+              <widget name="childDirectory" type="selectOneResource">
+
+                <labels>
+
+                  <label mode="any">Vocabulary</label>
+
+                </labels>
+
+                <helpLabels>
+
+                  <label mode="any">
+                    Select the child or hierarchical directory
+                    mapped.
+                  </label>
+
+                </helpLabels>
+
+                <fields>
+
+                  <field>childDirectory</field>
+
+                </fields>
+
+                <properties mode="any">
+
+                  <property name="resourceName">child_vocabularies</property>
+
+                </properties>
+
+                <properties widgetMode="edit">
+
+                  <property name="required">true</property>
+
+                </properties>
+
+              </widget>
+
+              <widget name="localize" type="checkbox">
+
+                <labels>
+
+                  <label mode="any">Localize</label>
+
+                </labels>
+
+                <helpLabels>
+
+                  <label mode="any">If true, labels will be localized.</label>
+
+                </helpLabels>
+
+                <fields>
+
+                  <field>localize</field>
+
+                </fields>
+
+              </widget>
+
+            </layout>
+
+          </layouts>
+
+          <layouts mode="edit">
+
+            <layout name="chainedDirectory_widget_type_properties_edit">
+
+              <rows>
+
+                <row>
+
+                  <widget>required</widget>
+
+                </row>
+
+                <row>
+
+                  <widget>on2rows</widget>
+
+                </row>
+
+              </rows>
+
+              <widget name="required" type="checkbox">
+
+                <labels>
+
+                  <label mode="any">Required</label>
+
+                </labels>
+
+                <fields>
+
+                  <field>required</field>
+
+                </fields>
+
+              </widget>
+
+              <widget name="on2rows" type="checkbox">
+
+                <labels>
+
+                  <label mode="any">On 2 rows</label>
+
+                </labels>
+
+                <helpLabels>
+
+                  <label mode="any">
+                    If true, display the selectors on two rows.
+                    Defaults to
+                    false.
+                  </label>
+
+                </helpLabels>
+
+                <fields>
+
+                  <field>on2rows</field>
+
+                </fields>
+
+              </widget>
+
+            </layout>
+
+          </layouts>
+
+        </properties>
+
+      </configuration>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+
+      <property name="template">
+        /widgets/chain_monoselect_2levels_widget.xhtml
+      </property>
+
+    </widgetType>
+
+
+    <widgetType name="multiChainedDirectory">
+
+      <configuration>
+
+        <title>Multiple chained Vocabulary</title>
+
+        <supportedModes>
+
+          <mode>view</mode>
+
+          <mode>edit</mode>
+
+        </supportedModes>
+
+        <fields>
+
+          <list>true</list>
+
+          <complex>false</complex>
+
+          <supportedTypes>
+
+            <type>string</type>
+
+          </supportedTypes>
+
+        </fields>
+
+        <categories>
+
+          <category>document</category>
+
+          <category>studio</category>
+
+        </categories>
+
+        <properties>
+
+          <layouts mode="any">
+
+            <layout name="multiChainedDirectory_widget_type_properties_any">
+
+              <rows>
+
+                <row>
+
+                  <widget>childDirectory</widget>
+
+                </row>
+
+                <row>
+
+                  <widget>localize</widget>
+
+                </row>
+
+              </rows>
+
+              <widget name="childDirectory" type="selectOneResource">
+
+                <labels>
+
+                  <label mode="any">Vocabulary</label>
+
+                </labels>
+
+                <helpLabels>
+
+                  <label mode="any">
+                    Select the child or hierarchical directory
+                    mapped.
+                  </label>
+
+                </helpLabels>
+
+                <fields>
+
+                  <field>childDirectory</field>
+
+                </fields>
+
+                <properties mode="any">
+
+                  <property name="resourceName">child_vocabularies</property>
+
+                </properties>
+
+                <properties widgetMode="edit">
+
+                  <property name="required">true</property>
+
+                </properties>
+
+              </widget>
+
+              <widget name="localize" type="checkbox">
+
+                <labels>
+
+                  <label mode="any">Localize</label>
+
+                </labels>
+
+                <helpLabels>
+
+                  <label mode="any">If true, labels will be localized.</label>
+
+                </helpLabels>
+
+                <fields>
+
+                  <field>localize</field>
+
+                </fields>
+
+              </widget>
+
+            </layout>
+
+          </layouts>
+
+          <layouts mode="edit">
+
+            <layout name="multiChainedDirectory_widget_type_properties_edit">
+
+              <rows>
+
+                <row>
+
+                  <widget>required</widget>
+
+                </row>
+
+                <row>
+
+                  <widget>on2rows</widget>
+
+                </row>
+
+              </rows>
+
+              <widget name="required" type="checkbox">
+
+                <labels>
+
+                  <label mode="any">Required</label>
+
+                </labels>
+
+                <fields>
+
+                  <field>required</field>
+
+                </fields>
+
+              </widget>
+
+              <widget name="on2rows" type="checkbox">
+
+                <labels>
+
+                  <label mode="any">On 2 rows</label>
+
+                </labels>
+
+                <helpLabels>
+
+                  <label mode="any">
+                    If true, display the selectors on two rows.
+                    Defaults to
+                    false.
+                  </label>
+
+                </helpLabels>
+
+                <fields>
+
+                  <field>on2rows</field>
+
+                </fields>
+
+              </widget>
+
+            </layout>
+
+          </layouts>
+
+        </properties>
+
+      </configuration>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+
+      <property name="template">
+        /widgets/chain_multiselect_2levels_widget.xhtml
+      </property>
+
+    </widgetType>
+
+
+    <widgetType name="filesList">
+
+      <configuration>
+
+        <title>Files</title>
+
+        <description>
+
+          <p>
+            The Files displays an editable list of files, using javascript to
+            keep the uploaded file path when adding several files in a row.
+          </p>
+
+          <p>Items are defined using sub wigdets configuration.</p>
+
+          <p>
+            This is actually a template widget type whose template uses a
+            &lt;nxu:inputList /&gt; tag in edit or create mode, and a table
+            iterating over items in other modes.
+          </p>
+
+        </description>
+
+        <categories>
+
+          <category>document</category>
+
+          <category>studio</category>
+
+        </categories>
+
+        <supportedModes>
+
+          <mode>edit</mode>
+
+          <mode>view</mode>
+
+        </supportedModes>
+
+        <acceptingSubWidgets>true</acceptingSubWidgets>
+
+        <fields>
+
+          <list>true</list>
+
+          <complex>false</complex>
+
+          <supportedTypes>
+
+            <type>blob</type>
+
+          </supportedTypes>
+
+          <defaultTypes>
+
+            <type>blob</type>
+
+          </defaultTypes>
+
+        </fields>
+
+        <properties>
+
+          <layouts mode="edit">
+
+            <layout name="list_widget_type_properties_edit">
+
+              <rows>
+
+                <row>
+
+                  <widget>required</widget>
+
+                </row>
+
+                <row>
+
+                  <widget>diff</widget>
+
+                </row>
+
+              </rows>
+
+              <widget name="required" type="checkbox">
+
+                <labels>
+
+                  <label mode="any">Required</label>
+
+                </labels>
+
+                <fields>
+
+                  <field>required</field>
+
+                </fields>
+
+              </widget>
+
+              <widget name="diff" type="checkbox">
+
+                <labels>
+
+                  <label mode="any">Diff</label>
+
+                </labels>
+
+                <fields>
+
+                  <field>diff</field>
+
+                </fields>
+
+              </widget>
+
+            </layout>
+
+          </layouts>
+
+        </properties>
+
+      </configuration>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+
+      <property name="template">/widgets/files_list_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+
+  </extension>
+</component>
