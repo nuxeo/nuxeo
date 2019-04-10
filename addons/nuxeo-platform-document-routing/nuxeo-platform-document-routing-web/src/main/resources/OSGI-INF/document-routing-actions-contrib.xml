@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.routing.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+    <action id="TAB_CONTENT">
+      <filter-id>isNotRoute</filter-id>
+    </action>
+
+    <action id="TAB_DOCUMENT_ROUTE_CONTENT"
+      link="/incl/tabs/document_route_content.xhtml" order="10"
+      label="action.view.content" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>isRoute</filter-id>
+    </action>
+
+    <action id="TAB_DOCUMENT_ROUTE_ELEMENTS"
+      link="/incl/tabs/document_route_content_elements.xhtml" order="100"
+      label="action.view.document.routing.elements" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>isRoute</filter-id>
+    </action>
+
+    <action id="route_to_pdf"
+      link="#{routeToPdfActionBean.doRenderView('view_pdf_route.faces')}"
+      order="20" label="action.pdf.route" icon="/icons/pdf.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>isRoute</filter-id>
+    </action>
+
+    <action id="related_route_to_pdf"
+      link="#{routeToPdfActionBean.doRenderView('view_pdf_related_route.faces')}"
+      order="20" label="action.pdf.route" icon="/icons/pdf.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>isRoutable</filter-id>
+      <filter-id>hasRelatedRouteStarted</filter-id>
+    </action>
+
+    <action id="TAB_CASE_MANAGEMENT_VIEW_RELATED_ROUTE"
+      link="/incl/tabs/related_document_route_preview.xhtml" order="250"
+      label="label.document.routing.related.route">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>isRoutable</filter-id>
+      <filter-id>hasRelatedRouteStarted</filter-id>
+    </action>
+
+    <action id="CANCEL_RELATED_ROUTE" link="#{routingActions.cancelRoute()}"
+      order="10" label="label.document.routing.cancel.route">
+      <category>ATTACHED_ROUTE_LIST</category>
+      <filter-id>hasRelatedRouteStarted</filter-id>
+      <filter-id>isEditableRoute</filter-id>
+    </action>
+
+    <action id="SAVE_ATTACHED_ROUTE_AS_NEW_INSTANCE"
+      link="#{routingActions.saveRouteAsNewInstance()}" order="10"
+      label="label.document.routing.saveAsNew">
+      <category>ATTACHED_ROUTE_LIST</category>
+      <filter-id>hasRelatedRouteStarted</filter-id>
+    </action>
+
+    <action id="SAVE_ROUTE_AS_NEW_INSTANCE"
+      link="#{routingActions.saveRouteAsNewInstance()}" order="10"
+      label="label.document.routing.saveAsNew">
+      <category>ROUTE_LIST</category>
+    </action>
+
+    <action id="ADD_STEP_BEFORE" label="command.add.routeelement.before"
+      link="javascript:document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'before';Richfaces.showModalPanel('selectRouteElementsTypePanel');"
+      icon="/icons/add.png">
+      <category>ADD_STEP_ACTIONS_LIST</category>
+      <filter-id>isNotRunning</filter-id>
+      <filter-id>isEditableRoute</filter-id>
+    </action>
+
+    <action id="ADD_STEP_AFTER" label="command.add.routeelement.after"
+      link="javascript:document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'after';Richfaces.showModalPanel('selectRouteElementsTypePanel');"
+      icon="/icons/add.png">
+      <category>ADD_STEP_ACTIONS_LIST</category>
+      <filter-id>isEditableRoute</filter-id>
+    </action>
+
+    <action id="ADD_STEP_BETWEEN" label="command.add.routeelement.in"
+      link="javascript:document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');"
+      icon="/icons/add.png">
+      <category>ADD_STEP_IN_FORK_ACTIONS_LIST</category>
+      <filter-id>isNotRunning</filter-id>
+      <filter-id>isEditableRoute</filter-id>
+    </action>
+
+    <action id="REMOVE_STEP" label="command.delete"
+      link="#{routingActions.removeStep}" icon="/icons/delete.png">
+      <category>REMOVE_STEP_ACTIONS_LIST</category>
+      <filter-id>isNotRunning</filter-id>
+      <filter-id>isEditableRoute</filter-id>
+    </action>
+
+    <action id="UPDATE_STEP" label="command.edit"
+      link="#{routingActions.editStep}" icon="/icons/modify.png">
+      <category>EDIT_STEP_ACTIONS_LIST</category>
+      <filter-id>isNotRunning</filter-id>
+      <filter-id>isEditableRoute</filter-id>
+    </action>
+
+    <action id="MOVE_STEP_UP" label="command.selection.moveUp"
+      link="#{routingActions.moveRouteElement('up')}"
+      icon="/icons/move_up.png">
+      <category>EDIT_STEP_ACTIONS_LIST</category>
+      <filter-id>isNotRunning</filter-id>
+      <filter-id>isEditableRoute</filter-id>
+    </action>
+
+    <action id="MOVE_STEP_DOWN" label="command.selection.moveDown"
+      link="#{routingActions.moveRouteElement('down')}"
+      icon="/icons/move_down.png">
+      <category>EDIT_STEP_ACTIONS_LIST</category>
+      <filter-id>isNotRunning</filter-id>
+      <filter-id>isEditableRoute</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="create" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>DocumentRoute</type>
+        <type>StepFolder</type>
+      </rule>
+    </filter>
+
+    <filter id="isRoutable">
+      <rule grant="true">
+        <facet>Routable</facet>
+      </rule>
+    </filter>
+
+    <filter id="isRoute">
+      <rule grant="true">
+        <type>DocumentRoute</type>
+      </rule>
+    </filter>
+
+    <filter id="isNotRoute">
+      <rule grant="false">
+        <type>DocumentRoute</type>
+      </rule>
+    </filter>
+
+    <filter id="isDraftRouteModel">
+      <rule grant="true">
+        <condition>
+          document.getCurrentLifeCycleState().equals("draft")
+        </condition>
+        <type>DocumentRoute</type>
+      </rule>
+    </filter>
+
+    <filter id="isEditableRoute">
+      <rule grant="true">
+        <condition>#{userSession.administrator}</condition>
+      </rule>
+      <rule grant="true">
+        <group>routeManagers</group>
+      </rule>
+    </filter>
+
+
+    <filter id="isValidatedRouteModel">
+      <rule grant="true">
+        <condition>
+          document.getCurrentLifeCycleState().equals("validated")
+        </condition>
+        <type>DocumentRoute</type>
+      </rule>
+    </filter>
+
+    <filter id="noRelatedRouteStarted">
+      <rule grant="false">
+        <condition>#{routingActions.hasRelatedRoute()}</condition>
+      </rule>
+    </filter>
+
+    <filter id="hasRelatedRouteStarted">
+      <rule grant="true">
+        <condition>#{routingActions.hasRelatedRoute()}</condition>
+      </rule>
+    </filter>
+
+    <filter id="isNotRunning">
+      <rule grant="false">
+        <condition>
+          document.getCurrentLifeCycleState().equals("running")
+        </condition>
+      </rule>
+    </filter>
+
+  </extension>
+</component>
