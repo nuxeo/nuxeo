@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.convert.oooDaemon.config.default">
+
+  <extension target="org.nuxeo.ecm.platform.convert.oooserver.OOoDaemonManagerComponent"
+    point="oooServerConfig">
+
+  <OOoServer>
+    <!-- enable Nuxeo Daemon to manage OOo server instances : default is true -->
+    <enableDaemon>true</enableDaemon>
+    <!-- define OOo server listen IP : used even if daemon is disabled -->
+    <oooListenIP>127.0.0.1</oooListenIP>
+    <!-- define OOo server listen port : used even if daemon is disabled -->
+    <oooListenPort>8100</oooListenPort>
+    <!-- define Daemon listen port : used only if daemon is enabled -->
+    <oooDaemonListenPort>8101</oooDaemonListenPort>
+    <!-- define number of OOo worker process : used only if daemon is enabled -->
+    <oooWorkers>1</oooWorkers>
+    <!-- define maximum wait time in second before timeout -->
+    <oooServerStartTimeout>60</oooServerStartTimeout>
+
+    <!-- define OOo installation path : used only if daemon is enabled -->
+    <!-- if not defined Nuxeo will try to find the path automatically -->
+    <!--<oooInstallationPath>/usr/lib/openoffice/program</oooInstallationPath>-->
+
+    <!-- define jpipe library path : used only for OOo 3 -->
+    <!--<jpipeLibPath>/opt/openoffice.org/ure/lib</jpipeLibPath>-->
+
+
+    <!-- define number of time a worker process can be used before being recycled: used only if daemon is enabled -->
+    <oooWorkersRecycleInterval>10</oooWorkersRecycleInterval>
+
+    <!-- define is Daemon is started at server startup : used only if daemon is enabled -->
+    <autoStart>false</autoStart>
+
+  </OOoServer>
+
+  </extension>
+
+</component>
+
