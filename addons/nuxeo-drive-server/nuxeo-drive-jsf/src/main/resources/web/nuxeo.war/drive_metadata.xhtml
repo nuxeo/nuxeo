@@ -1,0 +1,17 @@
+<ui:composition template="/pages/popup_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <ui:define name="body">
+
+    <ui:include src="/incl/message_banner.xhtml"/>
+    <nxu:set var="tipsyGravity" value="tipsyGravitySW">
+      <nxl:layout value="#{currentDocument}" name="driveMetadataGridLayout" mode="view" />
+    </nxu:set>
+
+  </ui:define>
+
+</ui:composition>

@@ -1,0 +1,102 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<c:if test="false">
+  Displays widget preview form and rendering in a given mode.
+  Needed parameters:
+  - widgetPreviewMode
+  - widgetPreviewLayoutDef
+</c:if>
+
+<table class="dataOutput">
+  <thead>
+    <tr>
+      <th>
+        #{messages['label.layoutDemo.widgetPreview.properties']}
+      </th>
+      <th>
+        #{messages['label.layoutDemo.widgetPreview.preview']}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="2">
+        <h:outputText value="#{messages['label.layoutDemo.widgetPreview.help']}"
+          class="processMessage completeInfo" />
+      </td>
+    </tr>
+    <tr>
+      <td width="40%" valign="top">
+        <a4j:region id="layoutDemoPreviewRegion">
+          <h:form id="layoutDemoPreviewForm">
+            <nxl:layout name="layout_demo_widget_common_settings"
+              mode="edit" value="#{widgetPreviewLayoutDef}">
+              <ui:define name="inside_input_widget">
+                <f:ajax render="layoutDemoPreviewFrame" execute="@form" />
+              </ui:define>
+            </nxl:layout>
+            <c:forEach var="layoutDef"
+              items="#{currentWidgetTypeDef.configuration.getPropertyLayouts(widgetPreviewMode, 'any')}">
+              <nxu:set var="resolveHelpTwice" value="false">
+              <nxl:layout definition="#{layoutDef}"
+                mode="edit_demo_preview"
+                value="#{widgetPreviewLayoutDef.properties}"
+                template="/layouts/layout_default_template.xhtml">
+                <ui:define name="inside_input_widget">
+                  <f:ajax render="layoutDemoPreviewFrame" execute="@form" />
+                </ui:define>
+              </nxl:layout>
+              </nxu:set>
+            </c:forEach>
+            <nxl:layout name="layout_demo_widget_custom_properties"
+              mode="edit" value="#{widgetPreviewLayoutDef}">
+              <ui:define name="inside_input_widget">
+                <f:ajax render="layoutDemoPreviewFrame" execute="@form" />
+              </ui:define>
+            </nxl:layout>
+            <p class="buttonsGadget">
+              <a4j:commandButton
+                value="#{messages['label.layoutDemo.widgetDemo.submit']}"
+                styleClass="button"
+                id="#{currentWidgetType.name}_edit_form_submitButton"
+                execute="@form"
+                render="layoutDemoPreviewFrame" />
+              <a4j:status>
+                <f:facet name="start">
+                  <h:graphicImage value="/img/standart_waiter.gif" />
+                </f:facet>
+              </a4j:status>
+            </p>
+          </h:form>
+        </a4j:region>
+      </td>
+      <td width="60%" valign="top">
+        <a4j:outputPanel id="layoutDemoPreviewFrame" layout="block">
+          <c:if test="true">
+            <c:set var="frameURL"
+              value="#{baseURL}#{layoutPreviewActions.getPreviewLayoutURL(widgetPreviewLayoutDef, widgetPreviewMode, '/layouts/layout_default_template.xhtml')}" />
+            <iframe style="visibility:hidden;width:100%;height:400px;"
+              onload="javascript:this.style.visibility='visible';"
+              src="#{frameURL}"></iframe>
+          </c:if>
+          <c:if test="false">
+            <h:form id="layoutDemoPreviewResultForm">
+              <nxl:layout
+                definition="#{layoutPreviewActions.getLayoutDefinition(widgetPreviewLayoutDef)}"
+                value="#{layoutPreviewDocument}" mode="#{widgetPreviewMode}"
+                template="/layouts/layout_default_template.xhtml" />
+            </h:form>
+          </c:if>
+        </a4j:outputPanel>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</div>

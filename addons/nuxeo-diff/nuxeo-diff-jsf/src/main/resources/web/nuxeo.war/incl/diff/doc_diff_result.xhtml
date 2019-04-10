@@ -1,0 +1,109 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout" class="docDiffResult">
+
+  <c:if test="#{!diffActions.documentDiffAvailable}">
+    <h2>
+      <h:outputText value="#{messages['document.diff.noDiffAvailable']}"/>
+    </h2>
+  </c:if>
+  <c:if test="#{diffActions.documentDiffAvailable}">
+
+    <nxu:set var="leftDoc" value="#{diffActions.leftDoc}" cache="true">
+    <nxu:set var="rightDoc" value="#{diffActions.rightDoc}" cache="true">
+
+    <h:form id="document_diff">
+
+      <div id="diffHeader">
+        <table class="dataInput">
+          <tr>
+            <td class="labelColumn">
+              <h2>
+                <h:outputText value="#{messages['document.diff.title']}" />
+              </h2>
+            </td>
+            <td class="fieldColumn">
+              <ui:include src="/incl/diff/doc_title_link.xhtml">
+                <ui:param name="doc" value="#{leftDoc}" />
+              </ui:include>
+            </td>
+            <td class="fieldColumn">
+              <ui:include src="/incl/diff/doc_title_link.xhtml">
+                <ui:param name="doc" value="#{rightDoc}" />
+              </ui:include>
+            </td>
+            <td class="contentDiffColumn">
+              <c:if test="#{diffActions.diffSelectionType == 'content'}">
+                <span class="action_bar">
+                  <nxd:restDocumentLink document="#{currentDocument}" styleClass="docLink">
+                    <nxh:graphicImage value="/icons/arrow_left.gif" />
+                    <h:outputText value="#{messages['document.diff.backToCurrentDoc']}" />
+                  </nxd:restDocumentLink>
+                </span>
+              </c:if>
+              <c:if test="#{diffActions.diffSelectionType == 'version'}">
+                <span class="action_bar">
+                  <nxd:restDocumentLink document="#{currentDocument}" tab="TAB_CONTENT_HISTORY"
+                    subTab="TAB_VERSIONS" styleClass="docLink">
+                    <nxh:graphicImage value="/icons/arrow_left.gif" />
+                    <h:outputText value="#{messages['document.diff.backToVersions']}" />
+                  </nxd:restDocumentLink>
+                </span>
+              </c:if>
+              <c:if test="#{diffActions.diffSelectionType == 'trash'}">
+                <span class="action_bar">
+                  <nxd:restDocumentLink document="#{currentDocument}" tab="TAB_MANAGE"
+                    subTab="TAB_TRASH_CONTENT" styleClass="docLink">
+                    <nxh:graphicImage value="/icons/arrow_left.gif" />
+                    <h:outputText value="#{messages['document.diff.backToTrash']}" />
+                  </nxd:restDocumentLink>
+                </span>
+              </c:if>
+            </td>
+          </tr>
+        </table>
+        <h:outputText value="#{messages['document.diff.subTitle']}" styleClass="diffSubTitle" />
+      </div>
+
+      <c:if test="#{empty defaultDiffDisplayBlocks}">
+        <h3>
+          <h:outputText value="#{messages['document.diff.emptyDiff']}"/>
+        </h3>
+      </c:if>
+
+      <c:if test="#{!empty defaultDiffDisplayBlocks}">
+        <c:forEach items="#{defaultDiffDisplayBlocks}" var="diffDisplayBlock">
+          <div class="foldableBox">
+            <h3 class="unfolded">
+              <a class="foldableHeaderLink" href="#nologo" onclick="return toggleBox(this)">
+                <h:outputText value="#{messages[diffDisplayBlock.label]}" />
+              </a>
+              <span class="breaker"></span>
+            </h3>
+            <div class="boxBody">
+              <nxl:layout mode="view" definition="#{diffDisplayBlock.layoutDefinition}"
+                value="#{diffDisplayBlock}" />
+            </div>
+          </div>
+        </c:forEach>
+        <div>
+          <h:commandButton value="#{messages['document.diff.refresh']}"
+            action="#{diffActions.refresh()}"
+            styleClass="button" />
+        </div>
+      </c:if>
+
+    </h:form>
+
+    </nxu:set>
+    </nxu:set>
+
+  </c:if>
+
+</div>
+

@@ -1,0 +1,8 @@
+<component name="org.nuxeo.diff.pictures.operations">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
+    <operation class="org.nuxeo.diff.pictures.DiffPicturesWithBlobsOp" />
+    <operation class="org.nuxeo.diff.pictures.DiffPicturesWithDocsOp" />
+  </extension>
+
+</component>
