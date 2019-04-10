@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.cm.schedule">
+
+  <extension
+    target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
+    point="schedule">
+
+    <documentation>
+      Every day at 01:00 create new mailboxes and update existing ones
+    </documentation>
+
+    <schedule id="syncMailbox">
+      <username>Administrator</username>
+      <password>Administrator</password>
+      <eventId>syncMailbox</eventId>
+      <eventCategory>cmSync</eventCategory>
+      <cronExpression>0 0 1 * * ?</cronExpression>
+    </schedule>
+
+  </extension>
+</component>

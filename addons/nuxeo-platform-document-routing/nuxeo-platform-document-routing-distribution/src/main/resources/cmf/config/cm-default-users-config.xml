@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<component name="com.nuxeo.case-management.default.users.config">
+
+  <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
+  <require>org.nuxeo.ecm.directory.sql.storage</require>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <directory name="userDirectory">
+
+      <schema>user</schema>
+
+      <dataSource>java:/nxsqldirectory</dataSource>
+
+      <table>users</table>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>config/cm_default_users.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <querySizeLimit>0</querySizeLimit>
+
+      <references>
+        <inverseReference field="groups" directory="groupDirectory"
+          dualReferenceField="members" />
+      </references>
+    </directory>
+
+  </extension>
+
+</component>

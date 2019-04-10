@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.routing.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+    <action id="TAB_CONTENT">
+      <filter-id>isNotRoute</filter-id>
+    </action>
+
+    <action id="TAB_DOCUMENT_ROUTE_CONTENT" link="/incl/tabs/document_route_content.xhtml" order="10"
+      label="action.view.content" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>isRoute</filter-id>
+    </action>
+
+    <action id="executeRoute" link="#{routingActions.startRoute()}"
+      enabled="true" label="action.start.document.routing" icon="/icons/action_add.gif"
+      order="110">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter-id>isValidatedRouteModel</filter-id>
+    </action>
+    
+    <action id="validateRouteModel" link="#{routingActions.validateRouteModel()}"
+      enabled="true" label="action.validate.document.routing.model" icon="/icons/action_add.gif"
+      order="110">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter-id>isUnvalidatedRouteModel</filter-id>
+    </action>
+    
+    <action id="TAB_DOCUMENT_ROUTE_ELEMENTS" link="/incl/tabs/document_route_content_elements.xhtml" order="100"
+      label="action.view.document.routing.elements" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>isRoute</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="create" append="true">
+      <rule grant="true">
+        <type>DocumentRoute</type>
+        <type>StepFolder</type>
+      </rule>
+    </filter>
+
+    <filter id="isRoute">
+      <rule grant="true">
+        <type>DocumentRoute</type>
+      </rule>
+    </filter>
+
+    <filter id="isNotRoute">
+      <rule grant="false">
+        <type>DocumentRoute</type>
+      </rule>
+    </filter>
+    
+    <filter id="isUnvalidatedRouteModel">
+       <rule grant="true">
+         <condition>
+          document.getCurrentLifeCycleState().equals("draft")
+        </condition>
+       <type>DocumentRoute</type>
+      </rule>
+    </filter>
+    
+    <filter id="isValidatedRouteModel">
+       <rule grant="true">
+         <condition>
+          document.getCurrentLifeCycleState().equals("validated")
+        </condition>
+       <type>DocumentRoute</type>
+       </rule>
+    </filter>
+    
+  </extension>
+
+</component>
