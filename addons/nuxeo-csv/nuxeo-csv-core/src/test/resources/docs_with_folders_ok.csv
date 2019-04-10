@@ -1,0 +1,6 @@
+"name","type","dc:title"
+"folder","Folder","A Folder"
+"folder/doc1","File","First doc"
+"folder/subfolder","Folder","Sub folder"
+"folder/subfolder/doc2","File","Second doc"
+"folder/folder/doc3","File", "Third doc"

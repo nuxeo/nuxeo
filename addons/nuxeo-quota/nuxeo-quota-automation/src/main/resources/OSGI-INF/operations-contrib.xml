@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="rg.nuxeo.ecm.quota.automation.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+    <operation
+      class="org.nuxeo.ecm.quota.automation.GetQuotaInfoOperation" />
+    <operation
+      class="org.nuxeo.ecm.quota.automation.SetQuotaInfoOperation" />
+    <operation
+      class="org.nuxeo.ecm.quota.automation.GetQuotaStatisticsOperation" />
+    <operation
+      class="org.nuxeo.ecm.quota.automation.RecomputeQuotaStatistics" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
+    point="bindings">
+    <binding name="org.nuxeo.ecm.quota.automation.RecomputeQuotaStatistics">
+      <administrator>true</administrator>
+    </binding>
+  </extension>
+
+</component>
