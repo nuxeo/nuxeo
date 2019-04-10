@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.quota.work" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="quota">
+      <maxThreads>1</maxThreads>
+      <category>quotaInitialStatistics</category>
+      <category>quotaMaxSizeSetter</category>
+      <name>quota</name>
+    </queue>
+  </extension>
+
+</component>
