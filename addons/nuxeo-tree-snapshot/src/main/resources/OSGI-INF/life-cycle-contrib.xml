@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.snapshot.lifecycle.contrib">
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="SnapshotableFolder">default</type>
+    </types>
+  </extension>
+
+</component>

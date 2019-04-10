@@ -1,0 +1,24 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{widget.id}">
+
+    <!--[if lte IE 8]><script src="#{baseURL}scripts/jquery/flot/excanvas.min.js"></script><![endif]-->
+    <script src="#{baseURL}scripts/jquery/flot/jquery.flot.min.js"></script>
+    <script src="#{baseURL}scripts/jquery/flot/jquery.flot.pie.min.js"></script>
+    <style>
+    .graph-area {
+	  width: 400px;
+	  height: 150px;	
+     }
+    </style>
+   <script type="text/javascript">
+    <h:outputText value="var currentLang='#{restHelper.getLocaleString()}';"/>
+    <h:outputText  value="var currentDocId='#{currentDocument.id}';" /> 
+   jQuery(document).ready(function() {
+	displayQuotaStats(currentDocId, currentLang, "#{messages['label.quota.error.display']}");
+   });
+   </script>  
+ <div id="quota_stats" class="graph-area"/>
+</div>
