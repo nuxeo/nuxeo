@@ -1,0 +1,82 @@
+<c:if test="true" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<c:if test="#{widget.mode == 'create'}">
+
+    <div id="#{widget.id}_filecontainer">
+      <nxu:inputFile id="#{widget.id}_file" value="#{field_0}"
+        filename="#{field_1}" required="#{widgetProperty_required}" editFilename="false"
+        onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
+      <h:message styleClass="errorMessage" for="#{widget.id}_file"
+        id="#{widget.id}_message" />
+    </div>
+
+    <span id="#{widget.id}_valueHolder">
+    <h:inputHidden value="#{selectionActions.selectedValue}"/>
+    </span>
+    <div id="#{widget.id}_templatecontainer" style="display:none">
+      <h:outputText value="#{messages['label.use.template']}" />
+      <h:selectOneMenu value="#{field_2}"
+        styleClass="#{widgetProperty_styleClass}"
+        required="#{widgetProperty_required}"
+        id="#{widget.id}_select_template">
+        <f:selectItem id="none" itemLabel="None" itemValue="none" />
+        <nxu:selectItems value="#{widgetProperty_availableTemplates}"
+          var="tdoc" itemValue="#{tdoc.id}" itemLabel="#{tdoc.label}" />
+      </h:selectOneMenu>
+  </div>
+
+<script>
+jQuery(document).ready(function(){
+   var fileContainer = jQuery('#' + '#{widget.id}_filecontainer');
+   var templateChooser = jQuery('#' + '#{widget.id}_templatecontainer');
+   var valueHolder = jQuery(jQuery('#' + '#{widget.id}_valueHolder').find('input')[0]);
+   // add radio
+   var radioOption = jQuery(fileContainer.find('input[type=radio]')[0]).clone();
+   radioOption.attr('id','useTemplate');
+   radioOption.removeAttr('checked');
+   var radioCell = jQuery('<td></td>').append(radioOption);
+   radioCell.addClass('radioColumn');
+   var row = jQuery('<tr></tr>');
+   radioCell.appendTo(row);
+   // add chooser
+   var cell = jQuery('<td></td>');
+   cell.addClass('fieldColumn');
+   templateChooser.appendTo(cell);
+   cell.appendTo(row);
+   fileContainer.find('table').append(row);
+   templateChooser.css('display','block');
+   fileContainer.find('input[type=radio]').change(function() {
+      if (this.id!='useTemplate') {
+        templateChooser.find('select').val('');
+      }
+    });
+    jQuery(fileContainer.find('input[type=radio]')).click(
+      function() {
+        console.log(valueHolder);
+        if (this.id=='useTemplate') {
+          valueHolder.val('template');
+        } else {
+          valueHolder.val('');
+        }
+      });
+    if (valueHolder.val()=='template') {
+      radioOption.attr('checked','checked');
+    }
+});
+
+</script>
+
+</c:if>
+
+<c:if test="#{widget.mode != 'create'}">
+  <ui:include src="/widgets/extended_file_widget.xhtml" />
+</c:if>
+
+</c:if>

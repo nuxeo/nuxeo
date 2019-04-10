@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.login.token.authentication.contrib">
+
+  <!-- Require default token authentication -->
+  <require>org.nuxeo.ecm.login.token.authentication.contrib</require>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+
+    <authenticationPlugin name="STATEFUL_TOKEN_AUTH"
+      enabled="true"
+      class="org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+      <stateful>true</stateful>
+    </authenticationPlugin>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="specificChains">
+
+    <specificAuthenticationChain name="DriveMetadata">
+      <urlPatterns>
+        <url>(.*)/view_drive_metadata.*</url>
+      </urlPatterns>
+      <replacementChain>
+        <plugin>STATEFUL_TOKEN_AUTH</plugin>
+      </replacementChain>
+    </specificAuthenticationChain>
+
+  </extension>
+
+</component>
