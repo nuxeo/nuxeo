@@ -1,0 +1,69 @@
+<project name="integration-tests"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+
+  <!-- Configure nuxeo-drive marketplace package installation -->
+  <property name="nuxeo.drive.mp.filename" value="nuxeo-drive.zip" />
+  <property name="mp.install" value="${out.dir}/${nuxeo.drive.mp.filename}" />
+
+  <target name="fetch-nuxeo-drive-mp">
+    <exec executable="python" failonerror="true">
+      <arg value="../tools/integration_tests_setup.py" />
+      <arg value="--base-folder=../nuxeo-drive-client" />
+      <arg value="--work-folder=${out.dir}" />
+      <arg value="fetch-mp" />
+      <arg value="--url=${nuxeo.drive.mp.url}" />
+      <arg value="--marketplace-filename=${nuxeo.drive.mp.filename}" />
+    </exec>
+  </target>
+
+  <target name="tune-nuxeo">
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.db.max-pool-size" />
+      <param name="value" value="52" />
+    </antcall>
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.vcs.max-pool-size" />
+      <param name="value" value="50" />
+    </antcall>
+  </target>
+
+  <!-- TODO: patch to remove clid on mp-install until NXBT-902 is fixed -->
+  <target name="start-unix" if="osfamily-unix">
+    <antcall target="tune-nuxeo" />
+    <if>
+      <available file="${nuxeo.data}/installAfterRestart.log" />
+      <then>
+        <echo level="info" message="Execute pending actions before start" />
+        <exec executable="${nuxeo.home}/bin/nuxeoctl" spawn="false" failonerror="true">
+          <arg value="mp-install" />
+          <env key="LAUNCHER_DEBUG" value="${launcher.debug}" />
+        </exec>
+      </then>
+    </if>
+    <chmod dir="${nuxeo.home}/bin" perm="ug+x" includes="*.sh,*ctl" />
+    <exec executable="${nuxeo.home}/bin/nuxeoctl" spawn="false" failonerror="false" resultproperty="retcode">
+      <arg value="start" />
+      <arg value="--force" />
+      <arg value="${nuxeoctl.option.clid}" />
+      <env key="LAUNCHER_DEBUG" value="${launcher.debug}" />
+    </exec>
+    <condition property="startup.failed" value="${retcode}">
+      <not>
+        <equals arg1="${retcode}" arg2="0" />
+      </not>
+    </condition>
+    <antcall target="stop-iffailed" />
+  </target>
+
+</project>
