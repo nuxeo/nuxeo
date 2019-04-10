@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.csv.core.operation.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+        <operation class="org.nuxeo.ecm.csv.core.operation.CSVImportOperation"/>
+        <operation class="org.nuxeo.ecm.csv.core.operation.CSVImportStatusOperation"/>
+        <operation class="org.nuxeo.ecm.csv.core.operation.CSVImportLogOperation"/>
+        <operation class="org.nuxeo.ecm.csv.core.operation.CSVImportResultOperation"/>
+  </extension>
+
+</component>

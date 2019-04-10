@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="specNux">
+  <system>
+    <type>TemplateSource</type>
+    <path>default-domain/templates/SpecNux</path>
+    <lifecycle-state>project</lifecycle-state>
+    <lifecycle-policy>default</lifecycle-policy>
+    <facet>Downloadable</facet>
+    <facet>Template</facet>
+    <facet>Commentable</facet>
+    <facet>Versionable</facet>
+    <facet>HasRelatedText</facet>
+    <access-control>
+      <acl name="inherited">
+        <entry principal="Administrator" permission="Everything"
+          grant="true" />
+        <entry principal="members" permission="Read" grant="true" />
+      </acl>
+    </access-control>
+  </system>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/"
+    name="dublincore">
+    <dc:creator>Administrator</dc:creator>
+    <dc:source />
+    <dc:contributors>
+      <item>Administrator</item>
+    </dc:contributors>
+    <dc:nature />
+    <dc:created>2012-04-17T15:35:42.00Z</dc:created>
+    <dc:description></dc:description>
+    <dc:rights />
+    <dc:subjects />
+    <dc:publisher />
+    <dc:valid />
+    <dc:format />
+    <dc:issued />
+    <dc:modified>2012-04-17T15:35:42.00Z</dc:modified>
+    <dc:language />
+    <dc:coverage />
+    <dc:expired />
+    <dc:lastContributor>Administrator</dc:lastContributor>
+    <dc:title>SpecNux</dc:title>
+  </schema>
+  <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/"
+    name="uid">
+    <uid:uid />
+    <uid:minor_version>0</uid:minor_version>
+    <uid:major_version>0</uid:major_version>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/"
+    name="common">
+    <common:icon>/icons/odt.png</common:icon>
+    <common:icon-expanded />
+  </schema>
+  <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/"
+    name="file">
+    <file:content>
+      <encoding></encoding>
+      <mime-type>application/vnd.oasis.opendocument.text</mime-type>
+      <filename>Spec_ModelNux.odt</filename>
+      <data>specNux.odt</data>
+    </file:content>
+  </schema>
+  <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
+    <tmpl:forcedTypes>
+      <item>none</item>
+    </tmpl:forcedTypes>
+    <tmpl:templateData>&lt;nxdt:templateParams
+      xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate"/&gt;</tmpl:templateData>
+    <tmpl:allowOverride>false</tmpl:allowOverride>
+    <tmpl:templateType>XDocReportProcessor</tmpl:templateType>
+    <tmpl:useAsMainContent>true</tmpl:useAsMainContent>
+    <tmpl:templateName>SpecNux</tmpl:templateName>
+    <tmpl:applicableTypes>
+      <item>all</item>
+    </tmpl:applicableTypes>
+    <tmpl:outputFormat>pdf</tmpl:outputFormat>
+    <tmpl:targetRenditionName>delivery</tmpl:targetRenditionName>
+  </schema>
+  <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/"
+    name="relatedtext">
+    <relatedtext:relatedtextresources />
+  </schema>
+</document>

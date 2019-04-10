@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.resetSyncRootsOnCopy.disabled.test">
+
+  <require>org.nuxeo.drive.adapters</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.drive.resetSyncRootsOnCopy">false</property>
+  </extension>
+
+</component>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document repository="default" id="73825d07-2163-4966-9137-1dcfa2a82fbe">
+  <system>
+    <type>Note</type>
+    <path>default-domain/workspaces/templateSamples/Test Note for XL MetaDat</path>
+    <lifecycle-state>project</lifecycle-state>
+    <lifecycle-policy>default</lifecycle-policy>
+    <facet>TemplateBased</facet>
+    <facet>Commentable</facet>
+    <facet>Versionable</facet>
+    <facet>Publishable</facet>
+    <facet>HasRelatedText</facet>
+    <access-control>
+      <acl name="inherited">
+        <entry principal="Administrator" permission="Everything" grant="true"/>
+        <entry principal="members" permission="Read" grant="true"/>
+      </acl>
+    </access-control>
+  </system>
+  <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/" name="uid">
+    <uid:uid/>
+    <uid:minor_version><![CDATA[0]]></uid:minor_version>
+    <uid:major_version><![CDATA[0]]></uid:major_version>
+  </schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:creator><![CDATA[Administrator]]></dc:creator>
+    <dc:source><![CDATA[Nuxeo]]></dc:source>
+    <dc:contributors>
+      <item><![CDATA[Administrator]]></item>
+    </dc:contributors>
+    <dc:nature><![CDATA[article]]></dc:nature>
+    <dc:created><![CDATA[2012-05-22T16:26:38.76Z]]></dc:created>
+    <dc:description><![CDATA[A simple note with meta-data to test XL rendering]]></dc:description>
+    <dc:rights><![CDATA[Copyright Nuxeo]]></dc:rights>
+    <dc:subjects>
+      <item><![CDATA[technology/it]]></item>
+      <item><![CDATA[human sciences/information]]></item>
+    </dc:subjects>
+    <dc:publisher/>
+    <dc:valid/>
+    <dc:format><![CDATA[Html]]></dc:format>
+    <dc:issued/>
+    <dc:modified><![CDATA[2012-05-22T16:32:10.00Z]]></dc:modified>
+    <dc:language><![CDATA[English]]></dc:language>
+    <dc:coverage><![CDATA[europe/France]]></dc:coverage>
+    <dc:expired><![CDATA[2014-05-29T22:00:00.00Z]]></dc:expired>
+    <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
+    <dc:title><![CDATA[Test Note for XL MetaData rendering]]></dc:title>
+  </schema>
+  <schema xmlns:files="http://www.nuxeo.org/ecm/schemas/files/" name="files">
+    <files:files/>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon><![CDATA[/icons/note.gif]]></common:icon>
+    <common:icon-expanded/>
+  </schema>
+  <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
+    <relatedtext:relatedtextresources/>
+  </schema>
+  <schema xmlns:nxts="http://www.nuxeo.org/ecm/schemas/nxts/" name="templatesupport">
+    <nxts:bindings>
+      <templateEntry>
+        <templateId><![CDATA[61ccf205-986a-4e9f-865c-54e88dc0d433]]></templateId>
+        <templateData><![CDATA[<nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate"/>]]></templateData>
+        <templateName><![CDATA[XL MetaData render]]></templateName>
+        <useMainContentAsTemplate><![CDATA[false]]></useMainContentAsTemplate>
+      </templateEntry>
+    </nxts:bindings>
+  </schema>
+  <schema xmlns:note="http://www.nuxeo.org/ecm/schemas/note/" name="note">
+    <note:mime_type><![CDATA[text/html]]></note:mime_type>
+    <note:note><![CDATA[<p><strong>Hello World !</strong></p>
+
+<p><strong>Let's test XL rendering ...</strong></p>]]></note:note>
+  </schema>
+</document>

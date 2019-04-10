@@ -1,0 +1,56 @@
+<!--
+(C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+  Nelson Silva <nsilva@nuxeo.com>
+-->
+<link rel="import" href="nuxeo-authentication-tokens-management.html">
+<link rel="import" href="nuxeo-drive-sync-roots-management.html">
+<link rel="import" href="nuxeo-drive-desktop-packages.html">
+
+<!--
+Nuxeo Drive management page.
+
+Example:
+
+    <nuxeo-drive-page></nuxeo-drive-page>
+
+@group Nuxeo UI Elements
+@element nuxeo-drive-page
+-->
+<dom-module id="nuxeo-drive-page">
+  <template>
+    <style include="nuxeo-styles"></style>
+    <nuxeo-page>
+      <div class="header">[[i18n('drivePage.heading','Nuxeo Drive')]]</div>
+      <div class="content">
+        <nuxeo-card heading="[[i18n('drivePage.packages','Packages')]]">
+          <nuxeo-drive-desktop-packages></nuxeo-drive-desktop-packages>
+        </nuxeo-card>
+        <nuxeo-card heading="[[i18n('drivePage.roots','Synchronization Roots')]]">
+          <nuxeo-drive-sync-roots-management></nuxeo-drive-sync-roots-management>
+        </nuxeo-card>
+        <nuxeo-card heading="[[i18n('drivePage.tokens','Tokens')]]">
+          <nuxeo-authentication-tokens-management application="Nuxeo Drive"></nuxeo-authentication-tokens-management>
+        </nuxeo-card>
+      </div>
+    </nuxeo-page>
+  </template>
+  <script>
+    Polymer({
+      is: 'nuxeo-drive-page',
+      behaviors: [Nuxeo.I18nBehavior]
+    });
+  </script>
+</dom-module>
