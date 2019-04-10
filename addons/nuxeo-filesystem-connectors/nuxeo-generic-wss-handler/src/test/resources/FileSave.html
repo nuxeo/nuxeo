@@ -1,0 +1,142 @@
+<html dir="ltr">
+<HEAD>
+<META Name="GENERATOR" Content="Microsoft SharePoint">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META HTTP-EQUIV="Expires" content="0">
+<!-- _locID="id_PageTitle" _locComment="{StringCategory=TTL}" -->
+<Title ID=onetidTitle>File Properties</Title>
+<Link REL="stylesheet" Type="text/css"
+    HREF="/_layouts/1033/styles/core.css">
+<META Name="Microsoft Theme" Content="default">
+<META Name="Microsoft Border" Content="none">
+<script src="/_layouts/1033/init.js"></script>
+<script src="/_layouts/1033/core.js"></script>
+</HEAD>
+<script language="JavaScript">.
+L_tooltipfile_Text = "Double-click to open this document";.
+L_tooltipfolder_Text = "";.
+selectedElement = null.
+inChangeSelection = false.
+slElem = null;.
+oldSelection = "";.
+bIsFileDialogView = true;.
+function selectrow().
+{.
+    if (slElem) {.
+.    slElem.className=oldSelection;.
+.    slElem.title="";.
+.    }.
+    selectedElement = window.event.srcElement;.
+    while (selectedElement.tagName!="TR") {.
+    .   selectedElement=selectedElement.parentElement;.
+           }.
+    slElem = selectedElement;.
+    oldSelection=slElem.className;...
+    slElem.className="ms-selected";.
+    if (slElem.getAttribute("fileattribute") == "file").
+        slElem.title=L_tooltipfile_Text;.
+    else.
+        slElem.title=L_tooltipfolder_Text;.
+    document.selection.empty();.
+}.
+function checkScroll().
+{.
+    if (document.body.scrollHeight > document.body.offsetHeight ||.
+..document.body.scrollWidth > document.body.offsetWidth).
+       document.body.scroll="yes";.
+}.
+</script>
+<BODY topmargin=5 leftmargin=5 scroll=no serverType=OWS.
+    onload="checkScroll()" onresize="checkScroll()">
+<!-- Banner -->
+<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH="100%">
+    <TR>
+        <TD valign=top class='ms-pagetitleareaframe' style="height: 0" nowrap>.
+        <table cellpadding=0 cellspacing=0 width=100% border="0">
+            <tr>
+                <td valign="top" class="ms-titlearea" style="padding-left: 4px;">.
+                ......nuxeo. ....</td>
+            </tr>
+            <tr>
+                <td height=100% valign=top class="ms-pagetitle"
+                    style="padding-left: 4px;">. ....
+                <h2 class="ms-pagetitle">. ...... workspaces. ....</h2>
+                . ....</td>
+            </tr>
+        </table>
+        . .</TD>
+    </TR>
+    <TR>
+        <TD>. <!-- View table -->.
+        <TABLE ID="FileDialogViewTable" width="100%" style="cursor: default;"
+            border=0 rules=rows cellspacing=0 cellpadding=2>
+            <TR>
+                <TH Class="ms-vh2-nofilter"><A ID="diidSortDocIcon"
+                    onfocus="OnFocusFilter(this)" TITLE="Sort by Type"
+                    HREF="javascript:"
+                    OnClick="javascript:return OnClickFilter(this,event);"
+                    SORTINGFIELDS="RootFolder=%2fnuxeo%2fworkspaces&amp;SortField=DocIcon&amp;SortDir=Asc&amp;View=FileDialog">Type<img
+                    src="/_layouts/images/blank.gif" class="ms-hidden" border=0 width=1
+                    height=1 alt="Use SHIFT+ENTER to open the menu (new window)."></A><IMG
+                    SRC="/_layouts/images/blank.gif" ALT="" BORDER=0><IMG
+                    SRC="/_layouts/images/blank.gif" BORDER=0 ALT=""></TH>
+                <TH Class="ms-vh2-nofilter"><A ID="diidSortBaseName"
+                    onfocus="OnFocusFilter(this)" TITLE="Sort by Name"
+                    HREF="javascript:"
+                    OnClick="javascript:return OnClickFilter(this,event);"
+                    SORTINGFIELDS="RootFolder=%2fnuxeo%2fworkspaces&amp;SortField=BaseName&amp;SortDir=Asc&amp;View=FileDialog">Name<img
+                    src="/_layouts/images/blank.gif" class="ms-hidden" border=0 width=1
+                    height=1 alt="Use SHIFT+ENTER to open the menu (new window)."></A><IMG
+                    SRC="/_layouts/images/blank.gif" ALT="" BORDER=0></TH>
+                <TH Class="ms-vh2-nofilter"><A ID="diidSortEditor"
+                    onfocus="OnFocusFilter(this)" TITLE="Sort by Modified By"
+                    HREF="javascript:"
+                    OnClick="javascript:return OnClickFilter(this,event);"
+                    SORTINGFIELDS="RootFolder=%2fnuxeo%2fworkspaces&amp;SortField=Editor&amp;SortDir=Asc&amp;View=FileDialog">Modified
+                By<img src="/_layouts/images/blank.gif" class="ms-hidden" border=0
+                    width=1 height=1
+                    alt="Use SHIFT+ENTER to open the menu (new window)."></A><IMG
+                    SRC="/_layouts/images/blank.gif" ALT="" BORDER=0><IMG
+                    SRC="/_layouts/images/blank.gif" BORDER=0 ALT=""></TH>
+                <TH Class="ms-vh2-nofilter"><A ID="diidSortModified"
+                    onfocus="OnFocusFilter(this)" TITLE="Sort by Modified"
+                    HREF="javascript:"
+                    OnClick="javascript:return OnClickFilter(this,event);"
+                    SORTINGFIELDS="RootFolder=%2fnuxeo%2fworkspaces&amp;SortField=Modified&amp;SortDir=Asc&amp;View=FileDialog">Modified<img
+                    src="/_layouts/images/blank.gif" class="ms-hidden" border=0 width=1
+                    height=1 alt="Use SHIFT+ENTER to open the menu (new window)."></A><IMG
+                    SRC="/_layouts/images/blank.gif" ALT="" BORDER=0><IMG
+                    SRC="/_layouts/images/blank.gif" BORDER=0 ALT=""></TH>
+            </TR>
+            <TR fileattribute=folder ID="http://vm2k3/nuxeo/workspaces/ws1"
+                class="ms-alternating" onmousedown="selectrow()"
+                onclick="selectrow()">
+                <TD class="ms-vb" style="padding-left: 4px"><A TABINDEX=-1
+                    HREF="http://vm2k3/nuxeo/_vti_bin/owssvr.dll?RootFolder=%2fnuxeo%2fworkspaces%2fws1&amp;FolderCTID=&amp;View=FileDialog"
+                    onclick="javascript:EnterFolder('http:\u002f\u002fvm2k3\u002fnuxeo\u002f_vti_bin\u002fowssvr.dll?RootFolder=\u00252fnuxeo\u00252fworkspaces\u00252fws1\u0026FolderCTID=\u0026View=FileDialog');javascript:return false;"><IMG
+                    BORDER=0 alt="Folder: ws1" title="Folder: ws1"
+                    SRC="/_layouts/images/folder.gif"></A></TD>
+                <TD class="ms-vb" style="padding-left: 4px">ws1</TD>
+                <TD class="ms-vb" style="padding-left: 4px">Nuxeo</TD>
+                <TD class="ms-vb" style="padding-left: 4px"><NOBR>9/24/2009
+                4:46 PM</NOBR></TD>
+            </TR>
+            <TR fileattribute=file
+                ID="http://vm2k3/nuxeo/workspaces/NXAdministrationGuide.doc"
+                class="" onmousedown="selectrow()" onclick="selectrow()">
+                <TD class="ms-vb" style="padding-left: 4px"><A TABINDEX=-1
+                    HREF="/nuxeo/workspaces/NXAdministrationGuide.doc"
+                    onclick="return DispEx(this,event,'TRUE','FALSE','TRUE','SharePoint.OpenDocuments.3','0','SharePoint.OpenDocuments','','','','1','0','0','0x7fffffffffffffff')"><IMG
+                    BORDER=0 ALT="NXAdministrationGuide.doc"
+                    title="NXAdministrationGuide.doc" SRC="/_layouts/images/icdoc.gif"></A></TD>
+                <TD class="ms-vb" style="padding-left: 4px">NXAdministrationGuide</TD>
+                <TD class="ms-vb" style="padding-left: 4px">Nuxeo</TD>
+                <TD class="ms-vb" style="padding-left: 4px"><NOBR>9/24/2009
+                5:53 PM</NOBR></TD>
+            </TR>
+        </TABLE>
+        .</TD>
+    </TR>
+</TABLE>
+</BODY>
+</HTML>
