@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.layout.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="layout_demo_widget_common_settings">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>label</widget>
+        </row>
+        <row>
+          <widget>helpLabel</widget>
+        </row>
+        <row>
+          <widget>translated</widget>
+        </row>
+        <row>
+          <widget>handlingLabels</widget>
+        </row>
+      </rows>
+      <widget name="label" type="text">
+        <labels>
+          <label mode="any">label.layoutDemo.widgetPreview.label</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>label</field>
+        </fields>
+      </widget>
+      <widget name="helpLabel" type="text">
+        <labels>
+          <label mode="any">label.layoutDemo.widgetPreview.helpLabel</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>helpLabel</field>
+        </fields>
+      </widget>
+      <widget name="translated" type="checkbox">
+        <labels>
+          <label mode="any">label.layoutDemo.widgetPreview.translated</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">
+            label.layoutDemo.widgetPreview.translated.help
+          </label>
+        </helpLabels>
+        <translated>true</translated>
+        <fields>
+          <field>translated</field>
+        </fields>
+      </widget>
+      <widget name="handlingLabels" type="checkbox">
+        <labels>
+          <label mode="any">label.layoutDemo.widgetPreview.handlingLabels</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">
+            label.layoutDemo.widgetPreview.handlingLabels.help
+          </label>
+        </helpLabels>
+        <translated>true</translated>
+        <fields>
+          <field>handlingLabels</field>
+        </fields>
+      </widget>
+    </layout>
+
+    <layout name="layout_demo_widget_custom_properties">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>props</widget>
+        </row>
+      </rows>
+      <widget name="props" type="template">
+        <labels>
+          <label mode="any">
+            label.layoutDemo.widgetPreview.customProperties
+          </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>customProperties</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /layoutDemo/widgets/properties_map_widget_template.xhtml
+          </property>
+        </properties>
+        <subWidgets>
+          <widget name="prop" type="complex">
+            <labels>
+              <label mode="any"></label>
+            </labels>
+            <properties widgetMode="edit">
+              <property name="display">inline</property>
+            </properties>
+            <!-- subwidgets for complex -->
+            <subWidgets>
+              <widget name="key" type="text">
+                <fields>
+                  <field>key</field>
+                </fields>
+                <labels>
+                  <label mode="any"></label>
+                </labels>
+                <properties widgetMode="edit">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="value" type="text">
+                <fields>
+                  <field>value</field>
+                </fields>
+                <labels>
+                  <label mode="any"></label>
+                </labels>
+              </widget>
+            </subWidgets>
+          </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="demo_listing_title" type="text">
+      <labels>
+        <label mode="any">label.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.title</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+</component>
