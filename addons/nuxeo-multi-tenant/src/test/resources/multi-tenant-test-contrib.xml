@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.multi.tenant.test">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <require>org.nuxeo.ecm.platform.usermanager.test</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+      point="schema">
+    <schema name="tenantconfig" prefix="tenantconfig" src="schemas/tenantconfig.xsd"/>
+
+    <!-- override default user schema -->
+    <schema name="user" src="schemas/multi_tenant_user.xsd" override="true"/>
+    <!-- override default group schema -->
+    <schema name="group" src="schemas/multi_tenant_group.xsd" override="true"/>
+
+    <schema name="tenant" src="schemas/tenant.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+    <facet name="TenantConfig">
+      <schema name="tenantconfig" />
+    </facet>
+
+    <doctype name="Domain" extends="Folder">
+      <schema name="domain" />
+      <facet name="SuperSpace" />
+      <subtypes>
+        <type>WorkspaceRoot</type>
+        <type>SectionRoot</type>
+        <type>TemplateRoot</type>
+      </subtypes>
+    </doctype>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <directory name="tenants" remove="true" />
+
+    <directory name="tenants">
+      <schema>tenant</schema>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>tenants</table>
+      <idField>id</idField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="userDirectory">
+
+      <schema>user</schema>
+
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+
+      <table>users</table>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+
+      <autoincrementIdField>false</autoincrementIdField>
+      <computeMultiTenantId>false</computeMultiTenantId>
+      <dataFile>users.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+
+      <references>
+        <tableReference field="groups" directory="groupDirectory"
+          table="user2group" sourceColumn="userId"
+          targetColumn="groupId" dataFile="user2group.csv"
+          master="true" />
+      </references>
+
+    </directory>
+
+  </extension>
+
+  <extension target="org.nuxeo.runtime.LoginComponent" point="domains">
+
+    <domain name="nuxeo-system-login">
+      <login-module code="org.nuxeo.runtime.api.login.SystemLoginModule"
+        flag="required"/>
+      <login-module code="org.nuxeo.ecm.core.api.local.ClientLoginModule"
+        flag="required">
+        <option name="password-stacking">true</option>
+        <option name="multi-threaded">true</option>
+      </login-module>
+    </domain>
+
+    <domain name="nuxeo-client-login">
+      <login-module code="org.nuxeo.ecm.platform.login.NuxeoLoginModule"
+        flag="required">
+        <option name="useUserIdentificationInfoCB">true</option>
+      </login-module>
+      <login-module code="org.nuxeo.ecm.core.api.local.ClientLoginModule"
+        flag="required">
+        <option name="password-stacking">true</option>
+        <option name="restore-login-identity">true</option>
+        <option name="multi-threaded">true</option>
+      </login-module>
+    </domain>
+
+  </extension>
+  
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+
+    <userManager
+      class="org.nuxeo.ecm.multi.tenant.MultiTenantUserManager">
+      <users>
+        <listingMode>search_only</listingMode>
+      </users>
+    </userManager>
+
+  </extension>
+  
+  
+</component>
