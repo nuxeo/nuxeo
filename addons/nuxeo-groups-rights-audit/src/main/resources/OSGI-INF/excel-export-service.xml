@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.groups.audit.ExportService">
+
+  <implementation
+    class="org.nuxeo.ecm.platform.groups.audit.service.ExcelExportServiceImpl" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.groups.audit.service.ExcelExportService" />
+  </service>
+
+  <extension-point name="excelExportFactory">
+    <documentation>
+      @author Vladimir Pasquier (vpasquier@nuxeo.com)
+      This extension
+      provides export excel factories to inject data into contributed
+      template
+      <code>
+        <ExcelExport name="exportGroupsAuditFactory"
+          template="templates/audit-groups-template.xls"
+          factoryClass="org.nuxeo.ecm.platform.groups.audit.factory.ExcelExportAllGroups" />
+        <ExcelExport name="exportGroupsAuditFactoryBis"
+          template="templates/audit-groups-template.xls" />
+      </code>
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.groups.audit.service.ExcelExportServiceDescriptor" />
+
+  </extension-point>
+
+</component>
