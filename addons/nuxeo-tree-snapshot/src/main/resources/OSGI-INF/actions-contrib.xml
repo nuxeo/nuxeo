@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.snapshots.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+
+    <action id="TAB_VCONTENT" link="/incl/tabs/document_vcontent.xhtml" order="10"
+      label="action.view.content" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>view_vcontent</filter-id>
+      <filter-id>outSection</filter-id>
+    </action>
+
+    <action id="RESTORE_VERSION" link="#{versionedActions.restoreToVersion}"
+      label="command.restore" order="20">
+      <category>VERSION_LIST_ITEM</category>
+      <filter-id>canRestoreVersion</filter-id>
+      <filter id="notForFolder">
+        <rule grant="false">
+          <facet>Folderish</facet>
+         </rule>
+       </filter>
+    </action>
+
+    <action id="RESTORE_FOLDER_VERSION" link="#{vFolderActions.restoreToVersion}"
+      label="command.restore" order="20">
+      <category>VERSION_LIST_ITEM</category>
+      <filter-id>canRestoreVersion</filter-id>
+      <filter id="forFolder">
+        <rule grant="true">
+          <facet>Folderish</facet>
+         </rule>
+       </filter>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="create">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <facet>Folderish</facet>
+        <type>Workspace</type>
+        <type>TemplateRoot</type>
+        <type>Section</type>
+        <type>Folder</type>
+        <type>OrderedFolder</type>
+        <type>SnapshotableFolder</type>
+        <condition>
+          #{typeManager.getAllowedSubTypes(document.getType(), document).size()
+          > 0}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="view_content">
+      <rule grant="true">
+        <permission>ReadChildren</permission>
+        <facet>Folderish</facet>
+      </rule>
+      <rule grant="false">
+        <condition>
+          document.isVersion()
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="view_vcontent">
+      <rule grant="true">
+        <permission>ReadChildren</permission>
+        <facet>Folderish</facet>
+        <condition>
+          document.isVersion()
+        </condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

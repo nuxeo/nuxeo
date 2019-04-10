@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.routing.dashboard.layouts">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="user_open_tasks_cv" prefix="user_open_tasks_cv" src="schemas/user_open_tasks_cv.xsd"/>
+  </extension>
+  
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="user_open_tasks_cv" extends="Document">
+      <facet name="ContentViewDisplay"/>
+      <schema name="user_open_tasks_cv"/>
+    </doctype>
+   </extension>
+ 
+ <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+      point="widgettypes">
+  
+   <widgetType name="listing_process_task">
+    <configuration>
+     <title>Listing process task link</title>
+     <documentation>
+      Two fields are required:
+      <ul>
+       <li>A field to map the task</li>
+       <li>A field to map the targetDocumentId on the task</li>
+      </ul>
+     </documentation>
+     <sinceVersion>5.7.3</sinceVersion>
+     <categories>
+      <category>routing</category>
+     </categories>
+     <supportedModes>
+      <mode>view</mode>
+     </supportedModes>
+     <fields>
+      <list>false</list>
+      <complex>false</complex>
+      <supportedTypes>
+       <type>string</type>
+      </supportedTypes>
+     </fields>
+    </configuration>
+    <handler-class>
+     org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+    </handler-class>
+    <property name="template">
+     /widgets/listing/listing_process_task_widget_template.xhtml
+    </property>
+   </widgetType>
+
+ <widgetType name="listing_workflow_name_task">
+  <configuration>
+   <title>Listing the name of the workflow that created the task</title>
+   <documentation>
+    A field is required:
+    <ul>
+     <li>A field to map the processId on the task</li>
+    </ul>
+   </documentation>
+   <sinceVersion>5.7.3</sinceVersion>
+   <categories>
+    <category>routing</category>
+   </categories>
+   <supportedModes>
+    <mode>view</mode>
+   </supportedModes>
+   <fields>
+    <list>false</list>
+    <complex>false</complex>
+    <supportedTypes>
+     <type>string</type>
+    </supportedTypes>
+   </fields>
+  </configuration>
+  <handler-class>
+   org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+  </handler-class>
+  <property name="template">
+   /widgets/listing/listing_workflow_name_task_widget_template.xhtml
+  </property>
+ </widgetType>
+  </extension>
+  
+  
+  
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="routing_task_name" type="text">
+      <labels>
+        <label mode="any">label.workflow.task.name</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.nt.name</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+
+    <widget name="routing_task_target_document" type="singleDocumentSuggestion">
+      <labels>
+        <label mode="any">label.document</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.nt.targetDocumentId</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="routing_task_duedate" type="datetime">
+      <labels>
+        <label mode="any">label.widget.task_step.dueDate</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.nt.dueDate</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="format">#{nxu:dateAndTimeFormater('medium')}</property>
+        <property name="timeZone">#{timeZone}</property>
+      </properties>
+    </widget>
+
+    <widget name="routing_task_directive" type="text">
+      <labels>
+        <label mode="any">label.widget.task_step.directive</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.nt.directive</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+
+    <widget name="routing_task_actors" type="multiplePrefixedUsersSuggestion">
+      <labels>
+        <label mode="any">label.document.route.content.header.actors</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.nt.actors</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+
+    <widget name="routing_task_comments" type="list">
+      <labels>
+        <label mode="any">label.content.header.comments</label>
+      </labels>
+      <fields>
+        <field>data.nt.taskComments</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="localize">true</property>
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="comment" type="text">
+          <fields>
+            <field></field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+    
+    <widget name="routing_task_workflow_name" type="listing_workflow_name_task">
+      <labels>
+        <label mode="any">label.review.type</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.nt.processId</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+    
+    <widget name="routing_task_process_btn" type="listing_process_task">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+        <field>data.nt.targetDocumentId</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="tab">TAB_ROUTE_WORKFLOW</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="routing_task_listing">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+        <property name="display">table</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="isListingSelectionBox">true</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">nt:name</property>
+          </properties>
+          <widget>routing_task_name</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>routing_task_target_document</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">nt:directive</property>
+          </properties>
+          <widget>routing_task_directive</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">nt:dueDate</property>
+          </properties>
+          <widget>routing_task_duedate</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>routing_task_actors</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>routing_task_comments</widget>
+        </column>
+      </columns>
+    </layout>
+    
+    <layout name="routing_user_open_task_listing">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+        <property name="display">table</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">nt:name</property>
+          </properties>
+          <widget>routing_task_workflow_name</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>routing_task_name</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>routing_task_target_document</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">nt:directive</property>
+          </properties>
+          <widget>routing_task_directive</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">nt:dueDate</property>
+          </properties>
+          <widget>routing_task_duedate</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>routing_task_actors</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+          </properties>
+          <widget>routing_task_process_btn</widget>
+        </column>
+      </columns>
+    </layout>
+    
+    <layout name="routing_user_open_task_search_layout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>task_name</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>task_dueDate_min</widget>
+          <widget>task_dueDate_max</widget>
+        </row>
+      </rows>
+      <widget name="task_name" type="text">
+        <labels>
+          <label mode="any">label.workflow.task.name</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>user_open_tasks_cv:task_name</field>
+        </fields>
+      </widget>
+      <widget name="task_dueDate_min" type="datetime">
+        <labels>
+          <label mode="any">label.widget.task_step.dueDate</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>user_open_tasks_cv:task_dueDate_min</field>
+        </fields>
+      </widget>
+      <widget name="task_dueDate_max" type="datetime">
+        <labels>
+          <label mode="any">label.search.and</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>user_open_tasks_cv:task_dueDate_max</field>
+        </fields>
+      </widget>
+    </layout>
+    
+
+  </extension>
+
+</component>
