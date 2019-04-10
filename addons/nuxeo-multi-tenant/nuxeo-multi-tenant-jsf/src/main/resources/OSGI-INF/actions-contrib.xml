@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.multi.tenant.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+  <require>org.nuxeo.ecm.platform.audit.web</require>
+  <require>org.nuxeo.ecm.directory.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <!-- Admin Center -->
+    <action id="TenantAdministration" link="/incl/tenant/tenant_administration.xhtml"
+      type="admin_rest_document_link"
+      label="label.multi.tenant.isolation" order="150">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <!-- Hide Manage tab for tenants -->
+    <action id="TAB_MANAGE">
+      <filter-id>denyForTenantConfig</filter-id>
+    </action>
+    <!-- Hide Permissions tab for tenants -->
+    <action id="TAB_PERMISSIONS">
+      <filter-id>denyForTenantConfig</filter-id>
+    </action>
+
+    <action id="TAB_CONTENT_HISTORY">
+      <filter-id>denyForTenantConfig</filter-id>
+    </action>
+
+    <!-- Tenant Administration tabs -->
+    <action id="TAB_TENANT_ADMINISTRATION" type="rest_document_link" order="240"
+      label="action.view.manage" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>manage</filter-id>
+      <filter-id>allowForTenantConfig</filter-id>
+      <filter id="TAB_TENANT_ADMINISTRATION_has_subtabs">
+        <rule grant="false">
+          <condition>
+            #{webActions.getActionsList('TAB_TENANT_ADMINISTRATION_sub_tab').isEmpty()}
+          </condition>
+        </rule>
+      </filter>
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="link">/incl/tabs/document_manage.xhtml</property>
+      </properties>
+    </action>
+
+    <action id="TAB_TENANT_CONFIGURATION" link="/incl/tabs/tenant_configuration.xhtml"
+      order="40" label="label.tenant.configuration" icon="/icons/file.gif">
+      <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
+      <filter-id>tenantAdministrators</filter-id>
+      <filter-id>allowForTenantConfig</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="TAB_TENANT_RIGHTS" link="/incl/tabs/document_rights.xhtml"
+      order="50" label="action.view.rights" icon="/icons/file.gif">
+      <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
+      <filter-id>rights</filter-id>
+      <filter-id>tenantAdministrators</filter-id>
+      <filter-id>allowForTenantConfig</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="TAB_TENANT_LOCAL_CONFIGURATION" link="/incl/tabs/local_configuration.xhtml"
+      order="70" label="action.view.local.configuration" icon="/icons/file.gif">
+      <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
+      <filter-id>has_local_configuration_available</filter-id>
+      <filter-id>tenantAdministrators</filter-id>
+      <filter-id>allowForTenantConfig</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="TAB_TENANT_HISTORY" link="/incl/tabs/tenant_history.xhtml" label="action.view.tenant.history"
+      icon="/icons/file.gif" order="100">
+      <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
+      <filter-id>tenantAdministrators</filter-id>
+      <filter-id>allowForTenantConfig</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="TAB_TENANT_TRASH_CONTENT" link="/incl/tabs/document_trash_content.xhtml"
+      order="200" label="action.view.trash.content" icon="/icons/file.gif">
+      <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
+      <filter-id>allowForTenantConfig</filter-id>
+      <filter-id>tenantAdministrators</filter-id>
+      <filter id="viewTrash">
+        <rule grant="true">
+          <permission>Manage everything</permission>
+          <facet>Folderish</facet>
+          <condition>#{deleteActions.trashManagementEnabled}</condition>
+        </rule>
+      </filter>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="allowForTenantConfig">
+      <rule grant="true">
+        <facet>TenantConfig</facet>
+      </rule>
+    </filter>
+
+    <filter id="denyForTenantConfig">
+      <rule grant="false">
+        <facet>TenantConfig</facet>
+      </rule>
+    </filter>
+
+    <filter id="tenantAdministrators">
+      <rule grant="true">
+        <condition>#{currentUser.administrator}</condition>
+        <condition>#{currentUser.isMemberOf('powerusers')}</condition>
+      </rule>
+    </filter>
+
+    <filter id="readOnlyDirectory">
+      <rule grant="true">
+        <condition>#{multiTenantActions.isReadOnlyDirectory(directoryName)}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="typeCompatibility">
+
+    <typeCompatibility type="rest_document_link">
+      <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
+    </typeCompatibility>
+
+  </extension>
+
+</component>

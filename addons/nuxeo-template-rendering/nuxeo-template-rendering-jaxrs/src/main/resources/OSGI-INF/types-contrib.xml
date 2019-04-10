@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.platform.TemplateSources.jaxrs.types.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService"
+    point="types">
+
+    <type id="WebTemplateSource" coretype="WebTemplateSource">
+      <label>WebTemplateSource</label>
+      <icon>/icons/webtemplate.png</icon>
+      <bigIcon>/icons/webtemplate_100.png</bigIcon>
+      <default-view>view_documents</default-view>
+      <category>SimpleDocument</category>
+      <layouts mode="create">
+        <layout>heading</layout>
+        <layout>templateOptionsWizard</layout>
+        <layout>templateOptions</layout>
+        <layout>note</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>heading</layout>
+        <layout>note</layout>
+        <layout>templateOptions</layout>
+        <layout>templateParams</layout>
+        <layout>linkedTemplateBasedDocs</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>note</layout>
+      </layouts>
+    </type>
+
+  </extension>
+
+</component>

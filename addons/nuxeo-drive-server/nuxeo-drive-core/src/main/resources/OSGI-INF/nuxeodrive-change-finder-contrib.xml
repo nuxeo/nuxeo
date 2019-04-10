@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.change.finder" version="1.0">
+
+  <extension target="org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl"
+    point="changeFinder">
+    <changeFinder class="org.nuxeo.drive.service.impl.AuditChangeFinder" />
+  </extension>
+
+</component>
