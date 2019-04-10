@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.pageproviders">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="SAVED_DAM_SEARCHES">
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'DamSearch'
+        AND dc:creator = ? AND ecm:isProxy = 0
+        AND ecm:isCheckedInVersion = 0
+        AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="SHARED_DAM_SEARCHES">
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'DamSearch'
+        AND dc:creator != ? AND ecm:isProxy = 0
+        AND ecm:isCheckedInVersion = 0
+        AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+    </coreQueryPageProvider>
+
+    <genericPageProvider name="damImportFolders"
+      class="org.nuxeo.dam.provider.ImportFolderPageProvider">
+      <pattern quoteParameters="false" escapeParameters="true">
+        SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE '?' AND ecm:mixinType !=
+        'HiddenInNavigation' AND ecm:mixinType = 'Folderish'
+        AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>10</pageSize>
+    </genericPageProvider>
+
+  </extension>
+
+</component>
