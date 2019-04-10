@@ -1,0 +1,102 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  id="#{widget.id}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+  <nxu:set var="numberOfSubWidgets" value="#{fn:length(widget.subWidgets)}" cache="true">
+    <c:forEach items="#{field}" var="item" varStatus="status">
+      <nxl:subWidget>
+        <nxl:widget widget="#{widget}" value="#{item}" />
+        <h:outputText value=", "
+          rendered="#{status.index != (field.size()-1) or widgetIndex != (numberOfSubWidgets-1)}" />
+      </nxl:subWidget>
+    </c:forEach>
+  </nxu:set>
+</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+  <c:set var="displaySubLabels" value="#{not widgetProperty_hideSubLabels}" />
+
+  <table class="diffDisplayTable">
+    <c:choose>
+      <c:when test="#{widgetProperty_display == 'inline'}">
+        <c:if test="#{displaySubLabels}">
+        <thead>
+          <tr>
+            <nxl:subWidget>
+              <th>
+                <h:outputText value="#{messages[widget.label]}" />
+              </th>
+            </nxl:subWidget>
+          </tr>
+        </thead>
+        </c:if>
+        <tbody>
+          <c:forEach items="#{field}" var="item" varStatus="status">
+            <tr>
+              <f:subview id="row_#{status.index}">
+                <nxl:subWidget>
+                  <td>
+                    <nxl:widget widget="#{widget}" value="#{item}" />
+                  </td>
+                </nxl:subWidget>
+               </f:subview>
+            </tr>
+          </c:forEach>
+        </tbody>
+      </c:when>
+      <c:otherwise>
+        <tbody>
+          <c:forEach items="#{field}" var="item" varStatus="status">
+            <tr>
+              <f:subview id="row_#{status.index}">
+                <td>
+                  <table>
+                    <nxl:subWidget>
+                      <tr>
+                        <c:if test="#{displaySubLabels}">
+                          <td class="subItemCell">
+                            <h:outputText value="#{messages[widget.label]}" />
+                          </td>
+                          <td class="subItemCell">
+                            <nxl:widget widget="#{widget}" value="#{item}" />
+                          </td>
+                        </c:if>
+                        <c:if test="#{!displaySubLabels}">
+                          <td>
+                            <nxl:widget widget="#{widget}" value="#{item}" />
+                          </td>
+                        </c:if>
+                      </tr>
+                    </nxl:subWidget>
+                  </table>
+                </td>
+              </f:subview>
+            </tr>
+          </c:forEach>
+        </tbody>
+      </c:otherwise>
+    </c:choose>
+  </table>
+
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <nxu:set var="numberOfSubWidgets" value="#{fn:length(widget.subWidgets)}" cache="true">
+      <c:forEach items="#{field}" var="item" varStatus="status">
+        <nxl:subWidget>
+          <nxl:widget widget="#{widget}" value="#{item}" />
+          <h:outputText value=", "
+            rendered="#{status.index != (field.size()-1) or widgetIndex != (numberOfSubWidgets-1)}" />
+        </nxl:subWidget>
+      </c:forEach>
+    </nxu:set>
+  </nxp:html>
+</c:if>
+</f:subview>
