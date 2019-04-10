@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:nxs="http://www.nuxeo.org/ecm/schemas/video"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.nuxeo.org/ecm/schemas/video">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:element name="info" type="nxs:info" />
+  <xs:element name="transcodedVideos" type="nxs:transcodedVideoItems" />
+  <xs:element name="storyboard" type="nxs:storyboarditems" />
+
+  <xs:complexType name="info">
+    <xs:sequence>
+      <xs:element name="duration" type="xs:float" /> <!-- in seconds -->
+      <xs:element name="width" type="xs:integer" />
+      <xs:element name="height" type="xs:integer" />
+      <xs:element name="format" type="xs:string" />
+      <xs:element name="streams" type="nxs:streamItems" />
+      <xs:element name="frameRate" type="xs:float" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="streamItems">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0"
+       name="streamItem" type="nxs:streamItem"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="streamItem">
+    <xs:sequence>
+      <xs:element name="streamInfo" type="xs:string" />
+      <xs:element name="type" type="xs:string" />
+      <xs:element name="codec" type="xs:string" />
+      <xs:element name="bitRate" type="xs:double" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="transcodedVideoItems">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0"
+       name="transcodedVideoItem" type="nxs:transcodedVideoItem"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="transcodedVideoItem">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="content" type="nxs:content" />
+      <xs:element name="info" type="nxs:info" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="storyboarditems">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0"
+       name="storyboarditem" type="nxs:storyboarditem"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="storyboarditem">
+    <xs:sequence>
+      <xs:element name="content" type="nxs:content" />
+      <xs:element name="timecode" type="xs:float" />
+      <xs:element name="comment" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

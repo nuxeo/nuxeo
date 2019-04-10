@@ -1,0 +1,17 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <c:if test="#{value.hasFacet('Video')}">
+
+  <h3 class="summaryTitle">
+    <h:outputText value="#{messages['heading.video.info']}" />
+  </h3>
+
+  <c:if test="#{value.hasFacet('Video')}">
+    <nxl:layout value="#{value}" name="video_info" mode="view" />
+  </c:if>
+
+  </c:if>
+
+</div>

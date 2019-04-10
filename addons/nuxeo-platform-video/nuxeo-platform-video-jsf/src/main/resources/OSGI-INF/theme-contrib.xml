@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.video.theme">
+
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view name="nuxeo5 includes" template-engine="jsf-facelets" merge="true">
+      <format-type>widget</format-type>
+      <resource>video-js.css</resource>
+
+      <resource>video-js.js</resource>
+      <resource>video-player-util.js</resource>
+    </view>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <resource name="video-js.css">
+      <path>css/video-js.css</path>
+    </resource>
+
+    <resource name="video-js.js">
+      <path>scripts/video.js</path>
+    </resource>
+    <resource name="video-player-util.js">
+      <path>scripts/video-player-util.js</path>
+      <require>video-js.js</require>
+    </resource>
+  </extension>
+
+
+</component>

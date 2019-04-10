@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.lifecycle">
+
+  <require>org.nuxeo.ecm.core.lifecycle.LifeCycleService</require>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+             point="types">
+    <types>
+      <type name="ImportRoot">default</type>
+      <type name="ImportFolder">default</type>
+      <type name="ImportSet">default</type>
+
+      <type name="Video">default</type>
+      <type name="Audio">default</type>
+    </types>
+  </extension>
+
+</component>
