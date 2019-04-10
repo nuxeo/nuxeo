@@ -1,0 +1,767 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layoutDemo.framework"
+    point="widgettypes">
+
+    <widgetType name="text">
+      <label>Text</label>
+      <viewId>textWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:textField</field>
+        </fields>
+        <defaultProperties>
+          <property name="rendered">true</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="textWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-text-widget.xml" />
+        <layout name="textWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-text-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="textarea">
+      <label>Textarea</label>
+      <viewId>textareaWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:textareaField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="textareaWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-textarea-widget.xml" />
+        <layout name="textareaWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-textarea-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="int">
+      <label>Int</label>
+      <viewId>intWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:intField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="intWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-int-widget.xml" />
+        <layout name="intWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-int-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="secret">
+      <label>Secret</label>
+      <viewId>secretWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:secretField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="secretWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-secret-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="datetime">
+      <label>Datetime</label>
+      <viewId>datetimeWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:dateField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="datetimeWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-datetime-widget.xml" />
+        <layout name="datetimeWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-datetime-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <!-- TODO: need to handle file size restriction -->
+    <widgetType name="file">
+      <label>File</label>
+      <viewId>fileWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:fileField</field>
+          <field>lds:fileField/filename</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="fileWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-file-widget.xml"
+          useAjaxForm="false" />
+        <layout name="fileWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-file-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="htmltext">
+      <label>Htmltext</label>
+      <viewId>htmltextWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:htmlField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="htmltextWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-htmltext-widget.xml" />
+        <layout name="htmltextWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-htmltext-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectOneDirectory">
+      <label>Single vocabulary</label>
+      <viewId>selectOneDirectoryWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:selectVocabularyField</field>
+        </fields>
+        <defaultProperties>
+          <property name="directoryName">layout_demo_crew</property>
+          <property name="ordering">label</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="selectOneDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-widget.xml" />
+        <layout name="selectOneDirectoryLocalizedWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-localized-widget.xml" />
+        <layout name="selectOneDirectoryL10NWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-l10n-widget.xml" />
+        <layout name="selectOneDirectoryWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectOneRadioDirectory">
+      <label>Single vocabulary radio</label>
+      <viewId>selectOneRadioDirectoryWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:selectVocabularyField</field>
+        </fields>
+        <defaultProperties>
+          <property name="directoryName">layout_demo_crew</property>
+          <property name="ordering">label</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="selectOneRadioDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-widget.xml" />
+        <layout name="selectOneRadioDirectoryLocalizedWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-localized-widget.xml" />
+        <layout name="selectOneRadioDirectoryL10NWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-l10n-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyDirectory">
+      <label>Multiple vocabulary</label>
+      <viewId>selectManyDirectoryWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:selectMultiVocabularyField</field>
+        </fields>
+        <defaultProperties>
+          <property name="directoryName">layout_demo_crew</property>
+          <property name="ordering">label</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="selectManyDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-widget.xml" />
+        <layout name="selectManyDirectoryLocalizedWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-localized-widget.xml" />
+        <layout name="selectManyDirectoryL10NWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-l10n-widget.xml" />
+        <layout name="selectManyDirectoryWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxDirectory">
+      <label>Multiple vocabulary checkbox</label>
+      <viewId>selectManyCheckboxDirectoryWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:selectMultiVocabularyField</field>
+        </fields>
+        <defaultProperties>
+          <property name="directoryName">layout_demo_crew</property>
+          <property name="ordering">label</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="selectManyCheckboxDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyCheckboxDirectory-widget.xml" />
+        <layout name="selectManyCheckboxDirectoryLocalizedWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyCheckboxDirectory-localized-widget.xml" />
+        <layout name="selectManyCheckboxDirectoryL10NWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyCheckboxDirectory-l10n-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="suggestOneDirectory">
+      <label>Vocabulary suggestion</label>
+      <viewId>suggest_one_directory_widget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:select_coverage_field</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">300</property>
+          <property name="labelFieldName">label_{lang}</property>
+          <property name="dbl10n">true</property>
+          <property name="minChars">0</property>
+          <property name="hideHelpLabel">true</property>
+          <property name="directoryName">l10ncoverage</property>
+          <property name="suggestionFormatter">dirformatter</property>
+          <property name="selectionFormatter">dirformatter</property>
+          <property name="keySeparator">/</property>
+          <property name="placeholder">Choose a country</property>
+          <property name="inlinejs"> <![CDATA[
+  function dirformatter(entry) {
+    var markup = entry.displayLabel;
+    if (entry.warn_message) {
+      markup += "<img src='/nuxeo/icons/warning.gif' title='"
+          + entry.warn_message + "'/>"
+    }
+    return markup;
+  }]]></property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="suggestOneDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-suggestOneDirectory-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="suggestManyDirectory">
+      <label>Multiple vocabulary suggestion</label>
+      <viewId>suggest_one_directory_multiple_widget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:select_subjects_multi_fields</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">300</property>
+          <property name="labelFieldName">label_{lang}</property>
+          <property name="dbl10n">true</property>
+          <property name="minChars">0</property>
+          <property name="hideHelpLabel">true</property>
+          <property name="directoryName">l10nsubjects</property>
+          <property name="suggestionFormatter">dirformatter</property>
+          <property name="selectionFormatter">dirformatter</property>
+          <property name="keySeparator">/</property>
+          <property name="placeholder">Choose one or more topics</property>
+          <property name="inlinejs"> <![CDATA[
+  function dirformatter(entry) {
+    var markup = entry.displayLabel;
+    if (entry.warn_message) {
+      markup += "<img src='/nuxeo/icons/warning.gif' title='"
+          + entry.warn_message + "'/>"
+    }
+    return markup;
+  }]]></property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="suggestManyDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-suggestManyDirectory-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="singleUserSuggestion">
+      <label>Single user</label>
+      <viewId>singleUserSuggestion</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:select_user_field</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">200</property>
+          <property name="minChars">3</property>
+          <property name="helpLabel">Type at least "Adm" to trigger suggestion
+          </property>
+          <property name="suggestionFormatter">userformatter</property>
+          <property name="selectionFormatter">userformatter</property>
+          <property name="inlinejs"> <![CDATA[
+     function userformatter(entry) {
+    var markup = "";
+    if (entry.displayIcon && entry.type) {
+      if (entry.type == "USER_TYPE") {
+        markup += "<img src='" + window.nxContextPath + "/icons/user.png'/>";
+      } else if (entry.type == "GROUP_TYPE") {
+        markup += "<img src='" + window.nxContextPath + "/icons/group.png'/>";
+      }
+    }
+    markup += entry.displayLabel;
+    return markup;
+  }]]></property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="singleUserSuggestionLayout"
+          src="sources/OSGI-INF/demo/layout-demo-singleUserSuggestion-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="multipleUsersSuggestion">
+      <label>Multiple user</label>
+      <viewId>multipleUsersSuggestion</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:select_users_multi_fields</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">200</property>
+          <property name="minChars">3</property>
+          <property name="helpLabel">Type at least "Adm" to trigger suggestion
+          </property>
+          <property name="repository">default</property>
+          <property name="suggestionFormatter">userformatter</property>
+          <property name="selectionFormatter">userformatter</property>
+          <property name="inlinejs"> <![CDATA[
+   function userformatter(entry) {
+    var markup = "";
+    if (entry.displayIcon && entry.type) {
+      if (entry.type == "USER_TYPE") {
+        markup += "<img src='" + window.nxContextPath + "/icons/user.png'/>";
+      } else if (entry.type == "GROUP_TYPE") {
+        markup += "<img src='" + window.nxContextPath + "/icons/group.png'/>";
+      }
+    }
+    markup += entry.displayLabel;
+    return markup;
+  }]]></property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="multipleUsersSuggestionLayout"
+          src="sources/OSGI-INF/demo/layout-demo-multipleUsersSuggestion-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="checkbox">
+      <label>Checkbox</label>
+      <viewId>checkboxWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:booleanField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="checkboxWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-checkbox-widget.xml" />
+        <layout name="checkboxWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-checkbox-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="complex">
+      <label>Complex</label>
+      <viewId>complexWidget</viewId>
+      <category>standard</category>
+      <layouts>
+        <layout name="complexWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-complex-widget.xml" />
+      </layouts>
+      <preview enabled="true">
+        <fields>
+          <field>lds:complexField</field>
+        </fields>
+      </preview>
+    </widgetType>
+
+    <widgetType name="list">
+      <label>List</label>
+      <viewId>listWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:complexList</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="listArrayWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-list-array-widget.xml" />
+        <layout name="listWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-list-widget.xml" />
+        <layout name="complexListWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-complex-list-widget.xml" />
+        <layout name="complexListWidgetLayout2"
+          src="sources/OSGI-INF/demo/layout-demo-complex-list2-widget.xml" />
+        <!-- disabled: need to handle file size restriction -->
+        <!-- <layout name="fileListWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-file-list-widget.xml" 
+          /> -->
+        <layout name="listOfListsWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-listOfLists-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="template">
+      <label>Template</label>
+      <viewId>templateWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <!-- TODO? -->
+        <!-- <layout name="templateWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-template-widget.xml" 
+          /> -->
+      </layouts>
+    </widgetType>
+
+    <widgetType name="container">
+      <label>Container</label>
+      <viewId>containerWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <layout name="containerWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-container-widget.xml" />
+      </layouts>
+      <preview enabled="true" hideEditMode="true">
+        <fields>
+          <field></field>
+        </fields>
+      </preview>
+    </widgetType>
+
+    <widgetType name="layout">
+      <label>Layout</label>
+      <viewId>layoutWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <layout name="layoutWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-layout-widget.xml" />
+      </layouts>
+      <preview enabled="true">
+        <fields>
+          <field></field>
+        </fields>
+        <defaultProperties>
+          <property name="name">demoLayout</property>
+        </defaultProperties>
+      </preview>
+    </widgetType>
+
+    <widgetType name="toggleableLayoutWithForms">
+      <label>Toggleable form</label>
+      <viewId>toggleableLayoutWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <layout name="toggleableLayout"
+          src="sources/OSGI-INF/demo/layout-demo-toggleable-layout-widget.xml"
+          addForm="false" hideEditMode="true" />
+        <layout name="toggleableLayoutStudio"
+          src="sources/OSGI-INF/demo/layout-demo-toggleable-layout-studio-widget.xml"
+          addForm="false" hideEditMode="true" />
+      </layouts>
+      <!-- XXX: maybe enable when toggle actually works inside the frame -->
+      <preview enabled="false" hideEditMode="true">
+        <fields>
+          <field></field>
+        </fields>
+        <defaultProperties>
+          <property name="initialLayoutName">heading</property>
+          <property name="toggledLayoutName">heading demoToggleableLayout</property>
+          <property name="useAjaxForm">true</property>
+          <property name="displayToggleActionInHeader">true</property>
+          <!-- hook up specific actions for demo -->
+          <property name="canToggleMode">true</property>
+          <property name="hideDefaultActions">true</property>
+          <property name="additionalActionsCategory">TOGGLEABLE_LAYOUT_DEMO</property>
+        </defaultProperties>
+      </preview>
+    </widgetType>
+
+    <widgetType name="actions">
+      <label>Actions</label>
+      <viewId>actionsWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <layout name="actionsWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-actions-widget.xml"
+          useAjaxForm="false" />
+      </layouts>
+      <!-- XXX: maybe enable when toggle actually works inside the frame -->
+      <preview enabled="false" hideEditMode="true">
+        <fields>
+          <field></field>
+        </fields>
+        <defaultProperties>
+          <property name="actions">#{layoutDemoCustomActions}</property>
+        </defaultProperties>
+      </preview>
+    </widgetType>
+
+
+    <widgetType name="listing_author">
+      <label>Author</label>
+      <viewId>listing_authorWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_authorWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-author-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_big_icon_type">
+      <label>Big icon and document type</label>
+      <viewId>listing_big_icon_typeWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_big_icon_typeWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-big-icon-type-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_big_icon_type_link">
+      <label>Big icon and document type with link</label>
+      <viewId>listing_big_icon_type_linkWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_big_icon_type_linkWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-big-icon-type-link-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_icon_type">
+      <label>Icon and document type</label>
+      <viewId>listing_icon_typeWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_icon_typeWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-icon-type-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_last_contributor">
+      <label>Last contributor</label>
+      <viewId>listing_last_contributorWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_last_contributorWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-last-contributor-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_lifecycle">
+      <label>Lifecycle state</label>
+      <viewId>listing_lifecycleWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_lifecycleWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-lifecycle-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_lock_icon">
+      <label>Lock icon</label>
+      <viewId>listing_lock_iconWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_lock_iconWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-lock-icon-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_title_link">
+      <label>Title with link</label>
+      <viewId>listing_title_linkWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_title_linkWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-title-link-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_version">
+      <label>Version</label>
+      <viewId>listing_versionWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_versionWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-version-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="link">
+      <label>Link</label>
+      <viewId>linkAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
+    <widgetType name="bare_link">
+      <label>Bare link</label>
+      <viewId>bare_linkAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
+    <widgetType name="fancybox">
+      <label>Fancybox</label>
+      <viewId>fancyboxAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
+    <widgetType name="rest_document_link">
+      <label>Rest document link</label>
+      <viewId>rest_document_linkAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
+    <widgetType name="main_tab">
+      <label>Main tab link</label>
+      <viewId>main_tabAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
+    <widgetType name="widget">
+      <label>Widget</label>
+      <viewId>widgetAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
+    <widgetType name="templateAction" widgetTypeName="template">
+      <label>Template</label>
+      <viewId>templateAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxAggregate">
+      <label>Multiple aggregate checkbox</label>
+      <viewId>selectManyCheckboxAggregateWidget</viewId>
+      <category>aggregate</category>
+      <preview enabled="true" hideViewMode="true">
+        <fields>
+          <field>lds:stringList</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectManyCheckboxAggregate" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-checkbox-widget.xml" />
+        <layout name="selectManyCheckboxAggregateOptions" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-checkbox-options-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyListboxAggregate">
+      <label>Multiple aggregate listbox</label>
+      <viewId>selectManyListboxAggregateWidget</viewId>
+      <category>aggregate</category>
+      <preview enabled="true" hideViewMode="true">
+        <fields>
+          <field>lds:stringList</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectManyListboxAggregate" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-listbox-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxDirectoryAggregate">
+      <label>Multiple directory aggregate checkbox</label>
+      <viewId>selectManyCheckboxDirectoryAggregateWidget</viewId>
+      <category>aggregate</category>
+      <preview enabled="true" hideViewMode="true">
+        <fields>
+          <field>lds:selectMultiVocabularyField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectManyCheckboxDirectoryAggregate" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-checkbox-directory-widget.xml" />
+        <layout name="selectManyCheckboxDirectoryAggregateLocalized"
+          hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-checkbox-directory-translated-widget.xml" />
+        <layout name="selectManyCheckboxDirectoryAggregateL10N"
+          hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-checkbox-directory-dbl10n-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyListboxDirectoryAggregate">
+      <label>Multiple directory aggregate listbox</label>
+      <viewId>selectManyListboxDirectoryAggregateWidget</viewId>
+      <category>aggregate</category>
+      <preview enabled="true" hideViewMode="true">
+        <fields>
+          <field>lds:selectMultiVocabularyField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectManyListboxDirectoryAggregate" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-listbox-directory-widget.xml" />
+        <layout name="selectManyListboxDirectoryAggregateLocalized"
+          hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-listbox-directory-localized-widget.xml" />
+        <layout name="selectManyListboxDirectoryAggregateL10N"
+          hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-listbox-directory-dbl10n-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyListboxUserAggregate">
+      <label>Multiple user aggregate listbox</label>
+      <viewId>selectManyListboxUserAggregateWidget</viewId>
+      <category>aggregate</category>
+      <preview enabled="true" hideViewMode="true">
+        <fields>
+          <field>lds:selectMultiUserField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectManyListboxUserAggregate" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-listbox-user-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyCheckboxUserAggregate">
+      <label>Multiple user aggregate checkbox</label>
+      <viewId>selectManyCheckboxUserAggregateWidget</viewId>
+      <category>aggregate</category>
+      <preview enabled="true" hideViewMode="true">
+        <fields>
+          <field>lds:selectMultiUserField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectManyCheckboxUserAggregate" hideViewMode="true"
+          src="sources/OSGI-INF/demo/layout-demo-agg-checkbox-user-widget.xml" />
+      </layouts>
+    </widgetType>
+
+  </extension>
+
+</component>

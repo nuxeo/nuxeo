@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/layoutDemo"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/layoutDemo">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:element name="textField" type="xs:string" />
+
+  <xs:element name="anotherTextField" type="xs:string" />
+
+  <xs:element name="textareaField" type="xs:string" />
+
+  <xs:element name="htmlField" type="xs:string" />
+
+  <xs:element name="secretField" type="xs:string" />
+
+  <xs:element name="selectVocabularyField" type="xs:string" />
+  <xs:element name="selectVocabularyLocalizedField" type="xs:string" />
+  <xs:element name="selectVocabularyL10NField" type="xs:string" />
+
+  <xs:element name="select_coverage_field" type="xs:string" />
+
+  <xs:element name="select_subjects_multi_fields" type="nxs:stringArrayType" />
+
+  <xs:element name="select_user_field" type="xs:string" />
+
+  <xs:element name="select_users_multi_fields" type="nxs:stringArrayType" />
+
+  <xs:element name="select_doc_field" type="xs:string" />
+
+  <xs:element name="select_docs_multi_fields" type="nxs:stringArrayType" />
+
+  <xs:element name="dateField" type="xs:date" />
+
+  <xs:element name="intField" type="xs:int" />
+
+  <xs:element name="booleanField" type="xs:boolean" />
+
+  <xs:element name="fileField" type="nxs:content" />
+
+  <xs:element name="stringArrayField" type="nxs:stringArrayType" />
+  <xs:element name="selectMultiUserField" type="nxs:stringArrayType" />
+  <xs:element name="selectMultiVocabularyField" type="nxs:stringArrayType" />
+  <xs:element name="selectMultiVocabularyLocalizedField" type="nxs:stringArrayType" />
+  <xs:element name="selectMultiVocabularyL10NField" type="nxs:stringArrayType" />
+  <xs:simpleType name="stringArrayType">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
+  <xs:element name="stringList" type="nxs:stringListType" />
+  <xs:complexType name="stringListType">
+    <xs:sequence>
+      <xs:element name="item" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="complexField" type="nxs:complexType" />
+  <xs:complexType name="complexType">
+    <xs:sequence>
+      <xs:element name="stringComplexItem" type="xs:string" />
+      <xs:element name="dateComplexItem" type="xs:date" />
+      <xs:element name="intComplexItem" type="xs:int" />
+      <xs:element name="booleanComplexItem" type="xs:boolean" default="true" />
+      <xs:element name="stringComplexItem2" type="xs:string" />
+      <xs:element name="stringComplexItem3" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="complexList" type="nxs:complexListType" />
+  <xs:complexType name="complexListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:complexType" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="complexType2">
+    <xs:sequence>
+      <xs:element name="stringComplexItem1" type="xs:string" />
+      <xs:element name="stringComplexItem2" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="complexList2" type="nxs:complexListType2" />
+  <xs:complexType name="complexListType2">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:complexType2" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="fileList" type="nxs:fileListType" />
+  <xs:complexType name="fileListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:content" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="listOfListsItemType">
+    <xs:sequence>
+      <xs:element name="stringItem" type="xs:string" />
+      <xs:element name="stringArrayItem" type="nxs:stringArrayType" />
+      <xs:element name="stringListItem" type="nxs:stringListType" />
+      <xs:element name="stringListItem2" type="nxs:stringListType" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="listOfLists" type="nxs:listOfListsType" />
+  <xs:complexType name="listOfListsType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:listOfListsItemType"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
