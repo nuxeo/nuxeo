@@ -1,0 +1,44 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+  <h:form id="#{widget.id}_open_tasks">
+   <nxu:set var="tasks" value="#{routingActions.getCurrentRouteAllTasks()}"
+    cache="true">
+
+    <c:if test="#{!empty tasks}">
+      <h3 class="summaryTitle">
+        <h:outputText value="#{messages['label.document.routing.open.tasks']}" />
+      </h3>
+
+      <c:forEach var="task" items="#{tasks}" varStatus="status">
+        <div>
+          <h:outputFormat styleClass="boldLabel" value="#{messages['label.route.task.type']} ">
+            <f:param value="#{messages[task.name]}" />
+          </h:outputFormat>
+          <h:outputText value="#{messages['label.route.task.assigned.to']} " />
+          <c:forEach var="actor" items="#{task.actors}">
+            <nxl:widgetType name="template" mode="view"
+              template="/document_routing_widgets/route_assignee_widget_template.xhtml"
+              value="#{actor}" />
+          </c:forEach>
+          <div class="dueDate warningLabel">
+            <h:outputText value=" #{messages['label.route.task.due.date']} " />
+            <h:outputText value="#{task.dueDate}" />
+          </div>
+          <div class="directive quote">
+            <h:outputText value="#{messages[task.directive]}" />
+          </div>
+        </div>
+      </c:forEach>
+
+    </c:if>
+
+  </nxu:set>
+</h:form>
+</c:if>
