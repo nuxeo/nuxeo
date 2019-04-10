@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.shibboleth.groups.web.layouts">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.base</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+    <layout name="user_group_suggestion">
+      <templates>
+        <template mode="any">/layouts/shibboleth_user_tree_layout.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>shibbolethUserSuggestionWithGroupTree</widget>
+        </row>
+      </rows>
+    </layout>
+  </extension>
+</component>
