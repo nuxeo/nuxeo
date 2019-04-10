@@ -1,0 +1,34 @@
+<div xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{field.filename}</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+    <nxh:outputLink
+      value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field.filename)}">
+      <nxh:graphicImage value="#{nxd:fileIconPath(field)}"
+        rendered="#{! empty nxd:fileIconPath(field)}" />
+      <nxh:outputText value="#{field.filename}" />
+    </nxh:outputLink>
+
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
+
+  <c:set var="acceptedExtensions"
+    value="#{nxu:test(!empty widgetProperty_acceptedExtensions, widgetProperty_acceptedExtensions, '.mp3, .ogg, .oga, .flac, .m4a, .aac, .ac3, .aif, .aiff, .aifc, .au, .snd, .asf, .wav')}" />
+
+  <nxu:inputFile id="#{widget.id}" value="#{field}"
+    filename="#{field.filename}" required="#{widgetProperty_required}" editFilename="false"
+    onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}">
+    <nxu:validateFileMimetype extensions="#{acceptedExtensions}" hidden="true" />
+  </nxu:inputFile>
+  <h:message escape="false" styleClass="errorMessage" for="#{widget.id}"
+    id="#{widget.id}_message" />
+
+</c:if>
+</div>

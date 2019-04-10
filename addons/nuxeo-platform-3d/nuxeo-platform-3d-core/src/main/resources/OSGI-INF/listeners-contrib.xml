@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.threed.listeners">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="threeDBatchGenerationListener" async="false" postCommit="false"
+              class="org.nuxeo.ecm.platform.threed.listener.ThreeDBatchGenerationListener" priority="20">
+      <event>documentCreated</event>
+      <event>documentModified</event>
+    </listener>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="threeDBatchCleanerListener" async="false" postCommit="false"
+              class="org.nuxeo.ecm.platform.threed.listener.ThreeDBatchCleanerListener" priority="20">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+  </extension>
+
+</component>

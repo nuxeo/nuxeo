@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.segment.io.SegmentIOComponent" version="1.0">
+
+  <implementation class="org.nuxeo.segment.io.SegmentIOComponent" />
+
+  <service>
+      <provide interface="org.nuxeo.segment.io.SegmentIO" />
+  </service>
+
+  <extension-point name="config">
+    <documentation>
+      Configure segment.io settings : mainly the Write Key that is used to send info to the segment.io backend.
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.segment.io.SegmentIOConfig" />
+  </extension-point>
+
+  <extension-point name="mapper">
+    <documentation>
+      Define mapping XXX
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.segment.io.SegmentIOMapper" />
+  </extension-point>
+
+  <extension-point name="integrations">
+    <documentation>
+      Allows to configure segment.io integrations configuration.
+
+      See https://segment.com/docs/sources/server/java/#selecting-integrations
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.segment.io.SegmentIOIntegrations" />
+  </extension-point>
+
+  <extension-point name="filters">
+    <documentation>
+      Allows to filter out events associated with particular users
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.segment.io.SegmentIOUserFilter" />
+  </extension-point>
+
+</component>
