@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<fragment version="1">
+  <require>org.nuxeo.ecm.platform.lang</require>
+  <!--
+    Template:   nuxeo.war/OSGI-INF/templates/faces-config.xml
+    End Result: nuxeo.war/META-INF/faces-config.xml
+  -->
+  <extension target="faces-config#APPLICATION_LOCALE">
+    <locale-config>
+      <supported-locale>de</supported-locale><!-- German - Germany -->
+      <supported-locale>de_DE</supported-locale><!-- German - Germany -->
+      <supported-locale>es</supported-locale><!-- Spanish - Spain -->
+      <supported-locale>es_ES</supported-locale><!-- Spanish - Spain -->
+      <supported-locale>eu_ES</supported-locale><!-- Basque -->
+      <supported-locale>fr</supported-locale><!-- French - France -->
+      <supported-locale>fr_FR</supported-locale><!-- French - France -->
+      <supported-locale>id_ID</supported-locale><!-- Indonesian - Indonesia -->
+      <supported-locale>it_IT</supported-locale><!-- Italian - Italy -->
+      <supported-locale>ja</supported-locale><!-- Japanese (Gregorian calendar) - Japan -->
+      <supported-locale>ja_JP</supported-locale><!-- Japanese (Gregorian calendar) - Japan -->
+      <supported-locale>nl</supported-locale><!-- Dutch - Netherlands -->
+      <supported-locale>nl_NL</supported-locale><!-- Dutch - Netherlands -->
+      <supported-locale>sq_AL</supported-locale><!-- Albanian -->
+      <supported-locale>sv_SE</supported-locale><!-- Swedish -->
+      <supported-locale>zh_CN</supported-locale><!-- Chinese (Simplified) - China -->
+    </locale-config>
+  </extension>
+
+  <install>
+    <!-- Unzip the contents of our nuxeo.war into the real nuxeo.war on the server -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+
+    <!-- Add fallback to two letters locale for browser compat -->
+    <copy from="nuxeo.war/WEB-INF/classes/messages_fr_FR.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties" />
+    <copy from="nuxeo.war/WEB-INF/classes/messages_de_DE.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_de.properties"/>
+    <copy from="nuxeo.war/WEB-INF/classes/messages_es_ES.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_es.properties"/>
+    <copy from="nuxeo.war/WEB-INF/classes/messages_nl_NL.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_nl.properties"/>
+    <copy from="nuxeo.war/WEB-INF/classes/messages_pl_PL.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_pl.properties"/>
+    <copy from="nuxeo.war/WEB-INF/classes/messages_pt_PT.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_pt.properties"/>
+    <copy from="nuxeo.war/WEB-INF/classes/messages_ja_JP.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_ja.properties"/>
+    <copy from="nuxeo.war/WEB-INF/classes/messages_ru_RU.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_ru.properties"/>
+
+  </install>
+
+</fragment>

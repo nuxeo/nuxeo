@@ -1,0 +1,9 @@
+target
+.classpath
+.project
+.settings
+bin
+**/js/npm-debug.log
+**/js/app/app-build.js
+**/node_modules/
+**/bower_components/
