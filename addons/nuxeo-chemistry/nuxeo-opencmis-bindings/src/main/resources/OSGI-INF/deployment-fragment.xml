@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <require>org.nuxeo.runtime.nuxeo-runtime-deploy</require>
+
+  <extension target="web#LISTENER">
+    <listener>
+      <listener-class>
+        <!-- this is a wrapper that holds off running NuxeoCmisContextListener
+        (the real listener) until Nuxeo is fully initialized -->
+        org.nuxeo.ecm.core.opencmis.bindings.ContextListenerDelayer
+      </listener-class>
+    </listener>
+  </extension>
+
+  <!-- AtomPub -->
+
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>atomcmis</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAtomPubServlet
+      </servlet-class>
+      <init-param>
+        <param-name>callContextHandler</param-name>
+        <param-value>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthCallContextHandler</param-value>
+      </init-param>
+      <init-param>
+        <param-name>cmisVersion</param-name>
+        <param-value>1.1</param-value>
+      </init-param>
+    </servlet>
+    <servlet>
+      <servlet-name>atomcmis10</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAtomPubServlet
+      </servlet-class>
+      <init-param>
+        <param-name>callContextHandler</param-name>
+        <param-value>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthCallContextHandler</param-value>
+      </init-param>
+      <init-param>
+        <param-name>cmisVersion</param-name>
+        <param-value>1.0</param-value>
+      </init-param>
+    </servlet>
+  </extension>
+
+  <extension target="web#SERVLET-MAPPING">
+    <servlet-mapping>
+      <servlet-name>atomcmis</servlet-name>
+      <url-pattern>/atom/cmis/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+      <servlet-name>atomcmis10</servlet-name>
+      <url-pattern>/atom/cmis10/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/atom/cmis/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/atom/cmis10/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
+  <!-- JSON aka Browser Binding -->
+
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>jsoncmis</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisBrowserBindingServlet
+      </servlet-class>
+      <init-param>
+        <param-name>callContextHandler</param-name>
+        <param-value>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthCallContextHandler</param-value>
+      </init-param>
+    </servlet>
+  </extension>
+
+  <extension target="web#SERVLET-MAPPING">
+    <servlet-mapping>
+      <servlet-name>jsoncmis</servlet-name>
+      <url-pattern>/json/cmis/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/json/cmis/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
+</fragment>

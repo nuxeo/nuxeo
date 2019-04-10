@@ -1,0 +1,11 @@
+{
+  "properties": {
+    "file:content": {
+      "name": "content.docx",
+      "wopi": {
+        "appName": "Word",
+        "view": "http://fake-url.nuxeo.com/wopi/view/${REPOSITORY}/${DOC_ID}/file:content"
+      }
+    }
+  }
+}

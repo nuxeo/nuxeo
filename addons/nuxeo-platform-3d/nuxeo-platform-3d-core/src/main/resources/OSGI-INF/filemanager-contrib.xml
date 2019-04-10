@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.threed.filemanager">
+  <extension target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService" point="plugins">
+    <plugin name="ThreeDPlugin" class="org.nuxeo.ecm.platform.threed.importer.ThreeDImporter" order="0">
+      <!-- .dae -->
+      <filter>model/vnd.collada\+xml</filter>
+      <!-- .3ds -->
+      <filter>application/x-3ds</filter>
+      <!-- .fbx -->
+      <filter>application/octet-stream</filter>
+      <!-- .ply -->
+      <filter>text/x-c</filter>
+      <!-- .obj -->
+      <filter>text/wavefront-obj</filter>
+      <!-- .x3d -->
+      <filter>model/x3d\+xml</filter>
+      <!-- .stl -->
+      <filter>application/sla</filter>
+      <!-- .gltf -->
+      <filter>model/gltf\+json</filter>
+      <!-- .zip -->
+      <filter>application/zip</filter>
+    </plugin>
+  </extension>
+</component>

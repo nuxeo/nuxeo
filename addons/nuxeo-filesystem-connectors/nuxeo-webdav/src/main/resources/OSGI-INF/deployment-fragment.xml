@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <extension target="web#SERVLET">
+
+    <!--
+      Declare this module in a separate application so
+      that it does not interfere with other jax-rs application
+      (including webengine apps).
+
+      The application name has to match the host name set in MANIFEST.MF
+    -->
+    <servlet>
+      <servlet-name>Nuxeo Webdav Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.webengine.app.jersey.WebEngineServlet
+      </servlet-class>
+      <init-param>
+        <param-name>application.name</param-name>
+        <param-value>nuxeo-webdav</param-value>
+      </init-param>
+      <init-param>
+        <param-name>com.sun.jersey.config.feature.IgnoreMatrixParams</param-name>
+        <param-value>true</param-value>
+      </init-param>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Webdav Servlet</servlet-name>
+      <url-pattern>/site/dav/*</url-pattern>
+    </servlet-mapping>
+
+  </extension>
+
+</fragment>

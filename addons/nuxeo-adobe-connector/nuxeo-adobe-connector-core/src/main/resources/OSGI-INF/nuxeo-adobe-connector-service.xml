@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.adobe.cc.NuxeoAdobeConnectorService" version="1.0">
+
+  <implementation class="org.nuxeo.adobe.cc.NuxeoAdobeConnectorServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.adobe.cc.NuxeoAdobeConnectorService" />
+  </service>
+</component>

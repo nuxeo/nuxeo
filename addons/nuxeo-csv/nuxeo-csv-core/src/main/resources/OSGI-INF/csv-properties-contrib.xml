@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.csv.core.properties" version="1.0">
+
+  <extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
+
+    <documentation>
+      Property that enables the old legacy date format 'MM/dd/yyyy' instead of the W3C format when reading dates on
+      CSV files.
+      Defaults to false.
+
+      @since 10.3
+    </documentation>
+    <property name="nuxeo.csv.import.legacyDateFormat">false</property>
+  </extension>
+
+</component>

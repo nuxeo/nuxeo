@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Version: 5.9
+Bundle-Name: org.nuxeo.drive.jsf
+Nuxeo-Component: OSGI-INF/nuxeodrive-actions.xml,
+ OSGI-INF/nuxeodrive-layouts-contrib.xml,
+ OSGI-INF/nuxeodrive-token-authentication-contrib.xml,
+ OSGI-INF/nuxeodrive-ui-types-contrib.xml
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.drive.jsf;singleton:=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
