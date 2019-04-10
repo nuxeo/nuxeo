@@ -1,0 +1,41 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <a4j:outputPanel id="syncRootsPanel" layout="block">
+    <nxu:set var="currentUserSyncRoots" cache="true" value="#{nuxeoDriveActions.synchronizationRoots}">
+
+    <h:form id="currentUserSyncRoots"
+      rendered="#{!empty currentUserSyncRoots}">
+
+      <table class="dataOutput">
+        <thead>
+          <nxl:layout name="driveSynchronizationRoots" mode="header" value="" />
+        </thead>
+        <tbody>
+          <c:forEach var="synchronizationRoot" items="#{currentUserSyncRoots}"
+            varStatus="status">
+            <c:if test="#{status.index % 2 == 0}">
+              <c:set var="syncRootClass" value="dataRowOdd" />
+            </c:if>
+            <c:if test="#{status.index % 2 != 0}">
+              <c:set var="syncRootClass" value="dataRowEven" />
+            </c:if>
+            <nxl:layout name="driveSynchronizationRoots" mode="list" value="#{synchronizationRoot}" />
+          </c:forEach>
+        </tbody>
+      </table>
+
+    </h:form>
+
+    <h:outputText value="#{messages['user.center.nuxeoDrive.syncRoots.noSyncRoots']}"
+      rendered="#{empty currentUserSyncRoots}" class="emptyResult"/>
+
+    </nxu:set>
+  </a4j:outputPanel>
+
+</div>

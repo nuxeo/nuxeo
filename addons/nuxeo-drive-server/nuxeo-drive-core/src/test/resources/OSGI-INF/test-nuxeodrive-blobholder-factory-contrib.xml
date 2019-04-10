@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.blobholder.factory.test">
+
+  <extension target="org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent" point="BlobHolderFactory">
+    <blobHolderFactory name="exception" docType="File"
+      class="org.nuxeo.drive.service.adapter.ExceptionBlobHolderFactory" />
+  </extension>
+
+</component>
+
