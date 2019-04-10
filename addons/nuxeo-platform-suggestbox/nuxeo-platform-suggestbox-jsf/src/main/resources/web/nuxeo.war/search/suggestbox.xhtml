@@ -1,0 +1,47 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  style="display: inline; float: left">
+
+  <a4j:outputPanel id="#{widget.id}_panel" layout="block">
+
+    <h:outputScript library="js" name="nuxeo-suggestbox.js" target="#{pageJsTarget}" />
+
+    <span id="#{widget.id}_suggestDiv">
+      <h:outputScript type="text/javascript" target="#{pageJsTarget}">
+        function nxSuggestHandleEnterKey(search) {
+            var searchUrl = '#{nxu:javaScriptEscape(searchUIActions.getSearchTabUrl(search))}';
+            var encodedSearch = encodeURIComponent(search);
+            searchUrl += '&amp;#{searchUIActions.searchTermParameter}=' + encodedSearch;
+            window.location.replace(searchUrl);
+        }
+
+      function focus_searchbox(event) {
+          event.preventDefault();
+          jQuery('##{widget.id}_form\\:#{widget.id}_panel input.select2-input').focus();
+          return false;
+        }
+      // bind the '/' key to focus the searchbox
+      jQuery(document).bind('keydown', '/', focus_searchbox);
+      // handle keyboard layouts such as French where the '/' char is
+      // accessed through the Shift modifier
+      jQuery(document).bind('keydown', 'Shift+/', focus_searchbox);
+    </h:outputScript>
+    <ui:include src="/incl/select2_js.xhtml" />
+
+    <a4j:region>
+      <h:inputHidden id="#{widget.id}_select2" value="">
+        <f:converter converterId="select2Converter" />
+      </h:inputHidden>
+      <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
+        value="#{resolveDocumentTags}" />
+    </a4j:region>
+
+    <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
+      value='#{select2Actions.encodeParameters(widget, action.properties)}' />
+    </span>
+  </a4j:outputPanel>
+
+</div>

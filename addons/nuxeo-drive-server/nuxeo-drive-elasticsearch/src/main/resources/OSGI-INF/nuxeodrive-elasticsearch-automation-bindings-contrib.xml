@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.elasticsearch.automation.server.bindings" version="1.0">
+
+  <require>org.nuxeo.elasticsearch.audit.contrib</require>
+
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer" point="bindings">
+    <!-- Protect Nuxeo Drive integration test operations -->
+    <binding name="NuxeoDrive.WaitForElasticsearchCompletion">
+      <administrator>true</administrator>
+    </binding>
+  </extension>
+
+</component>
