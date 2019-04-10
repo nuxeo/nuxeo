@@ -1,0 +1,18 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <a4j:region id="#{widget.id}_region">
+    <h:selectOneMenu
+      value="#{damSearchActions.currentSelectedSavedSearchId}"
+      id="#{widget.id}" styleClass="langSelect">
+      <f:ajax execute="@this"
+        listener="#{damSearchActions.refreshAndRewind()}"
+        render="#{nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender)}" />
+      <f:selectItems value="#{damSearchActions.allSavedSearchesSelectItems}" />
+    </h:selectOneMenu>
+  </a4j:region>
+
+</div>

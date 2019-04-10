@@ -1,0 +1,164 @@
+/*
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
+ */
+package org.nuxeo.drive.service.adapter;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.drive.adapter.FileItem;
+import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.impl.CollectionSyncRootFolderItem;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
+import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.impl.CollectionSyncRootFolderItemFactory;
+import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
+import org.nuxeo.ecm.collections.api.CollectionManager;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.inject.Inject;
+
+/**
+ * Tests the {@link CollectionSyncRootFolderItemFactory}.
+ *
+ * @author Antoine Taillefer
+ */
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core",
+        "org.nuxeo.ecm.platform.query.api" })
+public class TestCollectionSyncRootFolderItemFactory {
+
+    private static final Log log = LogFactory.getLog(TestCollectionSyncRootFolderItemFactory.class);
+
+    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
+
+    private static final String COLLECTION_SYNC_ROOT_ITEM_ID_PREFIX = "collectionSyncRootFolderItemFactory#test#";
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected CollectionManager collectionManager;
+
+    @Inject
+    protected NuxeoDriveManager nuxeoDriveManager;
+
+    @Inject
+    protected FileSystemItemAdapterService fileSystemItemAdapterService;
+
+    @Test
+    public void testFactory() throws Exception {
+
+        FileSystemItemFactory collectionSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("collectionSyncRootFolderItemFactory");
+        DocumentModel collection = collectionManager.createCollection(session,
+                "testCollection", "Test collection.", "/");
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
+        doc1.setPropertyValue("dc:title", "doc1");
+        doc1.setPropertyValue("file:content", new StringBlob(
+                "Content of file 1."));
+        doc1 = session.createDocument(doc1);
+        collectionManager.addToCollection(collection, doc1, session);
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
+        doc2.setPropertyValue("dc:title", "doc2");
+        doc2.setPropertyValue("file:content", new StringBlob(
+                "Content of file 2."));
+        doc2 = session.createDocument(doc2);
+        collectionManager.addToCollection(collection, doc2, session);
+
+        log.trace("Check document that is not a Collection");
+        assertFalse(collectionSyncRootFolderItemFactory.isFileSystemItem(session.getRootDocument()));
+        log.trace("Check Collection not registered as a sync root");
+        assertFalse(collectionSyncRootFolderItemFactory.isFileSystemItem(collection));
+        log.trace("Check Collection registered as a sync root");
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(),
+                collection, session);
+        assertTrue(collectionSyncRootFolderItemFactory.isFileSystemItem(collection));
+
+        log.trace("Adapt test collection as a FileSystemItem");
+        FileSystemItem fsItem = collectionSyncRootFolderItemFactory.getFileSystemItem(collection);
+        assertNotNull(fsItem);
+        assertTrue(fsItem instanceof CollectionSyncRootFolderItem);
+
+        log.trace("Check children");
+        FolderItem collectionFSItem = (FolderItem) fsItem;
+        List<FileSystemItem> collectionChildren = collectionFSItem.getChildren();
+        assertEquals(2, collectionChildren.size());
+        FileSystemItem child1 = collectionChildren.get(0);
+        assertTrue(child1 instanceof FileItem);
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc1.getId(),
+                child1.getId());
+        assertEquals(COLLECTION_SYNC_ROOT_ITEM_ID_PREFIX + collection.getId(),
+                child1.getParentId());
+        assertEquals("doc1", child1.getName());
+        FileSystemItem child2 = collectionChildren.get(1);
+        assertTrue(child2 instanceof FileItem);
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc2.getId(),
+                child2.getId());
+        assertEquals(COLLECTION_SYNC_ROOT_ITEM_ID_PREFIX + collection.getId(),
+                child2.getParentId());
+        assertEquals("doc2", child2.getName());
+
+        log.trace("Check FolderItem#getCanCreateChild");
+        assertFalse(collectionFSItem.getCanCreateChild());
+
+        log.trace("Check FolderItem#createFile");
+        try {
+            collectionFSItem.createFile(new StringBlob("Child file content."));
+            fail("Should not be able to create a file in a CollectionSyncRootFolderItem.");
+        } catch (UnsupportedOperationException e) {
+            assertEquals(
+                    "Cannot create a file in a collection synchronization root.",
+                    e.getMessage());
+        }
+
+        log.trace("Check FolderItem#createFolder");
+        try {
+            collectionFSItem.createFolder("Child folder");
+            fail("Should not be able to create a folder in a CollectionSyncRootFolderItem.");
+        } catch (UnsupportedOperationException e) {
+            assertEquals(
+                    "Cannot create a folder in a collection synchronization root.",
+                    e.getMessage());
+        }
+
+        log.trace("Test AbstractDocumentBackedFileSystemItem#delete");
+        child1.delete();
+        assertTrue(!doc1.getCurrentLifeCycleState().equals(
+                LifeCycleConstants.DELETED_STATE));
+        assertFalse(collectionManager.isInCollection(collection, doc1, session));
+    }
+
+}
