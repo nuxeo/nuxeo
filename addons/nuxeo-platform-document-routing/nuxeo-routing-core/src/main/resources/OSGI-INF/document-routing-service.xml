@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.routing.service">
+
+  <documentation>
+    The Document Routing Service allows to create and start
+    new DocumentRoute
+    instance.
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.routing.core.impl.DocumentRoutingServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.routing.api.DocumentRoutingService" />
+  </service>
+
+  <extension-point name="chainsToType">
+    <documentation>
+      Use to map an operation chains to a Step document type. If the
+      chains are
+      declared for the same type, only the last one is use.
+      The same chain can
+      be used for different type.
+      @deprecated since
+      5.9.2 - Use only routes of type 'graph'
+      <code>
+        <mapping
+          documentType="The type of the document that extends DocumentRouteStep"
+          chainId="the id of the chain" />
+      </code>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.routing.core.impl.ChainToTypeMappingDescriptor" />
+  </extension-point>
+
+
+  <extension-point name="persister">
+    <documentation>
+      Use to provide a persister. A persister should implement
+      DocumentRoutingPersister. It is responsible to persist instances
+      of route.
+      <code>
+        <persister class="org.my.implementation.of.Persister" />
+      </code>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.routing.core.impl.PersisterDescriptor" />
+  </extension-point>
+
+  <extension-point name="routeModelImporter">
+    <documentation>
+      Use to provide a resource path to import route models
+      <code>
+        <template-resource
+          path="the path of the zip containing an xml export of the models to import " />
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.routing.api.RouteModelResourceType" />
+  </extension-point>
+
+</component>

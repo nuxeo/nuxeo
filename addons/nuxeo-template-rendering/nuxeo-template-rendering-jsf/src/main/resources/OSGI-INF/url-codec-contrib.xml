@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.template.jsf.codec">
+
+  <require>org.nuxeo.ecm.platform.url.service.DocumentViewCodecService
+  </require>
+
+  <extension
+    target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"
+    point="codecs">
+    <documentViewCodec name="template" enabled="true"
+      prefix="nxtemplate" class="org.nuxeo.template.jsf.url.TemplateRenderCodec" />
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.rest.URLService"
+    point="urlpatterns">
+    <documentation>
+      Url pattern to access templates
+    </documentation>
+
+    <urlPattern name="template" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>false</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>template</codecName>
+      <actionBinding>#{templateRestHelper.render}</actionBinding>
+      <documentViewBinding>#{restHelper.documentView}</documentViewBinding>
+      <newDocumentViewBinding>#{restHelper.newDocumentView}
+      </newDocumentViewBinding>
+    </urlPattern>
+
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>nxtemplate/</pattern>
+      </patterns>
+    </startURLPattern>
+
+  </extension>
+</component>

@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.routing.lifecycle.contrib">
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="lifecycle">
+
+    <lifecycle name="documentRouteElement" defaultInitial="draft">
+      <transitions>
+        <transition name="toValidated" destinationState="validated">
+          <description>the model is validated</description>
+        </transition>
+        <transition name="toReady" destinationState="ready">
+          <description>the element is ready to be executed</description>
+        </transition>
+        <transition name="toRunning" destinationState="running">
+          <description>the element starts</description>
+        </transition>
+        <transition name="toDone" destinationState="done">
+          <description>the element finishes</description>
+        </transition>
+        <transition name="toWaiting" destinationState="waiting">
+          <description>the element waits for a join</description>
+        </transition>
+        <transition name="toSuspended" destinationState="suspended">
+          <description>the element waits for a task</description>
+        </transition>
+        <transition name="backToReady" destinationState="ready">
+          <description>the element finishes</description>
+        </transition>
+        <transition name="toCanceled" destinationState="canceled">
+          <description>cancel this element</description>
+        </transition>
+        <transition name="toDraft" destinationState="draft">
+          <description>
+            go to the draft state, this is done when creating a new instance
+            from a model
+          </description>
+        </transition>
+      </transitions>
+      <states>
+        <state name="draft" description="Default state" initial="true">
+          <transitions>
+            <transition>toValidated</transition>
+          </transitions>
+        </state>
+        <state name="validated" description="The element is validated" initial="true">
+          <transitions>
+            <transition>toReady</transition>
+            <transition>toDraft</transition>
+          </transitions>
+        </state>
+        <state name="ready" description="The element is ready" initial="true">
+          <transitions>
+            <transition>toRunning</transition>
+            <transition>toWaiting</transition>
+            <transition>toSuspended</transition>
+            <transition>toCanceled</transition>
+            <transition>toDraft</transition>
+          </transitions>
+        </state>
+        <state name="running" description="The element is running">
+          <transitions>
+            <transition>toDone</transition>
+            <transition>backToReady</transition>
+            <transition>toCanceled</transition>
+            <transition>toDraft</transition>
+          </transitions>
+        </state>
+        <state name="done" description="The element is done">
+          <transitions>
+            <transition>backToReady</transition>
+            <transition>toCanceled</transition>
+            <transition>toDraft</transition>
+          </transitions>
+        </state>
+        <state name="waiting" description="The element waits for a join">
+          <transitions>
+            <transition>toReady</transition>
+            <transition>toSuspended</transition>
+            <transition>toCanceled</transition>
+            <transition>toDraft</transition>
+          </transitions>
+        </state>
+        <state name="suspended" description="The element waits for a task">
+          <transitions>
+            <transition>toReady</transition>
+            <transition>toWaiting</transition>
+            <transition>toCanceled</transition>
+            <transition>toDraft</transition>
+          </transitions>
+        </state>
+        <state name="canceled" description="The element is cancelled">
+          <transitions>
+            <transition>backToReady</transition>
+            <transition>toDraft</transition>
+          </transitions>
+        </state>
+      </states>
+    </lifecycle>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="DocumentRoute"
+        noRecursionForTransitions="toValidated,toReady,toRunning,toDone,toCanceled,backToReady">
+        documentRouteElement
+      </type>
+      <type name="StepFolder"
+        noRecursionForTransitions="toValidated,toReady,toRunning,toDone,toCanceled,backToReady">
+        documentRouteElement
+      </type>
+      <type name="ConditionalStepFolder"
+        noRecursionForTransitions="toValidated,toReady,toRunning,toDone,toCanceled,backToReady">
+        documentRouteElement
+      </type>
+      <type name="DocumentRouteStep">documentRouteElement</type>
+      <type name="RouteNode">documentRouteElement</type>
+      <type name="RoutingTask">task</type>
+    </types>
+  </extension>
+
+</component>
