@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Bundle-Name: Nuxeo Asset Browser JSF
+Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.dam.jsf;singleton=true
+Nuxeo-Component: OSGI-INF/dam-core-types-contrib.xml,
+ OSGI-INF/dam-actions-contrib.xml,
+ OSGI-INF/dam-import-actions-contrib.xml,
+ OSGI-INF/dam-layouts-contrib.xml,
+ OSGI-INF/dam-contentviews-contrib.xml,
+ OSGI-INF/dam-pageproviders-contrib.xml,
+ OSGI-INF/dam-url-service-contrib.xml,
+ OSGI-INF/dam-auth-contrib.xml,
+ OSGI-INF/dam-ecm-types-contrib.xml,
+ OSGI-INF/dam-service.xml,
+ OSGI-INF/dam-service-contrib.xml,
+ OSGI-INF/dam-content-template-contrib.xml,
+ OSGI-INF/dam-operations-contrib.xml,
+ OSGI-INF/dam-directories-contrib.xml,
+ OSGI-INF/dam-documentslists-contrib.xml
