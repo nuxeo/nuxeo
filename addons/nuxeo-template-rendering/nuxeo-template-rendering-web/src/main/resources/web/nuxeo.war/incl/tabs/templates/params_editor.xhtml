@@ -1,0 +1,78 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:nxthemes="http://nuxeo.org/nxthemes"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:nxl="http://nuxeo.org/nxforms/layout"
+    xmlns:nxu="http://nuxeo.org/nxweb/util"
+    xmlns:c="http://java.sun.com/jstl/core">
+
+  <script src="#{contextPath}/scripts/template-edit-param.js"></script>
+  <h:panelGroup id="params_edit">
+  <h:form enctype="multipart/form-data" id="params_edit_form">
+      <nxu:repeat var="param" value="#{bean.templateEditableInputs}">
+          <ui:include src="/incl/tabs/templates/template_edit_oneparam.xhtml" />
+      </nxu:repeat>
+      <c:if test="#{bean.canUpdateTemplateInputs(targetTemplate)}">
+
+        <c:if test="#{bean.canAddTemplateInputs()}">
+           <script>
+             function showNewParameterPanel(event) {
+               var link = jQuery(event.target);
+               link.next().fadeIn();
+               link.fadeOut();
+               return false;
+             }
+           </script>
+
+
+            <span class="buttonsGadget">
+            <A href="#" onclick="return showNewParameterPanel(event)" class="button">
+            <h:outputText value="#{messages['label.template.parameter.add']}"/></A>
+            <table border="0" style="display:none">
+            <tr>
+            <td class="labelColumn">
+               <h:outputText value="#{messages['label.template.parameter.name']}" />
+            </td>
+            <td class="fieldColumn">
+                <h:inputText value="#{bean.newInput.name}"></h:inputText>
+            </td>
+            <td class="labelColumn">
+               <h:outputText value="#{messages['label.template.parameter.type']}" />
+            </td>
+            <td class="fieldColumn">
+                <h:selectOneMenu  value="#{bean.newInput.typeAsString}">
+                    <f:selectItem itemLabel="String value" itemValue="String"/>
+                    <f:selectItem itemLabel="Boolean value" itemValue="Boolean"/>
+                    <f:selectItem itemLabel="Date value" itemValue="Date"/>
+                    <f:selectItem itemLabel="Document property binding" itemValue="source"/>
+                    <f:selectItem itemLabel="Picture property binding" itemValue="picture"/>
+                    <f:selectItem itemLabel="Include" itemValue="content"/>
+                </h:selectOneMenu>
+            </td>
+            <td class="fieldColumn">
+                <span class="buttonsGadget">
+                    <h:commandButton type="submit" styleClass="button" value="#{messages['command.add']}"
+                        action="#{bean.addTemplateInput}" id="button_add" />
+                </span>
+            </td>
+            </tr>
+            </table>
+            </span>
+        </c:if>
+
+                  <p class="buttonsGadget">
+                    <h:commandButton type="submit" styleClass="button" value="#{messages['command.save']}"
+                        action="#{bean.saveTemplateInputs}" id="button_save"/>
+                    <h:commandButton styleClass="button" value="#{messages['command.cancel']}"
+                        action="#{bean.cancelTemplateInputsEdit}" immediate="true"/>
+                  </p>
+                </c:if>
+            </h:form>
+           </h:panelGroup>
+<script>
+ jQuery(document).ready(function(){
+      initContentWidgets();
+    });
+</script>
+</div>

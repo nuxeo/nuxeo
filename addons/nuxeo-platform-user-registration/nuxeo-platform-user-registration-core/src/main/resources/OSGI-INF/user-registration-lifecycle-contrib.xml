@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.registration.lifecycle.contrib">
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+             point="lifecycle">
+
+    <lifecycle name="registrationRequest" defaultInitial="created">
+      <transitions>
+        <transition name="approve" destinationState="approved">
+          <description>Approve the registration request</description>
+        </transition>
+        <transition name="reject" destinationState="rejected">
+          <description>Reject the registration request</description>
+        </transition>
+        <transition name="accept" destinationState="accepted">
+          <description>Accept the registration request</description>
+        </transition>
+        <transition name="process" destinationState="processed">
+          <description>Process the registration request</description>
+        </transition>
+      </transitions>
+      <states>
+        <state name="created" description="Default state" initial="true">
+          <transitions>
+            <transition>approve</transition>
+            <transition>reject</transition>
+          </transitions>
+        </state>
+        <state name="approved" description="Registration has been approved">
+          <transitions>
+            <transition>accept</transition>
+          </transitions>
+        </state>
+        <state name="rejected" description="Registration has been rejected">
+          <transitions></transitions>
+        </state>
+        <state name="accepted" description="Registration has been accepted">
+          <transitions>
+            <transition>process</transition>
+          </transitions>
+        </state>
+        <state name="processed" description="Registration request has been processed">
+          <transitions></transitions>
+        </state>
+      </states>
+    </lifecycle>
+  </extension>
+
+</component>
