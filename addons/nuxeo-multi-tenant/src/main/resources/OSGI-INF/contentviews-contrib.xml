@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.multi.tenant.content.views">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="TENANT_HISTORY">
+
+      <title>label.contentview.document.history</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>true</showTitle>
+
+      <genericPageProvider
+        class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
+        <property name="coreSession">#{documentManager}</property>
+        <property name="generateUIComments">true</property>
+
+        <whereClause docType="BasicAuditSearch">
+          <fixedPart>
+            log.docPath like ?
+          </fixedPart>
+
+          <predicate parameter="log.eventDate" operator="BETWEEN">
+            <field schema="basicauditsearch" name="startDate" />
+            <field schema="basicauditsearch" name="endDate" />
+          </predicate>
+          <predicate parameter="log.category" operator="=">
+            <field schema="basicauditsearch" name="eventCategory" />
+          </predicate>
+          <predicate parameter="log.eventId" operator="IN">
+            <field schema="basicauditsearch" name="eventIds" />
+          </predicate>
+          <predicate parameter="log.principalName" operator="=">
+            <field schema="basicauditsearch" name="principalName" />
+          </predicate>
+        </whereClause>
+        <parameter>#{currentDocument.path}%</parameter>
+        <sort column="log.eventDate" ascending="false" />
+        <pageSize>10</pageSize>
+        <maxPageSize>1000</maxPageSize>
+      </genericPageProvider>
+
+      <searchLayout name="basicauditsearch" filterDisplayType="quick" />
+      <showFilterForm>true</showFilterForm>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentCreated</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheSize>10</cacheSize>
+      <cacheKey>#{currentDocument.repositoryName}_#{currentDocument.id}</cacheKey>
+
+      <resultLayouts>
+        <layout name="tenant_event_listing" title="history_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="false" />
+      </resultLayouts>
+
+    </contentView>
+
+  </extension>
+
+</component>
