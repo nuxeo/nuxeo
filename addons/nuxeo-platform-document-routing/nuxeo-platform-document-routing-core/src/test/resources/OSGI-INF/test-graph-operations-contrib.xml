@@ -1,0 +1,65 @@
+<component name="org.nuxeo.ecm.platform.routing.graph.operations.test"
+  version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+    <operation
+      class="org.nuxeo.ecm.platform.routing.test.TestOperationSetProperty" />
+    <operation
+      class="org.nuxeo.ecm.platform.routing.test.TestOperationSetVariable" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="chains">
+    <chain id="testchain_title1">
+      <operation id="Document.Routing.Test.SetProperty">
+        <param type="string" name="field">dc:title</param>
+        <param type="string" name="value">title 1</param>
+      </operation>
+    </chain>
+    <chain id="testchain_title2">
+      <operation id="Document.Routing.Test.SetProperty">
+        <param type="string" name="field">dc:title</param>
+        <param type="string" name="value">title 2</param>
+      </operation>
+    </chain>
+    <chain id="testchain_descr1">
+      <operation id="Document.Routing.Test.SetProperty">
+        <param type="string" name="field">dc:description</param>
+        <param type="string" name="value">descr 1</param>
+      </operation>
+    </chain>
+    <chain id="testchain_descr2">
+      <operation id="Document.Routing.Test.SetProperty">
+        <param type="string" name="field">dc:description</param>
+        <param type="string" name="value">descr 2</param>
+      </operation>
+    </chain>
+    <chain id="testchain_rights1">
+      <operation id="Document.Routing.Test.SetProperty">
+        <param type="string" name="field">dc:rights</param>
+        <param type="string" name="value">rights 1</param>
+      </operation>
+    </chain>
+    <chain id="testchain_stringfield">
+     <operation id="Context.SetWorkflowVar">
+        <param type="string" name="name">stringfield</param>
+        <param type="string" name="value">foo</param>
+      </operation>
+    </chain>
+    <chain id="testchain_stringfield2">
+      <operation id="Context.SetWorkflowNodeVar">
+        <param type="string" name="name">stringfield2</param>
+        <param type="string" name="value">bar</param>
+      </operation>
+    </chain>
+    <chain id="test_setGlobalvariable">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Context.SetWorkflowVar">
+        <param type="string" name="name">globalVariable</param>
+        <param type="object" name="value">test</param>
+      </operation>
+    </chain>
+    
+  </extension>
+</component>

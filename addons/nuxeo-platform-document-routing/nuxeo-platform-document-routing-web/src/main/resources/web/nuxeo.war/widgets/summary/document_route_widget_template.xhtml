@@ -1,0 +1,56 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <h3 class="summaryTitle">
+    <h:outputText value="#{messages['label.document.routing.workflow']}" />
+  </h3>
+
+  <c:choose>
+    <c:when test="#{routingActions.hasRelatedRoute()}">
+      <nxu:set var="relatedRoute" value="#{routingActions.getRelatedRoute()}">
+        <h:outputText value="#{relatedRoute.getName()} " />
+        <h:outputText value="#{messages['label.route.started']} " />
+        <h:outputText value="#{nxu:userFullName(relatedRoute.document.dc.creator)}"/>
+      </nxu:set>
+
+      <script type="text/javascript">
+        <h:outputText  value="var routeDocId='#{routingActions.getRelatedRoute().document.id}'" />
+        function showGraph() {
+          loadGraph(routeDocId);
+          jQuery('&lt;a href="#graphView_box"&gt;&lt;/a&gt;').fancybox({
+            'autoScale': true,
+            'autoDimensions': false,
+            'type': 'inline',
+            'width': '90%',
+            'height': '90%',
+            'transitionIn': 'none',
+            'transitionOut': 'none',
+            'enableEscapeButton': true,
+            'centerOnScroll': true
+          }).click();
+          return false;
+        }
+      </script>
+
+      <a href="#" onclick="showGraph();return false;" class="button">#{messages['label.document.routing.show.graph']}</a>
+
+      <div style="display:none">
+        <div id="graphView_box">
+          <!-- div container for the graph -->
+          <div id="target" class="targetDiv"></div>
+        </div>
+      </div>
+
+
+    </c:when>
+    <c:otherwise>
+      <nxl:layout value="#{routingActions}" mode="edit" name="start_route" />
+    </c:otherwise>
+  </c:choose>
+
+</c:if>
