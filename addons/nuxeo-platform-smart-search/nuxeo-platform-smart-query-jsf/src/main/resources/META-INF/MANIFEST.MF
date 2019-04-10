@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Smart Query JSF
+Bundle-SymbolicName: org.nuxeo.ecm.platform.smart.query.jsf;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Bundle-Category: stateless
+Nuxeo-Require: org.nuxeo.ecm.platform.smart.query.api,
+ org.nuxeo.ecm.platform.lang
+Nuxeo-Component: OSGI-INF/smart-query-layouts-contrib.xml,
+ OSGI-INF/smart-query-contentviews-contrib.xml,
+ OSGI-INF/smart-query-actions-contrib.xml

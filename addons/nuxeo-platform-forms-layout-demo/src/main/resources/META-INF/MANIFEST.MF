@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Layout Demo
+Bundle-SymbolicName: org.nuxeo.ecm.platform.forms.layout.demo;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Category: stateless
+Require-Bundle: org.nuxeo.ecm.core.api
+Nuxeo-Component: OSGI-INF/layout-demo-framework.xml,
+ OSGI-INF/layout-demo-contrib.xml,
+ OSGI-INF/layout-demo-auth-contrib.xml,
+ OSGI-INF/layout-demo-url-contrib.xml,
+ OSGI-INF/layout-demo-core-types-contrib.xml,
+ OSGI-INF/layout-demo-directories-contrib.xml,
+ OSGI-INF/layout-demo-theme-contrib.xml,
+ OSGI-INF/layout-demo-layouts-contrib.xml,
+ OSGI-INF/demo/layout-demo-text-widget.xml,
+ OSGI-INF/demo/layout-demo-textarea-widget.xml,
+ OSGI-INF/demo/layout-demo-int-widget.xml,
+ OSGI-INF/demo/layout-demo-secret-widget.xml,
+ OSGI-INF/demo/layout-demo-datetime-widget.xml,
+ OSGI-INF/demo/layout-demo-template-widget.xml,
+ OSGI-INF/demo/layout-demo-file-widget.xml,
+ OSGI-INF/demo/layout-demo-htmltext-widget.xml,
+ OSGI-INF/demo/layout-demo-selectOneDirectory-widget.xml,
+ OSGI-INF/demo/layout-demo-selectManyDirectory-widget.xml,
+ OSGI-INF/demo/layout-demo-checkbox-widget.xml,
+ OSGI-INF/demo/layout-demo-list-widget.xml,
+ OSGI-INF/demo/layout-demo-list-array-widget.xml,
+ OSGI-INF/demo/layout-demo-complex-widget.xml,
+ OSGI-INF/demo/layout-demo-complex-list-widget.xml,
+ OSGI-INF/demo/layout-demo-file-list-widget.xml,
+ OSGI-INF/demo/layout-demo-listOfLists-widget.xml
+ 
