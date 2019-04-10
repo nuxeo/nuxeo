@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.suggestbox.core.pageproviders">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+      <coreQueryPageProvider name="DEFAULT_DOCUMENT_SUGGESTION">
+        <property name="maxResults">PAGE_SIZE</property>
+        <pattern quoteParameters="false" escapeParameters="true">
+          SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE '?' AND ecm:mixinType !=
+          'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
+          ecm:currentLifeCycleState != 'deleted'
+        </pattern>
+        <pageSize>10</pageSize>
+      </coreQueryPageProvider>
+
+  </extension>
+
+</component>
