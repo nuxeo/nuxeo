@@ -1,0 +1,196 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:rich="http://richfaces.org/rich">
+  <c:set var="userSchema" value="#{userManager.userSchemaName}" />
+
+  <c:if test="#{widget.mode != 'edit'}">
+
+    <h:dataTable value="#{field_0}"
+      var="item" rendered="#{not empty field_0}">
+      <h:column>
+      <nxu:methodResult name="info"
+        value="#{shibbUserSuggestionWithGroupTree.getUserInfo(item)}">
+        <f:subview rendered="#{info.type == 'USER_TYPE'}">
+          <h:graphicImage value="/icons/user.png" alt="user" />
+          <h:commandLink
+            value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}"
+            action="#{userManagerActions.viewUser(info.id)}" />
+        </f:subview>
+        <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
+          <h:graphicImage value="/icons/group.png" alt="group" />
+          <h:commandLink value="#{info.id}"
+            action="#{groupManagerActions.viewGroup(info.id)}" />
+        </f:subview>
+        <f:subview rendered="#{empty info.type}">
+          <h:outputText value="#{item}" />
+        </f:subview>
+      </nxu:methodResult>
+    </h:column>
+    </h:dataTable>
+
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <c:set var="minChars" value="#{nxu:test(!empty widget.properties.minChars, widget.properties.minChars, '3')}" />
+    <c:set var="frequency" value="#{nxu:test(!empty widget.properties.frequency, widget.properties.frequency, '0')}" />
+    <c:set var="requestDelay" value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}" />
+    <c:set var="searchType" value="USER_TYPE" />
+    <c:set var="maxSearchResults" value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 0)}" />
+    <c:set var="hideVirtualGroups" value="#{nxu:test(!empty widget.properties.hideVirtualGroups, widget.properties.hideVirtualGroups, false)}" />
+
+    <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
+      <h:panelGrid id="#{widget.id}_panel" columns="2">
+
+        <h:panelGroup id="#{widget.id}_panelGroup">
+          <h:outputText value="#{messages['label.security.searchUsers']}"
+            rendered="#{searchType =='USER_TYPE'}"
+            class="rightsAddLabel" />
+          <h:outputText value="#{messages['label.security.searchGroups']}"
+            rendered="#{searchType =='GROUP_TYPE'}"
+            class="rightsAddLabel" />
+          <h:outputText value="#{messages['label.security.search']}"
+            rendered="#{searchType =='USER_GROUP_TYPE' or empty searchType}"
+            class="rightsAddLabel" /><br/>
+
+          <span id="#{widget.id}_suggestDiv">
+            <h:inputText id="#{widget.id}_suggest"
+              onkeydown="if (event.keyCode == 13) {return false;}" />
+          </span>
+          <a4j:status>
+            <f:facet name="start">
+              <h:graphicImage value="/img/standart_waiter.gif" />
+            </f:facet>
+          </a4j:status>
+          <rich:suggestionbox id="#{widget.id}_suggestionBox"
+            for="#{widget.id}_suggest" tokens=""
+            suggestionAction="#{shibbUserSuggestionWithGroupTree.getSuggestions}"
+            var="result"
+            fetchValue=""
+            nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
+            minChars="#{minChars}" frequency="#{frequency}" requestDelay="#{requestDelay}">
+            <f:param name="userSuggestionSearchType" value="#{searchType}" />
+            <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
+            <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
+            <a4j:support event="onselect"
+              focus="#{widget.id}_suggest"
+              bypassUpdates="true"
+              reRender="#{widget.id}_listRegion"
+              id="#{widget.id}_listRegion_select">
+              <f:setPropertyActionListener value="#{result['id']}"
+                target="#{suggestionActions.selectedValue}" />
+              <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
+              <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
+              <f:param name="userSuggestionSearchType" value="#{searchType}" />
+              <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
+              <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
+            </a4j:support>
+            <h:column>
+              <f:subview rendered="#{result.type == 'USER_TYPE'}" id="#{widget.id}_user_result">
+                <h:graphicImage value="/icons/user.png" alt="user" />
+                <h:outputText value="#{nxu:userDisplayName(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName)}" />
+              </f:subview>
+              <f:subview rendered="#{result.type == 'GROUP_TYPE'}" id="#{widget.id}_group_result">
+                <h:graphicImage value="/icons/group.png" alt="group" />
+                <h:outputText value="#{result.id}" />
+              </f:subview>
+              <f:subview rendered="#{empty result.type}" id="#{widget.id}_result">
+                <h:outputText value="#{result}" />
+              </f:subview>
+            </h:column>
+          </rich:suggestionbox>
+          <br />
+          <h:outputText value="#{messages['label.suggestion.help.minChars.start']} " />
+          <h:outputText value="#{minChars} #{messages['label.suggestion.help.minChars.end']}" />
+          <br/><br/>
+          <h:outputText value="#{messages['label.suggestion.custom.user']}" class="rightsAddLabel" /><br/>
+          <a4j:form id="#{widget.id}_userInputForm" ajaxSubmit="true">
+            <h:inputText value="#{shibbUserSuggestionWithGroupTree.shibbUserName}" id="#{widget.id}_sibbInput"/>
+            <a4j:commandButton value="#{messages['label.suggestion.custom.addUser']}"
+                             reRender="#{widget.id}_listRegion, #{widget.id}_userInputForm" id="#{widget.id}_sibbName">
+              <f:setPropertyActionListener value="#{shibbUserSuggestionWithGroupTree.shibbUserName}"
+                        target="#{suggestionActions.selectedValue}" />
+              <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
+                      <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
+            </a4j:commandButton>
+          </a4j:form>
+        </h:panelGroup>
+
+        <h:panelGroup>
+          <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_listRegion"
+           layout="block">
+            <nxu:inputList id="#{widget.id}_list" value="#{field_0}" model="model"
+              required="#{widget.required}">
+              <h:panelGroup id="#{widget.id}_listItem">
+                <h:panelGrid columns="2">
+                  <a4j:commandLink immediate="true"
+                    actionListener="#{editableListBean.performAction}"
+                    id="#{widget.id}_delete" reRender="#{widget.id}_listRegion"
+                    bypassUpdates="true">
+                    <h:graphicImage value="/icons/action_delete.gif" />
+                    <f:param name="for" value="#{widget.id}_list" />
+                    <f:param name="index" value="#{model.rowIndex}" />
+                    <f:param name="type" value="remove" />
+                  </a4j:commandLink>
+                  <nxu:methodResult name="info" value="#{shibbUserSuggestionWithGroupTree.getUserInfo(model.rowData)}">
+                    <f:subview rendered="#{info.type == 'USER_TYPE'}">
+                      <h:graphicImage value="/icons/user.png" alt="user" />
+                      <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />
+                    </f:subview>
+                    <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
+                      <h:graphicImage value="/icons/group.png" alt="group" />
+                      <h:outputText value="#{info.id}" />
+                    </f:subview>
+                    <f:subview rendered="#{empty info.type}">
+                      <h:outputText value="#{info}" />
+                    </f:subview>
+                  </nxu:methodResult>
+                </h:panelGrid>
+              </h:panelGroup>
+            </nxu:inputList>
+            <h:message styleClass="errorMessage" for="#{widget.id}_list"
+              id="#{widget.id}_message" />
+          </a4j:outputPanel>
+        </h:panelGroup>
+
+        <h:panelGroup>
+          <h:outputText value="#{messages['label.security.searchGroups']}" class="rightsAddLabel" /><br/>
+        <rich:tree id="#{widget.id}_tree">
+          <rich:recursiveTreeNodesAdaptor
+            roots="#{shibbUserSuggestionWithGroupTree.treeRoot}"
+            nodes="#{node.childrens}"
+            var="node">
+            <rich:treeNode iconLeaf="/icons/group.png">
+              <div id="docRefTarget:#{node.id}">
+                <span>
+                  <h:outputText value="#{node.displayedName}" rendered="#{!empty node.childrens}"/>
+                  <a4j:commandLink value="#{node.displayedName}" rendered="#{empty node.childrens}">
+                    <a4j:support event="onclick"
+                      bypassUpdates="true"
+                      reRender="#{widget.id}_listRegion"
+                      id="#{widget.id}_tree_select">
+                      <f:setPropertyActionListener value="#{node.id}"
+                        target="#{suggestionActions.selectedValue}" />
+                      <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
+                      <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
+                      <f:param name="userSuggestionSearchType" value="#{searchType}" />
+                      <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
+                      <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
+                    </a4j:support>
+                  </a4j:commandLink>
+                </span>
+              </div>
+            </rich:treeNode>
+          </rich:recursiveTreeNodesAdaptor>
+        </rich:tree>
+        </h:panelGroup>
+
+      </h:panelGrid>
+
+    </a4j:region>
+  </c:if>
+</div>
