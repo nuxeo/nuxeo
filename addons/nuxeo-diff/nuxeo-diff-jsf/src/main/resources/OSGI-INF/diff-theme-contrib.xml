@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.theme">
+
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+  <!-- Theme pages -->
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="galaxy/default">
+      <styles append="true">
+        <style>diff</style>
+      </styles>
+    </themePage>
+
+  </extension>
+
+  <!-- Styles -->
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+
+    <style name="diff">
+      <src>themes/css/diff_result.css</src>
+    </style>
+
+  </extension>
+
+  <!-- Mapping between views and theme pages -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+
+    <application root="${org.nuxeo.ecm.contextPath}"
+      template-engine="jsf-facelets">
+      <view id="/content_diff_fancybox.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+    </application>
+
+  </extension>
+
+</component>
