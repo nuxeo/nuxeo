@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.threed.service.ThreeDService.default">
+  <documentation>
+    Defines default contributions for 3D service
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="automaticLOD">
+
+    <automaticLOD order="0" name="FullWithinReason" percPoly="100" maxPoly="1000000" percTex="100"
+                  maxTex="5000x5000" enabled="true" rendition="true" renditionVisible="true"/>
+    <automaticLOD order="1" name="HalfTextures" percPoly="100" maxPoly="1000000" percTex="50" maxTex="5000x5000"
+                  enabled="true" rendition="true" renditionVisible="true"/>
+    <automaticLOD order="2" name="10PercTextures" percPoly="100" maxPoly="1000000" percTex="10" maxTex="5000x5000"
+                  enabled="true" rendition="true" renditionVisible="true"/>
+    <automaticLOD order="3" name="50x50Texture" percPoly="100" maxPoly="1000000" percTex="100" maxTex="50x50"
+                  enabled="true" rendition="true" renditionVisible="true"/>
+    <automaticLOD order="4" name="HalfPolygon" percPoly="50" maxPoly="1000000" enabled="true" rendition="true"
+                  renditionVisible="true"/>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="renderViews">
+
+    <renderView name="isometric" azimuth="225" zenith="45" width="1920" height="1080"
+                enabled="true" rendition="true" renditionVisible="true"/>
+    <renderView name="top" azimuth="270" zenith="0" width="1920" height="1080"
+                enabled="true" rendition="true" renditionVisible="true"/>
+    <renderView name="left" azimuth="0" zenith="90" width="1920" height="1080"
+                enabled="true" rendition="true" renditionVisible="true"/>
+    <renderView name="right" azimuth="180" zenith="90" width="1920" height="1080"
+                enabled="true" rendition="true" renditionVisible="true"/>
+    <renderView name="front" azimuth="270" zenith="90" width="1920" height="1080"
+                enabled="true" rendition="true" renditionVisible="true"/>
+    <renderView name="behind" azimuth="90" zenith="90" width="1920" height="1080"
+                enabled="true" rendition="true" renditionVisible="true"/>
+    <renderView name="bottom" azimuth="270" zenith="180" width="1920" height="1080"
+                enabled="true" rendition="true" renditionVisible="true"/>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="automaticRenderViews">
+
+    <automaticRenderView order="0" name="isometric" enabled="true"/>
+    <automaticRenderView order="1" name="top" enabled="true"/>
+    <automaticRenderView order="2" name="front" enabled="true"/>
+    <automaticRenderView order="3" name="left" enabled="true"/>
+
+  </extension>
+
+</component>

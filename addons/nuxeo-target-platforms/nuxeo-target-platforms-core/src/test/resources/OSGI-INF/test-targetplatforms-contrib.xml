@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.targetplatforms.core.test.contrib">
+
+  <extension target="org.nuxeo.targetplatforms.core.framework" point="platforms">
+
+    <platform id="cmf-1.8">
+      <name>cmf</name>
+      <version>1.8</version>
+      <label>Nuxeo CMF</label>
+      <refVersion>5.4.2</refVersion>
+      <status>deprecated</status>
+      <default>true</default>
+      <description>
+        This target platform shows CMF specific features.
+        <p>
+          This is a test description holding HTML tags.
+        </p>
+      </description>
+      <downloadLink>
+        http://community.nuxeo.com/static/releases/cmf-1.8/nuxeo-case-management-distribution-1.8-tomcat-cmf.zip
+      </downloadLink>
+      <types>
+        <type>CMF</type>
+      </types>
+    </platform>
+
+    <platform id="dm-5.3.0" deprecated="true" enabled="false">
+      <name>dm</name>
+      <version>5.3.0</version>
+      <label>DM</label>
+      <status>deprecated</status>
+    </platform>
+
+    <platform id="cap-5.7.2" deprecated="true" enabled="true">
+      <name>cap</name>
+      <label>Nuxeo Platform</label>
+      <version>5.7.2</version>
+      <status>deprecated</status>
+      <fastTrack>true</fastTrack>
+    </platform>
+
+    <platform id="cap-5.8">
+      <name>cap</name>
+      <version>5.8</version>
+      <label>Nuxeo Platform</label>
+      <status>supported</status>
+      <trial>true</trial>
+      <default>true</default>
+      <description>
+        This target platform is the last LTS.
+      </description>
+      <types>
+        <type>CAP</type>
+      </types>
+      <testVersions>
+        <version>5.8.0-HF07-SNAPSHOT</version>
+        <version>5.8</version>
+      </testVersions>
+      <downloadLink>
+        http://community.nuxeo.com/static/releases/nuxeo-5.8/nuxeo-cap-5.8-tomcat.zip
+      </downloadLink>
+      <releaseDate>2013/09/23</releaseDate>
+    </platform>
+
+    <platform id="cap-5.9.1">
+      <name>cap</name>
+      <label>Nuxeo Platform</label>
+      <version>5.9.1</version>
+      <fastTrack>true</fastTrack>
+    </platform>
+
+    <platform id="cap-5.9.2" parent="cap-5.9.1">
+      <name>cap</name>
+      <label>Nuxeo Platform</label>
+      <version>5.9.2</version>
+      <status>new</status>
+      <fastTrack>true</fastTrack>
+      <trial>true</trial>
+      <downloadLink>
+        http://community.nuxeo.com/static/releases/nuxeo-5.9.2/nuxeo-cap-5.9.2-tomcat.zip
+      </downloadLink>
+      <releaseDate>2014/02/17</releaseDate>
+      <endOfAvailability>2014/06/18</endOfAvailability>
+    </platform>
+
+    <platform id="cap-5.9.3" parent="cap-5.9.2" restricted="true">
+      <name>cap</name>
+      <label>Nuxeo Platform</label>
+      <version>5.9.3</version>
+      <status>dev</status>
+      <fastTrack>true</fastTrack>
+    </platform>
+
+    <platform id="cap-6.0" restricted="true">
+      <name>cap</name>
+      <version>6.0</version>
+      <label>Nuxeo Platform</label>
+      <status>supported</status>
+      <trial>true</trial>
+      <default>true</default>
+      <types>
+        <type>CAP</type>
+      </types>
+    </platform>
+
+  </extension>
+
+  <extension target="org.nuxeo.targetplatforms.core.framework" point="packages">
+
+    <package id="nuxeo-dm-5.7.2" deprecated="true">
+      <name>nuxeo-dm</name>
+      <version>5.7.2</version>
+      <label>DM</label>
+      <targetPlatforms>
+        <platform>cap-5.7.2</platform>
+      </targetPlatforms>
+      <fastTrack>true</fastTrack>
+    </package>
+
+    <package id="nuxeo-dm-5.8">
+      <name>nuxeo-dm</name>
+      <version>5.8</version>
+      <label>DM</label>
+      <targetPlatforms>
+        <platform>cap-5.8</platform>
+      </targetPlatforms>
+      <status>supported</status>
+      <downloadLink>
+        https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-dm?version=5.8.0
+      </downloadLink>
+      <description>My desc</description>
+    </package>
+
+    <package id="nuxeo-dam-5.8">
+      <name>nuxeo-dm</name>
+      <version>5.8</version>
+      <label>DM</label>
+      <targetPlatforms>
+        <platform>cap-5.8</platform>
+      </targetPlatforms>
+      <dependencies>
+        <dependency>nuxeo-dm-5.8</dependency>
+      </dependencies>
+    </package>
+
+  </extension>
+
+</component>
