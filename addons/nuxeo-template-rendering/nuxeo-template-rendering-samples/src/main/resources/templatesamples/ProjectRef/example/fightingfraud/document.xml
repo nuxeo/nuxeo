@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="f0e470b0-dc82-402c-a9ad-aeb7e3573107">
+  <system>
+    <type>nxtrProject</type>
+    <path>default-domain/workspaces/templatesamples/Fighting Fraud - Complex</path>
+    <lifecycle-state>project</lifecycle-state>
+    <lifecycle-policy>default</lifecycle-policy>
+    <facet>Versionable</facet>
+    <facet>Publishable</facet>
+    <facet>Commentable</facet>
+    <facet>TemplateBased</facet>
+    <facet>HasRelatedText</facet>
+    <facet>Downloadable</facet>
+    <access-control>
+      <acl name="inherited">
+        <entry principal="Administrator" permission="Everything" grant="true"/>
+        <entry principal="members" permission="Read" grant="true"/>
+      </acl>
+    </access-control>
+  </system>
+  <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/" name="uid">
+    <uid:major_version><![CDATA[0]]></uid:major_version>
+    <uid:minor_version><![CDATA[0]]></uid:minor_version>
+  </schema>
+  <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/" name="file"></schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon><![CDATA[/img/project-16.png]]></common:icon>
+  </schema>
+  <schema xmlns:files="http://www.nuxeo.org/ecm/schemas/files/" name="files">
+    <files:files/>
+  </schema>
+  <schema xmlns:nxtrproject="http://www.nuxeo.org/ecm/project/schemas/template-module-demo/nxtrproject" name="nxtrproject">
+    <nxtrproject:project_duration><![CDATA[8 months]]></nxtrproject:project_duration>
+    <nxtrproject:project_name><![CDATA[Auditor Ruler]]></nxtrproject:project_name>
+    <nxtrproject:customer_logo>
+      <encoding></encoding>
+      <mime-type>image/svg+xml</mime-type>
+      <filename>auditor_ruler.svg</filename>
+      <data>9895757d.blob</data>
+      <digest>2727275567e6f9dec73e85b1d15e8d12</digest>
+    </nxtrproject:customer_logo>
+    <nxtrproject:customer_cost><![CDATA[745000.0]]></nxtrproject:customer_cost>
+    <nxtrproject:involved_people>
+      <item>
+        <number><![CDATA[1]]></number>
+        <role><![CDATA[Senior Software Architect]]></role>
+        <number_of_days><![CDATA[160]]></number_of_days>
+        <price_per_day><![CDATA[750.0]]></price_per_day>
+      </item>
+      <item>
+        <number><![CDATA[3]]></number>
+        <role><![CDATA[Software Engineers]]></role>
+        <number_of_days><![CDATA[160]]></number_of_days>
+        <price_per_day><![CDATA[650.0]]></price_per_day>
+      </item>
+      <item>
+        <number><![CDATA[1]]></number>
+        <role><![CDATA[Financial Fraud Expert]]></role>
+        <number_of_days><![CDATA[80]]></number_of_days>
+        <price_per_day><![CDATA[650.0]]></price_per_day>
+      </item>
+      <item>
+        <number><![CDATA[1]]></number>
+        <role><![CDATA[Project Manager]]></role>
+        <number_of_days><![CDATA[80]]></number_of_days>
+        <price_per_day><![CDATA[600.0]]></price_per_day>
+      </item>
+    </nxtrproject:involved_people>
+    <nxtrproject:abstract><![CDATA[Modeling and managing complex rules to fight financial and credit fraud is our field of expertise. 
+With this new product, we morphed documents into deep, rich content objects describing and documenting fraud detection and compliance audit rules in highly regulated financial services. 
+This enables a new level of rules, auditability and manageability (think versioning, differentiation, and change logs on highly rich and nested objects).]]></nxtrproject:abstract>
+    <nxtrproject:industry><![CDATA[Bank]]></nxtrproject:industry>
+    <nxtrproject:date_of_delivery><![CDATA[2025-10-05T22:00:00.00Z]]></nxtrproject:date_of_delivery>
+    <nxtrproject:quote><![CDATA[Anybody in charge of implementing the massive and recent financial regulation rules will understand the benefit.]]></nxtrproject:quote>
+  </schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:description/>
+    <dc:creator><![CDATA[Administrator]]></dc:creator>
+    <dc:modified><![CDATA[2015-07-17T15:50:33.95Z]]></dc:modified>
+    <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
+    <dc:created><![CDATA[2015-07-17T14:34:22.98Z]]></dc:created>
+    <dc:title><![CDATA[Fighting Financial Fraud - Complex Rules Made Easy]]></dc:title>
+    <dc:subjects/>
+    <dc:contributors>
+      <item><![CDATA[Administrator]]></item>
+    </dc:contributors>
+  </schema>
+  <schema xmlns:nxts="http://www.nuxeo.org/ecm/schemas/nxts/" name="templatesupport">
+    <nxts:bindings/>
+  </schema>
+  <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
+    <relatedtext:relatedtextresources/>
+  </schema>
+</document>

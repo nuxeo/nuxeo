@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/project/schemas/nxtrproject"
+  xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/"
+  targetNamespace="http://www.nuxeo.org/ecm/project/schemas/nxtrproject">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:element name="abstract">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="999999999"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="customer_cost" type="xs:double"/>
+  <xs:element name="customer_logo" type="nxs:content"/>
+  <xs:element name="date_of_delivery" type="xs:date"/>
+  <xs:element name="industry">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="nxtrIndustry"/>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="involved_people" type="nxs:nxtrproject_involved_peopleListType"/>
+  <xs:complexType name="nxtrproject_involved_peopleListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:nxtrproject_involved_peopleType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="nxtrproject_involved_peopleType">
+    <xs:sequence>
+      <xs:element name="number" type="xs:integer" default="1"/>
+      <xs:element name="number_of_days" type="xs:integer" default="0"/>
+      <xs:element name="price_per_day" type="xs:double" default="0"/>
+      <xs:element name="role" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="project_duration" type="xs:string"/>
+  <xs:element name="project_name" type="xs:string"/>
+  <xs:element name="quote" type="xs:string"/>
+
+</xs:schema>

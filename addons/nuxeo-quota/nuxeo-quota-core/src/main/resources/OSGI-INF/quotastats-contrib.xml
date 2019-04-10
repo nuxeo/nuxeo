@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.quota.contrib">
+
+  <documentation>
+    Default contribution to the QuotaStatsService registering a
+    QuotaStatsUpdater to count non-folderish documents.
+
+    @author Thomas Roger (troger@nuxeo.com)
+    @since 5.5
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.quota.QuotaStatsService" point="quotaStatsUpdaters">
+
+    <quotaStatsUpdater name="documentsCountUpdater"
+      class="org.nuxeo.ecm.quota.count.DocumentsCountUpdater"
+      label="label.quota.documentsCountUpdater"
+      descriptionLabel="label.quota.documentsCountUpdater.description"/>
+
+    <quotaStatsUpdater name="documentsSizeUpdater"
+      class="org.nuxeo.ecm.quota.size.DocumentsSizeUpdater"
+      label="label.quota.documentsCountSizeUpdater"
+      descriptionLabel="label.quota.documentsCountAndSizeUpdater.description"/>
+
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property controlling the scroll size when clearing quota size.
+
+      @since 11.1
+    </documentation>
+    <property name="nuxeo.quota.clear.scroll.size">500</property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property controlling the scroll lifetime when clearing quota size.
+
+      @since 11.1
+    </documentation>
+    <property name="nuxeo.quota.clear.scroll.keepAliveSeconds">60</property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property controlling the scroll size when initialising quota size.
+
+      @since 11.1
+    </documentation>
+    <property name="nuxeo.quota.init.scroll.size">250</property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property controlling the scroll lifetime when initialising quota size.
+
+      @since 11.1
+    </documentation>
+    <property name="nuxeo.quota.init.scroll.keepAliveSeconds">120</property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property controlling either:
+      - quota computation and check is done on aboutToCheckIn
+      - quota computation is done on checkedIn and check is done on checkOut
+
+      @since 9.10-HF to 10.10-HF
+    </documentation>
+    <property name="nuxeo.quota.size.check.on.aboutToCheckIn">false</property>
+  </extension>
+
+</component>

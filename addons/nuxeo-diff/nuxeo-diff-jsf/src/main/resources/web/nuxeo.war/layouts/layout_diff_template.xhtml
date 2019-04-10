@@ -1,0 +1,78 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  id="#{layout.id}">
+
+  <table class="dataInput">
+    <tbody>
+
+      <nxl:layoutRow>
+        <tr>
+          <nxl:layoutRowWidget>
+            <c:if test="#{widgetIndex == 0}">
+              <c:choose>
+                <c:when test="#{widget.translated}">
+                  <td class="labelColumn">
+                    <c:if test="#{empty widget.helpLabel}">
+                      <h:outputText value="#{messages[widget.label]}" />
+                    </c:if>
+                    <c:if test="#{!empty widget.helpLabel}">
+                      <div class="widgetHelpLabel tipsyShow" title="{messages[widget.helpLabel]}">
+                        <h:outputText value="#{messages[widget.label]}" />
+                      </div>
+                    </c:if>
+                  </td>
+                </c:when>
+                <c:otherwise>
+                  <td class="labelColumn">
+                    <c:if test="#{empty widget.helpLabel}">
+                      <h:outputText value="#{widget.label}" />
+                    </c:if>
+                    <c:if test="#{!empty widget.helpLabel}">
+                      <div class="widgetHelpLabel tipsyShow" title="#{widget.helpLabel}">
+                        <h:outputText value="#{widget.label}" />
+                      </div>
+                    </c:if>
+                  </td>
+                </c:otherwise>
+              </c:choose>
+              <td class="fieldColumn">
+                <f:subview id="#{widget.id}_left">
+                  <nxu:set var="leftValue" value="#{value.leftValue}" cache="true">
+                    <nxl:widget widget="#{widget}" value="#{leftValue}" />
+                  </nxu:set>
+                 </f:subview>
+              </td>
+              <td class="fieldColumn">
+                <f:subview id="#{widget.id}_right">
+                  <nxu:set var="rightValue" value="#{value.rightValue}" cache="true">
+                    <nxl:widget widget="#{widget}" value="#{rightValue}" />
+                  </nxu:set>
+                 </f:subview>
+              </td>
+              <c:if test="#{fn:length(layoutRow.widgets) == 1}">
+                <td class="contentDiffColumn">
+                </td>
+              </c:if>
+            </c:if>
+            <c:if test="#{widgetIndex == 1}">
+              <td class="contentDiffColumn">
+                <nxu:set var="contentDiffValue" value="#{value.contentDiffValue}" cache="true">
+                  <nxl:widget widget="#{widget}" value="#{contentDiffValue}" />
+                </nxu:set>
+              </td>
+            </c:if>
+          </nxl:layoutRowWidget>
+        </tr>
+      </nxl:layoutRow>
+
+    </tbody>
+  </table>
+
+</f:subview>

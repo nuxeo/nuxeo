@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doc>
+  <title>Multifile</title>
+  <file>file1.txt</file>
+  <files>file2.txt</files>
+  <files>file3.txt</files>
+</doc>

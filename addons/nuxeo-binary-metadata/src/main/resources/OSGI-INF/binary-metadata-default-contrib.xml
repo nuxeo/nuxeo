@@ -1,0 +1,63 @@
+<component name="org.nuxeo.binary.metadata.contribs">
+
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+
+  <extension target="org.nuxeo.binary.metadata" point="metadataProcessors">
+    <processor id="exifTool" class="org.nuxeo.binary.metadata.internals.ExifToolProcessor" prefix="true" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+             point="environment">
+    <environment name="exiftool">
+      <parameters>
+        <!-- See http://search.cpan.org/dist/PAR/lib/PAR.pm#Notes -->
+        <parameter name="PAR_GLOBAL_TMPDIR">${nuxeo.tmp.dir}</parameter>
+        <!-- set PAR_CLEAN cleaning PAR_GLOBAL_TEMP after execution -->
+        <!-- <parameter name="PAR_CLEAN">0</parameter> -->
+      </parameters>
+    </environment>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" point="command">
+
+    <command name="exiftool-read-taglist" enabled="true">
+      <commandLine>exiftool</commandLine>
+      <parameterString>-m -q -q -G -json #{tagList} #{inFilePath}</parameterString>
+      <installationDirective>You need to install exiftool</installationDirective>
+    </command>
+
+    <command name="exiftool-read" enabled="true">
+      <commandLine>exiftool</commandLine>
+      <parameterString>-m -q -q -G -json #{inFilePath}</parameterString>
+      <installationDirective>You need to install exiftool</installationDirective>
+    </command>
+
+    <command name="exiftool-write" enabled="true">
+      <commandLine>exiftool</commandLine>
+      <parameterString>-m -q -q -G -overwrite_original #{tagList} #{inFilePath}</parameterString>
+      <installationDirective>You need to install exiftool</installationDirective>
+    </command>
+
+    <!-- Since 7.3 -->
+    <command name="exiftool-read-taglist-noprefix" enabled="true">
+      <commandLine>exiftool</commandLine>
+      <parameterString>-m -q -q -json #{tagList} #{inFilePath}</parameterString>
+      <installationDirective>You need to install exiftool</installationDirective>
+    </command>
+
+    <!-- Since 7.3 -->
+    <command name="exiftool-read-noprefix" enabled="true">
+      <commandLine>exiftool</commandLine>
+      <parameterString>-m -q -q -json #{inFilePath}</parameterString>
+      <installationDirective>You need to install exiftool</installationDirective>
+    </command>
+
+    <!-- Since 7.3 -->
+    <command name="exiftool-write-noprefix" enabled="true">
+      <commandLine>exiftool</commandLine>
+      <parameterString>-m -q -q -overwrite_original #{tagList} #{inFilePath}</parameterString>
+      <installationDirective>You need to install exiftool</installationDirective>
+    </command>
+
+  </extension>
+</component>
