@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forms.layoutDemo.selectOneDirectoryLocalizedWidget.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="selectOneDirectoryLocalizedWidgetLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>selectOneDirectoryWidget</widget>
+        </row>
+      </rows>
+      <widget name="selectOneDirectoryWidget" type="selectOneDirectory">
+        <labels>
+          <label mode="any">selectOneDirectory widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:selectVocabularyLocalizedField</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">continent</property>
+          <property name="localize">true</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+        <controls mode="any">
+          <!-- enable ajax submit on change/click/select on demo application -->
+          <control name="supportInsideInputWidgetEffects">true</control>
+        </controls>
+      </widget>
+    </layout>
+  </extension>
+
+</component>

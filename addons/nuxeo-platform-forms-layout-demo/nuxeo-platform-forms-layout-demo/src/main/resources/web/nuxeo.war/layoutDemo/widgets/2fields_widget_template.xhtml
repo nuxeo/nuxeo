@@ -1,0 +1,31 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <c:if test="false">
+    Sample template widget mapped to 2 fields, used as non-regression test
+    for NXP-9341.
+  </c:if>
+
+  <nxu:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}">
+    <c:if test="#{isEditMode}">
+      <h:outputText value="#{widgetProperty_label1}"
+        styleClass="labelColumn #{nxu:test(widget.required, 'required', '')}" />
+    </c:if>
+    <nxl:widgetType name="text" mode="#{widget.mode}"
+      value="#{field_0}" properties="#{widget.properties}" />
+
+    <c:if test="#{isEditMode}">
+      <h:outputText value="#{widgetProperty_label2}"
+        styleClass="labelColumn #{nxu:test(widget.required, 'required', '')}" />
+    </c:if>
+    <c:if test="#{not isEditMode}">
+      <h:outputText value=" " />
+    </c:if>
+    <nxl:widgetType name="text" mode="#{widget.mode}"
+      value="#{field_1}" properties="#{widget.properties}" />
+  </nxu:set>
+
+</div>
