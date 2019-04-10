@@ -1,0 +1,103 @@
+<component
+  name="org.nuxeo.template.service.defaultContrib">
+
+  <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="processor">
+
+    <documentation>Freemarker based template processor</documentation>
+
+    <templateProcessor name="Freemarker" label="Raw Freemarker" default="false" class="org.nuxeo.template.processors.fm.FreeMarkerProcessor">
+      <supportedMimeType>text/x-freemarker</supportedMimeType>
+      <supportedExtension>ftl</supportedExtension>
+    </templateProcessor>
+
+  </extension>
+
+  <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="processor">
+
+    <documentation>XSLT template processor</documentation>
+
+    <templateProcessor name="XSLTProcessor" label="Raw XSLT Processor" default="false" class="org.nuxeo.template.processors.xslt.XSLTProcessor">
+      <supportedMimeType>text/xml</supportedMimeType>
+      <supportedExtension>xml</supportedExtension>
+      <supportedExtension>xsl</supportedExtension>
+      <supportedExtension>xslt</supportedExtension>
+    </templateProcessor>
+
+  </extension>
+
+ <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="processor">
+
+    <documentation>Identity processor</documentation>
+
+    <templateProcessor name="Identity" label="Identity" default="false" class="org.nuxeo.template.processors.IdentityProcessor">
+    </templateProcessor>
+
+  </extension>
+
+  <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="contextExtension">
+
+    <documentation>
+      Adds utility functions in the context
+      <ul>
+        <li>functions.getVocabularyTranslatedLabel(vocname, key, lang)</li>
+        <li>functions.getVocabularyLabel(vocname, key)</li>
+        <li>functions.getVocabularyLabel(vocname, key)</li>
+        <li>functions.formatDate(calendar)</li>
+        <li>functions.formatDateTime(calendar)</li>
+        <li>functions.formatTime(calendar)</li>
+        <li>functions.getNuxeoPrincipal(username)</li>
+      </ul>
+    </documentation>
+
+    <contextFactory name="functions" class="org.nuxeo.template.context.extensions.FunctionsExtensionFactory">
+     <aliasName>fn</aliasName>
+     <aliasName>Fn</aliasName>
+    </contextFactory>
+
+  </extension>
+
+  <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="contextExtension">
+
+    <documentation>Adds audit infos in the context
+      <ul>
+        <li>auditEntries</li>
+      </ul>
+    </documentation>
+
+    <contextFactory name="auditEntries" class="org.nuxeo.template.context.extensions.AuditExtensionFactory">
+    </contextFactory>
+
+  </extension>
+
+  <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="contextExtension">
+
+    <documentation>Adds Repository features in the context
+      <ul>
+        <li>core.getParent()</li>
+        <li>core.getChildren()</li>
+      </ul>
+    </documentation>
+
+    <contextFactory name="core" class="org.nuxeo.template.context.extensions.CoreExtensionFactory">
+    </contextFactory>
+
+  </extension>
+
+  <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="outputFormat">
+
+    <documentation>Adds outputFormat for the following mime type
+      <ul>
+        <li>pdf</li>
+        <li>odt</li>
+        <li>doc</li>
+        <li>docx</li>
+      </ul>
+    </documentation>
+
+    <outputFormat id="pdf" label="PDF" mimetype="application/pdf"/>
+    <outputFormat id="odt" label="ODT" mimetype="application/vnd.oasis.opendocument.text"/>
+    <outputFormat id="doc" label="DOC" mimetype="application/msword"/>
+    <outputFormat id="docx" label="DOCX" mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+  </extension>
+
+ </component>
