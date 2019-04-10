@@ -1,0 +1,22 @@
+{
+  "parent" : null,
+  "dependencies" : [ ],
+  "name" : "nuxeo-dm",
+  "id" : "nuxeo-dm-5.8",
+  "status" : "supported",
+  "description" : "My desc",
+  "version" : "5.8",
+  "refVersion" : "5.8",
+  "label" : "DM",
+  "releaseDate" : null,
+  "endOfAvailability" : null,
+  "downloadLink" : "https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-dm?version=5.8.0",
+  "fastTrack" : false,
+  "trial" : false,
+  "default" : false,
+  "types" : [ ],
+  "enabled" : true,
+  "overridden" : false,
+  "restricted" : false,
+  "deprecated" : false
+}
