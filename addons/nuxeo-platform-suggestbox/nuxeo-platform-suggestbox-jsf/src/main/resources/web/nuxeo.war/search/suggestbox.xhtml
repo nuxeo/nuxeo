@@ -1,0 +1,96 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:cm="http://org.nuxeo.cm/" xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  style="display: inline; float: left">
+
+  <c:set var="minChars"
+    value="#{nxu:test(!empty widget.properties.minChars, widget.properties.minChars, '1')}" />
+  <c:set var="frequency"
+    value="#{nxu:test(!empty widget.properties.frequency, widget.properties.frequency, '0')}" />
+  <c:set var="requestDelay"
+    value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}" />
+
+  <a4j:region renderRegionOnly="true">
+    <h:panelGrid id="#{widget.id}_suggestbox_panel" columns="3">
+      <h:panelGroup>
+        <script type="text/javascript">
+        <!--
+        function focus_searchbox(event) {
+           event.preventDefault();
+           jQuery('input.search_suggest_box').focus();
+           return false;
+        }
+        function call_suggestion(value) {
+          if (value != '') {
+            #{rich:component('faceted_search_suggestionBox')}.callSuggestion(true);
+          }
+        }
+        function simple_search() {
+          var box = jQuery(document.getElementById('nxw_suggest_search_box_form:faceted_search_suggestionBox'));
+          if (!box.is(':visible')) {
+            // use default navigation without waiting for the suggestions to display
+            document.getElementById('nxw_suggest_search_box_form:simpleSearchSubmitButton').click();
+          }
+          return false;
+        }
+
+        function showSearchLoading() {
+           jQuery("input[id$=faceted_search_suggest_box]").css('background', '#fff url(' + window.nxContextPath + '/img/standart_waiter.gif) no-repeat 98% center');
+        }
+
+        function hideSearchLoading() {
+           jQuery("input[id$=faceted_search_suggest_box]").css('background', '#fff url(' + window.nxContextPath + '/icons/search.png) no-repeat 98% center');
+        }
+
+        // bind the '/' key to focus the searchbox
+        jQuery(document).bind('keydown', '/', focus_searchbox);
+        // handle keyboard layouts such as French where the '/' char is
+        // accessed through the Shift modifier
+        jQuery(document).bind('keydown', 'Shift+/', focus_searchbox);
+        -->
+        </script>
+        <h:inputText id="faceted_search_suggest_box"
+            class="search_suggest_box directoryFilter"
+            onkeydown="if (event.keyCode == 13) {return simple_search();}"
+            onfocus="call_suggestion(jQuery(this).attr('value'))"
+            value="#{suggestboxActions.searchKeywords}"
+            placeholder="#{messages['label.search.form.simple']}" />
+        <rich:suggestionbox
+          id="faceted_search_suggestionBox"
+          for="faceted_search_suggest_box" tokens=""
+          suggestionAction="#{suggestboxActions.getSuggestions}"
+          var="result" fetchValue="" width="300" height="500"
+          nothingLabel="#{messages['label.noSuggestions']}"
+          requestDelay="100" ajaxSingle="true"
+          ignoreDupResponses="true" zindex="5000"
+          styleClass="suggestionBoxResult">
+          <f:param name="suggesterGroup" value="searchbox" />
+          <a4j:support event="onselect" id="#{widget.id}_a4jSupport"
+            focus="" bypassUpdates="true"
+            action="#{suggestboxActions.handleSelection(result)}">
+            <f:param name="suggesterGroup" value="searchbox" />
+          </a4j:support>
+          <h:column>
+            <h:graphicImage value="#{result.iconURL}" />
+          </h:column>
+          <h:column>
+            <h:outputText value="#{result.label}" styleClass="resultLabel" />
+            <h:outputText rendered="#{result.type == 'user'}" value=" #{result.userId}" styleClass="detail"/> 
+          </h:column>
+        </rich:suggestionbox>
+        <a4j:status onstart="showSearchLoading();" onstop="hideSearchLoading();" />
+        <a4j:commandButton
+          action="#{suggestboxActions.performKeywordsSearch('searchByKeywords', 'searchbox')}"
+          value="#{messages['command.search']}" styleClass="button"
+          id="simpleSearchSubmitButton"/>
+      </h:panelGroup>
+
+    </h:panelGrid>
+
+  </a4j:region>
+</div>
