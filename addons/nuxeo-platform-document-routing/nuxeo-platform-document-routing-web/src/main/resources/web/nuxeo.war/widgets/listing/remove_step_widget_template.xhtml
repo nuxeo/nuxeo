@@ -1,0 +1,30 @@
+<f:subview id="#{widget.id}_remove"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <c:if test="#{isEditableRouteElement}">
+    <nxu:set var="actions"
+      value="#{routingWebActions.getRemoveStepActions(field_0)}"
+      cache="true">
+      <c:if test="#{!empty actions}">
+        <div class="action_bar">
+          <nxu:dataList layout="unorderedList"
+            var="action" styleClass="ctxMenuStyle"
+            value="#{actions}"
+            id="removeStepListTable">
+            <nxh:commandLink action="#{action.getLink()}"
+              id="documentActionSubviewUpperListLink">
+              <nxu:graphicImage value="#{action.icon}"/>
+              <h:outputText value="#{messages[action.label]}" />
+              <f:param name="stepId" value="#{field_1}" />
+            </nxh:commandLink>
+          </nxu:dataList>
+        </div>
+      </c:if>
+    </nxu:set>
+  </c:if> 
+
+</f:subview>
