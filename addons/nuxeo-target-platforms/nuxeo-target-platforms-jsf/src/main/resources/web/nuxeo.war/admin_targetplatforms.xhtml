@@ -1,0 +1,179 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <h3><h:outputText value="#{messages['label.admin.targetplatforms']}" /></h3>
+
+  <script type="text/javascript">
+    function confirmRestoreAllMessage() {
+      return confirm("#{messages['command.admin.restoreAll.confirm']}");
+    }
+  </script>
+
+  <div class="tips">
+    <a4j:region>
+      <h:outputText value="#{messages['label.admin.targetplatforms.details']}" />
+      <a4j:form id="restoreAll" ajaxSubmit="true"
+        ignoreDupResponses="true">
+        <a4j:commandLink styleClass="button" id="restoreAllButton"
+          onclick="if (!confirmRestoreAllMessage()) return false;"
+          action="#{targetPlatformService.restoreAllTargetPlatforms()}"
+          value="#{messages['command.admin.targetplatforms.restoreAll']}"
+          reRender="targetPlatformsTable" />
+        <a4j:status>
+          <f:facet name="start">
+            <h:graphicImage value="/img/standart_waiter.gif" />
+          </f:facet>
+        </a4j:status>
+      </a4j:form>
+    </a4j:region>
+  </div>
+
+  <a4j:outputPanel id="targetPlatformsTable" layout="block">
+    <a4j:form id="targetPlatformsTableForm"
+      ajaxSubmit="true"
+      ignoreDupResponses="true">
+      <h:dataTable value="#{targetPlatformActions.platforms}" var="tp"
+        styleClass="dataTable">
+        <h:column styleClass="thirtyPercent boldColumn">
+          <f:facet name="header">
+            <h:outputText value="#{messages['label.admin.targetplatforms.id']}" />
+          </f:facet>
+          <h:outputText rendered="#{tp.enabled}">
+            #{tp.id}
+            <span class="label label-success">
+              ENABLED
+            </span>
+          </h:outputText>
+          <h:outputText rendered="#{!tp.enabled}">
+            <strike>#{tp.id}</strike>
+          </h:outputText>
+          <h:outputText rendered="#{!tp.enabled}">
+            <span class="label label-error">
+              DISABLED
+            </span>
+          </h:outputText>
+          <h:outputText rendered="#{tp.trial}">
+            <span class="label label-info">
+              TRIAL
+            </span>
+          </h:outputText>
+          <h:outputText rendered="#{tp.default}">
+            <span class="label label-info">
+              DEFAULT
+            </span>
+          </h:outputText>
+          <h:outputText rendered="#{tp.deprecated}">
+            <span class="label label-warning">
+              DEPRECATED
+            </span>
+          </h:outputText>
+        </h:column>
+        <h:column>
+          <f:facet name="header">
+            <h:outputText value="#{messages['label.admin.targetplatforms.label']}" />
+          </f:facet>
+          <h:outputText rendered="#{tp.enabled}">
+            #{tp.label}
+          </h:outputText>
+          <h:outputText rendered="#{!tp.enabled}">
+            <strike>#{tp.label}</strike>
+          </h:outputText>
+        </h:column>
+        <h:column styleClass="fortyPercent">
+          <a4j:region>
+            <h:outputText rendered="#{tp.enabled}">
+              <a4j:commandLink styleClass="button" id="disable_#{status.index}"
+                reRender="targetPlatformsTable"
+                action="#{targetPlatformService.enableTargetPlatform(false, tp.id)}"
+                value="#{messages['command.admin.targetplatforms.disable']}" />
+              <h:outputText rendered="#{tp.restricted}">
+                <a4j:commandLink styleClass="button" id="unrestrict_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.restrictTargetPlatform(false, tp.id)}">
+                  <h:graphicImage value="/icons/warning.gif" />
+                  <h:outputText value="#{messages['command.admin.targetplatforms.removeRestriction']}" />
+                </a4j:commandLink>
+              </h:outputText>
+              <h:outputText rendered="#{!tp.restricted}">
+                <a4j:commandLink styleClass="button" id="restrict_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.restrictTargetPlatform(true, tp.id)}"
+                  value="#{messages['command.admin.targetplatforms.addRestriction']}" />
+              </h:outputText>
+              <h:outputText rendered="#{tp.deprecated}">
+                <a4j:commandLink styleClass="button" id="undeprecate_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.deprecateTargetPlatform(false, tp.id)}"
+                  value="#{messages['command.admin.targetplatforms.undeprecate']}" />
+              </h:outputText>
+              <h:outputText rendered="#{!tp.deprecated}">
+                <a4j:commandLink styleClass="button" id="deprecate_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.deprecateTargetPlatform(true, tp.id)}"
+                  value="#{messages['command.admin.targetplatforms.deprecate']}" />
+              </h:outputText>
+              <h:outputText rendered="#{tp.trial}">
+                <a4j:commandLink styleClass="button" id="untrial_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.setTrialTargetPlatform(false, tp.id)}"
+                  value="#{messages['command.admin.targetplatforms.untrial']}" />
+              </h:outputText>
+              <h:outputText rendered="#{!tp.trial}">
+                <a4j:commandLink styleClass="button" id="trial_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.setTrialTargetPlatform(true, tp.id)}"
+                  value="#{messages['command.admin.targetplatforms.trial']}" />
+              </h:outputText>
+              <h:outputText rendered="#{tp.default}">
+                <a4j:commandLink styleClass="button" id="undefault_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.setDefaultTargetPlatform(false, tp.id)}"
+                  value="#{messages['command.admin.targetplatforms.undefault']}" />
+              </h:outputText>
+              <h:outputText rendered="#{!tp.default}">
+                <a4j:commandLink styleClass="button" id="default_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.setDefaultTargetPlatform(true, tp.id)}"
+                  value="#{messages['command.admin.targetplatforms.default']}" />
+              </h:outputText>
+            </h:outputText>
+            <h:outputText rendered="#{!tp.enabled}">
+              <a4j:commandLink styleClass="button" id="enable_#{status.index}"
+                reRender="targetPlatformsTable"
+                action="#{targetPlatformService.enableTargetPlatform(true, tp.id)}"
+                value="#{messages['command.admin.targetplatforms.enable']}" />
+            </h:outputText>
+            <a4j:status>
+              <f:facet name="start">
+                <h:graphicImage value="/img/standart_waiter.gif" />
+              </f:facet>
+            </a4j:status>
+          </a4j:region>
+        </h:column>
+        <h:column styleClass="tenPercent">
+          <f:facet name="header">
+            <h:outputText value="#{messages['command.admin.targetplatforms.restore']}" />
+          </f:facet>
+          <h:outputText rendered="#{tp.overridden}">
+            <a4j:region>
+              <a4j:commandLink styleClass="button" id="restore"
+                reRender="targetPlatformsTable"
+                action="#{targetPlatformService.restoreTargetPlatform(tp.id)}"
+                value="#{messages['command.admin.targetplatforms.restore']}" />
+              <a4j:status>
+                <f:facet name="start">
+                  <h:graphicImage value="/img/standart_waiter.gif" />
+                </f:facet>
+              </a4j:status>
+            </a4j:region>
+          </h:outputText>
+        </h:column>
+      </h:dataTable>
+    </a4j:form>
+  </a4j:outputPanel>
+
+</div>

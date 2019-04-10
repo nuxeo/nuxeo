@@ -1,0 +1,1 @@
+GET http://[site_name]/_vti_bin/owssvr.dll?Cmd=Method_name&Parameter1=Value1&Parameter2=Value2
