@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.drive.service.test.contrib.override.FileSystemItemAdapterService"
+  version="1.0">
+
+  <require>org.nuxeo.drive.service.test.contrib.FileSystemItemAdapterService
+  </require>
+
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+    point="fileSystemItemFactory">
+
+    <!-- Override dummyDocTypeFactory, dummyFacetFactory and nullMergeTestFactory -->
+    <fileSystemItemFactory name="dummyFacetFactory"
+      order="20" facet="Folderish"
+      class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory" />
+    <fileSystemItemFactory name="dummyDocTypeFactory"
+      order="30" docType="File"
+      class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory">
+      <parameters>
+        <parameter name="versioningDelay">60</parameter>
+        <parameter name="versioningOption">MAJOR</parameter>
+      </parameters>
+    </fileSystemItemFactory>
+    <fileSystemItemFactory name="nullMergeTestFactory" />
+
+  </extension>
+
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+    point="topLevelFolderItemFactory">
+
+    <topLevelFolderItemFactory
+      class="org.nuxeo.drive.service.adapter.DummyTopLevelFolderItemFactory" />
+
+  </extension>
+
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+    point="activeFileSystemItemFactories">
+
+    <activeTopLevelFolderItemFactory>org.nuxeo.drive.service.adapter.DummyTopLevelFolderItemFactory
+    </activeTopLevelFolderItemFactory>
+
+    <activeFileSystemItemFactories merge="true">
+      <factories>
+        <!-- Disable defaultFileSystemItemFactory -->
+        <factory enabled="false">defaultFileSystemItemFactory</factory>
+      </factories>
+    </activeFileSystemItemFactories>
+
+  </extension>
+
+</component>

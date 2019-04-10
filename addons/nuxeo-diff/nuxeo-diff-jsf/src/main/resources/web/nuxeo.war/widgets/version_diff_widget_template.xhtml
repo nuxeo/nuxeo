@@ -1,0 +1,32 @@
+<f:subview id="#{widget.id}"
+           xmlns:c="http://java.sun.com/jstl/core"
+           xmlns:f="http://java.sun.com/jsf/core"
+           xmlns:nxu="http://nuxeo.org/nxweb/util"
+           xmlns:nxd="http://nuxeo.org/nxweb/document"
+           xmlns:nxl="http://nuxeo.org/nxforms/layout"
+           xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:if test="false">
+    Display diff between live document and specified version.
+
+    Since Nuxeo 5.7
+  </c:if>
+
+  <nxu:set  var="versionLabel"
+         value="#{nxu:test(!empty widgetProperty_versionLabel, widgetProperty_versionLabel, 'lastVersion')}">
+  <nxu:set  var="propertyXPath"
+            value="#{nxu:test(!empty widgetProperty_propertyXPath, widgetProperty_propertyXPath, 'file:content')}">
+  <nxu:set var="height"
+           value="#{nxu:test(!empty widgetProperty_height, widgetProperty_height, '400px')}">
+
+    <c:if test="#{diffActions.prepareCurrentVersionDiff(versionLabel) != null}">
+      <iframe src="#{diffActions.getContentDiffURL(propertyXPath, null)}"
+              id="content-diff-frame" frameborder="1" height="#{height}" width="100%" scrolling="auto">
+      </iframe>
+    </c:if>
+
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+
+</f:subview>
