@@ -1,0 +1,46 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:choose>
+    <c:when test="#{empty nuxeoDriveClientPackages}">
+      <p>
+        <h:outputText
+          value="#{messages['user.center.nuxeoDrive.missingDesktopPackage']}" />
+      </p>
+    </c:when>
+
+    <c:otherwise>
+      <p>
+        <h:outputText
+          value="#{messages['user.center.nuxeoDrive.helpDesktopInstall']}" class="detail" />
+      </p>
+      <h:form>
+	      <table class="dataOutput nuxeoDrivePackages">
+	        <thead>
+		        <tr>
+		          <th>
+		            <h:outputText value="#{messages['user.center.nuxeoDrive.heading.platform']}" />
+		          </th>
+		          <th>
+		            <h:outputText value="#{messages['user.center.nuxeoDrive.heading.package']}" />
+		          </th>
+		        </tr>
+	        </thead>
+	        <c:forEach var="package"
+	          items="#{nuxeoDriveClientPackages}">
+	          <tr>
+	            <td class="#{package.platformId}">
+	              <h:outputText value="#{messages[package.platformLabel]}" class="label label-info" />
+	            </td>
+	            <td id="nuxeo-drive-download-#{package.platformId}">
+	              <h:outputLink value="#{package.URL}" target="_blank" class="button">
+                  <h:outputText value="#{messages[package.name]}" />
+                </h:outputLink>
+	            </td>
+	          </tr>
+	        </c:forEach>
+	      </table>
+      </h:form>
+    </c:otherwise>
+  </c:choose>
+</div>

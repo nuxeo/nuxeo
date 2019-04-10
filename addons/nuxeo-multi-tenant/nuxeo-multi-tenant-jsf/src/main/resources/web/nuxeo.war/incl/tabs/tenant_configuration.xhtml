@@ -1,0 +1,22 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <h:form enctype="multipart/form-data" id="tenant_configuration">
+
+    <nxl:layout name="tenant_configuration" mode="edit"
+      value="#{currentDocument}" />
+
+    <p class="buttonsGadget">
+      <nxh:commandButton action="#{documentActions.updateCurrentDocument}"
+        value="#{messages['command.save']}"
+        styleClass="button" />
+    </p>
+  </h:form>
+
+</div>
