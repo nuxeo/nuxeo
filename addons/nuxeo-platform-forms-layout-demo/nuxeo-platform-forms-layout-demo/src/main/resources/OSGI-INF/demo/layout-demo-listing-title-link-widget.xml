@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forms.layoutDemo.listing_title_linkWidget.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <!-- WARNING: this layout is focused on the widget definition.
+      The layout and column settings are incomplete and show only parts of
+      the standard configuration for a full listing layout configuration. -->
+
+    <layout name="listing_title_linkWidgetLayout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column name="listing_title_link">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_title_linkWidget</widget>
+        </column>
+      </columns>
+      <widget name="listing_title_linkWidget" type="listing_title_link">
+        <labels>
+          <label mode="any">Title with link widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>data</field>
+          <field>data.ref</field>
+          <field>data.dc.description</field>
+          <field>data.file.content</field>
+          <field>data.file.filename</field>
+        </fields>
+      </widget>
+    </layout>
+  </extension>
+
+</component>

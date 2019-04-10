@@ -1,0 +1,653 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.contentviews">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="dam_search">
+      <title>label.dam.search</title>
+      <translateTitle>true</translateTitle>
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+        <whereClause docType="DamSearch">
+          <fixedPart>
+            ecm:mixinType = 'Asset' AND ecm:mixinType != 'HiddenInNavigation'
+            AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+          </fixedPart>
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="dam_search" name="ecm_fulltext" />
+          </predicate>
+          <predicate parameter="damc:author" operator="LIKE">
+            <field schema="dam_search" name="damc_author" />
+          </predicate>
+          <predicate parameter="damc:authoringDate" operator="BETWEEN">
+            <field schema="dam_search" name="damc_authoringDate_min" />
+            <field schema="dam_search" name="damc_authoringDate_max" />
+          </predicate>
+          <predicate parameter="dc:coverage" operator="STARTSWITH">
+            <field schema="dam_search" name="dc_coverage" />
+          </predicate>
+          <predicate parameter="ecm:path" operator="STARTSWITH">
+            <field schema="dam_search" name="ecm_path" />
+          </predicate>
+          <predicate parameter="ecm:tag" operator="IN">
+            <field schema="dam_search" name="ecm_tags" />
+          </predicate>
+
+        </whereClause>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="dam_search_layout" />
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <layout name="dam_box_listing_ajax" title="label.dam.box.listing.title"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
+        <layout name="dam_listing_ajax" title="label.dam.listing.title"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="DAM_CURRENT_SELECTION_LIST" />
+
+      <flags>
+        <flag>DAM</flag>
+      </flags>
+    </contentView>
+
+    <contentView name="dam_saved_search">
+
+      <showTitle>false</showTitle>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <whereClause docType="AdvancedSearch">
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="advanced_search" name="fulltext_all" />
+          </predicate>
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="advanced_search" name="title" />
+          </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="advanced_search" name="modified_min" />
+            <field schema="advanced_search" name="modified_max" />
+          </predicate>
+          <fixedPart>
+            ecm:mixinType = 'DamSearch'
+            AND ecm:currentLifeCycleState != 'deleted'
+            AND ecm:parentId = ?
+          </fixedPart>
+        </whereClause>
+        <parameter>#{userWorkspaceManagerActions.currentUserPersonalWorkspace.id}</parameter>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="document_content_filter"
+        filterDisplayType="quick" />
+      <showFilterForm>true</showFilterForm>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <layout name="document_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="true" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="DAM_SEARCHES_CURRENT_SELECTION_LIST" />
+    </contentView>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="dam_listing_ajax_selection_box_with_title">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Ajax selection checkbox with title</title>
+        <description>
+          <p>
+            This widget type displays a selection checkbox, that will perform
+            ajax selection of given item, and the document title
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the title
+              </li>
+              <li>
+                second field maps the label used as the tooltip of the
+                document title
+              </li>
+              <li>
+                third field maps a boolean representing the selection state
+              </li>
+              <li>
+                fourth field maps the string identifier used to perform
+                selection
+              </li>
+            </ul>
+          </p>
+          <p>
+            It also requires the following variables to be present in the EL
+            context:
+            <ul>
+              <li>
+                provider: result provider used to get the list of items, its
+                name will be used.
+              </li>
+              <li>
+                listName: the name of the list that will hold selected items
+              </li>
+            </ul>
+          </p>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+            <field>data.dc.description</field>
+            <field>selected</field>
+            <field>data.ref</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>hidden_listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /dam/widgets/listing/listing_ajax_selection_box_with_title_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="dam_listing_size">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Size</title>
+        <description>
+          <p>
+            This widget type displays the size of the main blob of the
+            given document.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the size
+              </li>
+            </ul>
+          </p>
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /dam/widgets/listing/listing_size_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="dam_listing_main_file_format">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Main file format</title>
+        <description>
+          <p>
+            This widget type displays the format of the main file of the
+            document
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the format
+              </li>
+            </ul>
+          </p>
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /dam/widgets/listing/listing_main_file_format_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <!-- widgets for dam_search -->
+
+    <widget name="dam_text_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dam.search.textSearch</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="ecm_fulltext" type="text">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <translated>false</translated>
+          <fields>
+            <field>dams:ecm_fulltext</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="placeholder">
+              #{messages['label.dam.search.text.placeholder']}
+            </property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="dam_date_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dam.search.dateSearch</label>
+      </labels>
+      <translated>true</translated>
+      <subWidgets>
+        <widget name="dc_creationDate" type="datetimeRange">
+          <labels>
+            <label mode="any">label.dublincore.creationDate</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>dams:dc_created_min</field>
+            <field>dams:dc_created_max</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="styleClass">dataInputTextDate</property>
+            <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+          </properties>
+        </widget>
+        <widget name="damc_authoringDate" type="datetimeRange">
+          <labels>
+            <label mode="any">label.dam.damc.authoringDate</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>dams:damc_authoringDate_min</field>
+            <field>dams:damc_authoringDate_max</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="styleClass">dataInputTextDate</property>
+            <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="dam_user_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dam.search.userSearch</label>
+      </labels>
+      <translated>true</translated>
+      <subWidgets>
+        <widget name="dc_creator" type="multipleUsersSuggestion">
+          <labels>
+            <label mode="any">label.dublincore.creator</label>
+          </labels>
+          <fields>
+            <field>dams:dc_creator</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="userSuggestionSearchType">USER_TYPE</property>
+            <property name="displaySuggestionOnTop">true</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="hideSearchTypeText">true</property>
+          </properties>
+        </widget>
+        <widget name="damc_author" type="text">
+          <labels>
+            <label mode="any">label.dam.damc.author</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>dams:damc_author</field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="dam_categorization_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dam.search.categorizationSearch</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+      </properties>
+      <subWidgets>
+        <widget name="dc_subjects" type="select_l10n_vocabulary_tree">
+          <labels>
+            <label mode="any">label.dublincore.subject</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>dams:dc_subjects</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="directoryName">l10nsubjects</property>
+            <property name="multiSelect">true</property>
+          </properties>
+        </widget>
+        <widget name="dc_coverage" type="select_l10n_vocabulary_tree">
+          <labels>
+            <label mode="any">label.dublincore.coverage</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>dams:dc_coverage</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="directoryName">l10ncoverage</property>
+            <property name="multiSelect">true</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="dam_location_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dam.search.locationSearch</label>
+      </labels>
+      <translated>true</translated>
+      <subWidgets>
+        <widget name="ecm_path" type="select_path_tree">
+          <labels>
+            <label mode="any">label.dam.search.path</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>dams:ecm_path</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="showAllDomains">true</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="dam_tags_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dam.search.tagSearch</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="tags" type="select_tags">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>dams:ecm_tags</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="placeholder">
+              #{messages['label.dam.search.tags.placeholder']}
+            </property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <!-- widgets for listings -->
+
+    <widget name="dam_listing_title" type="dam_title">
+      <labels>
+        <label mode="any">label.content.header.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
+    <widget name="dam_listing_thumbnail" type="listing_thumbnail">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
+    <widget name="dam_listing_ajax_selection_box_with_title" type="dam_listing_ajax_selection_box_with_title">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data</field>
+        <field>selected</field>
+        <field>data.ref</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="hideExtension">true</property>
+      </properties>
+    </widget>
+
+    <widget name="dam_listing_dam_common" type="layout">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="name">dam_common</property>
+        <property name="widgetsDisplay">no_label</property>
+      </properties>
+    </widget>
+
+    <widget name="dam_listing_size_and_format" type="container">
+      <properties widgetMode="view">
+        <property name="display">inline</property>
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>dam_listing_size</widget>
+        <widget>dam_listing_main_file_format</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <widget name="dam_listing_size" type="dam_listing_size">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
+    <widget name="dam_listing_main_file_format" type="dam_listing_main_file_format">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="dam_search_layout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>dam_text_search</widget>
+        </row>
+        <row>
+          <widget>dam_tags_search</widget>
+        </row>
+        <row>
+          <widget>dam_date_search</widget>
+        </row>
+        <row>
+          <widget>dam_user_search</widget>
+        </row>
+        <row>
+          <widget>dam_categorization_search</widget>
+        </row>
+        <row>
+          <widget>dam_location_search</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="dam_listing_ajax">
+      <templates>
+        <template mode="any">
+          /dam/layouts/dam_layout_listing_ajax_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+        <property name="display">table</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="isListingSelectionBox">true</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <widget>dam_listing_title</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_lock_icon</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:lastContributor</property>
+          </properties>
+          <widget>listing_last_contributor</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="dam_box_listing_ajax">
+      <templates>
+        <template mode="any">
+          /dam/layouts/dam_layout_box_listing_ajax_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="display">block</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="isBoxTitle">true</property>
+          </properties>
+          <widget>dam_listing_ajax_selection_box_with_title</widget>
+        </column>
+        <column>
+          <widget>dam_listing_thumbnail</widget>
+        </column>
+        <column>
+          <widget>dam_listing_dam_common</widget>
+        </column>
+        <column>
+          <widget>dam_listing_size_and_format</widget>
+        </column>
+      </columns>
+    </layout>
+
+  </extension>
+
+</component>
