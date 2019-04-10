@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.targetplatforms.jaxrs.auth.contrib">
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+             point="openUrl">
+    <openUrl name="Connect_TargetPlatform">
+      <grantPattern>.*/restAPI/target-platforms$</grantPattern>
+    </openUrl>
+  </extension>
+</component>
