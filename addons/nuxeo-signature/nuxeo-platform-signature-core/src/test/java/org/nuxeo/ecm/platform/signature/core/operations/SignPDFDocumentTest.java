@@ -1,0 +1,121 @@
+package org.nuxeo.ecm.platform.signature.core.operations;
+
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
+import org.nuxeo.ecm.platform.signature.api.user.CUserService;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+@RunWith(FeaturesRunner.class)
+@Features({ PlatformFeature.class, AutomationFeature.class })
+@Deploy({ 
+    "org.nuxeo.ecm.platform.signature.core",
+    "org.nuxeo.ecm.platform.signature.core.test",
+    "org.nuxeo.ecm.core.convert.api", //
+    "org.nuxeo.ecm.core.convert", //
+    "org.nuxeo.ecm.platform.commandline.executor", //
+    "org.nuxeo.ecm.core.mimetype", //
+    "org.nuxeo.ecm.core.cache", //
+    "org.nuxeo.ecm.platform.convert" })
+public class SignPDFDocumentTest {
+
+    protected static final String ORIGINAL_PDF = "pdf-tests/original.pdf";
+
+    protected static final String USER_KEY_PASSWORD = "abc";
+
+    protected static final String CERTIFICATE_DIRECTORY_NAME = "certificate";
+
+    protected static final String DEFAULT_USER_ID = "hsimpsons";
+
+    @Inject
+    protected CUserService cUserService;
+
+    @Inject
+    protected SignatureService signatureService;
+
+    @Inject
+    protected UserManager userManager;
+
+    @Inject
+    protected DirectoryService directoryService;
+
+    @Inject
+    CoreSession session;
+
+    @Inject
+    AutomationService automationService;
+
+    protected File origPdfFile;
+
+    protected DocumentModel user;
+
+    /**
+     * Signing Prerequisite: a user with a certificate needs to be present
+     */
+    @Before
+    public void setUp() throws Exception {
+        DocumentModel userModel = userManager.getBareUserModel();
+        userModel.setProperty("user", "username", DEFAULT_USER_ID);
+        userModel.setProperty("user", "firstName", "Homer");
+        userModel.setProperty("user", "lastName", "Simpson");
+        userModel.setProperty("user", "email", "hsimpson@springfield.com");
+        userModel.setPathInfo("/", DEFAULT_USER_ID);
+        user = userManager.createUser(userModel);
+        DocumentModel certificate = cUserService.createCertificate(user, USER_KEY_PASSWORD);
+        assertNotNull(certificate);
+        origPdfFile = FileUtils.getResourceFileFromContext(ORIGINAL_PDF);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        // delete certificates associated with user ids
+        try (Session sqlSession = directoryService.open(CERTIFICATE_DIRECTORY_NAME)) {
+            sqlSession.deleteEntry(DEFAULT_USER_ID);
+        }
+        // delete users
+        userManager.deleteUser(DEFAULT_USER_ID);
+    }
+
+    @Test
+    public void testSignPDFDocument() throws Exception {
+        DocumentModel doc = session.createDocumentModel("File");
+        assertNotNull(doc);
+        doc.setPathInfo("/", "file1");
+        Blob origBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("pdf-tests/hello.txt"), "text/plain", null, "foo.txt");
+        doc.setPropertyValue("file:content", (Serializable) origBlob);
+        doc = session.createDocument(doc);
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(doc);
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", DEFAULT_USER_ID);
+        params.put("password", USER_KEY_PASSWORD);
+        params.put("reason", "TEST");
+        Blob signedBlob = (Blob) automationService.run(ctx, SignPDFDocument.ID, params);
+        assertNotNull(signedBlob);
+    }
+}

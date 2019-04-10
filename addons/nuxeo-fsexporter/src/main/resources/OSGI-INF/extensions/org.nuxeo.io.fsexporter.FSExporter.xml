@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.io.fsexporter.FSExporter" version="1.0">
+
+	<implementation class="org.nuxeo.io.fsexporter.FSExporter" />
+
+	<service>
+		<provide interface="org.nuxeo.io.fsexporter.FSExporterService" />
+	</service>
+
+	<extension-point name="exportLogic">
+		<documentation>The target directory is not checked if it is empty or
+			not.
+		</documentation>
+		<object class="org.nuxeo.io.fsexporter.ExportLogicDescriptor" />
+	</extension-point>
+
+</component>
