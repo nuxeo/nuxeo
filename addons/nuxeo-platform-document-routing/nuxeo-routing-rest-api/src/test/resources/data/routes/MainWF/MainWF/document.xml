@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="MainWF">
+  <system>
+    <type>DocumentRoute</type>
+    <path>MainWF</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>DocumentRoute</facet>
+    <facet>Orderable</facet>
+    <facet>StepFolder</facet>
+    <facet>facet-var_MainWF</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:docrm="http://www.nuxeo.org/ecm/schemas/document_route_model" name="document_route_model"></schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common"></schema>
+  <schema xmlns:stepf="http://www.nuxeo.org/ecm/schemas/step_folder" name="step_folder">
+    <stepf:execution><![CDATA[graph]]></stepf:execution>
+  </schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:title><![CDATA[MainWF]]></dc:title>
+  </schema>
+  <schema xmlns:var_MainWF="http://www.nuxeo.org/ecm/project/schemas/pabgrall-sandbox-92-nuxe/var_MainWF" name="var_MainWF"></schema>
+  <schema xmlns:docri="http://www.nuxeo.org/ecm/schemas/document_route_instance/" name="document_route_instance">
+    <docri:variablesFacet><![CDATA[facet-var_MainWF]]></docri:variablesFacet>
+  </schema>
+</document>

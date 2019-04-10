@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.binary.metadata">
+  <implementation
+          class="org.nuxeo.binary.metadata.internals.BinaryMetadataComponent"/>
+  <service>
+    <provide
+            interface="org.nuxeo.binary.metadata.api.BinaryMetadataService"/>
+  </service>
+
+  <extension-point name="metadataProcessors">
+    <object class="org.nuxeo.binary.metadata.internals.MetadataProcessorDescriptor"/>
+    <documentation>
+      <code>
+        <processor id="exifTool"
+                   class="org.nuxeo.binary.metadata.ExifToolProcessor"
+                   prefix="true"/>
+      </code>
+    </documentation>
+  </extension-point>
+
+  <extension-point name="metadataMappings">
+    <object
+            class="org.nuxeo.binary.metadata.internals.MetadataMappingDescriptor"/>
+    <documentation>
+      <code>
+        <metadataMapping id="xmp" processor="exifTool" blobXPath="file:content"
+                         ignorePrefix="true">
+          <metadata name="tiff:ImageWidth" xpath="xmp:ImageWidth"/>
+          <metadata name="tiff:ImageLength" xpath="xmp:ImageLength"/>
+          <metadata name="xmp:CreatorTool" xpath="xmp:CreatorTool"/>
+        </metadataMapping>
+      </code>
+    </documentation>
+  </extension-point>
+
+  <extension-point name="metadataRules">
+    <object
+            class="org.nuxeo.binary.metadata.internals.MetadataRuleDescriptor"/>
+    <documentation>
+      <code>
+        <rule id="default" order="0" enabled="true" async="false">
+          <metadataMappings>
+            <metadataMapping-id>xmp</metadataMapping-id>
+          </metadataMappings>
+          <filters>
+            <filter-id>hasXMPFacet</filter-id>
+          </filters>
+        </rule>
+      </code>
+    </documentation>
+  </extension-point>
+
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+             point="listener">
+    <listener name="binaryMetadataSyncListener"
+              class="org.nuxeo.binary.metadata.internals.listeners.BinaryMetadataSyncListener"
+              priority="100">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+    <listener name="binaryMetadataWorkSyncListener"
+              class="org.nuxeo.binary.metadata.internals.listeners.BinaryMetadataWorkListener"
+              priority="100">
+      <event>documentCreated</event>
+      <event>documentModified</event>
+    </listener>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+             point="operations">
+    <operation
+            class="org.nuxeo.binary.metadata.internals.operations.WriteMetadataToBinaryFromDocument"/>
+    <operation
+            class="org.nuxeo.binary.metadata.internals.operations.WriteMetadataToBinaryFromContext"/>
+    <operation
+            class="org.nuxeo.binary.metadata.internals.operations.TriggerMetadataMappingOnDocument"/>
+    <operation
+            class="org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinaryToContext"/>
+    <operation
+            class="org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinary"/>
+
+  </extension>
+
+</component>
