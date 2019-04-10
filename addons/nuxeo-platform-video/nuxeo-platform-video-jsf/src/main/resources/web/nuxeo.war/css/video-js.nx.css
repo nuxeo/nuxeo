@@ -1,0 +1,16 @@
+/*!
+Video.js Default Styles (http://videojs.com)
+Version 4.1.0
+*/
+
+
+/* DEFAULT SKIN Overridden by Nuxeo to fix font urls.
+==============================================================
+*/
+@font-face {
+    font-family: 'VideoJS';
+    src: url('../font/vjs.eot');
+    src: url('../font/vjs.eot?#iefix') format('embedded-opentype'), url('../font/vjs.woff') format('woff'), url('../font/vjs.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
