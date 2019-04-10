@@ -1,0 +1,242 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="driveSynchronizationRoots">
+      <templates>
+        <template mode="any">
+          /layouts/synchronization_roots_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>syncRootTitle</widget>
+        </row>
+        <row>
+          <widget>syncRootPath</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="driveMetadataGridLayout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_grid_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>driveMetadataPanel</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="syncRootTitle" type="listing_title_link">
+      <labels>
+        <label mode="any">user.center.nuxeoDrive.syncRoots.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field></field>
+        <field>ref</field>
+        <field>dc.description</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="syncRootPath" type="text">
+      <labels>
+        <label mode="any">user.center.nuxeoDrive.syncRoots.path</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>pathAsString</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="driveMetadataPanel" type="documentActions">
+      <properties widgetMode="view">
+        <property name="category">DRIVE_METADATA_VIEW_PANEL</property>
+      </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">false</control>
+        <control name="gridStyleClass">
+          gridStyle12 compactLayout infoViewRight
+        </control>
+      </controls>
+    </widget>
+
+    <widget name="driveMetadataTitleContainer" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewTitle</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="driveMetadataTitle" type="text">
+          <fields>
+            <field>dc.title</field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="driveMetadataLayoutContainer" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewInfoLayout</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="driveMetadataLayout" type="toggleableDocumentLayoutWithForms">
+          <properties widgetMode="any">
+            <property name="initialDocumentMode">drive</property>
+            <property name="initialDocumentModeFallback">view</property>
+            <property name="toggledDocumentMode">drive</property>
+            <property name="toggledDocumentModeFallback">edit</property>
+            <property name="hideDefaultActions">true</property>
+            <property name="additionalActionsCategory">DRIVE_METADATA_VIEW_FORM_ACTION
+            </property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="driveMetadataActions" type="documentActionsWithForms">
+      <properties widgetMode="view">
+        <property name="category">DRIVE_METADATA_VIEW_ACTION</property>
+        <property name="styleClass">globalActionBar infoViewActions
+        </property>
+        <property name="subStyleClass">contextActions</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="actionsDisplay">icons</property>
+        <property name="useAjaxForm">true</property>
+        <property name="ignoreTemplateProperty">true</property>
+        <property name="maxActionsNumber">5</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="driveMetadataTitleContainer" type="widget" order="100">
+      <category>DRIVE_METADATA_VIEW_PANEL</category>
+      <properties>
+        <property name="widgetName">driveMetadataTitleContainer</property>
+      </properties>
+    </action>
+
+    <action id="driveMetadataLayoutContainer" type="widget"
+      order="200">
+      <category>DRIVE_METADATA_VIEW_PANEL</category>
+      <properties>
+        <property name="widgetName">driveMetadataLayoutContainer</property>
+      </properties>
+    </action>
+
+    <action id="driveMetadataActions" type="widget" order="300">
+      <category>DRIVE_METADATA_VIEW_PANEL</category>
+      <properties>
+        <property name="widgetName">driveMetadataActions</property>
+      </properties>
+    </action>
+
+    <action id="driveUpdateDocument" link="#{nuxeoDriveActions.updateCurrentDocument}"
+      order="10" label="command.save" type="link" icon="/icons/update.png">
+      <category>DRIVE_METADATA_VIEW_FORM_ACTION</category>
+    </action>
+
+    <action id="diveMetadataAddToFavoritesAction" order="0"
+      label="label.addToFavorites" link="#{favoritesActions.addCurrentDocumentToFavorites()}"
+      icon="/icons/pin.png">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <filter-id>canAddToFavorites</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="diveMetadataRemoveFromFavoritesAction" order="0"
+      label="label.removeFromFavorites" link="#{favoritesActions.removeCurrentDocumentFromFavorites()}"
+      icon="/icons/pinned.png">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <filter-id>canRemoveFromFavorites</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="diveMetadataDocumentLock" link="#{lockActions.lockCurrentDocument}"
+      order="10" label="command.lock" type="link"
+      icon="/icons/contextual_menu/unlocked.png">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_lock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="diveMetadataDocumentUnlock" link="#{lockActions.unlockCurrentDocument}"
+      order="10" label="command.unlock" type="link"
+      icon="/icons/contextual_menu/locked.png">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_unlock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="diveMetadataermalinkAction" order="20"
+      label="label.permalink" type="fancybox" icon="/icons/contextual_menu/share.png"
+      accessKey="k">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <properties>
+        <property name="include">/incl/permalink_box.xhtml</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="diveMetadataubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.follow" type="link"
+      icon="/icons/contextual_menu/subscribe.png">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <filter-id>hasNoSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="diveMetadataUnsubscribesAllDocNotifications"
+      link="#{subscriptionAction.updateAllSubscriptions}" order="40"
+      label="label.subscriptions.unfollow" type="link"
+      icon="/icons/contextual_menu/unsubscribe.png">
+      <category>DRIVE_METADATA_VIEW_ACTION</category>
+      <filter-id>hasSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+  </extension>
+
+</component>

@@ -1,0 +1,44 @@
+<project name="nuxeo-layoutDemo-webdriver-tests" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+
+  <!-- override default target to add layout-demo specific conf -->
+  <target name="prepare-server">
+    <antcall target="download" />
+    <antcall target="unzip-local" />
+    <antcall target="nuxeo-conf" />
+    <antcall target="set-layout-demo-conf" />
+    <antcall target="fix-max-waits" />
+    <antcall target="activate-wizard-preset" />
+    <antcall target="mp-install" />
+  </target>
+
+  <target name="set-layout-demo-conf" depends="_init">
+    <echo level="info" message="Removing single datasource conf" />
+    <!-- do not declare datasources (NXP-14138) -->
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.server.declare_datasources" />
+      <param name="value" value="false" />
+    </antcall>
+  </target>
+
+  <target name="download" unless="no.download">
+    <echo level="info" message="Downloading for tests ${groupId}:${artifactId}:${nuxeo.distribution.version}:zip:${classifier}" />
+    <delete failonerror="false" dir="${nuxeo.home}" />
+    <unzip dest="${nuxeo.home}/">
+      <artifact:file key="${groupId}:${artifactId}:${nuxeo.distribution.version}:zip:${classifier}" />
+      <cutdirsmapper dirs="1" />
+    </unzip>
+    <copy todir="${nuxeo.nxserver}/bundles/">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-forms-layout-demo:${maven.project.version}:jar" />
+    </copy>
+  </target>
+
+</project>
