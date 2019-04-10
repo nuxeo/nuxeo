@@ -1,0 +1,18 @@
+<component
+  name="org.nuxeo.template.service.jxlsContrib">
+
+  <require>org.nuxeo.template.service.defaultContrib</require>
+
+    <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="processor">
+
+    <documentation>JXLS template processor  @author Thierry Delprat (td@nuxeo.com)</documentation>
+
+    <templateProcessor name="JXLSProcessor" label="JXLS Processor" default="false" class="org.nuxeo.template.processors.jxls.JXLSTemplateProcessor">
+      <supportedMimeType>application/vnd.ms-excel</supportedMimeType>
+      <supportedExtension>xls</supportedExtension>
+    </templateProcessor>
+
+  </extension>
+
+
+ </component>
