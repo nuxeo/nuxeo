@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:nxthemes="http://nuxeo.org/nxthemes"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:nxl="http://nuxeo.org/nxforms/layout"
+    xmlns:nxu="http://nuxeo.org/nxweb/util"
+    xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+    <h3>
+       <h:outputText value="#{messages['label.associated.templates']}" />
+    </h3>
+
+   <c:set var="templates" value="#{currentTemplateBasedDocument.getSourceTemplates()}" />
+
+   <table class="dataOutput">
+   <nxu:repeat var="template" value="#{templates}">
+    <tr>
+      <td>
+       <nxu:graphicImage
+        value="#{nxd:iconPath(template.adaptedDoc)}" alt="#{template.title}" title="#{template.title}"
+        rendered="#{!empty nxd:iconPath(template.adaptedDoc)}"
+        styleClass="smallIcon" />
+
+          <nxd:restDocumentLink document="#{template.adaptedDoc}">
+            #{template.title}
+          </nxd:restDocumentLink>
+          <h:outputText value="&#160;" />
+      </td>
+
+         <c:if test="#{template.name == templateBasedActions.getEditableTemplateName()}">
+         <td>
+              <div class="foldableBox">
+               <h3 class="unfolded">
+                  <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
+                    <h:outputText value="#{messages['label.template.parameters']}"/>
+                  </a>
+               </h3>
+               <div class="boxBody">
+                 <ui:include src="/incl/tabs/templates/params_editor.xhtml">
+                  <ui:param name="targetTemplate" value="#{template.name}" />
+                  <ui:param name="bean" value="#{templateBasedActions}" />
+                 </ui:include>
+                 <h:form enctype="multipart/form-data" id="editParamsForm" rendered="false">
+                        <p class="buttonsGadget">
+                            <h:commandButton type="submit" class="button" value="#{messages['label.template.canceleditparameters']}"
+                                action="#{templateBasedActions.setEditableTemplateName(null)}" />
+                        </p>
+                 </h:form>
+               </div>
+              </div>
+         </td>
+         <td></td>
+         </c:if>
+         <c:if test="#{template.name != templateBasedActions.getEditableTemplateName()}">
+         <td>
+            <c:if test="#{currentTemplateBasedDocument.hasParams(template.name)}">
+
+               <div class="foldableBox">
+               <h3 class="folded">
+                  <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
+                    <h:outputText value="#{messages['label.template.parameters']}"/>
+                  </a>
+               </h3>
+               <div class="boxBody" style="display:none">
+                  <nxu:repeat value="#{currentTemplateBasedDocument.getParams(template.name)}" var="templateInput">
+                   <span> #{templateInput.toString()} </span><br/>
+                 </nxu:repeat>
+                 <c:if test="#{templateBasedActions.canUpdateTemplateInputs(template.name)}">
+                  <h:form enctype="multipart/form-data">
+                      <p class="buttonsGadget">
+                          <h:commandButton type="submit" class="button" value="#{messages['label.template.editparameters']}"
+                              action="#{templateBasedActions.setEditableTemplateName(template.name)}" />
+                          <input type="button" class="button" value="#{messages['label.template.canceleditparameters']}" onclick="window.location.reload()"/>
+                      </p>
+                  </h:form>
+                 </c:if>
+               </div>
+             </div>
+
+            </c:if>
+            <c:if test="#{!currentTemplateBasedDocument.hasParams(template.name)}">
+                <h:outputText value="#{messages['label.template.noparameters']}"/>
+            </c:if>
+          </td>
+          <td>
+            <h:form enctype="multipart/form-data">
+                <p class="buttonsGadget">
+                        <h:commandLink type="submit" class="button" value="#{messages['command.template.render']}"
+                            action="#{templateBasedActions.render(template.name)}" id="button_render" />
+                  <c:if test="#{templateBasedActions.canResetParameters(template.name)}">
+                        <h:commandLink type="submit" class="button" value="#{messages['command.template.resetParams']}"
+                            action="#{templateBasedActions.resetParameters(template.name)}" id="button_resetParams" />
+                  </c:if>
+                  <c:if test="#{templateBasedActions.canDetachTemplate(template.name)}">
+                        <h:commandLink type="submit" class="button" value="#{messages['command.template.detach']}"
+                            action="#{templateBasedActions.detachTemplate(template.name)}" id="button_detach" />
+                  </c:if>
+                </p>
+            </h:form>
+          </td>
+         </c:if>
+
+     </tr>
+   </nxu:repeat>
+   </table>
+
+   <c:if test="#{templateBasedActions.canBindNewTemplate()}">
+     <a class="button" href="#" onclick="jQuery(event.target).hide().next().fadeIn('slow'); return false;"> <h:outputText value="#{messages['label.template.add']}"/> </a>
+     <div style="display:none">
+     <h:form>
+       <h3>
+         <h:outputText value="#{messages['command.template.associate']}"/>
+       </h3>
+       <table class="dataInput">
+           <tr>
+             <td class="labelColumn"><h:outputText value="#{messages['label.template.select']}"/>
+             </td>
+             <td class="fieldColumn">
+                   <h:selectOneMenu value="#{templateBasedActions.templateIdToAssociate}">
+                    <nxu:selectItems var="item" value="#{templateBasedActions.getBindableTemplatesForDocumentAsSelectItems()}"
+                      itemValue="#{item.value}"
+                      itemLabel="#{item.label}" />
+                   </h:selectOneMenu>
+              </td>
+              <td class="fieldColumn">
+                <h:commandButton class="button" value="#{messages['command.template.associate']}"
+                    action="#{templateBasedActions.associateDocumentToTemplate}" id="button_save" />
+             </td>
+          </tr>
+       </table>
+     </h:form>
+   </div>
+  </c:if>
+</div>

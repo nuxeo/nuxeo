@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:node="http://www.nuxeo.org/ecm/schemas/test_var_route1/"
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/test_var_route1/">
+
+  <xs:element name="stringfield" type="xs:string" />
+  <xs:element name="myassignees" type="node:stringList" />
+  <xs:element name="datefield" type="xs:date" />
+  <xs:element name="globalVariable" type="xs:string" />
+  <xs:element name="ids" type="node:longList" />
+  <xs:element name="notAllowed" type="xs:string" />
+
+  <xs:simpleType name="stringList">
+    <xs:list itemType="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="longList">
+    <xs:list itemType="xs:long"/>
+  </xs:simpleType>
+
+</xs:schema>
