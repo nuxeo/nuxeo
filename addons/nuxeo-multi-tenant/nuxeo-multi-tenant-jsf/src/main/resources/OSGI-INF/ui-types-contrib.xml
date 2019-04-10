@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.multi.tenant.ui.types">
+
+  <require>org.nuxeo.ecm.platform.types</require>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService"
+    point="types">
+
+    <type id="Domain">
+      <label>Domain</label>
+      <icon>/icons/domain.gif</icon>
+      <bigIcon>/icons/domain.gif</bigIcon>
+      <category>SuperDocument</category>
+      <description>Domain.description</description>
+      <default-view>view_documents</default-view>
+      <create-view>create_multi_tenant_domain</create-view>
+      <views>
+        <view id="user_dashboard" value="user_dashboard" />
+        <view id="opensocial_dashboard" value="opensocial_dashboard" />
+      </views>
+      <subtypes>
+        <type hidden="create">WorkspaceRoot</type>
+        <type hidden="create">SectionRoot</type>
+        <type hidden="create">TemplateRoot</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="create">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+    </type>
+
+  </extension>
+
+</component>

@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.threed.service.ThreeDService">
+
+  <implementation class="org.nuxeo.ecm.platform.threed.service.ThreeDServiceImpl"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.threed.service.ThreeDService"/>
+  </service>
+
+  <documentation>
+    <p>Since 8.4.</p>
+    The ThreeDService provides extension points to register low level of detail version and default values for
+    transmission conversion and rendering
+  </documentation>
+
+  <extension-point name="automaticLOD">
+    <documentation>
+      <p>Extension point to contribute default level of details launched after the creation or modification of a
+        3D document
+        <ul>
+          <li>rendition: true if this render view should be exposed as a rendition, false otherwise.</li>
+          <li>renditionVisible: equivalent of the 'visible' attribute on a rendition definition,
+            true if this render view conversion is a rendition and should be visible in the UI, false
+            otherwise
+          </li>
+          <li>percPoly: percentage of polygons remaining</li>
+          <li>maxPoly: maximum number of polygons remaining</li>
+          <li>percTex: percentage of original texture size</li>
+          <li>maxText: maximum size of textures (eg: '640x640')</li>
+        </ul>
+      </p>
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.threed.service.AutomaticLOD"/>
+  </extension-point>
+
+  <extension-point name="renderViews">
+    <documentation>
+      Extension point to contribute available render views
+      <p>
+        <ul>
+          <li>rendition: true if this render view should be exposed as a rendition, false otherwise.</li>
+          <li>renditionVisible: equivalent of the 'visible' attribute on a rendition definition,
+            true if this render view conversion is a rendition and should be visible in the UI, false
+            otherwise
+          </li>
+          <li>zenith: polar axis angle value in degrees</li>
+          <li>azimuth: equatorial plane angle value in degrees</li>
+        </ul>
+      </p>
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.threed.service.RenderView"/>
+  </extension-point>
+
+  <extension-point name="automaticRenderViews">
+    <documentation>
+      Extension point to contribute default render views
+      launched after the creation/update of a 3D document.
+      Identify render views by name.
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.threed.service.AutomaticRenderView"/>
+  </extension-point>
+
+</component>

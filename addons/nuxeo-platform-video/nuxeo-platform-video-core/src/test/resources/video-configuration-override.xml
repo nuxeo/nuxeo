@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.video.service.override">
+
+  <extension target="org.nuxeo.ecm.platform.video.service.VideoService"
+    point="configuration">
+
+    <configuration>
+      <previewScreenshotInDurationPercent>20.0</previewScreenshotInDurationPercent>
+      <storyboardMinDuration>0</storyboardMinDuration>
+      <storyboardThumbnailCount>2</storyboardThumbnailCount>
+    </configuration>
+
+  </extension>
+
+</component>
