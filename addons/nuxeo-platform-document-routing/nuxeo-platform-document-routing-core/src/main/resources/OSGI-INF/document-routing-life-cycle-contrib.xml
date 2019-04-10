@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.routing.lifecycle.contrib">
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="lifecycle">
+
+    <lifecycle name="documentRouteElement" defaultInitial="project">
+      <transitions>
+        <transition name="toRunning" destinationState="running">
+          <description>the element starts</description>
+        </transition>
+        <transition name="toDone" destinationState="done">
+          <description>the element finishes</description>
+        </transition>
+      </transitions>
+      <states>
+        <state name="project" description="Default state" initial="true">
+          <transitions>
+            <transition>toRunning</transition>
+          </transitions>
+        </state>
+        <state name="running" description="The element is running">
+          <transitions>
+            <transition>toDone</transition>
+          </transitions>
+        </state>
+        <state name="done" description="The element is done">
+          <transitions>
+          </transitions>
+        </state>
+      </states>
+    </lifecycle>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="DocumentRoute">documentRouteElement</type>
+      <type name="StepFolder">documentRouteElement</type>
+      <type name="Step">documentRouteElement</type>
+    </types>
+  </extension>
+
+</component>
