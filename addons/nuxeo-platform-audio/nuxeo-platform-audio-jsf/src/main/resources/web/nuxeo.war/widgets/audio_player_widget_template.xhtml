@@ -1,0 +1,37 @@
+<div xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:h="http://java.sun.com/jsf/html"
+  id="#{widget.id}">
+
+  <c:if test="#{!empty widget.label and widget.handlingLabels}">
+    <ui:include src="/widgets/incl/widget_label_template.xhtml">
+      <ui:param name="labelStyleClass" value="summaryTitle" />
+    </ui:include>
+  </c:if>
+
+  <c:if test="#{not empty field_1 and not empty field_1.mimeType and field_1.mimeType.startsWith('audio/')}">
+    <c:set var="width"
+        value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, '100%')}" />
+
+    <nxu:set var="sound_url"
+      value="#{nxd:bigFileUrl(fieldOrValue, widget.fieldDefinitions[1].propertyName, field_1.filename)}">
+
+      <audio id="audioplayer_#{widget.id}" preload="auto" controls="controls" style="width:#{width};">
+        <source src="#{sound_url}" />
+      </audio>
+      <c:if test="#{field_1.mimeType == 'audio/mpeg'}">
+        <h:outputScript target="#{pageJsTarget}">
+          var audioTag = document.createElement('audio');
+          if (!(!!(audioTag.canPlayType) &amp;&amp; ("no" != audioTag.canPlayType("audio/mpeg")) &amp;&amp; ("" != audioTag.canPlayType("audio/mpeg")))) {
+              AudioPlayer.setup("#{baseURL}scripts/wpaudioplayer/player.swf", {width: "#{width}", initialvolume: 100});
+              AudioPlayer.embed("audioplayer_#{widget.id}", {soundFile: "#{sound_url}"});
+          }
+        </h:outputScript>
+      </c:if>
+
+    </nxu:set>
+  </c:if>
+
+</div>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.descendants.scrolling.cache.redis.test">
+
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
+
+    <cache name="driveDescendantsScroll">
+      <ttl>1</ttl>
+      <option name="maxSize">100</option>
+      <option name="concurrencyLevel">4</option>
+    </cache>
+
+  </extension>
+
+</component>

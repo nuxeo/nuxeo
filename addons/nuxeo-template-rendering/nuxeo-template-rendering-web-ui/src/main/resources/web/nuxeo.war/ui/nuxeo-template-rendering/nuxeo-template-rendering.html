@@ -1,0 +1,57 @@
+<!--
+(C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<link rel="import" href="nuxeo-render-template-button.html">
+<link rel="import" href="nuxeo-delete-template-button.html">
+<link rel="import" href="nuxeo-template-rendering-page.html">
+
+<nuxeo-slot-content name="templateDeleteAction" slot="DOCUMENT_ACTIONS">
+  <template>
+    <nuxeo-filter document="[[document]]" facet="Template">
+      <template>
+        <nuxeo-delete-template-button document="[[document]]"></nuxeo-delete-template-button>
+      </template>
+    </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>
+
+<nuxeo-slot-content name="templateRenderAction" slot="DOCUMENT_ACTIONS">
+  <template>
+    <nuxeo-render-template-button document="[[document]]"
+                                  filter-op="javascript.FilterTemplatesByType"
+                                  render-op="javascript.RenderPdf"></nuxeo-render-template-button>
+  </template>
+</nuxeo-slot-content>
+
+<nuxeo-slot-content name="templateRenderingDocumentViewItems" slot="DOCUMENT_VIEWS_ITEMS" order="40">
+  <template>
+    <nuxeo-filter document="[[document]]" facet="Template">
+      <template>
+        <nuxeo-page-item name="configTemplate" label="templateRendering.documentView.item"></nuxeo-page-item>
+      </template>
+    </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>
+
+<nuxeo-slot-content name="templateRenderingDocumentViewPages" slot="DOCUMENT_VIEWS_PAGES">
+  <template>
+    <nuxeo-filter document="[[document]]" facet="Template">
+      <template>
+        <nuxeo-template-rendering-page name="configTemplate" document="[[document]]"></nuxeo-template-rendering-page>
+      </template>
+    </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>
+

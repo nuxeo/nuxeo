@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.targetplatforms.core.test.contrib.override">
+
+  <extension target="org.nuxeo.targetplatforms.core.framework" point="configuration">
+
+    <configuration>
+      <overrideDirectory>test</overrideDirectory>
+    </configuration>
+
+  </extension>
+
+</component>
