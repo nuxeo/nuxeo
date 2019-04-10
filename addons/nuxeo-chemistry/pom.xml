@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <prerequisites>
+    <maven>2.0.9</maven>
+  </prerequisites>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.core</groupId>
+    <artifactId>nuxeo-core-parent</artifactId>
+    <version>5.4.1-I20101203_0116</version>
+  </parent>
+
+  <artifactId>nuxeo-chemistry</artifactId>
+  <name>Nuxeo Chemistry</name>
+  <description>Nuxeo Core: Chemistry</description>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-opencmis-impl</module>
+    <module>nuxeo-opencmis-bindings</module>
+    <module>nuxeo-opencmis-tests</module>
+  </modules>
+
+  <properties>
+    <chemistry.opencmis.version>0.2.0-incubating-r1040083</chemistry.opencmis.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-chemistry</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-chemistry</developerConnection>
+    <url>http://hg.nuxeo.org/addons/nuxeo-chemistry</url>
+  </scm>
+
+</project>

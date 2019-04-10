@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.theme.contrib">
+
+  <!-- redefine the theme negotiator to use a given theme in layoutDemo application -->
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="negotiations">
+
+    <negotiation object="theme" strategy="nuxeo5">
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.RequestParameter</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.CookieValue</scheme>
+      <scheme>org.nuxeo.theme.jsf.negotiation.theme.ViewId</scheme>
+      <!-- local theme (specific to nuxeo5) -->
+      <scheme>org.nuxeo.ecm.webapp.theme.negotiation.LocalTheme</scheme>
+      <!-- popup theme (specific to layoutDemo) -->
+      <scheme>org.nuxeo.ecm.platform.forms.layout.demo.jsf.LayoutDemoTheme</scheme>
+    </negotiation>
+
+  </extension>
+
+</component>
