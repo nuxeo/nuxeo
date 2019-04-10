@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.signature.api.pki.CertService">
+
+ <documentation>
+    The Cert Service offers Certificate Authority functionalities
+    like signing CSRs (Certificate Signing Requests), revoking certificates,
+    and also certificate generation capabilities and access to the CA-certificate.
+    @version 1.0
+    @author ws@nuxeo.com
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.signature.core.pki.CertServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.signature.api.pki.CertService" />
+  </service>
+
+</component>

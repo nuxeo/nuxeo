@@ -1,0 +1,102 @@
+<div xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  id="#{widget.id}">
+<nxu:set var="validateMaxSize" value="#{nxu:test(empty widgetProperty_validateMaxSize, 'false', widgetProperty_validateMaxSize)}" cache="true">
+<script>
+jQuery.noConflict();
+
+<h:outputText  value="var currentSliderValue='#{field}';" />
+<h:outputText  value="var maxQuotaSliderValue='#{quotaStatsActions.getMaxQuotaSliderValue()}';" />
+<h:outputText  value="var minQuotaSliderValue='#{quotaStatsActions.getMinQuotaSliderValue()}';" />
+
+  var GB_label = "#{messages['label.unit.GB']}";
+  var MB_label = "#{messages['label.unit.MB']}";
+  var KB_label = "#{messages['label.unit.KB']}";
+  var B_label = "#{messages['label.unit.B']}";
+
+ 
+ function expon(value){
+    value = Number(value);
+    value = Math.exp(value);
+    value = Math.round(value / 1000)*1000;
+    return value;
+    
+ }
+ function logposition(val){
+    return Math.log(val);
+ }
+ 
+  function getCurrentSliderValue(){
+  if(currentSliderValue == -1){
+  	return 0;
+  }
+  return logposition(currentSliderValue);
+  }
+ 
+  function formatQuotaSize(value) {
+    var gb = 1024*1024*1024;
+    var mb = 1024*1024;
+    var kb = 1024;
+    var label = "";
+    value = Number(value);
+    value = Math.exp(value);
+    value = Math.round(value / 1000)*1000;
+    var label;
+    if (value > gb) {
+      label = Math.round(value/gb*100)/100 + " " + GB_label;
+    } else if (value > mb) {
+      label = Math.round(value/mb*100)/100 + " " + MB_label;
+    } else if (value > kb) {
+      label = Math.round(value/kb*100)/100 + " " + KB_label;
+    } else {
+     label = Math.round(value*100)/100 + " " + B_label;
+    }
+    return label;
+  } 
+ 
+  jQuery(document).ready(function() {
+  
+  jQuery( "#slider" ).slider({
+  value: Number(getCurrentSliderValue()),
+  min: Number(logposition(minQuotaSliderValue)),
+  max: Number(logposition(maxQuotaSliderValue)),
+  step: 0.001,
+  slide: function( event, ui ) {
+    jQuery("#sliderValue").text(formatQuotaSize(ui.value));
+    jQuery("input[id$='maxValue']").val(expon(ui.value));
+  }
+  });
+ 
+ jQuery("#sliderValue").text(formatQuotaSize(jQuery("#slider").slider("value")));
+ jQuery("#limitMin").text(formatQuotaSize(Number(logposition(minQuotaSliderValue))));
+ jQuery("#limitMax").text(formatQuotaSize(Number(logposition(maxQuotaSliderValue))));
+ 
+ });
+</script>
+<table class="dataTableNoBorder">
+  <tbody>
+      <tr>
+      <td class="eightyPercent"><p><span id="sliderValue" class="warning"></span></p></td>
+      <td />
+    </tr>
+    <tr>
+      <td class="eightyPercent"><span id="limitMin"></span><div id="slider"></div></td>
+      <td><span id="limitMax"></span></td>
+    </tr>
+  </tbody>
+</table>
+<c:if test="#{validateMaxSize}">
+ <h:inputText id="maxValue" value="#{field}" style="visibility:hidden" validator="#{quotaStatsActions.validateQuotaSize}"/>
+</c:if>
+<c:if test="#{!validateMaxSize}">
+ <h:inputText id="maxValue" value="#{field}" style="visibility:hidden"/>
+</c:if> 
+</nxu:set>
+ <h:outputText value="#{messages['label.quota.setMaxSize']}" rendered="#{!quotaStatsActions.isQuotaSetOnCurrentDocument()}" class="help"/>
+</div>
