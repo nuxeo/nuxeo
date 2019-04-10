@@ -1,0 +1,15 @@
+.deselected {
+    background-color: lavender;
+}
+.selected {
+    background-color: silver;
+}
+.ms-pagetitle {
+    color: red;
+}
+.ms-vh2-nofilter {
+    color: green;
+}
+.ms-vb2 {
+    color: blue;
+}
