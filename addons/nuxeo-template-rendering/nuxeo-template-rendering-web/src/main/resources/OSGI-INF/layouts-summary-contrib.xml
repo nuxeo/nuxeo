@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.platform.TemplateSources.summary.contrib">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.summary</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <documentation>
+      Contribute a Summary widget to display available template rendering that are not renditions
+    </documentation>
+
+    <widgetType name="summary_current_document_renderable_templates">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Available renderable templates</title>
+        <description>
+          <p>
+            This widgets displays the available renderable templates associated to the current Document that are not declared as renditions.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/rendertemplates_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="summary_current_document_renderable_templates"
+      type="summary_current_document_renderable_templates" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <documentation>
+      Contribute the "Renditions" widget to the summary
+    </documentation>
+
+    <action id="summary_current_document_renderable_templates" type="widget" order="920">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_renderable_templates</property>
+      </properties>
+    </action>
+
+  </extension>
+
+</component>
