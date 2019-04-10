@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Picture Video JSF
+Bundle-SymbolicName: org.nuxeo.ecm.platform.video.jsf;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Eclipse-LazyStart: true
+Nuxeo-Require: org.nuxeo.ecm.platform.video.core
+Require-Bundle: org.nuxeo.ecm.platform.video.core
+Nuxeo-Component: OSGI-INF/layouts-contrib.xml
