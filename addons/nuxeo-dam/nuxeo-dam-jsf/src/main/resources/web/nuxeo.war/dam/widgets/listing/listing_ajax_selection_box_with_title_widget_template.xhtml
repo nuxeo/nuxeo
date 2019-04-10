@@ -1,0 +1,18 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <h:selectBooleanCheckbox id="#{widget.id}" value="#{field_1}">
+    <a4j:ajax id="#{widget.id}_ajax_onclick" event="click"
+      execute="@this"
+      listener="#{documentListingActions.processSelectRow(field_2, contentView.name, contentView.selectionListName, field_1)}"
+      render="#{nxu:componentAbsoluteId(component, 'ajax_selection_buttons')}" />
+  </h:selectBooleanCheckbox>
+
+  <ui:include src="/dam/widgets/title_widget_template.xhtml" />
+
+</c:if>
+
+

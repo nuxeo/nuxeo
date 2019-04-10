@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.platform.TemplateSources.adapterContrib">
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+    point="adapters">
+
+    <adapter
+      class="org.nuxeo.template.api.adapters.TemplateBasedDocument" factory="org.nuxeo.template.adapters.TemplateAdapterFactory" />
+
+    <adapter
+      class="org.nuxeo.template.api.adapters.TemplateSourceDocument" factory="org.nuxeo.template.adapters.TemplateAdapterFactory" />
+
+
+  </extension>
+
+</component>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.segment.io.SegmentIOComponent.listeners">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <listener name="segmentIOEventListener" async="true" postCommit="true"
+      class="org.nuxeo.segment.io.listener.SegmentIOAsyncListener"
+      priority="20">
+    </listener>
+
+  </extension>
+
+</component>
