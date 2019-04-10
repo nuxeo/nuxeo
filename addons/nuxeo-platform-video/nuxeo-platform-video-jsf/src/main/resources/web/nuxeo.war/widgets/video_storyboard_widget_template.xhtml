@@ -1,0 +1,36 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <c:if test="#{fieldOrValue.hasFacet('Video')}">
+
+  <c:if test="#{!empty widget.label and widget.handlingLabels}">
+    <ui:include src="/widgets/incl/widget_label_template.xhtml">
+      <ui:param name="labelStyleClass" value="summaryTitle" />
+    </ui:include>
+  </c:if>
+
+  <ui:repeat var="item" value="#{storyboardActions.getItems(fieldOrValue)}">
+    <span class="videoStoryboardItem" timecode="#{item.timecode}">
+      <nxh:graphicImage url="#{item.url}" />
+    </span>
+  </ui:repeat>
+
+  <h:outputScript target="#{pageJsTarget}">
+    jQuery(document).ready(function() {
+      var thumbnailSettings = #{storyboardActions.getStoryboardItemsAsJsonSettings(fieldOrValue)};
+      NXVideo.initializeVideoThumbnails(thumbnailSettings);
+      NXVideo.initializeStoryBoard();
+    });
+  </h:outputScript>
+
+  </c:if>
+
+</div>
