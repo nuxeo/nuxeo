@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: org.nuxeo.ecm.platform.importer.queues
+Bundle-Name: Nuxeo Queues Importer
+Bundle-ClassPath: .
+Bundle-ActivationPolicy: lazy
+Bundle-ManifestVersion: 2
+Bundle-Vendor: Nuxeo

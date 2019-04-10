@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.liveconnect.workmanager">
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="blobProviderDocumentUpdate">
+      <maxThreads>2</maxThreads>
+      <category>blobProviderDocumentsUpdate</category>
+    </queue>
+  </extension>
+
+</component>

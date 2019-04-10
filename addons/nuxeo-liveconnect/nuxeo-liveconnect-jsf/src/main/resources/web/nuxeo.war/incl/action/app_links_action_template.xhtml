@@ -1,0 +1,17 @@
+<div id="appLinks_#{widget.id}">
+<script type="text/javascript">
+  //<![CDATA[
+  jQuery(document).ready(function() {
+    var actions = jQuery("#appLinks_#{widget.id}");
+    var title = "${nxu:translate('label.document.appLink', '$APP')}";
+    Seam.Component.getInstance("documentActions").getAppLinks("${document.id}", "${blobXPath}", function(data) {
+      jQuery.each(data, function(i, appLink) {
+        var link = jQuery("<a href='" + appLink.link + "' target='_blank'>");
+        link.append(jQuery("<img class='smallIcon' src='" + appLink.icon + "' title='" +  title.replace('$APP', appLink.appName) + "'/>"));
+        actions.append(link);
+      });
+    });
+  });
+  //]]>
+</script>
+</div>
