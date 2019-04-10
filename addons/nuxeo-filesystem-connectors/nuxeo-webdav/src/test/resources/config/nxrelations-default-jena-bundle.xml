@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.relations.services.DefaultJenaGraph">
+
+  <require>org.nuxeo.ecm.platform.relations.services.RelationService</require>
+  <require>org.nuxeo.ecm.platform.relations.jena</require>
+
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="resourceadapters">
+    <adapter namespace="http://www.nuxeo.org/document/uid/"
+      class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <documentation>see http://jena.sourceforge.net/DB/</documentation>
+    <graph name="default" type="jena">
+      <option name="backend">sql</option>
+      <option name="databaseType">Derby</option>
+      <option name="datasource">jdbc/nxrelations-default-jena</option>
+      <option name="databaseDoCompressUri">false</option>
+      <option name="databaseTransactionEnabled">false</option>
+      <namespaces>
+        <namespace name="rdf">
+          http://www.w3.org/1999/02/22-rdf-syntax-ns#
+        </namespace>
+        <namespace name="dcterms">http://purl.org/dc/terms/</namespace>
+        <namespace name="nuxeo">http://www.nuxeo.org/document/uid/</namespace>
+      </namespaces>
+    </graph>
+  </extension>
+
+</component>
