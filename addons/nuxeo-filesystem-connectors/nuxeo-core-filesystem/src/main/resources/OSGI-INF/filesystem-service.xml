@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.filesystem.FilesystemService">
+
+  <implementation class="org.nuxeo.ecm.core.filesystem.FilesystemServiceComponent" />
+  <documentation>
+    Component defining the implementation to use to manage
+    filesytem and filename mapping.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.api.filesystem.FilesystemService" />
+  </service>
+
+  <extension-point name="filesystemService">
+    <documentation>
+      Extension point defining the implementation for the management
+      of filenames and filesystem operations. Example:
+
+      <code>
+        <service class="some-class" />
+      </code>
+
+      The provided class must implement
+      org.nuxeo.ecm.core.api.filesystem.FilesystemService
+
+      The default implementation is
+      org.nuxeo.ecm.core.filesystem.FilesystemServiceImpl
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.api.filesystem.FilesystemServiceDescriptor" />
+
+  </extension-point>
+
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <documentation>
+      Listener calling the FilesystemService when document
+      events occur that would impact the filename, tile or name.
+    </documentation>
+    <listener name="filesystemServiceListener" async="false"
+      postCommit="false" priority="300"
+      class="org.nuxeo.ecm.core.filesystem.FilesystemServiceListener">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+
+  </extension>
+
+</component>
