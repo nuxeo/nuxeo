@@ -1,0 +1,15 @@
+<component
+  name="org.nuxeo.template.service.TestContrib1">
+
+  <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="processor">
+
+  <templateProcessor name="TestProcessor" label="Test Processor" default="false" class="org.nuxeo.template.processors.fm.FreeMarkerProcessor">
+    <supportedMimeType>application/vnd.openxmlformats-officedocument.wordprocessingml.document</supportedMimeType>
+    <supportedMimeType>application/nawak</supportedMimeType>
+    <supportedExtension>docx</supportedExtension>
+    <supportedExtension>nawak</supportedExtension>
+  </templateProcessor>
+
+  </extension>
+
+ </component>

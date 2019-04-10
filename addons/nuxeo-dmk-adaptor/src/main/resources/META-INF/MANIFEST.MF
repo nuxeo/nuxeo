@@ -1,0 +1,10 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: dmk-adaptor
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.7.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.dmk-adaptor
+Nuxeo-Component: OSGI-INF/dmk-adaptor.xml

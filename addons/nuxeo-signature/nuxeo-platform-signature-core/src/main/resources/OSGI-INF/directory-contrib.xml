@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="digital.signature.directory">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="certificate" extends="template-directory">
+      <schema>cert</schema>
+      <idField>userid</idField>
+      <passwordField>keypassword</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
+      <types>
+        <type>system</type>
+      </types>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
+    </directory>
+  </extension>
+</component>
