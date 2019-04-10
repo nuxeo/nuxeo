@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.quota.adapters">
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+    point="adapters">
+
+    <adapter facet="Folderish"
+      class="org.nuxeo.ecm.core.api.quota.QuotaStatsNonFolderishCount"
+      factory="org.nuxeo.ecm.quota.count.QuotaStatsAdapterFactory" />
+
+    <adapter
+      class="org.nuxeo.ecm.quota.size.QuotaAware"
+      factory="org.nuxeo.ecm.quota.size.QuotaAwareDocumentFactory" />
+
+
+  </extension>
+
+</component>

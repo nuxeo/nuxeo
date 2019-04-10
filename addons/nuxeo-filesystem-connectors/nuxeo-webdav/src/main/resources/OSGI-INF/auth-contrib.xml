@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webdav.auth.config">
+<!--
+Setup a Basic Auth plugin for /dav paths that will always send 401 on authentication failures
+-->
+
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="authenticators">
+    <authenticationPlugin name="WEBDAV_BASIC_AUTH" enabled="true"
+        class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
+      <parameters>
+        <parameter name="AutoPrompt">true</parameter>
+        <parameter name="RealmName">Nuxeo WebDAV</parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="specificChains">
+    <specificAuthenticationChain name="WebDAV">
+        <urlPatterns>
+            <url>(.*)/site/dav.*</url>
+        </urlPatterns>
+        <replacementChain>
+            <plugin>DIGEST_AUTH</plugin>
+            <plugin>WEBDAV_BASIC_AUTH</plugin>
+            <plugin>ANONYMOUS_AUTH</plugin>
+        </replacementChain>
+    </specificAuthenticationChain>
+    <specificAuthenticationChain name="WebDAV_Root">
+      <headers>
+        <header name="User-Agent">(Microsoft-WebDAV-MiniRedir|DavClnt|litmus|gvfs|gnome-vfs|davfs|WebDAV|cadaver|BitKinex|GoodReader|DataAccess|iWorkHTTPKit).*</header>
+      </headers>
+
+      <replacementChain>
+        <plugin>DIGEST_AUTH</plugin>
+        <plugin>WEBDAV_BASIC_AUTH</plugin>
+      </replacementChain>
+    </specificAuthenticationChain>
+  </extension>
+
+</component>

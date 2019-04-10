@@ -1,0 +1,10 @@
+<component name="org.nuxeo.drive.elasticsearch.operations">
+
+  <require>org.nuxeo.elasticsearch.audit.contrib</require>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
+    <!-- For test purpose -->
+    <operation class="org.nuxeo.drive.elasticsearch.operations.test.NuxeoDriveWaitForElasticsearchCompletion" />
+  </extension>
+
+</component>

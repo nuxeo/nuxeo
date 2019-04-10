@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.liveconnect.dropbox.theme">
+
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <resource name="dropboxclient.js">
+      <path>nxthemes/html/scripts/dropboxclient.js</path>
+    </resource>
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+    <view name="nuxeo5 includes" template-engine="jsf-facelets" merge="true">
+      <format-type>widget</format-type>
+      <resource>dropboxclient.js</resource>
+    </view>
+  </extension>
+
+</component>
