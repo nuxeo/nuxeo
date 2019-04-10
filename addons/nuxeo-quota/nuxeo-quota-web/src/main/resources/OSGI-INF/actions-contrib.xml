@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.quota.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="QuotaStatistics" link="/view_admin-fragment.xhtml" label="adm.quota.statistics"
+      type="admin_rest_document_link"
+      order="45">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="QuotaStatistics_computeInitialStas" link="/incl/quota/adminQuotaInitialComputation.xhtml"
+      type="admin_rest_document_link"
+      label="adm.quota.compute.initial.statistics" order="55">
+      <category>QuotaStatistics_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="QuotaStatistics_activate" link="/incl/quota/adminActivateQuota.xhtml"
+      type="admin_rest_document_link"
+      label="adm.quota.activate" order="50">
+      <category>QuotaStatistics_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="QuotaStatistics_stats" link="/incl/quota/adminQuotaStats.xhtml"
+      type="admin_rest_document_link"
+      label="action.view.quota" order="45">
+      <category>QuotaStatistics_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="TAB_QUOTA" link="/incl/tabs/document_quota.xhtml" order="400"
+      label="action.view.quota" icon="/icons/file.gif" accessKey="q"
+      type="rest_document_link">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>QUOTA_MANAGABLE_DOCTYPES</filter-id>
+    </action>
+
+    <action id="TAB_SET_QUOTA" link="/incl/tabs/document_set_quota.xhtml"
+      order="300" label="action.activate.quota" icon="/icons/file.gif" type="rest_document_link">
+      <category>TAB_QUOTA_sub_tab</category>
+      <filter-id>setQuota</filter-id>
+    </action>
+
+    <action id="TAB_QUOTA_STATS" link="/incl/tabs/document_quota_statistics.xhtml"
+      order="200" label="action.view.quota.statistics" icon="/icons/file.gif">
+      <category>TAB_QUOTA_sub_tab</category>
+    </action>
+
+    <action id="CURRENT_SELECTION_ADDTOLIST">
+      <category>CURRENT_QUOTA_SELECTION_LIST</category>
+    </action>
+
+
+    <action id="CURRENT_SELECTION_TRASH">
+      <category>CURRENT_QUOTA_SELECTION_LIST</category>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="QUOTA_MANAGABLE_DOCTYPES">
+      <rule grant="true">
+        <type>Domain</type>
+        <type>Workspace</type>
+      </rule>
+    </filter>
+
+    <filter id="editQuota">
+      <rule grant="true">
+        <permission>Write</permission>
+      </rule>
+    </filter>
+
+    <filter id="setQuota">
+      <rule grant="true">
+        <permission>Manage everything</permission>
+      </rule>
+    </filter>
+
+  </extension>
+</component>
