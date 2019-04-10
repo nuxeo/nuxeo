@@ -1,0 +1,49 @@
+<project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build"
+  xmlns:artifact="urn:nuxeo-artifact">
+
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+    uri="urn:nuxeo-artifact" />
+
+  <filterset id="filter-resources">
+    <filter token="nuxeo.core.version" value="${nuxeo.core.version}" />
+  </filterset>
+
+  <target name="init" unless="init.done">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="stagedir" value="${outdir}/stage" />
+    <property name="finaltarget" value="../target" />
+    <property name="init.done" value="true" />
+    <artifact:expand depth="3"/>
+  </target>
+
+  <target name="build">
+    <echo message="Building distribution test for document routing" />
+    <antcall target="server" />
+  </target>
+
+  <target name="server" depends="init" description="Server packaging">
+    <mkdir dir="${stagedir}" />
+    <unzip dest="${stagedir}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jboss:${nuxeo.platform.version}:zip"
+                            classifier="nuxeo-dm" />
+      <patternset>
+        <exclude name="**/templates/common-sfsl/**" />
+        <exclude name="**/templates/stateful/**" />
+        <exclude name="**/templates/stateless/**" />
+      </patternset>
+    </unzip>
+    <property name="app.path" value="${stagedir}/nuxeo-dm-server" />
+    <nx:rename from="${stagedir}/nuxeo-*" to="${app.path}" />
+    <chmod dir="${app.path}" perm="750" includes="*.sh,bin/*.sh" />
+    <!-- Deploy Custom plugins -->
+    <copy todir="${app.path}/server/default/deploy/nuxeo.ear/plugins">
+      <artifact:set groupId="org.nuxeo.ecm.platform" artifactId="nuxeo-platform-document-routing-*"/>
+    </copy>
+    <copy todir="${app.path}/templates/" overwrite="true">
+      <fileset dir="src/main/resources" />
+    </copy>
+    <echo file="${app.path}/templates/common/nuxeo.defaults" append="yes" message="${line.separator}#redefine common template to include test contrib${line.separator}nuxeo.template.includes=routing" /> 
+  </target>
+
+</project>
