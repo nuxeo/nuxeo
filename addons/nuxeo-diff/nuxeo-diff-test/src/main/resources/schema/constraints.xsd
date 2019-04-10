@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/constraints/" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/constraints/">
+
+  <xs:element name="string" type="nxs:constrainedString" />
+
+  <xs:simpleType name="constrainedString">
+    <xs:restriction base="xs:string" />
+  </xs:simpleType>
+
+  <xs:element name="multivaluedString">
+    <xs:simpleType>
+      <xs:list itemType="nxs:constrainedString" />
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="multivaluedDirectory">
+    <xs:simpleType>
+      <xs:list>
+        <xs:simpleType>
+          <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="nature" />
+        </xs:simpleType>
+      </xs:list>
+    </xs:simpleType>
+  </xs:element>
+
+</xs:schema>

@@ -1,0 +1,91 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<c:if test="false">
+Displays a listing widget demo in view mode, with sources.
+
+Needed parameters:
+- layoutDemoDocument
+- demoLayout  
+</c:if>
+
+<a4j:region id="#{demoLayout.name}_region">
+  <table class="dataOutput">
+    <thead>
+      <tr>
+        <th>
+          #{messages['label.layoutDemo.widgetDemo.editMode']}
+        </th>
+        <th>
+          #{messages['label.layoutDemo.widgetDemo.viewMode']}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td width="50%" valign="top">
+          <c:if test="#{not demoLayout.useAjaxForm}">
+            <h:form id="#{demoLayout.name}_edit_form"
+              enctype="multipart/form-data">
+              <nxl:layout value="#{layoutDemoDocument}"
+                mode="edit"
+                name="#{demoLayout.name}" />
+              <p class="buttonsGadget">
+                <h:commandButton
+                  value="#{messages['label.layoutDemo.widgetDemo.submit']}"
+                  styleClass="button"
+                  id="#{demoLayout.name}_edit_form_submitButton" />
+              </p>
+            </h:form>
+          </c:if>
+          <c:if test="#{demoLayout.useAjaxForm}">
+            <h:form id="#{demoLayout.name}_edit_form"
+              ajaxSubmit="true">
+              <nxl:layout value="#{layoutDemoDocument}"
+                mode="edit"
+                name="#{demoLayout.name}" />
+              <p class="buttonsGadget">
+                <a4j:commandButton
+                  value="#{messages['label.layoutDemo.widgetDemo.submit']}"
+                  styleClass="button"
+                  id="#{demoLayout.name}_edit_form_submitButton"
+                  render="#{demoLayout.name}_view_form #{demoLayout.name}_edit_form" />
+                <a4j:status>
+                  <f:facet name="start">
+                    <h:graphicImage value="/img/standart_waiter.gif" />
+                  </f:facet>
+                </a4j:status>
+              </p>
+            </h:form>
+          </c:if>
+        </td>
+        <td width="50%" valign="top">
+          <c:if test="#{not demoLayout.useAjaxForm}">
+            <h:form id="#{demoLayout.name}_view_form"
+              enctype="multipart/form-data">
+              <nxl:layout value="#{layoutDemoDocument}" mode="view"
+                name="#{demoLayout.name}" />
+            </h:form>
+          </c:if>
+          <c:if test="#{demoLayout.useAjaxForm}">
+            <h:form id="#{demoLayout.name}_view_form"
+              ajaxSubmit="true">
+              <nxl:layout value="#{layoutDemoDocument}" mode="view"
+                name="#{demoLayout.name}" />
+            </h:form>
+          </c:if>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</a4j:region>
+  
+  <ui:include src="/layoutDemo/show_xml_source_template.xhtml">
+    <ui:param name="sourcePath" value="#{demoLayout.sourcePath}" />
+  </ui:include>
+
+</div>
