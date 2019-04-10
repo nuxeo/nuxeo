@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+<ui:define name="page title">
+  <h:outputText value="#{nuxeoApplicationName} - #{messages['label.smart.search.form']}"/>
+</ui:define>
+
+<ui:define name="body">
+
+  <ui:include src="/incl/message_banner.xhtml"/>
+
+  <h:form id="smartSearchForm">
+
+    <nxu:set var="contentView"
+      value="#{contentViewActions.getContentViewWithProvider('nxql_incremental_smart_query')}"
+      cache="true">
+
+      <div class="foldableBox">
+        <h3 class="unfolded">
+          <h:outputText value="#{messages['label.search.criteria']}"/>
+        </h3>
+        <div class="boxBody">
+  
+          <h:outputText value="#{messages['label.smart.query.build.help']}"
+            class="infoMessage" />
+          <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
+            value="#{smartNXQLQueryActions.queryPart}" />
+  
+        </div>
+      </div>
+    
+      <div class="foldableBox">
+        <h3 class="unfolded">
+         <a href="#nologo" onclick="return toggleBox(this)">
+           <h:outputText value="#{messages['label.search.results']}" />
+         </a>
+        </h3>
+        <div class="boxBody">
+
+          <table class="dataInput">
+            <tbody>
+              <tr>
+                <td class="labelColumn">
+                  <h:outputText value="#{messages['label.search.resultColumns']}" />
+                </td>
+                <td>
+                  <nxl:layout name="#{contentView.resultLayouts[0].name}"
+                    mode="edit_columns"
+                    value="#{smartNXQLQueryActions.selectedLayoutColumns}"
+                    selectAllByDefault="true" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelColumn">
+                  <h:outputText value="#{messages['label.search.orderBy']}" />
+                </td>
+                <td>
+                  <nxl:layout name="#{contentView.resultLayouts[0].name}"
+                    mode="edit_sort_infos"
+                    value="#{smartNXQLQueryActions.searchSortInfos}"
+                    selectAllByDefault="true" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+
+    </nxu:set>
+    
+    <div>
+      <h:commandButton value="#{messages['command.search']}"
+        action="smart_search_results" class="button"
+        id="searchButton">
+        <nxu:actionListenerMethod
+          value="#{contentViewActions.resetPageProvider('nxql_incremental_smart_query')}" /> 
+      </h:commandButton>
+      <nxu:set var="actions"
+        value="#{webActions.getActionsList('SMART_SEARCH_BUTTONS')}"
+        cache="true">
+        <c:forEach var="action" items="#{actions}" varStatus="status">
+          <nxh:commandButton action="#{action.getLink()}"
+            value="#{messages[action.label]}"
+            id="smartSearchActionsButton_#{status.index}"
+            styleClass="button" />
+        </c:forEach>
+      </nxu:set>
+      <h:commandButton value="#{messages['command.selection.resetSelectedColumns']}"
+        action="#{smartNXQLQueryActions.resetSelectedLayoutColumns()}"
+        styleClass="button"
+        immediate="true"
+        id="resetSelectedColumnsButton" />
+    </div>
+  
+  </h:form>
+
+</ui:define>
+
+</nxthemes:composition>
