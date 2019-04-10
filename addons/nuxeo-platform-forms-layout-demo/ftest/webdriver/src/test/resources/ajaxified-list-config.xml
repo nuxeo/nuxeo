@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ajaxified.list.config">
+
+  <require>org.nuxeo.ecm.platform.forms.layout.properties</require>
+ 
+  <extension
+    target="org.nuxeo.runtime.ConfigurationService"
+    point="configuration">
+
+    <property name="nuxeo.jsf.listWidget.compatEnabled">true</property>
+
+  </extension>
+
+</component>
