@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.snapshots.listeners">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="snapshotableListener" async="false"
+      postCommit="false" priority="100"
+      class="org.nuxeo.snapshot.listeners.SnapshotableListener">
+      <event>documentModified</event>
+    </listener>
+
+  </extension>
+
+</component>

@@ -1,0 +1,273 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.audio.layouts">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.summary</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="audio_player">
+      <configuration>
+        <sinceVersion>5.8</sinceVersion>
+        <title>Audio Player</title>
+        <description>
+          <p>This widgets displays a html5 or flash audio player</p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <!-- set configuration not ready until Studio knows how to manage that
+            kind of configuration -->
+          <category>configuration_not_ready</category>
+          <!--
+            <category>summary</category>
+          -->
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <layouts mode="any">
+            <layout>
+              <rows>
+                <row>
+                  <widget>field_0</widget>
+                </row>
+                <row>
+                  <widget>field_1</widget>
+                </row>
+              </rows>
+              <widget name="field_0" type="text">
+                <labels>
+                  <label mode="any">Bound document</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The bound document can be referenced using
+                    an empty field definition in a form layout, or using the
+                    equivalent expression "#{value}". In a listing layout, it
+                    can be referenced by using the value "data".
+                  </label>
+                </helpLabels>
+                <properties mode="any">
+                  <property name="resourceName">fields</property>
+                </properties>
+              </widget>
+              <widget name="field_1" type="selectOneResource">
+                <labels>
+                  <label mode="any">File field binding</label>
+                </labels>
+                <properties mode="any">
+                  <property name="resourceName">fields</property>
+                  <property name="list">false</property>
+                  <property name="complex">false</property>
+                  <propertyList name="supportedTypes">
+                    <value>blob</value>
+                  </propertyList>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="video_player_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>width</widget>
+                </row>
+              </rows>
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The width of the Audio player.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/audio_player_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="audio_file">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Audio File</title>
+        <description>
+          <p>
+            The audio widget displays a file uploader/editor in create or edit
+            mode, with additional message tag for errors.
+          </p>
+        </description>
+        <properties>
+          <layouts mode="edit">
+            <layout name="audio_file_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget>acceptedExtensions</widget>
+                </row>
+              </rows>
+              <widget name="acceptedExtensions" type="text">
+                <labels>
+                  <label mode="any">Accepted extensions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    A comma separated list of supported file
+                    extensions. Default value: '.mp3, .ogg, .oga, .flac, .m4a,
+                    .aac, .ac3, .aif, .aiff, .aifc, .au, .snd, .asf, .wav'.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>acceptedExtensions</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>blob</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/audio_file_widget_template.xhtml</property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="summary_audio_player" type="audio_player">
+      <fields>
+        <field>#{value}</field>
+        <field>file:content</field>
+      </fields>
+    </widget>
+
+    <widget name="audioFile" type="audio_file">
+      <labels>
+        <label mode="any">label.file.content</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>file:content</field>
+        <field>file:content/name</field>
+      </fields>
+    </widget>
+
+    <widget name="infoViewAudioPlayer" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">infoViewAudioContainer</property>
+        <property name="display">block_top</property>
+      </properties>
+      <subWidgets>
+        <widget name="audioPlayer" type="audio_player">
+          <fields>
+            <field>#{value}</field>
+            <field>file:content</field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="summary_audio_player" type="widget" order="50">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_audio_player</property>
+      </properties>
+      <filter-id>hasAudio</filter-id>
+    </action>
+
+    <action id="summary_current_document_view">
+      <filter-id>notHasAudio</filter-id>
+    </action>
+
+    <action id="infoViewAudioPlayer" type="widget" order="100">
+      <category>INFO_VIEW_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">infoViewAudioPlayer</property>
+      </properties>
+      <filter-id>hasAudio</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="hasAudio">
+      <rule grant="true">
+        <facet>Audio</facet>
+      </rule>
+    </filter>
+
+    <filter id="notHasAudio">
+      <rule grant="false">
+        <facet>Audio</facet>
+      </rule>
+    </filter>
+
+    <filter id="denyInfoViewPreview" append="true">
+      <rule grant="false">
+        <facet>Audio</facet>
+      </rule>
+    </filter>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="audio_file">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>audioFile</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>
