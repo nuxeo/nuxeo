@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+
+<component name="com.nuxeo.document.routing.table.widget">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.listing</require>
+  
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+    
+    <widgetType name="listing_document_route_element_type">
+      <documentation>
+        This widget type displays Step is a the current document is a Step or
+        "Serial" or "Parallel "
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+           the documentRoteElement
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_document_route_element_type_widget_template.xhtml
+      </property>
+    </widgetType>
+  </extension> 
+  
+   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+    
+     <widget name="dr_listing_document_route_element_type" type="listing_document_route_element_type">
+      <labels>
+        <label mode="any">label.document.route.content.header.type</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+    
+    <widget name="dr_listing_title_link" type="listing_title_link">
+      <labels>
+        <label mode="any">label.content.header.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.document</field>
+        <field>data.document.id</field>
+      </fields>
+    </widget>
+    
+    <widget name="dr_listing_title_description" type="text">
+      <labels>
+        <label mode="any">label.content.header.description</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.document.dc.description</field>
+      </fields>
+    </widget>
+    
+  </extension>
+
+</component>    

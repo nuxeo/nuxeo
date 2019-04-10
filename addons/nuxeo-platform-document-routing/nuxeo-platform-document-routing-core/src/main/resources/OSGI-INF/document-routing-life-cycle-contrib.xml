@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.routing.lifecycle.contrib">
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="lifecycle">
+
+    <lifecycle name="documentRouteElement" defaultInitial="draft">
+      <transitions>
+        <transition name="toValidated" destinationState="validated">
+          <description>the model is validated</description>
+        </transition>
+        <transition name="toReady" destinationState="ready">
+          <description>the element is ready to be executed</description>
+        </transition>
+        <transition name="toRunning" destinationState="running">
+          <description>the element starts</description>
+        </transition>
+        <transition name="toDone" destinationState="done">
+          <description>the element finishes</description>
+        </transition>
+      </transitions>
+      <states>
+        <state name="draft" description="Default state" initial="true">
+          <transitions>
+            <transition>toValidated</transition>
+          </transitions>
+        </state>
+        <state name="validated" description="The element is validated">
+          <transitions>
+            <transition>toReady</transition>
+          </transitions>
+        </state>
+        <state name="ready" description="The element is ready">
+          <transitions>
+            <transition>toRunning</transition>
+          </transitions>
+        </state>
+        <state name="running" description="The element is running">
+          <transitions>
+            <transition>toDone</transition>
+          </transitions>
+        </state>
+        <state name="done" description="The element is done">
+          <transitions>
+          </transitions>
+        </state>
+      </states>
+    </lifecycle>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="DocumentRoute" noRecursionForTransitions="toReady,toRunning,toDone">documentRouteElement</type>
+      <type name="StepFolder" noRecursionForTransitions="toReady,toRunning,toDone">documentRouteElement</type>
+      <type name="DocumentRouteStep">documentRouteElement</type>
+    </types>
+  </extension>
+
+</component>
