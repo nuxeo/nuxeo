@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/dxt/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/dxt/"
+  >
+
+  <xs:simpleType name="typesList">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
+  <xs:simpleType name="longString">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="65536" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="templateName" type="xs:string"/>
+
+  <xs:element name="applicableTypes" type="nxs:typesList"/>
+
+  <xs:element name="forcedTypes" type="nxs:typesList"/>
+
+  <xs:element name="templateType" type="xs:string"/>
+
+  <xs:element name="templateData" type="nxs:longString"/>
+
+  <xs:element name="allowOverride" type="xs:boolean"/>
+
+  <xs:element name="outputFormat" type="xs:string"/>
+
+  <xs:element name="targetRenditionName" type="xs:string"/>
+
+  <xs:element name="useAsMainContent" type="xs:boolean"/>
+
+</xs:schema>
