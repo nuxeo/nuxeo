@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/dam/schemas/documentsSizeStats/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/dam/schemas/documentsSizeStats/">
+
+  <xs:element name="innerSize" type="xs:long"/>
+  <xs:element name="totalSize" type="xs:long"/>
+  <xs:element name="sizeTrash" type="xs:long"/>
+  <xs:element name="sizeVersions" type="xs:long"/>
+  <xs:element name="maxSize" type="xs:long"/>
+
+</xs:schema>
