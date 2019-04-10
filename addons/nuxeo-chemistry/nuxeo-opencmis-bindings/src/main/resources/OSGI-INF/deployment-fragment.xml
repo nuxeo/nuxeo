@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <extension target="web#LISTENER">
+    <listener>
+      <listener-class>
+        org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener
+      </listener-class>
+    </listener>
+  </extension>
+
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>atomcmis</servlet-name>
+      <servlet-class>
+        org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet
+      </servlet-class>
+      <init-param>
+        <param-name>callContextHandler</param-name>
+        <param-value>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthCallContextHandler</param-value>
+      </init-param>
+    </servlet>
+  </extension>
+
+  <extension target="web#SERVLET-MAPPING">
+    <servlet-mapping>
+      <servlet-name>atomcmis</servlet-name>
+      <url-pattern>/atom/cmis/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/atom/cmis/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
+  <!-- the /webservices prefix is defined by Nuxeo in nuxeo-platform-ws config -->
+
+  <extension target="jaxws#ENDPOINT">
+
+    <endpoint name="RepositoryService" wsdl="WEB-INF/wsdl/CMISWS-Service.wsdl"
+      implementation="org.apache.chemistry.opencmis.server.impl.webservices.RepositoryService"
+      service="{http://docs.oasis-open.org/ns/cmis/ws/200908/}RepositoryService"
+      port="{http://docs.oasis-open.org/ns/cmis/ws/200908/}RepositoryServicePort"
+      url-pattern="/webservices/cmis/RepositoryService" enable-mtom="true">
+      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+        <handler-chain>
+          <handler>
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
+            </handler-class>
+          </handler>
+        </handler-chain>
+      </handler-chains>
+    </endpoint>
+
+    <endpoint name="NavigationService" wsdl="WEB-INF/wsdl/CMISWS-Service.wsdl"
+      implementation="org.apache.chemistry.opencmis.server.impl.webservices.NavigationService"
+      service="{http://docs.oasis-open.org/ns/cmis/ws/200908/}NavigationService"
+      port="{http://docs.oasis-open.org/ns/cmis/ws/200908/}NavigationServicePort"
+      url-pattern="/webservices/cmis/NavigationService" enable-mtom="true">
+      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+        <handler-chain>
+          <handler>
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
+            </handler-class>
+          </handler>
+        </handler-chain>
+      </handler-chains>
+    </endpoint>
+
+    <endpoint name="ObjectService" wsdl="WEB-INF/wsdl/CMISWS-Service.wsdl"
+      implementation="org.apache.chemistry.opencmis.server.impl.webservices.ObjectService"
+      service="{http://docs.oasis-open.org/ns/cmis/ws/200908/}ObjectService"
+      port="{http://docs.oasis-open.org/ns/cmis/ws/200908/}ObjectServicePort"
+      url-pattern="/webservices/cmis/ObjectService" enable-mtom="true">
+      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+        <handler-chain>
+          <handler>
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
+            </handler-class>
+          </handler>
+        </handler-chain>
+      </handler-chains>
+    </endpoint>
+
+    <endpoint name="VersioningService" wsdl="WEB-INF/wsdl/CMISWS-Service.wsdl"
+      implementation="org.apache.chemistry.opencmis.server.impl.webservices.VersioningService"
+      service="{http://docs.oasis-open.org/ns/cmis/ws/200908/}VersioningService"
+      port="{http://docs.oasis-open.org/ns/cmis/ws/200908/}VersioningServicePort"
+      url-pattern="/webservices/cmis/VersioningService" enable-mtom="true">
+      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+        <handler-chain>
+          <handler>
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
+            </handler-class>
+          </handler>
+        </handler-chain>
+      </handler-chains>
+    </endpoint>
+
+    <endpoint name="RelationshipService" wsdl="WEB-INF/wsdl/CMISWS-Service.wsdl"
+      implementation="org.apache.chemistry.opencmis.server.impl.webservices.RelationshipService"
+      service="{http://docs.oasis-open.org/ns/cmis/ws/200908/}RelationshipService"
+      port="{http://docs.oasis-open.org/ns/cmis/ws/200908/}RelationshipServicePort"
+      url-pattern="/webservices/cmis/RelationshipService" enable-mtom="true">
+      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+        <handler-chain>
+          <handler>
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
+            </handler-class>
+          </handler>
+        </handler-chain>
+      </handler-chains>
+    </endpoint>
+
+    <endpoint name="DiscoveryService" wsdl="WEB-INF/wsdl/CMISWS-Service.wsdl"
+      implementation="org.apache.chemistry.opencmis.server.impl.webservices.DiscoveryService"
+      service="{http://docs.oasis-open.org/ns/cmis/ws/200908/}DiscoveryService"
+      port="{http://docs.oasis-open.org/ns/cmis/ws/200908/}DiscoveryServicePort"
+      url-pattern="/webservices/cmis/DiscoveryService" enable-mtom="true">
+      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+        <handler-chain>
+          <handler>
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
+            </handler-class>
+          </handler>
+        </handler-chain>
+      </handler-chains>
+    </endpoint>
+
+    <endpoint name="MultiFilingService" wsdl="WEB-INF/wsdl/CMISWS-Service.wsdl"
+      implementation="org.apache.chemistry.opencmis.server.impl.webservices.MultiFilingService"
+      service="{http://docs.oasis-open.org/ns/cmis/ws/200908/}MultiFilingService"
+      port="{http://docs.oasis-open.org/ns/cmis/ws/200908/}MultiFilingServicePort"
+      url-pattern="/webservices/cmis/MultiFilingService" enable-mtom="true">
+      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+        <handler-chain>
+          <handler>
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
+            </handler-class>
+          </handler>
+        </handler-chain>
+      </handler-chains>
+    </endpoint>
+
+    <endpoint name="ACLService" wsdl="WEB-INF/wsdl/CMISWS-Service.wsdl"
+      implementation="org.apache.chemistry.opencmis.server.impl.webservices.AclService"
+      service="{http://docs.oasis-open.org/ns/cmis/ws/200908/}ACLService"
+      port="{http://docs.oasis-open.org/ns/cmis/ws/200908/}ACLServicePort"
+      url-pattern="/webservices/cmis/ACLService" enable-mtom="true">
+      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+        <handler-chain>
+          <handler>
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
+            </handler-class>
+          </handler>
+        </handler-chain>
+      </handler-chains>
+    </endpoint>
+
+    <endpoint name="PolicyService" wsdl="WEB-INF/wsdl/CMISWS-Service.wsdl"
+      implementation="org.apache.chemistry.opencmis.server.impl.webservices.PolicyService"
+      service="{http://docs.oasis-open.org/ns/cmis/ws/200908/}PolicyService"
+      port="{http://docs.oasis-open.org/ns/cmis/ws/200908/}PolicyServicePort"
+      url-pattern="/webservices/cmis/PolicyService" enable-mtom="true">
+      <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+        <handler-chain>
+          <handler>
+            <handler-class>
+              org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler
+            </handler-class>
+          </handler>
+        </handler-chain>
+      </handler-chains>
+    </endpoint>
+
+  </extension>
+
+  <install>
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/WEB-INF/wsdl/**</include>
+    </unzip>
+  </install>
+
+</fragment>
