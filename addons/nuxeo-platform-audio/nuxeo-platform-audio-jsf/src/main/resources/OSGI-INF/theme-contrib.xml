@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.audio.theme">
+
+  <require>org.nuxeo.theme.nuxeo.webapp</require>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
+    <bundle name="nuxeo_includes">
+      <resources append="true">
+        <resource>audio-player.js</resource>
+      </resources>
+    </bundle>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+    <resource name="audio-player.js">
+      <uri>/scripts/wpaudioplayer/audio-player.js</uri>
+    </resource>
+  </extension>
+
+</component>

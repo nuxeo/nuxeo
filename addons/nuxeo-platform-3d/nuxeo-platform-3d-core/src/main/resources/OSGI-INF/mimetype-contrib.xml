@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.threed.mimetype">
+  <extension point="mimetype" target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService">
+
+    <mimetype normalized="model/vnd.collada+xml" binary="false" iconPath="3d.png">
+      <mimetypes>
+        <mimetype>model/vnd.collada+xml</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>dae</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/x-3ds" binary="true" iconPath="3d.png">
+      <mimetypes>
+        <mimetype>application/x-3ds</mimetype>
+        <mimetype>image/x-3ds</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>3ds</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/octet-stream" binary="true" iconPath="3d.png">
+      <mimetypes>
+        <mimetype>application/octet-stream</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>fbx</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="text/x-c" binary="false" iconPath="3d.png">
+      <mimetypes>
+        <mimetype>text/x-c</mimetype>
+        <mimetype>application/octet-stream</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>ply</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="text/wavefront-obj" binary="false" iconPath="3d.png">
+      <mimetypes>
+        <mimetype>text/wavefront-obj</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>obj</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="model/x3d+xml" binary="false" iconPath="3d.png">
+      <mimetypes>
+        <mimetype>model/x3d+xml</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>x3d</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/sla" binary="false" iconPath="3d.png">
+      <mimetypes>
+        <mimetype>application/sla</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>stl</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="model/gltf+json" binary="false" iconPath="3d.png">
+      <mimetypes>
+        <mimetype>model/gltf+json</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>gltf</extension>
+      </extensions>
+    </mimetype>
+
+  </extension>
+</component>
