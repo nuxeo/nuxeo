@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.nuxeo.ecm.platform.video.media.streaming.configuration.test">
+
+  <require>org.nuxeo.nuxeo.ecm.platform.video.media.streaming.configuration</require>
+
+  <extension target="org.nuxeo.nuxeo.ecm.platform.video.media.streaming.configuration" point="video">
+    <config activated="true" streamServerBaseURL="rtsp://localhost"/>
+  </extension>
+</component>
