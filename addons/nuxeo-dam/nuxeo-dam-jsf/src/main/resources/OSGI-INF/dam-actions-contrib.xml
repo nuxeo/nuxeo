@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+  <require>org.nuxeo.ecm.platform.notifications.web.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="dam" link="assets" label="label.main.tab.dam" order="50"
+      type="template">
+      <category>MAIN_TABS</category>
+      <properties>
+        <property name="template">/dam/incl/action/dam_main_tab_action_template.xhtml</property>
+      </properties>
+    </action>
+
+    <!-- Search actions -->
+
+    <action id="damSaveSearchAction" link="#{damSearchActions.saveSearch()}"
+      label="command.save" order="10">
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">
+          damPanelLeft
+        </property>
+      </properties>
+    </action>
+
+    <action id="damSubmitSearch" link="#{damSearchActions.refreshAndRewind()}"
+      label="label.dam.search.filter" order="10">
+      <category>DAM_SEARCH_FILTER_ACTIONS</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">
+          damPanelCenter, damPanelRight, damPanelLeft
+        </property>
+      </properties>
+    </action>
+
+    <action id="damClearSearch" link="#{damSearchActions.clearSearch()}"
+      label="label.dam.search.clear" order="20" immediate="true">
+      <category>DAM_SEARCH_FILTER_ACTIONS</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">
+          damPanelLeft, damPanelCenter, damPanelRight
+        </property>
+      </properties>
+    </action>
+
+    <!-- Asset view actions -->
+    <action id="damShowFancyBoxPreview" order="50" type="fancybox"
+      label="label.document.preview" icon="/icons/contextual_menu/preview.png">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>view_preview</filter-id>
+      <filter-id>not_folder</filter-id>
+      <filter-id>not_anonymous</filter-id>
+      <properties>
+        <property name="iframe">
+          #{previewActions.getCurrentDocumentPreviewPopupURL()}
+        </property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="damDocumentLock" link="#{lockActions.lockCurrentDocument}"
+      order="10" label="command.lock" type="link" icon="/icons/contextual_menu/unlocked.png">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_lock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="damDocumentUnlock" link="#{lockActions.unlockCurrentDocument}"
+      order="10" label="command.unlock" type="link" icon="/icons/contextual_menu/locked.png">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_unlock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="damDownloadAction" link="#{operationActionBean.doOperation('downloadFilesZip')}"
+      order="30" label="label.document.download" type="link"
+      icon="/icons/contextual_menu/download.png">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>documentHasBlobs</filter-id>
+    </action>
+
+    <action id="damPermalinkAction" order="20" label="label.permalink" type="fancybox"
+      icon="/icons/contextual_menu/share.png">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <properties>
+        <property name="include">/dam/incl/permalink_box.xhtml</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="damSubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.follow" type="link"
+      icon="/icons/contextual_menu/subscribe.png">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>hasNoSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="damUnsubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.unfollow" type="link"
+      icon="/icons/contextual_menu/unsubscribe.png">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>hasSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="damAddCurrentDocumentToWorklist"
+      link="#{operationActionBean.doOperation('addCurrentDocumentToWorklist')}"
+      order="60" label="help.command.clipboard.addworklist" type="link"
+      icon="/icons/action_add.gif" immediate="true">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>not_folder</filter-id>
+      <filter-id>not_anonymous</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="damPrint" link="#{restHelper.doPrint(themeActions.defaultTheme)}"
+      order="70" label="label.print" icon="/icons/printer.gif">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <properties>
+        <property name="target">_blank</property>
+      </properties>
+    </action>
+
+    <action id="damDocumentLike" order="5" type="link"
+      link="#{likeActions.like(currentUser, currentDocument)}"
+      icon="/icons/like.png" label="command.like">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>not_folder</filter-id>
+      <filter-id>userNotLiked</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="damDocumentUnlike" order="5" type="link"
+      link="#{likeActions.cancelLike(currentUser, currentDocument)}"
+      icon="/icons/unlike.png" label="command.unlike">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>not_folder</filter-id>
+      <filter-id>userLiked</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="damViewInDM"
+      link="#{damActions.viewInDM()}"
+      label="label.dam.action.viewInDM"
+      icon="/icons/switch.png"
+      order="65">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="damViewInDAM"
+      link="#{damActions.viewInDAM()}"
+      label="label.dam.action.viewInDAM"
+      icon="/icons/switch.png"
+      order="65">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <action id="damSingleAssetBackToDam" order="50" type="bare_link"
+      link="#{damSearchActions.getSearchPermanentLinkUrl()}"
+      icon="/icons/unlike.png" label="label.dam.backToDam">
+      <category>DAM_SINGLE_ASSET_ACTIONS</category>
+    </action>
+
+    <action id="damEditCurrentDocument" link="#{damActions.updateCurrentDocument}"
+      order="0" label="command.save">
+      <category>DAM_EDIT_DOCUMENT_FORM</category>
+    </action>
+
+    <!-- Search results actions -->
+    <action id="damNewAsset" order="100" label="label.dam.new.asset"
+      type="fancybox">
+      <category>DAM_SEARCH_RESULTS_ACTIONS</category>
+      <properties>
+        <property name="include">/dam/incl/new_asset_box.xhtml</property>
+        <property name="autoDimensions">false</property>
+        <property name="width">60%</property>
+        <property name="height">90%</property>
+        <property name="modal">true</property>
+        <property name="scrolling">auto</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+    <action id="damBulkImportAssets" order="200" label="label.dam.bulk.import.assets"
+      type="fancybox">
+      <category>DAM_SEARCH_RESULTS_ACTIONS</category>
+      <properties>
+        <property name="include">/dam/incl/bulk_import_assets_box.xhtml</property>
+        <property name="dropContext">DAM_IMPORT_ASSETS</property>
+        <property name="autoDimensions">false</property>
+        <property name="width">85%</property>
+        <property name="height">95%</property>
+        <property name="modal">true</property>
+        <property name="scrolling">auto</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <!-- Current selection actions -->
+    <action id="damBulkEdit" type="fancybox"
+      label="command.bulk.edit" icon="" order="0">
+      <category>DAM_CURRENT_SELECTION_LIST</category>
+      <filter-id>canEditCurrentSelection</filter-id>
+      <properties>
+        <property name="include">/incl/bulk_edit_box.xhtml</property>
+        <property name="layout">damBulkEdit@edit</property>
+        <property name="autoDimensions">false</property>
+        <property name="width">50%</property>
+        <property name="height">70%</property>
+        <property name="modal">true</property>
+        <property name="scrolling">auto</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="CURRENT_SELECTION_ADDTOLIST">
+      <category>DAM_CURRENT_SELECTION_LIST</category>
+    </action>
+
+    <action id="CURRENT_SELECTION_TRASH">
+      <category>DAM_CURRENT_SELECTION_LIST</category>
+    </action>
+
+    <!-- Saved searches -->
+    <action id="DamSavedSearches" link="dam/incl/saved_searches.xhtml"
+      label="label.home.dam.saved.searches" order="10">
+      <category>SavedSearches_sub_tab</category>
+      <filter-id>not_readonly</filter-id>
+    </action>
+
+    <action id="damCurrentSelectionDelete" link="#{deleteActions.purgeSelection('DAM_SAVED_SEARCHES_CURRENT_SELECTION')}"
+      label="command.trashDocs" icon="" help="comand.deleteDocs.help"
+      confirm="if( !confirmDeleteDocumentsForever() ) return false;">
+      <category>DAM_SAVED_SEARCHES_CURRENT_SELECTION_LIST</category>
+      <filter id="canDeleteDamSavedSearches">
+        <rule grant="true">
+          <condition>#{deleteActions.getCanDelete('DAM_SAVED_SEARCHES_CURRENT_SELECTION')}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_MY_SUBSCRIPTIONS">
+      <filter-id>denyForDamSearch</filter-id>
+    </action>
+
+    <action id="TAB_MANAGE_SUBSCRIPTIONS">
+      <filter-id>denyForDamSearch</filter-id>
+    </action>
+
+    <action id="TAB_RELATIONS">
+      <filter-id>denyForDamSearch</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="canCreateInAssetLibrary">
+      <rule grant="true">
+        <condition>#{damActions.canCreateInAssetLibrary}</condition>
+      </rule>
+    </filter>
+
+    <filter id="create" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>AssetLibrary</type>
+        <type>ImportRoot</type> <!-- for backward compatibility -->
+      </rule>
+    </filter>
+
+    <filter id="importFile" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>AssetLibrary</type>
+        <type>ImportRoot</type> <!-- for backward compatibility -->
+      </rule>
+    </filter>
+
+    <filter id="rights" append="true">
+      <rule grant="true">
+        <facet>DamSearch</facet>
+      </rule>
+    </filter>
+
+    <filter id="denyForDamSearch">
+      <rule grant="false">
+        <facet>DamSearch</facet>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>
