@@ -1,0 +1,31 @@
+<component name="org.nuxeo.diff.pictures.jsf">
+
+  <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService" point="diffDisplay">
+
+    <diffDisplay type="Picture">
+      <diffBlocks>
+        <diffBlock name="dublincore" />
+        <diffBlock name="picture" />
+      </diffBlocks>
+    </diffDisplay>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService" point="diffBlock">
+
+    <diffBlock name="picture">
+      <properties mode="any">
+        <property name="label">label.diffBlock.picture</property>
+      </properties>
+      <fields>
+        <field schema="file" name="content" displayContentDiffLinks="true" />
+      </fields>
+      <templates>
+        <template mode="any">/layouts/layout_diff_template.xhtml
+        </template>
+      </templates>
+    </diffBlock>
+
+  </extension>
+
+</component>
