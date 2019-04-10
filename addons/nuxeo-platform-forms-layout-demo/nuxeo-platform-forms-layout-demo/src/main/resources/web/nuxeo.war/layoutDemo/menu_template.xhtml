@@ -1,0 +1,38 @@
+<div class="foldableBox"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+<c:if test="false">
+needed parameters:
+- category
+- categoryTitle
+- widgetTypes
+- currentWidgetType
+- openByDefault
+</c:if>
+
+  <nxu:set var="widgetsSelected" value="#{currentWidgetType.category == category}">
+    <h3 class="#{nxu:test(widgetsSelected or (currentWidgetType==null and openByDefault), 'unfolded', 'folded')}">
+      <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
+        <h:outputText value="#{categoryTitle}" />
+      </a>
+    </h3>
+  
+    <div class="boxBody"
+      style="#{nxu:test(widgetsSelected or (currentWidgetType==null and openByDefault), '', 'overflow: visible; display: none;')}">
+  
+      <nxu:set var="widgetTypes" value="#{widgetTypes}">
+        <ul class="layoutDemoMenu">
+          <c:forEach var="widgetType" items="#{widgetTypes}">
+            <li class="#{nxu:test(currentWidgetType.name == widgetType.name, 'selected', '')}">
+              <a href="#{baseURL}#{widgetType.url}">#{widgetType.label}</a>
+            </li>
+          </c:forEach>
+        </ul>
+      </nxu:set>
+  
+    </div>
+  </nxu:set>
+    
+</div>

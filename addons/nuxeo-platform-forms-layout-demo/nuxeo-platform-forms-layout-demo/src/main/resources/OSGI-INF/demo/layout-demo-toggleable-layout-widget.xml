@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forms.layoutDemo.toggleableLayoutWidget.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="toggleableLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>toggleableLayoutWidget</widget>
+        </row>
+      </rows>
+      <widget name="toggleableLayoutWidget" type="toggleableLayoutWithForms">
+        <labels>
+          <label mode="any">Toggleable layout widget</label>
+        </labels>
+        <translated>false</translated>
+        <handlingLabels>true</handlingLabels>
+        <properties widgetMode="any">
+          <property name="initialLayoutName">heading</property>
+          <property name="toggledLayoutName">heading demoToggleableLayout</property>
+          <property name="useAjaxForm">true</property>
+          <property name="displayToggleActionInHeader">true</property>
+          <!-- hook up specific actions for demo -->
+          <property name="canToggleMode">true</property>
+          <property name="hideDefaultActions">true</property>
+          <property name="additionalActionsCategory">TOGGLEABLE_LAYOUT_DEMO</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="demoToggleableLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>htmlWidget</widget>
+        </row>
+        <row>
+          <widget>datetimeWidget</widget>
+        </row>
+        <row>
+          <widget>intWidget</widget>
+          <widget>checkboxWidget</widget>
+        </row>
+      </rows>
+      <widget name="htmlWidget" type="htmltext">
+        <labels>
+          <label mode="any">HTML widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:htmlField</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="datetimeWidget" type="datetime">
+        <labels>
+          <label mode="any">Datetime widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:dateField</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
+        </properties>
+      </widget>
+      <widget name="intWidget" type="int">
+        <labels>
+          <label mode="any">Int widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:intField</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="checkboxWidget" type="checkbox">
+        <labels>
+          <label mode="any">Checkbox widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:booleanField</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+        <controls mode="any">
+          <!-- enable ajax submit on change/click/select on demo application -->
+          <control name="supportInsideInputWidgetEffects">true</control>
+        </controls>
+      </widget>
+    </layout>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="saveDemoToggleableLayout" link="" type="link" label="Save">
+      <category>TOGGLEABLE_LAYOUT_DEMO</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+  </extension>
+
+</component>
