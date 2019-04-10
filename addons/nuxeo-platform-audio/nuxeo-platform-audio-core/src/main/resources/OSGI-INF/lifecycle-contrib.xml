@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.nuxeo.ecm.platform.audio.lifecycle">
+
+  <require>org.nuxeo.ecm.core.LifecycleCoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="Audio">default</type>
+    </types>
+  </extension>
+
+</component>

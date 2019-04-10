@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.video.convert.commandline">
+
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    point="command">
+
+    <command name="ffmpeg-info" enabled="true">
+      <commandLine>ffmpeg</commandLine>
+      <parameterString> -i #{inFilePath}</parameterString>
+      <installationDirective>You need to install ffmpeg from http://ffmpeg.org (apt-get install ffmpeg)</installationDirective>
+    </command>
+
+    <command name="ffmpeg-storyboard" enabled="true">
+      <commandLine>ffmpeg</commandLine>
+      <parameterString> -y -i #{inFilePath} -f image2 -r #{rate} -s #{width}x#{height} -an #{outFolderPath}/video-thumb-%06d.jpeg</parameterString>
+      <installationDirective>You need to install ffmpeg from http://ffmpeg.org (apt-get install ffmpeg)</installationDirective>
+    </command>
+
+    <command name="ffmpeg-screenshot" enabled="true">
+      <commandLine>ffmpeg</commandLine>
+      <parameterString> -y -i #{inFilePath} -f image2 -ss #{position} #{outFilePath}</parameterString>
+      <installationDirective>You need to install ffmpeg from http://ffmpeg.org (apt-get install ffmpeg)</installationDirective>
+    </command>
+
+  </extension>
+
+</component>
