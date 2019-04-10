@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="nuxeo.platform.signature.web.actions">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+		point="actions">
+
+		<action id="sign_view" link="/incl/tabs/sign_view.xhtml"
+			enabled="true" label="Signature" icon="/icons/certificates.png" order="60">
+			<category>VIEW_ACTION_LIST</category>
+			<filter id="signature_filter">
+				<rule grant="true">
+					<type>File</type>
+				</rule>
+			</filter>
+		</action>
+    
+      <action id="Certificate" link="user_center_fragment.xhtml" label="label.cert.user.center.certificate" icon="/icons/certificates.png"
+      order="70">
+      <category>USER_CENTER</category>
+    </action>
+
+    <action id="CertificateView" link="edit_user_certificate.xhtml"
+      order="10">
+      <category>Certificate_sub_tab</category>
+    </action>
+</extension>
+</component>
