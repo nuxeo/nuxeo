@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:nxthemes="http://nuxeo.org/nxthemes"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:nxl="http://nuxeo.org/nxforms/layout"
+    xmlns:nxu="http://nuxeo.org/nxweb/util"
+    xmlns:c="http://java.sun.com/jstl/core">
+
+    <ui:define name="page title">
+        <h:outputText value="#{nuxeoApplicationName} - #{messages['title.create.document']}" />
+    </ui:define>
+
+    <ui:define name="body">
+        <div>
+            <h3>
+                <h:outputText value="#{messages['title.create.document']} #{messages[changeableDocument.type]}" />
+            </h3>
+            <script src="/nuxeo/scripts/template-edit-param.js"></script>
+            <h:form enctype="multipart/form-data" id="params_edit">
+
+                <nxu:repeat var="param" value="#{templateActions.templateInputs}">
+                    <ui:include src="/incl/tabs/templates/template_edit_oneparam.xhtml" />
+                </nxu:repeat>
+
+                <p class="buttonsGadget">
+                    <input type="hidden" name="parentDocumentPath" value="#{currentDocument.pathAsString}" />
+                    <h:commandButton type="submit" class="button" value="#{messages['command.create']}"
+                        action="#{templateActions.saveDocument}" id="button_create" />
+                    <h:commandButton class="button" value="#{messages['command.cancel']}"
+                        action="#{navigationContext.goBack()}" immediate="true" />
+                </p>
+            </h:form>
+        </div>
+    </ui:define>
+
+</nxthemes:composition>
