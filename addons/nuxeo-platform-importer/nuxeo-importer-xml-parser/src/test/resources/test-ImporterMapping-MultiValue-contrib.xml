@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.importer.xml.parser.ImporterComponent.test.contrib" version="1.0">
+
+    <extension target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent" point="documentMapping">
+        <docConfig tagName="document" updateExistingDocuments="true">
+            <docType>File</docType>
+        </docConfig>
+    </extension>
+
+    <extension target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent" point="attributeMapping">
+        <attributeConfig tagName="title" docProperty="dc:title" xmlPath="text()"/>
+        <attributeConfig tagName="subject" docProperty="dc:subjects" xmlPath="text()"/>
+    </extension>
+
+</component>

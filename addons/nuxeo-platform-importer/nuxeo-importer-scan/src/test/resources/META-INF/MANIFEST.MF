@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Scan importer Sample
+Bundle-SymbolicName: org.nuxeo.ecm.platform.scanimporter.test;singleton:=true

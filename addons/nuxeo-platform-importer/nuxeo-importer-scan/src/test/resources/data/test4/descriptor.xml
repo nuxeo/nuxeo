@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns:d1="A DEFINIR">
+<header creator="A DEFINIR">
+<resource-definition name="BonAPayer_1.0" />
+</header>
+<history />
+<body>
+<string name="Devise" label="Devise" value="Eur" />
+<float name="TotalTtc" label="TotalTtc" value="67.86" />
+<float name="TotalTva" label="Total TVA" value="11.12" />
+<float name="TauxTva" label="Taux TVA" value="19.60" />
+<float name="TotalHt" label="Total HT" value="56.74" />
+<string name="NDeFacture" label="N de facture" value="3-77-2" />
+<string name="NSAGE" label="NSAGE" value="12345" />
+<string name="FactureAvoir" label="Facture/avoir" value="facture" />
+<string name="Fournisseur" label="Fournisseur" value="SFC" />
+<date name="DateDeLaFacture" value="2005-03-17T11:00:00.000Z" />
+<collection name="ImageFacture">
+<file>
+<content name="testFile.txt" filepath="$TMP/test4/files/testFile.txt" />
+</file>
+</collection>
+</body>
+</resource>

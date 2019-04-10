@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.importer.scanimporter.advanced.xmlparser.factory.contrib">
+
+  <require>org.nuxeo.ecm.platform.importer.scanimporter.default.parser.contrib</require>
+
+  <documentation>
+    This contribution replace the default Scan importer logic for XML parsing by powerful XML parser
+    available into the nuxeo-importer-xml-parser bundle.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent" point="importerConfiguration">
+   <importerConfig sourceNodeClass="org.nuxeo.ecm.platform.importer.xml.parser.XMLFileSourceNode">
+       <documentModelFactory documentModelFactoryClass="org.nuxeo.ecm.platform.importer.xml.parser.AdvancedScannedFileFactory" />
+   </importerConfig>
+  </extension>
+
+
+</component>
