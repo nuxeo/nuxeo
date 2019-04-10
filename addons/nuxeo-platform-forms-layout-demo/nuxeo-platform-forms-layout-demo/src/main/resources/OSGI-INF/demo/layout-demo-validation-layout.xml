@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.validation.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="layout_demo_validation_sample">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>title</widget>
+        </row>
+        <row>
+          <widget>groupCode</widget>
+        </row>
+        <row>
+          <widget>manager</widget>
+        </row>
+        <row>
+          <widget>roles</widget>
+        </row>
+        <row>
+          <widget>users</widget>
+        </row>
+        <row>
+          <widget>listOfListsWidget</widget>
+        </row>
+      </rows>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="groupCode" type="int">
+        <labels>
+          <label mode="any">GroupCode</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>vs:groupCode</field>
+        </fields>
+        <controls mode="any">
+          <!-- enable ajax submit on change/click/select on demo application -->
+          <control name="supportInsideInputWidgetEffects">true</control>
+        </controls>
+      </widget>
+      <widget name="manager" type="complex">
+        <labels>
+          <label mode="any">Manager</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>vs:manager</field>
+        </fields>
+        <subWidgets>
+          <widget name="firstname" type="text">
+            <labels>
+              <label mode="any">Firstname</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>firstname</field>
+            </fields>
+            <controls mode="any">
+              <!-- enable ajax submit on change/click/select on demo application -->
+              <control name="supportInsideInputWidgetEffects">true</control>
+            </controls>
+          </widget>
+          <widget name="lastname" type="text">
+            <labels>
+              <label mode="any">Lastname</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>lastname</field>
+            </fields>
+          </widget>
+        </subWidgets>
+      </widget>
+      <widget name="roles" type="list">
+        <labels>
+          <label mode="any">Roles</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>vs:roles</field>
+        </fields>
+        <subWidgets>
+          <widget name="role" type="text">
+            <labels>
+              <label mode="any"></label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field></field>
+            </fields>
+          </widget>
+        </subWidgets>
+      </widget>
+      <widget name="users" type="list">
+        <labels>
+          <label mode="any">Users</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>vs:users</field>
+        </fields>
+        <subWidgets>
+          <widget name="fn" type="text">
+            <labels>
+              <label mode="any">Firstname</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>firstname</field>
+            </fields>
+          </widget>
+          <widget name="ln" type="text">
+            <labels>
+              <label mode="any">Lastname</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>lastname</field>
+            </fields>
+          </widget>
+        </subWidgets>
+      </widget>
+      <widget name="listOfListsWidget" type="list">
+        <labels>
+          <label mode="any">List of lists</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>vs:listOfLists</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="diff">true</property>
+        </properties>
+        <properties widgetMode="any">
+          <property name="display">block_left</property>
+        </properties>
+        <!-- subwidgets for complex -->
+        <subWidgets>
+          <widget name="stringListItem" type="list">
+            <fields>
+              <field>stringListItem</field>
+            </fields>
+            <labels>
+              <label mode="any">String list item</label>
+            </labels>
+            <properties mode="any">
+              <property name="listTemplateItem">
+                #{nxd:propertyDefaultValue('lds:listOfLists/stringListItem')}
+              </property>
+            </properties>
+            <properties widgetMode="any">
+              <property name="hideSubLabels">true</property>
+            </properties>
+            <subWidgets>
+              <widget name="stringListSubItem" type="text">
+                <labels>
+                  <label mode="any"></label>
+                </labels>
+                <fields>
+                  <field>#{value}</field>
+                </fields>
+              </widget>
+            </subWidgets>
+          </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>
