@@ -1,0 +1,30 @@
+<ui:decorate
+  template="/layouts/layout_listing_ajax_template.xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <ui:define name="listing_row">
+    <c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
+    <c:set var="trSelectedStyleClass" value="#{nxu:test(value.data.id == currentDocument.id, 'selectedItem', '')}" />
+    <tr data-docref="#{value.data.id}" class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')} jsDamItem #{trSelectedStyleClass}"
+      onclick="nuxeo.dam.selectDocument(event, '#{value.data.id}')">
+      <nxl:layoutColumn>
+        <td class="#{layoutColumn.properties.columnStyleClass}" dir="auto">
+          <nxl:layoutColumnWidget>
+            <nxl:widget widget="#{widget}" value="#{value}" />
+            <c:if test="#{layoutColumn.size > 1 and layoutColumn.size > widgetIndex + 1 and widgetIndex > 0}">
+              <br />
+            </c:if>
+          </nxl:layoutColumnWidget>
+        </td>
+      </nxl:layoutColumn>
+    </tr>
+  </ui:define>
+
+</ui:decorate>
