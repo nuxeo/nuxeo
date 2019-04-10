@@ -1,0 +1,98 @@
+<component name="org.nuxeo.template.service.TemplateProcessorComponent">
+
+  <documentation>
+    Template processor service that is used to configure DocumentModel
+    rendering via template (ex: merge DocumentModel with a MSWord or
+    OpenOffice template file).
+
+    <p>It support an ExtensionPoint to contribute template
+      processors.</p>
+
+    @version 1.0
+    @author
+    <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+  </documentation>
+
+  <implementation class="org.nuxeo.template.service.TemplateProcessorComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.template.api.TemplateProcessorService" />
+  </service>
+
+  <extension-point name="processor">
+
+    <documentation>
+
+      <p>
+      Extension allowing one to register a new TemplateProcessor.
+      </p>
+      <p>
+
+      A TemplateProcessor is a class associated with a format (mime-type or
+      extension) and that can be used to render a DocumentModel via type
+      type of template.
+
+      For instance :
+      </p>
+
+      <code>
+        <templateProcessor name="XDocReportProcessor"
+          label="XDocReport processor" default="true"
+          class="org.nuxeo.template.processors.xdocreport.XDocReportProcessor">
+          <supportedMimeType>application/vnd.oasis.opendocument.text</supportedMimeType>
+          <supportedMimeType>application/vnd.openxmlformats-officedocument.wordprocessingml.document</supportedMimeType>
+          <supportedExtension>odt</supportedExtension>
+          <supportedExtension>docx</supportedExtension>
+        </templateProcessor>
+
+      </code>
+
+    </documentation>
+
+    <object
+      class="org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor" />
+
+  </extension-point>
+
+
+  <extension-point name="contextExtension">
+
+    <documentation>
+
+      <p>
+      Extension allowing to register a new ContentExtensionFactory that will be used to add custom objects inside the rendering context.
+      </p>
+
+      <code>
+
+
+      </code>
+
+    </documentation>
+
+    <object
+      class="org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor" />
+
+  </extension-point>
+
+
+  <extension-point name="outputFormat">
+
+    <documentation>
+      <p>
+        Extension allowing to register a output formats for rendered template. If no
+        chainId is specified, the ConvertBlob operation will be called with
+        the mime-type as parameter.
+      </p>
+      <code>
+        <outputFormat id="doc" label="DOC" mimetype="application/msword"/>
+        <outputFormat id="deckJsToPDF" label="PDF (from DeckJS)" chainId="deckJs2PDF" mimetype="application/pdf"/>
+      </code>
+    </documentation>
+
+    <object
+      class="org.nuxeo.template.api.descriptor.OutputFormatDescriptor" />
+
+  </extension-point>
+
+</component>
