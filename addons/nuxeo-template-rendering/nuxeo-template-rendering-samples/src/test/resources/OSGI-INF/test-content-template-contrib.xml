@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.template.contentTemplate.test">
+
+  <require>org.nuxeo.template.contentTemplate</require>
+
+  <extension target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService" point="postContentCreationHandlers">
+
+    <postContentCreationHandler name="templateSamplesImporter" class="org.nuxeo.template.samples.importer.InitListener" enabled="false" />
+
+  </extension>
+
+</component>

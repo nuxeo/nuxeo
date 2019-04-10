@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo 3D DM
+Bundle-SymbolicName: org.nuxeo.ecm.platform.threed.jsf;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateless
+Nuxeo-Component: OSGI-INF/threed-types-contrib.xml, OSGI-INF/threed-layouts-contrib.xml
+Eclipse-LazyStart: true
+Require-Bundle: org.nuxeo.ecm.platform.types.api,
+ org.nuxeo.ecm.webapp.base,
+ org.nuxeo.ecm.platform.search.api,
+ org.nuxeo.ecm.platform.web.common,
+ org.nuxeo.ecm.platform.url.core
