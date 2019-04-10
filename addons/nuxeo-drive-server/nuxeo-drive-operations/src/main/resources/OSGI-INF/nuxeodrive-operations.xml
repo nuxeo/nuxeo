@@ -1,0 +1,44 @@
+<component name="org.nuxeo.drive.operations.NuxeoDriveGetRootsOperation">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+    <operation class="org.nuxeo.drive.operations.GetRepositoriesOperation" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveGetChangeSummary" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveGetRootsOperation" />
+    <operation
+      class="org.nuxeo.drive.operations.NuxeoDriveSetSynchronizationOperation" />
+    <operation
+      class="org.nuxeo.drive.operations.NuxeoDriveGetTopLevelFolder" />
+    <operation
+      class="org.nuxeo.drive.operations.NuxeoDriveFileSystemItemExists" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveGetFileSystemItem" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveGetChildren" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveScrollDescendants" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveCreateFolder" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveCreateFile" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveUpdateFile" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveAttachBlob" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveDelete" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveRename" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveCanMove" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveMove" />
+    <operation
+      class="org.nuxeo.drive.operations.NuxeoDriveGenerateConflictedItemName" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveGetClientUpdateInfo" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveAddToLocallyEditedCollection" />
+    <!-- For test purpose -->
+    <operation
+      class="org.nuxeo.drive.operations.test.NuxeoDriveSetupIntegrationTests" />
+    <operation
+      class="org.nuxeo.drive.operations.test.NuxeoDriveTearDownIntegrationTests" />
+    <operation
+      class="org.nuxeo.drive.operations.test.NuxeoDriveWaitForAsyncCompletion" />
+    <operation
+      class="org.nuxeo.drive.operations.test.NuxeoDriveSetVersioningOptions" />
+    <operation
+      class="org.nuxeo.drive.operations.test.NuxeoDriveCreateTestDocuments" />
+    <operation
+      class="org.nuxeo.drive.operations.test.NuxeoDriveSetActiveFactories" />
+  </extension>
+
+</component>

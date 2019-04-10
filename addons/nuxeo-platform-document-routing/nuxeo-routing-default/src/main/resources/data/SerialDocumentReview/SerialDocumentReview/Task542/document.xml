@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="Task542">
+  <system>
+    <type>RouteNode</type>
+    <path>SerialDocumentReview/Task542</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>facet-var_Task542</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common"></schema>
+  <schema xmlns:var_Task542="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_Task542" name="var_Task542"></schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:description><![CDATA[Thank you for validating the document]]></dc:description>
+    <dc:title><![CDATA[wf.serialDocumentReview.updateRequest]]></dc:title>
+  </schema>
+  <schema xmlns:rnode="http://www.nuxeo.org/ecm/schemas/route_node/" name="route_node">
+    <rnode:taskDocType><![CDATA[TaskDoc]]></rnode:taskDocType>
+    <rnode:taskButtons>
+      <button>
+        <filter><![CDATA[]]></filter>
+        <name><![CDATA[cancel]]></name>
+        <label><![CDATA[wf.serialDocumentReview.cancel]]></label>
+        <validate><![CDATA[true]]></validate>
+      </button>
+      <button>
+        <filter><![CDATA[]]></filter>
+        <name><![CDATA[submit]]></name>
+        <label><![CDATA[wf.serialDocumentReview.submit]]></label>
+        <validate><![CDATA[true]]></validate>
+      </button>
+    </rnode:taskButtons>
+    <rnode:transitions>
+      <transition>
+        <path>
+          <pathpoint>
+            <x><![CDATA[200.0]]></x>
+            <y><![CDATA[0.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[200.0]]></x>
+            <y><![CDATA[130.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[130.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[260.0]]></y>
+          </pathpoint>
+        </path>
+        <condition><![CDATA[NodeVariables["button"] =="cancel"]]></condition>
+        <chain><![CDATA[]]></chain>
+        <targetId><![CDATA[Task5c1]]></targetId>
+        <name><![CDATA[sdr_cancelationTask542]]></name>
+        <label><![CDATA[sdr_cancelation]]></label>
+      </transition>
+      <transition>
+        <path>
+          <pathpoint>
+            <x><![CDATA[380.0]]></x>
+            <y><![CDATA[80.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[380.0]]></x>
+            <y><![CDATA[103.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[71.0]]></x>
+            <y><![CDATA[103.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[71.0]]></x>
+            <y><![CDATA[-30.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[-30.0]]></y>
+          </pathpoint>
+          <pathpoint>
+            <x><![CDATA[0.0]]></x>
+            <y><![CDATA[0.0]]></y>
+          </pathpoint>
+        </path>
+        <condition><![CDATA[NodeVariables["button"] =="submit"]]></condition>
+        <chain><![CDATA[]]></chain>
+        <targetId><![CDATA[Task6d8]]></targetId>
+        <name><![CDATA[sdr_submissionTask542]]></name>
+        <label><![CDATA[sdr_submission]]></label>
+      </transition>
+    </rnode:transitions>
+    <rnode:taskLayout><![CDATA[Task542@taskLayout]]></rnode:taskLayout>
+    <rnode:taskY><![CDATA[280]]></rnode:taskY>
+    <rnode:variablesFacet><![CDATA[facet-var_Task542]]></rnode:variablesFacet>
+    <rnode:taskX><![CDATA[620]]></rnode:taskX>
+    <rnode:inputChain><![CDATA[]]></rnode:inputChain>
+    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
+    <rnode:hasMultipleTasks><![CDATA[false]]></rnode:hasMultipleTasks>
+    <rnode:allowTaskReassignment><![CDATA[false]]></rnode:allowTaskReassignment>
+    <rnode:stop><![CDATA[false]]></rnode:stop>
+    <rnode:taskAssignees/>
+    <rnode:taskDueDateExpr><![CDATA[CurrentDate.days(5)]]></rnode:taskDueDateExpr>
+    <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
+    <rnode:escalationRules/>
+    <rnode:outputChain><![CDATA[nextAssignee]]></rnode:outputChain>
+    <rnode:taskDirective><![CDATA[wf.serialDocumentReview.updateRequest.directive]]></rnode:taskDirective>
+    <rnode:taskAssigneesExpr><![CDATA[workflowInitiator]]></rnode:taskAssigneesExpr>
+    <rnode:nodeId><![CDATA[Task542]]></rnode:nodeId>
+    <rnode:start><![CDATA[false]]></rnode:start>
+  </schema>
+</document>

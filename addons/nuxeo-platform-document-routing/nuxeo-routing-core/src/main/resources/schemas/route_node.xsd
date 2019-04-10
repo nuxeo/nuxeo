@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:node="http://www.nuxeo.org/ecm/schemas/route_node/"
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/route_node/">
+
+  <xs:include schemaLocation="base.xsd" />
+
+  <xs:element name="nodeId" type="xs:string" />
+  <xs:element name="variablesFacet" type="xs:string" />
+  <xs:element name="inputChain" type="xs:string" />
+  <xs:element name="outputChain" type="xs:string" />
+  <xs:element name="transitions" type="node:transitions" />
+  <xs:element name="start" type="xs:boolean" />
+  <xs:element name="stop" type="xs:boolean" />
+  <xs:element name="merge" type="xs:string" /> <!-- (null)/one/all -->
+  <xs:element name="executeOnlyFirstTransition" type="xs:boolean" />
+  <xs:element name="subRouteModelExpr" type="xs:string" />
+  <xs:element name="subRouteVariables" type="node:keyvalues" />
+
+  <xs:element name="hasTask" type="xs:boolean" />
+  <xs:element name="hasMultipleTasks" type="xs:boolean" />
+  <xs:element name="taskDirective" type="xs:string" />
+  <xs:element name="taskDescription" type="xs:string" />
+  <xs:element name="taskDueDate" type="xs:date" />
+  <xs:element name="taskDueDateExpr" type="xs:string" />
+  <xs:element name="taskAssignees" type="node:stringList" />
+  <xs:element name="taskAssigneesExpr" type="xs:string" />
+  <xs:element name="taskAssigneesPermission" type="xs:string" />
+  <xs:element name="taskLayout" type="xs:string" />
+  <xs:element name="taskDocType" type="xs:string" />
+  <xs:element name="taskNotificationTemplate" type="xs:string" />
+  <xs:element name="taskButtons" type="node:buttons" />
+
+  <xs:element name="lastActor" type="xs:string" /> <!-- audit -->
+  <xs:element name="count" type="xs:int" /> <!-- audit -->
+  <xs:element name="startDate" type="xs:date" /> <!-- audit -->
+  <xs:element name="endDate" type="xs:date" /> <!-- audit -->
+  <xs:element name="canceled" type="xs:int" /> <!-- audit -->
+  <xs:element name="subRouteInstanceId" type="xs:string" />
+  <xs:element name="button" type="xs:string" />
+
+  <!-- used to display the graphView -->
+  <xs:element name="taskX" type="xs:string" />
+  <xs:element name="taskY" type="xs:string" />
+  <xs:element name="escalationRules" type="node:escalation_rules" />
+  <xs:element name="tasksInfo" type="node:tasks_info" />
+  <xs:element name="allowTaskReassignment" type="xs:boolean"
+    default="true" />
+
+  <xs:complexType name="transitions">
+    <xs:sequence>
+      <xs:element name="transition" type="node:transition"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="transition">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="label" type="xs:string" />
+      <xs:element name="description" type="xs:string" />
+      <xs:element name="targetId" type="xs:string" />
+      <xs:element name="condition" type="xs:string" />
+      <xs:element name="result" type="xs:boolean" /> <!-- runtime -->
+      <xs:element name="chain" type="xs:string" />
+      <xs:element name="path" type="node:path" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="buttons">
+    <xs:sequence>
+      <xs:element name="button" type="node:button" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="button">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="label" type="xs:string" />
+      <xs:element name="filter" type="xs:string" />
+      <xs:element name="validate" type="xs:boolean" default="true"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="escalation_rules">
+    <xs:sequence>
+      <xs:element name="escalation_rule" type="node:escalation_rule"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="escalation_rule">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="label" type="xs:string" />
+      <xs:element name="multipleExecution" type="xs:boolean"
+        default="false" />
+      <xs:element name="condition" type="xs:string" />
+      <xs:element name="executed" type="xs:boolean" default="false" />
+      <xs:element name="chain" type="xs:string" />
+      <!-- last time the rule was executed -->
+      <xs:element name="executionDate" type="xs:date" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="keyvalues">
+    <xs:sequence>
+      <xs:element name="keyvalue" type="node:keyvalue"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="keyvalue">
+    <xs:sequence>
+      <xs:element name="key" type="xs:string" />
+      <xs:element name="value" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="path">
+    <xs:sequence>
+      <xs:element name="pathpoint" type="node:pathpoint" minOccurs="0"
+                  maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="pathpoint">
+    <xs:sequence>
+      <xs:element name="x" type="xs:float" />
+      <xs:element name="y" type="xs:float" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tasks_info">
+    <xs:sequence>
+      <xs:element name="task_info" type="node:task_info"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="task_info">
+    <xs:sequence>
+      <xs:element name="actor" type="xs:string" />
+      <xs:element name="comment" type="xs:string" />
+      <xs:element name="status" type="xs:string" />
+      <xs:element name="taskDocId" type="xs:string" />
+      <xs:element name="ended" type="xs:boolean" default="false" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
