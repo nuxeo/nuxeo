@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.csv.core.workmanager" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="csvImporter">
+      <maxThreads>1</maxThreads>
+      <category>csvImporter</category>
+    </queue>
+  </extension>
+
+</component>
