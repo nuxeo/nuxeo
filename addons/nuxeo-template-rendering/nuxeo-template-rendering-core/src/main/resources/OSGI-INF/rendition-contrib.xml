@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.platform.TemplateSources.rendition.contrib">
+
+  <require>org.nuxeo.ecm.platform.rendition.contrib</require>
+
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
+    point="renditionDefinitions">
+    <renditionDefinition name="delivery" enabled="true" class="org.nuxeo.template.rendition.TemplateBasedRenditionProvider">
+      <icon>/icons/delivery.png</icon>
+      <label>label.rendition.delivery</label>
+    </renditionDefinition>
+    <renditionDefinition name="webView" enabled="true" class="org.nuxeo.template.rendition.TemplateBasedRenditionProvider">
+      <icon>/icons/htmlView.png</icon>
+      <label>label.rendition.webView</label>
+    </renditionDefinition>
+  </extension>
+
+</component>
