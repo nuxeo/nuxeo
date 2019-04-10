@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.chemistry.tests.types">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="mylib" src="schemas/mylib.xsd" />
+    <schema name="myschema" src="schemas/myschema.xsd" prefix="my" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="MyDocType" extends="Document">
+      <schema name="common" />
+      <schema name="myschema" />
+      <schema name="dublincore" />
+      <prefetch>common.icon</prefetch>
+    </doctype>
+  </extension>
+
+</component>
