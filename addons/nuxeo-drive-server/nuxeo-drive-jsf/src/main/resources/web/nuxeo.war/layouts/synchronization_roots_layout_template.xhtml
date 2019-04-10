@@ -1,0 +1,45 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="http://richfaces.org/a4j"
+  id="#{layout.id}">
+
+<c:if test="#{layout.mode == 'header'}">
+  <tr>
+    <nxl:layoutRow>
+      <nxl:layoutRowWidget>
+        <th>
+          <h:outputText value="#{widget.label}" rendered="#{!widget.translated}" />
+          <h:outputText value="#{messages[widget.label]}" rendered="#{widget.translated}" />
+        </th>
+      </nxl:layoutRowWidget>
+    </nxl:layoutRow>
+    <th>
+      <h:outputText value="#{messages['user.center.nuxeoDrive.syncRoots.actions']}" />
+    </th>
+  </tr>
+</c:if>
+
+<c:if test="#{layout.mode == 'list'}">
+  <tr class="#{syncRootClass}">
+    <nxl:layoutRow>
+      <nxl:layoutRowWidget>
+        <td class="fieldColumn">
+          <nxl:widget widget="#{widget}" value="#{value}" />
+        </td>
+      </nxl:layoutRowWidget>
+    </nxl:layoutRow>
+    <td class="fieldColumn">
+      <a4j:commandButton value="#{messages['user.center.nuxeoDrive.syncRoots.unsynchronizeRoot']}"
+        id="#{layout.id}_unsynchronizeButton"
+        styleClass="button"
+        action="#{nuxeoDriveActions.unsynchronizeRoot(value)}"
+        immediate="true"
+        render="syncRootsPanel" />
+    </td>
+  </tr>
+</c:if>
+
+</f:subview>

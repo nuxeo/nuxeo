@@ -1,0 +1,84 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+ <script>
+  jQuery(document).ready(function() {
+	  changeUnlimited();
+  });
+
+  function changeUnlimited() {
+     var checked = jQuery("#set_quota_userworkspace_form input[type='radio']:checked").val();
+     setUnlimited(checked);
+  }
+
+  function setUnlimited(isUnlimited) {
+    if (isUnlimited == 'false' || !isUnlimited) {
+      jQuery("#sliderTable").css("display","none");
+    } else {
+      jQuery("#sliderTable").css("display","block");
+    }
+  }
+</script>
+
+ <a4j:queue name="quotaActivateQueue"/>
+ <a4j:outputPanel id="quotaActivateQueueReg">
+
+ <h:form>
+  <a4j:poll id="checkQuotaStatus" interval="5000"
+   enabled="true"
+   render="setQuotaOnUserWorkspacesPanel checkQuotaStatus quotaActivateQueueReg" />
+ </h:form>
+
+  <a4j:outputPanel id="setQuotaOnUserWorkspacesPanel"
+    layout="block"
+    rendered="#{!quotaStatsActions.workQueuesInProgess()}">
+
+  <h:form id="set_quota_userworkspace_form">
+
+   <table class="dataInput fullWidth">
+     <tr>
+      <td class="labelColumn">
+       <h:outputText value="#{messages['adm.quota.set.personalworkspace']}"/>
+     </td>
+    <td>
+     <h:selectOneRadio id="unlimitedChk" value="#{quotaStatsActions.activateQuotaOnUsersWorkspaces}"
+     onchange="changeUnlimited()">
+     <f:selectItem
+      itemLabel="#{messages['label.forum.thread.moderated.yes']}"
+      itemValue="#{true}"/>
+     <f:selectItem
+      itemLabel="#{messages['label.forum.thread.moderated.no']}"
+      itemValue="#{false}"/>
+     </h:selectOneRadio>
+   </td>
+   </tr>
+   </table>
+   <nxu:set var="canEditQuota" cache="true" value="#{webActions.checkFilter('editQuota')}">
+   <div id="sliderTable">
+     <nxl:layout mode="#{nxu:test(canEditQuota, 'edit', 'view')}" name="edit_userworkspaces_quota" value="#{quotaStatsActions}" />
+   </div>
+  </nxu:set>
+
+  <nxh:commandButton action="#{quotaStatsActions.saveQuotaActivatedOnUsersWorkspaces}"
+    id="activate_quota_on_userworkspaces"
+    value="#{messages['command.save']}" render="setQuotaOnUserWorkspacesPanel checkQuotaStatus"
+    styleClass="button" />
+
+  <h:message styleClass="errorMessage"
+      for="unlimitedChk" id="unlimitedChk_message" />
+
+  </h:form>
+ <h:messages/>
+ </a4j:outputPanel>
+ <h:outputText value="#{messages['status.quota.initialComputationInProgress']}" rendered="#{quotaStatsActions.workQueuesInProgess()}" class="processMessage running"/>
+</a4j:outputPanel>
+
+</div>
