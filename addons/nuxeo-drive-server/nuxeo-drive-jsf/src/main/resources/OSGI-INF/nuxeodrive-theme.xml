@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.theme">
+
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+  <extension point="applications" target="org.nuxeo.theme.services.ThemeService">
+
+    <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
+
+      <!-- Cache control for theme resources (/nxthemes-lib/) -->
+      <resource-caching>
+        <lifetime>36000</lifetime>
+      </resource-caching>
+      <!-- Cache control for theme styles (/nxthemes-css/) -->
+      <style-caching>
+        <lifetime>900</lifetime>
+      </style-caching>
+
+      <view id="/drive_metadata.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+
+    </application>
+  </extension>
+</component>
