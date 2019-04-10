@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.csv.core.test.ui-types">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+    <type id="Root">
+      <label>Server Root</label>
+    </type>
+    <type id="Folder">
+      <label>Folder</label>
+    </type>
+  </extension>
+
+</component>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.spreadsheet.pageproviders">
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+             point="providers">
+    <coreQueryPageProvider name="spreadsheet_query">
+      <property name="maxResults">1000</property>
+      <pattern quoteParameters="false" escapeParameters="false">?</pattern>
+      <pageSize>1000</pageSize>
+    </coreQueryPageProvider>
+  </extension>
+</component>
