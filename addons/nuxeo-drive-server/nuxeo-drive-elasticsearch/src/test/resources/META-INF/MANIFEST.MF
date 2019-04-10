@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Name: org.nuxeo.drive.elasticsearch.test
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.drive.elasticsearch.test;singleton:=true
