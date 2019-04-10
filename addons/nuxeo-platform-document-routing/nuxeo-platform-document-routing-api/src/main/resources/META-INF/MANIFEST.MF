@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Routing API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.routing.api;singleton=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
