@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.opencmis.impl.server.querymaker"
+  version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService"
+    point="queryMaker">
+    <queryMaker name="CMISQL">
+      org.nuxeo.ecm.core.opencmis.impl.server.CMISQLQueryMaker
+    </queryMaker>
+  </extension>
+
+</component>
