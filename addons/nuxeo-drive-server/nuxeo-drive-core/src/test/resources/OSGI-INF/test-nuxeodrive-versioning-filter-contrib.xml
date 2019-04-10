@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.versioning.filter.test" version="1.0">
+
+  <require>org.nuxeo.drive.versioning</require>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <!-- We want to override the delay -->
+    <filter id="versioning-delay">
+      <condition>#{currentDocument.dc.modified.time - previousDocument.dc.modified.time >= 1000}</condition>
+    </filter>
+  </extension>
+
+</component>
