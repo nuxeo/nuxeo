@@ -1,0 +1,136 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-addons-parent</artifactId>
+    <version>5.6-I20120712_0221</version>
+  </parent>
+  <groupId>org.nuxeo.template.rendering</groupId>
+  <artifactId>nuxeo-template-rendering-parent</artifactId>
+  <name>Nuxeo Template Rendering Parent</name>
+  <description>Nuxeo Template Rendering Module</description>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-template-rendering-api</module>
+    <module>nuxeo-template-rendering-core</module>
+    <module>nuxeo-template-rendering-xdocreport</module>
+    <module>nuxeo-template-rendering-jxls</module>
+    <module>nuxeo-template-rendering-jod</module>
+    <module>nuxeo-template-rendering-sandbox</module>
+    <module>nuxeo-template-rendering-web</module>
+    <module>nuxeo-template-rendering-jaxrs</module>
+    <module>nuxeo-template-rendering-samples</module>
+    <module>nuxeo-template-rendering-package</module>
+  </modules>
+
+  <properties>
+    <xdocreport.version>0.9.8-SNAPSHOT</xdocreport.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- docx report - move to org.nuxeo:nuxeo-ecm when released -->
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.converter</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.core</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.document</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.document.odt</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.document.ods</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.document.docx</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.template</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.template.freemarker</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.remoting.resources</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-template-rendering.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-template-rendering.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-template-rendering</url>
+  </scm>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- Remove when using released versions of fr.opensagres.xdocreport -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <configuration>
+            <rules>
+              <requireReleaseDeps>
+                <message>No Snapshots Allowed!</message>
+                <onlyWhenRelease>true</onlyWhenRelease>
+                <excludes>
+                  <exclude>fr.opensagres.xdocreport:*</exclude>
+                  <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
+                  <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
+                </excludes>
+              </requireReleaseDeps>
+            </rules>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
