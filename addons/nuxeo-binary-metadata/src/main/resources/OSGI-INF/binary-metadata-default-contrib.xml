@@ -1,0 +1,37 @@
+<component name="org.nuxeo.binary.metadata.contribs">
+
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+
+  <extension target="org.nuxeo.binary.metadata"
+             point="metadataProcessors">
+    <processor id="exifTool"
+               class="org.nuxeo.binary.metadata.internals.ExifToolProcessor"/>
+  </extension>
+
+  <extension
+          target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+          point="command">
+
+    <command name="exiftool-read-taglist" enabled="true">
+      <commandLine>exiftool</commandLine>
+      <parameterString>-G -json #{tagList} #{inFilePath}</parameterString>
+      <installationDirective>You need to install exiftool
+      </installationDirective>
+    </command>
+
+    <command name="exiftool-read" enabled="true">
+      <commandLine>exiftool</commandLine>
+      <parameterString>-G -json #{inFilePath}</parameterString>
+      <installationDirective>You need to install exiftool
+      </installationDirective>
+    </command>
+
+    <command name="exiftool-write" enabled="true">
+      <commandLine>exiftool</commandLine>
+      <parameterString>-G #{tagList} #{inFilePath}</parameterString>
+      <installationDirective>You need to install exiftool
+      </installationDirective>
+    </command>
+
+  </extension>
+</component>
