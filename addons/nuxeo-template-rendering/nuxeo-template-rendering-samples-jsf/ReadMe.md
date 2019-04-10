@@ -1,0 +1,2 @@
+This module contributes UI level extensions for the template-rendering-samples module.
+These extensions were extracted from the template-module-demo Studio project when its dependency to the nuxeo-jsf-ui package was removed, as of Nuxeo version 9.3.

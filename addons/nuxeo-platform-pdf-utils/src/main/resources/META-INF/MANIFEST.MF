@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: org.nuxeo.ecm.platform.pdf;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Name: nuxeo-platform-pdf-utils
+Bundle-ClassPath: .
+Bundle-ActivationPolicy: lazy
+Bundle-ManifestVersion: 2
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/pdf-utils-operations.xml,OSGI-INF/service-contrib.xml

@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<project name="Nuxeo Platform Spreadsheet" default="build" basedir=".">
+  <property file="build.properties" />
+
+  <!-- set executable names based on OS family -->
+  <condition property="cmd.npm" value="npm.cmd" else="npm">
+    <os family="windows"/>
+  </condition>
+  <condition property="cmd.bower" value="bower.cmd" else="bower">
+    <os family="windows"/>
+  </condition>
+  <condition property="cmd.gulp" value="gulp.cmd" else="gulp">
+    <os family="windows"/>
+  </condition>
+
+  <target name="clean-cache" description="Clean npm and bower cache"
+          unless="skipCleanCache">
+    <delete dir="node_modules" failonerror="true" />
+    <delete dir="app/bower_components" failonerror="true" />
+    <exec executable="${cmd.npm}" failonerror="true">
+      <arg value="cache" />
+      <arg value="clean" />
+      <arg value="--force" />
+    </exec>
+    <exec executable="${cmd.bower}" failonerror="true">
+      <arg value="cache" />
+      <arg value="clean" />
+    </exec>
+  </target>
+
+  <target name="init" description="Download all node and web dependencies"
+          depends="clean-cache">
+    <exec executable="${cmd.npm}" failonerror="true">
+      <arg value="install" />
+    </exec>
+    <exec executable="${cmd.bower}" failonerror="true">
+      <arg value="install" />
+    </exec>
+  </target>
+
+  <target name="build" depends="init,build-with-tests,build-skip-tests" />
+  <target name="build-with-tests" unless="skipTests">
+    <echo message="build and test" />
+    <exec executable="${cmd.gulp}" failonerror="true">
+      <arg value="build" />
+    </exec>
+    <mkdir dir="../../../target/surefire-reports" />
+    <copy file="test-results.xml"
+          todir="../../../target/surefire-reports"
+          failonerror="false" />
+  </target>
+  <target name="build-skip-tests" if="skipTests">
+    <exec executable="${cmd.gulp}" failonerror="true">
+      <arg value="build" /> <!-- TODO(nsilva) build-skip-tests -->
+    </exec>
+  </target>
+
+  <target name="web" depends="build" description="Build and copy to nuxeo.war directory">
+    <copy todir="${nuxeo.war.dir}">
+      <fileset dir="../../../target/classes/web/nuxeo.war" />
+    </copy>
+  </target>
+
+</project>

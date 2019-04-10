@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-addons-parent</artifactId>
+    <version>9.10-HF23</version>
+  </parent>
+  
+  <groupId>org.nuxeo.utils</groupId>
+  <artifactId>nuxeo-target-platforms-parent</artifactId>
+  <name>Nuxeo Target Platforms - Parent Pom</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-target-platforms-api</module>
+    <module>nuxeo-target-platforms-core</module>
+    <module>nuxeo-target-platforms-io</module>
+    <module>nuxeo-target-platforms-jsf</module>
+    <module>nuxeo-target-platforms-jaxrs</module>
+    <module>nuxeo-target-platforms-sample</module>
+    <module>nuxeo-target-platforms-compat</module>
+  </modules>
+
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-target-platforms.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-target-platforms.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-target-platforms</url>
+  </scm>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+</project>

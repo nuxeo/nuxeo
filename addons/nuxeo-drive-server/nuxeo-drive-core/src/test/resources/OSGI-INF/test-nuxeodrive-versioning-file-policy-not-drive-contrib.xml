@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.versioning.test.file.not-drive" version="1.0">
+
+  <!-- These contributions replace the former behavior of Drive versioning when an automatic policy is setup
+   and `nuxeo.drive.force.versioning` = true -->
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="drive-force-versioning" increment="NONE" order="200">
+      <filter-id>file-type-filter</filter-id>
+      <filter-id>drive-filter</filter-id>
+      <filter-id>drive-force-versioning-filter</filter-id>
+    </policy>
+    <policy id="version-file" increment="MINOR" order="210">
+      <filter-id>file-type-filter</filter-id>
+    </policy>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <filter id="file-type-filter">
+      <type>File</type>
+    </filter>
+    <filter id="drive-force-versioning-filter">
+      <condition>
+        #{currentDocument.dc.modified.time - previousDocument.dc.modified.time &lt; 1000 and previousDocument.dc.lastContributor == currentDocument.dc.lastContributor}
+      </condition>
+    </filter>
+  </extension>
+
+</component>

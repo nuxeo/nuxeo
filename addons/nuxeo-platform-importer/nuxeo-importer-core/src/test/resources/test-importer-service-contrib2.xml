@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.importer.service.test.contrib2">
+
+  <extension target="org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent" point="importerConfiguration">
+   <importerConfig sourceNodeClass ="org.nuxeo.ecm.platform.importer.source.FileWithNonHeritedIndividalMetaDataSourceNode" >
+       <documentModelFactory leafType="File" folderishType="Folder" documentModelFactoryClass="org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory" />
+       <enablePerfLogging>false</enablePerfLogging>
+   </importerConfig>
+  </extension>
+</component>

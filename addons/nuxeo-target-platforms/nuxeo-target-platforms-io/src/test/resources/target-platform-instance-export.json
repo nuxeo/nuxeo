@@ -1,0 +1,24 @@
+{
+  "default" : false,
+  "deprecated" : false,
+  "description" : "This target platform is the last LTS.",
+  "downloadLink" : "http://community.nuxeo.com/static/releases/nuxeo-5.8/nuxeo-cap-5.8-tomcat.zip",
+  "enabled" : true,
+  "enabledPackages" : {
+  },
+  "enabledPackagesIds" : [ ],
+  "endOfAvailability" : null,
+  "fastTrack" : false,
+  "id" : "cap-5.8",
+  "label" : "Nuxeo Platform",
+  "name" : "cap",
+  "overridden" : false,
+  "parent" : null,
+  "refVersion" : "5.8",
+  "releaseDate" : 1379894400000,
+  "restricted" : false,
+  "status" : "supported",
+  "trial" : false,
+  "types" : [ ],
+  "version" : "5.8"
+}
