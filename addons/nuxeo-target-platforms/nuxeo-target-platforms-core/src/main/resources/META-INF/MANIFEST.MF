@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Target Platforms Core
+Bundle-SymbolicName: org.nuxeo.targetplatforms.core;singleton:=true
+Bundle-Version: 0.1.0
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/targetplatforms-framework.xml
