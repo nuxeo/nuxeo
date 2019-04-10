@@ -1,0 +1,37 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  <f:view contentType="text/html" />
+  <h:head>
+    <title>Test distributed transaction</title>
+  </h:head>
+  <h:outputScript name="js/fixviewstate.js" target="head" />
+  <h:outputScript name="js/fixformtargetframeid.js" target="head" />
+
+<body>
+
+<h3>Test Seam concurrency issues </h3>
+
+<h:messages globalOnly="true"/>
+
+<h:form disableDoubleClickShield="true">
+  <ul>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performConcurrentRequestTimeoutException}"
+      value="Seam long blocking call" /> (increment a counter)
+      -- current value of counter is #{errorSeamComponent.counterValue}
+    </li>
+    <li>
+      <h:outputLink value ="/nuxeo/error_test_web/test_seam_concurrency.faces?conversationId=#{nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId)}">Refresh this page</h:outputLink> (simple GET)
+    </li>
+    <li>
+      <nxd:restDocumentLink document="#{currentDocument}" pattern="home" view="view_home">Rest link</nxd:restDocumentLink>
+    </li>
+  </ul>
+</h:form>
+
+</body>
+</html>
