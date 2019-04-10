@@ -1,0 +1,1137 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
+    <version>9.1</version>
+  </parent>
+
+  <artifactId>nuxeo-addons-parent</artifactId>
+  <name>Nuxeo Addons parent POM</name>
+  <packaging>pom</packaging>
+  <description>Nuxeo Addons parent POM</description>
+
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/addons.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/addons.git</developerConnection>
+    <url>https://github.com/nuxeo/addons</url>
+  </scm>
+
+  <properties>
+    <nuxeo.addons.version>9.1</nuxeo.addons.version>
+    <nuxeo.opencmis.version>9.1</nuxeo.opencmis.version>
+    <nuxeo.businessdays.version>9.1</nuxeo.businessdays.version>
+    <nuxeo.shell.version>9.1</nuxeo.shell.version>
+    <nuxeo.webembedded.version>9.1</nuxeo.webembedded.version>
+    <nuxeo.fsconnectors.version>9.1</nuxeo.fsconnectors.version>
+    <nuxeo.importer.version>9.1</nuxeo.importer.version>
+    <nuxeo.routing.version>9.1</nuxeo.routing.version>
+    <nuxeo.smartsearch.version>9.1</nuxeo.smartsearch.version>
+    <nuxeo.audio.version>9.1</nuxeo.audio.version>
+    <nuxeo.video.version>9.1</nuxeo.video.version>
+    <nuxeo.replication.version>9.1</nuxeo.replication.version>
+    <nuxeo.activity.version>9.1</nuxeo.activity.version>
+    <nuxeo.suggestbox.version>9.1</nuxeo.suggestbox.version>
+    <nuxeo.dam.version>9.1</nuxeo.dam.version>
+    <nuxeo.quota.version>9.1</nuxeo.quota.version>
+    <nuxeo.binary.metadata.version>9.1</nuxeo.binary.metadata.version>
+    <nuxeo.web.mobile.version>9.1</nuxeo.web.mobile.version>
+    <nuxeo.indexing.gateway.version>9.1</nuxeo.indexing.gateway.version>
+    <nuxeo.exalead.connector.version>9.1</nuxeo.exalead.connector.version>
+    <nuxeo.user.registration.version>9.1</nuxeo.user.registration.version>
+    <nuxeo.rating.version>9.1</nuxeo.rating.version>
+    <nuxeo.agenda.version>9.1</nuxeo.agenda.version>
+    <nuxeo.templates.version>9.1</nuxeo.templates.version>
+    <nuxeo.csv.version>9.1</nuxeo.csv.version>
+    <nuxeo.drive.version>9.1</nuxeo.drive.version>
+    <nuxeo.resources.compat.version>9.1</nuxeo.resources.compat.version>
+    <nuxeo.dmk.version>9.1</nuxeo.dmk.version>
+    <nuxeo.style.guide.version>9.1</nuxeo.style.guide.version>
+    <nuxeo.easyshare.version>9.1</nuxeo.easyshare.version>
+    <nuxeo.logs.viewer.version>9.1</nuxeo.logs.viewer.version>
+    <nuxeo.spreadsheet.version>9.1</nuxeo.spreadsheet.version>
+    <nuxeo.datadog.reporter.version>9.1</nuxeo.datadog.reporter.version>
+    <nuxeo.review.workflows.dashboards.version>9.1</nuxeo.review.workflows.dashboards.version>
+    <nuxeo.playground.version>9.1</nuxeo.playground.version>
+    <nuxeo.fsexporter.version>9.1</nuxeo.fsexporter.version>
+    <nuxeo.javaagent.version>9.1</nuxeo.javaagent.version>
+    <nuxeo.pdfutils.version>9.1</nuxeo.pdfutils.version>
+    <nuxeo.threed.version>9.1</nuxeo.threed.version>
+    <nuxeo.mqueues.version>9.1</nuxeo.mqueues.version>
+    <nuxeo.mongodb.ext.version>9.1</nuxeo.mongodb.ext.version>
+    
+    <!-- optional addons -->
+    <nuxeo.sync.version>9.1</nuxeo.sync.version>
+    <!-- end of optional addons -->
+  </properties>
+
+  <modules>
+    <module>nuxeo-platform-lang-ext</module>
+    <module>nuxeo-platform-lang-ext-incomplete</module>
+    <module>nuxeo-chemistry</module>
+    <module>nuxeo-business-days-management</module>
+    <module>nuxeo-core-binarymanager-sql</module>
+    <module>nuxeo-http-client</module>
+    <module>nuxeo-platform-document-routing</module>
+    <module>nuxeo-platform-error-web</module>
+    <module>nuxeo-platform-forms-layout-demo</module>
+    <module>nuxeo-platform-audio</module>
+    <module>nuxeo-platform-video</module>
+    <module>nuxeo-platform-user-registration</module>
+    <module>nuxeo-shell</module>
+    <module>nuxeo-filesystem-connectors</module>
+    <module>nuxeo-platform-shibboleth-groups-web</module>
+    <module>nuxeo-apidoc-server</module>
+    <module>nuxeo-activity</module>
+    <module>nuxeo-platform-suggestbox</module>
+    <module>nuxeo-dam</module>
+    <module>nuxeo-quota</module>
+    <module>nuxeo-platform-indexing-gateway</module>
+    <module>nuxeo-exalead-connector</module>
+    <module>nuxeo-signature</module>
+    <module>nuxeo-rating</module>
+    <module>nuxeo-multi-tenant</module>
+    <module>nuxeo-core-binarymanager-cloud</module>
+    <module>nuxeo-diff</module>
+    <module>nuxeo-template-rendering</module>
+    <module>nuxeo-csv</module>
+    <module>nuxeo-tree-snapshot</module>
+    <module>nuxeo-drive-server</module>
+    <module>nuxeo-resources-compat</module>
+    <module>nuxeo-dmk-adaptor</module>
+    <module>nuxeo-style-guide</module>
+    <module>nuxeo-javaagent</module>
+    <module>nuxeo-session-inspector</module>
+    <module>nuxeo-platform-importer</module>
+    <module>nuxeo-easyshare</module>
+    <module>nuxeo-duoweb-authentication</module>
+    <module>nuxeo-sample-project</module>
+    <module>nuxeo-logs-viewer</module>
+    <module>nuxeo-platform-spreadsheet</module>
+    <module>nuxeo-binary-metadata</module>
+    <module>nuxeo-segment.io-connector</module>
+    <module>nuxeo-liveconnect</module>
+    <module>nuxeo-media-publishing</module>
+    <module>nuxeo-datadog-reporter</module>
+    <module>nuxeo-review-workflows-dashboards</module>
+    <module>nuxeo-shibboleth-invitation</module>
+    <module>nuxeo-fsexporter</module>
+    <module>nuxeo-showcase-content-sample</module>
+    <module>nuxeo-platform-smart-search</module>
+    <module>nuxeo-connect-tools</module>
+    <module>nuxeo-platform-pdf-utils</module>
+    <module>nuxeo-platform-3d</module>
+    <module>nuxeo-mqueues</module>
+    <module>nuxeo-agenda</module>
+    <module>nuxeo-mongodb-ext</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Language extensions -->
+      <dependency>
+        <groupId>org.nuxeo</groupId>
+        <artifactId>nuxeo-platform-lang-ext</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo</groupId>
+        <artifactId>nuxeo-platform-lang-ext-incomplete</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- CMIS -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-opencmis-bindings</artifactId>
+        <version>${nuxeo.opencmis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-opencmis-impl</artifactId>
+        <version>${nuxeo.opencmis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-opencmis-tests</artifactId>
+        <version>${nuxeo.opencmis.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <!-- Business Days Management -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-business-days-management-api</artifactId>
+        <version>${nuxeo.businessdays.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-business-days-management-core</artifactId>
+        <version>${nuxeo.businessdays.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.shibboleth.invitation</groupId>
+        <artifactId>nuxeo-shibboleth-invitation</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Nuxeo Shell -->
+      <dependency>
+        <groupId>org.nuxeo.shell</groupId>
+        <artifactId>nuxeo-shell</artifactId>
+        <version>${nuxeo.shell.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.shell</groupId>
+        <artifactId>nuxeo-shell</artifactId>
+        <version>${nuxeo.shell.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.shell</groupId>
+        <artifactId>nuxeo-shell-automation</artifactId>
+        <version>${nuxeo.shell.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.shell</groupId>
+        <artifactId>nuxeo-shell-core</artifactId>
+        <version>${nuxeo.shell.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.shell</groupId>
+        <artifactId>nuxeo-shell-equinox</artifactId>
+        <version>${nuxeo.shell.version}</version>
+      </dependency>
+
+      <!-- User Registration -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-user-registration-core</artifactId>
+        <version>${nuxeo.user.registration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-user-registration-web</artifactId>
+        <version>${nuxeo.user.registration.version}</version>
+      </dependency>
+
+      <!-- Filesystem connectors -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-webdav</artifactId>
+        <version>${nuxeo.fsconnectors.version}</version>
+      </dependency>
+
+      <!-- Importer -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-importer-core</artifactId>
+        <version>${nuxeo.importer.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-importer-jaxrs</artifactId>
+        <version>${nuxeo.importer.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-importer-scan</artifactId>
+        <version>${nuxeo.importer.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-importer-queues</artifactId>
+        <version>${nuxeo.importer.version}</version>
+      </dependency>
+
+      <!-- Document Routing -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-api</artifactId>
+        <version>${nuxeo.routing.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-core</artifactId>
+        <version>${nuxeo.routing.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-core</artifactId>
+        <version>${nuxeo.routing.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-web</artifactId>
+        <version>${nuxeo.routing.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-dm</artifactId>
+        <version>${nuxeo.routing.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-dashboard</artifactId>
+        <version>${nuxeo.routing.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-default</artifactId>
+        <version>${nuxeo.routing.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-test</artifactId>
+        <version>${nuxeo.routing.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-rest-api</artifactId>
+        <version>${nuxeo.routing.version}</version>
+      </dependency>
+
+      <!-- Smart Search -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-smart-search</artifactId>
+        <version>${nuxeo.smartsearch.version}</version>
+      </dependency>
+
+      <!-- Audio -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-audio-core</artifactId>
+        <version>${nuxeo.audio.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-audio-jsf</artifactId>
+        <version>${nuxeo.audio.version}</version>
+      </dependency>
+
+      <!-- Video -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-video-api</artifactId>
+        <version>${nuxeo.video.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-video-core</artifactId>
+        <version>${nuxeo.video.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-video-convert</artifactId>
+        <version>${nuxeo.video.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-video-jsf</artifactId>
+        <version>${nuxeo.video.version}</version>
+      </dependency>
+
+      <!-- Documentation server -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-apidoc-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-apidoc-repo</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-apidoc-webengine</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Activity -->
+      <dependency>
+        <groupId>org.nuxeo.activity</groupId>
+        <artifactId>nuxeo-activity</artifactId>
+        <version>${nuxeo.activity.version}</version>
+      </dependency>
+
+      <!-- Suggest Box -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-suggestbox-core</artifactId>
+        <version>${nuxeo.suggestbox.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-suggestbox-jsf</artifactId>
+        <version>${nuxeo.suggestbox.version}</version>
+      </dependency>
+
+      <!-- Digital Asset Management -->
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam</artifactId>
+        <version>${nuxeo.dam.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-jsf</artifactId>
+        <version>${nuxeo.dam.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-web-ui</artifactId>
+        <version>${nuxeo.dam.version}</version>
+      </dependency>
+
+      <!-- Quota -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-quota-core</artifactId>
+        <version>${nuxeo.quota.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-quota-core-dependencies</artifactId>
+        <type>pom</type>
+        <version>${nuxeo.quota.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-quota-web</artifactId>
+        <version>${nuxeo.quota.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-quota-automation</artifactId>
+        <version>${nuxeo.quota.version}</version>
+      </dependency>
+
+      <!-- Binary Metadata -->
+      <dependency>
+        <groupId>org.nuxeo.binary.metadata</groupId>
+        <artifactId>nuxeo-binary-metadata</artifactId>
+        <version>${nuxeo.binary.metadata.version}</version>
+      </dependency>
+
+      <!-- External Indexer WS Gateway -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-indexing-gateway</artifactId>
+        <version>${nuxeo.indexing.gateway.version}</version>
+      </dependency>
+
+      <!-- Exalead Connector -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-exalead-connector</artifactId>
+        <version>${nuxeo.exalead.connector.version}</version>
+      </dependency>
+
+      <!-- Nuxeo Platform Signature -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-signature-api</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-signature-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-signature-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-signature-config</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-signature-core-dependencies</artifactId>
+        <type>pom</type>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Rating -->
+      <dependency>
+        <groupId>org.nuxeo.rating</groupId>
+        <artifactId>nuxeo-rating-api</artifactId>
+        <version>${nuxeo.rating.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.rating</groupId>
+        <artifactId>nuxeo-rating-core</artifactId>
+        <version>${nuxeo.rating.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.rating</groupId>
+        <artifactId>nuxeo-rating-web</artifactId>
+        <version>${nuxeo.rating.version}</version>
+      </dependency>
+
+      <!-- Agenda -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-agenda-core</artifactId>
+        <version>${nuxeo.agenda.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-agenda-jsf</artifactId>
+        <version>${nuxeo.agenda.version}</version>
+      </dependency>
+
+      <!-- Multi Tenant Management -->
+      <dependency>
+        <groupId>org.nuxeo.multi.tenant</groupId>
+        <artifactId>nuxeo-multi-tenant-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.multi.tenant</groupId>
+        <artifactId>nuxeo-multi-tenant-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Binary Managers -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-binarymanager-common</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-binarymanager-common</artifactId>
+        <version>${nuxeo.addons.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-binarymanager-s3</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-binarymanager-azure</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Nuxeo diff -->
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-content</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-pictures</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-test</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Sample project -->
+      <dependency>
+        <groupId>org.nuxeo.sample</groupId>
+        <artifactId>nuxeo-sample-project</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Template rendering -->
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-api</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-core</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-xdocreport</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-jxls</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-jaxrs</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-jaxrs-web-ui</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-jsf</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-samples</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-deckjs</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-core-dependencies</artifactId>
+        <type>pom</type>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-jsf-dependencies</artifactId>
+        <type>pom</type>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-web-ui</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+
+      <!-- CSV -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.csv</groupId>
+        <artifactId>nuxeo-csv-core</artifactId>
+        <version>${nuxeo.csv.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.csv</groupId>
+        <artifactId>nuxeo-csv-jsf</artifactId>
+        <version>${nuxeo.csv.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.csv</groupId>
+        <artifactId>nuxeo-csv-web-ui</artifactId>
+        <version>${nuxeo.csv.version}</version>
+      </dependency>
+
+
+      <!-- Tree snapshot -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-tree-snapshot-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-tree-snapshot-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Groups Rights Audit -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-groups-rights-audit</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Nuxeo Drive -->
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-core</artifactId>
+        <version>${nuxeo.drive.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-core-dependencies</artifactId>
+        <type>pom</type>
+        <version>${nuxeo.drive.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-core</artifactId>
+        <version>${nuxeo.drive.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-elasticsearch</artifactId>
+        <version>${nuxeo.drive.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-jsf</artifactId>
+        <version>${nuxeo.drive.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-operations</artifactId>
+        <version>${nuxeo.drive.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-web-ui</artifactId>
+        <version>${nuxeo.drive.version}</version>
+      </dependency>
+
+      <!-- Nuxeo Resources Compat -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform.resources</groupId>
+        <artifactId>nuxeo-resources-compat</artifactId>
+        <version>${nuxeo.resources.compat.version}</version>
+      </dependency>
+
+      <!-- DMK -->
+      <dependency>
+        <groupId>org.nuxeo</groupId>
+        <artifactId>nuxeo-dmk-adaptor</artifactId>
+        <version>${nuxeo.dmk.version}</version>
+      </dependency>
+
+      <!-- Style guide -->
+      <dependency>
+        <groupId>org.nuxeo.style</groupId>
+        <artifactId>nuxeo-style-guide</artifactId>
+        <version>${nuxeo.style.guide.version}</version>
+      </dependency>
+
+      <!-- JSF perfs debugging helpers -->
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-javaagent-main</artifactId>
+        <version>${nuxeo.javaagent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-javaagent-bridge</artifactId>
+        <version>${nuxeo.javaagent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-session-inspector</artifactId>
+        <version>${nuxeo.javaagent.version}</version>
+      </dependency>
+
+      <!-- Easyshare -->
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-easyshare</artifactId>
+        <version>${nuxeo.easyshare.version}</version>
+      </dependency>
+
+      <!-- DEPRECATED FS Exporter -->
+      <dependency>
+        <groupId>org.nuxeo.io</groupId>
+        <artifactId>nuxeo-fsexporter</artifactId>
+        <version>${nuxeo.fsexporter.version}</version>
+      </dependency>
+
+      <!-- DuoWeb Authentication -->
+      <dependency>
+        <groupId>org.nuxeo.duoweb.authentication</groupId>
+        <artifactId>nuxeo-duoweb-authentication</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Logs Viewer -->
+      <dependency>
+        <groupId>org.nuxeo.logs.viewer</groupId>
+        <artifactId>nuxeo-logs-viewer</artifactId>
+        <version>${nuxeo.logs.viewer.version}</version>
+      </dependency>
+
+      <!-- Spreadsheet -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-spreadsheet-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-spreadsheet-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-spreadsheet-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-spreadsheet-web-ui</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Github Segment IO -->
+      <dependency>
+        <groupId>org.nuxeo</groupId>
+        <artifactId>nuxeo-segmentio-connector</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Live Connect -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-core-dependencies</artifactId>
+        <type>pom</type>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-jsf-dependencies</artifactId>
+        <type>pom</type>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-web-ui</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-google-drive-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-google-drive-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-google-drive-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-google-drive-web-ui</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-dropbox-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-dropbox-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-dropbox-web-ui</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-box-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-box-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-box-web-ui</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-onedrive-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-onedrive-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-onedrive-web-ui</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Media Publishing -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.media.publishing</groupId>
+        <artifactId>nuxeo-media-publishing-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.media.publishing</groupId>
+        <artifactId>nuxeo-media-publishing-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.media.publishing</groupId>
+        <artifactId>nuxeo-media-publishing-wistia-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.media.publishing</groupId>
+        <artifactId>nuxeo-media-publishing-wistia-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.media.publishing</groupId>
+        <artifactId>nuxeo-media-publishing-youtube-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.media.publishing</groupId>
+        <artifactId>nuxeo-media-publishing-youtube-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-error-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-forms-layout-demo</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Datadog reporter -->
+      <dependency>
+        <groupId>org.nuxeo.datadog</groupId>
+        <artifactId>nuxeo-datadog-reporter</artifactId>
+        <version>${nuxeo.datadog.reporter.version}</version>
+      </dependency>
+
+      <!-- Review Workflows Dashboards -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.review.workflows.dashboards</groupId>
+        <artifactId>nuxeo-review-workflows-dashboards</artifactId>
+        <version>${nuxeo.review.workflows.dashboards.version}</version>
+      </dependency>
+
+      <!-- Nuxeo API Playground -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-api-playground</artifactId>
+        <version>${nuxeo.playground.version}</version>
+      </dependency>
+
+      <!-- Nuxeo Showcase Sample -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-showcase-content-importer</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Travel Expenses Sample -->
+      <dependency>
+        <groupId>org.nuxeo.sample</groupId>
+        <artifactId>nuxeo-travel-expenses</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Connect Tools -->
+      <dependency>
+        <groupId>org.nuxeo.connect.tools</groupId>
+        <artifactId>nuxeo-connect-tools</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.connect.tools</groupId>
+        <artifactId>nuxeo-connect-tools-report-client</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.connect.tools</groupId>
+        <artifactId>nuxeo-connect-tools-report-management-api</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.connect.tools</groupId>
+        <artifactId>nuxeo-connect-tools-report-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.connect.tools</groupId>
+        <artifactId>nuxeo-connect-tools-report-core</artifactId>
+        <type>test-jar</type>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.connect.tools</groupId>
+        <artifactId>nuxeo-connect-tools-report-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- PDF Utils -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-pdf-utils</artifactId>
+        <version>${nuxeo.pdfutils.version}</version>
+      </dependency>
+
+      <!-- 3D -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-api</artifactId>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-core</artifactId>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-convert</artifactId>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-jsf</artifactId>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-web-ui</artifactId>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+
+      <!-- MQueues -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-mqueues-core</artifactId>
+        <version>${nuxeo.mqueues.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-mqueues-importer</artifactId>
+        <version>${nuxeo.mqueues.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-mqueues-automation</artifactId>
+        <version>${nuxeo.mqueues.version}</version>
+      </dependency>
+
+      <!-- MongoDB Extension -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
+        <artifactId>nuxeo-mongodb-core</artifactId>
+        <version>${nuxeo.mongodb.ext.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
+        <artifactId>nuxeo-mongodb-seqgen</artifactId>
+        <version>${nuxeo.mongodb.ext.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
+        <artifactId>nuxeo-mongodb-audit</artifactId>
+        <version>${nuxeo.mongodb.ext.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
+        <artifactId>nuxeo-mongodb-directory</artifactId>
+        <version>${nuxeo.mongodb.ext.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
+        <artifactId>nuxeo-mongodb-core</artifactId>
+        <version>${nuxeo.mongodb.ext.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <name>Nuxeo virtual release repository</name>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <name>Nuxeo virtual snapshot repository</name>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+</project>

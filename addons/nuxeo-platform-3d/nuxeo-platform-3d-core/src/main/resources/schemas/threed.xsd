@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:nxs="http://www.nuxeo.org/ecm/schemas/threed"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.nuxeo.org/ecm/schemas/threed">
+
+  <xs:include schemaLocation="core-types.xsd"/>
+
+  <xs:element name="transmissionFormats" type="nxs:transmissionFormatItems"/>
+  <xs:element name="renderViews" type="nxs:renderViewsItems"/>
+  <xs:element name="info" type="nxs:infoThreeD"/>
+
+  <xs:complexType name="transmissionFormatItems">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0"
+                  name="transmissionFormatItem" type="nxs:transmissionFormatItem"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="transmissionFormatItem">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="percPoly" type="xs:integer"/>
+      <xs:element name="maxPoly" type="xs:integer"/>
+      <xs:element name="percTex" type="xs:integer"/>
+      <xs:element name="maxTex" type="xs:string"/>
+      <xs:element name="content" type="nxs:content"/>
+      <xs:element name="info" type="nxs:infoThreeD"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="renderViewsItems">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="renderViewsItem" type="nxs:renderViewsItem"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="renderViewsItem">
+    <xs:sequence>
+      <xs:element name="content" type="nxs:content"/>
+      <xs:element name="thumbnail" type="nxs:content"/>
+      <xs:element name="title" type="xs:string"/>
+      <xs:element name="azimuth" type="xs:integer"/>
+      <xs:element name="zenith" type="xs:integer"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="infoThreeD">
+    <xs:sequence>
+      <xs:element name="non_manifold_vertices" type="xs:long"/>
+      <xs:element name="non_manifold_edges" type="xs:long"/>
+      <xs:element name="non_manifold_polygons" type="xs:long"/>
+      <xs:element name="vertices" type="xs:long"/>
+      <xs:element name="edges" type="xs:long"/>
+      <xs:element name="polygons" type="xs:long"/>
+      <xs:element name="position_x" type="xs:double"/>
+      <xs:element name="position_y" type="xs:double"/>
+      <xs:element name="position_z" type="xs:double"/>
+      <xs:element name="dimension_x" type="xs:double"/>
+      <xs:element name="dimension_y" type="xs:double"/>
+      <xs:element name="dimension_z" type="xs:double"/>
+      <xs:element name="textures_size" type="xs:long"/>
+      <xs:element name="textures_max_dimension" type="xs:string"/>
+      <xs:element name="geometry_lod_success" type="xs:boolean"/>
+      <xs:element name="texture_lod_success" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
