@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.test.contrib">
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchLocal">
+    <elasticSearchLocal clusterName="nuxeoTestClusterLocal" nodeName="nuxeoTestNode"
+      indexStoreType="mmapfs" httpEnabled="true" />
+  </extension>
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
+    <elasticSearchIndex name="nxutest" type="doc" repository="test" />
+    <elasticSearchIndex name="nuxeo-uidgen" type="seqId">
+      <settings>
+        {
+        "number_of_shards" : 1,
+        "auto_expand_replicas" : "0-all"
+        }
+      </settings>
+      <mapping>
+        {
+        "_source" : {"enabled": false},
+        "_all" : {"enabled": false},
+        "enabled" : false
+        }
+      </mapping>
+    </elasticSearchIndex>
+    <elasticSearchIndex name="nuxeo-audit" type="entry" >
+      <mapping>
+        {
+          "properties" : {
+            "eventDate": {
+              "format": "dateOptionalTime",
+              "type": "date"
+            },
+            "logDate": {
+              "format": "dateOptionalTime",
+              "type": "date"
+            }
+          }
+        }
+      </mapping>
+    </elasticSearchIndex>
+  </extension>
+
+  <!-- for uidgen which is a dependency -->
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+    <datasource name="jdbc/nxuidsequencer" driverClassName="${nuxeo.test.vcs.driver}"
+        maxPoolSize="20" minPoolSize="5">
+      <property name="url">${nuxeo.test.vcs.url}</property>
+      <property name="username">${nuxeo.test.vcs.user}</property>
+      <property name="password">${nuxeo.test.vcs.password}</property>
+    </datasource>
+  </extension>
+
+</component>
