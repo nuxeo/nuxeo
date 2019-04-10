@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <prerequisites>
+    <maven>2.0.9</maven>
+  </prerequisites>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-features-parent</artifactId>
+    <version>5.4.2-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.core</groupId>
+  <artifactId>nuxeo-chemistry</artifactId>
+  <name>Nuxeo Chemistry</name>
+  <description>Nuxeo Core: Chemistry</description>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-opencmis-impl</module>
+    <module>nuxeo-opencmis-bindings</module>
+    <module>nuxeo-opencmis-tests</module>
+  </modules>
+
+  <properties>
+    <chemistry.opencmis.version>0.2.0-incubating</chemistry.opencmis.version>
+    <nuxeo.version>${version}</nuxeo.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-opencmis-bindings</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-opencmis-impl</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-opencmis-tests</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry.opencmis</groupId>
+        <artifactId>chemistry-opencmis-commons-api</artifactId>
+        <version>${chemistry.opencmis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry.opencmis</groupId>
+        <artifactId>chemistry-opencmis-commons-impl</artifactId>
+        <version>${chemistry.opencmis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry.opencmis</groupId>
+        <artifactId>chemistry-opencmis-server-support</artifactId>
+        <version>${chemistry.opencmis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry.opencmis</groupId>
+        <artifactId>chemistry-opencmis-client-api</artifactId>
+        <version>${chemistry.opencmis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry.opencmis</groupId>
+        <artifactId>chemistry-opencmis-client-impl</artifactId>
+        <version>${chemistry.opencmis.version}</version>
+      </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-server-bindings</artifactId>
+      <classifier>classes</classifier>
+      <version>${chemistry.opencmis.version}</version>
+    </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/addons/nuxeo-chemistry</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/addons/nuxeo-chemistry</developerConnection>
+    <url>http://hg.nuxeo.org/addons/nuxeo-chemistry</url>
+  </scm>
+
+</project>
