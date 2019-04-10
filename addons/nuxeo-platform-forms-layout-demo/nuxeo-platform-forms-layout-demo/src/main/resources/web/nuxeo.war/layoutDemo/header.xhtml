@@ -1,0 +1,29 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <div class="logo">
+    <a href="#{baseURL}layoutDemo/">
+      <img width="114" height="20"
+        src="#{baseURL}img/nuxeo_logo.png"
+        alt="#{messages['label.layoutDemo.title']}" />
+    </a>
+  </div>
+
+  <div class="content">
+    <span class="subtitle">#{messages['label.layoutDemo.title']}</span>
+
+    <div class="header_admin_messages">
+      <c:if test="#{adminMessageActivated}">
+        <div style="text-align: center; padding: 5px 5px 5px 25px; background-color:#fff9B4; font: normal 12px Arial,sans-serif;">
+          <h:outputText value="#{adminMessage}"/>
+        </div>
+      </c:if>
+    </div>
+
+    <div class="userServicesBlock">
+    </div>
+
+    <div class="clear"></div>
+  </div>
+
+</div>

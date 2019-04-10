@@ -1,0 +1,129 @@
+<ui:composition template="global_page_template.xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <ui:define name="content">
+
+    <div class="mainNoTabs">
+      <h1>Welcome to the Nuxeo Layout Showcase!</h1>
+
+      <div class="mainContent">
+
+        <div>
+          This site presents standard widget types available to the Nuxeo layout service,
+          and can be used as a demo, reference and preview application.
+          <br />
+          You can browse widget types by clicking on items in the left menu.
+        </div>
+        <br />
+
+        <div>
+          This application is running on top of
+          #{nuxeoApplicationName} #{nuxeoApplicationVersion}.
+        </div>
+        <br />
+        <br />
+
+        <h2>Useful Links</h2>
+        <div>
+          <ul>
+            <li>
+              <a href="https://doc.nuxeo.com/x/OoAO" target="_blank">
+                Layouts developer documentation
+              </a>
+            </li>
+            <li>
+              <a href="http://community.nuxeo.com/api/nuxeo/latest/tlddoc/" target="_blank">
+                Nuxeo JSF tag library documentation
+              </a>
+            </li>
+          </ul>
+        </div>
+        <br />
+        <br />
+
+        <h2>About this site</h2>
+        <div>
+          The idea of this application came with
+          <a href="http://www.nuxeo.com/en/products/studio" target="_blank">Studio integration</a>,
+          as widget types configuration needed to be made user friendly by:
+          <ul class="layoutDemoList">
+            <li>
+              providing a library of available widget types, taking care of
+              the widget accepted field type (String, Boolean, Integer....);
+            </li>
+            <li>
+              making it possible to set the widget properties using a form;
+            </li>
+            <li>
+              making it possible to preview the resulting widget.
+            </li>
+          </ul>
+          It was also interesting for functional tests, to verify that default widget
+          types all work as expected, and are styled correctly.
+        </div>
+        <br />
+
+        <div>
+          So the widget type definition was improved to hold configuration
+          instructions (title, description, definition of field types that match
+          the widget type...).
+        </div>
+        <br />
+
+        <div>
+          To describe the available properties depending on the mode, as well as
+          the form to display them, layouts were the natural choice. So the widget
+          type definition was modified to accept standard layout definitions, with
+          widgets using the property name as a field.
+        </div>
+        <br />
+
+        <div>
+          Using this way of describing a widget type is also a good maintenance tool:
+          the information is kept in XML format, accepting HTML rendering for the
+          description. It can be used directly to generate pages like the
+          reference page or preview forms on this showcase application (using the
+          standard JSF implementation of layouts).
+          <br />
+          It can be exported in JSON format for Nuxeo Studio, as it accepts
+          widget types as JSON contributions and uses them to fill its registries.
+          A specific GWT implementation of layouts has been implemented for this
+          purpose.
+        </div>
+        <br />
+
+        <div>
+          A webengine application has also been added to the default Nuxeo platform
+          (since version 5.4.2) so that you can get the list of available widget types
+          on your Nuxeo instance, as well as some configuration details when they have
+          been filled. This application is visible at http://localhost:8080/nuxeo/site/layout-manager/.
+          <br />
+          These pages do not show the widget properties as there is no Freemarker
+          implementation of layouts - yet ;-).
+        </div>
+        <br />
+
+        <div>
+          You can read more about how to setup a custom widget type definition at:
+          <a href="https://doc.nuxeo.com/x/uwY7" target="_blank">
+          http://doc.nuxeo.com/display/NXDOC/Custom+widget+types</a>.
+        </div>
+        <br />
+
+        <div>
+          Apart from that, this JSF application shows a standard way of defining
+          a separate application on top of Nuxeo, with custom pages and URLs,
+          that can be accessed without authentication. Check the
+          <a href="https://doc.nuxeo.com/x/hwFu" target="_blank">Navigation URLs</a>
+          documentation for more details!
+          <br />
+        </div>
+
+      </div>
+
+    </div>
+
+  </ui:define>
+
+</ui:composition>

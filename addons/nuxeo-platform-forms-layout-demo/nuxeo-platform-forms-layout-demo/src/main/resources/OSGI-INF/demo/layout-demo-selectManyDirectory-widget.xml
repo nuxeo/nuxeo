@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forms.layoutDemo.selectManyDirectoryWidget.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="selectManyDirectoryWidgetLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>selectManyDirectoryWidget</widget>
+        </row>
+      </rows>
+      <widget name="selectManyDirectoryWidget" type="selectManyDirectory">
+        <labels>
+          <label mode="any">selectManyDirectory widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:selectMultiVocabularyField</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">layout_demo_crew</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+        <controls mode="any">
+          <!-- enable ajax submit on change/click/select on demo application -->
+          <control name="supportInsideInputWidgetEffects">true</control>
+        </controls>
+      </widget>
+    </layout>
+  </extension>
+
+</component>

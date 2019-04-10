@@ -1,0 +1,80 @@
+<ui:composition template="global_page_template.xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <ui:define name="page title">
+    <h:outputText
+      value="#{messages['label.layoutDemo.shortTitle']} - #{currentWidgetType.label}"/>
+  </ui:define>
+
+  <ui:define name="content">
+
+    <h3>#{currentWidgetType.label}</h3>
+
+    <div class="tabsBar">
+
+      <ul>
+        <li class="#{nxu:test(empty layoutDemoCurrentTabId, 'selected', '')}">
+          <a href="#{baseURL}#{currentWidgetType.url}">
+            #{messages['label.layoutDemo.widgetDemo.overview']}
+          </a>
+        </li>
+        <li class="#{nxu:test(layoutDemoCurrentTabId == 'reference', 'selected', '')}">
+          <a href="#{baseURL}#{currentWidgetType.url}/reference">
+            #{messages['label.layoutDemo.widgetDemo.reference']}
+          </a>
+        </li>
+        <c:if test="#{currentWidgetType.previewEnabled}">
+          <li class="#{nxu:test(layoutDemoCurrentTabId == 'preview', 'selected', '')}">
+            <a href="#{baseURL}#{currentWidgetType.url}/preview">
+              #{messages['label.layoutDemo.widgetDemo.preview']}
+            </a>
+          </li>
+        </c:if>
+      </ul>
+    </div>
+    <div style="clear:both"></div>
+    <div class="tabsContent">
+
+      <c:if test="#{empty layoutDemoCurrentTabId}">
+
+        <c:if test="#{not empty currentWidgetTypeDef.configuration.description}">
+          <div class="foldableBox">
+            <h3 class="unfolded">
+              <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
+                <h:outputText
+                  value="#{messages['label.layoutDemo.widgetDemo.description']}" />
+              </a>
+            </h3>
+
+            <div class="boxBody">
+              <h:outputText value="#{currentWidgetTypeDef.configuration.description}"
+                escape="false" styleClass="currentDocumentDescription" />
+            </div>
+          </div>
+        </c:if>
+
+        <c:forEach var="demoLayout" items="#{currentWidgetType.demoLayouts}"
+          varStatus="demoLayoutStatus">
+          <ui:include src="/layoutDemo/widget_demo.xhtml" />
+          <br /><br />
+        </c:forEach>
+      </c:if>
+
+      <c:if test="#{layoutDemoCurrentTabId == 'reference'}">
+        <ui:include src="/layoutDemo/widget_reference.xhtml" />
+      </c:if>
+
+      <c:if test="#{layoutDemoCurrentTabId == 'preview'}">
+        <ui:include src="/layoutDemo/widget_preview.xhtml" />
+      </c:if>
+
+    </div>
+
+  </ui:define>
+
+</ui:composition>

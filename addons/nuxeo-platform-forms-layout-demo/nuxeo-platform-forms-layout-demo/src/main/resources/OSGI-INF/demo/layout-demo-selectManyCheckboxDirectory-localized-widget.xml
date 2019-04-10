@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forms.layoutDemo.selectManyCheckboxDirectoryLocalizedWidget.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="selectManyCheckboxDirectoryLocalizedWidgetLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>widget</widget>
+        </row>
+      </rows>
+      <widget name="widget" type="selectManyCheckboxDirectory">
+        <labels>
+          <label mode="any">selectManyCheckboxDirectory localized widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:selectMultiVocabularyLocalizedField</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">continent</property>
+          <property name="localize">true</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="layout">pageDirection</property>
+        </properties>
+        <controls mode="any">
+          <!-- enable ajax submit on change/click/select on demo application -->
+          <control name="supportInsideInputWidgetEffects">true</control>
+        </controls>
+      </widget>
+    </layout>
+  </extension>
+
+</component>
