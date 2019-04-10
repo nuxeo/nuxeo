@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/project/schemas/test/withComplex"
+  targetNamespace="http://www.nuxeo.org/ecm/project/schemas/test/withComplex">
+  <xs:element name="complex1" type="nxs:vnu_complex1" />
+  <xs:complexType name="vnu_complex1">
+    <xs:sequence>
+      <xs:element name="minimum" type="xs:double" default="0.0" />
+      <xs:element name="maximum" type="xs:double" default="0.0" />
+      <xs:element name="average" type="xs:double" default="0.0" />
+      <xs:element name="unit" type="xs:string" default="g" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="complex2" type="nxs:vnu_complex2" />
+  <xs:complexType name="vnu_complex2">
+    <xs:sequence>
+      <xs:element name="minimum" type="xs:double" default="0.0" />
+      <xs:element name="maximum" type="xs:double" default="0.0" />
+      <xs:element name="average" type="xs:double" default="0.0" />
+      <xs:element name="unit" type="xs:string" default="g" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
