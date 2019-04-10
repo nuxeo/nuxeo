@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="fa7fd49a-0032-40ee-af04-1b61aaed613e">
+  <system>
+    <type>TemplateSource</type>
+    <path>default-domain/templates/ProjectRef</path>
+    <lifecycle-state>project</lifecycle-state>
+    <lifecycle-policy>default</lifecycle-policy>
+    <facet>Versionable</facet>
+    <facet>Commentable</facet>
+    <facet>HasRelatedText</facet>
+    <facet>Downloadable</facet>
+    <facet>Template</facet>
+    <access-control>
+      <acl name="inherited">
+        <entry principal="Administrator" permission="Everything" grant="true"/>
+        <entry principal="members" permission="Read" grant="true"/>
+      </acl>
+    </access-control>
+  </system>
+  <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/" name="uid">
+    <uid:major_version><![CDATA[0]]></uid:major_version>
+    <uid:minor_version><![CDATA[0]]></uid:minor_version>
+  </schema>
+  <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/" name="file">
+    <file:content>
+      <encoding></encoding>
+      <mime-type>application/vnd.openxmlformats-officedocument.wordprocessingml.document</mime-type>
+      <filename>ProjectRef.docx</filename>
+      <data>9da40bd.blob</data>
+      <digest>6b7bbd3807fefab7e3ec339ecf57eedf</digest>
+    </file:content>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon><![CDATA[/icons/docx.png]]></common:icon>
+    <common:icon-expanded/>
+  </schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:description><![CDATA[Used to generate a project showcase in a portfolio.]]></dc:description>
+    <dc:creator><![CDATA[Administrator]]></dc:creator>
+    <dc:modified><![CDATA[2015-07-27T11:09:15.00Z]]></dc:modified>
+    <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
+    <dc:created><![CDATA[2015-07-27T11:07:40.00Z]]></dc:created>
+    <dc:title><![CDATA[ProjectRef]]></dc:title>
+    <dc:subjects/>
+    <dc:contributors>
+      <item><![CDATA[Administrator]]></item>
+    </dc:contributors>
+  </schema>
+  <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
+    <tmpl:forcedTypes>
+      <item><![CDATA[none]]></item>
+    </tmpl:forcedTypes>
+    <tmpl:applicableTypes>
+      <item><![CDATA[nxtrProject]]></item>
+    </tmpl:applicableTypes>
+    <tmpl:outputFormat><![CDATA[pdf]]></tmpl:outputFormat>
+    <tmpl:templateData><![CDATA[<nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate"><nxdt:field name="customer_logo" type="source" source="nxtrproject:customer_logo"></nxdt:field></nxdt:templateParams>]]></tmpl:templateData>
+    <tmpl:targetRenditionName><![CDATA[none]]></tmpl:targetRenditionName>
+    <tmpl:allowOverride><![CDATA[false]]></tmpl:allowOverride>
+    <tmpl:useAsMainContent><![CDATA[false]]></tmpl:useAsMainContent>
+    <tmpl:templateName><![CDATA[ProjectRef]]></tmpl:templateName>
+    <tmpl:templateType><![CDATA[XDocReportProcessor]]></tmpl:templateType>
+  </schema>
+  <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
+    <relatedtext:relatedtextresources/>
+  </schema>
+</document>

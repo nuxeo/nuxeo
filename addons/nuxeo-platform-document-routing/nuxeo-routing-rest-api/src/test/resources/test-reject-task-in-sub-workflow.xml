@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.restapi.server.routing.test.sub.workflow" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="var_Task7b6" prefix="var_Task7b6" override="true" src="data/schemas/var_Task7b6.xsd" />
+    <schema name="var_start-node" prefix="var_start-node" override="true" src="data/schemas/var_start-node.xsd" />
+    <schema name="var_stop-node" prefix="var_stop-node" override="true" src="data/schemas/var_stop-node.xsd" />
+    <schema name="var_ChildWF" prefix="var_ChildWF" override="true" src="data/schemas/var_ChildWF.xsd" />
+    <schema name="var_Task18b2" prefix="var_Task18b2" override="true" src="data/schemas/var_Task18b2.xsd" />
+    <schema name="var_Task9b9" prefix="var_Task9b9" override="true" src="data/schemas/var_Task9b9.xsd" />
+    <schema name="var_MainWF" prefix="var_MainWF" override="true" src="data/schemas/var_MainWF.xsd" />
+    <schema name="var_Taskea3" prefix="var_Taskea3" override="true" src="data/schemas/var_Taskea3.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <facet name="facet-var_Task7b6">
+      <schema name="var_Task7b6" />
+    </facet>
+    <facet name="facet-var_start-node">
+      <schema name="var_start-node" />
+    </facet>
+    <facet name="facet-var_stop-node">
+      <schema name="var_stop-node" />
+    </facet>
+    <facet name="facet-var_ChildWF">
+      <schema name="var_ChildWF" />
+    </facet>
+    <facet name="facet-var_Task18b2">
+      <schema name="var_Task18b2" />
+    </facet>
+    <facet name="facet-var_Task9b9">
+      <schema name="var_Task9b9" />
+    </facet>
+    <facet name="facet-var_start-node">
+      <schema name="var_start-node" />
+    </facet>
+    <facet name="facet-var_stop-node">
+      <schema name="var_stop-node" />
+    </facet>
+    <facet name="facet-var_MainWF">
+      <schema name="var_MainWF" />
+    </facet>
+    <facet name="facet-var_Taskea3">
+      <schema name="var_Taskea3" />
+    </facet>
+    <facet name="facet-var_start-node">
+      <schema name="var_start-node" />
+    </facet>
+    <facet name="facet-var_stop-node">
+      <schema name="var_stop-node" />
+    </facet>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.routing.service" point="routeModelImporter">
+    <template-resource id="ChildWF" path="data/routes/ChildWF.zip" />
+    <template-resource id="MainWF" path="data/routes/MainWF.zip" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="ChildWFAction">
+      <operation id="Context.FetchDocument" />
+      <operation id="Context.SetWorkflowVar">
+        <param type="string" name="name">isVeto</param>
+        <param type="object" name="value">"true"</param>
+        <param type="string" name="workflowInstanceId">expr:Context["workflowParent"]</param>
+      </operation>
+    </chain>
+    <chain id="MessageMe">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Log">
+        <param type="string" name="level">warn</param>
+        <param type="string" name="message">YES, the message Log was called at</param>
+        <param type="string" name="category">MessageMe</param>
+      </operation>
+    </chain>
+  </extension>
+
+</component>

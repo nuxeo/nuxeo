@@ -1,0 +1,20 @@
+<component
+  name="org.nuxeo.template.service.jaxrs.contrib">
+
+  <require>org.nuxeo.template.service.defaultContrib</require>
+
+  <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="contextExtension">
+
+    <documentation>Adds helper function to manage REST resources urls
+      <ul>
+        <li>jaxrs.getResourceUrl(resourceName)</li>
+      </ul>
+    </documentation>
+
+    <contextFactory name="jaxrs" class="org.nuxeo.template.jaxrs.context.ExtensionFactory">
+    </contextFactory>
+
+  </extension>
+
+
+ </component>
