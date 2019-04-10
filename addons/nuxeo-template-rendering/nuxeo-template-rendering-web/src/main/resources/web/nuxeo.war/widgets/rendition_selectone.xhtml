@@ -1,0 +1,32 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <c:set var="namespace" value="#{widget.properties.namespace}" />
+
+  <c:if test="#{widget.mode == 'view' }">
+      <c:if test="#{!empty field_0 }">
+        <c:set var="renditionLabel" value="#{nxu:concat('label.rendition.',field_0)}" />
+        <h:outputText value="#{messages[renditionLabel]}"/>
+      </c:if>
+      <c:if test="#{empty field_0 }">
+       <h:outputText value="#{messages['label.rendition.none']}" />
+      </c:if>
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit' }">
+    <h:selectOneMenu value="#{field_0}"
+      styleClass="#{widget.properties['styleClass']}"
+      required="#{widget.properties['required']}"
+      id="#{widget.id}">
+       <f:selectItem  itemLabel="#{messages['label.rendition.none']}" itemValue="none" />
+       <nxu:selectItems var="rend" value="#{templateActions.getRenditions()}"
+        itemValue="#{rend.name}"
+        itemLabel="#{messages[rend.label]}" />
+    </h:selectOneMenu>
+    <h:message for="#{widget.id}" styleClass="errorMessage" />
+  </c:if>
+</div>

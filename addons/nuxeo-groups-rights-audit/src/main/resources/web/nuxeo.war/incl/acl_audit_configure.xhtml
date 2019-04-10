@@ -1,0 +1,20 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h3><h:outputText value="ACL Audit" /></h3>
+
+  <div class="content">
+    <h:selectManyCheckbox value="Permissions">
+        <c:forEach items="#{excelExportRightsAction.existingPermissions}" var="permission">
+            <f:selectItem itemValue="#{permission}" itemLabel="#{permission}" />
+        </c:forEach>
+    </h:selectManyCheckbox>
+  </div>
+</div>
