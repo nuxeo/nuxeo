@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.threed.core.thumbnailfactory">
+
+  <extension target="org.nuxeo.ecm.core.api.thumbnail.ThumbnailService" point="thumbnailFactory">
+    <thumbnailFactory name="thumbnailThreedFactory"
+                      facet="ThreeD"
+                      factoryClass="org.nuxeo.ecm.platform.threed.adapter.ThumbnailThreeDFactory"/>
+  </extension>
+
+</component>

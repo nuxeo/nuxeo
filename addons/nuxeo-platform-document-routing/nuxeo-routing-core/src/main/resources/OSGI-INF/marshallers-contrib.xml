@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.routing.marshallers" version="1.0.0">
+  <documentation>
+    Core IO registered marshallers set.
+  </documentation>
+  <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+    <!-- Reader -->
+    <register class="org.nuxeo.ecm.platform.routing.core.io.TaskCompletionRequestJsonReader" enable="true" />
+    <register class="org.nuxeo.ecm.platform.routing.core.io.WorkflowRequestJsonReader" enable="true" />
+
+    <!-- Writers -->
+    <register class="org.nuxeo.ecm.platform.routing.core.io.DocumentRouteWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.routing.core.io.DocumentRouteListWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.routing.core.io.TaskWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.routing.core.io.TaskListWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.routing.core.io.GraphRouteWriter" enable="true" />
+  </extension>
+</component>

@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.complexListWidget2.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="complexListWidgetLayout2">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>complexListWidget</widget>
+        </row>
+      </rows>
+      <widget name="complexListWidget" type="list">
+        <labels>
+          <label mode="any">Complex List widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:complexList2</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="display">#{param.display}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+        <subWidgets>
+          <widget name="suggest" type="suggestOneDirectory">
+            <fields>
+              <field>stringComplexItem1</field>
+            </fields>
+            <labels>
+              <label mode="any">String item</label>
+            </labels>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+            <properties mode="any">
+              <property name="width">300</property>
+              <property name="labelFieldName">label_{lang}</property>
+              <property name="dbl10n">true</property>
+              <property name="minChars">0</property>
+              <property name="hideHelpLabel">true</property>
+              <property name="directoryName">l10ncoverage</property>
+              <property name="keySeparator">/</property>
+              <property name="placeholder">Choose a country</property>
+              <property name="documentSchemas">dublincore,layout_demo_schema</property>
+              <property name="repository">default</property>
+            </properties>
+            <controls mode="any">
+              <!-- enable ajax submit on change/click/select on demo application -->
+              <control name="supportInsideInputWidgetEffects">true</control>
+            </controls>
+          </widget>
+          <widget name="htmlTextItem" type="htmltext">
+            <fields>
+              <field>stringComplexItem2</field>
+            </fields>
+            <labels>
+              <label mode="any">HTML Text</label>
+            </labels>
+            <controls mode="any">
+              <!-- enable ajax submit on change/click/select on demo application -->
+              <control name="supportInsideInputWidgetEffects">true</control>
+            </controls>
+          </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+  </extension>
+
+</component>
