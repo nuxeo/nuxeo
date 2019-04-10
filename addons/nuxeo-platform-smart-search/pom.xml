@@ -1,0 +1,67 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-features-parent</artifactId>
+    <version>5.4.1-HF14</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-smart-search-parent</artifactId>
+  <name>Nuxeo Platform Smart Search Parent</name>
+  <description>Nuxeo Platform Smart Search Parent</description>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-platform-smart-query-api</module>
+    <module>nuxeo-platform-smart-query-jsf</module>
+    <module>nuxeo-platform-smart-folder-core</module>
+    <module>nuxeo-platform-smart-folder-jsf</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-smart-query-api</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-smart-query-jsf</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-smart-folder-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-smart-folder-jsf</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+</project>
