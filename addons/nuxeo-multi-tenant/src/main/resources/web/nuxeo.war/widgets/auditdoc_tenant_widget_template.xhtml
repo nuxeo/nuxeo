@@ -1,0 +1,19 @@
+<f:subview xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
+  rendered="#{field.docUUID != null}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}"><h:outputText value="#{field.docPath} (#{field.docType})" /></c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+  <h:panelGroup rendered="#{field.docUUID!=null}">
+    <h:outputText value="#{field.docPath} (#{field.docType})" />
+  </h:panelGroup>
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <h:panelGroup rendered="#{field.docUUID!=null}">
+      <h:outputText value="#{field.docPath} (#{field.docType})" />
+    </h:panelGroup>
+   </nxp:html>
+</c:if>
+</f:subview>

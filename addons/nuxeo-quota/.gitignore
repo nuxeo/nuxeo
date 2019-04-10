@@ -1,0 +1,16 @@
+syntax: glob
+*.class
+target
+bin
+gen
+.classpath
+.settings
+.project
+build.properties
+.idea
+*.ipr
+*.iml
+*.iws
+*.log
+*.orig
+.DS_Store
