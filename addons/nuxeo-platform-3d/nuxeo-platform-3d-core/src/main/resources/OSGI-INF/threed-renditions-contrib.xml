@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.threed.renditions">
+
+  <require>org.nuxeo.ecm.platform.rendition.contrib</require>
+
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
+             point="renditionDefinitionProviders">
+
+    <renditionDefinitionProvider name="threedRenditionDefinitionProvider"
+                                 class="org.nuxeo.ecm.platform.threed.rendition.ThreeDRenditionDefinitionProvider">
+      <filters>
+        <filter-id>hasThreeDFacet</filter-id>
+      </filters>
+    </renditionDefinitionProvider>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+             point="filters">
+
+    <filter id="hasThreeDFacet">
+      <rule grant="true">
+        <facet>ThreeD</facet>
+      </rule>
+    </filter>
+
+
+    <filter id="allowPDFRendition" append="true">
+      <rule grant="false">
+        <facet>ThreeD</facet>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>
