@@ -1,0 +1,196 @@
+<?xml version="1.0"?>
+<fragment version="1">
+  <require>org.nuxeo.ecm.platform.lang</require>
+
+  <extension target="application#MODULE">
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+
+    <navigation-case>
+      <from-outcome>layoutDemoIntroduction</from-outcome>
+      <to-view-id>/layoutDemo/introduction.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>layoutDemoAbout</from-outcome>
+      <to-view-id>/layoutDemo/about.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>layoutPreviewFrame</from-outcome>
+      <to-view-id>/layoutDemo/layout_preview_frame.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <!-- pages mapping -->
+    <navigation-case>
+      <from-outcome>textWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/textWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>textareaWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/textareaWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>intWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/intWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>secretWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/secretWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>datetimeWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/datetimeWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>fileWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/fileWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>htmltextWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/htmltextWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>selectOneDirectoryWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/selectOneDirectoryWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>selectManyDirectoryWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/selectManyDirectoryWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/listWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>checkboxWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/checkboxWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>templateWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/templateWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>complexWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/complexWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_authorWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_authorWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_big_icon_typeWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_big_icon_typeWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_big_icon_type_linkWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_big_icon_type_linkWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_icon_typeWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_icon_typeWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_last_contributorWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_last_contributorWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_lifecycleWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_lifecycleWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_lock_iconWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_lock_iconWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_title_linkWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_title_linkWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>listing_versionWidget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/listing_versionWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+
+  </extension>
+
+  <install>
+
+    <!-- unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+
+    <!-- append translations -->
+    <delete path="${bundle.fileName}.tmp" />
+    <mkdir path="${bundle.fileName}.tmp" />
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp">
+      <include>OSGI-INF/l10n/**</include>
+    </unzip>
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
+    <delete path="${bundle.fileName}.tmp" />
+
+    <!--  make some extension sources available for demo -->
+    <unzip from="${bundle.fileName}" to="/nuxeo.war/layoutDemo/sources/">
+      <include>OSGI-INF/demo/**</include>
+      <include>schemas/**</include>
+    </unzip>
+
+
+  </install>
+
+</fragment>
+
