@@ -1,0 +1,26 @@
+<component name="org.nuxeo.datadog.service">
+
+  <implementation class="org.nuxeo.datadog.reporter.DatadogReporterServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.datadog.reporter.DatadogReporterService" />
+  </service>
+
+
+
+  <extension-point name="configuration">
+    <documentation>
+      Configuration of the Datadog reporter :
+
+      <configuration>
+        <apiKey>DATADOG_API_KEY</apiKey>
+        <!-- Host to use. If not set, is computed from nuxeo.url -->
+        <host>myhost.com</host>
+        <pollInterval>10</pollInterval>
+        <tags>myfirsttag,mysecondtag</tags>
+      </configuration>
+
+    </documentation>
+    <object class="org.nuxeo.datadog.reporter.DatadogReporterConfDescriptor" />
+  </extension-point>
+</component>
