@@ -1,0 +1,39 @@
+<div class="footer"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <ui:decorate template="/incl/nuxeo_footer_template.xhtml">
+    <ui:define name="prefooter" />
+    <ui:define name="footer">
+
+      <div class="footerDefaultLinks">
+        <div class="nuxLinks">
+          <nxu:set var="actions"
+            value="#{actionManager.getActions('FOOTER', null)}" cache="true">
+            <c:forEach var="action" items="#{actions}" varStatus="status">
+              <ui:decorate template="/incl/action/generic_action_template.xhtml" />
+              <c:if test="#{not status.last}">
+                <h:outputText value=" | " />
+              </c:if>
+            </c:forEach>
+          </nxu:set>
+        </div>
+
+        <div class="copyrights">
+          <h:outputFormat value="#{messages['label.login.copyright']}">
+            <f:param value="#{copyrightCurrentYear}" />
+          </h:outputFormat>
+        </div>
+
+        <div class="clear"></div>
+
+      </div>
+
+    </ui:define>
+  </ui:decorate>
+
+</div>

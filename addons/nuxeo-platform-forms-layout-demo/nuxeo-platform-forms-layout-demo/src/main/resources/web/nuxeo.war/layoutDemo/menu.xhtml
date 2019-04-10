@@ -1,0 +1,47 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  class="layoutDemoLeftMenu">
+
+  <ui:include src="menu_template.xhtml">
+    <ui:param name="category" value="standard" />
+    <ui:param name="categoryTitle" value="#{messages['label.layoutDemo.standardWidgets']}" />
+    <ui:param name="currentWidgetType" value="#{currentWidgetType}" />
+    <ui:param name="widgetTypes" value="#{standardWidgetTypes}" />
+    <ui:param name="openByDefault" value="true" />
+  </ui:include>
+
+  <ui:include src="menu_template.xhtml">
+    <ui:param name="category" value="custom" />
+    <ui:param name="categoryTitle" value="#{messages['label.layoutDemo.customWidgets']}" />
+    <ui:param name="currentWidgetType" value="#{currentWidgetType}" />
+    <ui:param name="widgetTypes" value="#{customWidgetTypes}" />
+    <ui:param name="openByDefault" value="true" />
+  </ui:include>
+
+  <ui:include src="menu_template.xhtml">
+    <ui:param name="category" value="listing" />
+    <ui:param name="categoryTitle" value="#{messages['label.layoutDemo.listingWidgets']}" />
+    <ui:param name="currentWidgetType" value="#{currentWidgetType}" />
+    <ui:param name="widgetTypes" value="#{listingWidgetTypes}" />
+    <ui:param name="openByDefault" value="true" />
+  </ui:include>
+
+  <ui:include src="menu_template.xhtml">
+    <ui:param name="category" value="aggregate" />
+    <ui:param name="categoryTitle" value="#{messages['label.layoutDemo.aggregateWidgets']}" />
+    <ui:param name="currentWidgetType" value="#{currentWidgetType}" />
+    <ui:param name="widgetTypes" value="#{aggregateWidgetTypes}" />
+    <ui:param name="openByDefault" value="true" />
+  </ui:include>
+
+  <ui:include src="menu_template.xhtml">
+    <ui:param name="category" value="action" />
+    <ui:param name="categoryTitle" value="#{messages['label.layoutDemo.actionWidgets']}" />
+    <ui:param name="currentWidgetType" value="#{currentWidgetType}" />
+    <ui:param name="widgetTypes" value="#{actionWidgetTypes}" />
+    <ui:param name="openByDefault" value="true" />
+  </ui:include>
+
+</div>

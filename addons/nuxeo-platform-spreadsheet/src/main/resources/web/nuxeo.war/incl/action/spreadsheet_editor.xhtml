@@ -1,0 +1,30 @@
+<c:choose
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:when test="#{!removeActionOptims}">
+    <ui:decorate template="/incl/action/widgets/fancybox_action_template.xhtml">
+      <ui:define name="fancybox_properties_include">
+        <a4j:jsFunction name="#{fancyboxIdPrefix}refreshContentView" render="#{ajaxReRender}">
+          <nxu:actionListenerMethod value="#{contentView.refreshAndRewindPageProvider()}" />
+        </a4j:jsFunction>
+        <c:set var="widgetProperty_onClosed" value="#{fancyboxIdPrefix}refreshContentView" />
+      </ui:define>
+    </ui:decorate>
+  </c:when>
+
+  <c:otherwise>
+    <ui:decorate template="/incl/action/fancybox_action_template.xhtml">
+      <ui:define name="with_fancybox_properties">
+        <a4j:jsFunction name="#{fancyboxIdPrefix}refreshContentView" render="#{ajaxReRender}">
+          <nxu:actionListenerMethod value="#{contentView.refreshAndRewindPageProvider()}" />
+        </a4j:jsFunction>
+        <c:set var="fancy_onClosed" value="#{fancyboxIdPrefix}refreshContentView" />
+      </ui:define>
+    </ui:decorate>
+  </c:otherwise>
+
+</c:choose>
