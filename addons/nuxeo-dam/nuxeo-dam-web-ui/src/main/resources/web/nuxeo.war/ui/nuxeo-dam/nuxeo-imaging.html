@@ -1,0 +1,89 @@
+<!--
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. -->
+
+<!--
+`nuxeo-imaging`
+@group Nuxeo UI
+@element nuxeo-imaging
+-->
+<dom-module id="nuxeo-imaging">
+  <template>
+    <style>
+    </style>
+
+    <nuxeo-page>
+      <div slot="header">
+        <span class="flex">[[i18n('Recompute Picture Views')]]</span>
+      </div>
+      <div>
+
+        <nuxeo-operation id="rop"
+          op="Picture.Recompute"
+          input="[[query]]">
+        </nuxeo-operation>
+
+        <nuxeo-operation id="pop"
+          op="Picture.PendingRecompute">
+        </nuxeo-operation>
+
+        <paper-textarea id="queryInput"
+                     type="search"
+                     label="[[i18n('NXQL Query')]]"
+                     value="{{query}}"
+                     placeholder="[[i18n('imaging.query.placeholder')]]"
+                     autofocus>
+        </paper-textarea>
+        <paper-button on-tap="_recompute">[[i18n('Recompute')]]</paper-button>
+      </div>
+    </nuxeo-page>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'nuxeo-imaging',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        query: {
+          type: String,
+          value: "SELECT * FROM Document WHERE ecm:mixinType = 'Picture'"
+        }
+      },
+
+      _recompute: function() {
+        this.$.rop.execute().then(function() {
+          this.fire('notify', {message: 'Recomputing'});
+          window.setTimeout(this._checkRecomputeDone.bind(this), 1000);
+        }.bind(this)).catch(function(err) {
+          this.fire('notify', {message: 'Error'});
+        }.bind(this));
+      },
+
+      _checkRecomputeDone: function() {
+        this.$.pop.execute().then(function(res) {
+          if (res.value) {
+            this.fire('notify', {message: 'Done'});
+          } else {
+            this.fire('notify', {message: 'Still Recomputing'});
+            window.setTimeout(this._checkRecomputeDone.bind(this), 1000);
+          }
+        }.bind(this)).catch(function(err) {
+          this.fire('notify', {message: 'Error'});
+        }.bind(this));
+      }
+
+    });
+  </script>
+</dom-module>
