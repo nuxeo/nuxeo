@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.threed.web.ui.resources.contrib">
+
+  <require>org.nuxeo.web.ui.resources</require>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+    <resource name="nuxeo-threed.html" type="import" shrinkable="false">
+      <uri>/ui/nuxeo-threed/nuxeo-threed.html</uri>
+    </resource>
+    <resource name="threed.svg" type="import" shrinkable="false">
+      <uri>/ui/images/doctypes/threed.svg</uri>
+    </resource>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
+    <bundle name="web-ui">
+      <resources append="true">
+        <resource>nuxeo-threed.html</resource>
+        <resource>threed.svg</resource>
+      </resources>
+    </bundle>
+  </extension>
+
+</component>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.opencmis.tests.tests.test-relax-cmis-spec">
+
+  <require>org.nuxeo.ecm.core.opencmis.configuration</require>
+
+  <extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
+    <property name="org.nuxeo.cmis.relaxSpec">true</property>
+  </extension>
+
+</component>

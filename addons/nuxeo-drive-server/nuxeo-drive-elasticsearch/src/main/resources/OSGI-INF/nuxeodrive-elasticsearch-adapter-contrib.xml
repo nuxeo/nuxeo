@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.elasticsearch.adapters" version="1.0">
+
+  <require>org.nuxeo.drive.adapters</require>
+
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService" point="fileSystemItemFactory">
+
+    <fileSystemItemFactory name="defaultSyncRootFolderItemFactory" class="org.nuxeo.drive.elasticsearch.ESSyncRootFolderItemFactory">
+    </fileSystemItemFactory>
+
+  </extension>
+
+</component>
