@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+    <action
+      id="org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean"
+      link="#{excelExportRightsAction.doGet()}"
+      order="200"
+      label="action.acl.audit.export"
+      icon="/icons/export_acl.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <!-- <action
+      id="acl_audit_configure"
+      order="20"
+      label="parameters"
+      type="fancybox"
+      icon="/icons/acl-export-icon.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>only_for_manager</filter-id>
+      <properties>
+        <property name="include">/incl/acl_audit_configure.xhtml</property>
+      </properties>
+    </action>  -->
+  </extension>
+</component>
