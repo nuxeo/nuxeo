@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding>
+  <!--GET /_vti_inf.html HTTP/1.1.-->
+  <filtermapping url="(.*)/_vti_inf.html.*" service="VtiHandler" type="GET">
+  </filtermapping>
+
+  <filtermapping url="(.*)/_vti_bin/resources/.*" type="RESOURCES">
+  </filtermapping>
+
+  <!-- GET /_vti_bin/owssvr.dll -->
+  <filtermapping url="(.*)/_vti_bin/owssvr.dll.*" service="OWSSvrHandler"
+    type="FP">
+  </filtermapping>
+
+  <!-- POST /_vti_bin/shtml.dll/_vti_rpc -->
+  <filtermapping url="(.*)/_vti_bin/shtml.dll/_vti_rpc.*" service="SHtmlHandler"
+    type="FP">
+  </filtermapping>
+
+  <!-- POST /_vti_bin/_vti_aut/author.dll -->
+  <filtermapping url="(.*)/_vti_bin/_vti_aut/author.dll.*"
+    service="AuthorHandler" type="FP">
+  </filtermapping>
+
+  <!-- POST /_vti_bin/webs.asmx -->
+  <filtermapping url="(.*)/_vti_bin/webs.asmx.*" service="FakeWebS"
+    type="FakeWS">
+  </filtermapping>
+
+  <!--POST /_vti_bin/dws.asmx-->
+  <filtermapping url="(.*)/_vti_bin/dws.asmx.*" service="FakeDWS"
+    type="FakeWS">
+  </filtermapping>
+
+  <!--POST /_vti_bin/lists.asmx-->
+  <filtermapping url="(.*)/_vti_bin/lists.asmx.*" service="FakeLists"
+    type="FakeWS">
+  </filtermapping>
+
+  <!--
+    http://Server_Name/[sites/][Site/]_vti_bin/owssvr.dll?
+    dialogview=[FileOpen|FileSave|SaveForm]
+    &location=Document_Library[/Folder][/File]
+    &FileDialogFilterValue=Text
+  -->
+
+</binding>

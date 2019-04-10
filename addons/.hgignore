@@ -1,0 +1,13 @@
+.classpath
+.project
+.settings
+nuxeo-social-collaboration
+nuxeo-rss-reader
+nuxeo-birt
+nuxeo-platform-suggestbox
+nuxeo-poll
+target
+nuxeo-dam
+
+syntax: regexp
+

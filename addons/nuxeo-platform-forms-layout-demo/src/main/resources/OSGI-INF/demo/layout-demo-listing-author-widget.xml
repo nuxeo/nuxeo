@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forms.layoutDemo.listing_authorWidget.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <!-- WARNING: this layout is focused on the widget definition.
+      The layout and column settings are incomplete and show only parts of
+      the standard configuration for a full listing layout configuration. -->
+
+    <layout name="listing_authorWidgetLayout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column name="listing_title">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>demo_listing_title</widget>
+        </column>
+        <column name="listing_author">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_authorWidget</widget>
+        </column>
+      </columns>
+      <widget name="listing_authorWidget" type="listing_author">
+        <labels>
+          <label mode="any">Author widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>data.dublincore.creator</field>
+        </fields>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>
