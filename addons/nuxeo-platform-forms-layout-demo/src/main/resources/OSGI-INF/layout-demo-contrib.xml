@@ -1,0 +1,324 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layoutDemo.framework"
+    point="widgettypes">
+
+    <widgetType name="text">
+      <label>Text</label>
+      <viewId>textWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:textField</field>
+        </fields>
+        <defaultProperties>
+          <property name="rendered">true</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="textWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-text-widget.xml" />
+        <layout name="textWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-text-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="textarea">
+      <label>Textarea</label>
+      <viewId>textareaWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:textareaField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="textareaWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-textarea-widget.xml" />
+        <layout name="textareaWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-textarea-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="int">
+      <label>Int</label>
+      <viewId>intWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:intField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="intWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-int-widget.xml" />
+        <layout name="intWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-int-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="secret">
+      <label>Secret</label>
+      <viewId>secretWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:secretField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="secretWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-secret-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="datetime">
+      <label>Datetime</label>
+      <viewId>datetimeWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:dateField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="datetimeWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-datetime-widget.xml" />
+        <layout name="datetimeWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-datetime-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <!-- TODO: need to handle file size restriction -->
+    <widgetType name="file">
+      <label>File</label>
+      <viewId>fileWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:fileField</field>
+          <field>lds:fileField/filename</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="fileWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-file-widget.xml" />
+        <layout name="fileWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-file-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="htmltext">
+      <label>Htmltext</label>
+      <viewId>htmltextWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:htmlField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="htmltextWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-htmltext-widget.xml" />
+        <layout name="htmltextWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-htmltext-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectOneDirectory">
+      <label>Vocabulary</label>
+      <viewId>selectOneDirectoryWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:selectVocabularyField</field>
+        </fields>
+        <defaultProperties>
+          <property name="directoryName">layout_demo_crew</property>
+          <property name="ordering">label</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="selectOneDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-widget.xml" />
+        <layout name="selectOneDirectoryWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyDirectory">
+      <label>Multiple vocabulary</label>
+      <viewId>selectManyDirectoryWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:selectMultiVocabularyField</field>
+        </fields>
+        <defaultProperties>
+          <property name="directoryName">layout_demo_crew</property>
+          <property name="ordering">label</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="selectManyDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-widget.xml" />
+        <layout name="selectManyDirectoryWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="checkbox">
+      <label>Checkbox</label>
+      <viewId>checkboxWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:booleanField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="checkboxWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-checkbox-widget.xml" />
+        <layout name="checkboxWidgetListingLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-checkbox-listing-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="list">
+      <label>List</label>
+      <viewId>listWidget</viewId>
+      <category>standard</category>
+      <layouts>
+        <layout name="listArrayWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-list-array-widget.xml" />
+        <layout name="listWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-list-widget.xml" />
+        <layout name="complexListWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-complex-list-widget.xml" />
+        <!-- disabled: need to handle file size restriction -->
+        <!-- 
+          <layout name="fileListWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-file-list-widget.xml" />
+        -->
+        <layout name="listOfListsWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-listOfLists-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="complex">
+      <label>Complex</label>
+      <viewId>complexWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <layout name="complexWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-complex-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="template">
+      <label>Template</label>
+      <viewId>templateWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <!-- TODO? -->
+        <!--
+          <layout name="templateWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-template-widget.xml" />
+        -->
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_author">
+      <label>Author</label>
+      <viewId>listing_authorWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_authorWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-author-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_big_icon_type">
+      <label>Big icon and document type</label>
+      <viewId>listing_big_icon_typeWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_big_icon_typeWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-big-icon-type-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_big_icon_type_link">
+      <label>Big icon and document type with link</label>
+      <viewId>listing_big_icon_type_linkWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_big_icon_type_linkWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-big-icon-type-link-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_icon_type">
+      <label>Icon and document type</label>
+      <viewId>listing_icon_typeWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_icon_typeWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-icon-type-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_last_contributor">
+      <label>Last contributor</label>
+      <viewId>listing_last_contributorWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_last_contributorWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-last-contributor-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_lifecycle">
+      <label>Lifecycle state</label>
+      <viewId>listing_lifecycleWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_lifecycleWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-lifecycle-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_lock_icon">
+      <label>Lock icon</label>
+      <viewId>listing_lock_iconWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_lock_iconWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-lock-icon-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_title_link">
+      <label>Title with link</label>
+      <viewId>listing_title_linkWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_title_linkWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-title-link-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="listing_version">
+      <label>Version</label>
+      <viewId>listing_versionWidget</viewId>
+      <category>listing</category>
+      <layouts>
+        <layout name="listing_versionWidgetLayout" isListing="true"
+          src="sources/OSGI-INF/demo/layout-demo-listing-version-widget.xml" />
+      </layouts>
+    </widgetType>
+
+  </extension>
+
+</component>
