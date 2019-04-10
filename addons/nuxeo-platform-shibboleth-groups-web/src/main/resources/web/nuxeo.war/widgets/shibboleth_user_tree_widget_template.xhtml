@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<div xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:a4j="http://richfaces.org/a4j" xmlns:nxu="http://nuxeo.org/nxweb/util" xmlns:c="http://java.sun.com/jstl/core" xmlns:rich="http://richfaces.org/rich">
+  <c:set var="userSchema" value="#{userManager.userSchemaName}"/>
+  <c:if test="#{widget.mode != 'edit'}">
+    <h:dataTable value="#{field_0}" var="item" rendered="#{not empty field_0}">
+      <h:column>
+        <nxu:methodResult name="info" value="#{shibbUserSuggestionWithGroupTree.getUserInfo(item)}">
+          <f:subview rendered="#{info.type == 'USER_TYPE'}">
+            <h:graphicImage value="/icons/user.png" alt="user"/>
+            <h:commandLink value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" action="#{userManagerActions.viewUser(info.id)}"/>
+          </f:subview>
+          <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
+            <h:graphicImage value="/icons/group.png" alt="group"/>
+            <h:commandLink value="#{info.id}" action="#{groupManagerActions.viewGroup(info.id)}"/>
+          </f:subview>
+          <f:subview rendered="#{empty info.type}">
+            <h:outputText value="#{item}"/>
+          </f:subview>
+        </nxu:methodResult>
+      </h:column>
+    </h:dataTable>
+  </c:if>
+  <c:if test="#{widget.mode == 'edit'}">
+    <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
+      <h:panelGroup>
+        <rich:tree id="#{widget.id}_tree" var="node">
+          <rich:treeModelRecursiveAdaptor roots="#{shibbUserSuggestionWithGroupTree.treeRoot}" nodes="#{node.childrens}">
+            <rich:treeNode iconLeaf="/icons/group.png">
+              <div id="docRefTarget:#{node.id}">
+                  <span> 
+                    <h:outputText value="#{node.displayedName}" rendered="#{!empty node.childrens}"/>  
+                    <a4j:commandLink value="#{node.displayedName}" rendered="#{empty node.childrens}">
+                      <a4j:ajax event="click" bypassUpdates="true" render="#{widget.id}_listRegion" id="#{widget.id}_tree_select">
+                        <f:setPropertyActionListener value="#{node.id}" target="#{suggestionActions.selectedValue}"/>
+                        <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}"/>
+                        <f:param name="suggestionSelectionListId" value="#{widget.id}_list"/>
+                        <f:param name="userSuggestionSearchType" value="#{searchType}"/>
+                        <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}"/>
+                        <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}"/>
+                      </a4j:ajax>
+                    </a4j:commandLink> 
+                  </span>
+              </div>
+            </rich:treeNode>
+          </rich:treeModelRecursiveAdaptor>
+        </rich:tree>
+      </h:panelGroup>
+      <h:panelGroup>
+        <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_listRegion" layout="block">
+          <nxu:inputList id="#{widget.id}_list" value="#{field_0}" model="model" required="#{widgetProperty_required}">
+            <h:panelGroup id="#{widget.id}_listItem">
+              <h:panelGrid columns="2">
+                <a4j:commandLink immediate="true" actionListener="#{editableListBean.performAction}" id="#{widget.id}_delete" render="#{widget.id}_listRegion" bypassUpdates="true">
+                  <h:graphicImage value="/icons/delete.png"/>
+                  <f:param name="for" value="#{widget.id}_list"/>
+                  <f:param name="index" value="#{model.rowIndex}"/>
+                  <f:param name="type" value="remove"/>
+                </a4j:commandLink>
+                <nxu:methodResult name="info" value="#{shibbUserSuggestionWithGroupTree.getUserInfo(model.rowData)}">
+                  <f:subview rendered="#{info.type == 'USER_TYPE'}">
+                    <h:graphicImage value="/icons/user.png" alt="user"/>
+                    <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}"/>
+                  </f:subview>
+                  <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
+                    <h:graphicImage value="/icons/group.png" alt="group"/>
+                    <h:outputText value="#{info.id}"/>
+                  </f:subview>
+                  <f:subview rendered="#{empty info.type}">
+                    <h:outputText value="#{info}"/>
+                  </f:subview>
+                </nxu:methodResult>
+              </h:panelGrid>
+            </h:panelGroup>
+          </nxu:inputList>
+          <h:message styleClass="errorMessage" for="#{widget.id}_list" id="#{widget.id}_message"/>
+        </a4j:outputPanel>
+      </h:panelGroup>
+    </a4j:region>
+  </c:if>
+</div>

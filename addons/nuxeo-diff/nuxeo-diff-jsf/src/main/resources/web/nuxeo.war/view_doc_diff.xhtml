@@ -1,0 +1,39 @@
+<ui:composition template="/pages/workspace_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <ui:define name="page title">
+    <h:outputText
+      value="#{nuxeoApplicationName} - #{nxd:titleOrId(currentDocument)}" />
+  </ui:define>
+
+  <ui:define name="bookmark">
+    <link rel="bookmark"
+      href="#{navigationContext.currentDocumentFullUrl}" />
+  </ui:define>
+
+  <ui:define name="body">
+    <div>
+
+      <ui:remove>
+        For now the diff title is in included tab content,
+        but we could have a first level title here
+        <div>
+          <h1>
+            <h:outputText value="#{messages['document.diff.title']}" />
+          </h1>
+        </div>
+      </ui:remove>
+
+      <ui:include src="/incl/message_banner.xhtml" />
+
+      <div class="tabsContent">
+        <ui:include src="/incl/diff/doc_diff_result.xhtml" />
+      </div>
+
+    </div>
+  </ui:define>
+
+</ui:composition>
