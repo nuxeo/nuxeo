@@ -1,0 +1,68 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+
+  <p class="help">#{messages['label.quota.admin.help']}</p>
+
+  <a4j:queue name="quotaStatsQueue"/>
+  <a4j:region renderRegionOnly="true">
+  <a4j:outputPanel id="quotaStatsAdminPanel">
+
+    <a4j:form>
+
+      <a4j:poll interval="5000" eventsQueue="quotaStatsQueue"
+        reRender="quotaStatsAdminPanel" ignoreDupResponses="true"
+        enabled="true" />
+
+      <table class="dataOutput">
+        <thead>
+          <tr>
+            <th>
+              #{messages['label.quota.admin.updaterName']}
+            </th>
+            <th>
+              #{messages['label.quota.admin.updaterDescription']}
+            </th>
+            <th>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <c:forEach var="updater" items="#{quotaStatsActions.quotaStatsUpdaters}">
+            <tr>
+              <td>
+                #{messages[updater.label]}
+              </td>
+              <td>
+                #{messages[updater.descriptionLabel]}
+              </td>
+              <td>
+                <nxu:set var="status" value="#{quotaStatsActions.getStatus(updater.name)}">
+                  <c:if test="#{not empty status}">
+                    <input class="button" type="button" disabled="disabled"
+                      value="#{messages[status]}"></input>
+                  </c:if>
+
+                  <c:if test="#{empty status}">
+                    <a4j:commandButton value="#{messages['action.quota.launch.computation']}"
+                      action="#{quotaStatsActions.launchInitialComputation(updater.name)}"
+                      styleClass="button"
+                      reRender="quotaStatsAdminPanel"/>
+                  </c:if>
+                </nxu:set>
+              </td>
+            </tr>
+          </c:forEach>
+        </tbody>
+      </table>
+    </a4j:form>
+
+  </a4j:outputPanel>
+  </a4j:region>
+
+
+</div>
