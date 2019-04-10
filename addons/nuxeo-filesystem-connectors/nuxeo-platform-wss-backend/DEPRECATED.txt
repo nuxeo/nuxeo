@@ -1,0 +1,2 @@
+This module is deprecated since NXP-6308, it is superseded by
+nuxeo-platform-wi-backend."
