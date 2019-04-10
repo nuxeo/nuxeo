@@ -1,0 +1,114 @@
+// set absolute path to current folder here, used in tests with file upload
+Selenium.prototype.doRetrieveTestFolderPath = function() {
+  storedVars['testfolderpath'] = "/path/to/project-ear/ftest/selenium";
+};
+
+// ajax4jsf testing helper inspired from
+// http://codelevy.com/articles/2007/11/05/selenium-and-ajax-requests
+/**
+ * Registers with the a4j library to record when an Ajax request
+ * finishes.
+ *
+ * Call this after the most recent page load but before any Ajax requests.
+ *
+ * Once you've called this for a page, you should call waitForA4jRequest at
+ * every opportunity, to make sure the A4jRequestFinished flag is consumed.
+ */
+Selenium.prototype.doWatchA4jRequests = function() {
+  var testWindow = selenium.browserbot.getCurrentWindow();
+  // workaround for Selenium IDE 1b2 bug, see
+  // http://clearspace.openqa.org/message/46135
+  if (testWindow.wrappedJSObject) {
+      testWindow = testWindow.wrappedJSObject;
+  }
+  Selenium.A4jRequestFinished = false;
+  Selenium.ActiveA4jRequestCount = 0;
+  testWindow.A4J.AJAX.AddListener({
+    onbeforeajax: function() {
+      Selenium.ActiveA4jRequestCount++;
+    }
+  });
+  testWindow.A4J.AJAX.AddListener({
+    onafterajax: function() {
+      Selenium.ActiveA4jRequestCount--;
+      if (Selenium.ActiveA4jRequestCount == 0) {
+        Selenium.A4jRequestFinished = true;
+      }
+    }
+  });
+}
+
+Selenium.prototype.doWaitForA4jRequest = function(timeout) {
+  return Selenium.decorateFunctionWithTimeout(function() {
+    if (Selenium.A4jRequestFinished) {
+      Selenium.A4jRequestFinished = false;
+      //Selenium.prototype.doPause(2000);
+      return true;
+    }
+    return false;
+  }, timeout);
+}
+
+Selenium.A4jRequestFinished = false;
+Selenium.ActiveA4jRequestCount = 0;
+
+/**
+ * Function that waits for opensocial gadgets to be loaded.
+ * Assumes frame name starts with "open-social" and will display a div with id
+ * "content".
+ * Accepts a mandatory element id with content to check, and timeout.
+ */
+Selenium.prototype.doWaitForOpensocialGadgetsToLoad = function(mandatoryElementId, timeout) {
+  var framesLoadedPredicate = function () {
+    var testWindow = selenium.browserbot.getCurrentWindow();
+    if (testWindow.wrappedJSObject) {
+      testWindow = testWindow.wrappedJSObject;
+    }
+
+    if(testWindow.document.getElementById("gwtContainerDiv") === null) {
+      // there is no OpenSocial container
+      return true;
+    }
+
+    var foundOneGadgetFrame = false;
+    if (testWindow.frames && testWindow.frames.length && testWindow.frames.length > 0) {
+      for (var i = 0; i < testWindow.frames.length; i++) {
+        LOG.debug("Selected frame: " + testWindow.frames[i].name);
+        if (testWindow.frames[i].name && testWindow.frames[i].name.match("^open-social")=="open-social") {
+          foundOneGadgetFrame = true;
+          selenium.browserbot.selectFrame("index="+i);
+          var testFrame = selenium.browserbot.getCurrentWindow();
+          if (testFrame.wrappedJSObject) {
+            testFrame = testFrame.wrappedJSObject;
+          }
+          // wait for frame to be loaded
+          var loaded = false;
+          if (testFrame.document.getElementById(mandatoryElementId)) {
+            var content = this.getText(testFrame.document.getElementById(mandatoryElementId));
+            if (content) {
+              loaded = true;
+            }
+          }
+          if (!loaded) {
+            // go back to original window
+            selenium.browserbot.selectWindow();
+            return false;
+          }
+          LOG.info("Loaded frame: " + testWindow.frames[i].name);
+          // go back to original window to iterate over frames
+          selenium.browserbot.selectWindow();
+        }
+      }
+      if (!foundOneGadgetFrame) {
+        LOG.debug("no gadget frames present yet");
+        return false;
+      }
+    } else {
+      LOG.debug("no frames present yet");
+      return false;
+    }
+    return true;
+  };
+
+  return Selenium.decorateFunctionWithTimeout(framesLoadedPredicate, timeout);
+}
