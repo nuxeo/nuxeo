@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.signature.api.sign.SignatureService">
+
+  <documentation>
+    The signature service offers digital signing capabilities for pdf documents
+    @version 1.0
+    @author ws@nuxeo.com
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.signature.core.sign.SignatureServiceImpl"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.signature.api.sign.SignatureService"/>
+  </service>
+
+  <extension-point name="signature">
+    <documentation>
+      @since 5.8
+      @author Vladimir Pasquier (vpasquier@nuxeo.com)
+
+      Signature registration.
+      This registration provides configuration of the signature. For layout, numbers of columns, lines, police size and
+      starting (column,line) point. And finally the textual reason of the signature.
+
+      Example of signature configuration:
+
+      <code>
+        <configuration>
+          <reason>This document signed as an example.
+          </reason>
+          <layout id="configExample" lines="5" columns="3" startLine="1" startColumn="1" textSize="8"/>
+        </configuration>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.signature.core.sign.SignatureDescriptor"/>
+  </extension-point>
+
+</component>

@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Quota Web
+Bundle-SymbolicName: org.nuxeo.ecm.quota.web;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Nuxeo-component: OSGI-INF/actions-contrib.xml,
+ OSGI-INF/layouts-contrib.xml,
+ OSGI-INF/quota-nxthemes-contrib.xml,
+ OSGI-INF/quota-maxsize-contrib.xml,
+ OSGI-INF/quota-contentviews-contrib.xml
