@@ -1,0 +1,61 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{widget.id}">
+
+  <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
+
+    <nxdir:chainSelect id="#{widget.id}_viewselect" size="2" value="#{field}"
+      displayValueOnly="true" multiSelect="true">
+      <nxdir:chainSelectListbox index="0" size="4" directoryName="continent"
+        localize="true" id="#{widget.id}_continent" />
+      <nxdir:chainSelectListbox size="4" directoryName="country" index="1"
+        localize="true" id="#{widget.id}_country" />
+      <nxdir:chainSelectStatus display="value" id="#{widget.id}_status" />
+    </nxdir:chainSelect>
+
+  </c:if>
+
+  <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+
+    <a4j:region id="#{widget.id}_region">
+      <nxdir:chainSelect size="2" value="#{field}"
+        id="#{widget.id}_editselect" multiSelect="true" multiParentSelect="true"
+        allowBranchSelection="false" onchange="#{widgetProperty_onchange}">
+        <nxdir:chainSelectListbox index="0" size="4" directoryName="continent"
+          localize="true" id="#{widget.id}_continent">
+          <a4j:support event="onchange" reRender="#{widget.id}_country" />
+        </nxdir:chainSelectListbox>
+
+        <nxdir:chainSelectListbox id="#{widget.id}_country" size="4" index="1"
+          directoryName="country" localize="true" />
+
+        <a4j:commandButton value="#{messages['command.add']}"
+          styleClass="button" immediate="true"
+          actionListener="#{chainSelectActions.add}"
+          reRender="#{widget.id}_status" id="#{widget.id}_add" />
+        <br />
+        <nxdir:chainSelectStatus display="value"
+          entryCssStyle="background-color: #DDEEFF"
+          label="#{messages['label.chainSelect.selection']}"
+          id="#{widget.id}_status">
+          <f:facet name="removeButton">
+            <a4j:commandButton actionListener="#{chainSelectActions.delete}"
+              immediate="true" reRender="#{widget.id}_status"
+              image="/icons/toggle_minus.png" id="#{widget.id}_delete" />
+          </f:facet>
+        </nxdir:chainSelectStatus>
+      </nxdir:chainSelect>
+    </a4j:region>
+    <a4j:outputPanel ajaxRendered="true">
+      <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+        id="#{widget.id}_message" />
+    </a4j:outputPanel>
+
+  </c:if>
+
+</f:subview>

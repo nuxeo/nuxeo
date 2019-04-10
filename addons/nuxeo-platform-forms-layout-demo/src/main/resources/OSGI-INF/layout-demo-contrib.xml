@@ -1,0 +1,204 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layoutDemo.framework"
+    point="widgettypes">
+
+    <widgetType name="text">
+      <label>Text widget</label>
+      <viewId>textWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="textWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-text-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="textarea">
+      <label>Textarea widget</label>
+      <viewId>textareaWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="textareaWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-textarea-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="int">
+      <label>Int widget</label>
+      <viewId>intWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:intField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="intWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-int-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="secret">
+      <label>Secret widget</label>
+      <viewId>secretWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="secretWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-secret-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="datetime">
+      <label>Datetime widget</label>
+      <viewId>datetimeWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:dateField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="datetimeWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-datetime-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <!-- TODO: need to handle file size restriction -->
+    <widgetType name="file">
+      <label>File widget</label>
+      <viewId>fileWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:fileField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="fileWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-file-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="htmltext">
+      <label>Htmltext widget</label>
+      <viewId>htmltextWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="htmltextWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-htmltext-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectOneDirectory">
+      <label>SelectOneDirectory widget</label>
+      <viewId>selectOneDirectoryWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectOneDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="selectManyDirectory">
+      <label>SelectManyDirectory widget</label>
+      <viewId>selectManyDirectoryWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringArrayField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="selectManyDirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="checkbox">
+      <label>Checkbox widget</label>
+      <viewId>checkboxWidget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:booleanField</field>
+        </fields>
+      </preview>
+      <layouts>
+        <layout name="checkboxWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-checkbox-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="list">
+      <label>List widget</label>
+      <viewId>listWidget</viewId>
+      <category>standard</category>
+      <layouts>
+        <layout name="listArrayWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-list-array-widget.xml" />
+        <layout name="listWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-list-widget.xml" />
+        <layout name="complexListWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-complex-list-widget.xml" />
+        <!-- disabled: need to handle file size restriction -->
+        <!-- 
+          <layout name="fileListWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-file-list-widget.xml" />
+        -->
+        <layout name="listOfListsWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-listOfLists-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="complex">
+      <label>Complex widget</label>
+      <viewId>complexWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <layout name="complexWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-complex-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="template">
+      <label>Template widget</label>
+      <viewId>templateWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <!-- TODO -->
+        <!-- 
+          <layout name="templateWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-template-widget.xml" />
+        -->
+      </layouts>
+    </widgetType>
+
+  </extension>
+
+</component>
