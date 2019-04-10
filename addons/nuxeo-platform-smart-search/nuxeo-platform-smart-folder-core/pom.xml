@@ -1,0 +1,14 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-smart-search-parent</artifactId>
+    <version>5.8.0-HF26</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-smart-folder-core</artifactId>
+  <name>Nuxeo Platform Smart Folder Core</name>
+
+  <dependencies></dependencies>
+
+</project>
