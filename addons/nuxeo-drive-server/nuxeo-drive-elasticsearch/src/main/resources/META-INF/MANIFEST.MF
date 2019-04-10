@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Name: org.nuxeo.drive.elasticsearch
+Nuxeo-Component: OSGI-INF/nuxeodrive-elasticsearch-change-finder-contrib.xml,
+ OSGI-INF/nuxeodrive-elasticsearch-operations.xml,
+ OSGI-INF/nuxeodrive-elasticsearch-automation-bindings-contrib.xml
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.drive.elasticsearch;singleton:=true

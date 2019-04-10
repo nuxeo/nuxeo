@@ -1,0 +1,159 @@
+<!--
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<script type="text/javascript" src="aws-sdk-2.201.0.min.js"></script>
+<script type="text/javascript">
+  (function () {
+    var _resource;
+
+    var S3Provider = function(connection, accept, batchAppend) {
+      this.connection = connection;
+      this.accept = accept;
+      this.batchAppend = batchAppend;
+      this.uploader = null;
+      this.batchId = null;
+      this.files = [];
+    };
+
+    S3Provider.prototype._resource = function() {
+      if (!_resource) {
+        _resource = document.createElement('nuxeo-resource');
+        document.body.appendChild(_resource);
+      }
+      return _resource;
+    }
+
+    S3Provider.prototype._upload = function(file, callback) {
+      return new Promise(function(resolve, reject) {
+        this.uploader.upload({
+          Key: this.extraInfo.baseKey.replace(/^\/+/g, '').concat(file.name),
+          ContentType: file.type,
+          Body: file
+        }).on('httpUploadProgress', function(evt) {
+          if (typeof callback === 'function') {
+            callback({ type: 'uploadProgress', fileIdx: file.index, progress: (evt.loaded / evt.total) * 100 });
+          }
+        }.bind(this)).send(function(error, data) {
+          if (error === null) {
+            var resource = this._resource();
+            resource.path = ['upload', this.batchId, file.index, 'complete'].join('/');
+            resource.data = {
+              name: file.name,
+              fileSize: file.size,
+              key: data.Key,
+              bucket: data.Bucket,
+              etag: data.ETag
+            };
+            resource.post().then(function() {
+              if (typeof callback === 'function') {
+                callback({ type: 'uploadCompleted', fileIdx: file.index })
+              }
+              resolve();
+            });
+          } else {
+            reject(error)
+          }
+        }.bind(this));
+      }.bind(this));
+    };
+
+    S3Provider.prototype._ensureBatch = function() {
+      if (!this.batchAppend || !this.uploader) {
+        this.files = [];
+        return this._newBatch();
+      }
+      return Promise.resolve();
+    };
+
+    S3Provider.prototype._initCredentials = function(options) {
+      AWS.config.update({
+        credentials: new AWS.Credentials(options.awsSecretKeyId, options.awsSecretAccessKey, options.awsSessionToken),
+        region: options.region,
+        useAccelerateEndpoint: options.useS3Accelerate || false,
+        leavePartsOnError: true
+      });
+
+      AWS.config.credentials.expireTime = new Date(options.expiration);
+    };
+
+    S3Provider.prototype._newBatch = function() {
+      var resource = this._resource();
+      resource.path = 'upload/new/s3';
+      return resource.post().then(function(response) {
+        this.batchId = response.batchId;
+        this.extraInfo = response.extraInfo;
+        this._initCredentials(response.extraInfo);
+        this.uploader = new AWS.S3({
+          params: {
+            Bucket: this.extraInfo.bucket,
+          },
+          computeChecksums: true
+        });
+      }.bind(this));
+    };
+
+    S3Provider.prototype.accepts = Nuxeo.UploaderBehavior.getProviders()['default'].prototype.accepts;
+
+    S3Provider.prototype.upload = function(files, callback) {
+      this._ensureBatch().then(function() {
+        if ((new Date()).getTime() >= this.extraInfo.expiration) {
+          this._refreshBatchInfo();
+        }
+
+        var promises = [];
+        for (var i = 0; i < files.length; ++i) {
+          var file = files[i];
+          file.index = this.files.length;
+          this.files.push(file);
+          if (typeof callback === 'function') {
+            callback({ type: 'uploadStarted', file: file })
+          }
+          promises.push(this._upload(file, callback));
+        }
+        return Promise.all(promises).then(function() {
+          callback({ type: 'batchFinished', batchId: this.batchId });
+        }.bind(this));
+      }.bind(this));
+    };
+
+    S3Provider.prototype.hasProgress = function() {
+      return true;
+    };
+
+    S3Provider.prototype.cancelBatch = function() {
+      this.uploader = null;
+      this.batchId = null;
+      this.files = [];
+    };
+
+    S3Provider.prototype.batchExecute = function(operationId, params, headers) {
+      return this.connection.operation(operationId).then(function(operation) {
+        var options = {
+          url: [operation._nuxeo._restURL, 'upload', this.batchId, 'execute', operationId].join('/')
+              .replace(/\/+/g, '\/')
+        };
+        if (headers) {
+          options['headers'] = headers;
+        }
+        if (params.context) {
+          operation = operation.context(params.context);
+        }
+        return operation.params(params).execute(options);
+      }.bind(this));
+    };
+
+    Nuxeo.UploaderBehavior.registerProvider('s3', S3Provider);
+    Nuxeo.UploaderBehavior.defaultProvider = 's3';
+  })();
+</script>

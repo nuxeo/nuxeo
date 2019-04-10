@@ -1,0 +1,94 @@
+<!--
+(C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+Tiago Cardoso <tcardoso@nuxeo.com>
+-->
+
+<html>
+<head>
+  <title>nuxeo-3d-viewer tests</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <script src="test-helpers.js"></script>
+  <link rel="import" href="../../polymer/polymer.html">
+  <link rel="import" href="../nuxeo-3d-viewer.html">
+</head>
+<body>
+
+
+  <test-fixture id="simpleLoad">
+    <template>
+      <nuxeo-3d-viewer src="../demo/nuxeo-3d-viewer/suzanne.gltf"></nuxeo-3d-viewer>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="completeLoad">
+    <template>
+      <nuxeo-3d-viewer src="../demo/nuxeo-3d-viewer/suzanne.gltf" loader="complete"></nuxeo-3d-viewer>
+    </template>
+  </test-fixture>
+
+  <script>
+  suite('<nuxeo-3d-viewer>', function() {
+    suite('viewer', function() {
+      var simple3DViewerEl;
+      var complete3DViewerEl;
+      var canvas;
+      setup(function() {
+        simple3DViewerEl = fixture('simpleLoad');
+        complete3DViewerEl = fixture('completeLoad');
+      });
+      test('element structure', function() {
+        expect(simple3DViewerEl).to.not.be.null;
+        expect(simple3DViewerEl.loader).to.be.equal('simple');
+        expect(simple3DViewerEl.gltfLoader).to.be.instanceOf(THREE.GLTFLoader);
+        expect(simple3DViewerEl.src).to.be.equal('../demo/nuxeo-3d-viewer/suzanne.gltf');
+        expect(simple3DViewerEl.renderer).to.not.be.null;
+        var threedEl = simple3DViewerEl.$.threed;
+        expect(threedEl).to.not.be.null;
+        var canvasTest = function() {
+          var children = threedEl.children;
+          expect(children).to.have.length(1);
+          canvas = children[0];
+          expect(canvas.nodeName).to.be.equal('CANVAS');
+          expect(canvas.getContext("webgl")).to.not.be.null;
+        }
+        if(simple3DViewerEl.setupFinished) {
+          canvasTest();
+        } else {
+          return waitChanged(simple3DViewerEl, 'setup-finished').then(canvasTest);
+        }
+
+      });
+      test('has renderer', function() {
+        expect(simple3DViewerEl.renderer).to.not.be.null;
+        expect(simple3DViewerEl.renderer.domElement.nodeName).to.be.equal('CANVAS');
+      });
+      test('clear scene', function() {
+        simple3DViewerEl.clear();
+        expect(simple3DViewerEl.scene.children).to.have.length(0);
+      });
+      test('element complete loader', function() {
+        expect(complete3DViewerEl).to.not.be.null;
+        expect(complete3DViewerEl.loader).to.be.equal('complete');
+        expect(complete3DViewerEl.gltfLoader).to.be.instanceOf(THREE.glTFLoader);
+      });
+    });
+  });
+  </script>

@@ -1,0 +1,8 @@
+<component name="org.nuxeo.binary.metadata.contribs.tests.provider">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="testProvider">
+      <class>org.nuxeo.binary.metadata.test.MockDummyBlobProvider</class>
+      <property name="preventUserUpdate">true</property>
+    </blobprovider>
+  </extension>
+</component>

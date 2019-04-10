@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.registration.contentviews.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+             point="contentViews">
+
+    <contentView name="user_requests_view">
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:mixinType = 'UserRegistration' AND ecm:isVersion = 0
+        </pattern>
+        <pageSize>20</pageSize>
+        <sort column="dc:created" ascending="false"/>
+      </coreQueryPageProvider>
+
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+        <event>requestDocumentsChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <layout name="user_requests_listing_layout" title="document_listing"
+                translateTitle="true" iconPath="/icons/document_listing_icon.png"/>
+      </resultLayouts>
+
+      <selectionList>CURRENT_USER_REQUESTS</selectionList>
+      <actions category="CURRENT_USER_REQUESTS_GLOBAL"/>
+
+    </contentView>
+
+    <contentView name="local_user_requests_view">
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:mixinType = 'UserRegistration' AND docinfo:documentId = ? AND ecm:isVersion = 0 AND
+          ecm:currentLifeCycleState != 'validated'
+        </pattern>
+        <parameter>#{navigationContext.currentDocument.id}</parameter>
+        <pageSize>20</pageSize>
+        <sort column="dc:created" ascending="false"/>
+      </coreQueryPageProvider>
+
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+        <event>requestDocumentsChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <layout name="user_requests_listing_layout" title="document_listing"
+                translateTitle="true" iconPath="/icons/document_listing_icon.png"/>
+      </resultLayouts>
+
+      <selectionList>CURRENT_USER_REQUESTS</selectionList>
+      <actions category="CURRENT_USER_REQUESTS_LOCAL"/>
+
+    </contentView>
+
+  </extension>
+
+  <extension point="list" target="org.nuxeo.ecm.webapp.documentsLists.DocumentsListsService">
+    <documentsList name="CURRENT_USER_REQUESTS">
+      <events>
+        <event>folderishDocumentSelectionChanged</event>
+        <event>searchPerformed</event>
+        <event>requestDocumentsChanged</event>
+      </events>
+      <isSession>false</isSession>
+    </documentsList>
+  </extension>
+
+</component>

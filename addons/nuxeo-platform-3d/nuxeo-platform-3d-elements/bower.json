@@ -1,0 +1,29 @@
+{
+  "name": "nuxeo-3d-elements",
+  "authors": [
+    "Tiago Cardoso <tcardoso@nuxeo.com>"
+  ],
+  "description": "Nuxeo 3D Web Components.",
+  "keywords": [
+    "nuxeo",
+    "web-components",
+    "polymer",
+    "3d"
+  ],
+  "main": "nuxeo-3d-elements.html",
+  "license": "Apache 2.0",
+  "homepage": "https://github.com/nuxeo/nuxeo-3d-elements/",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.1.0",
+    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#~1.0.2",
+    "paper-progress": "PolymerElements/paper-progress#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "^4.0.0"
+  }
+}
