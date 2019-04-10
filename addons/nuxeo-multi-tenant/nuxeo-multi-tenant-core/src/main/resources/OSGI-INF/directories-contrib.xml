@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.multi.tenant.directories">
+
+  <require>org.nuxeo.ecm.directories</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="tenant" src="schemas/tenant.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="tenants" extends="template-directory">
+      <schema>tenant</schema>
+      <idField>id</idField>
+      <entryCacheName>tenants-cache</entryCacheName>
+      <entryCacheWithoutReferencesName>tenants-cache-without-ref</entryCacheWithoutReferencesName>
+    </directory>
+
+    <directory name="topic" extends="template-directory">
+      <schema>multitenantvocabulary</schema>
+      <idField>id</idField>
+      <dataFile>directories/topic.csv</dataFile>
+      <entryCacheName>topic-cache</entryCacheName>
+      <entryCacheWithoutReferencesName>topic-cache-without-ref</entryCacheWithoutReferencesName>
+      <deleteConstraint
+        class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
+        <property name="targetDirectory">subtopic</property>
+        <property name="targetDirectoryField">parent</property>
+      </deleteConstraint>
+    </directory>
+
+    <directory name="subtopic" extends="template-directory">
+      <schema>multitenantxvocabulary</schema>
+      <idField>id</idField>
+      <parentDirectory>topic</parentDirectory>
+      <dataFile>directories/subtopic.csv</dataFile>
+      <entryCacheName>subtopic-cache</entryCacheName>
+      <entryCacheWithoutReferencesName>subtopic-cache-without-ref</entryCacheWithoutReferencesName>
+    </directory>
+
+    <directory name="l10nsubjects" extends="template-directory">
+      <schema>multitenantl10nxvocabulary</schema>
+      <idField>id</idField>
+      <parentDirectory>l10nsubjects</parentDirectory>
+      <dataFile>directories/l10nsubjects.csv</dataFile>
+      <entryCacheName>l10nsubjects-cache</entryCacheName>
+      <entryCacheWithoutReferencesName>l10nsubjects-cache-without-ref</entryCacheWithoutReferencesName>
+      <deleteConstraint
+        class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
+        <property name="targetDirectory">l10nsubjects</property>
+        <property name="targetDirectoryField">parent</property>
+      </deleteConstraint>
+    </directory>
+
+    <directory name="l10ncoverage" extends="template-directory">
+      <schema>multitenantl10nxvocabulary</schema>
+      <idField>id</idField>
+      <parentDirectory>l10ncoverage</parentDirectory>
+      <dataFile>directories/l10ncoverage.csv</dataFile>
+      <entryCacheName>l10ncoverage-cache</entryCacheName>
+      <entryCacheWithoutReferencesName>l10ncoverage-cache-without-ref</entryCacheWithoutReferencesName>
+      <deleteConstraint
+        class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
+        <property name="targetDirectory">l10ncoverage</property>
+        <property name="targetDirectoryField">parent</property>
+      </deleteConstraint>
+    </directory>
+
+  </extension>
+
+</component>
