@@ -1,0 +1,59 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <c:if test="#{value.hasFacet('Video')}">
+
+  <c:if test="#{!empty widget.label and widget.handlingLabels}">
+    <ui:include src="/widgets/incl/widget_label_template.xhtml">
+      <ui:param name="labelStyleClass" value="summaryTitle" />
+    </ui:include>
+  </c:if>
+
+  <c:set var="width" value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, 550)}" />
+  <c:set var="height" value="#{nxu:test(!empty widgetProperty_height, widgetProperty_height, 310)}" />
+
+  <nxu:set var="staticPreview" value="#{videoActions.getURLForStaticPreview(value)}">
+  <nxu:set var="mp4URL" value="#{videoActions.getTranscodedVideoURL(value, 'MP4 480p')}">
+  <nxu:set var="webmURL" value="#{videoActions.getTranscodedVideoURL(value, 'WebM 480p')}">
+
+  <c:if test="#{empty mp4URL}">
+    <nxu:set var="conversionStatus"
+      value="#{videoActions.getVideoConversionStatus(value, 'MP4 480p')}">
+      <c:if test="#{not empty conversionStatus}">
+        <p class="tips">
+          #{videoActions.getStatusMessageFor(conversionStatus)}
+        </p>
+      </c:if>
+    </nxu:set>
+  </c:if>
+
+  <div class="video-js-box">
+    <!-- Unless using the CDN hosted version, update the URL to the Flash SWF -->
+    <script>
+      videojs.options.flash.swf = "#{baseURL}swf/video-js.swf";
+    </script>
+    <video id="videoJs" width="#{width}" height="#{height}" class="video-js vjs-default-skin" controls="controls" preload="auto"
+      poster="#{staticPreview}" data-setup="{}">
+      <c:if test="#{not empty mp4URL}">
+        <source src="#{mp4URL}" type='video/mp4' />
+      </c:if>
+      <c:if test="#{not empty webmURL}">
+        <source src="#{webmURL}" type='video/webm' />
+      </c:if>
+    </video>
+  </div>
+
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </c:if>
+
+</div>
