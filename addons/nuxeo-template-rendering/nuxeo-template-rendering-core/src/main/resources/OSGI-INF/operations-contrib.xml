@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.platform.TemplateSources.operations" version="1.0">
+
+  <documentation>
+  Contribute Operation to encapsulate TemplateProcessor rendering features
+  @author Tiry (tdelprat@nuxeo.com)</documentation>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+
+    <operation
+      class="org.nuxeo.template.automation.RenderWithTemplateOperation" />
+    <operation
+      class="org.nuxeo.template.automation.DetachTemplateOperation" />
+
+  </extension>
+  
+</component>
