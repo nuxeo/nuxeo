@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="ParallelDocumentReview">
+  <system>
+    <type>DocumentRoute</type>
+    <path>ParallelDocumentReview</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>DocumentRoute</facet>
+    <facet>Orderable</facet>
+    <facet>StepFolder</facet>
+    <facet>facet-var_ParallelDocumentReview</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:docrm="http://www.nuxeo.org/ecm/schemas/document_route_model" name="document_route_model"></schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common"></schema>
+  <schema xmlns:stepf="http://www.nuxeo.org/ecm/schemas/step_folder" name="step_folder">
+    <stepf:execution><![CDATA[graph]]></stepf:execution>
+  </schema>
+  <schema xmlns:var_ParallelDocumentReview="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_ParallelDocumentReview" name="var_ParallelDocumentReview"></schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:title><![CDATA[wf.parallelDocumentReview.ParallelDocumentReview]]></dc:title>
+  </schema>
+  <schema xmlns:docri="http://www.nuxeo.org/ecm/schemas/document_route_instance/" name="document_route_instance">
+    <docri:variablesFacet><![CDATA[facet-var_ParallelDocumentReview]]></docri:variablesFacet>
+    <docri:availabilityFilter><![CDATA[filter@wf@ParallelDocumentReview]]></docri:availabilityFilter>
+  </schema>
+</document>

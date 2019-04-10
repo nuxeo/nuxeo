@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.routing.directories.contrib">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="execution_type" extends="template-vocabulary">
+      <table>ecp-note-type</table>
+      <dataFile>directories/execution_type.csv</dataFile>
+      <types>
+        <type>system</type>
+      </types>
+    </directory>
+
+  </extension>
+
+</component>

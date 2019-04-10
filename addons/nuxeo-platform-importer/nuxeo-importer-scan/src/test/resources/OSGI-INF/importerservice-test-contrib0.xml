@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent.testContrib0">
+
+  <extension target="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent"
+    point="mapping">
+
+    <mapping>
+        <fieldMappings>
+            <fieldMapping sourceXPath="xpath1" sourceAttribute="attr1" targetXPath="dc:title" targetType="string"/>
+            <fieldMapping sourceXPath="xpath2" sourceAttribute="attr2" targetXPath="dc:description" targetType="string"/>
+        </fieldMappings>
+
+        <blobMappings>
+            <blobMapping sourceXPath="xpath3" sourcePathAttribute="filePath1" sourceFilenameAttribute="fileName1" targetXPath="file:content" ></blobMapping>
+        </blobMappings>
+    </mapping>
+
+  </extension>
+
+</component>

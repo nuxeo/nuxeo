@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<title>MultiValue</title>
+	<subject>Subject 1</subject>
+	<subject>Subject 2</subject>
+	<Actors>
+		<Actor>
+			<FirstName>Eddie</FirstName>
+			<LastName>Murphy</LastName>
+		</Actor>
+		<Actor>
+			<FirstName>Martin</FirstName>
+			<LastName>Lawrence</LastName>
+		</Actor>
+	</Actors>
+</document>

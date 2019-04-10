@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="Task375f">
+  <system>
+    <type>RouteNode</type>
+    <path>SerialDocumentReview/Task375f</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>facet-var_Task375f</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common"></schema>
+  <schema xmlns:var_Task375f="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_Task375f" name="var_Task375f"></schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:title><![CDATA[Start]]></dc:title>
+  </schema>
+  <schema xmlns:rnode="http://www.nuxeo.org/ecm/schemas/route_node/" name="route_node">
+    <rnode:transitions>
+      <transition>
+        <condition><![CDATA[true]]></condition>
+        <chain><![CDATA[]]></chain>
+        <targetId><![CDATA[Task38e]]></targetId>
+        <name><![CDATA[startTask375f]]></name>
+        <label><![CDATA[start]]></label>
+      </transition>
+    </rnode:transitions>
+    <rnode:taskY><![CDATA[0]]></rnode:taskY>
+    <rnode:variablesFacet><![CDATA[facet-var_Task375f]]></rnode:variablesFacet>
+    <rnode:taskX><![CDATA[440]]></rnode:taskX>
+    <rnode:inputChain><![CDATA[]]></rnode:inputChain>
+    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
+    <rnode:stop><![CDATA[false]]></rnode:stop>
+    <rnode:hasTask><![CDATA[false]]></rnode:hasTask>
+    <rnode:escalationRules/>
+    <rnode:outputChain><![CDATA[]]></rnode:outputChain>
+    <rnode:nodeId><![CDATA[Task375f]]></rnode:nodeId>
+    <rnode:start><![CDATA[true]]></rnode:start>
+  </schema>
+</document>

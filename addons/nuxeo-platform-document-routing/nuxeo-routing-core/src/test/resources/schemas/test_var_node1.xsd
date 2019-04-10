@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:node="http://www.nuxeo.org/ecm/schemas/test_var_node1/"
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/test_var_node1/">
+
+  <xs:element name="stringfield2" type="xs:string" />
+  <xs:element name="status" type="xs:string" />
+
+</xs:schema>

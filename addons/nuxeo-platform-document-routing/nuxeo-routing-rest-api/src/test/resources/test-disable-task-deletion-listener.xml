@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.disable.task.deletion.listener.test">
+
+  <require>org.nuxeo.ecm.platform.task.core.listeners</require>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="removeProcessForDeletedDocument" enabled="false" />
+  </extension>
+
+</component>

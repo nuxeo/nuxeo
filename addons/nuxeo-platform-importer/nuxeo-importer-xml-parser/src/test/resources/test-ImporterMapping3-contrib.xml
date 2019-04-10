@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<component
+	name="org.nuxeo.ecm.platform.importer.xml.parser.ImporterComponent.adullact.contrib"
+	version="1.0">
+
+	<extension
+		target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent"
+		point="documentMapping">
+
+		<docConfig tagName="seance" updateExistingDocuments="true">
+			<docType>Workspace</docType>
+			<name>@IdSeance</name>
+		</docConfig>
+
+		<docConfig tagName="dossierActe" updateExistingDocuments="true">
+			<docType>Folder</docType>
+			<name>Acte-{{@idActe}}</name>
+			<parent><![CDATA[ #{nodes = currentElement.selectNodes('@refSeance');
+                        if (nodes.size()>0) {
+                          String seanceRef = nodes.get(0).getText();
+                          String parentRef = '//seance[@idSeance=\"' + seanceRef + '\"]';
+                          return xml.selectNodes(parentRef).get(0);
+                        } else {
+                          return root.getPathAsString();
+                        }}]]>
+			</parent>
+		</docConfig>
+
+		<docConfig tagName="//document[@type='convocation']"
+			updateExistingDocuments="true">
+			<docType>Section</docType>
+			<name>@nom</name>
+			<parent>..</parent>
+		</docConfig>
+
+		<docConfig tagName="//document[@type!='convocation']"
+			updateExistingDocuments="true">
+			<docType>File</docType>
+			<name>@nom</name>
+			<parent>..</parent>
+		</docConfig>
+
+	</extension>
+
+	<extension
+		target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent"
+		point="attributeMapping">
+
+		<attributeConfig tagName="titre" docProperty="dc:title"
+			xmlPath="text()" />
+		<attributeConfig tagName="dossierActe" docProperty="dc:source"
+			xmlPath="#{'Seance ' + currentDocument.name}" />
+		<attributeConfig tagName="document" docProperty="dc:title"
+			xmlPath="@nom" />
+		<attributeConfig tagName="document" docProperty="dc:source"
+			xmlPath="@type" />
+
+		<attributeConfig tagName="signature" docProperty="dc:format"
+			xmlPath="@formatSignature" />
+
+		<attributeConfig tagName="document" docProperty="file:content">
+			<mapping documentProperty="filename">@nom</mapping>
+			<mapping documentProperty="mimetype">mimetype/text()</mapping>
+			<mapping documentProperty="content">@nom</mapping>
+		</attributeConfig>
+
+		<attributeConfig tagName="subjects" docProperty="dc:subjects"
+			overwrite="true" />
+		<attributeConfig tagName="subject" docProperty="dc:subjects"
+			xmlPath="text()" />
+
+		<attributeConfig tagName="contributors" docProperty="dc:contributors"
+			overwrite="true" />
+		<attributeConfig tagName="contributor" docProperty="dc:contributors"
+			xmlPath="text()" />
+		<attributeConfig tagName="Actors" docProperty="complx:Actors"
+			overwrite="true" />
+		<attributeConfig tagName="Actor" docProperty="complx:Actors"
+			xmlPath="text()">
+			<mapping documentProperty="FirstName">FirstName/text()</mapping>
+			<mapping documentProperty="LastName">LastName/text()</mapping>
+		</attributeConfig>
+
+	</extension>
+
+	<require>org.nuxeo.ecm.core.CoreExtensions</require>
+	<extension target="org.nuxeo.ecm.core.schema.TypeService"
+		point="schema">
+		<schema name="complx" prefix="complx" src="complx.xsd" />
+	</extension>
+
+	<extension target="org.nuxeo.ecm.core.schema.TypeService"
+		point="doctype">
+		<doctype name="File" append="true">
+			<schema name="complx" />
+		</doctype>
+	</extension>
+</component>

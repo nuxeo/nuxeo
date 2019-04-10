@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.importer.xml.parser.ImporterComponent.adullact.contrib2" version="1.0">
+
+ <extension target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent"
+    point="documentMapping">
+
+  <docConfig tagName="seance">
+    <docType>Workspace</docType>
+    <name>@IdSeance</name>
+    <parent><![CDATA[ #{String dateStr = currentElement.selectNodes('dateSeance/text()')[0].getText().substring(0,10);
+                        return Fn.mkdir(root,'-',dateStr,'Workspace'); }]]>
+    </parent>
+  </docConfig>
+
+  <docConfig tagName="dossierActe">
+    <docType>Folder</docType>
+    <name>Acte-{{@idActe}}</name>
+    <parent><![CDATA[ #{nodes = currentElement.selectNodes('@refSeance');
+                        if (nodes.size()>0) {
+                          String seanceRef = nodes.get(0).getText();
+                          String parentRef = '//seance[@idSeance=\"' + seanceRef + '\"]';
+                          return xml.selectNodes(parentRef).get(0);
+                        } else {
+                          return root.getPathAsString();
+                        }}]]>
+    </parent>
+  </docConfig>
+
+ </extension>
+
+</component>

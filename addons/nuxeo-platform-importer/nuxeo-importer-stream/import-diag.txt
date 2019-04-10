@@ -1,0 +1,63 @@
+@startuml
+node Nuxeo {
+  frame "Stream Importer" {
+    [1. File Blob] <<Producer>> as C1
+    [2. Blob] <<Consumer>> as C2
+    [3. Document] <<Producer>> as C3
+    [4.a Import Document in Nuxeo] <<Consumer>> as C4
+    [4.b Import Document into Redis] <<Consumer>> as C5
+  }
+  frame "Core API" {
+    [Repository]
+    [Binary Store] as Blob
+    [REST API] as Rest
+  }
+}
+  database "Shared Filesystem" {
+    frame "Sample blobs" {
+      database "blob files" as fs1
+    }
+    frame "Generated blobs" {
+      database "blob files" as fs2
+    }
+  }
+
+node Kafka {
+  queue "Blob Message" as s1
+  queue "BlobInfo Message" as s2
+  queue "Document Message" as s3
+}
+
+
+node Database {
+  database Mongo
+}
+
+node AWS {
+  database S3
+}
+
+node Loader {
+  [Gatling]
+  database Redis
+}
+fs1==>C1
+C1-->s1
+s1-->C2
+C2-->s2
+C2-->fs2
+C2-->Blob
+s2-->C3
+C3-->s3
+s3-->C4
+C4==>Repository
+s3-->C5
+C5==>Redis
+Gatling==>Rest
+fs2-->Gatling
+Redis-->Gatling
+Blob<-->S3
+Repository<-->Mongo
+
+@enduml
+
