@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component
+  name="org.nuxeo.ecm.platform.shibboleth.web.service.ShibbolethGroupsService">
+
+  <documentation>
+    The Shibboleth Groups Service handles the Group Tree Widget configuration
+
+    @author Arnaud Kervern (akervern@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.shibboleth.web.service.ShibbolethGroupsService" />
+  </service>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.shibboleth.web.service.ShibbolethGroupsServiceImpl" />
+
+  <extension-point name="config">
+    <documentation>
+      Hold configuration for the Shibboleth Groups Service. Contains:
+      * the group hierarchy delimiter
+      * the base path for Shibb Group
+
+      A sample configuration could be:
+      <code>
+        <extension
+          target="org.nuxeo.ecm.platform.shibboleth.web.service.ShibbolethGroupsService"
+          point="config">
+          <config>
+            <parseString>:</parseString>
+            <basePath>external:group</basePath>
+          </config>
+        </extension>
+      </code>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.shibboleth.web.service.ShibbolethGroupsConfig" />
+  </extension-point>
+
+</component>
