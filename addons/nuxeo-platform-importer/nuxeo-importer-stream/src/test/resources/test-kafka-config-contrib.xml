@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.importer.stream.tests.kafka.contrib">
+
+  <extension point="kafkaConfig" target="org.nuxeo.runtime.stream.kafka.service">
+    <kafkaConfig name="default" randomPrefix="true" topicPrefix="nuxeo-test-" zkServers="localhost:2181">
+      <producer>
+        <property name="bootstrap.servers">localhost:9092</property>
+      </producer>
+      <consumer>
+        <property name="bootstrap.servers">localhost:9092</property>
+        <property name="request.timeout.ms">30000</property>
+        <property name="max.poll.interval.ms">20000</property>
+        <property name="session.timeout.ms">10000</property>
+        <property name="heartbeat.interval.ms">400</property>
+        <property name="max.poll.records">25</property>
+      </consumer>
+    </kafkaConfig>
+
+    <kafkaConfig name="no-subscribe" randomPrefix="true" topicPrefix="nuxeo-test-" zkServers="localhost:2181">
+      <producer>
+        <property name="bootstrap.servers">localhost:9092</property>
+      </producer>
+      <consumer>
+        <property name="subscribe.disable">true</property>
+        <property name="bootstrap.servers">localhost:9092</property>
+        <property name="request.timeout.ms">30000</property>
+        <property name="max.poll.interval.ms">20000</property>
+        <property name="session.timeout.ms">10000</property>
+        <property name="heartbeat.interval.ms">400</property>
+        <property name="max.poll.records">25</property>
+      </consumer>
+    </kafkaConfig>
+
+  </extension>
+</component>
