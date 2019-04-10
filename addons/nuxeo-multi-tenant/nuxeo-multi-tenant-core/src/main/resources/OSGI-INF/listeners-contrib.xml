@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.multi.tenant.listeners">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="multiTenantListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.ecm.multi.tenant.MultiTenantListener"
+      priority="150">
+      <event>documentCreated</event>
+      <event>documentCreatedByCopy</event>
+      <event>documentRemoved</event>
+      <event>lifecycle_transition_event</event>
+      <event>documentTrashed</event>
+      <event>documentUntrashed</event>
+    </listener>
+
+    <listener name="tenantAdministratorsListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.ecm.multi.tenant.TenantAdministratorsListener"
+      priority="100">
+      <event>beforeDocumentModification</event>
+    </listener>
+
+    <listener name="multiTenantACLListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.ecm.multi.tenant.acl.ACLUpdateListener"
+      priority="150">
+      <event>beforeDocumentSecurityModification</event>
+    </listener>
+
+  </extension>
+
+</component>

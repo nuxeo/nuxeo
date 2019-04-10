@@ -1,0 +1,30 @@
+{
+  "kind": "drive#app",
+  "id": "22222222",
+  "name": "App #2",
+  "supportsCreate": true,
+  "supportsImport": false,
+  "supportsMultiOpen": false,
+  "supportsOfflineCreate": false,
+  "installed": true,
+  "authorized": true,
+  "hasDriveWideScope": false,
+  "useByDefault": false,
+  "primaryMimeTypes": [
+    "image/jpeg"
+  ],
+  "secondaryMimeTypes": [
+    "image/png",
+    "image/gif",
+    "image/bmp"
+  ],
+  "primaryFileExtensions": [
+    "jpg"
+  ],
+  "secondaryFileExtensions": [
+    "png",
+    "jpeg",
+    "bmp",
+    "gif"
+  ]
+}
