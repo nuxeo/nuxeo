@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Snapshot Manager
+Bundle-SymbolicName: org.nuxeo.snapshot;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
+ OSGI-INF/adapter-contrib.xml,
+ OSGI-INF/version-policy-contrib.xml,
+ OSGI-INF/life-cycle-contrib.xml,
+ OSGI-INF/types-contrib.xml,
+ OSGI-INF/publisher-contrib.xml,
+ OSGI-INF/pageprovider-contrib.xml,
+ OSGI-INF/listeners-contrib.xml,
+ OSGI-INF/operations-contrib.xml

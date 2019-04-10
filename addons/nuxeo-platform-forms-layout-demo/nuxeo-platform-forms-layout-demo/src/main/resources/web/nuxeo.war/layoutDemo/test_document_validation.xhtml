@@ -1,0 +1,72 @@
+<ui:composition template="global_page_template.xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <ui:define name="menu">
+  </ui:define>
+
+  <ui:define name="content">
+
+    <h1>Test Document Validation</h1>
+
+    <div class="mainContent">
+
+      <ui:include src="/incl/message_banner.xhtml" />
+
+      <h:form id="validateForm">
+
+        <nxl:layout value="#{layoutValidationDocument}"
+          mode="edit"
+          name="layout_demo_validation_sample">
+          <ui:define name="inside_input_widget">
+            <c:if test="#{widgetControl_supportInsideInputWidgetEffects}">
+              <f:ajax execute="@form"
+                render="validateForm" />
+            </c:if>
+          </ui:define>
+        </nxl:layout>
+
+        <p class="buttonsGadget">
+
+          <h:commandButton
+            value="#{messages['label.layoutDemo.widgetDemo.submit']}"
+            styleClass="button"
+            action="#{layoutDemoActions.validateDocument}"
+            id="validateButton">
+            <f:ajax execute="@form" render="@form" />
+          </h:commandButton>
+          <a4j:status>
+            <f:facet name="start">
+              <h:graphicImage value="/img/standart_waiter.gif" />
+            </f:facet>
+          </a4j:status>
+          <h:commandButton
+            value="#{messages['label.layoutDemo.validation.resetDemoDocument']}"
+            styleClass="button"
+            action="#{layoutDemoActions.resetValidationDocument}"
+            immediate="true"
+            id="resetButton" />
+        </p>
+
+      </h:form>
+
+      <ui:include src="show_source_template.xhtml">
+        <ui:param name="sourcePath" value="layoutDemo/sources/OSGI-INF/demo/layout-demo-validation-layout.xml" />
+        <ui:param name="label" value="#{messages['label.layoutDemo.widgetDemo.showSources']}" />
+      </ui:include>
+
+      <ui:include src="show_source_template.xhtml">
+        <ui:param name="sourcePath" value="layoutDemo/sources/schemas/validationSample.xsd" />
+        <ui:param name="label" value="#{messages['label.layoutDemo.widgetDemo.showSchemaDefinition']}" />
+      </ui:include>
+
+    </div>
+
+  </ui:define>
+
+</ui:composition>

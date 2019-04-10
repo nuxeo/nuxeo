@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.threed.service.ThreeDService.default.override">
+  <documentation>
+    Defines default override contributions for 3D service test
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="automaticLOD">
+
+    <!-- disable defaults -->
+    <automaticLOD name="FullWithinReason" rendition="false"/>
+    <automaticLOD name="HalfTextures" rendition="false"/>
+    <automaticLOD name="10PercTextures" rendition="false"/>
+    <automaticLOD name="50x50Texture" rendition="false"/>
+    <automaticLOD name="HalfPolygon" rendition="false"/>
+
+    <automaticLOD order="0" name="geo_100_tex_100" percPoly="100" maxPoly="999999"
+                  percTex="100" maxTex="1920x1080" enabled="true" rendition="true" renditionVisible="true"/>
+    <automaticLOD order="1" name="geo_100_tex_050" percPoly="100" maxPoly="999999"
+                  percTex="50" maxTex="1920x1080" enabled="true" rendition="true" renditionVisible="true"/>
+    <automaticLOD order="2" name="geo_050_tex_050" percPoly="50" maxPoly="999999"
+                  percTex="50" maxTex="1920x1080" enabled="true" rendition="true" renditionVisible="true"/>
+    <automaticLOD order="3" name="geo_025_tex_025" percPoly="25" maxPoly="999999"
+                  percTex="25" maxTex="1920x1080" enabled="true" rendition="true" renditionVisible="true"/>
+    <automaticLOD order="4" name="not_enabled" percPoly="10" maxPoly="999999"
+                  percTex="10" maxTex="1920x1080" enabled="false" rendition="true" renditionVisible="true"/>
+    <automaticLOD order="5" name="not_rendition" percPoly="10" maxPoly="999999"
+                  percTex="10" maxTex="1920x1080" enabled="true" rendition="false" renditionVisible="true"/>
+    <automaticLOD order="5" name="not_visible" percPoly="10" maxPoly="999999"
+                  percTex="10" maxTex="1920x1080" enabled="true" rendition="true" renditionVisible="false"/>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="renderViews">
+
+    <renderView name="mini_top" azimuth="270" zenith="0" width="100" height="100"
+                enabled="true" rendition="true" renditionVisible="true"/>
+    <renderView name="mini_left" azimuth="0" zenith="90" width="100" height="100"
+                enabled="true" rendition="true" renditionVisible="true"/>
+    <renderView name="mini_front" azimuth="270" zenith="90" width="100" height="100"
+                enabled="true" rendition="true" renditionVisible="true"/>
+    <renderView name="not_enabled" azimuth="0" zenith="0" width="100" height="100"
+                enabled="false" rendition="true" renditionVisible="true"/>
+    <renderView name="not_rendition" azimuth="0" zenith="0" width="100" height="100"
+                enabled="true" rendition="false" renditionVisible="true"/>
+    <renderView name="not_visible" azimuth="0" zenith="0" width="100" height="100"
+                enabled="true" rendition="true" renditionVisible="false"/>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="automaticRenderViews">
+
+    <!-- disable defaults -->
+    <automaticRenderView order="0" name="isometric" enabled="false"/>
+    <automaticRenderView order="1" name="top" enabled="false"/>
+    <automaticRenderView order="2" name="front" enabled="false"/>
+    <automaticRenderView order="3" name="left" enabled="false"/>
+
+    <automaticRenderView order="0" name="mini_top" enabled="true"/>
+    <automaticRenderView order="1" name="mini_left" enabled="true"/>
+    <automaticRenderView order="2" name="mini_front" enabled="true"/>
+
+  </extension>
+
+</component>

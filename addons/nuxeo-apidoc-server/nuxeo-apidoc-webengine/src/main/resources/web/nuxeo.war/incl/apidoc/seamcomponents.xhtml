@@ -1,0 +1,29 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <h3>Seam Components </h3>
+
+
+<c:if test="false">
+  <table>
+  <ui:repeat value="#{nuxeoSeamComponents}" var="component">
+  <tr>
+     <td><h:outputText value="#{component.name}"/> </td>
+     <td><h:outputText value="#{component.className}"/> </td>
+     <td><h:outputText value="#{component.scope}"/> </td>
+     <td>
+         <ui:repeat value="#{component.interfaceNames}" var="iface">
+         <h:outputText value="#{iface}"/> <br/>
+         </ui:repeat>
+     </td>
+  </tr>
+  </ui:repeat>
+  </table>
+</c:if>
+
+  <iframe src="#{contextPath}/site/distribution/adm/listSeamComponents" frameborder="0" scrolling="auto" width="100%" height="550px"></iframe>
+</div>
