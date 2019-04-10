@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.platform.threed.core.adapters">
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService" point="adapters">
+    <adapter class="org.nuxeo.ecm.platform.threed.ThreeDDocument"
+             factory="org.nuxeo.ecm.platform.threed.adapter.ThreeDDocumentAdapterFactory"/>
+  </extension>
+
+</component>
