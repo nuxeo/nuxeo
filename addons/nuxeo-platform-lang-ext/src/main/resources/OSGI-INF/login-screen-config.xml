@@ -1,0 +1,27 @@
+<component name="org.nuxeo.ecm.platform.ui.web.login.lang.ext"
+  version="1.0">
+  <require>org.nuxeo.ecm.platform.ui.web.login</require>
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="loginScreen">
+    <loginScreenConfig>
+      <supportedLocales append="true">
+        <locale>de</locale><!-- German - Germany -->
+        <locale>de_DE</locale><!-- German - Germany -->
+        <locale>es</locale><!-- Spanish - Spain -->
+        <locale>es_ES</locale><!-- Spanish - Spain -->
+        <locale>eu_ES</locale><!-- Basque -->
+        <locale>fr</locale><!-- French - France -->
+        <locale>fr_FR</locale><!-- French - France -->
+        <locale>id_ID</locale><!-- Indonesian - Indonesia -->
+        <locale>it_IT</locale><!-- Italian - Italy -->
+        <locale>ja_JP</locale><!-- Japanese (Gregorian calendar) - Japan -->
+        <locale>nl</locale><!-- Dutch - Netherlands -->
+        <locale>nl_NL</locale><!-- Dutch - Netherlands -->
+        <locale>sq_AL</locale><!-- Albanian -->
+        <locale>sv_SE</locale><!-- Swedish -->
+        <locale>zh_CN</locale><!-- Chinese (Simplified) - China -->
+      </supportedLocales>
+    </loginScreenConfig>
+  </extension>
+</component>

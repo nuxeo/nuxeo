@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.multi.tenant.content.views.es">
+
+  <require>org.nuxeo.ecm.multi.tenant.content.views</require>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="TENANT_HISTORY">
+
+      <title>label.contentview.document.history</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>true</showTitle>
+
+      <genericPageProvider name="EVENTS_VIEW" class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
+        <property name="coreSession">#{documentManager}</property>
+        <property name="generateUIComments">false</property>
+        <whereClause docType="BasicAuditSearch">
+          <fixedPart>
+            {
+              "bool": {
+                "must": {
+                  "term": {
+                    "docPath.children": "?"
+                  }
+                }
+              }
+            }
+          </fixedPart>
+
+          <predicate parameter="eventDate" operator="BETWEEN">
+            <field schema="basicauditsearch" name="startDate" />
+            <field schema="basicauditsearch" name="endDate" />
+          </predicate>
+          <predicate parameter="category" operator="=">
+            <field schema="basicauditsearch" name="eventCategory" />
+          </predicate>
+          <predicate parameter="eventId" operator="IN">
+            <field schema="basicauditsearch" name="eventIds" />
+          </predicate>
+          <predicate parameter="principalName" operator="=">
+            <field schema="basicauditsearch" name="principalName" />
+          </predicate>
+        </whereClause>
+        <parameter>#{currentDocument.path}</parameter>
+        <sort column="eventDate" ascending="false" />
+        <pageSize>10</pageSize>
+        <maxPageSize>1000</maxPageSize>
+      </genericPageProvider>
+
+      <searchLayout name="basicauditsearch" filterDisplayType="quick" />
+      <showFilterForm>true</showFilterForm>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentCreated</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheSize>10</cacheSize>
+      <cacheKey>#{currentDocument.repositoryName}_#{currentDocument.id}</cacheKey>
+
+      <resultLayouts>
+        <layout name="tenant_event_listing" title="history_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="false" />
+      </resultLayouts>
+
+    </contentView>
+
+  </extension>
+
+</component>

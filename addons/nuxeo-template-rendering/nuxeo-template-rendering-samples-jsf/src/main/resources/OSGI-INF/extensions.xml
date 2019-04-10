@@ -1,0 +1,1611 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="nuxeo-template-rendering-samples-jsf" version="1.0.0">
+  <require>studio.extensions.template-module-demo</require>
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+    <type id="nxtrPortfolio">
+      <default-view>view_documents</default-view>
+      <layouts mode="create">
+        <layout>layout@nxtrPortfolio-create</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>layout@nxtrPortfolio-edit</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>layout@nxtrPortfolio-view</layout>
+      </layouts>
+    </type>
+    <type id="nxtrProject">
+      <default-view>view_documents</default-view>
+      <layouts mode="create">
+        <layout>layout@nxtrProject-create</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>layout@nxtrProject-edit</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>layout@nxtrProject-view</layout>
+      </layouts>
+    </type>
+    <type id="nxtrSamplesContainer">
+      <default-view>view_documents</default-view>
+      <layouts mode="create">
+        <layout>layout@nxtrSamplesContainer-create</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>layout@nxtrSamplesContainer-edit</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>layout@nxtrSamplesContainer-view</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView showInExportView="false">document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">document_trash_content</contentView>
+      </contentViews>
+    </type>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+    <action id="view_comments">
+      <filter id="nxtrportfolio.deny.view_comments">
+        <rule grant="false">
+          <type>nxtrPortfolio</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_EDIT">
+      <filter id="nxtrportfolio.deny.tab_edit">
+        <rule grant="false">
+          <type>nxtrPortfolio</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_WORKSPACE_EDIT">
+      <filter id="nxtrportfolio.deny.tab_workspace_edit">
+        <rule grant="false">
+          <type>nxtrPortfolio</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_FILES_EDIT">
+      <filter id="nxtrportfolio.deny.tab_files_edit">
+        <rule grant="false">
+          <type>nxtrPortfolio</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_CONTENT">
+      <filter id="nxtrportfolio.deny.tab_content">
+        <rule grant="false">
+          <type>nxtrPortfolio</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_CONTENT_HISTORY">
+      <filter id="nxtrportfolio.deny.tab_content_history">
+        <rule grant="false">
+          <type>nxtrPortfolio</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_MANAGE">
+      <filter id="nxtrportfolio.deny.tab_manage">
+        <rule grant="false">
+          <type>nxtrPortfolio</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_PUBLISH">
+      <filter id="nxtrportfolio.deny.tab_publish">
+        <rule grant="false">
+          <type>nxtrPortfolio</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_RELATIONS">
+      <filter id="nxtrportfolio.deny.tab_relations">
+        <rule grant="false">
+          <type>nxtrPortfolio</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_MY_SUBSCRIPTIONS">
+      <filter id="nxtrportfolio.deny.tab_my_subscriptions">
+        <rule grant="false">
+          <type>nxtrPortfolio</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_VIEW">
+      <filter id="nxtrportfolio.deny.tab_view">
+        <rule grant="false">
+          <type>nxtrPortfolio</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_ROUTE_WORKFLOW">
+      <filter id="nxtrportfolio.deny.tab_route_workflow">
+        <rule grant="false">
+          <type>nxtrPortfolio</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="showFancyBoxPreview">
+      <filter id="nxtrportfolio.deny.showfancyboxpreview">
+        <rule grant="false">
+          <type>nxtrPortfolio</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="view_comments">
+      <filter id="nxtrproject.deny.view_comments">
+        <rule grant="false">
+          <type>nxtrProject</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_EDIT">
+      <filter id="nxtrproject.deny.tab_edit">
+        <rule grant="false">
+          <type>nxtrProject</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_WORKSPACE_EDIT">
+      <filter id="nxtrproject.deny.tab_workspace_edit">
+        <rule grant="false">
+          <type>nxtrProject</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_FILES_EDIT">
+      <filter id="nxtrproject.deny.tab_files_edit">
+        <rule grant="false">
+          <type>nxtrProject</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_CONTENT">
+      <filter id="nxtrproject.deny.tab_content">
+        <rule grant="false">
+          <type>nxtrProject</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_CONTENT_HISTORY">
+      <filter id="nxtrproject.deny.tab_content_history">
+        <rule grant="false">
+          <type>nxtrProject</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_MANAGE">
+      <filter id="nxtrproject.deny.tab_manage">
+        <rule grant="false">
+          <type>nxtrProject</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_PUBLISH">
+      <filter id="nxtrproject.deny.tab_publish">
+        <rule grant="false">
+          <type>nxtrProject</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_RELATIONS">
+      <filter id="nxtrproject.deny.tab_relations">
+        <rule grant="false">
+          <type>nxtrProject</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_MY_SUBSCRIPTIONS">
+      <filter id="nxtrproject.deny.tab_my_subscriptions">
+        <rule grant="false">
+          <type>nxtrProject</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_VIEW">
+      <filter id="nxtrproject.deny.tab_view">
+        <rule grant="false">
+          <type>nxtrProject</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_ROUTE_WORKFLOW">
+      <filter id="nxtrproject.deny.tab_route_workflow">
+        <rule grant="false">
+          <type>nxtrProject</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="showFancyBoxPreview">
+      <filter id="nxtrproject.deny.showfancyboxpreview">
+        <rule grant="false">
+          <type>nxtrProject</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="view_comments">
+      <filter id="nxtrsamplescontainer.deny.view_comments">
+        <rule grant="false">
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_EDIT">
+      <filter id="nxtrsamplescontainer.deny.tab_edit">
+        <rule grant="false">
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_WORKSPACE_EDIT">
+      <filter id="nxtrsamplescontainer.deny.tab_workspace_edit">
+        <rule grant="false">
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_FILES_EDIT">
+      <filter id="nxtrsamplescontainer.deny.tab_files_edit">
+        <rule grant="false">
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_CONTENT">
+      <filter id="nxtrsamplescontainer.deny.tab_content">
+        <rule grant="false">
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_CONTENT_HISTORY">
+      <filter id="nxtrsamplescontainer.deny.tab_content_history">
+        <rule grant="false">
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_MANAGE">
+      <filter id="nxtrsamplescontainer.deny.tab_manage">
+        <rule grant="false">
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_PUBLISH">
+      <filter id="nxtrsamplescontainer.deny.tab_publish">
+        <rule grant="false">
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_RELATIONS">
+      <filter id="nxtrsamplescontainer.deny.tab_relations">
+        <rule grant="false">
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_MY_SUBSCRIPTIONS">
+      <filter id="nxtrsamplescontainer.deny.tab_my_subscriptions">
+        <rule grant="false">
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_VIEW">
+      <filter id="nxtrsamplescontainer.deny.tab_view">
+        <rule grant="false">
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_ROUTE_WORKFLOW">
+      <filter id="nxtrsamplescontainer.deny.tab_route_workflow">
+        <rule grant="false">
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="showFancyBoxPreview">
+      <filter id="nxtrsamplescontainer.deny.showfancyboxpreview">
+        <rule grant="false">
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="nxtrGoToWebUITab" link="/studio_tabs/studio_tab_nxtrGoToWebUITab.xhtml" order="-500" label="Information" type="rest_document_link">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="filter@tab@nxtrGoToWebUITab">
+        <rule grant="true">
+          <type>nxtrPortfolio</type>
+          <type>nxtrProject</type>
+          <type>nxtrSamplesContainer</type>
+        </rule>
+      </filter>
+    </action>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="layouts">
+    <layout name="layout@nxtrPortfolio-create">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>text</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+      </rows>
+      <widget name="text" type="text">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields/>
+        <widgetModes>
+          <mode value="create">view</mode>
+        </widgetModes>
+        <properties widgetMode="view">
+          <property name="value">These samples are meant to be used with Web UI: Use the Web UI button on top of the screen and browse again this document to give it a try!</property>
+        </properties>
+      </widget>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="layout@nxtrPortfolio-edit">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>text</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>documentIds</widget>
+        </row>
+      </rows>
+      <widget name="text" type="text">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields/>
+        <widgetModes>
+          <mode value="edit">view</mode>
+        </widgetModes>
+        <properties widgetMode="view">
+          <property name="value">These samples are meant to be used with Web UI: Use the Web UI button on top of the screen and browse again this document to give it a try!</property>
+        </properties>
+      </widget>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="documentIds" type="multipleDocumentsSuggestion">
+        <labels>
+          <label mode="any">Projects</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">Select projects to be referenced. Their metadata will be extracted when rendering the portfolio.</label>
+        </helpLabels>
+        <translated>false</translated>
+        <fields>
+          <field>collection:documentIds</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="documentSchemas">dublincore,common</property>
+          <property name="query">SELECT * FROM nxtrProject
+WHERE dc:title ILIKE ?
+AND ecm:isProxy = 0
+AND ecm:isVersion = 0
+AND ecm:isTrashed = 0</property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="layout@nxtrPortfolio-view">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>text</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>documentIds</widget>
+        </row>
+      </rows>
+      <widget name="text" type="text">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields/>
+        <properties widgetMode="view">
+          <property name="value">These samples are meant to be used with Web UI: Use the Web UI button on top of the screen and browse again this document to give it a try!</property>
+        </properties>
+      </widget>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+        <properties widgetMode="view">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="documentIds" type="multipleDocumentsSuggestion">
+        <labels>
+          <label mode="any">Projects</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">Select projects to be referenced. Their metadata will be extracted when rendering the portfolio.</label>
+        </helpLabels>
+        <translated>false</translated>
+        <fields>
+          <field>collection:documentIds</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="documentSchemas">dublincore,common</property>
+          <property name="query">SELECT * FROM nxtrProject
+WHERE dc:title ILIKE ?
+AND ecm:isProxy = 0
+AND ecm:isVersion = 0
+AND ecm:isTrashed = 0</property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="layout@nxtrProject-create">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>text</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>project_name</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>abstract</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>date_of_delivery</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>industry</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>project_duration</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>involved_people</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>customer_cost</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>customer_logo</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>quote</widget>
+        </row>
+      </rows>
+      <widget name="text" type="text">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields/>
+        <widgetModes>
+          <mode value="create">view</mode>
+        </widgetModes>
+      </widget>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="project_name" type="text">
+        <labels>
+          <label mode="any">Project name</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:project_name</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="abstract" type="textarea">
+        <labels>
+          <label mode="any">Abstract</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:abstract</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="date_of_delivery" type="datetime">
+        <labels>
+          <label mode="any">Date of delivery</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:date_of_delivery</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="industry" type="selectOneDirectory">
+        <labels>
+          <label mode="any">Industry</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:industry</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="localize">false</property>
+          <property name="displayIdAndLabel">false</property>
+          <property name="notDisplayDefaultOption">false</property>
+          <property name="ordering">label</property>
+          <property name="directoryName">nxtrIndustry</property>
+          <property name="required">true</property>
+          <property name="displayObsoleteEntries">false</property>
+        </properties>
+      </widget>
+      <widget name="project_duration" type="text">
+        <labels>
+          <label mode="any">Project duration</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:project_duration</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="involved_people" type="list">
+        <labels>
+          <label mode="any">Involved people</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:involved_people</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+        <subWidgets>
+          <widget name="sub0" type="int">
+            <labels>
+              <label mode="any">Number</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>number</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+          <widget name="sub1" type="int">
+            <labels>
+              <label mode="any">Number of days</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>number_of_days</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+          <widget name="sub2" type="double">
+            <labels>
+              <label mode="any">Price per day</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>price_per_day</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+          <widget name="sub3" type="text">
+            <labels>
+              <label mode="any">Role</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>role</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+        </subWidgets>
+      </widget>
+      <widget name="customer_cost" type="double">
+        <labels>
+          <label mode="any">Customer cost</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:customer_cost</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="customer_logo" type="file">
+        <labels>
+          <label mode="any">Customer logo</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:customer_logo</field>
+          <field>nxtrproject:customer_logo/filename</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="iconRendered">false</property>
+        </properties>
+      </widget>
+      <widget name="quote" type="textarea">
+        <labels>
+          <label mode="any">Quote</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:quote</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="disabled">false</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="layout@nxtrProject-edit">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>text</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>project_name</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>abstract</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>date_of_delivery</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>industry</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>project_duration</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>involved_people</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>customer_cost</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>customer_logo</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>quote</widget>
+        </row>
+      </rows>
+      <widget name="text" type="text">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields/>
+        <widgetModes>
+          <mode value="edit">view</mode>
+        </widgetModes>
+      </widget>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="project_name" type="text">
+        <labels>
+          <label mode="any">Project name</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:project_name</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="abstract" type="textarea">
+        <labels>
+          <label mode="any">Abstract</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:abstract</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="date_of_delivery" type="datetime">
+        <labels>
+          <label mode="any">Date of delivery</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:date_of_delivery</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="industry" type="selectOneDirectory">
+        <labels>
+          <label mode="any">Industry</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:industry</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="localize">false</property>
+          <property name="displayIdAndLabel">false</property>
+          <property name="notDisplayDefaultOption">false</property>
+          <property name="ordering">label</property>
+          <property name="directoryName">nxtrIndustry</property>
+          <property name="required">true</property>
+          <property name="displayObsoleteEntries">false</property>
+        </properties>
+      </widget>
+      <widget name="project_duration" type="text">
+        <labels>
+          <label mode="any">Project duration</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:project_duration</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="involved_people" type="list">
+        <labels>
+          <label mode="any">Involved people</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:involved_people</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+        <subWidgets>
+          <widget name="sub0" type="int">
+            <labels>
+              <label mode="any">Number</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>number</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+          <widget name="sub1" type="int">
+            <labels>
+              <label mode="any">Number of days</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>number_of_days</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+          <widget name="sub2" type="double">
+            <labels>
+              <label mode="any">Price per day</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>price_per_day</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+          <widget name="sub3" type="text">
+            <labels>
+              <label mode="any">Role</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>role</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+        </subWidgets>
+      </widget>
+      <widget name="customer_cost" type="double">
+        <labels>
+          <label mode="any">Customer cost</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:customer_cost</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="customer_logo" type="file">
+        <labels>
+          <label mode="any">Customer logo</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:customer_logo</field>
+          <field>nxtrproject:customer_logo/filename</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="iconRendered">false</property>
+        </properties>
+      </widget>
+      <widget name="quote" type="textarea">
+        <labels>
+          <label mode="any">Quote</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:quote</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="disabled">false</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="layout@nxtrProject-view">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>text</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>project_name</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>abstract</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>date_of_delivery</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>industry</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>project_duration</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>involved_people</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>customer_cost</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>customer_logo</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>quote</widget>
+        </row>
+      </rows>
+      <widget name="text" type="text">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields/>
+      </widget>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="project_name" type="text">
+        <labels>
+          <label mode="any">Project name</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:project_name</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="abstract" type="textarea">
+        <labels>
+          <label mode="any">Abstract</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:abstract</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="date_of_delivery" type="datetime">
+        <labels>
+          <label mode="any">Date of delivery</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:date_of_delivery</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="industry" type="selectOneDirectory">
+        <labels>
+          <label mode="any">Industry</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:industry</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="localize">false</property>
+          <property name="displayIdAndLabel">false</property>
+          <property name="notDisplayDefaultOption">false</property>
+          <property name="ordering">label</property>
+          <property name="directoryName">nxtrIndustry</property>
+          <property name="required">true</property>
+          <property name="displayObsoleteEntries">false</property>
+        </properties>
+        <properties widgetMode="view">
+          <property name="localize">false</property>
+          <property name="displayIdAndLabel">false</property>
+          <property name="directoryName">nxtrIndustry</property>
+        </properties>
+      </widget>
+      <widget name="project_duration" type="text">
+        <labels>
+          <label mode="any">Project duration</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:project_duration</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="involved_people" type="list">
+        <labels>
+          <label mode="any">Involved people</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:involved_people</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+        <subWidgets>
+          <widget name="sub0" type="int">
+            <labels>
+              <label mode="any">Number</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>number</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+          <widget name="sub1" type="int">
+            <labels>
+              <label mode="any">Number of days</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>number_of_days</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+          <widget name="sub2" type="double">
+            <labels>
+              <label mode="any">Price per day</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>price_per_day</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+          <widget name="sub3" type="text">
+            <labels>
+              <label mode="any">Role</label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field>role</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+        </subWidgets>
+      </widget>
+      <widget name="customer_cost" type="double">
+        <labels>
+          <label mode="any">Customer cost</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:customer_cost</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="customer_logo" type="file">
+        <labels>
+          <label mode="any">Customer logo</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:customer_logo</field>
+          <field>nxtrproject:customer_logo/filename</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">false</property>
+          <property name="iconRendered">false</property>
+        </properties>
+        <properties widgetMode="view">
+          <property name="iconRendered">false</property>
+        </properties>
+      </widget>
+      <widget name="quote" type="textarea">
+        <labels>
+          <label mode="any">Quote</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxtrproject:quote</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="disabled">false</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="layout@nxtrSamplesContainer-create">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>text</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+      </rows>
+      <widget name="text" type="text">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields/>
+        <widgetModes>
+          <mode value="create">view</mode>
+        </widgetModes>
+        <properties widgetMode="view">
+          <property name="value">These samples are meant to be used with Web UI: Use the Web UI button on top of the screen and browse again this document to give it a try!</property>
+        </properties>
+      </widget>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="layout@nxtrSamplesContainer-edit">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>text</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+      </rows>
+      <widget name="text" type="text">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields/>
+        <widgetModes>
+          <mode value="edit">view</mode>
+        </widgetModes>
+        <properties widgetMode="view">
+          <property name="value">These samples are meant to be used with Web UI: Use the Web UI button on top of the screen and browse again this document to give it a try!</property>
+        </properties>
+      </widget>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="layout@nxtrSamplesContainer-view">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>text</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+      </rows>
+      <widget name="text" type="text">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields/>
+        <properties widgetMode="view">
+          <property name="value">These samples are meant to be used with Web UI: Use the Web UI button on top of the screen and browse again this document to give it a try!</property>
+        </properties>
+      </widget>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">Title</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+        <properties widgetMode="view">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="nxtrGoToWebUITab@tabLayout">
+      <templates>
+        <template mode="any">/layouts/template-module-demo_tab_layout_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>container</widget>
+        </row>
+      </rows>
+      <widget name="container" type="container">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field></field>
+        </fields>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+          <control name="gridStyleClass">gridStyle12</control>
+        </controls>
+        <subWidgets>
+          <widget name="sub0" type="text">
+            <labels>
+              <label mode="any"></label>
+            </labels>
+            <translated>false</translated>
+            <fields/>
+            <properties widgetMode="view">
+              <property name="value">These samples are meant to be used with Web UI: Use the Web UI button on top of the screen and browse this document again to give it a try!</property>
+              <property name="style">font-size: 1.4em; line-height: 140%;</property>
+            </properties>
+          </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+  </extension>
+  <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager" point="directories">
+    <directory name="nxtrIndustry" layout="vocabulary" sortField="label"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+    <filter id="create" append="true">
+      <rule grant="false">
+        <type>nxtrPortfolio</type>
+        <type>nxtrProject</type>
+        <type>nxtrSamplesContainer</type>
+      </rule>
+    </filter>
+  </extension>
+</component>

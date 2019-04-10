@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.liveconnect.scheduler">
+
+  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService"
+    point="schedule">
+    <schedule id="blobProviderDocumentUpdate">
+      <event>blobProviderDocumentUpdateEvent</event>
+      <!-- cleanup every 30 sec  -->
+      <!-- cronExpression>0/30 * * * * ?</cronExpression-->
+      <!-- every day at 11.59 PM -->
+      <cronExpression>0 0/5 * * * ?</cronExpression>
+    </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="blobProviderDocumentUpdate"
+      class="org.nuxeo.ecm.liveconnect.update.listener.BlobProviderDocumentsUpdateListener">
+      <event>blobProviderDocumentUpdateEvent</event>
+    </listener>
+  </extension>
+
+</component>
