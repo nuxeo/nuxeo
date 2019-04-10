@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.template.deckjs.outputFormat.contrib">
+
+  <extension target="org.nuxeo.template.service.TemplateProcessorComponent"
+    point="outputFormat">
+
+    <documentation>
+      Adds pdf output for deckJs web template.
+    </documentation>
+
+    <outputFormat id="deckJsToPDF" label="PDF (from DeckJS)"
+      chainId="deckJs2PDF" mimetype="application/pdf" />
+  </extension>
+
+</component>

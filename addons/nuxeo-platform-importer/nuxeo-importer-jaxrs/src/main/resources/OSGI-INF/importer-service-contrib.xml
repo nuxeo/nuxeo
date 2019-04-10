@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.importer.service.jaxrs.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent" point="importerConfiguration">
+   <importerConfig sourceNodeClass ="org.nuxeo.ecm.platform.importer.source.FileWithMetadataSourceNode" >
+       <documentModelFactory leafType="File" folderishType="Folder" documentModelFactoryClass="org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory" />
+       <enablePerfLogging>true</enablePerfLogging>
+   </importerConfig>
+  </extension>
+</component>

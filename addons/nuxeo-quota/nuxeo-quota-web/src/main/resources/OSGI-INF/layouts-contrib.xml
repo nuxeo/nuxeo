@@ -1,0 +1,597 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.quota.layouts">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp</require>
+  
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="quota_display_size_listing">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/quotaSize_listing_widget_template.xhtml
+      </property>
+    </widgetType>
+    </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="quotaInfo" type="template">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field></field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+        <mode value="edit">hidden</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="template">
+          /widgets/quotaInfo_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+    
+    <widget name="quota_statsistics_graph" type="template">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field></field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="template">
+          /widgets/document_quota_statistics_widget_template.xhtml
+        </property>
+      </properties>
+      <controls mode="any">
+        <control name="gridStyleClass">gridStyle12</control>
+      </controls>
+    </widget>
+    
+    <widget name="quota_heaviest_containers" type="contentViewWithForms">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <properties widgetMode="any">
+        <property name="contentViewName">quota_heaviest_containers</property>
+      </properties>
+     </widget>
+     
+     <widget name="quota_heaviest_children" type="contentViewWithForms">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <properties widgetMode="any">
+        <property name="contentViewName">quota_heaviest_children</property>
+      </properties>
+     </widget>
+    
+     <widget name="innerSize" type="template">
+        <labels>
+          <label mode="any">label.quota.innerSize</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="documents_size_statistics">innerSize</field>
+          <field schema="documents_size_statistics">maxSize</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <properties mode="any">
+          <property name="template">
+            /widgets/quota_singleValue_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="totalSize" type="template">
+        <labels>
+          <label mode="any">label.quota.totalSize</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="documents_size_statistics">totalSize</field>
+          <field schema="documents_size_statistics">maxSize</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <properties mode="any">
+          <property name="template">
+            /widgets/quota_singleValue_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="maxSize" type="template">
+        <labels>
+          <label mode="any">label.quota.maxSize</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="documents_size_statistics">maxSize</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/quota_selectMax_widget_template.xhtml
+          </property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="validateMaxSize">true</property>
+         </properties> 
+      </widget>
+      
+     <widget name="maxSize2" type="text">
+        <labels>
+          <label mode="any">label.quota.maxSize</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="documents_size_statistics">maxSize</field>
+        </fields>
+         <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="edit">edit</mode>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="validateMaxSize">true</property>
+        </properties>
+       </widget>
+       
+      <widget name="maxSizeOnUserWorkspaces" type="template">
+        <labels>
+          <label mode="any">label.quota.maxSize</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>maxQuotaOnUsersWorkspaces</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/quota_selectMax_widget_template.xhtml
+          </property>
+        </properties>
+        <handlingLabels>false</handlingLabels>
+      </widget>
+      
+      <widget name="listing_quota_title" type="listing_title_link">
+        <labels>
+          <label mode="any">label.content.header.title</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data</field>
+        </fields>
+      </widget>
+      <widget name="listing_quota_created" type="datetime">
+        <labels>
+          <label mode="any">label.content.header.created</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data['dc']['created']</field>
+        </fields>
+      </widget>
+      <widget name="listing_quota_lastContributor" type="text">
+        <labels>
+          <label mode="any">label.content.header.lastContributor</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data['dc']['lastContributor']</field>
+        </fields>
+      </widget>
+      <widget name="listing_quota_totalSize" type="quota_display_size_listing">
+        <labels>
+          <label mode="any">label.quota.totalSize</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data['dss']['totalSize']</field>
+        </fields>
+      </widget>
+      <widget name="listing_quota_maxSize" type="quota_display_size_listing">
+        <labels>
+          <label mode="any">label.quota.maxSize</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data['dss']['maxSize']</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="maxSize">true</property>
+        </properties>
+      </widget>
+      <widget name="listing_quota_pathAsString" type="text">
+        <labels>
+          <label mode="any">label.quota.path</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data.pathAsString</field>
+        </fields>
+      </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="document_header">
+      <templates>
+        <template mode="any">/layouts/layout_div_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>header_title_and_permlink</widget>
+        </row>
+        <row>
+          <widget>header_description</widget>
+        </row>
+        <row>
+          <widget>quotaInfo</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="edit_quota">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>maxSize</widget>
+        </row>
+      </rows>
+    </layout>
+    
+    <layout name="edit_userworkspaces_quota">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>maxSizeOnUserWorkspaces</widget>
+        </row>
+      </rows>
+    </layout>
+    
+    <layout name="quota_heaviest_containers_cv@cvLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>dublincore_title</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>documents_size_statistics_totalSize</widget>
+        </row>
+      </rows>
+      <widget name="dublincore_title" type="text">
+        <labels>
+          <label mode="any">label.content.header.title</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>quota_heaviest_containers_cv:dublincore_title</field>
+        </fields>
+      </widget>
+      <widget name="documents_size_statistics_totalSize" type="template">
+        <labels>
+          <label mode="any">label.quota.totalSize</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>quota_heaviest_containers_cv:documents_size_statistics_totalSize_min</field>
+          <field>quota_heaviest_containers_cv:documents_size_statistics_totalSize_max</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/quota_selectSizeLimits_widget_template.xhtml
+          </property>
+         <property name="rangeMinSize">1024</property>
+         <property name="styleClass">gridStyle12</property>
+        </properties>
+        <handlingLabels>false</handlingLabels>
+      </widget>
+    </layout>
+    <layout name="quota_heaviest_children@cvListingLayout">
+      <templates>
+        <template mode="any">/layouts/layout_listing_ajax_template.xhtml</template>
+        <template mode="edit_columns">/layouts/layout_column_selection_template.xhtml</template>
+        <template mode="edit_sort_infos">/layouts/layout_sort_infos_template.xhtml</template>
+        <template mode="edit_sort_infos_map">/layouts/layout_sort_infos_template.xhtml</template>
+        <template mode="csv">/layouts/layout_listing_csv_template.xhtml</template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <properties mode="edit_columns">
+        <property name="availableElementsLabel">label.selection.availableColumns</property>
+        <property name="selectedElementsLabel">label.selection.selectedColumns</property>
+        <property name="selectedElementsHelp"></property>
+        <property name="selectSize">10</property>
+        <property name="displayAlwaysSelectedColumns">false</property>
+      </properties>
+      <properties mode="edit_sort_infos">
+        <property name="newSortInfoTemplate">#{documentSearchActions.newSortInfo}</property>
+        <property name="required">false</property>
+      </properties>
+      <properties mode="edit_sort_infos">
+        <property name="newSortInfoTemplate">#{documentSearchActions.newSortInfoMap}</property>
+        <property name="required">false</property>
+      </properties>
+      <columns>
+        <column name="selection" alwaysSelected="true">
+          <properties mode="any">
+            <property name="isListingSelectionBox">true</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column name="title">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="columnStyleClass"></property>
+            <property name="label">Title</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_quota_title</widget>
+        </column>
+        <column name="created">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="columnStyleClass"></property>
+            <property name="label">Created</property>
+            <property name="sortPropertyName">dc:created</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_quota_created</widget>
+        </column>
+        <column name="lastContributor">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="columnStyleClass"></property>
+            <property name="label">LastContributor</property>
+            <property name="sortPropertyName">dc:lastContributor</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_quota_lastContributor</widget>
+        </column>
+        <column name="totalSize">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="columnStyleClass"></property>
+            <property name="label">TotalSize</property>
+            <property name="sortPropertyName">dss:totalSize</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_quota_totalSize</widget>
+        </column>
+        </columns>
+    </layout>
+    
+   <layout name="quota_heaviest_containers@cvListingLayout">
+      <templates>
+        <template mode="any">/layouts/layout_listing_ajax_template.xhtml</template>
+        <template mode="edit_columns">/layouts/layout_column_selection_template.xhtml</template>
+        <template mode="edit_sort_infos">/layouts/layout_sort_infos_template.xhtml</template>
+        <template mode="edit_sort_infos_map">/layouts/layout_sort_infos_template.xhtml</template>
+        <template mode="csv">/layouts/layout_listing_csv_template.xhtml</template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <properties mode="edit_columns">
+        <property name="availableElementsLabel">label.selection.availableColumns</property>
+        <property name="selectedElementsLabel">label.selection.selectedColumns</property>
+        <property name="selectedElementsHelp"></property>
+        <property name="selectSize">10</property>
+        <property name="displayAlwaysSelectedColumns">false</property>
+      </properties>
+      <properties mode="edit_sort_infos">
+        <property name="newSortInfoTemplate">#{documentSearchActions.newSortInfo}</property>
+        <property name="required">false</property>
+      </properties>
+      <properties mode="edit_sort_infos">
+        <property name="newSortInfoTemplate">#{documentSearchActions.newSortInfoMap}</property>
+        <property name="required">false</property>
+      </properties>
+      <columns>
+        <column name="title">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="columnStyleClass"></property>
+            <property name="label">Title</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_quota_title</widget>
+        </column>
+        <column name="path">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="columnStyleClass"></property>
+            <property name="label">label.quota.path</property>
+            <property name="sortPropertyName"></property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">false</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">false</property>
+          </properties>
+          <widget>listing_quota_pathAsString</widget>
+        </column>
+        <column name="totalSize">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="columnStyleClass"></property>
+            <property name="label">label.quota.totalSize</property>
+            <property name="sortPropertyName">dss:totalSize</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_quota_totalSize</widget>
+        </column>
+        <column name="maxSize">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="columnStyleClass"></property>
+            <property name="label">label.quota.maxSize</property>
+            <property name="sortPropertyName">dss:maxSize</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_quota_maxSize</widget>
+        </column>
+        </columns>
+    </layout>
+    
+    
+   <layout name="tab_quota_children_statistics_layout">
+      <templates>
+        <template mode="any">/layouts/layout_grid_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>quota_statsistics_graph</widget>
+        </row>
+        <row>
+          <widget>quota_heaviest_folders_container</widget>
+        </row>
+      </rows>
+      <widget name="quota_heaviest_folders_container" type="container">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field></field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+          <control name="gridStyleClass">gridStyle12</control>
+        </controls>
+        <subWidgets>
+          <widget name="quota_heaviest_children" type="contentViewWithForms">
+           <labels>
+            <label mode="any"></label>
+           </labels>
+           <translated>false</translated>
+           <properties widgetMode="any">
+            <property name="contentViewName">quota_heaviest_children</property>
+           </properties>
+         </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+    
+   <layout name="tab_quota_statistics_layout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>quota_statsistics_graph</widget>
+        </row>
+        <row>  
+          <widget>quota_heaviest_folders_container</widget>
+        </row>
+      </rows>
+      <widget name="quota_heaviest_folders_container" type="container">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field></field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+        <subWidgets>
+          <widget name="quota_heaviest_children" type="contentViewWithForms">
+           <labels>
+            <label mode="any"></label>
+           </labels>
+           <translated>false</translated>
+           <properties widgetMode="any">
+            <property name="contentViewName">quota_heaviest_containers</property>
+           </properties>
+         </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+  </extension>
+
+</component>

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://nuxeo.ecm.csv.test/schemas/complex/"
+  xmlns:complexTest="http://nuxeo.ecm.csv.test/schemas/complex/">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:simpleType name="stringArray">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
+  <xs:simpleType name="enumValue">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ValueA"/>
+      <xs:enumeration value="ValueB"/>
+      <xs:enumeration value="ValueC"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="complexType">
+    <xs:sequence>
+      <xs:element name="stringProp" type="xs:string"/>
+      <xs:element name="dateProp" type="xs:dateTime"/>
+      <xs:element name="intProp" type="xs:integer"/>
+      <xs:element name="boolProp" type="xs:boolean"/>
+      <xs:element name="floatProp" type="xs:float"/>
+      <xs:element name="enumProp" type="complexTest:enumValue"/>
+      <xs:element name="arrayProp" type="complexTest:stringArray"/>
+      <xs:element name="contentProp" type="complexTest:content"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="complexListType">
+    <xs:sequence>
+      <xs:element name="complexListItem" type="complexTest:complexType"
+          minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="listItem" type="complexTest:complexListType"/>
+  <xs:element name="complexItem" type="complexTest:complexType"/>
+
+</xs:schema>
