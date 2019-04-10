@@ -1,0 +1,62 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:a4j="http://richfaces.org/a4j"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:nxh="http://nuxeo.org/nxweb/html"
+     xmlns:nxl="http://nuxeo.org/nxforms/layout"
+     xmlns:nxd="http://nuxeo.org/nxweb/document"
+     class="content_block">
+
+  <c:if test="#{fieldOrValue.hasFacet('Video')}">
+
+  <c:if test="#{!empty widget.label and widget.handlingLabels}">
+    <ui:include src="/widgets/incl/widget_label_template.xhtml">
+      <ui:param name="labelStyleClass" value="summaryTitle" />
+    </ui:include>
+  </c:if>
+
+  <table width="100%" cellspacing="0">
+    <tbody>
+      <c:forEach var="conversion" items="#{videoService.getAvailableVideoConversions()}"
+        varStatus="status">
+        <tr class="videoConversionRow">
+          <td class="labelColumn">
+            <c:if test="#{status.index == 0}">
+            #{messages['label.widget.video.format']}
+            </c:if>
+          </td>
+          <td class="fieldColumn">
+            #{conversion.name}
+          </td>
+          <td class="actionsColumn">
+            <nxu:set var="conversionStatus"
+              value="#{videoActions.getVideoConversionStatus(fieldOrValue, conversion.name)}">
+              <c:if test="#{not empty conversionStatus}">
+                #{videoActions.getStatusMessageFor(conversionStatus)}
+              </c:if>
+              <c:if test="#{empty conversionStatus}">
+                <nxu:set var="transcodedVideo"
+                  value="#{videoActions.getTranscodedVideo(fieldOrValue, conversion.name)}">
+                <c:if test="#{not empty transcodedVideo}">
+                  <h:outputLink value="#{videoActions.getTranscodedVideoURL(fieldOrValue, conversion.name)}">
+                    <h:graphicImage url="/icons/download.png" />
+                  </h:outputLink>
+                </c:if>
+                <c:if test="#{empty transcodedVideo}">
+                  <h:commandButton value="#{messages['action.video.launch.conversion']}"
+                    action="#{videoActions.launchConversion(fieldOrValue, conversion.name)}" class="button smallButton" />
+                </c:if>
+                </nxu:set>
+              </c:if>
+            </nxu:set>
+          </td>
+        </tr>
+      </c:forEach>
+    </tbody>
+  </table>
+
+  </c:if>
+
+</div>
