@@ -1,0 +1,37 @@
+<project name="jenkins-report-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+  <target name="build"
+          description="Build Nuxeo Jenkins Report Marketplace package">
+    <tstamp />
+    <delete failonerror="false"
+            dir="${maven.project.build.directory}/marketplace" />
+    <mkdir dir="${maven.project.build.directory}/marketplace" />
+    <copy todir="${maven.project.build.directory}/marketplace">
+      <fileset dir="src/main/resources" />
+      <filterset>
+        <filter token="VERSION" value="${nuxeo.targetplatforms.version}" />
+        <filter token="DISTRIB_VERSION" value="${nuxeo.distribution.version}" />
+      </filterset>
+    </copy>
+
+    <copy todir="${maven.project.build.directory}/marketplace/install/bundles">
+      <artifact:resolveFile key="org.nuxeo.utils:nuxeo-target-platforms-api:${nuxeo.targetplatforms.version}:jar" />
+      <artifact:resolveFile key="org.nuxeo.utils:nuxeo-target-platforms-core:${nuxeo.targetplatforms.version}:jar" />
+      <artifact:resolveFile key="org.nuxeo.utils:nuxeo-target-platforms-io:${nuxeo.targetplatforms.version}:jar" />
+      <artifact:resolveFile key="org.nuxeo.utils:nuxeo-target-platforms-jaxrs:${nuxeo.targetplatforms.version}:jar" />
+      <artifact:resolveFile key="org.nuxeo.utils:nuxeo-target-platforms-jsf:${nuxeo.targetplatforms.version}:jar" />
+    </copy>
+
+    <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${nuxeo.targetplatforms.version}.zip"
+         basedir="${maven.project.build.directory}/marketplace" />
+    <artifact:attach file="${maven.project.build.directory}/${maven.project.artifactId}-${nuxeo.targetplatforms.version}.zip"
+                     type="zip" />
+  </target>
+
+</project>

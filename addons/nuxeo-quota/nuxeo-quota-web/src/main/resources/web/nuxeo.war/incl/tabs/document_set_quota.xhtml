@@ -1,0 +1,81 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+<h:form enctype="multipart/form-data" id="quota_edit">
+
+  <script>
+
+  var GB_label = "#{messages['label.unit.GB']}";
+  var MB_label = "#{messages['label.unit.MB']}";
+  var KB_label = "#{messages['label.unit.KB']}";
+  var B_label = "#{messages['label.unit.B']}";
+
+  jQuery(document).ready(function() {
+    setInitialValue(#{currentQuotaDoc.quotaInfo.maxQuota.value});
+    jQuery("#quota_edit\\:nxl_edit_quota\\:sliderInput").css("display","none");
+  });
+
+  function setInitialValue(value) {
+    value = Number(value);
+    if (value == -1) {
+    } else {
+      value = Math.log(value);
+      var sVal = jQuery("#quota_edit\\:nxl_edit_quota\\:slider").find("input");
+      sVal.val(value);
+      sVal.trigger('focus');
+      sVal.trigger('blur');
+    }
+  }
+
+  function displayQuotaSize(value) {
+    var gb = 1024*1024*1024;
+    var mb = 1024*1024;
+    var kb = 1024;
+    var label = "";
+    value = Number(value);
+    value = Math.exp(value);
+    value = Math.round(value / 1000)*1000;
+    jQuery('#quota_edit\\:nxl_edit_quota\\:maxValue').val(value);
+    if (value > gb) {
+      label = Math.round(value/gb) + " " + GB_label;
+    } else if (value > mb) {
+      label = Math.round(value/mb) + " " + MB_label;
+    } else if (value > kb) {
+      label = Math.round(value/kb) + " " + KB_label;
+    } else {
+     label = value + " " + B_label;
+    }
+    jQuery('#sliderDisplay').html(label);
+  }
+  </script>
+
+  <nxu:set var="canEditQuota" cache="true" value="#{webActions.checkFilter('editQuota')}">
+    <nxl:layout mode="#{nxu:test(canEditQuota, 'edit', 'view')}" name="edit_quota" value="#{currentDocument}" />
+  </nxu:set>
+
+  <p class="buttonsGadget">
+    <nxu:set var="actions"
+      value="#{webActions.getActionsList('EDIT_DOCUMENT_FORM')}"
+      cache="true">
+      <c:forEach var="action" items="#{actions}">
+        <nxh:commandButton action="#{action.getLink()}"
+          immediate="#{action.immediate}"
+          onclick="#{action.confirm}"
+          id="edit_doc_#{action.id}"
+          value="#{messages[action.label]}"
+          styleClass="button" />
+      </c:forEach>
+    </nxu:set>
+  </p>
+
+</h:form>
+
+
+</div>

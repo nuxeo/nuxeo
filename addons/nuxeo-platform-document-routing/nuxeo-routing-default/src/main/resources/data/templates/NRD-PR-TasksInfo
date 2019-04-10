@@ -1,0 +1,32 @@
+<div>
+  <#if (Context['numberApproved']>0)>
+    <span class="label label-success">${Context['numberApproved']}/${Context['numberOfTasks']} OK </span>
+  </#if>
+  <#if ( Context['numberRejected']>0)>
+    <span class="label label-error">${Context['numberRejected']}  KO</span>
+  </#if>
+  <#if (Context['numberNA']>0)>
+    <span class="label label-info">${Context['numberNA']} N/A</span>
+  </#if>
+</div>
+<table class="dataTableNoBorder smallTable">
+<#list Context['tasksInfo'] as taskInfo>
+  <tr>
+    <td class="fortyPercent">
+      <span class="user">${Fn.getPrincipal(taskInfo.actor).firstName} ${Fn.getPrincipal(taskInfo.actor).lastName} 
+        <#if (Fn.getPrincipal(taskInfo.actor).firstName?? &&Fn.getPrincipal(taskInfo.actor).lastName??)>${taskInfo.actor}</#if>
+      </span>
+    </td>
+    <td class="tenPercent">
+      <#if taskInfo.status =="approve">
+        <span class="label label-success">OK</span>
+      <#elseif taskInfo.status =="reject" >
+        <span class="label label-error">KO</span>
+      <#else><span class="label label-info">N/A</span></#if>
+    </td>
+    <td class="fiftyPercent">
+      <span class="detail">${taskInfo.comment}</span>
+    </td>
+  </tr>
+</#list>
+</table>
