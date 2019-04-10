@@ -1,0 +1,35 @@
+<link rel="import" href="nuxeo-drive-sync-toggle-button.html">
+<link rel="import" href="nuxeo-drive-edit-button.html">
+<link rel="import" href="nuxeo-drive-page.html">
+
+<!-- DOCUMENT ACTIONS -->
+<link rel="import" href="nuxeo-drive-sync-toggle-button.html">
+
+<nuxeo-slot-content name="driveSyncToggleButton" slot="DOCUMENT_ACTIONS">
+  <template>
+    <nuxeo-drive-sync-toggle-button document="[[document]]"></nuxeo-drive-sync-toggle-button>
+  </template>
+</nuxeo-slot-content>
+
+<!-- BLOB ACTIONS -->
+<link rel="import" href="nuxeo-drive-edit-button.html">
+
+<nuxeo-slot-content name="driveEditButton" slot="BLOB_ACTIONS">
+  <template>
+    <nuxeo-drive-edit-button user="[[user]]" document="[[document]]" blob="[[blob]]"></nuxeo-drive-edit-button>
+  </template>
+</nuxeo-slot-content>
+
+<!-- MENU ITEMS -->
+<nuxeo-slot-content name="drivePageLink" slot="USER_MENU">
+  <template>
+    <nuxeo-menu-item route="page:drive" label="app.user.drive"></nuxeo-menu-item>
+  </template>
+</nuxeo-slot-content>
+
+<!-- PAGES -->
+<nuxeo-slot-content name="drivePage" slot="PAGES">
+  <template>
+    <nuxeo-drive-page class="flex" name="drive"></nuxeo-drive-page>
+  </template>
+</nuxeo-slot-content>
