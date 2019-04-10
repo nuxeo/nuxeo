@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.listWidget.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="listWidgetLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>listWidget</widget>
+        </row>
+      </rows>
+      <widget name="listWidget" type="list">
+        <labels>
+          <label mode="any">List widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:stringList</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+          <property name="orderable">true</property>
+          <property name="display">#{param.display}</property>
+        </properties>
+        <subWidgets>
+          <widget name="listItem" type="text">
+            <fields>
+              <field>#{value}</field>
+              <!-- equivalent field definition alternative:
+                <field></field>
+              -->
+            </fields>
+            <labels>
+              <label mode="any"></label>
+            </labels>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+  </extension>
+
+</component>

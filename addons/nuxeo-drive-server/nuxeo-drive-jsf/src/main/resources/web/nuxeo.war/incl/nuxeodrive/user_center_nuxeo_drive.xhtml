@@ -1,0 +1,25 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <div class="bubbleBox">
+    <h3>
+      <h:outputText value="#{messages['user.center.nuxeoDrive.clientDownload']}" />
+    </h3>
+    <ui:include src="/incl/nuxeodrive/client_download.xhtml" />
+  </div>
+
+  <div class="bubbleBox">
+    <h3>
+      <h:outputText value="#{messages['user.center.nuxeoDrive.syncRoots']}" />
+    </h3>
+    <ui:include src="/incl/nuxeodrive/synchronization_roots.xhtml" />
+  </div>
+
+  <div class="bubbleBox">
+    <h3>
+      <h:outputText value="#{messages['user.center.nuxeoDrive.authTokenBindings']}" />
+    </h3>
+    <ui:include src="/incl/tokenauth/auth_token_bindings.xhtml" />
+  </div>
+
+</div>
