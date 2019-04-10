@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+<h:panelGroup id="param_#{param.name}">
+
+<table class="dataTableNoBorder">
+<tr>
+<td class="labelColumn" width="10%">  <h:outputText value="#{messages['label.template.parameter.name']}" /></td>
+<td class="fieldColumn" width="10%"><h:outputText value="#{param.name}" />  </td>
+<td class="labelColumn" width="10%"> <h:outputText value="#{messages['label.template.parameter.type']}" /></td>
+<td class="fieldColumn" width="10%">
+<c:if test="#{param.readOnly}">
+  ( <h:outputText value="#{param.typeAsString}"/> )
+</c:if>
+<c:if test="#{!param.readOnly}">
+    <h:selectOneMenu  value="#{param.typeAsString}">
+        <f:selectItem itemLabel="#{messages['label.template.parameter.stringType']}" itemValue="String"/>
+        <f:selectItem itemLabel="#{messages['label.template.parameter.booleanType']}" itemValue="Boolean"/>
+        <f:selectItem itemLabel="#{messages['label.template.parameter.dateType']}" itemValue="Date"/>
+        <f:selectItem itemLabel="#{messages['label.template.parameter.documentPropertyType']}" itemValue="source"/>
+        <f:selectItem itemLabel="#{messages['label.template.parameter.pictureType']}" itemValue="picture"/>
+        <f:selectItem itemLabel="#{messages['label.template.parameter.includeType']}" itemValue="content"/>
+        <a4j:ajax event="change" render="params_edit" oncomplete="initContentWidgets()"/>
+    </h:selectOneMenu>
+</c:if>
+</td>
+<c:set var="widgetMode" value="edit"/>
+<c:if test="#{param.readOnly}">
+  <c:set var="widgetMode" value="view"/>
+</c:if>
+
+  <c:if test="#{param.simpleValue}">
+      <td class="labelColumn" width="20%" > <h:outputText value="#{messages['label.template.parameter.value']}"/></td>
+      <td class="fieldColumn" width="20%"><c:if test="#{param.typeAsString=='String'}">
+        <nxl:widgetType name="textarea" value="#{param.stringValue}"
+          mode="#{widgetMode}" />
+      </c:if> <c:if test="#{param.typeAsString=='Date'}">
+        <nxl:widgetType name="datetime" value="#{param.dateValue}"
+          mode="#{widgetMode}" />
+      </c:if> <c:if test="#{param.typeAsString=='Boolean'}">
+        <nxl:widgetType name="checkbox" value="#{param.booleanValue}"
+          mode="#{widgetMode}" />
+      </c:if></td>
+  </c:if>
+
+  <c:if test="#{param.sourceValue}">
+     <c:if test="#{param.typeAsString=='content'}">
+      <td class="labelColumn" width="20%"><h:outputText value="#{messages['label.template.parameter.content.source']}"/></td>
+      <c:if test="#{!param.readOnly}">
+      <td class="fieldColumn" width="20%">
+      <span class="contentWidget">
+         <h:inputHidden value="#{param.source}"/>
+         <select>
+           <option value="htmlPreview"> <h:outputText value="#{messages['label.template.parameter.htmlPreview']}"/> </option>
+           <option value="blobContent"> <h:outputText value="#{messages['label.template.parameter.blobContent']}"/> </option>
+           <option value="xPath"> <h:outputText value="#{messages['label.template.parameter.xpath']}"/> </option>
+         </select>
+         <input type="text" name="xPath" value=""/>
+      </span>
+      </td>
+     </c:if>
+     <c:if test="#{param.readOnly}">
+      <td class="fieldColumn" width="20%">
+      <span class="contentWidget">
+         <h:outputText value="#{param.source}"/>
+      </span>
+      </td>
+     </c:if>
+    </c:if>
+
+     <c:if test="#{param.typeAsString!='content'}">
+      <td class="labelColumn" width="20%"> <h:outputText value="#{messages['label.template.parameter.xpath']}"/> </td>
+      <td class="fieldColumn" width="20%">
+        <nxl:widgetType name="text" value="#{param.source}" mode="#{widgetMode}" />
+         (
+        <h:outputText value="#{messages['label.template.parameter.loop']}"/> :
+        <h:selectBooleanCheckbox
+          value="#{param.autoLoop}" readonly="#{param.readOnly}" >
+        </h:selectBooleanCheckbox>
+          )
+      </td>
+     </c:if>
+  </c:if>
+
+<c:if test="#{!param.readOnly}">
+   <td class="fieldColumn" width="20%">
+       <span class="floatR">
+           <h:commandButton type="submit" styleClass="button" value="#{messages['command.delete']}"
+                    action="#{bean.removeTemplateInput(param.name)}" id="button_rm_#{param.name}" />
+       </span>
+   </td>
+</c:if>
+
+
+</tr>
+</table>
+</h:panelGroup>
+
+</div>

@@ -1,0 +1,12 @@
+{
+  "delay": 30,
+  "ignored_prefixes": [".", "icon\r", "thumbs.db", "desktop.ini", "~$"],
+  "ignored_suffixes": [".bak", ".crdownload", ".lock", ".nxpart", ".part", ".partial", ".swp", ".tmp", "~", ".dwl", ".dwl2"],
+  "ignored_files": ["^atmp\\d+$"],
+  "log_level_file": "DEBUG",
+  "timeout": 30,
+  "handshake_timeout": 60,
+  "beta_channel": false,
+  "update_check_delay": 3600,
+  "ui": "web"
+}

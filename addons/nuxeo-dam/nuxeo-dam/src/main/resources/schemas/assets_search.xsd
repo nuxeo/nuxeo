@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/assetssearch/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/assetssearch/">
+
+  <xs:simpleType name="stringList">
+    <xs:list itemType="xs:string"/>
+  </xs:simpleType>
+
+  <xs:element name="ecm_fulltext" type="xs:string"/>
+  <xs:element name="system_primaryType_agg" type="nxs:stringList"/>
+  <xs:element name="system_mimetype_agg" type="nxs:stringList"/>
+  <xs:element name="asset_width_agg" type="nxs:stringList"/>
+  <xs:element name="asset_height_agg" type="nxs:stringList"/>
+  <xs:element name="color_profile_agg" type="nxs:stringList"/>
+  <xs:element name="color_depth_agg" type="nxs:stringList"/>
+  <xs:element name="video_duration_agg" type="nxs:stringList"/>
+</xs:schema>

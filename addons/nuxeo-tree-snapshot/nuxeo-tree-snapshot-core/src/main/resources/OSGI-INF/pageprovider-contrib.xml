@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.snapshot.PageProviderservice.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <genericPageProvider name="VFOLDER_CONTENT_PROVIDER"
+      class="org.nuxeo.snapshot.pageprovider.VFolderPageProvider">
+      <pageSize>10</pageSize>
+    </genericPageProvider>
+
+  </extension>
+
+</component>

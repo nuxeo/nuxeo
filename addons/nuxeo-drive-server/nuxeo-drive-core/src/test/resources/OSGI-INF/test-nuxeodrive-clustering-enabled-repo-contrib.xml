@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.repository.config.clustering.enabled.test">
+  <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService" point="repository">
+    <repository name="test">
+      <clustering id="1" enabled="true" delay="1000" />
+    </repository>
+  </extension>
+</component>

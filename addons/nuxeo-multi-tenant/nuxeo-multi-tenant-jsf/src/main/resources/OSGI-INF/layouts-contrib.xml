@@ -1,0 +1,343 @@
+<component name="org.nuxeo.ecm.multi.tenant.layouts">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.base</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="tenantId" type="selectOneMenu">
+      <labels>
+        <label mode="any">label.tenant.id</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>user:tenantId</field>
+      </fields>
+      <widgetModes>
+        <mode value="editPassword">hidden</mode>
+        <mode value="create">#{nxu:test(multiTenantActions.isTenantIsolationEnabled()
+            and webActions.checkFilter('only_for_manager'), 'edit', 'hidden')}</mode>
+        <mode value="edit">#{nxu:test(multiTenantActions.isTenantIsolationEnabled()
+            and webActions.checkFilter('only_for_manager'), 'edit', 'hidden')}</mode>
+        <mode value="view">hidden</mode>
+      </widgetModes>
+      <selectOptions>
+        <option itemLabel="None" itemValue="" />
+        <options value="#{multiTenantActions.tenants}"
+          var="doc" itemValue="#{doc.tenant.id}"
+          itemLabel="#{doc.tenant.label}" />
+      </selectOptions>
+    </widget>
+    <widget name="tenantIdView" type="text">
+      <labels>
+        <label mode="any">label.tenant.id</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>user:tenantId</field>
+      </fields>
+      <widgetModes>
+        <mode value="editPassword">hidden</mode>
+        <mode value="create">hidden</mode>
+        <mode value="edit">hidden</mode>
+        <mode value="view">#{nxu:test(multiTenantActions.isTenantIsolationEnabled()
+          and webActions.checkFilter('only_for_manager'), 'view', 'hidden')}</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="userTenantId" type="layout">
+      <properties mode="any">
+        <property name="name">user_tenant_id</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="userTenantId" type="widget" order="100">
+      <category>USER_ADDITIONAL_WIDGETS</category>
+      <properties>
+        <property name="widgetName">userTenantId</property>
+      </properties>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="user_tenant_id">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>tenantId</widget>
+        </row>
+        <!-- hack because the selectOneMenu widget display nothing in 'view' mode  -->
+        <row>
+          <widget>tenantIdView</widget>
+        </row>
+      </rows>
+    </layout>
+
+   <layout name="multi_tenant_content_view_configuration">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>content_view_selection</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="multi_tenant_ui_types_configuration">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>ui_types_selection</widget>
+        </row>
+        <row>
+          <widget>deny_all_types</widget>
+        </row>
+        <row>
+          <widget>default_type</widget>
+        </row>
+      </rows>
+    </layout>
+
+   <layout name="multi_tenant_search_configuration">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>search_content_views_selection</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="tenant_configuration">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>tenant_id</widget>
+        </row>
+        <row>
+          <widget>tenant_administrators</widget>
+        </row>
+      </rows>
+      <widget name="tenant_id" type="text">
+        <labels>
+          <label mode="any">label.tenant.id</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tenantconfig:tenantId</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+          <property name="required">true</property>
+        </properties>
+        <widgetModes>
+          <mode value="edit">
+            #{nxu:test(multiTenantActions.isTenantIsolationEnabled(), 'view', 'hidden')}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="tenant_administrators" type="template">
+        <labels>
+          <label mode="any">label.tenant.administrators</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>tenantconfig:administrators</field>
+        </fields>
+        <widgetModes>
+          <mode value="create">
+            hidden
+          </mode>
+          <mode value="edit">
+            #{nxu:test(multiTenantActions.isTenantIsolationEnabled(), 'edit', 'hidden')}
+          </mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="userSuggestionSearchType">USER_TYPE</property>
+          <property name="minChars">3</property>
+          <property name="hideHelpLabel">true</property>
+        </properties>
+        <properties widgetMode="any">
+          <property name="template">/widgets/tenant_administrators_widget.xhtml</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="tenant_event_listing">
+      <templates>
+        <template mode="any">/layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">/layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">/layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">eventId</property>
+          </properties>
+          <widget>eventId</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">log.eventDate</property>
+          </properties>
+          <widget>eventDate</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">log.principalName</property>
+          </properties>
+          <widget>username</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">log.category</property>
+          </properties>
+          <widget>eventCategory</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>eventDoc</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>eventComment</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>eventLC</widget>
+        </column>
+      </columns>
+      <widget name="eventId" type="text">
+        <labels>
+          <label mode="any">label.performedAction</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data.eventId</field>
+        </fields>
+        <properties mode="any">
+          <property name="localize">true</property>
+        </properties>
+      </widget>
+      <widget name="eventDate" type="datetime">
+        <labels>
+          <label mode="any">label.date</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data.eventDate</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
+          <property name="timezone">#{timeZone}</property>
+        </properties>
+        <properties mode="csv">
+          <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
+          <property name="csv_forceType">date</property>
+        </properties>
+      </widget>
+      <widget name="username" type="text">
+        <labels>
+          <label mode="any">label.username</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data.principalName</field>
+        </fields>
+      </widget>
+      <widget name="eventCategory" type="text">
+        <labels>
+          <label mode="any">label.category</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data:category</field>
+        </fields>
+        <properties mode="any">
+          <property name="localize">true</property>
+        </properties>
+      </widget>
+      <widget name="eventDoc" type="template">
+        <labels>
+          <label mode="any">label.document</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/auditdoc_tenant_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="eventComment" type="text">
+        <labels>
+          <label mode="any">label.comment</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data.comment</field>
+        </fields>
+      </widget>
+      <widget name="eventLC" type="text">
+        <labels>
+          <label mode="any">label.lifecycle</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data.docLifeCycle</field>
+        </fields>
+        <properties mode="any">
+          <property name="localize">true</property>
+        </properties>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>
