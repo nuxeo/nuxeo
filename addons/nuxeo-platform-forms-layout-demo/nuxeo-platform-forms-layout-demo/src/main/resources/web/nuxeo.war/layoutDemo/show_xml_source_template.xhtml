@@ -1,0 +1,24 @@
+<div id="show_sources"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:if test="false">
+  Template presenting a drop box for an XML source
+  
+  Needed parameters:
+  - sourcePath: source path of the source to retrieve
+  
+  </c:if>
+  
+  <ui:include src="show_source_template.xhtml">
+    <ui:param name="sourcePath" value="#{sourcePath}" />
+    <ui:param name="label" value="#{messages['label.layoutDemo.widgetDemo.showSources']}" />
+  </ui:include>
+
+  <ui:include src="show_source_template.xhtml">
+    <ui:param name="sourcePath" value="layoutDemo/sources/schemas/layout_demo_schema.xsd" />
+    <ui:param name="label" value="#{messages['label.layoutDemo.widgetDemo.showSchemaDefinition']}" />
+  </ui:include>
+  
+</div>
