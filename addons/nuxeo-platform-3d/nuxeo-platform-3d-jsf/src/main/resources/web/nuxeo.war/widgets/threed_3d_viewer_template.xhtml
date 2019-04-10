@@ -1,0 +1,35 @@
+<h:panelGroup layout="block"
+              xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:h="http://java.sun.com/jsf/html"
+              xmlns:c="http://java.sun.com/jstl/core"
+              xmlns:nxu="http://nuxeo.org/nxweb/util"
+              styleClass="tabsContent">
+
+  <script type="text/javascript"
+          src="#{baseURL}platform-3d/bower_components/webcomponentsjs/webcomponents-lite.min.js">
+  </script>
+
+  <link rel="import" href="#{baseURL}platform-3d/nuxeo-3d-viewer.html"></link>
+
+  <style type="text/css">
+    #threed-simple-viewer {
+      width: 100%;
+      height: 40vh;
+    }
+  </style>
+  <nxu:set var="isConverting" value="#{transmissionFormatActions.isConvertingFormats(fieldOrValue)}"/>
+  <nxu:set var="hasTransmissionFormats" value="#{!transmissionFormatActions.getItems(fieldOrValue).isEmpty()}"/>
+  <c:choose>
+    <c:when test="#{isConverting}">
+      <p>#{messages['label.widget.threed.3d_viewer.converting']}</p>
+    </c:when>
+    <c:when test="#{!hasTransmissionFormats}">
+      <p>#{messages['label.widget.threed.3d_viewer.no_transmission_formats']}</p>
+    </c:when>
+    <c:otherwise>
+      <nuxeo-3d-viewer src="#{transmissionFormatActions.getItems(fieldOrValue)[0].src}"
+                       id="threed-simple-viewer"/>
+    </c:otherwise>
+  </c:choose>
+
+</h:panelGroup>

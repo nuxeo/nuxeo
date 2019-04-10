@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<!-- This is a test setup for directories that is similar to the
+  default-directories-bundle.xml setup except that the datasource is set
+  to a in memory backend -->
+
+<component name="org.nuxeo.ecm.directory.sql.test">
+
+  <require>org.nuxeo.ecm.platform.test.directory.sql.storage</require>
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="userDirectory" extends="template-directory">
+
+      <schema>user</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <substringMatchType>subany</substringMatchType>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>userdata/test-users.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+
+      <references>
+        <reference field="groups" directory="groupDirectory" name="user2group" source="userId" target="groupId"
+          dataFile="userdata/test-user2group.csv"/>
+      </references>
+
+    </directory>
+
+
+    <directory name="groupDirectory" extends="template-directory">
+
+      <schema>group</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <idField>groupname</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>userdata/test-groups.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+
+      <references>
+        <inverseReference field="members" directory="userDirectory" dualReferenceField="groups"/>
+        <reference field="subGroups" directory="groupDirectory" name="group2group" source="childGroupId"
+          target="parentGroupId"/>
+        <inverseReference field="parentGroups" directory="groupDirectory" dualReferenceField="subGroups"/>
+      </references>
+
+    </directory>
+
+  </extension>
+</component>

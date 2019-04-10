@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webdav.service">
+
+    <alias>org.nuxeo.ecm.platform.wi.service.WIPluggableBackendManager</alias>
+
+    <implementation class="org.nuxeo.ecm.webdav.service.WebDavService"/>
+
+    <extension-point name="backendFactory">
+        <documentation>
+      This extension can be used to register WI backend Factory
+        </documentation>
+        <object class="org.nuxeo.ecm.webdav.service.BackendFactoryDescriptor"/>
+    </extension-point>
+
+</component>
