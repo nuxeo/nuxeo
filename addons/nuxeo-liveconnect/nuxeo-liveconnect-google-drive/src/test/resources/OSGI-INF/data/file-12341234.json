@@ -1,0 +1,88 @@
+{
+   "markedViewedByMeDate" : "1970-01-01T00:00:00.000Z",
+   "thumbnailLink" : "http://example.com/thumbnail/12341234",
+   "alternateLink" : "https://docs.google.com/a/example.com/file/d/12341234/edit?usp=drivesdk",
+   "shared" : true,
+   "selfLink" : "https://www.googleapis.com/drive/v2/files/12341234",
+   "userPermission" : {
+      "etag" : "\"tlWfk03TbBHKoqyGbIYE6wA918U/dFBoEB6f2pJbvPOLoRJyog3tL7I\"",
+      "selfLink" : "https://www.googleapis.com/drive/v2/files/12341234/permissions/me",
+      "kind" : "drive#permission",
+      "type" : "user",
+      "id" : "me",
+      "role" : "owner"
+   },
+   "quotaBytesUsed" : "36830",
+   "id" : "12341234",
+   "md5Checksum" : "1fecf5e5db21e3d6f088c66dba3b1ce8",
+   "headRevisionId" : "v1abcd",
+   "writersCanShare" : true,
+   "etag" : "\"tlWfk03TbBHKoqyGbIYE6wA918U/MTQyNjcwMDcyNjYyNg\"",
+   "copyable" : true,
+   "modifiedByMeDate" : "2015-03-18T17:45:26.626Z",
+   "title" : "testimage.jpg",
+   "mimeType" : "image/jpeg",
+   "createdDate" : "2015-03-18T17:45:26.626Z",
+   "parents" : [
+      {
+         "selfLink" : "https://www.googleapis.com/drive/v2/files/12341234/parents/01010101",
+         "kind" : "drive#parentReference",
+         "parentLink" : "https://www.googleapis.com/drive/v2/files/01010101",
+         "isRoot" : true,
+         "id" : "01010101"
+      }
+   ],
+   "fileExtension" : "jpg",
+   "lastModifyingUserName" : "Tester Tester",
+   "webContentLink" : "https://docs.google.com/a/example.com/uc?id=12341234&export=download",
+   "iconLink" : "https://ssl.gstatic.com/docs/doclist/images/icon_11_image_list.png",
+   "downloadUrl" : "http://example.com/download/12341234",
+   "appDataContents" : false,
+   "kind" : "drive#file",
+   "owners" : [
+      {
+         "permissionId" : "18093776961422815682",
+         "kind" : "drive#user",
+         "isAuthenticatedUser" : true,
+         "emailAddress" : "tester@example.com",
+         "picture" : {
+            "url" : "http://example.com/picture/tester@example.com/photo.jpg"
+         },
+         "displayName" : "Tester Tester"
+      }
+   ],
+   "labels" : {
+      "starred" : false,
+      "viewed" : false,
+      "trashed" : false,
+      "hidden" : false,
+      "restricted" : false
+   },
+   "modifiedDate" : "2015-03-18T17:45:26.626Z",
+   "version" : "6467",
+   "lastModifyingUser" : {
+      "permissionId" : "18093776961422815682",
+      "kind" : "drive#user",
+      "isAuthenticatedUser" : true,
+      "emailAddress" : "tester@example.com",
+      "picture" : {
+          "url" : "http://example.com/picture/tester@example.com/photo.jpg"
+      },
+      "displayName" : "Tester Tester"
+   },
+   "fileSize" : "36830",
+   "editable" : true,
+   "imageMediaMetadata" : {
+      "width" : 800,
+      "height" : 600
+   },
+   "originalFilename" : "testimage.jpg",
+   "ownerNames" : [
+      "Tester Tester"
+   ],
+  "defaultOpenWithLink": "app1.com",
+  "openWithLinks": {
+    "22222222": "app2.com",
+    "11111111": "app1.com"
+  }
+}
