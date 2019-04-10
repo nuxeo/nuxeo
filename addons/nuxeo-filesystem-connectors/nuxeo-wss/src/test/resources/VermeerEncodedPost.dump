@@ -1,0 +1,14 @@
+POST /_vti_bin/_vti_aut/author.dll HTTP/1.1
+Date: Fri, 04 Sep 2009 13:52:01 GMT
+MIME-Version: 1.0
+User-Agent: MSFrontPage/6.0
+Host: vm2k3
+Accept: auth/sicily
+Content-Length: 487694
+Content-Type: application/x-vermeer-urlencoded
+X-Vermeer-Content-Type: application/x-vermeer-urlencoded
+Connection: Keep-Alive
+Cache-Control: no-cach
+
+method=put+document%3a6%2e0%2e2%2e5523&service%5fname=&document=%5bdocument%5fname%3dDocLib0%2fWorkspace-1-1%2fDocument-2-1%2edoc%3bmeta%5finfo%3d%5bvti%5ftimelastmodified%3bTW%7c04+Sep+2009+13%3a26%3a59+%2d0000%5d%5d&put%5foption=edit&comment=&keep%5fchecked%5fout=false
+AAABBBCCCDDD

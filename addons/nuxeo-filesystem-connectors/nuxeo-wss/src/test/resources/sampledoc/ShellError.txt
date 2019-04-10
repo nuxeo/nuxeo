@@ -1,0 +1,20 @@
+Connecting to nuxeo server at 10.0.2.15:62474 as system
+Command failed with error:
+javax.naming.CommunicationException [Root exception is java.rmi.ServerException:
+ RemoteException occurred in server thread; nested exception is:
+        java.rmi.UnmarshalException: error unmarshalling arguments; nested excep
+tion is:
+        java.net.MalformedURLException: no protocol: Files/Nuxeo5]
+        at org.jnp.interfaces.NamingContext.lookup(NamingContext.java:707)
+        at org.jnp.interfaces.NamingContext.lookup(NamingContext.java:572)
+        at javax.naming.InitialContext.lookup(Unknown Source)
+        at org.nuxeo.runtime.api.JndiServiceLocator.lookup(JndiServiceLocator.ja
+va:62)
+        at org.nuxeo.runtime.api.JBossServiceLocator.lookup(JBossServiceLocator.
+java:66)
+        at org.nuxeo.runtime.api.ServiceHost.lookup(ServiceHost.java:176)
+        at org.nuxeo.runtime.api.ServiceManager.getService(ServiceManager.java:1
+02)
+        at org.nuxeo.runtime.api.Framework.getService(Framework.java:95)
+        at org.nuxeo.ecm.core.client.NuxeoClient.schemaRemotingWorkaround(NuxeoC
+lient.java:229)

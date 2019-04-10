@@ -1,0 +1,12 @@
+POST /_vti_bin/dws.asmx HTTP/1.1
+Content-Type: text/xml; charset=utf-8
+SOAPAction: http://schemas.microsoft.com/sharepoint/soap/dws/GetDwsMetaData
+X-Office-Version: 11.0.5606
+User-Agent: Microsoft Office/11.0 (Windows NT 5.1; Microsoft Office Word 11.0.5606; Std)
+Host: vm2k3
+Content-Length: 315
+Connection: Keep-Alive
+Cache-Control: no-cache
+Cookie: MSOWebPartPage_AnonymousAccessCookie=80; WSS_KeepSessionAuthenticated=80
+
+<?xml version='1.0' ?><s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body><GetDwsMetaData xmlns="http://schemas.microsoft.com/sharepoint/soap/dws/"><document>http://localhost/DocLib0/Workspace-1-1/Document-2-1.doc</document><id></id><minimal>true</minimal></GetDwsMetaData></s:Body></s:Envelope>

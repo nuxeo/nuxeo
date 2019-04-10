@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.wss.auth">
+
+  <require>org.nuxeo.ecm.platform.login.digest</require>
+  <require>org.nuxeo.ecm.webdav.auth.config</require>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="specificChains">
+
+    <specificAuthenticationChain name="WSS">
+      <urlPatterns>
+        <url>(.*)/_vti_.*</url>
+      </urlPatterns>
+      <headers>
+        <header name="User-Agent">MSFrontPage.*</header>
+      </headers>
+
+      <replacementChain>
+        <plugin>DIGEST_AUTH</plugin>
+        <plugin>WEBDAV_BASIC_AUTH</plugin>
+      </replacementChain>
+    </specificAuthenticationChain>
+
+  </extension>
+
+</component>
