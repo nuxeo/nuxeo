@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.jaxrs.tester">
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+             point="resource">
+    <resource path="fileImporter"
+              class="org.nuxeo.ecm.platform.importer.executor.jaxrs.HttpFileImporterExecutor"/>
+    <resource path="randomImporter"
+              class="org.nuxeo.ecm.platform.importer.executor.jaxrs.RandomImporterExecutor"/>
+  </extension>
+</component>
