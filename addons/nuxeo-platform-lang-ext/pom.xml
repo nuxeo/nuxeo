@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.nuxeo</groupId>
+  <artifactId>nuxeo-platform-lang-ext</artifactId>
+  <version>5.3.0</version>
+  <packaging>jar</packaging>
+  <name>Nuxeo EP Language Extensions</name>
+  <description>
+    Nuxeo Enterprise Platform: The Nuxeo Language Extensions package.
+  </description>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.2</version>
+          <configuration>
+            <archive>
+              <manifestFile>
+                src/main/resources/META-INF/MANIFEST.MF
+              </manifestFile>
+              <manifestEntries>
+                <Bundle-Version>${eclipseVersion}</Bundle-Version>
+                <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <distributionManagement>
+    <repository>
+      <id>nuxeo-release</id>
+      <url>http://maven.nuxeo.org/nexus/content/repositories/nuxeo-release</url>
+    </repository>
+    <snapshotRepository>
+      <id>nuxeo-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/repositories/nuxeo-snapshot</url>
+    </snapshotRepository>
+  </distributionManagement>
+</project>
