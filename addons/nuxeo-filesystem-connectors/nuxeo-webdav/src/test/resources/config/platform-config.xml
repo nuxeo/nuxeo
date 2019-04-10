@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.api.DefaultPlatform" version="1.0">
+  <documentation>
+    A default platform layout. All services are available remotely trough a JNDI
+    server on localhost Services not specified here will be retrieved using
+    NXRuntime on the current JVM.
+    <p />
+    Only one repository is defined: "default" which is managed by a remote service on
+    localhost.
+    <p />
+    This is the default layout that may be used for simple installations schemes
+    like:
+    <ul>
+    <li>A ECM Web Application deployed on a single JVM</li>
+    <li>A client application like Apogee willing to connect to an ECM Application
+      (possibly without web layer) deployed on the same host (localhost)
+    </li>
+    </ul>
+
+    @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+  </documentation>
+
+
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <documentation>The default repository</documentation>
+
+    <repository name="default" label="Default Repository" />
+
+  </extension>
+
+
+</component>
