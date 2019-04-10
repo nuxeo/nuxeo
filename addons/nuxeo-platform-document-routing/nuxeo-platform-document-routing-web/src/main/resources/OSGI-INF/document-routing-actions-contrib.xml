@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.routing.actions">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+    <action id="TAB_CONTENT">
+      <filter-id>isNotRoute</filter-id>
+    </action>
+
+    <action id="TAB_DOCUMENT_ROUTE_CONTENT" link="/incl/tabs/document_route_content.xhtml"
+      order="10" label="action.view.content" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>isRoute</filter-id>
+    </action>
+
+    <action id="TAB_DOCUMENT_ROUTE_ELEMENTS" link="/incl/tabs/document_route_content_elements.xhtml"
+      order="100" label="action.view.document.routing.elements" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>isRoute</filter-id>
+    </action>
+
+    <action id="TAB_CASE_MANAGEMENT_VIEW_RELATED_ROUTE"
+      link="/incl/tabs/related_document_route_preview.xhtml"
+      order="250" label="label.document.routing.related.route">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>hasRelatedRouteStarted</filter-id>
+    </action>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="create" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>DocumentRoute</type>
+        <type>StepFolder</type>
+      </rule>
+    </filter>
+
+    <filter id="isRoute">
+      <rule grant="true">
+        <type>DocumentRoute</type>
+      </rule>
+    </filter>
+
+    <filter id="isNotRoute">
+      <rule grant="false">
+        <type>DocumentRoute</type>
+      </rule>
+    </filter>
+
+    <filter id="isUnvalidatedRouteModel">
+      <rule grant="true">
+        <condition>
+          document.getCurrentLifeCycleState().equals("draft")
+        </condition>
+        <type>DocumentRoute</type>
+      </rule>
+    </filter>
+
+    <filter id="isValidatedRouteModel">
+      <rule grant="true">
+        <condition>
+          document.getCurrentLifeCycleState().equals("validated")
+        </condition>
+        <type>DocumentRoute</type>
+      </rule>
+    </filter>
+  
+   <filter id="noRelatedRouteStarted">
+      <rule grant="false">
+        <condition>#{routingActions.hasRelatedRoute()}</condition>
+      </rule>
+    </filter>
+    
+    <filter id="hasRelatedRouteStarted">
+      <rule grant="true">
+        <condition>#{routingActions.hasRelatedRoute()}</condition>
+      </rule>
+    </filter>
+  </extension>
+
+</component>
