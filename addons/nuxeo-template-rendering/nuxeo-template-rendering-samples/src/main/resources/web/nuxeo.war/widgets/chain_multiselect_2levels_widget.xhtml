@@ -1,0 +1,74 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
+
+  <c:if test="#{widget.mode != 'edit'}">
+    <nxdir:chainSelect id="#{widget.id}_viewselect" size="2"
+      value="#{field_0}" displayValueOnly="true" multiSelect="true"
+      defaultRootKey="">
+      <nxdir:chainSelectListbox index="0" size="4"
+      directoryName="#{widget.properties['parentDirectory']}"
+      localize="#{widget.properties['localize']}"
+      id="#{widget.id}_parent" />
+      <nxdir:chainSelectListbox size="4"
+        directoryName="#{widget.properties['childDirectory']}" index="1"
+        localize="#{widget.properties['localize']}"
+        id="#{widget.id}_child" />
+      <nxdir:chainSelectStatus display="value" id="#{widget.id}_status" />
+    </nxdir:chainSelect>
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <a4j:region id="#{widget.id}_region" renderRegionOnly="true">
+      <nxdir:chainSelect size="2" value="#{field_0}"
+        id="#{widget.id}_editselect" multiSelect="true"
+        multiParentSelect="true" allowBranchSelection="false"
+        defaultRootKey=""
+        required="#{widget.required}">
+        <nxdir:chainSelectListbox index="0" size="4"
+          directoryName="#{widget.properties['parentDirectory']}"
+          localize="#{widget.properties['localize']}"
+          id="#{widget.id}_parent" ordering="label">
+          <a4j:support event="onchange"
+            reRender="#{widget.id}_child,#{widget.id}_message"
+            immediate="true">
+            <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
+          </a4j:support>
+        </nxdir:chainSelectListbox>
+        <f:subview rendered="#{widget.properties['on2rows']}">
+          <br />
+        </f:subview>
+        <nxdir:chainSelectListbox size="4" index="1"
+          directoryName="#{widget.properties['childDirectory']}"
+          localize="#{widget.properties['localize']}"
+          id="#{widget.id}_child" ordering="label" />
+        <a4j:commandButton value="#{messages['command.add']}"
+          styleClass="button" immediate="true"
+          actionListener="#{chainSelectActions.add}"
+          reRender="#{widget.id}_status" id="#{widget.id}_add" />
+        <br />
+        <nxdir:chainSelectStatus display="value"
+          entryCssStyle="background-color: #DDEEFF"
+          label="#{messages['label.chainSelect.selection']}"
+          id="#{widget.id}_status">
+          <f:facet name="removeButton">
+            <a4j:commandButton
+              actionListener="#{chainSelectActions.delete}"
+              immediate="true" reRender="#{widget.id}_status"
+              image="/icons/toggle_minus.png"
+              id="#{widget.id}_delete" />
+          </f:facet>
+        </nxdir:chainSelectStatus>
+      </nxdir:chainSelect>
+    </a4j:region>
+    <a4j:outputPanel ajaxRendered="true">
+      <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+        id="#{widget.id}_message" />
+    </a4j:outputPanel>
+  </c:if>
+
+</f:subview>
