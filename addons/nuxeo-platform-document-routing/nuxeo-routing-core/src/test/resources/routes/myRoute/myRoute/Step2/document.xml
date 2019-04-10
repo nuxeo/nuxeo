@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="Task6cee2342">
+  <system>
+    <type>RouteNode</type>
+    <path>myRoute/Step2</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <access-control/>
+  </system>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:creator/>
+    <dc:source/>
+    <dc:contributors/>
+    <dc:nature/>
+    <dc:created/>
+    <dc:description/>
+    <dc:rights/>
+    <dc:subjects/>
+    <dc:publisher/>
+    <dc:valid/>
+    <dc:format/>
+    <dc:issued/>
+    <dc:modified/>
+    <dc:language/>
+    <dc:coverage/>
+    <dc:expired/>
+    <dc:lastContributor/>
+    <dc:title><![CDATA[Step2]]></dc:title>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon/>
+    <common:icon-expanded/>
+  </schema>
+  <schema xmlns:rnode="http://www.nuxeo.org/ecm/schemas/route_node/" name="route_node">
+    <rnode:canceled/>
+    <rnode:variablesFacet></rnode:variablesFacet>
+    <rnode:taskLayout/>
+    <rnode:taskButtons/>
+    <rnode:endDate/>
+    <rnode:taskDueDate/>
+    <rnode:stop><![CDATA[true]]></rnode:stop>
+    <rnode:inputChain/>
+    <rnode:taskDescription/>
+    <rnode:start><![CDATA[false]]></rnode:start>
+    <rnode:startDate/>
+    <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
+    <rnode:taskNotificationTemplate/>
+    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
+    <rnode:transitions/>
+    <rnode:nodeId><![CDATA[Task6cee2342]]></rnode:nodeId>
+    <rnode:taskDirective/>
+    <rnode:outputChain/>
+    <rnode:merge/>
+    <rnode:taskAssignees/>
+    <rnode:count/>
+    <rnode:taskAssigneesPermission/>
+    <rnode:button/>
+    <rnode:taskDocType/>
+  </schema>
+</document>

@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Live Connect JSF for Google Drive
+Bundle-SymbolicName: org.nuxeo.ecm.liveconnect.google.drive.jsf;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/googledrive-config.xml,
+    OSGI-INF/theme-contrib.xml
