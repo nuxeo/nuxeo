@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/document_route_instance/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/document_route_instance/">
+
+  <xs:include schemaLocation="base.xsd" />
+
+  <xs:element name="initiator" type="xs:string" />
+  <xs:element name="participatingDocuments" type="nxs:stringList" />
+  <xs:element name="variablesFacet" type="xs:string" />
+  <xs:element name="availabilityFilter" type="xs:string" />
+  <xs:element name="parentRouteInstanceId" type="xs:string" />
+  <xs:element name="parentRouteNodeId" type="xs:string" />
+  <xs:element name="modelId" type="xs:string" />
+
+</xs:schema>

@@ -1,0 +1,12 @@
+<component name="org.nuxeo.ecm.platform.routing.persister.contrib"
+  version="1.0">
+
+  <require>org.nuxeo.ecm.core.repository.RepositoryService</require>
+
+  <extension target="org.nuxeo.ecm.platform.routing.service"
+    point="persister">
+    <persister
+      class="org.nuxeo.ecm.platform.routing.core.impl.DocumentRoutingTreePersister" />
+  </extension>
+
+</component>

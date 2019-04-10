@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Routing Default Workflows
+Bundle-SymbolicName: org.nuxeo.ecm.platform.routing.default;singleton=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/extensions.xml
