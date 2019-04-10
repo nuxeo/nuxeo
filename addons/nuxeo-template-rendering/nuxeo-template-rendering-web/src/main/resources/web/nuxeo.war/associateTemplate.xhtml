@@ -1,0 +1,36 @@
+<h:panelGroup layout="block"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxwt="http://nuxeo.org/nxforms/runtime/widgettype">
+
+      <h3>
+        <h:outputText value="#{messages['title.template.associate']}" />
+      </h3>
+
+      <h:form enctype="multipart/form-data" id="document_template_associate">
+
+        <div class="content positionR">
+
+          <h:selectOneMenu value="#{templateBasedActions.templateIdToAssociate}">
+            <nxu:selectItems var="item" value="#{templateBasedActions.getBindableTemplatesForDocumentAsSelectItems()}"
+              itemValue="#{item.value}"
+              itemLabel="#{item.label}" />
+          </h:selectOneMenu>
+
+        </div>
+
+        <div class="buttonsGadget">
+            <a4j:commandButton value="#{messages['command.template.associate']}"
+                action="#{templateBasedActions.associateDocumentToTemplate}" id="button_save" oncomplete="parent.window.location.reload();"
+                render="nope" />
+            <input type="button" value="#{messages['command.cancel']}"
+                 onclick="parent.window.location.reload();"/>
+          </div>
+      </h:form>
+
+</h:panelGroup>
