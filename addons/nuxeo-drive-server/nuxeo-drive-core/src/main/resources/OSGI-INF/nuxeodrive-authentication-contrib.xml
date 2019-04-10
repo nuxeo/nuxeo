@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.auth">
+
+  <require>org.nuxeo.ecm.automation.server.auth.config</require>
+  <require>org.nuxeo.ecm.login.token.authentication.contrib</require>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>drive_login.jsp</pattern>
+        <pattern>drive_browser_login.jsp</pattern>
+      </patterns>
+    </startURLPattern>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="specificChains">
+
+    <specificAuthenticationChain name="Drive">
+      <urlPatterns>
+        <url>(.*)/drive(/.*)?</url>
+      </urlPatterns>
+
+      <replacementChain>
+        <plugin>AUTOMATION_BASIC_AUTH</plugin>
+        <plugin>TOKEN_AUTH</plugin>
+      </replacementChain>
+    </specificAuthenticationChain>
+
+  </extension>
+
+</component>
+

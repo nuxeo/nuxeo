@@ -1,0 +1,49 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:nxh="http://nuxeo.org/nxweb/html"
+     xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <script type="text/javascript">
+    function setViewerAngles(azimuth, zenith) {
+      document.querySelector('nuxeo-3d-viewer').sphericalCoords = [parseInt(azimuth), parseInt(zenith)];
+    }
+  </script>
+
+  <c:if test="#{fieldOrValue.hasFacet('ThreeD')}">
+
+    <c:if test="#{!empty widget.label and widget.handlingLabels}">
+      <ui:include src="/widgets/incl/widget_label_template.xhtml">
+        <ui:param name="labelStyleClass" value="summaryTitle"/>
+      </ui:include>
+    </c:if>
+
+    <nxu:set var="isConverting" value="#{renderViewActions.isConvertingRenders(fieldOrValue)}"/>
+    <nxu:set var="hasRenderViews" value="#{!renderViewActions.getItems(fieldOrValue).isEmpty()}"/>
+    <c:choose>
+      <c:when test="#{isConverting}">
+        <p>#{messages['label.widget.threed.render_views.converting']}</p>
+      </c:when>
+      <c:when test="#{!hasRenderViews}">
+        <p>#{messages['label.widget.threed.render_views.none']}</p>
+      </c:when>
+      <c:otherwise>
+        <ui:repeat var="item" value="#{renderViewActions.getItems(fieldOrValue)}">
+          <span class="threeDRenderViewItem">
+            <div style="max-width:48%;float:left;">
+              <nxh:graphicImage url="#{item.thumbnailUrl}"
+                                onclick="setViewerAngles(#{item.azimuth},#{item.zenith});"
+                                style="max-width:100%;max-height:100;"/>
+              <nxh:outputLink value="#{item.url}">
+                <div align="center" style="text-transform:capitalize">
+                  <nxh:outputLink value="#{item.url}">#{item.title}</nxh:outputLink>
+                </div>
+              </nxh:outputLink>
+            </div>
+          </span>
+        </ui:repeat>
+      </c:otherwise>
+    </c:choose>
+
+  </c:if>
+
+</div>
