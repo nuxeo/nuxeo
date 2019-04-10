@@ -1,0 +1,42 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{widget.id}">
+
+  <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
+
+    <nxdir:chainSelect id="#{widget.id}_viewselect" size="2" value="#{field}"
+      displayValueOnly="true">
+      <nxdir:chainSelectListbox index="0" size="0" directoryName="continent"
+        localize="true" id="#{widget.id}_continent" />
+      <nxdir:chainSelectListbox size="0" directoryName="country" index="1"
+        localize="true" id="#{widget.id}_country" />
+      <nxdir:chainSelectStatus display="value" id="#{widget.id}_status" />
+    </nxdir:chainSelect>
+
+  </c:if>
+
+  <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+
+    <a4j:region id="#{widget.id}_region">
+      <nxdir:chainSelect size="2" value="#{field}"
+        id="#{widget.id}_editselect" onchange="#{widgetProperty_onchange}">
+        <nxdir:chainSelectListbox index="0" size="0" directoryName="continent"
+          localize="true" id="#{widget.id}_continent">
+          <a4j:support event="onchange" reRender="#{widget.id}_country" />
+        </nxdir:chainSelectListbox>
+
+        <nxdir:chainSelectListbox size="0" index="1" directoryName="country"
+          localize="true" id="#{widget.id}_country" />
+      </nxdir:chainSelect>
+    </a4j:region>
+    <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+      id="#{widget.id}_message" />
+
+  </c:if>
+
+</f:subview>
