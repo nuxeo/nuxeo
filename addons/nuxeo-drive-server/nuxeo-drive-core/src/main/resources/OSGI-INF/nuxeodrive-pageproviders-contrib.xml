@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.pageproviders" version="1.0">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="FOLDER_ITEM_CHILDREN">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ?
+        AND ecm:isVersion = 0
+        AND ecm:isTrashed = 0
+        AND ecm:mixinType != 'HiddenInNavigation'
+      </pattern>
+      <sort column="dc:created" ascending="true" />
+      <pageSize>1000</pageSize>
+      <maxPageSize>1000</maxPageSize>
+      <property name="maxResults">PAGE_SIZE</property>
+    </coreQueryPageProvider>
+
+  </extension>
+
+</component>

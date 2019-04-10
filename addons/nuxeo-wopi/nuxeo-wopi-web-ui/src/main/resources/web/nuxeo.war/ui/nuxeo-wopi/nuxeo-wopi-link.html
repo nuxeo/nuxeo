@@ -1,0 +1,91 @@
+<!--
+(C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and contributors.
+Licensed under the Apache License, Version 2.0 (the 'License');
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+​
+    http://www.apache.org/licenses/LICENSE-2.0
+​
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an 'AS IS' BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+Contributors:
+  Thomas Roger <troger@nuxeo.com>
+-->
+
+<!--
+`nuxeo-wopi-link`
+@group Nuxeo UI
+@element nuxeo-wopi-link
+-->
+<dom-module id="nuxeo-wopi-link">
+  <template>
+    <style include="iron-flex iron-flex-alignment">
+      :host {
+        display: inline-block;
+      }
+    </style>
+
+    <template is="dom-if" if="[[_isAvailable(url)]]">
+      <a href="[[url]]" tabindex="-1" target="_blank">
+        <paper-icon-button src="[[_wopiIcon(appName)]]" id="wopiLink"></paper-icon-button>
+      </a>
+      <paper-tooltip for="wopiLink">[[_wopiTooltip(appName)]]</paper-tooltip>
+    </template>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-wopi-link',
+
+      behaviors: [Nuxeo.I18nBehavior],
+
+      properties: {
+        document: Object,
+        xpath: String,
+        appName: {
+          type: String,
+          computed: '_appName(document)'
+        },
+        url: {
+          type: String,
+          computed: '_wopiURL(document, xpath)'
+        }
+      },
+
+      _appName() {
+        return this.document.contextParameters && this.document.contextParameters.wopi
+          && this.document.contextParameters.wopi.appName && this.document.contextParameters.wopi.appName.toLowerCase();
+      },
+
+      _isAvailable() {
+        return !!this.url;
+      },
+
+      _wopiIcon() {
+        return 'images/' + this.appName +'.png'
+      },
+
+      _wopiTooltip() {
+        return this.i18n('wopiLink.' + this.appName + '.tooltip');
+      },
+
+      _wopiURL() {
+        var wopi = this.document.contextParameters && this.document.contextParameters.wopi;
+        if (!wopi) {
+          return null;
+        }
+
+        var url = wopi.edit ? wopi.edit : wopi.view;
+        return [
+          url,
+          this.xpath
+        ].join('/');
+      }
+    });
+  </script>
+
+</dom-module>

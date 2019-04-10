@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.segment.io.SegmentIOComponent.test.listener">
+  <extension target="org.nuxeo.segment.io.SegmentIOComponent" point="filters">
+    <userFilter>
+      <blackListedUser>Administrator</blackListedUser>
+      <blackListedUser>system</blackListedUser>
+    </userFilter>
+  </extension>
+
+  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
+             point="mapper">
+    <mapper name="testDummyEvent">
+      <events>
+        <event>dummyEvent</event>
+      </events>
+    </mapper>
+  </extension>
+
+  <!-- Enable this to bypass debug mode -->
+  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
+             point="config">
+    <segmentio>
+      <writeKey>TestKey</writeKey>
+    </segmentio>
+  </extension>
+</component>

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.wopi.directories">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+
+    <schema name="wopiLocks" src="schemas/wopiLocks.xsd" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="wopiLocks" extends="template-directory">
+      <schema>wopiLocks</schema>
+      <idField>fileId</idField>
+      <types>
+        <type>system</type>
+      </types>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
+    </directory>
+
+  </extension>
+
+</component>

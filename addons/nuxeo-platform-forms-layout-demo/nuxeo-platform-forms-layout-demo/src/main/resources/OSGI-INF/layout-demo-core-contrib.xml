@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.core.contrib">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="layoutDemo">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
+      <property name="path">binaries2</property>
+    </blobprovider>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.storage.mem.MemRepositoryService"
+    point="repository">
+    <repository name="layoutDemo" label="Layout demo repository (with a memory backend)">
+      <schema>
+        <field type="largetext">note</field>
+        <field type="largetext">relatedtext</field>
+      </schema>
+      <indexing>
+        <!-- no fulltext for memory databases -->
+        <fulltext disabled="true" />
+      </indexing>
+    </repository>
+  </extension>
+</component>

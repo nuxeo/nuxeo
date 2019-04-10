@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/tenantconfig/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/tenantconfig/">
+
+  <xs:include schemaLocation="base.xsd" />
+
+  <xs:element name="tenantId" type="xs:string"/>
+  <xs:element name="administrators" type="nxs:stringList" />
+
+</xs:schema>
