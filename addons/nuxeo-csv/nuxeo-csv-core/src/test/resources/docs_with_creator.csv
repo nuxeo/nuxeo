@@ -1,0 +1,3 @@
+"name","type","dc:description","dc:title","dc:creator","dc:contributors","dc:created","dc:modified"
+"myfile","File","a simple file","My File","leela","","2012-12-12T00:00:00",""
+"myfile2","File","a simple file 2","My File 2","leela","contributor1|contributor2","2012-12-12T00:00:00.000Z","2015-04-12T00:00:00.000Z"

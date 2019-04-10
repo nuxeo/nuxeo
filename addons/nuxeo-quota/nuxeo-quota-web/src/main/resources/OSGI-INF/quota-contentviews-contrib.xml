@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.quota.contentview.contrib">
+
+<require>org.nuxeo.ecm.quota.layouts</require>
+
+ <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+   <contentView name="quota_heaviest_children">
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <whereClause docType="quota_heaviest_containers_cv">
+          <predicate parameter="dc:title" operator="LIKE">
+            <field schema="quota_heaviest_containers_cv" name="dublincore_title"/>
+          </predicate>
+          <predicate parameter="dss:totalSize" operator="BETWEEN">
+            <field schema="quota_heaviest_containers_cv" name="documents_size_statistics_totalSize_min"/>
+            <field schema="quota_heaviest_containers_cv" name="documents_size_statistics_totalSize_max"/>
+          </predicate>
+          <fixedPart>ecm:parentId = ? AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:isVersion = 0 AND ecm:isTrashed = 0
+           AND dss:totalSize >=1024</fixedPart>
+        </whereClause>
+        <parameter>#{currentDocument.id}</parameter>
+        <sort column="dss:totalSize" ascending="false"/>
+        <pageSize>10</pageSize>
+      </coreQueryPageProvider>
+      <searchLayout name="quota_heaviest_containers_cv@cvLayout"/>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{currentDocument.repositoryName}_#{currentDocument.id}</cacheKey>
+      <cacheSize>10</cacheSize>
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <showTitle>false</showTitle>
+      <showFilterForm>true</showFilterForm>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <actions category="CURRENT_QUOTA_SELECTION_LIST"/>
+      <resultLayouts>
+        <layout name="quota_heaviest_children@cvListingLayout" title="document_listing" translateTitle="true"
+        iconPath="/icons/document_listing_icon.png" showCSVExport="false" showPDFExport="false"/>
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="quota_heaviest_containers">
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <whereClause docType="quota_heaviest_containers_cv">
+          <predicate parameter="dc:title" operator="LIKE">
+            <field schema="quota_heaviest_containers_cv" name="dublincore_title"/>
+          </predicate>
+          <predicate parameter="dss:totalSize" operator="BETWEEN">
+            <field schema="quota_heaviest_containers_cv" name="documents_size_statistics_totalSize_min"/>
+            <field schema="quota_heaviest_containers_cv" name="documents_size_statistics_totalSize_max"/>
+          </predicate>
+          <fixedPart>ecm:path STARTSWITH ? AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:isVersion = 0 AND ecm:isTrashed = 0
+           AND dss:totalSize >=1024</fixedPart>
+        </whereClause>
+        <parameter>#{documentManager.getRootDocument().getPathAsString()}</parameter>
+        <sort column="dss:totalSize" ascending="false"/>
+        <pageSize>10</pageSize>
+      </coreQueryPageProvider>
+      <searchLayout name="quota_heaviest_containers_cv@cvLayout"/>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{currentDocument.repositoryName}_#{currentDocument.id}</cacheKey>
+      <cacheSize>10</cacheSize>
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <showTitle>false</showTitle>
+      <showFilterForm>true</showFilterForm>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <resultLayouts>
+        <layout name="quota_heaviest_containers@cvListingLayout" title="document_listing" translateTitle="true"
+        iconPath="/icons/document_listing_icon.png" showCSVExport="false" showPDFExport="false"/>
+      </resultLayouts>
+    </contentView>
+
+  </extension>
+
+</component>

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.opencmis.configuration">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Properties for relaxing the CMIS specifications. Note that setting any property of them to true gives a behavior
+      that is contrary to the CMIS specification. Please be aware the risk of doing so.
+      <ul>
+        <li>
+          "org.nuxeo.cmis.relaxSpec":
+          Relaxing CMIS specification control, default to false. Setting this property to true allows users to relax
+          the CMIS specification and use customized CMISQL. It allows multiple CONTAINS in CMISQL, contrary to the
+          specification 1.1, section 2.1.14.2.4.4, where at most one CONTAINS() function must be included in a single
+          query statement. Currently, JOIN predicate is not supported in such mode. This relax mode must NOT be used
+          with DBS (Document-Based Storage), like MongoDB or MarkLogic.
+        </li>
+        <li>
+          "org.nuxeo.cmis.errorOnCancelCheckOutOfDraftVersion":
+          Property that makes it an error to call CMIS cancelCheckOut on a draft version (0.0).
+        </li>
+      </ul>
+    </documentation>
+    <property name="org.nuxeo.cmis.errorOnCancelCheckOutOfDraftVersion">false</property>
+    <property name="org.nuxeo.cmis.relaxSpec">false</property>
+  </extension>
+
+</component>

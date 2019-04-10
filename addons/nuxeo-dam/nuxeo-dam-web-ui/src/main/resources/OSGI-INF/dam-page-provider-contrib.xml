@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.pageprovider">
+
+  <require>org.nuxeo.ecm.platform.query.api.PageProviderService</require>
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+             point="providers">
+
+    <genericPageProvider name="assets_search" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <whereClause docType="AssetsSearch">
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT ALL">
+          <field schema="assets_search" name="ecm_fulltext"/>
+        </predicate>
+        <fixedPart>ecm:mixinType IN ('Picture', 'Audio', 'Video') AND ecm:isVersion = 0 AND
+          ecm:isTrashed = 0 AND ecm:isProxy=0
+        </fixedPart>
+      </whereClause>
+      <aggregates>
+        <aggregate id="system_primaryType_agg" type="terms" parameter="ecm:primaryType">
+          <field schema="assets_search" name="system_primaryType_agg"/>
+        </aggregate>
+        <aggregate id="system_mimetype_agg" type="terms" parameter="file:content/mime-type">
+          <field schema="assets_search" name="system_mimetype_agg"/>
+        </aggregate>
+        <aggregate id="asset_width_agg" type="range" parameter="picture:info/width">
+          <field schema="assets_search" name="asset_width_agg"/>
+          <ranges>
+            <range key="to_500_px" to="500.0"/>
+            <range key="from_500_to_1500_px" from="500.0" to="1500.0"/>
+            <range key="from_1500_to_2000_px" from="1500.0" to="2000.0"/>
+            <range key="from_2000_px" from="2000.0"/>
+          </ranges>
+        </aggregate>
+        <aggregate id="asset_height_agg" type="range" parameter="picture:info/height">
+          <field schema="assets_search" name="asset_height_agg"/>
+          <ranges>
+            <range key="to_500_px" to="500.0"/>
+            <range key="from_500_to_1500_px" from="500.0" to="1500.0"/>
+            <range key="from_1500_to_2000_px" from="1500.0" to="2000.0"/>
+            <range key="from_2000_px" from="2000.0"/>
+          </ranges>
+        </aggregate>
+        <aggregate id="color_profile_agg" type="terms" parameter="picture:info/colorSpace">
+          <field schema="assets_search" name="color_profile_agg"/>
+        </aggregate>
+        <aggregate id="color_depth_agg" type="terms" parameter="picture:info/depth">
+          <field schema="assets_search" name="color_depth_agg"/>
+        </aggregate>
+        <aggregate id="video_duration_agg" type="range" parameter="vid:info/duration">
+          <field schema="assets_search" name="video_duration_agg"/>
+          <ranges>
+            <range key="to_30_s" to="30.0"/>
+            <range key="from_30_to_180_s" from="30.0" to="180.0"/>
+            <range key="from_180_to_600_s" from="180.0" to="600.0"/>
+            <range key="from_600_to_1800_s" from="600.0" to="1800.0"/>
+            <range key="from_1800_s" from="1800.0"/>
+          </ranges>
+        </aggregate>
+      </aggregates>
+      <pageSize>20</pageSize>
+    </genericPageProvider>
+
+  </extension>
+
+</component>
