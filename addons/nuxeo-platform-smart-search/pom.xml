@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-addons-parent</artifactId>
+    <version>8.1-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-smart-search-parent</artifactId>
+  <name>Nuxeo Platform Smart Search Parent</name>
+  <description>Nuxeo Platform Smart Search Parent</description>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-platform-smart-query-api</module>
+    <module>nuxeo-platform-smart-query-jsf</module>
+    <module>nuxeo-platform-smart-folder-core</module>
+    <module>nuxeo-platform-smart-folder-jsf</module>
+  </modules>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-platform-smart-search.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-platform-smart-search.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-platform-smart-search</url>
+  </scm>
+
+</project>
