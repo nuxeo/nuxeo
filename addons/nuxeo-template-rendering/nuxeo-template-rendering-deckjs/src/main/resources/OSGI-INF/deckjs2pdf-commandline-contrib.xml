@@ -1,0 +1,15 @@
+<component name="org.nuxeo.template.deckjs.deckjs2pdf.commandline">
+
+  <extension
+    target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    point="command">
+
+    <command name="phantomjs" enabled="true">
+      <commandLine>phantomjs</commandLine>
+      <parameterString> #{jsFilePath} #{inFilePath} #{outFilePath}</parameterString>
+      <installationDirective>You need to install phantomJs</installationDirective>
+    </command>
+
+  </extension>
+
+</component>

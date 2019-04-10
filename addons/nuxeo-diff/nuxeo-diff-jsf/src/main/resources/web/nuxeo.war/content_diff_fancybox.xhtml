@@ -1,0 +1,15 @@
+<ui:composition template="/pages/popup_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{nxd:titleOrId(currentDocument)}"/>
+  </ui:define>
+
+  <ui:define name="body">
+    <ui:include src="/incl/diff/content_diff.xhtml"/>
+  </ui:define>
+
+</ui:composition>
