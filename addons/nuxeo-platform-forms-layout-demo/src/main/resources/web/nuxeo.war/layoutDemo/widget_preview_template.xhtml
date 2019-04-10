@@ -1,0 +1,160 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<c:if test="#{not currentWidgetType.previewEnabled}">
+  Preview is not enabled for this widget type.
+</c:if>
+
+<c:if test="#{currentWidgetType.previewEnabled}">
+
+<a4j:log />
+  <div class="tabsBar subtabsBar">
+
+    <ul>
+      <li class="#{nxu:test(empty layoutDemoCurrentSubTabId, 'selected', '')}">
+        <a href="#{baseURL}#{currentWidgetType.url}?tabId=preview">View mode</a>
+      </li>
+      <li class="#{nxu:test(layoutDemoCurrentSubTabId == 'edit_mode', 'selected', '')}">
+        <a href="#{baseURL}#{currentWidgetType.url}?tabId=preview&amp;subTabId=edit_mode">Edit mode</a>
+      </li>
+    </ul>
+  </div>
+  <div style="clear:both"></div>
+  <div class="tabsContent">
+
+    <c:if test="#{empty layoutDemoCurrentSubTabId}">
+
+      <a4j:region>
+        <table class="dataOutput">
+          <thead>
+            <tr>
+              <th>
+                Properties
+              </th>
+              <th>
+                Preview
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td width="50%" valign="top">
+                <a4j:form id="layoutDemoViewPreviewForm"
+                  ajaxSubmit="true">
+                  <nxl:layout value="#{layoutDemoDocument}"
+                    mode="edit"
+                    name="#{currentWidgetType.demoLayouts[0].name}" />
+                  <nxl:layout name="layout_demo_widget_common_settings"
+                    mode="edit" value="#{viewPreviewLayoutDef}" />
+                  <c:forEach var="layoutDef"
+                    items="#{currentWidgetTypeConf.getPropertyLayouts('view', 'any')}">
+                    <nxl:layout definition="#{layoutDef}" mode="edit"
+                      value="#{viewPreviewLayoutDef.properties}"
+                      template="/layouts/layout_default_template.xhtml" />
+                  </c:forEach>
+                  <p class="buttonsGadget">
+                    <a4j:commandButton value="submit"
+                      styleClass="button"
+                      id="#{demoLayout.name}_edit_form_submitButton"
+                      reRender="layoutDemoViewPreviewForm, layoutDemoViewPreview">
+                      <nxu:actionListenerMethod
+                        value="#{layoutDemoActions.setShowViewPreview(true)}" /> 
+                    </a4j:commandButton>
+                    <a4j:status>
+                      <f:facet name="start">
+                        <h:graphicImage value="/img/standart_waiter.gif" />
+                      </f:facet>
+                    </a4j:status>
+                  </p>
+                </a4j:form>
+              </td>
+              <td width="50%" valign="top">
+                <a4j:outputPanel id="layoutDemoViewPreview">
+                  <c:if test="#{layoutDemoActions.showViewPreview}">
+                    <nxl:layout
+                      definition="#{layoutDemoActions.getLayoutDefinition(viewPreviewLayoutDef)}"
+                      value="#{layoutDemoDocument}" mode="view"
+                      template="/layouts/layout_default_template.xhtml" />
+                  </c:if>
+                </a4j:outputPanel>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </a4j:region>
+
+    </c:if>
+
+    <c:if test="#{layoutDemoCurrentSubTabId == 'edit_mode'}">
+
+      <a4j:region>
+        <table class="dataOutput">
+          <thead>
+            <tr>
+              <th>
+                Properties
+              </th>
+              <th>
+                Preview
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td width="50%" valign="top">
+                <a4j:form id="layoutDemoEditPreviewForm"
+                  ajaxSubmit="true">
+                  <nxl:layout value="#{layoutDemoDocument}"
+                    mode="edit"
+                    name="#{currentWidgetType.demoLayouts[0].name}" />
+                  <nxl:layout name="layout_demo_widget_common_settings"
+                    mode="edit" value="#{editPreviewLayoutDef}" />
+                  <c:forEach var="layoutDef"
+                    items="#{currentWidgetTypeConf.getPropertyLayouts('edit', 'any')}">
+                    <nxl:layout definition="#{layoutDef}" mode="edit"
+                      value="#{editPreviewLayoutDef.properties}"
+                      template="/layouts/layout_default_template.xhtml" />
+                  </c:forEach>
+                  <p class="buttonsGadget">
+                    <a4j:commandButton value="submit"
+                      styleClass="button"
+                      id="#{demoLayout.name}_edit_form_submitButton"
+                      reRender="layoutDemoEditPreviewForm, layoutDemoEditPreview">
+                      <nxu:actionListenerMethod
+                        value="#{layoutDemoActions.setShowEditPreview(true)}" /> 
+                    </a4j:commandButton>
+                    <a4j:status>
+                      <f:facet name="start">
+                        <h:graphicImage value="/img/standart_waiter.gif" />
+                      </f:facet>
+                    </a4j:status>
+                  </p>
+                </a4j:form>
+              </td>
+              <td width="50%" valign="top">
+                <a4j:outputPanel id="layoutDemoEditPreview">
+                  <c:if test="#{layoutDemoActions.showEditPreview}">
+                    <nxl:layout
+                      definition="#{layoutDemoActions.getLayoutDefinition(editPreviewLayoutDef)}"
+                      value="#{layoutDemoDocument}" mode="edit"
+                      template="/layouts/layout_default_template.xhtml" />
+                  </c:if>
+                </a4j:outputPanel>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </a4j:region>
+
+    </c:if>
+
+  </div>
+
+</c:if>
+
+</div>
