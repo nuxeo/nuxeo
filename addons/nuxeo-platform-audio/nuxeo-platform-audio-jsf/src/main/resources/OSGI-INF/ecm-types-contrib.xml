@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.audio.ecm.types">
+
+  <require>org.nuxeo.ecm.platform.types</require>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <type id="Audio">
+      <label>Audio</label>
+      <default-view>view_documents</default-view>
+      <icon>/icons/audio.png</icon>
+      <bigIcon>/icons/audio_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>Audio.description</description>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>audio_file</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>audio_file</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>heading</layout>
+        <layout>file</layout>
+      </layouts>
+    </type>
+
+    <type id="Workspace">
+      <subtypes>
+        <type>Audio</type>
+      </subtypes>
+    </type>
+
+    <type id="Folder">
+      <subtypes>
+        <type>Audio</type>
+      </subtypes>
+    </type>
+
+    <type id="OrderedFolder">
+      <subtypes>
+        <type>Audio</type>
+      </subtypes>
+    </type>
+  </extension>
+
+</component>
