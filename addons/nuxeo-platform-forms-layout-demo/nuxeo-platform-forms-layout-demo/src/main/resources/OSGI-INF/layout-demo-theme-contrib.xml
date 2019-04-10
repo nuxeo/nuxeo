@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.theme.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+
+    <resource name="layoutDemo.css">
+      <uri>/layoutDemo/style/layoutDemo.css</uri>
+    </resource>
+    <resource name="layoutDemo.js">
+      <uri>/layoutDemo/scripts/layoutDemo.js</uri>
+    </resource>
+    <resource name="prettify.css">
+      <uri>/layoutDemo/style/prettify.css</uri>
+    </resource>
+    <resource name="prettify.js">
+      <uri>/layoutDemo/scripts/prettify.js</uri>
+    </resource>
+    <resource name="layoutDemo-ga.js">
+      <uri>/layoutDemo/scripts/ga.js</uri>
+    </resource>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
+
+    <bundle name="layoutDemo">
+      <resources>
+        <resource>layoutDemo.css</resource>
+        <resource>layoutDemo.js</resource>
+        <resource>prettify.css</resource>
+        <resource>prettify.js</resource>
+        <resource>layoutDemo-ga.js</resource>
+      </resources>
+    </bundle>
+
+  </extension>
+
+  <!-- Register mapping between theme pages and resources -->
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <page name="layoutDemo/default" charset="utf-8">
+      <defaultFlavor>default</defaultFlavor>
+      <resources>
+        <bundle>nuxeo_includes</bundle>
+        <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_sassCss</bundle>
+        <bundle>layoutDemo</bundle>
+      </resources>
+    </page>
+
+    <themePage name="layoutDemo/frame" charset="utf-8">
+      <defaultFlavor>default</defaultFlavor>
+      <resources>
+        <bundle>nuxeo_includes</bundle>
+        <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_sassCss</bundle>
+      </resources>
+    </themePage>
+
+  </extension>
+
+</component>

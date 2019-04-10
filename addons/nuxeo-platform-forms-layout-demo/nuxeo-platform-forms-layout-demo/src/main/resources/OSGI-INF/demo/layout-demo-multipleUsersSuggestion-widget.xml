@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.multipleUsersSuggestion.contrib">
+
+  <require>org.nuxeo.ecm.platform.forms.layoutDemo.contrib</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="multipleUsersSuggestionLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>users</widget>
+        </row>
+      </rows>
+
+      <widget name="users" type="multipleUsersSuggestion">
+        <labels>
+          <label mode="any">Users or Groups</label>
+        </labels>
+        <fields>
+          <field>lds:select_users_multi_fields</field>
+        </fields>
+        <properties mode="any">
+          <property name="minChars">3</property>
+          <property name="hideHelpLabel">true</property>
+          <property name="placeholder">Choose one or more user/group</property>
+        </properties>
+        <controls mode="any">
+          <!-- enable ajax submit on change/click/select on demo application -->
+          <control name="supportInsideInputWidgetEffects">true</control>
+        </controls>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>

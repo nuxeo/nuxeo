@@ -1,0 +1,49 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <div>
+    <nxl:layout name="layout_demo_reference_general_information" mode="view"
+      value="#{currentWidgetTypeDef}"
+      template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
+      title="#{messages['label.layoutDemo.reference.information']}" />
+  </div>
+
+  <div>
+    <c:forEach var="layoutDef" items="#{currentWidgetTypeDef.configuration.getPropertyLayouts('any', null)}">
+      <nxl:layout definition="#{layoutDef}" mode="view_reference"
+        value="#{viewPreviewLayoutDef.properties}"
+        template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
+        showLayoutDefinition="true"
+        title="#{messages['label.layoutDemo.reference.anyProperties']}"
+        defaultPropertyValues="#{currentWidgetTypeDef.configuration.getDefaultPropertyValues('any')}" />
+    </c:forEach>
+  </div>
+
+  <div>
+    <c:forEach var="layoutDef" items="#{currentWidgetTypeDef.configuration.getPropertyLayouts('view', null)}">
+      <nxl:layout definition="#{layoutDef}" mode="view_reference"
+        value="#{viewPreviewLayoutDef.properties}"
+        template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
+        showLayoutDefinition="true"
+        title="#{messages['label.layoutDemo.reference.viewProperties']}"
+        defaultPropertyValues="#{currentWidgetTypeDef.configuration.getDefaultPropertyValues('view')}" />
+    </c:forEach>
+  </div>
+
+  <div>
+    <c:forEach var="layoutDef" items="#{currentWidgetTypeDef.configuration.getPropertyLayouts('edit', null)}">
+      <nxl:layout definition="#{layoutDef}" mode="view_reference"
+        value="#{viewPreviewLayoutDef.properties}"
+        template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
+        showLayoutDefinition="true"
+        title="#{messages['label.layoutDemo.reference.editProperties']}"
+        defaultPropertyValues="#{currentWidgetTypeDef.configuration.getDefaultPropertyValues('edit')}" />
+    </c:forEach>
+  </div>
+
+</div>
