@@ -1,0 +1,11 @@
+/*
+Styles for Videos in Summary view, displayed in the Document Management view
+author: lkemen@nuxeo.com
+*/
+
+.videoConversionRow { height: 2.5em }
+.videoConversionRow:hover { background-color: "color.major.light (__FLAVOR__ background)" }
+.storyboard_block { text-align: center }
+.storyboard_block h3 { text-align: left }
+
+.vjs-flash-fallback, .video-js-box { margin: 0 auto }
