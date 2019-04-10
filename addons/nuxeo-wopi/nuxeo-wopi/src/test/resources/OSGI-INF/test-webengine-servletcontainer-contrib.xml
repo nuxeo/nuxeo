@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.wopi.webengine.servlet.container.test">
+
+  <require>org.nuxeo.ecm.webengine.test.WebEngineComponentSetup</require>
+
+  <extension target="org.nuxeo.runtime.server" point="servlet">
+    <servlet context="/">
+      <servlet-name>Nuxeo WOPI JAXRS Servlet</servlet-name>
+      <servlet-class>org.nuxeo.ecm.webengine.app.jersey.WebEngineServlet</servlet-class>
+      <url-pattern>/site/wopi/*</url-pattern>
+      <init-param>
+        <param-name>application.name</param-name>
+        <param-value>wopi</param-value>
+      </init-param>
+    </servlet>
+
+  </extension>
+
+</component>

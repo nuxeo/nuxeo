@@ -1,0 +1,157 @@
+<!--
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+`nuxeo-assets-search-form`
+@group Nuxeo UI
+@element nuxeo-assets-search-form
+-->
+<dom-module id="nuxeo-assets-search-form">
+  <template>
+    <style>
+      *[role=widget] {
+        margin-bottom: 16px;
+      }
+
+      label {
+        @apply --nuxeo-label;
+      }
+    </style>
+
+    <!-- Full Text -->
+    <nuxeo-input role="widget"
+                 id="searchInput"
+                 label="[[i18n('assetsSearch.fullText')]]"
+                 value="{{searchTerm}}"
+                 type="search"
+                 placeholder="[[i18n('assetsSearch.fullText.placeholder')]]"
+                 autofocus
+                 on-keydown="_checkForEnter">
+    </nuxeo-input>
+
+    <!-- Asset type -->
+    <div role="widget">
+      <label>[[i18n('assetsSearch.assetType')]]</label>
+      <nuxeo-checkbox-aggregation
+          data="[[aggregations.system_primaryType_agg]]"
+          value="{{params.system_primaryType_agg}}">
+      </nuxeo-checkbox-aggregation>
+    </div>
+
+    <!-- Asset format -->
+    <div role="widget">
+      <label>[[i18n('assetsSearch.assetFormat')]]</label>
+      <nuxeo-checkbox-aggregation
+          data="[[aggregations.system_mimetype_agg]]"
+          value="{{params.system_mimetype_agg}}">
+      </nuxeo-checkbox-aggregation>
+    </div>
+
+    <!-- Asset Width -->
+    <div role="widget">
+      <label>[[i18n('assetsSearch.assetWidth')]]</label>
+      <nuxeo-checkbox-aggregation
+          data="[[aggregations.asset_width_agg]]"
+          value="{{params.asset_width_agg}}">
+      </nuxeo-checkbox-aggregation>
+    </div>
+
+    <!-- Asset Height -->
+    <div role="widget">
+      <label>[[i18n('assetsSearch.assetHeight')]]</label>
+      <nuxeo-checkbox-aggregation
+          data="[[aggregations.asset_height_agg]]"
+          value="{{params.asset_height_agg}}">
+      </nuxeo-checkbox-aggregation>
+    </div>
+
+    <!-- Color Profile -->
+    <div role="widget">
+      <label>[[i18n('assetsSearch.colorProfile')]]</label>
+      <nuxeo-checkbox-aggregation
+          data="[[aggregations.color_profile_agg]]"
+          value="{{params.color_profile_agg}}">
+      </nuxeo-checkbox-aggregation>
+    </div>
+
+    <!-- Color Depth -->
+    <div role="widget">
+      <label>[[i18n('assetsSearch.colorDepth')]]</label>
+      <nuxeo-checkbox-aggregation
+          data="[[aggregations.color_depth_agg]]"
+          value="{{params.color_depth_agg}}">
+      </nuxeo-checkbox-aggregation>
+    </div>
+
+    <!-- Video Duration -->
+    <div role="widget">
+      <label>[[i18n('assetsSearch.videoDuration')]]</label>
+      <nuxeo-checkbox-aggregation
+          data="[[aggregations.video_duration_agg]]"
+          value="{{params.video_duration_agg}}">
+      </nuxeo-checkbox-aggregation>
+    </div>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'nuxeo-assets-search-form',
+      behaviors: [Nuxeo.LayoutBehavior, Nuxeo.I18nBehavior],
+      properties: {
+        params: {
+          type: Object,
+          value: {},
+          notify: true
+        },
+        aggregations: {
+          type: Object,
+          value: {},
+          notify: true
+        },
+        searchTerm: {
+          type: String,
+          notify: true
+        }
+      },
+
+      clear: function() {
+        this.searchTerm = '';
+        this._search();
+      },
+
+      _search: function() {
+        if (this.searchTerm) {
+          this.set('params.ecm_fulltext', this.formatFulltext(this.searchTerm));
+        } else {
+          if (this.params.ecm_fulltext) {
+            this.set('params.ecm_fulltext', '');
+            // dirty but needed, the above line for
+            // ecm_fulltext removal being observed
+            delete this.params.ecm_fulltext;
+          }
+        }
+      },
+
+      _checkForEnter: function(e) {
+        if (e.keyCode === 13) {
+          this._search();
+        }
+      }
+
+    });
+  </script>
+</dom-module>
