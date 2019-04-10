@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Shibboleth Groups Web
+Bundle-SymbolicName: org.nuxeo.ecm.platform.shibboleth.groups.web;singleton:=true
+Bundle-Version: ${eclipseVersion}-r${buildNumber}
+Nuxeo-Component: OSGI-INF/shibboleth-groups-layout-contrib.xml,
+ OSGI-INF/shibboleth-groups-service-contrib.xml

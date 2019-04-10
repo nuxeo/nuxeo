@@ -1,0 +1,67 @@
+<f:subview
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{layout.id}">
+
+  <ui:decorate template="/widgets/incl/foldable_box_template.xhtml">
+    <ui:param name="foldable" value="true" />
+    <ui:param name="foldedByDefault" value="#{layout.properties.foldedByDefault}" />
+    <ui:define name="foldable_box_header_content">
+        <h:outputText value="#{layoutProperty_title}" />
+    </ui:define>
+    <ui:define name="foldable_box_content">
+      <table class="dataOutput">
+        <tbody>
+          <nxl:layoutRow>
+            <nxl:layoutRowWidget>
+              <nxu:set var="widgetPropFieldName"
+                value="#{nxl:fieldDefinitionsAsString(widget.fieldDefinitions)}"
+                cache="true">
+              <tr class="#{nxu:test(layoutRowIndex%2 ==0, 'dataRowEven', 'dataRowOdd')}">
+                <td class="labelColumn">
+                  <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                    <ui:param name="isEditMode" value="true" />
+                    <ui:param name="hideHelp" value="#{layout.properties.showLayoutDefinition}" />
+                  </ui:include>
+                </td>
+                <c:if test="#{layout.properties.showLayoutDefinition}">
+                  <td class="fieldColumn">
+                    <h:outputText value="#{widgetPropFieldName}" />
+                  </td>
+                  <td class="fieldColumn">
+                    <c:if test="#{layout.properties.defaultPropertyValues.containsKey(widgetPropFieldName)}">
+                      <nxu:set var="defaultValue"
+                        value="#{layout.properties.defaultPropertyValues[widgetPropFieldName]}"
+                        cache="true">
+                        <h:outputText value="#{messages['label.layoutDemo.reference.defaultValue']} #{defaultValue}" />
+                      </nxu:set>
+                    </c:if>
+                  </td>
+                  <td class="fieldColumn">
+                    <nxu:set var="widgetHelpLabel" value="#{widget.helpLabel}"
+                      resolveTwice="false">
+                      #{widgetHelpLabel}
+                    </nxu:set>
+                  </td>
+                </c:if>
+                <c:if test="#{not layout.properties.showLayoutDefinition}">
+                  <td class="fieldColumn">
+                    <nxl:widget widget="#{widget}" value="#{value}" />
+                  </td>
+                </c:if>
+              </tr>
+              </nxu:set>
+            </nxl:layoutRowWidget>
+          </nxl:layoutRow>
+        </tbody>
+      </table>
+    </ui:define>
+  </ui:decorate>
+
+</f:subview>

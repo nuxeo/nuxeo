@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.diff.service.DiffDisplayService.contrib.test">
+
+  <require>
+    org.nuxeo.ecm.diff.service.DiffDisplayService.contrib
+  </require>
+
+  <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
+    point="diffDefaultDisplay">
+
+    <diffExcludedFields schema="dublincore">
+      <fields>
+        <field name="subjects" />
+        <field name="modified" />
+      </fields>
+    </diffExcludedFields>
+
+    <diffComplexField schema="complextypes" name="complex">
+      <includedItems>
+        <item name="dateItem" />
+        <item name="stringItem" />
+      </includedItems>
+    </diffComplexField>
+
+    <diffComplexField schema="complextypes" name="complexList">
+      <excludedItems>
+        <item name="stringItem" />
+        <item name="dateItem" />
+      </excludedItems>
+    </diffComplexField>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
+    point="diffDisplay">
+
+    <!-- Override File diffDisplay -->
+    <diffDisplay type="File">
+      <diffBlocks>
+        <diffBlock name="files" />
+        <diffBlock name="testNoFields" />
+      </diffBlocks>
+    </diffDisplay>
+
+    <!-- SampleType diffDisplay -->
+    <diffDisplay type="SampleType">
+      <diffBlocks>
+        <diffBlock name="dublincore" />
+        <diffBlock name="files" />
+        <diffBlock name="simpleTypes" />
+        <diffBlock name="complexTypesAndListOfLists" />
+      </diffBlocks>
+    </diffDisplay>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
+    point="diffBlock">
+
+    <!-- No fields diffBlock -->
+    <diffBlock name="testNoFields" />
+
+    <!-- Override dublincore diffBlock -->
+    <diffBlock name="dublincore">
+      <properties mode="any">
+        <property name="label">label.diffBlock.dublincore</property>
+      </properties>
+      <fields>
+        <field schema="dublincore" name="description" />
+        <field schema="dublincore" name="created" />
+        <field schema="dublincore" name="creator" />
+        <field schema="dublincore" name="modified" />
+        <field schema="dublincore" name="lastContributor" />
+        <field schema="dublincore" name="contributors" />
+        <field schema="dublincore" name="subjects" />
+      </fields>
+      <templates>
+        <template mode="any">/layouts/layout_diff_template.xhtml
+        </template>
+      </templates>
+    </diffBlock>
+
+    <!-- simpleTypes diffBlock -->
+    <diffBlock name="simpleTypes">
+      <properties mode="any">
+        <property name="label">label.diffBlock.simpleTypes</property>
+      </properties>
+      <fields>
+        <field schema="simpletypes" name="string" />
+        <field schema="simpletypes" name="textarea"
+          displayContentDiffLinks="true" />
+        <field schema="simpletypes" name="boolean" />
+        <field schema="simpletypes" name="integer" />
+        <field schema="simpletypes" name="date" />
+        <field schema="simpletypes" name="htmlText"
+          displayContentDiffLinks="true" />
+        <field schema="simpletypes" name="multivalued" />
+      </fields>
+      <templates>
+        <template mode="any">/layouts/layout_diff_template.xhtml
+        </template>
+      </templates>
+    </diffBlock>
+
+    <!-- complexTypesAndListOfLists diffBlock -->
+    <diffBlock name="complexTypesAndListOfLists">
+      <properties mode="any">
+        <property name="label">label.diffBlock.complexTypesAndListOfLists
+        </property>
+      </properties>
+      <fields>
+        <field schema="complextypes" name="complex">
+          <items>
+            <item name="stringItem" displayContentDiffLinks="true" />
+            <item name="integerItem" />
+            <item name="dateItem" />
+            <item name="booleanItem" />
+          </items>
+        </field>
+        <field schema="complextypes" name="complexList">
+          <items>
+            <item name="stringItem" displayContentDiffLinks="true" />
+            <item name="dateItem" />
+            <item name="integerItem" />
+          </items>
+        </field>
+        <field schema="listoflists" name="listOfLists" />
+      </fields>
+      <templates>
+        <template mode="any">/layouts/layout_diff_template.xhtml
+        </template>
+      </templates>
+    </diffBlock>
+
+  </extension>
+
+</component>
