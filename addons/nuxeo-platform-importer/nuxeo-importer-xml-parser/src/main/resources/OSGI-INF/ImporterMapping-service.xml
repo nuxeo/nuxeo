@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent" version="1.0">
+
+  <implementation class="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent" />
+  <service>
+      <provide interface="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterService" />
+  </service>
+
+  <extension-point name="documentMapping">
+    <documentation>
+      Define a mapping that correspond to the creation of a new DocumentModel in the repository.
+
+      The mapping is defined by :
+      <ul>
+        <li>tagName attribute : name of the target tag to select in the input XMLdocument (could also be an Xpath expression)</li>
+        <li>docType subtag : text node should contain the doctype that should be created</li>
+        <li>name subtag : text node should contain an expression giving the name of the document to create</li>
+        <li>parent subtag : text node should contain an expression giving the parent of the document to create</li>
+      </ul>
+
+      Example :
+      <code>
+        <docConfig tagName="document">
+          <docType>File</docType>
+          <name>@nom</name>
+          <parent>..</parent>
+        </docConfig>
+      </code>
+
+      name and parent expression can be :
+      <ul>
+        <li>xpath expression</li>
+        <li>MVEL expression encapsulated in #{ } </li>
+      </ul>
+
+      If parent expression is resolved to an xpath element, the system will try to find the matching document and use it as parent.
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.importer.xml.parser.DocConfigDescriptor" />
+  </extension-point>
+
+  <extension-point name="attributeMapping">
+    <documentation>
+      Define a mapping that correspond to attributes that should be mapped to the last created DocumentModel.
+
+      The mapping is defined by :
+      <ul>
+        <li>tagName attribute : name of the target tag to select in the input XMLdocument (could also be an Xpath expression)</li>
+        <li>docProperty attribute : xpath of the target Nuxeo property</li>
+        <li>xmlPath attribute : expression to extract the value from the XML input Document</li>
+        <li>mapping ssubTag : expression to extract the value from the XML input Document, used in for complex types that need multiple mappings</li>
+      </ul>
+
+      Example :
+      <code>
+
+        <attributeConfig tagName="dossierActe" docProperty="dc:source" xmlPath="#{'Seance ' + currentDocument.name}"/>
+
+        <attributeConfig tagName="document" docProperty="file:content">
+            <mapping documentProperty="filename">@nom</mapping>
+            <mapping documentProperty="mimetype">mimetype/text()</mapping>
+            <mapping documentProperty="content">@nom</mapping>
+        </attributeConfig>
+
+      </code>
+
+      Expression can be :
+      <ul>
+        <li>xpath expression</li>
+        <li>MVEL expression encapsulated in #{ } </li>
+      </ul>
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.importer.xml.parser.AttributeConfigDescriptor" />
+  </extension-point>
+
+</component>
