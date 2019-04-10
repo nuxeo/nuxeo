@@ -1,0 +1,15 @@
+POST /allnew/_vti_bin/_vti_aut/author.dll
+MIME-Version: 1.0
+User-Agent: client_name/version
+Host: host_name
+Accept: auth/sicily
+Authorization: Basic.cm9iZjpUS3NvKjUw
+Content-Length: 64
+Content-Type: application/x-www-form-urlencoded
+X-Vermeer-Content-Type: application/x-www-form-urlencoded
+
+method=list+documents&service%5fname=%2fallnew
+&listHiddenDocs=false&listExplorerDocs=false&listRecurse=false&listFiles=true
+&listFolders=true&listLinkInfo=true&listIncludeParent=true&listDerived=false
+&listBorders=false&listChildWebs=true&initialUrl=&platform=WinI386
+&folderList=%5b%3bTW%7c09+Nov+1998+17%3a03%3a25+%2d0000%5d
