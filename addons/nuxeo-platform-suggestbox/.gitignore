@@ -1,0 +1,7 @@
+target
+bin
+.project
+.classpath
+.settings
+pojo-bin
+seam-bin

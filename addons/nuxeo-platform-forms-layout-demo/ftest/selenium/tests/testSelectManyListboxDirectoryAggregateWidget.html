@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
+<title>testSelectManyCheckboxDirectoryAggregateWidget</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">testSelectManyCheckboxDirectoryAggregateWidget</td></tr>
+</thead><tbody>
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo/selectManyListboxDirectoryAggregateWidget</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextNotPresent</td>
+	<td>ERROR</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//form[@id='selectManyListboxDirectoryAggregate_edit_form']//table//tr/td[2]</td>
+	<td>Eric Cartman (10) Stan Marsh (5) Kyle Broflovski (2)</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//form[@id='selectManyListboxDirectoryAggregateLocalized_edit_form']//table//tr/td[2]</td>
+	<td>Australia/Oceania (10) Antarctica (5) Europe (2)</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//form[@id='selectManyListboxDirectoryAggregateL10N_edit_form']//table//tr/td[2]</td>
+	<td>Australia (10) Antarctica (5) France (2)</td>
+</tr>
+</tbody></table>
+</body>
+</html>
