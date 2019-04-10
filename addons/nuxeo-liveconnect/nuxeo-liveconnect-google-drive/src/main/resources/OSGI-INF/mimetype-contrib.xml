@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.liveconnect.google.drive.mimetypes">
+  <extension
+          target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService"
+          point="mimetype">
+
+    <!-- https://developers.google.com/drive/web/mime-types -->
+    <mimetype normalized="application/vnd.google-apps" binary="false" iconPath="google_drive.png">
+      <mimetypes>
+        <mimetype>application/vnd.google-apps.document</mimetype>
+        <mimetype>application/vnd.google-apps.audio</mimetype>
+        <mimetype>application/vnd.google-apps.file</mimetype>
+        <mimetype>application/vnd.google-apps.folder</mimetype>
+        <mimetype>application/vnd.google-apps.form</mimetype>
+        <mimetype>application/vnd.google-apps.fusiontable</mimetype>
+        <mimetype>application/vnd.google-apps.photo</mimetype>
+        <mimetype>application/vnd.google-apps.presentation</mimetype>
+        <mimetype>application/vnd.google-apps.script</mimetype>
+        <mimetype>application/vnd.google-apps.sites</mimetype>
+        <mimetype>application/vnd.google-apps.spreadsheet</mimetype>
+        <mimetype>application/vnd.google-apps.unknown</mimetype>
+        <mimetype>application/vnd.google-apps.video</mimetype>
+      </mimetypes>
+    </mimetype>
+
+  </extension>
+</component>

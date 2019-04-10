@@ -1,0 +1,85 @@
+<f:subview
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{layout.id}">
+
+  <div>
+    <span class="labelColumn displayIB">
+      <h:outputText value="#{messages[label.wizard.creationMode]}" />
+    </span>
+    <span class="modeSelectorContainer">
+       <input type="radio" class="modeSelector" name="modeSelector" value="preset" checked="true" /> #{messages["label.wizard.simpleMode"]}
+    </span>
+    <span class="modeSelectorContainer">
+       <input type="radio" class="modeSelector" name="modeSelector" value="advanced"/> #{messages["label.wizard.advancedMode"]}
+    </span>
+  </div>
+
+  <div id="#{layout.id}_wizard">
+
+  <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
+
+  <script>
+     var wizard_params = { "mapping" : #{layoutProperty_wizardMapping},
+                           "advancedLayout" :  "#{layoutProperty_wizardAdvancedLayout}",
+                           "presetLayout"  : "#{layout.id}_wizard",
+                           "form" : "document_create"};
+  </script>
+  <script src="#{contextPath}/scripts/formHelper.js"></script>
+  <script src="#{contextPath}/scripts/template-wizard.js"></script>
+
+  <table class="dataInput">
+    <tbody>
+
+      <nxl:layoutRow>
+        <tr>
+          <nxl:layoutRowWidget>
+            <c:choose>
+              <c:when test="#{widget.translated}">
+                <td class="labelColumn">
+                  <c:if test="#{empty widget.helpLabel}">
+                    <h:outputText value="#{messages[widget.label]}"
+                      styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                  </c:if>
+                  <c:if test="#{!empty widget.helpLabel}">
+                    <div class="widgetHelpLabel">
+                      <h:outputText value="#{messages[widget.label]}"
+                        title="#{messages[widget.helpLabel]}"
+                        styleClass="tipsyShow #{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                    </div>
+                  </c:if>
+                </td>
+              </c:when>
+              <c:otherwise>
+                <td class="labelColumn">
+                  <c:if test="#{empty widget.helpLabel}">
+                    <h:outputText value="#{widget.label}"
+                      styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                  </c:if>
+                  <c:if test="#{!empty widget.helpLabel}">
+                    <div class="widgetHelpLabel">
+                      <h:outputText value="#{widget.label}"
+                      title="#{widget.helpLabel}"
+                        styleClass="tipsyShow #{nxu:test(widget.required and isEditMode, 'required', '')}" />
+                    </div>
+                  </c:if>
+                </td>
+              </c:otherwise>
+            </c:choose>
+            <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
+              <nxl:widget widget="#{widget}" value="#{value}" />
+            </td>
+          </nxl:layoutRowWidget>
+        </tr>
+      </nxl:layoutRow>
+
+    </tbody>
+  </table>
+
+</div>
+</f:subview>
