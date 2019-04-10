@@ -1,0 +1,41 @@
+<project name="selenium-tests" xmlns:nx="urn:nuxeo-build"
+  xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="suites" value="suite" />
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+
+  <!-- override default target to add layout-demo specific conf -->
+  <target name="prepare-server">
+    <antcall target="download" />
+    <antcall target="unzip-local" />
+    <antcall target="nuxeo-conf" />
+    <antcall target="set-layout-demo-conf" />
+    <antcall target="fix-max-waits" />
+    <antcall target="activate-wizard-preset" />
+    <antcall target="mp-install" />
+  </target>
+
+  <!-- remove single datasource conf (see NXP-10308) -->
+  <target name="set-layout-demo-conf" depends="_init">
+    <echo message="Removing single datasource conf" />
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.db.singleDataSource" />
+      <param name="value" value="" />
+    </antcall>
+  </target>
+
+  <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat,prepare-jboss"
+    description="prepare all ressources for test">
+    <copy todir="${nuxeo.nxserver}/bundles/">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-forms-layout-demo:${maven.project.version}:jar" />
+    </copy>
+  </target>
+
+</project>

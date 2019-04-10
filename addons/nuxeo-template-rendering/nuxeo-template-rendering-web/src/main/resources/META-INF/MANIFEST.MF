@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Document template Web UI
+Bundle-SymbolicName: org.nuxeo.template.manager.web;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/url-codec-contrib.xml,
+ OSGI-INF/types-contrib.xml,
+ OSGI-INF/layouts-contrib.xml,
+ OSGI-INF/layouts-summary-contrib.xml,
+ OSGI-INF/actions-contrib.xml,
+ OSGI-INF/content-view-contrib.xml,
+ OSGI-INF/theme-contrib.xml
+ 
