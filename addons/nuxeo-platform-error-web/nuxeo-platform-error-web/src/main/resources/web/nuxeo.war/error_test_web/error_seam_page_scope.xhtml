@@ -1,0 +1,52 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:s="http://jboss.com/products/seam/taglib">
+
+<title>Test seam page scope in Nuxeo</title>
+<body>
+
+  <h3>Test seam page scope in Nuxeo</h3>
+
+  <p>Seam page scope is currently broken in Nuxeo</p>
+
+  <h:messages globalOnly="true" />
+
+  <h:form>
+    <h:outputText value="Ajax (works fine):   " />
+    <a4j:outputPanel id="dummyPanel">
+      <h:outputText value="#{dummySeamBean.dummyBoolean}" />
+    </a4j:outputPanel>
+
+    <a4j:commandLink action="#{dummySeamBean.dummyAction}"
+      value="DoDummy" reRender="dummyPanel" />
+
+    <a4j:outputPanel id="dummyPanel2">
+      <h:outputText value="#{dummySeamBean.dummyBoolean}" />
+    </a4j:outputPanel>
+
+    <a4j:commandLink value="Refresh" reRender="dummyPanel2" />
+
+  </h:form>
+
+  <h:form>
+
+    <h:outputText value="Non ajax (broken):   " />
+    <h:outputText value="#{dummySeamBean.dummyBoolean}" />
+
+    <h:commandLink action="#{dummySeamBean.dummyAction}" value="DoDummy" />
+
+    <h:outputText value="#{dummySeamBean.dummyBoolean}" />
+
+    <h:commandLink action="error_seam_page_scope" value="Refresh" />
+
+  </h:form>
+
+  <a4j:log />
+
+
+</body>
+
+</html>
