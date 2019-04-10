@@ -1,0 +1,45 @@
+<component name="org.nuxeo.ecm.platform.routing.operation.chains"
+  version="1.0">
+  <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="chains">
+    <chain id="setDone">
+      <operation id="Document.Routing.Step.Done" />
+    </chain>
+    <chain id="simpleValidate">
+      <operation id="Document.Routing.Resume.Step" />
+    </chain>
+    <chain id="simpleRefuse">
+      <operation id="Document.Routing.Resume.Step" />
+    </chain>
+    <chain id="simpleUndo">
+      <operation id="Document.Routing.BackToReady" />
+    </chain>
+    <chain id="setNextStep">
+      <operation id="Update.NextStep.ConditionalFolder" />
+    </chain>
+    <chain id="decideNextStepAndSimpleValidate">
+      <operation id="Update.NextStep.ConditionalFolder">
+        <param type="string" name="nextStepPos">expr:Context['nextStepPos']
+        </param>
+      </operation>
+      <operation id="Document.Routing.Resume.Step" />
+    </chain>
+    <chain id="updateCommentsOnDoc">
+      <operation id="Document.Routing.UpdateCommentsInfoOnDocument" />
+    </chain>
+    <chain id="simpleChooseNextOption1AndDone">
+      <operation id="Update.NextStep.ConditionalFolder">
+        <param type="string" name="nextStepPos">1</param>
+      </operation>
+      <operation id="Document.Routing.Step.Done" />
+    </chain>
+    <chain id="simpleChooseNextOption2AndDone">
+      <operation id="Update.NextStep.ConditionalFolder">
+        <param type="string" name="nextStepPos">2</param>
+      </operation>
+      <operation id="Document.Routing.Step.Done" />
+    </chain>
+  </extension>
+
+</component>

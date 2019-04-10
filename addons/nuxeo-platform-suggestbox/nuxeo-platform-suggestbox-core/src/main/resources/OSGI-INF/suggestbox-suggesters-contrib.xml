@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.suggestbox.core.defaultSuggesters">
+
+  <extension
+    target="org.nuxeo.ecm.platform.suggestbox.service.SuggestionService"
+    point="suggesters">
+
+    <suggester name="documentLookupByTitle"
+      class="org.nuxeo.ecm.platform.suggestbox.service.suggesters.DocumentLookupSuggester">
+      <parameters>
+        <parameter name="providerName">DEFAULT_DOCUMENT_SUGGESTION</parameter>
+        <parameter name="highlightFields">dc:title.fulltext,ecm:binarytext,dc:description.fulltext,ecm:tag,note:note.fulltext,file:content.name</parameter>
+      </parameters>
+    </suggester>
+
+    <suggester name="searchByUsersAndGroups"
+      class="org.nuxeo.ecm.platform.suggestbox.service.suggesters.UserGroupLookupSuggester">
+      <parameters>
+        <parameter name="userSuggestionsLimit">5</parameter>
+        <parameter name="groupSuggestionsLimit">5</parameter>
+        <parameter name="searchFields">fsd:dc_creator</parameter>
+      </parameters>
+    </suggester>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.suggestbox.service.SuggestionService"
+    point="suggesterGroups">
+
+    <suggesterGroup name="searchbox">
+      <suggesters>
+        <suggesterName>documentLookupByTitle</suggesterName>
+        <suggesterName>searchByUsersAndGroups</suggesterName>
+      </suggesters>
+    </suggesterGroup>
+
+  </extension>
+
+</component>

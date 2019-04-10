@@ -1,0 +1,9 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Bundle-Name: Nuxeo Audit Storage Directory
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.audit.storage.directory;singleton=true
+Nuxeo-Component: OSGI-INF/directory-audit-storage-contrib.xml
