@@ -1,0 +1,92 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.nuxeo</groupId>
+  <artifactId>nuxeo-addons-list</artifactId>
+  <version>5.4.2-HF19</version>
+  <name>Nuxeo Addons list</name>
+  <packaging>pom</packaging>
+  <description>Nuxeo Addons list</description>
+
+  <scm>
+    <connection>scm:hg:https://hg.nuxeo.org/addons</connection>
+    <developerConnection>
+      scm:hg:https://hg.nuxeo.org/addons
+    </developerConnection>
+    <url>https://hg.nuxeo.org/addons</url>
+  </scm>
+
+  <modules>
+    <module>nuxeo-platform-lang-ext</module>
+    <module>nuxeo-chemistry</module>
+    <module>nuxeo-correspondence-marianne</module>
+    <module>nuxeo-core-binarymanager-sql</module>
+    <module>nuxeo-jboss-jca-configurator</module>
+    <module>nuxeo-http-client</module>
+    <module>nuxeo-platform-classification</module>
+    <module>nuxeo-platform-importer</module>
+    <module>nuxeo-platform-login</module>
+    <module>nuxeo-platform-document-routing</module>
+    <module>nuxeo-platform-faceted-search</module>
+    <module>nuxeo-platform-error-web</module>
+    <module>nuxeo-platform-forms-layout-demo</module>
+    <module>nuxeo-platform-smart-search</module>
+    <module>nuxeo-platform-sync</module>
+    <module>nuxeo-platform-audio</module>
+    <module>nuxeo-platform-video</module>
+    <module>nuxeo-platform-semantic-entities</module>
+    <module>nuxeo-platform-categorization</module>
+    <module>nuxeo-platform-user-registration</module>
+    <module>nuxeo-shell</module>
+    <module>nuxeo-filesystem-connectors</module>
+    <module>nuxeo-opensocial</module>
+    <module>nuxeo-user-center</module>
+    <module>nuxeo-platform-shibboleth-groups-web</module>
+    <module>nuxeo-platform-user-dashboard-compat</module>
+    <module>nuxeo-platform-users-management-compat</module>
+    <module>nuxeo-platform-rendition</module>
+    <module>nuxeo-platform-replication</module>
+    <module>nuxeo-apidoc-server</module>
+  </modules>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>public-releases</id>
+      <url>
+        http://maven.in.nuxeo.com/nexus/content/repositories/public-releases
+      </url>
+    </repository>
+    <snapshotRepository>
+      <id>public-snapshots</id>
+      <url>
+        http://maven.in.nuxeo.com/nexus/content/repositories/public-snapshots
+      </url>
+      <uniqueVersion>true</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
+
+</project>
