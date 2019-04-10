@@ -1,0 +1,59 @@
+<project name="drive-gatling-tests" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+
+  <!-- Install nuxeo-drive and nuxeo-platform-importer packages -->
+  <property name="mp.install" value="nuxeo-drive,nuxeo-platform-importer" />
+
+  <property name="nuxeo.db.max-pool-size" value="52" />
+  <property name="nuxeo.vcs.max-pool-size" value="50" />
+  <property name="JAVA_OPTS" value="$JAVA_OPTS -Xms6g -Xmx6g -XX:SoftRefLRUPolicyMSPerMB=5 -Dcom.sun.management.jmxremote.autodiscovery=true -Dcom.sun.management.jdp.name=Nuxeo -XX:+PrintClassHistogramAfterFullGC -XX:+PrintClassHistogramBeforeFullGC" />
+
+  <target name="tune-nuxeo">
+    <echo level="info">Tune pool sizes</echo>
+    <echo level="info">nuxeo.db.max-pool-size=${nuxeo.db.max-pool-size}</echo>
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.db.max-pool-size" />
+      <param name="value" value="${nuxeo.db.max-pool-size}" />
+    </antcall>
+    <echo level="info">nuxeo.vcs.max-pool-size=${nuxeo.vcs.max-pool-size}</echo>
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.vcs.max-pool-size" />
+      <param name="value" value="${nuxeo.vcs.max-pool-size}" />
+    </antcall>
+    <echo level="info">Tune JAVA_OPTS</echo>
+    <echo level="info">JAVA_OPTS=${JAVA_OPTS}</echo>
+    <antcall target="set-conf">
+      <param name="name" value="JAVA_OPTS" />
+      <param name="value" value="${JAVA_OPTS}" />
+    </antcall>
+  </target>
+
+  <target name="add-custom-template" if="osfamily-unix">
+    <echo level="info">Add custom template to nuxeo.conf</echo>
+    <chmod dir="${nuxeo.home}/bin" perm="ug+x" includes="*.sh,*ctl" />
+    <exec executable="sh" failonerror="true">
+      <arg value="-c" />
+      <arg value="${nuxeo.home}/bin/nuxeoctl config nuxeo.templates  &quot;$(${nuxeo.home}/bin/nuxeoctl config --get nuxeo.templates -q),custom&quot;" />
+    </exec>
+  </target>
+
+  <target name="copy-drive-bundles">
+    <echo level="info">Copy nuxeo-drive-server bundles to custom template</echo>
+    <copy todir="${nuxeo.home}/templates/custom/bundles" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" artifactId="nuxeo-drive*" type="!pom" />
+        </includes>
+      </artifact:set>
+    </copy>
+  </target>
+
+</project>

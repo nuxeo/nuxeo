@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.multi.tenant.MultiTenantService">
+
+  <documentation>
+    @author Thomas Roger (troger@nuxeo.com)
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.multi.tenant.MultiTenantServiceImpl" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.multi.tenant.MultiTenantService" />
+  </service>
+
+  <extension-point name="configuration">
+    <documentation>
+      The multi tenant configuration contains:
+
+      - tenantDocumentType: define the document type on which enable the
+        tenant isolation.
+      - membersGroupPermission: the default permission on the tenant for the
+        group containing all the members of the tenant.
+      - enabledByDefault: if 'true' the tenant isolation will be enabled when
+        Nuxeo starts.
+    </documentation>
+    <object class="org.nuxeo.ecm.multi.tenant.MultiTenantConfiguration" />
+  </extension-point>
+
+</component>

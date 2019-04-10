@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.video.filemanager.contrib">
+
+  <extension
+      target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService"
+      point="plugins">
+    <documentation>
+      Simple plugin for the file manager. Creates a Video Document type from
+      any of the matching mime types.
+    </documentation>
+    <plugin name="VideoImporter"
+            class="org.nuxeo.ecm.platform.video.importer.VideoImporter"
+            order="10">
+      <filter>video/.*</filter>
+      <filter>application/gxf</filter>
+      <filter>application/mxf</filter>
+    </plugin>
+  </extension>
+
+</component>

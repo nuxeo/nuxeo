@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.nuxeo.org/ecm/schemas/wopiLocks/">
+
+  <xs:element name="fileId" type="xs:string" />
+  <xs:element name="repository" type="xs:string" />
+  <xs:element name="docId" type="xs:string" />
+  <xs:element name="lock" type="xs:string" />
+  <xs:element name="timestamp" type="xs:long" />
+
+</xs:schema>

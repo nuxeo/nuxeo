@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.multi.tenant.doctype.config">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <require>org.nuxeo.ecm.platform.types.local.configuration</require>
+  <require>org.nuxeo.ecm.platform.content.view.local.configuration</require>
+  <require>org.nuxeo.search.ui.local.configuration</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+    <doctype name="Domain" append="true">
+      <facet name="SearchConfiguration" />
+      <facet name="UITypesLocalConfiguration" />
+      <facet name="ContentViewLocalConfiguration" />
+    </doctype>
+  </extension>
+</component>

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.wopi.schedulers">
+
+  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService" point="schedule">
+    <schedule id="wopiDiscoveryRefresh">
+      <event>refreshWOPIDiscovery</event>
+      <!-- every 24 hours -->
+      <cronExpression>0 0 0 * * ?</cronExpression>
+    </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService" point="schedule">
+    <schedule id="wopiLocksExpiration">
+      <event>wopiLocksExpiration</event>
+      <!-- every 5 minutes -->
+      <cronExpression>0 0/5 * * * ?</cronExpression>
+    </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="wopiLocksExpiration" async="true" class="org.nuxeo.wopi.lock.LockExpirationListener">
+      <event>wopiLocksExpiration</event>
+    </listener>
+  </extension>
+
+</component>

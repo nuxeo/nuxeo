@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.threed.convert.converters">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl" point="converter">
+    <converter name="render3D" class="org.nuxeo.ecm.platform.threed.convert.RenderConverter">
+      <sourceMimeType>*</sourceMimeType>
+      <destinationMimeType>image/png</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">blender_pipeline</parameter>
+        <parameter name="scriptsDir">scripts</parameter>
+        <parameter name="scriptFile">pipeline.py</parameter>
+        <parameter name="operators">import info render</parameter>
+        <parameter name="dimensions">800x600</parameter>
+        <parameter name="coords">0,0</parameter>
+      </parameters>
+    </converter>
+    <converter name="lodConversion" class="org.nuxeo.ecm.platform.threed.convert.LodsConverter">
+      <sourceMimeType>*</sourceMimeType>
+      <destinationMimeType>model/vnd.collada+xml</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">blender_pipeline</parameter>
+        <parameter name="scriptsDir">scripts</parameter>
+        <parameter name="scriptFile">pipeline.py</parameter>
+        <parameter name="operators">import info lod info convert lod info convert lod info convert</parameter>
+        <parameter name="lodIds">33 11 03</parameter>
+        <parameter name="percPoly">33 11 3</parameter>
+        <parameter name="percTex">33 11 3</parameter>
+        <parameter name="maxPoly">1000000 null null</parameter>
+        <parameter name="maxTex">4000x4000 null null</parameter>
+      </parameters>
+    </converter>
+    <converter name="colladaConversion" class="org.nuxeo.ecm.platform.threed.convert.ColladaConverter">
+      <sourceMimeType>*</sourceMimeType>
+      <destinationMimeType>model/vnd.collada+xml</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">blender_pipeline</parameter>
+        <parameter name="scriptsDir">scripts</parameter>
+        <parameter name="scriptFile">pipeline.py</parameter>
+        <parameter name="operators">import convert</parameter>
+      </parameters>
+    </converter>
+    <converter name="batchConversion" class="org.nuxeo.ecm.platform.threed.convert.BatchConverter">
+      <sourceMimeType>*</sourceMimeType>
+      <destinationMimeType>*</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">blender_pipeline</parameter>
+        <parameter name="scriptsDir">scripts</parameter>
+        <parameter name="scriptFile">pipeline.py</parameter>
+        <parameter name="operators">import info render render lod info convert lod info convert lod info convert</parameter>
+        <parameter name="lodIds">33 11 03</parameter>
+        <parameter name="percPoly">33 11 3</parameter>
+        <parameter name="percTex">33 11 3</parameter>
+        <parameter name="maxPoly">1000000 null null</parameter>
+        <parameter name="maxTex">4000x4000 null null</parameter>
+        <parameter name="dimensions">800x600 800x600</parameter>
+        <parameter name="coords">0,0 90,0</parameter>
+      </parameters>
+    </converter>
+    <converter name="dae2gltf" class="org.nuxeo.ecm.platform.threed.convert.Collada2glTFConverter">
+      <sourceMimeType>*</sourceMimeType>
+      <destinationMimeType>model/gltf+json</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">collada2gltlf</parameter>
+      </parameters>
+    </converter>
+  </extension>
+
+</component>

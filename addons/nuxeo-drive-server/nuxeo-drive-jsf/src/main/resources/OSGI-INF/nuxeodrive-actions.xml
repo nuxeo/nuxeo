@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.drive.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="driveSynchronizeCurrentDocument" link="#{nuxeoDriveActions.synchronizeCurrentDocument}"
+      order="25" label="command.driveSynchronizeFolder" type="link"
+      icon="/icons/drive_unsynced.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>can_sync_current_doc</filter-id>
+    </action>
+
+    <action id="driveUnsynchronizeCurrentDocument"
+      link="#{nuxeoDriveActions.unsynchronizeCurrentDocument}" order="25"
+      label="command.driveUnsynchronizeFolder" type="link"
+      icon="/icons/drive_synced.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>can_unsync_current_doc</filter-id>
+    </action>
+
+    <action id="driveNavigateToCurrentSynchronizationRoot"
+      link="#{nuxeoDriveActions.navigateToCurrentSynchronizationRoot}"
+      order="25" label="command.navigateToSynchronizationRoot" type="link"
+      icon="/icons/drive_synced_under_root.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>can_navigate_to_current_synchronization_root
+      </filter-id>
+    </action>
+
+    <action id="driveEdit" link="#{nuxeoDriveActions.getDriveEditURL(document, blobXPath)}"
+      order="200" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
+      <properties>
+        <property name="target">_top</property>
+      </properties>
+      <category>BLOB_ACTIONS</category>
+      <filter-id>has_one_auth_token</filter-id>
+      <filter-id>can_drive_edit_any</filter-id>
+    </action>
+
+    <action id="driveEditListing" link="#{nuxeoDriveActions.getDriveEditURL(actionContextDocument)}"
+      order="200" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
+      <properties>
+        <property name="target">_top</property>
+      </properties>
+      <category>BLOB_ACTIONS_LISTING</category>
+      <filter-id>has_one_auth_token</filter-id>
+      <filter-id>can_drive_edit</filter-id>
+    </action>
+
+    <action id="driveEditUserCenterNuxeoDrive" link="#{nuxeoDriveActions.navigateToUserCenterNuxeoDrive}"
+      order="50" label="command.driveEdit" icon="/icons/drive_edit.png">
+      <category>BLOB_ACTIONS</category>
+      <filter-id>has_no_auth_token</filter-id>
+      <filter-id>can_drive_edit</filter-id>
+      <filter-id>isMainBlob</filter-id>
+    </action>
+
+    <action id="infoViewDriveEdit" link="#{nuxeoDriveActions.driveEditURL}"
+      order="50" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
+      <properties>
+        <property name="target">_top</property>
+      </properties>
+      <category>INFO_VIEW_ACTIONS</category>
+      <filter-id>has_one_auth_token</filter-id>
+      <filter-id>can_drive_edit</filter-id>
+    </action>
+
+    <action id="userCenterNuxeoDrive" link="/incl/nuxeodrive/user_center_nuxeo_drive.xhtml"
+      label="user.center.nuxeoDrive" icon="/icons/drive_tab.png" order="100">
+      <category>USER_CENTER</category>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="can_sync_current_doc">
+      <rule grant="false">
+        <type>Domain</type>
+        <type>SectionRoot</type>
+        <type>TemplateRoot</type>
+        <type>WorkspaceRoot</type>
+        <type>Forum</type>
+        <type>Collections</type>
+      </rule>
+      <rule grant="true">
+        <condition>#{canSynchronizeCurrentDocument}</condition>
+      </rule>
+    </filter>
+
+    <filter id="can_unsync_current_doc">
+      <rule grant="true">
+        <condition>#{canUnSynchronizeCurrentDocument}</condition>
+      </rule>
+    </filter>
+
+    <filter id="can_navigate_to_current_synchronization_root">
+      <rule grant="true">
+        <condition>#{canNavigateToCurrentSynchronizationRoot}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="can_drive_edit">
+      <rule grant="true">
+        <condition>#{nuxeoDriveActions.canEditDocument(document)}</condition>
+      </rule>
+      <rule grant="false">
+        <facet>Collection</facet>
+      </rule>
+    </filter>
+
+    <filter id="can_drive_edit_any">
+      <rule grant="true">
+        <condition>#{nuxeoDriveActions.canEditBlob(document, blobXPath)}</condition>
+      </rule>
+      <rule grant="false">
+        <facet>Collection</facet>
+      </rule>
+    </filter>
+
+    <filter id="has_one_auth_token">
+      <rule grant="true">
+        <condition>#{nuxeoDriveActions.hasOneDriveToken(currentUser)}</condition>
+      </rule>
+    </filter>
+
+    <filter id="has_no_auth_token">
+      <rule grant="false">
+        <condition>#{nuxeoDriveActions.hasOneDriveToken(currentUser)}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>
