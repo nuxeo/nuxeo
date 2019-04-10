@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://nuxeo.org/schemas/userinfo"
+    >
+
+  <xs:element name="login" type="xs:string"/>
+  <xs:element name="password" type="xs:string"/>
+  <xs:element name="firstName" type="xs:string"/>
+  <xs:element name="lastName" type="xs:string"/>
+  <xs:element name="company" type="xs:string"/>
+  <xs:element name="email" type="xs:string"/>
+
+  <xs:element name="documentId" type="xs:string"/>
+  <xs:element name="documentRight" type="xs:string"/>
+
+</xs:schema>
