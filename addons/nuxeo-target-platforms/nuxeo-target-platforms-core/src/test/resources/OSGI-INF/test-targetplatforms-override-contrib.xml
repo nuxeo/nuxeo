@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.targetplatforms.core.test.contrib.override">
+
+  <extension target="org.nuxeo.targetplatforms.core.framework" point="platforms">
+
+    <platform id="dm-5.3.0" enabled="true" />
+
+    <platform id="cap-5.9.2" enabled="false" />
+
+  </extension>
+
+  <extension target="org.nuxeo.targetplatforms.core.framework" point="packages">
+
+    <package id="nuxeo-dm-5.8" enabled="false" />
+
+  </extension>
+
+</component>

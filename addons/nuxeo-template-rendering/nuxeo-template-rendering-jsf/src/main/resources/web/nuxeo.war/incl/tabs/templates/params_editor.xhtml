@@ -1,0 +1,48 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:nxthemes="http://nuxeo.org/nxthemes"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:nxl="http://nuxeo.org/nxforms/layout"
+    xmlns:nxu="http://nuxeo.org/nxweb/util"
+    xmlns:c="http://java.sun.com/jstl/core">
+
+  <script src="#{contextPath}/scripts/template-edit-param.js"></script>
+  <h:panelGroup id="params_edit">
+    <h:form enctype="multipart/form-data" id="params_edit_form">
+      <c:if test="#{bean.canAddTemplateInputs()}">
+        <div>
+          <p class="specification">
+            <h:outputText value="#{messages['label.template.parameter.detail']}" />
+          </p>
+          <h:inputText value="#{bean.newInput.name}" class="eightyPercent"></h:inputText>
+          <span class="floatR">
+            <h:commandButton styleClass="button primary" value="#{messages['label.template.parameter.add']}"
+               id="button_add" >
+              <f:ajax render="@form" execute="@form" listener="#{bean.addTemplateInput}"/>
+            </h:commandButton>
+          </span>
+        </div>
+        <hr />
+      </c:if>
+      <nxu:repeat var="param" value="#{bean.templateEditableInputs}">
+        <ui:include src="/incl/tabs/templates/template_edit_oneparam.xhtml" />
+      </nxu:repeat>
+      <c:if test="#{bean.canUpdateTemplateInputs(targetTemplate)}">
+        <c:if test="#{bean.canAddTemplateInputs()}">
+        </c:if>
+        <p>
+          <h:commandButton type="submit" styleClass="button primary" value="#{messages['command.save']}"
+            action="#{bean.saveTemplateInputs}" id="button_save"/>
+          <h:commandButton styleClass="button" value="#{messages['command.cancel']}"
+            action="#{bean.cancelTemplateInputsEdit}" immediate="true"/>
+        </p>
+      </c:if>
+    </h:form>
+  </h:panelGroup>
+  <script>
+   jQuery(document).ready(function(){
+      initContentWidgets();
+    });
+  </script>
+</div>

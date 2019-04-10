@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-addons-parent</artifactId>
+    <version>8.10-HF32</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-quota-parent</artifactId>
+  <name>Nuxeo Quota</name>
+  <description>Nuxeo Quota</description>
+  <version>8.10-HF32</version>
+  <packaging>pom</packaging>
+
+  <properties>
+    <nuxeo.quota.version>8.10-HF32</nuxeo.quota.version>
+  </properties>
+
+  <modules>
+    <module>nuxeo-quota-core</module>
+    <module>nuxeo-quota-web</module>
+    <module>nuxeo-quota-automation</module>
+    <module>nuxeo-quota-core-dependencies</module>
+  </modules>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+</project>
