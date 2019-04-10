@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<component
+	name="org.nuxeo.platform.TemplateSources.mimetype">
+
+	<extension
+		target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService"
+		point="mimetype">
+
+		<mimetype normalized="text/x-freemarker" binary="false" iconPath="text.png">
+			<mimetypes>
+				<mimetype>text/x-freemarker</mimetype>
+			</mimetypes>
+			<extensions>
+				<extension>ftl</extension>
+			</extensions>
+		</mimetype>
+	</extension>
+
+</component>

@@ -1,0 +1,13 @@
+POST /_vti_bin/webs.asmx HTTP/1.1
+Host: vm2k3
+From: 192.168.2.210
+User-Agent: Microsoft Office/12.2.0 (Macintosh 10.6.1, Microsoft Document Connection 12.2.0; Pro)
+Accept: */*
+Accept-Language: en
+Content-Type: text/xml; charset=utf-8
+SOAPAction: http://schemas.microsoft.com/sharepoint/soap/GetWebCollection
+Cookie: WSS_KeepSessionAuthenticated=80
+Content-Length: 220
+Connection: Keep-Alive
+
+<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><GetWebCollection xmlns="http://schemas.microsoft.com/sharepoint/soap/"/></soap:Body></soap:Envelope>
