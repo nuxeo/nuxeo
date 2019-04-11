@@ -36,7 +36,7 @@ public interface WebSSOProfile {
     /**
      * Identifier of the WebSSO profile.
      */
-    public static final String PROFILE_URI = "urn:oasis:names:tc:SAML:2.0:profiles:SSO:browser";
+    String PROFILE_URI = "urn:oasis:names:tc:SAML:2.0:profiles:SSO:browser";
 
     SAMLCredential processAuthenticationResponse(SAMLMessageContext context) throws SAMLException;
 

@@ -44,66 +44,66 @@ public interface IExcelBuilder {
      * @param style a style to apply to the cell
      * @return the created or retrieved cell in case additional stuff should be done on it.
      */
-    public Cell setCell(int row, int column, String content, CellStyle style);
+    Cell setCell(int row, int column, String content, CellStyle style);
 
     /**
      * Set a cell text content with no styling information.
      *
      * @see {@link setCell(int i, int j, String content, CellStyle style)}
      */
-    public Cell setCell(int row, int column, String content);
+    Cell setCell(int row, int column, String content);
 
-    public Sheet getCurrentSheet();
+    Sheet getCurrentSheet();
 
-    public Collection<Sheet> getAllSheets();
+    Collection<Sheet> getAllSheets();
 
-    public int getCurrentSheetId();
+    int getCurrentSheetId();
 
-    public void setCurrentSheetId(int s);
+    void setCurrentSheetId(int s);
 
-    public int newSheet(int index, String name);
+    int newSheet(int index, String name);
 
-    public void setRowHeight(int row, int height);
+    void setRowHeight(int row, int height);
 
     /** Set the width (in units of 1/256th of a character width) */
-    public void setColumnWidth(int column, int width);
+    void setColumnWidth(int column, int width);
 
-    public void setColumnWidthAuto(int column);
+    void setColumnWidthAuto(int column);
 
-    public void setFreezePane(int colSplit, int rowSplit);
+    void setFreezePane(int colSplit, int rowSplit);
 
-    public void setFreezePane(int colSplit, int rowSplit, int leftmostColumn, int topRow);
+    void setFreezePane(int colSplit, int rowSplit, int leftmostColumn, int topRow);
 
-    public void setSplitPane(int xSplitPos, int ySplitPos, int leftmostColumn, int topRow, int activePane);
+    void setSplitPane(int xSplitPos, int ySplitPos, int leftmostColumn, int topRow, int activePane);
 
-    public void mergeRange(int firstRow, int firstColumn, int lastRow, int lastColumn);
+    void mergeRange(int firstRow, int firstColumn, int lastRow, int lastColumn);
 
-    public Comment addComment(Cell cell, String text, int row, int col, int colWidth, int rowHeight);
+    Comment addComment(Cell cell, String text, int row, int col, int colWidth, int rowHeight);
 
-    public CellStyle newColoredCellStyle(ByteColor color);
+    CellStyle newColoredCellStyle(ByteColor color);
 
-    public void save(String file) throws IOException;
+    void save(String file) throws IOException;
 
-    public void save(File file) throws IOException;
+    void save(File file) throws IOException;
 
-    public Workbook load(String file) throws InvalidFormatException, IOException;
+    Workbook load(String file) throws InvalidFormatException, IOException;
 
-    public Workbook load(File file) throws InvalidFormatException, IOException;
+    Workbook load(File file) throws InvalidFormatException, IOException;
 
-    public Font newFont(int size);
+    Font newFont(int size);
 
-    public Font newFont();
+    Font newFont();
 
-    public Font getBoldFont();
+    Font getBoldFont();
 
-    public CellStyle newCellStyle();
+    CellStyle newCellStyle();
 
-    public Workbook getWorkbook();
+    Workbook getWorkbook();
 
-    public HSSFColor getColor(ByteColor color);
+    HSSFColor getColor(ByteColor color);
 
-    public int loadPicture(String image) throws IOException;
+    int loadPicture(String image) throws IOException;
 
-    public void setPicture(int pictureIdx, int col1, int row1, boolean resize);
+    void setPicture(int pictureIdx, int col1, int row1, boolean resize);
 
 }

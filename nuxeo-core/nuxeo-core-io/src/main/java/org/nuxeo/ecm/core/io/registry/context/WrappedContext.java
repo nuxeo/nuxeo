@@ -102,7 +102,7 @@ public final class WrappedContext {
      * @return this {@link WrappedContext}.
      * @since 7.2
      */
-    public final WrappedContext with(String key, Object value) {
+    public WrappedContext with(String key, Object value) {
         if (StringUtils.isEmpty(key)) {
             return this;
         }
@@ -150,7 +150,7 @@ public final class WrappedContext {
      *
      * @since 7.2
      */
-    public final WrappedContext controlDepth() throws MaxDepthReachedException {
+    public WrappedContext controlDepth() throws MaxDepthReachedException {
         String depthKey = DEPTH_CONTROL_KEY_PREFIX + "DEFAULT";
         Integer value = getEntity(ctx, depthKey);
         Integer maxDepth;
@@ -181,7 +181,7 @@ public final class WrappedContext {
      *
      * @since 7.2
      */
-    public final Map<String, Object> flatten() {
+    public Map<String, Object> flatten() {
         Map<String, Object> mergedResult = new HashMap<>();
         if (parent != null) {
             mergedResult.putAll(parent.flatten());
@@ -235,7 +235,7 @@ public final class WrappedContext {
      * @return A {@link Closeable} instance.
      * @since 7.2
      */
-    public final Closeable open() {
+    public Closeable open() {
         ctx.setParameterValues(WRAPPED_CONTEXT, this);
         return new Closeable() {
             @Override

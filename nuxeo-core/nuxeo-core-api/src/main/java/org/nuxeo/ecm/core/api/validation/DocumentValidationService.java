@@ -34,15 +34,15 @@ import org.nuxeo.ecm.core.schema.types.Schema;
  */
 public interface DocumentValidationService {
 
-    public static final String CTX_MAP_KEY = "DocumentValidationService.Forcing";
+    String CTX_MAP_KEY = "DocumentValidationService.Forcing";
 
-    public static final String CTX_CREATEDOC = "createDocument";
+    String CTX_CREATEDOC = "createDocument";
 
-    public static final String CTX_SAVEDOC = "saveDocument";
+    String CTX_SAVEDOC = "saveDocument";
 
-    public static final String CTX_IMPORTDOC = "importDocument";
+    String CTX_IMPORTDOC = "importDocument";
 
-    public static enum Forcing {
+    public enum Forcing {
         TURN_ON, TURN_OFF, USUAL;
     }
 

@@ -40,7 +40,7 @@ public interface TemplateProcessor {
      * @param templateName
      * @return
      */
-    public Blob renderTemplate(TemplateBasedDocument templateDocument, String templateName) throws IOException;
+    Blob renderTemplate(TemplateBasedDocument templateDocument, String templateName) throws IOException;
 
     /**
      * Extract parameters from the Template file.
@@ -48,5 +48,5 @@ public interface TemplateProcessor {
      * @param blob
      * @return List of parameters for this template
      */
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws IOException;
+    List<TemplateInput> getInitialParametersDefinition(Blob blob) throws IOException;
 }

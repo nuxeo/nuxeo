@@ -35,7 +35,7 @@ public class ReportConfiguration extends SimpleContributionRegistry<Contribution
     interface Filter {
         boolean accept(Contribution contribution);
 
-        final Filter enabled = new Filter() {
+        Filter enabled = new Filter() {
 
             @Override
             public boolean accept(Contribution contribution) {

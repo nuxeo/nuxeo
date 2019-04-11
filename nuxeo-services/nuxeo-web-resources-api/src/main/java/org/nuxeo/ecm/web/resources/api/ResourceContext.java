@@ -25,6 +25,6 @@ package org.nuxeo.ecm.web.resources.api;
  */
 public interface ResourceContext {
 
-    public String getFlavor();
+    String getFlavor();
 
 }

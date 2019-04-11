@@ -30,33 +30,33 @@ import org.nuxeo.ecm.platform.signature.api.exception.CertException;
  */
 public interface RootService {
 
-    public KeyStore getRootKeyStore();
+    KeyStore getRootKeyStore();
 
-    public String getRootKeystoreFilePath();
+    String getRootKeystoreFilePath();
 
-    public String getRootKeystorePassword();
+    String getRootKeystorePassword();
 
-    public String getRootKeyAlias();
+    String getRootKeyAlias();
 
-    public String getRootKeyPassword();
+    String getRootKeyPassword();
 
-    public String getRootCertificateAlias();
+    String getRootCertificateAlias();
 
-    public boolean isRootSetup();
+    boolean isRootSetup();
 
-    public byte[] getRootPublicCertificate() throws CertException;
+    byte[] getRootPublicCertificate() throws CertException;
 
-    public InputStream getRootKeystoreIS() throws CertException;
+    InputStream getRootKeystoreIS() throws CertException;
 
-    public void setRootKeyStore(KeyStore rootKeyStore);
+    void setRootKeyStore(KeyStore rootKeyStore);
 
-    public void setRootKeystoreFilePath(String rootKeystoreFilePath);
+    void setRootKeystoreFilePath(String rootKeystoreFilePath);
 
-    public void setRootKeystorePassword(String rootKeystorePassword);
+    void setRootKeystorePassword(String rootKeystorePassword);
 
-    public void setRootKeyAlias(String rootKeyAlias);
+    void setRootKeyAlias(String rootKeyAlias);
 
-    public void setRootKeyPassword(String rootKeyPassword);
+    void setRootKeyPassword(String rootKeyPassword);
 
-    public void setRootCertificateAlias(String rootCertificateAlias);
+    void setRootCertificateAlias(String rootCertificateAlias);
 }

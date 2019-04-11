@@ -532,7 +532,7 @@ public final class Functions {
         return printFormattedDuration(durationObj, null);
     }
 
-    public static final String translate(String messageId, Object... params) {
+    public static String translate(String messageId, Object... params) {
         return ComponentUtils.translate(FacesContext.getCurrentInstance(), messageId, params);
     }
 

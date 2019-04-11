@@ -42,7 +42,7 @@ public class DocumentListZipExporter {
 
     public static final String ZIP_ENTRY_ENCODING_PROPERTY = "zip.entry.encoding";
 
-    public static enum ZIP_ENTRY_ENCODING_OPTIONS {
+    public enum ZIP_ENTRY_ENCODING_OPTIONS {
         ascii
     }
 

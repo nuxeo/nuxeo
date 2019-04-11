@@ -42,7 +42,7 @@ public class TestTabActionsSelection {
 
     static String CUSTOM_CATEGORY = "custom_category";
 
-    static enum TAB_ACTION {
+    enum TAB_ACTION {
 
         // standard tab
         TAB_VIEW(new String[] { DEFAULT_CATEGORY }),

@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public interface AggregateElement {
 
-    public static final String AGG_REGEX = "(.*) \\((.*)\\)";
+    String AGG_REGEX = "(.*) \\((.*)\\)";
 
     Map<String, Integer> getAggregates();
 }

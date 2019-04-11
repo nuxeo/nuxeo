@@ -20,13 +20,13 @@ package org.nuxeo.ecm.platform.signature.api.sign;
 
 public interface SignatureLayout {
 
-    public Integer getLines();
+    Integer getLines();
 
-    public Integer getColumns();
+    Integer getColumns();
 
-    public Integer getStartLine();
+    Integer getStartLine();
 
-    public Integer getStartColumn();
+    Integer getStartColumn();
 
-    public Integer getTextSize();
+    Integer getTextSize();
 }

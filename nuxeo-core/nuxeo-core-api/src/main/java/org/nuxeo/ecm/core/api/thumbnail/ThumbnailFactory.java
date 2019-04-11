@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface ThumbnailFactory {
 
-    public Blob getThumbnail(DocumentModel doc, CoreSession session);
+    Blob getThumbnail(DocumentModel doc, CoreSession session);
 
-    public Blob computeThumbnail(DocumentModel doc, CoreSession session);
+    Blob computeThumbnail(DocumentModel doc, CoreSession session);
 }

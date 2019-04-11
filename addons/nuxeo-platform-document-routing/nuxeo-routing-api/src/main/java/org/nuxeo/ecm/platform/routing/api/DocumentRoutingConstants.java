@@ -223,38 +223,38 @@ public interface DocumentRoutingConstants {
 
     String ROUTING_INITIATOR_ID_KEY = "initiator";
 
-    public static final String TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY = "routeInstanceDocId";
+    String TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY = "routeInstanceDocId";
 
-    public static final String TASK_NODE_ID_KEY = "nodeId";
+    String TASK_NODE_ID_KEY = "nodeId";
 
-    public static final String TASK_BUTTONS_KEY = "taskButtons";
+    String TASK_BUTTONS_KEY = "taskButtons";
 
-    public static final String ROUTING_TASK_FACET_NAME = "RoutingTask";
+    String ROUTING_TASK_FACET_NAME = "RoutingTask";
 
     /**
      * @since 7.1
      */
-    public static final String ROUTING_TASK_DOC_TYPE = "RoutingTask";
+    String ROUTING_TASK_DOC_TYPE = "RoutingTask";
 
-    public static final String ROUTE_TASK_LOCAL_ACL = "routingTask";
-
-    /**
-     * @since 7.2
-     */
-    public static final String DOCUMENT_ROUTE_MODEL_LIFECYCLESTATE = "validated";
+    String ROUTE_TASK_LOCAL_ACL = "routingTask";
 
     /**
      * @since 7.2
      */
-    public static final String DOCUMENT_ROUTE_INSTANCE_MODEL_ID = "docri:modelId";
+    String DOCUMENT_ROUTE_MODEL_LIFECYCLESTATE = "validated";
 
     /**
      * @since 7.2
      */
-    public static final String GLOBAL_VAR_SCHEMA_PREFIX = "var_global_";
+    String DOCUMENT_ROUTE_INSTANCE_MODEL_ID = "docri:modelId";
+
+    /**
+     * @since 7.2
+     */
+    String GLOBAL_VAR_SCHEMA_PREFIX = "var_global_";
 
     /**
      * @since 7.4
      */
-    public static final String CAN_DATA_VISU = "DataVisualization";
+    String CAN_DATA_VISU = "DataVisualization";
 }

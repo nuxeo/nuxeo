@@ -63,6 +63,6 @@ public interface Marshaller<EntityType> {
      * @return true if this converter handle the request, false otherwise.
      * @since 7.2
      */
-    public boolean accept(Class<?> clazz, Type genericType, MediaType mediatype);
+    boolean accept(Class<?> clazz, Type genericType, MediaType mediatype);
 
 }

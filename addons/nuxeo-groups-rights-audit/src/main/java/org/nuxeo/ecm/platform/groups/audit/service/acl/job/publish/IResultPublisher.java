@@ -24,6 +24,6 @@ import org.nuxeo.ecm.core.api.Blob;
 
 public interface IResultPublisher extends Serializable {
 
-    public void publish(Blob fileBlob);
+    void publish(Blob fileBlob);
 
 }

@@ -26,7 +26,7 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 public interface InputBindingResolver {
 
-    public abstract void resolve(List<TemplateInput> inputParams, Map<String, Object> context,
+    void resolve(List<TemplateInput> inputParams, Map<String, Object> context,
             TemplateBasedDocument templateBasedDocument);
 
 }

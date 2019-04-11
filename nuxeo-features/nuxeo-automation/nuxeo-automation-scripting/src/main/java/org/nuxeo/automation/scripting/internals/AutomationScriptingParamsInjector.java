@@ -26,9 +26,9 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 @FunctionalInterface
 public interface AutomationScriptingParamsInjector {
 
-    public void inject(Map<String, Object> params, OperationContext ctx, ScriptingOperationDescriptor desc);
+    void inject(Map<String, Object> params, OperationContext ctx, ScriptingOperationDescriptor desc);
 
-    public static AutomationScriptingParamsInjector newInstance(boolean inlinedContext) {
+    static AutomationScriptingParamsInjector newInstance(boolean inlinedContext) {
         if (inlinedContext) {
             return (params, ctx, desc) -> params.putAll(ctx);
         }

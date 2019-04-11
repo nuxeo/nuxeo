@@ -38,7 +38,7 @@ public interface BinaryMetadataProcessor {
      * @param ignorePrefix
      * @return the updated blob, or {@code null} if there was an error (since 7.4)
      */
-    public Blob writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix);
+    Blob writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix);
 
     /**
      * Read from a given blob given metadata map. Since 7.3 ignorePrefix is added.
@@ -48,7 +48,7 @@ public interface BinaryMetadataProcessor {
      * @param ignorePrefix
      * @return Metadata map.
      */
-    public Map<String, Object> readMetadata(Blob blob, List<String> metadata, boolean ignorePrefix);
+    Map<String, Object> readMetadata(Blob blob, List<String> metadata, boolean ignorePrefix);
 
     /**
      * Read all metadata from a given blob. Since 7.3 ignorePrefix is added.
@@ -57,6 +57,6 @@ public interface BinaryMetadataProcessor {
      * @param ignorePrefix
      * @return Metadata map.
      */
-    public Map<String, Object> readMetadata(Blob blob, boolean ignorePrefix);
+    Map<String, Object> readMetadata(Blob blob, boolean ignorePrefix);
 
 }

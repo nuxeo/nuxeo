@@ -24,5 +24,5 @@ package org.nuxeo.ecm.platform.routing.test;
 public interface TestConstants {
     String CORE_BUNDLE = "org.nuxeo.ecm.platform.routing.core";
 
-    static final String DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT = "/document-route-instances-root";
+    String DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT = "/document-route-instances-root";
 }

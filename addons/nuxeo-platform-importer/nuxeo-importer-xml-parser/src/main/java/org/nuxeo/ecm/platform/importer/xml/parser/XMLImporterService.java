@@ -40,7 +40,7 @@ public interface XMLImporterService {
      * @param source source file, can be XML or Zip with XML index
      * @return
      */
-    public List<DocumentModel> importDocuments(DocumentModel root, File source) throws IOException;
+    List<DocumentModel> importDocuments(DocumentModel root, File source) throws IOException;
 
 
     /**
@@ -50,7 +50,7 @@ public interface XMLImporterService {
      * @param xmlStream stream source for Xml contnt
      * @return
      */
-    public List<DocumentModel> importDocuments(DocumentModel root, InputStream xmlStream) throws IOException;
+    List<DocumentModel> importDocuments(DocumentModel root, InputStream xmlStream) throws IOException;
 
     /**
      * Same as {@link #importDocuments(DocumentModel, File)} with map injected into mvel contexts used during parsing
@@ -60,7 +60,7 @@ public interface XMLImporterService {
      * @param mvelContext Context added each time a mvel expression is resolved
      * @return
      */
-    public List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext)
+    List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext)
             throws IOException;
 
     /**
@@ -72,10 +72,10 @@ public interface XMLImporterService {
      * @param mvelContext Context added each time a mvel expression is resolved
      * @return
      */
-    public List<DocumentModel> importDocuments(DocumentModel root, InputStream xmlStream,
+    List<DocumentModel> importDocuments(DocumentModel root, InputStream xmlStream,
             Map<String, Object> mvelContext) throws IOException;
 
-    public List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext,
+    List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext,
 			boolean deferSave) throws IOException;
 
     /**
@@ -87,6 +87,6 @@ public interface XMLImporterService {
      * @since 7.4
      * @return
      */
-    public List<DocumentModel> importDocuments(DocumentModel root, File source, boolean deferSave) throws IOException;
+    List<DocumentModel> importDocuments(DocumentModel root, File source, boolean deferSave) throws IOException;
 
 }

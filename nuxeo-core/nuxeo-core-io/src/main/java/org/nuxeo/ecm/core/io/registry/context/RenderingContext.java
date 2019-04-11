@@ -83,35 +83,35 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl.RenderingCont
  */
 public interface RenderingContext {
 
-    public static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
+    Locale DEFAULT_LOCALE = Locale.ENGLISH;
 
-    public static final String DEFAULT_URL = "http://fake-url.nuxeo.com/";
+    String DEFAULT_URL = "http://fake-url.nuxeo.com/";
 
-    public static final String RESPONSE_HEADER_ENTITY_TYPE_KEY = "ENTITY_TYPE";
-
-    /**
-     * @since 10.2
-     */
-    public static final String REPOSITORY_NAME_REQUEST_HEADER = "X-NXRepository";
+    String RESPONSE_HEADER_ENTITY_TYPE_KEY = "ENTITY_TYPE";
 
     /**
      * @since 10.2
      */
-    public static final String REPOSITORY_NAME_REQUEST_PARAMETER = "nxrepository";
+    String REPOSITORY_NAME_REQUEST_HEADER = "X-NXRepository";
+
+    /**
+     * @since 10.2
+     */
+    String REPOSITORY_NAME_REQUEST_PARAMETER = "nxrepository";
 
     /**
      * Gets the requested {@link Locale}.
      *
      * @since 7.2
      */
-    public Locale getLocale();
+    Locale getLocale();
 
     /**
      * Gets the current base url.
      *
      * @since 7.2
      */
-    public String getBaseUrl();
+    String getBaseUrl();
 
     /**
      * Gets the current {@link CoreSession} or try to create one.
@@ -121,7 +121,7 @@ public interface RenderingContext {
      * @throws MarshallingException if no session could be created or found.
      * @since 7.2
      */
-    public SessionWrapper getSession(DocumentModel document) throws MarshallingException;
+    SessionWrapper getSession(DocumentModel document) throws MarshallingException;
 
     /**
      * Provides a {@link CoreSession} to marshallers.
@@ -132,7 +132,7 @@ public interface RenderingContext {
      * @param session The existing {@link CoreSession} which lifecycle is managed outside the marshalling context.
      * @since 7.2
      */
-    public void setExistingSession(CoreSession session);
+    void setExistingSession(CoreSession session);
 
     /**
      * Get all document properties. This will aggregate all values from parameters "properties", "X-NXproperties" and
@@ -141,7 +141,7 @@ public interface RenderingContext {
      * @return All document properties.
      * @since 7.2
      */
-    public Set<String> getProperties();
+    Set<String> getProperties();
 
     /**
      * Get all properties to fetch for a given entity type. This will aggregate all values from parameters
@@ -151,7 +151,7 @@ public interface RenderingContext {
      * @return All properties to fetch.
      * @since 7.2
      */
-    public Set<String> getFetched(String entity);
+    Set<String> getFetched(String entity);
 
     /**
      * Get all properties to translate for a given entity type. This will aggregate all values from parameters
@@ -161,7 +161,7 @@ public interface RenderingContext {
      * @return All properties to fetch.
      * @since 7.2
      */
-    public Set<String> getTranslated(String entity);
+    Set<String> getTranslated(String entity);
 
     /**
      * Get all enrichers to activate on the given entity type. This will aggregate all values from parameters
@@ -171,7 +171,7 @@ public interface RenderingContext {
      * @return All enrichers to activate.
      * @since 7.2
      */
-    public Set<String> getEnrichers(String entity);
+    Set<String> getEnrichers(String entity);
 
     /**
      * see {@link WrappedContext}
@@ -179,7 +179,7 @@ public interface RenderingContext {
      * @return A new {@link WrappedContext}
      * @since 7.2
      */
-    public WrappedContext wrap();
+    WrappedContext wrap();
 
     /**
      * Get the casted parameter value for a given name. If multiple are available, the first found is returned.
@@ -188,14 +188,14 @@ public interface RenderingContext {
      * @return The first parameter value, null if no parameter are availble.
      * @since 7.2
      */
-    public <T> T getParameter(String name);
+    <T> T getParameter(String name);
 
     /**
      * see {@link #getParameter(String)}
      *
      * @return true is the parameter exists and if it's Boolean.TRUE or "true", false otherwise.
      */
-    public boolean getBooleanParameter(String name);
+    boolean getBooleanParameter(String name);
 
     /**
      * Get the casted parameter values for a given name.
@@ -204,7 +204,7 @@ public interface RenderingContext {
      * @return The parameter values.
      * @since 7.2
      */
-    public <T> List<T> getParameters(String name);
+    <T> List<T> getParameters(String name);
 
     /**
      * Get all parameter in this context except wrapped parameters.
@@ -212,13 +212,13 @@ public interface RenderingContext {
      * @return All parameter's names and their values.
      * @since 7.2
      */
-    public Map<String, List<Object>> getAllParameters();
+    Map<String, List<Object>> getAllParameters();
 
     /**
      * @see #setParameterListValues(String, List)
      * @since 7.2
      */
-    public void setParameterValues(String name, Object... values);
+    void setParameterValues(String name, Object... values);
 
     /**
      * Push values in the context with a given name. Please note that this method remove any value for the given name.
@@ -227,13 +227,13 @@ public interface RenderingContext {
      * @param values The parameter values.
      * @since 7.2
      */
-    public void setParameterListValues(String name, List<Object> values);
+    void setParameterListValues(String name, List<Object> values);
 
     /**
      * @see #addParameterListValues(String, List)
      * @since 7.2
      */
-    public void addParameterValues(String name, Object... values);
+    void addParameterValues(String name, Object... values);
 
     /**
      * Add values in the context with a given name. Please note that this method keep current values for the given name.
@@ -242,7 +242,7 @@ public interface RenderingContext {
      * @param values The parameter values.
      * @since 7.2
      */
-    public void addParameterListValues(String name, List<?> values);
+    void addParameterListValues(String name, List<?> values);
 
     /**
      * {@link RenderingContext} builder.

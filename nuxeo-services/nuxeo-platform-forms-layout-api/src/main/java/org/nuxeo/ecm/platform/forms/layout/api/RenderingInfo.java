@@ -25,7 +25,7 @@ import java.io.Serializable;
  */
 public interface RenderingInfo extends Serializable {
 
-    public static enum LEVEL {
+    public enum LEVEL {
         error, warn, info
     }
 

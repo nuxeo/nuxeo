@@ -39,7 +39,7 @@ public interface Authenticator {
      * @param password
      * @return the authenticated principal if authentication succeded otherwise null
      */
-    public Principal authenticate(String name, String password);
+    Principal authenticate(String name, String password);
 
     /**
      * Check the password for the given username. Returns true if the username / password pair match, false otherwise.
@@ -48,6 +48,6 @@ public interface Authenticator {
      * @param password the password to check
      * @return true is valid, false otherwise
      */
-    public boolean checkUsernamePassword(String name, String password);
+    boolean checkUsernamePassword(String name, String password);
 
 }

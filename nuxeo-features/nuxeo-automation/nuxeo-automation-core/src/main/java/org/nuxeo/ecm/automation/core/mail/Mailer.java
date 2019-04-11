@@ -230,7 +230,7 @@ public class Mailer {
 
     public static class Message extends MimeMessage {
 
-        public static enum AS {
+        public enum AS {
             FROM, TO, CC, BCC, REPLYTO
         }
 

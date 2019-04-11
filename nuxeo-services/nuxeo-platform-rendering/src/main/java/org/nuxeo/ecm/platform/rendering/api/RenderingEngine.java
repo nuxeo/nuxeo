@@ -46,10 +46,10 @@ public interface RenderingEngine {
      */
     void render(String template, Object input, Writer writer) throws RenderingException;
 
-    public View getView(String path);
+    View getView(String path);
 
-    public View getView(String path, Object object);
+    View getView(String path, Object object);
 
-    public void flushCache();
+    void flushCache();
 
 }

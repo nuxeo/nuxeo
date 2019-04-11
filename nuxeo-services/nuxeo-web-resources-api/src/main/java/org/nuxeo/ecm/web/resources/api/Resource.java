@@ -32,7 +32,7 @@ public interface Resource extends Serializable {
     /**
      * Marker for Nuxeo web resources, used by URI locators.
      */
-    public static final String PREFIX = "nuxeo:";
+    String PREFIX = "nuxeo:";
 
     String getName();
 

@@ -23,10 +23,10 @@ package org.nuxeo.ecm.automation.client.adapters;
  */
 public interface VersionIncrement {
 
-    static final String MAJOR = "Major";
+    String MAJOR = "Major";
 
-    static final String MINOR = "Minor";
+    String MINOR = "Minor";
 
-    static final String NONE = "None";
+    String NONE = "None";
 
 }

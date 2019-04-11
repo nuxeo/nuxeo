@@ -48,7 +48,7 @@ public interface CertService {
      * @return
      * @throws CertException
      */
-    public X509Certificate getRootCertificate() throws CertException;
+    X509Certificate getRootCertificate() throws CertException;
 
     /**
      * Sets up a root service to be used for CA-related services like certificate request signing and certificate
@@ -57,7 +57,7 @@ public interface CertService {
      * @param keystore
      * @throws CertException
      */
-    public void setRootService(RootService rootService) throws CertException;
+    void setRootService(RootService rootService) throws CertException;
 
     /**
      * Retrieves a KeyStore object from a supplied InputStream. Requires a keystore password.
@@ -65,7 +65,7 @@ public interface CertService {
      * @param userId
      * @return
      */
-    public KeyStore getKeyStore(InputStream keystoreIS, String password) throws CertException;
+    KeyStore getKeyStore(InputStream keystoreIS, String password) throws CertException;
 
     /**
      * Retrieves existing private and public key from a KeyStore.
@@ -73,7 +73,7 @@ public interface CertService {
      * @param userId
      * @return
      */
-    public KeyPair getKeyPair(KeyStore ks, String keyAlias, String certificateAlias, String keyPassword)
+    KeyPair getKeyPair(KeyStore ks, String keyAlias, String certificateAlias, String keyPassword)
             throws CertException;
 
     /**
@@ -82,7 +82,7 @@ public interface CertService {
      * @param userId
      * @return
      */
-    public X509Certificate getCertificate(KeyStore keystore, String certificateAlias) throws CertException;
+    X509Certificate getCertificate(KeyStore keystore, String certificateAlias) throws CertException;
 
     /**
      * Generates a private key and a public certificate for a user whose X.509 field information was enclosed in a
@@ -93,7 +93,7 @@ public interface CertService {
      * @return KeyStore based on the provided userInfo
      */
 
-    public KeyStore initializeUser(UserInfo userInfo, String keyPassword) throws CertException;
+    KeyStore initializeUser(UserInfo userInfo, String keyPassword) throws CertException;
 
     /**
      * Wraps a certificate object into an OutputStream object secured by a keystore password
@@ -103,7 +103,7 @@ public interface CertService {
      * @param keystorePassword
      * @throws CertException
      */
-    public void storeCertificate(KeyStore keystore, OutputStream os, String keystorePassword) throws CertException;
+    void storeCertificate(KeyStore keystore, OutputStream os, String keystorePassword) throws CertException;
 
     /**
      * Extracts the email address from a certificate
@@ -112,6 +112,6 @@ public interface CertService {
      * @return
      * @throws CertException
      */
-    public String getCertificateEmail(X509Certificate certificate) throws CertException;
+    String getCertificateEmail(X509Certificate certificate) throws CertException;
 
 }

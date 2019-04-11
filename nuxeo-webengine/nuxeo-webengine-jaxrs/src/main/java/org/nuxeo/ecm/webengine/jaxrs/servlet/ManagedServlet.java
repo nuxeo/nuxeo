@@ -30,6 +30,6 @@ import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletDescriptor;
  */
 public interface ManagedServlet {
 
-    public void setDescriptor(ServletDescriptor sd);
+    void setDescriptor(ServletDescriptor sd);
 
 }

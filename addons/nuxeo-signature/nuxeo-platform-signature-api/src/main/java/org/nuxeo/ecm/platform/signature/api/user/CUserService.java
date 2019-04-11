@@ -38,7 +38,7 @@ public interface CUserService {
      * @param userKeyPassword
      * @throws CertException
      */
-    public DocumentModel createCertificate(DocumentModel user, String userKeyPassword) throws CertException;
+    DocumentModel createCertificate(DocumentModel user, String userKeyPassword) throws CertException;
 
     /**
      * Retrieves a UserInfo object containing information needed for certificate generation.
@@ -47,7 +47,7 @@ public interface CUserService {
      * @return UserInfo
      * @throws CertException
      */
-    public UserInfo getUserInfo(DocumentModel userModel) throws CertException;
+    UserInfo getUserInfo(DocumentModel userModel) throws CertException;
 
     /**
      * Returns simplified textual representation of a certificate's contents.
@@ -55,7 +55,7 @@ public interface CUserService {
      * @param certificate
      * @return Simple certificate string.
      */
-    public String getUserCertInfo(DocumentModel user, String userKeyPassword) throws CertException;
+    String getUserCertInfo(DocumentModel user, String userKeyPassword) throws CertException;
 
     /**
      * Retrieves user keystore from the directory.
@@ -65,7 +65,7 @@ public interface CUserService {
      * @return User KeyStore object
      * @throws CertException
      */
-    public KeyStore getUserKeystore(String userID, String userKeyPassword) throws CertException;
+    KeyStore getUserKeystore(String userID, String userKeyPassword) throws CertException;
 
     /**
      * Retrieves a user certificate from the directory.
@@ -73,7 +73,7 @@ public interface CUserService {
      * @param user
      * @return certificate document model
      */
-    public DocumentModel getCertificate(String userID);
+    DocumentModel getCertificate(String userID);
 
     /**
      * Retrieves the public root certificate.
@@ -81,7 +81,7 @@ public interface CUserService {
      * @param user
      * @return certificate document model
      */
-    public byte[] getRootCertificateData();
+    byte[] getRootCertificateData();
 
     /**
      * Checks if the user is present in the certificate directory.
@@ -90,7 +90,7 @@ public interface CUserService {
      * @return
      * @throws CertException
      */
-    public boolean hasCertificate(String userID) throws CertException;
+    boolean hasCertificate(String userID) throws CertException;
 
     /**
      * Deletes user entry from the certificate directory.
@@ -105,6 +105,6 @@ public interface CUserService {
      * @param user
      * @throws CertException
      */
-    public void deleteCertificate(String userID) throws CertException;
+    void deleteCertificate(String userID) throws CertException;
 
 }

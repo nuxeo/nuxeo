@@ -44,7 +44,7 @@ public class UIFavicon extends UIComponentBase {
     // local cache of icons
     protected static Map<String, String> iconsMime = new HashMap<>();
 
-    public static enum PropertyKeys {
+    public enum PropertyKeys {
         value, name, src, mimetype, sizes
     }
 

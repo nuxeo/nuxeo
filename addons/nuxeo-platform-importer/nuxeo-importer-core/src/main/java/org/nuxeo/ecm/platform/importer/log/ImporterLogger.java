@@ -26,24 +26,24 @@ package org.nuxeo.ecm.platform.importer.log;
  */
 public interface ImporterLogger {
 
-    public void info(String message);
+    void info(String message);
 
-    public void warn(String message);
+    void warn(String message);
 
-    public void debug(String message);
+    void debug(String message);
 
-    public void debug(String message, Throwable t);
+    void debug(String message, Throwable t);
 
-    public void error(String message);
+    void error(String message);
 
-    public void error(String message, Throwable t);
+    void error(String message, Throwable t);
 
-    public String getLoggerBuffer(String sep);
+    String getLoggerBuffer(String sep);
 
-    public String getLoggerBuffer();
+    String getLoggerBuffer();
 
-    public boolean isBufferActive();
+    boolean isBufferActive();
 
-    public void setBufferActive(boolean active);
+    void setBufferActive(boolean active);
 
 }

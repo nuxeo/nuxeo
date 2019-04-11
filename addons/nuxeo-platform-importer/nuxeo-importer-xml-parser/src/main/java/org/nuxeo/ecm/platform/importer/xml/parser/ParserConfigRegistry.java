@@ -27,8 +27,8 @@ import java.util.List;
  */
 public interface ParserConfigRegistry {
 
-    public abstract List<AttributeConfigDescriptor> getAttributConfigs();
+    List<AttributeConfigDescriptor> getAttributConfigs();
 
-    public abstract List<DocConfigDescriptor> getDocCreationConfigs();
+    List<DocConfigDescriptor> getDocCreationConfigs();
 
 }

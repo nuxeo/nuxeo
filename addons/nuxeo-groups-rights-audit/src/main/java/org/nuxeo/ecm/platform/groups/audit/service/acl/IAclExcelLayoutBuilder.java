@@ -28,18 +28,18 @@ public interface IAclExcelLayoutBuilder {
     /**
      * Analyze and render an ACL audit for the complete repository in unrestricted mode.
      */
-    public void renderAudit(CoreSession session);
+    void renderAudit(CoreSession session);
 
     /**
      * Analyze and render an ACL audit for the complete document tree in unrestricted mode.
      */
-    public void renderAudit(CoreSession session, DocumentModel doc);
+    void renderAudit(CoreSession session, DocumentModel doc);
 
     /** Analyze and render an ACL audit for the input document and its children. */
-    public void renderAudit(CoreSession session, DocumentModel doc, boolean unrestricted);
+    void renderAudit(CoreSession session, DocumentModel doc, boolean unrestricted);
 
-    public void renderAudit(CoreSession session, final DocumentModel doc, boolean unrestricted, int timeout);
+    void renderAudit(CoreSession session, final DocumentModel doc, boolean unrestricted, int timeout);
 
-    public IExcelBuilder getExcel();
+    IExcelBuilder getExcel();
 
 }

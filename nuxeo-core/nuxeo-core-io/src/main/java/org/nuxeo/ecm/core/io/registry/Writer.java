@@ -50,7 +50,7 @@ public interface Writer<EntityType> extends Marshaller<EntityType> {
      * @throws IOException If some error append while writing entity to out.
      * @since 7.2
      */
-    public void write(EntityType entity, Class<?> clazz, Type genericType, MediaType mediatype, OutputStream out)
+    void write(EntityType entity, Class<?> clazz, Type genericType, MediaType mediatype, OutputStream out)
             throws IOException;
 
 }

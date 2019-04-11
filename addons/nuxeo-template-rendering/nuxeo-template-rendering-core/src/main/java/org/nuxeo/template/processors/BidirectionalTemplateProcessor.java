@@ -35,6 +35,6 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
  */
 public interface BidirectionalTemplateProcessor extends TemplateProcessor {
 
-    public DocumentModel updateDocumentFromBlob(TemplateBasedDocument templateDocument, String templateName) throws IOException;
+    DocumentModel updateDocumentFromBlob(TemplateBasedDocument templateDocument, String templateName) throws IOException;
 
 }

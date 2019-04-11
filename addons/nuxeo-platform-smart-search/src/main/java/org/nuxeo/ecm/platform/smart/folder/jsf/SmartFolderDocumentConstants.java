@@ -26,12 +26,12 @@ package org.nuxeo.ecm.platform.smart.folder.jsf;
  */
 public interface SmartFolderDocumentConstants {
 
-    public static String QUERY_PART_PROP_NAME = "sf:queryPart";
+    String QUERY_PART_PROP_NAME = "sf:queryPart";
 
-    public static String SELECTED_LAYOUT_COLUMNS_PROP_NAME = "cvd:selectedLayoutColumns";
+    String SELECTED_LAYOUT_COLUMNS_PROP_NAME = "cvd:selectedLayoutColumns";
 
-    public static String SORT_INFOS_PROP_NAME = "cvd:sortInfos";
+    String SORT_INFOS_PROP_NAME = "cvd:sortInfos";
 
-    public static String PAGE_SIZE_PROP_NAME = "cvd:pageSize";
+    String PAGE_SIZE_PROP_NAME = "cvd:pageSize";
 
 }

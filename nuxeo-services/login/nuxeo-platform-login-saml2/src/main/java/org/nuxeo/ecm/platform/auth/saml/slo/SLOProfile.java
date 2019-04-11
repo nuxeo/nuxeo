@@ -34,7 +34,7 @@ public interface SLOProfile {
     /**
      * Identifier of the Single Logout profile.
      */
-    public static final String PROFILE_URI = "urn:oasis:names:tc:SAML:2.0:profiles:SSO:logout";
+    String PROFILE_URI = "urn:oasis:names:tc:SAML:2.0:profiles:SSO:logout";
 
     LogoutRequest buildLogoutRequest(SAMLMessageContext context, SAMLCredential credential) throws SAMLException;
 

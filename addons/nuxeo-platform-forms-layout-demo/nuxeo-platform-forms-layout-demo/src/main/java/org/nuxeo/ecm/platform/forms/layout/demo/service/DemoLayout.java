@@ -46,11 +46,11 @@ public interface DemoLayout extends Serializable {
     /**
      * @since 7.2
      */
-    public boolean isAddForm();
+    boolean isAddForm();
 
     /**
      * @since 7.2
      */
-    public boolean isUseAjaxForm();
+    boolean isUseAjaxForm();
 
 }

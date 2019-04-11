@@ -96,7 +96,7 @@ public class State implements StateAccessor, Serializable {
     /**
      * Singleton marker.
      */
-    private static enum Nop {
+    private enum Nop {
         NOP
     }
 

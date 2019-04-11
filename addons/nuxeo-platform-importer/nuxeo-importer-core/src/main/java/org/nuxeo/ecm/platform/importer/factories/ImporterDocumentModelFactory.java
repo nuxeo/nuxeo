@@ -36,11 +36,11 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  */
 public interface ImporterDocumentModelFactory {
 
-    public boolean isTargetDocumentModelFolderish(SourceNode node);
+    boolean isTargetDocumentModelFolderish(SourceNode node);
 
-    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException;
+    DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException;
 
-    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException;
+    DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException;
 
     /**
      * Defines the process to execute when a folderish node creation error occurs.
@@ -53,7 +53,7 @@ public interface ImporterDocumentModelFactory {
      * @return true if the global import task should continue after processing the error, false if it should be stopped
      *         immediately after processing the error.
      */
-    public boolean processFolderishNodeCreationError(CoreSession session, DocumentModel parent, SourceNode node);
+    boolean processFolderishNodeCreationError(CoreSession session, DocumentModel parent, SourceNode node);
 
     /**
      * Defines the process to execute when a leaf node creation error occurs.
@@ -65,6 +65,6 @@ public interface ImporterDocumentModelFactory {
      * @return true if the global import task should continue after processing the error, false if it should be stopped
      *         immediately after processing the error.
      */
-    public boolean processLeafNodeCreationError(CoreSession session, DocumentModel parent, SourceNode node);
+    boolean processLeafNodeCreationError(CoreSession session, DocumentModel parent, SourceNode node);
 
 }

@@ -37,7 +37,7 @@ public interface TransactionStatistics {
                 javax.transaction.Status.STATUS_PREPARING), ROLLEDBACK(javax.transaction.Status.STATUS_ROLLEDBACK), ROLLING_BACK(
                 javax.transaction.Status.STATUS_ROLLING_BACK), UNKNOWN(javax.transaction.Status.STATUS_UNKNOWN);
 
-        public final int code;
+        int code;
 
         Status(int code) {
             this.code = code;
