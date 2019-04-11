@@ -526,6 +526,6 @@ public class LogEntryProvider implements BaseLogEntryProvider {
     @SuppressWarnings("unchecked")
     public List<String> findEventIds() {
         Query query = em.createNamedQuery("LogEntry.findEventIds");
-        return (List<String>) query.getResultList();
+        return query.getResultList();
     }
 }

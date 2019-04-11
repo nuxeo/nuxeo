@@ -435,7 +435,7 @@ public class ChainSelect extends UIInput implements ResettableComponent {
         if (children != null) {
             UIComponent child = null;
             while (children.hasNext()) {
-                child = (UIComponent) children.next();
+                child = children.next();
                 if (child instanceof ChainSelectListboxComponent) {
                     Integer index = ((ChainSelectListboxComponent) child).getIndex();
                     if (i == index) {

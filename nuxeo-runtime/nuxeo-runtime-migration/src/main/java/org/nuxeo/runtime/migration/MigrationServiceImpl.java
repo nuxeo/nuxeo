@@ -519,7 +519,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
                 }
             }
             try {
-                Thread.sleep((long) (RANDOM.nextInt(100) * i));
+                Thread.sleep(RANDOM.nextInt(100) * i);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);

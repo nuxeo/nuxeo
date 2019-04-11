@@ -71,7 +71,7 @@ public class ProxyTicketReceptor extends HttpServlet {
             // retrieve the URL for CAS
             if (casProxyUrl == null) {
                 ServletContext app = config.getServletContext();
-                casProxyUrl = (String) app.getInitParameter("edu.yale.its.tp.cas.proxyUrl");
+                casProxyUrl = app.getInitParameter("edu.yale.its.tp.cas.proxyUrl");
                 if (casProxyUrl == null)
                     throw new ServletException("need edu.yale.its.tp.cas.proxyUrl");
             }

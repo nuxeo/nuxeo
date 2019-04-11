@@ -89,7 +89,7 @@ public abstract class TestBlobImport {
                         new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter),
                         ConsumerPolicy.builder().batchPolicy(BatchPolicy.NO_BATCH).build());
                 List<ConsumerStatus> retConsumers = consumers.start().get();
-                assertEquals(NB_QUEUE, (long) retConsumers.size());
+                assertEquals(NB_QUEUE, retConsumers.size());
                 assertEquals(NB_PRODUCERS * NB_BLOBS, retConsumers.stream().mapToLong(r -> r.committed).sum());
             }
         }

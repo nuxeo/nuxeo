@@ -460,7 +460,7 @@ public abstract class AbstractKeyValueStoreTest {
         assertEquals(BAR, new String(store.get(key)));
         assertEquals(Collections.singleton(key), storeKeys());
 
-        ((KeyValueStoreProvider) store).clear();
+        store.clear();
         assertNull(store.get(key));
         assertEquals(Collections.emptySet(), storeKeys());
     }

@@ -449,7 +449,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         if (isCheckedOut()) {
             return null;
         }
-        Serializable id = (Serializable) getPropertyValue(Model.MAIN_BASE_VERSION_PROP);
+        Serializable id = getPropertyValue(Model.MAIN_BASE_VERSION_PROP);
         if (id == null) {
             // shouldn't happen
             return null;

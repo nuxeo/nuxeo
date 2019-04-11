@@ -249,7 +249,7 @@ public class TestStateHelper {
                 state("1", "2", "A", "B"), state("1", "2", "A", "C"));
         // changed values which are diffs
         assertDiff(stateDiff("A", rpush("C")), //
-                state("A", (Serializable) list("B")), state("A", (Serializable) list("B", "C")));
+                state("A", list("B")), state("A", list("B", "C")));
         assertDiff(stateDiff("A", stateDiff("B", "D")), //
                 state("A", state("1", "2", "B", "C")), state("A", state("1", "2", "B", "D")));
     }

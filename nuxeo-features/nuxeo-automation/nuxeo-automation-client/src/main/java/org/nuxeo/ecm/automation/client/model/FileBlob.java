@@ -45,7 +45,7 @@ public class FileBlob extends Blob implements HasFile {
     @Override
     public int getLength() {
         long length = file.length();
-        if (length > (long) Integer.MAX_VALUE) {
+        if (length > Integer.MAX_VALUE) {
             return -1;
         }
         return (int) length;

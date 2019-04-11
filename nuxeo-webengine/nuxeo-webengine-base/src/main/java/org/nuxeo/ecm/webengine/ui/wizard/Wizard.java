@@ -80,7 +80,7 @@ public abstract class Wizard extends DefaultObject {
                 initialFields = new HashMap<>();
             }
         }
-        page = (WizardPage) session.getPage(); // the current page
+        page = session.getPage(); // the current page
     }
 
     protected void destroySession() {

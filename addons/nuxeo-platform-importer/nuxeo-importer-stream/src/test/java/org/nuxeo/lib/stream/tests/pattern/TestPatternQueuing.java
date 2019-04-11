@@ -99,7 +99,7 @@ public abstract class TestPatternQueuing {
         appender.append(1, KeyValueMessage.POISON_PILL);
 
         List<ConsumerStatus> ret = consumersFuture.get();
-        assertEquals(LOG_SIZE, (long) ret.size());
+        assertEquals(LOG_SIZE, ret.size());
         assertEquals(2, ret.stream().mapToLong(r -> r.committed).sum());
     }
 
@@ -120,7 +120,7 @@ public abstract class TestPatternQueuing {
         appender.append(0, KeyValueMessage.POISON_PILL);
         appender.append(0, KeyValueMessage.of("no consumer to read this one"));
         List<ConsumerStatus> ret = consumersFuture.get();
-        assertEquals(LOG_SIZE, (long) ret.size());
+        assertEquals(LOG_SIZE, ret.size());
         // with Kafka subscribe there is one more commit because of rebalance
         // assertEquals(1, ret.stream().mapToLong(r -> r.batchCommit).sum());
         assertEquals(1, ret.stream().mapToLong(r -> r.committed).sum());
@@ -154,7 +154,7 @@ public abstract class TestPatternQueuing {
         List<ConsumerStatus> ret;
         try {
             ret = future.get();
-            assertEquals(LOG_SIZE, (long) ret.size());
+            assertEquals(LOG_SIZE, ret.size());
             assertEquals(2, ret.stream().filter(s -> s.fail).count());
         } catch (ExecutionException e) {
             // When executor is shutdownNow async task can be reported as being rejected

@@ -348,13 +348,13 @@ public class LDAPFilterBuilder {
 
     public void walkOperand(Operand operand) {
         if (operand instanceof Literal) {
-            walkLiteral((Literal) operand);
+            walkLiteral(operand);
         } else if (operand instanceof Function) {
             walkFunction((Function) operand);
         } else if (operand instanceof Expression) {
             walkExpression((Expression) operand);
         } else if (operand instanceof Reference) {
-            walkReference((Reference) operand);
+            walkReference(operand);
         } else {
             throw new QueryParseException("Unknown operand: " + operand);
         }

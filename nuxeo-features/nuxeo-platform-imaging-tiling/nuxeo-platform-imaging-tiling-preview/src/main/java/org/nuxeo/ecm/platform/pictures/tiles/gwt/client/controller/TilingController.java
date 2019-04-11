@@ -76,8 +76,8 @@ public class TilingController {
         // + zoomedBx + " ,zoomedBy=" + zoomedBy);
 
         if (zoomedAx > startX && zoomedBx < endX && zoomedAy > startY && zoomedBy < endY) {
-            int Ax = (int) Math.round(zoomedAx);
-            int Ay = (int) Math.round(zoomedAy);
+            int Ax = Math.round(zoomedAx);
+            int Ay = Math.round(zoomedAy);
             int Bx = Math.round(Ax + (zoomedBx - zoomedAx));
             int By = Math.round(Ay + (zoomedBy - zoomedAy));
             // Window.alert("filterPoint: [" + Ax + "," + Ay + "]:[" + Bx + ","

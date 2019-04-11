@@ -263,7 +263,7 @@ public class WebException extends WebApplicationException {
      */
     protected Response toWebModuleResponse(WebContext ctx) {
         ModuleResource mr = (ModuleResource) ctx.head();
-        Object result = mr.handleError((WebApplicationException) this.getCause());
+        Object result = mr.handleError(this.getCause());
         if (result instanceof Response) {
             return (Response) result;
         }

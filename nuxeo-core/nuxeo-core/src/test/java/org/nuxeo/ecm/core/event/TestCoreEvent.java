@@ -132,7 +132,7 @@ public class TestCoreEvent {
     @Test
     public void testCoreEventWithInfo() {
         String eventId = "someEvent";
-        Document source = (Document) jmcontext.mock(Document.class);
+        Document source = jmcontext.mock(Document.class);
 
         Map<String, Serializable> info = new HashMap<>();
         info.put("destination", "xxx");

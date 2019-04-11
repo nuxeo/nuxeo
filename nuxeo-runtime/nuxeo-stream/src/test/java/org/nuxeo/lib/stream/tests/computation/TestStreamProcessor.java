@@ -106,7 +106,7 @@ public abstract class TestStreamProcessor {
                 long lowWatermark = processor.getLowWatermark();
                 log.info("low: " + lowWatermark + " dist: " + (targetWatermark - lowWatermark));
             }
-            double elapsed = (double) (System.currentTimeMillis() - start) / 1000.0;
+            double elapsed = (System.currentTimeMillis() - start) / 1000.0;
             // shutdown brutally so there is no more processing in background
             processor.shutdown();
 
@@ -241,7 +241,7 @@ public abstract class TestStreamProcessor {
             // no record are processed so far
 
             assertTrue(processor.drainAndStop(Duration.ofSeconds(100)));
-            double elapsed = (double) (System.currentTimeMillis() - start) / 1000.0;
+            double elapsed = (System.currentTimeMillis() - start) / 1000.0;
             // read the results
             int result = readOutputCounter(manager);
             log.info(String.format(
@@ -338,7 +338,7 @@ public abstract class TestStreamProcessor {
             // because of a random lag due to kafka init and/or GC > 500ms.
             Thread.sleep(2000);
             assertTrue(processor.drainAndStop(Duration.ofSeconds(100)));
-            double elapsed = (double) (System.currentTimeMillis() - start) / 1000.0;
+            double elapsed = (System.currentTimeMillis() - start) / 1000.0;
             long total = settings1.getConcurrency("GENERATOR") * nbRecords;
             log.info(String.format("generated: %s in %.2fs, throughput: %.2f records/s", total, elapsed,
                     total / elapsed));
@@ -370,7 +370,7 @@ public abstract class TestStreamProcessor {
             processor.start();
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             assertTrue(processor.drainAndStop(Duration.ofSeconds(200)));
-            double elapsed = (double) (System.currentTimeMillis() - start) / 1000.0;
+            double elapsed = (System.currentTimeMillis() - start) / 1000.0;
             // read the results
             long processed = readOutputCounter(manager);
             result += processed;
@@ -404,7 +404,7 @@ public abstract class TestStreamProcessor {
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             // no record are processed so far
             assertTrue(processor.drainAndStop(Duration.ofSeconds(100)));
-            double elapsed = (double) (System.currentTimeMillis() - start) / 1000.0;
+            double elapsed = (System.currentTimeMillis() - start) / 1000.0;
             int result = countRecordIn(manager, "s1");
             log.info(
                     String.format("count: %s in %.2fs, throughput: %.2f records/s", result, elapsed, result / elapsed));

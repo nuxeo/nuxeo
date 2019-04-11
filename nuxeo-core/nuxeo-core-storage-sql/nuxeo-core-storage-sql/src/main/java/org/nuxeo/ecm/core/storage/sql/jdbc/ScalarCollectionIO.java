@@ -96,7 +96,7 @@ public class ScalarCollectionIO implements CollectionIO {
                     if (key.equals(Model.MAIN_KEY)) {
                         v = id;
                     } else if (key.equals(Model.COLL_TABLE_POS_KEY)) {
-                        v = Long.valueOf((long) i);
+                        v = Long.valueOf(i);
                     } else if (key.equals(Model.COLL_TABLE_VALUE_KEY)) {
                         v = array[i];
                     } else {

@@ -186,7 +186,7 @@ public class FormData implements FormInstance {
         if (isMultipart) {
             return getMultiPartItems().keySet();
         } else {
-            return ((Map<String, String[]>) request.getParameterMap()).keySet();
+            return request.getParameterMap().keySet();
         }
     }
 

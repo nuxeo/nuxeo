@@ -149,7 +149,7 @@ public class DBCheck implements BackingChecker {
      */
     private Driver lookupDriver(ConfigurationGenerator cg, String databaseTemplate, File databaseTemplateDir, String classname)
             throws FileNotFoundException, IOException, DatabaseDriverException {
-        File[] files = (File[]) ArrayUtils.addAll( //
+        File[] files = ArrayUtils.addAll( //
                 new File(databaseTemplateDir, "lib").listFiles(), //
                 cg.getServerConfigurator().getServerLibDir().listFiles());
         List<URL> urlsList = new ArrayList<>();
