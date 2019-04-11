@@ -26,7 +26,6 @@ import java.util.List;
 import javax.servlet.ServletException;
 
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.core.io.download.DownloadHelper;
 
 public class ExceptionHelper {
 

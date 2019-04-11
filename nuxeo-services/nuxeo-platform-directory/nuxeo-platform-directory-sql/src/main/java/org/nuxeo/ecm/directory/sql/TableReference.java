@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table.IndexType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryCSVLoader;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.ReferenceDescriptor;

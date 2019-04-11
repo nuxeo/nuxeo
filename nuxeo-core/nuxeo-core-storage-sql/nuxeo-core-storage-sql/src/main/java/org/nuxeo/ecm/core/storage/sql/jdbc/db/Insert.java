@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**

@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.schema.types;
 
 import java.util.HashSet;
 
-import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**

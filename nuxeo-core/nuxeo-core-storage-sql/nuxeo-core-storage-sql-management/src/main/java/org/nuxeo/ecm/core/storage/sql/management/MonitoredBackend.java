@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.storage.sql.management;
 import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.ModelSetup;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;

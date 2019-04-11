@@ -12,7 +12,6 @@
 package org.nuxeo.ecm.core.storage.mongodb;
 
 import static org.junit.Assert.assertEquals;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_SET;
 
 import org.junit.Test;

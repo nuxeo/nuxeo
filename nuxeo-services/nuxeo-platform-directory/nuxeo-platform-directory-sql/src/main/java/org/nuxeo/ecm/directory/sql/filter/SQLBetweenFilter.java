@@ -20,8 +20,6 @@
 package org.nuxeo.ecm.directory.sql.filter;
 
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
-import org.nuxeo.ecm.directory.DirectoryException;
-
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Calendar;

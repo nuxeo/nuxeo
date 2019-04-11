@@ -21,10 +21,6 @@
 
 package org.nuxeo.ecm.platform.ec.notification;
 
-import java.util.Arrays;
-
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 
 /**

@@ -23,8 +23,6 @@ import java.util.Properties;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.nuxeo.lib.stream.computation.StreamProcessor;
-import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.lib.stream.tests.TestKafkaUtils;

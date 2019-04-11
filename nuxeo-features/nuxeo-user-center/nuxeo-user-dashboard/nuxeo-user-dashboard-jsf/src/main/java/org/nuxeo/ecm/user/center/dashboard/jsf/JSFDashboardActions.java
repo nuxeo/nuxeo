@@ -21,9 +21,7 @@ package org.nuxeo.ecm.user.center.dashboard.jsf;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
@@ -39,7 +37,6 @@ import org.nuxeo.common.utils.UserAgentMatcher;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;

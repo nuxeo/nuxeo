@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.automation.core.operations.management;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

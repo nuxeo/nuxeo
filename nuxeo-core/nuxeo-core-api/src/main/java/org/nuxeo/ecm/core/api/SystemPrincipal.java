@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.core.api;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

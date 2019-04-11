@@ -20,10 +20,7 @@ package org.nuxeo.ecm.platform.comment.impl;
 
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.api.CoreInstance;

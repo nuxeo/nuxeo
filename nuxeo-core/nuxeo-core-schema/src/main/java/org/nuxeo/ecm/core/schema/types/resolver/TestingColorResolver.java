@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.schema.types.resolver;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;

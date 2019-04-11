@@ -43,7 +43,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor;

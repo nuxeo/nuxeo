@@ -18,7 +18,6 @@
  */
 package org.nuxeo.targetplatforms.core.service;
 
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;

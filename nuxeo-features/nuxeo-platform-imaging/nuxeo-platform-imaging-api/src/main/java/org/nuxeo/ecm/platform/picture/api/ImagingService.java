@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.picture.api;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 

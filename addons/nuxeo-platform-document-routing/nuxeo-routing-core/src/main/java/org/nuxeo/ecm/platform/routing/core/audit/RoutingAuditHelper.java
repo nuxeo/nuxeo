@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.routing.core.audit;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 

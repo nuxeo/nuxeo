@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE_KEY;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.List;

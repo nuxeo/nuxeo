@@ -19,8 +19,6 @@
 package org.nuxeo.ecm.platform.query.api;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;

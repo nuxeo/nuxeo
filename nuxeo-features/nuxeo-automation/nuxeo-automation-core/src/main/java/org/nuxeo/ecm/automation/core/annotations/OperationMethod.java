@@ -25,7 +25,6 @@ import java.lang.annotation.Target;
 
 import org.nuxeo.ecm.automation.OutputCollector;
 import org.nuxeo.ecm.core.api.AsyncService;
-import org.nuxeo.ecm.core.bulk.BulkService;
 
 /**
  * To be used to mark methods provided by an operation. A method must have at most one argument which is the operation

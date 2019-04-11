@@ -54,9 +54,7 @@ import org.opensaml.saml2.core.Subject;
 import org.opensaml.saml2.metadata.SPSSODescriptor;
 import org.opensaml.saml2.metadata.SingleSignOnService;
 import org.opensaml.xml.encryption.DecryptionException;
-import org.opensaml.xml.security.SecurityException;
 import org.opensaml.xml.signature.Signature;
-import org.opensaml.xml.validation.ValidationException;
 
 /**
  * WebSSO (Single Sign On) profile implementation.

@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.IdentityQueryTransformer;
@@ -36,7 +35,6 @@ import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
-import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.multi.MultiDirectorySession.SourceInfo;
 import org.nuxeo.ecm.directory.multi.MultiDirectorySession.SubDirectoryInfo;
 

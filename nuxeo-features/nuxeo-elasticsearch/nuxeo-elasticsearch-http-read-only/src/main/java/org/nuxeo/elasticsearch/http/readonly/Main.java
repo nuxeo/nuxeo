@@ -19,8 +19,6 @@
 package org.nuxeo.elasticsearch.http.readonly;
 
 import java.io.IOException;
-import java.security.Principal;
-
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

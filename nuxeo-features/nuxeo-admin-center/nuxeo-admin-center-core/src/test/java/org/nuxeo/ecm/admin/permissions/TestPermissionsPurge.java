@@ -20,12 +20,10 @@
 package org.nuxeo.ecm.admin.permissions;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 

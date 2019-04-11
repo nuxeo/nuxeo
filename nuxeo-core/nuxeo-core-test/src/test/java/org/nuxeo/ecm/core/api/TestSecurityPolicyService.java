@@ -27,7 +27,6 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ANONYMOUS;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

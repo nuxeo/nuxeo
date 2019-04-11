@@ -21,7 +21,6 @@
 package org.nuxeo.template.fm;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.regex.Matcher;

@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

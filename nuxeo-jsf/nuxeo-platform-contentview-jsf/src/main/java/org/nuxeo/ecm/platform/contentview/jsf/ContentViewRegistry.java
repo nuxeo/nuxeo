@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -28,9 +27,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
-import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
-import org.nuxeo.ecm.platform.query.core.ReferencePageProviderDescriptor;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**

@@ -25,8 +25,6 @@ import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_NAME;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_PORT;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_PWD;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_USER;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNAME;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

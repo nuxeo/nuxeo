@@ -21,8 +21,6 @@ package org.nuxeo.ecm.automation.server.test.json;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.common.utils.StringUtils;
-
 /**
  * A simple POJO class that can be mapped as a json datastructure by jackson.
  */
