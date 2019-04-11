@@ -45,8 +45,6 @@ public class ResourceBinding {
     @XNode("@singleton")
     public boolean singleton = false;
 
-    private boolean hasUserPath = false;
-
     /**
      * Use this to specify the resource class.
      */
@@ -71,14 +69,12 @@ public class ResourceBinding {
         if (clazz == null) {
             clazz = engine.loadClass(className);
             if (path == null) {
-                hasUserPath = false;
                 Path p = clazz.getAnnotation(Path.class);
                 if (p == null) {
                     throw new NuxeoException("Invalid resource binding. Path not defined");
                 }
                 path = p.value();
             } else {
-                hasUserPath = true;
             }
         }
     }

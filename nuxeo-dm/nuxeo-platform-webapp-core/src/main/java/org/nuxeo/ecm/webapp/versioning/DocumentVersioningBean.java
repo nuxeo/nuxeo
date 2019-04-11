@@ -84,13 +84,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     @In(create = true)
     private transient VersioningManager versioningManager;
 
-    /**
-     * field used for deciding whether or not to display versioning controls section (in document editing)
-     */
-    private Boolean rendered;
-
-    private VersioningActions selectedOption;
-
     @Override
     public Collection<VersionModel> getItemVersioningHistory(DocumentModel document) {
         List<VersionModel> versions = Collections.emptyList();
@@ -123,8 +116,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void resetVersioningOption() {
-        selectedOption = null;
-        rendered = null;
     }
 
     @Override

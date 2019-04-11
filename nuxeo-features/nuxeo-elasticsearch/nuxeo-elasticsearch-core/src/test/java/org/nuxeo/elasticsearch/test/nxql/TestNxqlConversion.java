@@ -60,8 +60,6 @@ public class TestNxqlConversion {
 
     private static final String IDX_NAME = "nxutest";
 
-    private static final String TYPE_NAME = "doc";
-
     @Inject
     protected CoreSession session;
 

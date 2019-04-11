@@ -57,19 +57,10 @@ public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.mod
 
     private Reference reference;
 
-    /**
-     * This is {@code true} if the connectionManager comes from an application server, or {@code false} if the
-     * {@link ConnectionFactoryImpl} was constructed by application code and passed our manual
-     * {@link ConnectionManagerImpl}.
-     */
-    @SuppressWarnings("unused")
-    private final boolean managed;
-
     public ConnectionFactoryImpl(ManagedConnectionFactoryImpl managedConnectionFactory,
             ConnectionManager connectionManager) {
         this.managedConnectionFactory = managedConnectionFactory;
         this.connectionManager = connectionManager;
-        managed = !(connectionManager instanceof ConnectionManagerImpl);
         name = managedConnectionFactory.getName();
     }
 

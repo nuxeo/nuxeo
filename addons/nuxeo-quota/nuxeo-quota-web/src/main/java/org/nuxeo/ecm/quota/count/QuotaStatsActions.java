@@ -81,8 +81,6 @@ public class QuotaStatsActions implements Serializable {
     @In(create = true)
     protected Map<String, String> messages;
 
-    private transient ConfigurationGenerator setupConfigGenerator;
-
     protected boolean activateQuotaOnUsersWorkspaces;
 
     protected long maxQuotaOnUsersWorkspaces = -1;

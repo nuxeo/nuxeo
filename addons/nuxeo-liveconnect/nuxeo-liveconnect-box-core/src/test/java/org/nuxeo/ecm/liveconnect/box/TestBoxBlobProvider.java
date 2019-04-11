@@ -37,9 +37,6 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 public class TestBoxBlobProvider extends BoxTestCase {
 
     @Inject
-    private RuntimeHarness harness;
-
-    @Inject
     private BlobManager blobManager;
 
     private BoxBlobProvider blobProvider;

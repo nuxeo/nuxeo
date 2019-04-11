@@ -62,10 +62,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-nested-mapping-contrib.xml")
 public class TestElasticSearchQuery {
 
-    private static final String IDX_NAME = "nxutest";
-
-    private static final String TYPE_NAME = "doc";
-
     private static final String SCORE = "score";
 
     @Inject

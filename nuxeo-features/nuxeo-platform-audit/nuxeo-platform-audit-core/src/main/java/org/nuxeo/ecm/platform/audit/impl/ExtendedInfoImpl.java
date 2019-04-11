@@ -112,6 +112,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
 
         private static final long serialVersionUID = 1L;
 
+        // default constructor needed by hibernate
         private LongInfo() {
         }
 
@@ -143,6 +144,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
 
         private static final long serialVersionUID = 1L;
 
+        // default constructor needed by hibernate
         private DateInfo() {
         }
 
@@ -175,6 +177,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
 
         private static final long serialVersionUID = 1L;
 
+        // default constructor needed by hibernate
         private StringInfo() {
         }
 
@@ -206,6 +209,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
 
         private static final long serialVersionUID = 1L;
 
+        // default constructor needed by hibernate
         private DoubleInfo() {
         }
 
@@ -237,6 +241,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
 
         private static final long serialVersionUID = 1L;
 
+        // default constructor needed by hibernate
         private BooleanInfo() {
         }
 
@@ -268,6 +273,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
 
         private static final long serialVersionUID = 1L;
 
+        // default constructor needed by hibernate
         private BlobInfo() {
         }
 

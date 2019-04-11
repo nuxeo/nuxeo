@@ -42,8 +42,6 @@ public class PictureConversion implements Comparable<PictureConversion> {
 
     private static final boolean DEFAULT_ENABLED = true;
 
-    private static final boolean DEFAULT_ISDEFAULT = false;
-
     private static final boolean DEFAULT_RENDITION_VISIBLE = true;
 
     private static final boolean DEFAULT_ISRENDITION = true;

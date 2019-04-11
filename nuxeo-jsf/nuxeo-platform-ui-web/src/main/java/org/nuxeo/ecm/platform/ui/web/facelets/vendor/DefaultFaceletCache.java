@@ -255,7 +255,6 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
     private static class Record {
         Record(long creationTime, long lastModified, Facelet facelet, long refreshInterval) {
             _facelet = facelet;
-            _creationTime = creationTime;
             _lastModified = lastModified;
             _refreshInterval = refreshInterval;
 
@@ -284,8 +283,6 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
         private final long _lastModified;
 
         private final long _refreshInterval;
-
-        private final long _creationTime;
 
         private final AtomicLong _nextRefreshTime;
 

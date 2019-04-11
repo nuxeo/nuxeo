@@ -46,15 +46,11 @@ public class XAnnotatedMember {
      */
     protected XValueFactory valueFactory;
 
-    private final XMap xmap;
-
     protected XAnnotatedMember(XMap xmap, XAccessor accessor) {
-        this.xmap = xmap;
         this.accessor = accessor;
     }
 
     public XAnnotatedMember(XMap xmap, XAccessor setter, XNode anno) {
-        this.xmap = xmap;
         accessor = setter;
         path = new Path(anno.value());
         trim = anno.trim();

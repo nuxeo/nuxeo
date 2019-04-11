@@ -63,8 +63,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
 public class TestImagingAdapter {
 
-    private static final String JPEG_IMAGE = "iptc_sample.jpg";
-
     @Inject
     protected CoreSession session;
 

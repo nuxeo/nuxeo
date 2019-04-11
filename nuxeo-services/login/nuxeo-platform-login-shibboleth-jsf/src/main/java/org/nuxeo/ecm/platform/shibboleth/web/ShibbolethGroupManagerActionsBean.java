@@ -50,8 +50,6 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
 
     protected static final String EDIT_SHIBB_GROUP = "edit_shibbGroup";
 
-    private static final long serialVersionUID = -2103588024105680788L;
-
     protected DocumentModel selectedGroup;
 
     protected DocumentModel newGroup;

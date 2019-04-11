@@ -116,18 +116,8 @@ public class PathCache {
             return expiredTime;
         }
 
-        @SuppressWarnings("unused")
-        public void setExpiredTime(long expiredTime) {
-            this.expiredTime = expiredTime;
-        }
-
         public String getValue() {
             return value;
-        }
-
-        @SuppressWarnings("unused")
-        public void setValue(String value) {
-            this.value = value;
         }
     }
 

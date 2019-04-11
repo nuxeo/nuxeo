@@ -53,6 +53,7 @@ public class TestWriterMarshalledType {
         assertEquals(Integer.class, type);
     }
 
+    // keep those, we want to test reflection on private fields
     // used for reflect in following test
     @SuppressWarnings("unused")
     private Map<String, List<Integer>> listIntegerMapProperty = null;

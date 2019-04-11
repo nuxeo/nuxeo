@@ -51,10 +51,6 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin, NuxeoAuthe
 
     public static final String ALLOW_ANONYMOUS_KEY = "allowAnonymous";
 
-    private static final String HTTPS = "https";
-
-    private static final String LOCALHOST = "localhost";
-
     private static final Log log = LogFactory.getLog(TokenAuthenticator.class);
 
     protected static final String TOKEN_HEADER = "X-Authentication-Token";
