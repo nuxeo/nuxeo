@@ -415,14 +415,14 @@ public class NuxeoSession implements Session {
     @Override
     public ItemIterable<ChangeEvent> getContentChanges(String changeLogToken, boolean includeProperties) {
         return getContentChanges(changeLogToken, includeProperties, getDefaultContext());
-    };
+    }
 
     @Override
     public ItemIterable<ChangeEvent> getContentChanges(String changeLogToken, boolean includeProperties,
             OperationContext context) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
-    };
+    }
 
     @Override
     public Locale getLocale() {

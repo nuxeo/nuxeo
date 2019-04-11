@@ -215,7 +215,7 @@ public class TestComplexTypeJSONDecoder {
         assertDecodeBlobObjectFail(json);
 
         // unknown document
-        String downloadURL = BASE_URL + downloadService.getDownloadUrl("test", "1", "file:content", "foo.txt");;
+        String downloadURL = BASE_URL + downloadService.getDownloadUrl("test", "1", "file:content", "foo.txt");
         json = String.format(OBJECT_BLOB_JSON, downloadURL);
         assertDecodeBlobObjectFail(json);
 

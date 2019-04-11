@@ -45,6 +45,6 @@ public class DocumentRoutingWebConstants {
     public static final String MOVE_STEP_DOWN = "down";
 
     private DocumentRoutingWebConstants() {
-    };
+    }
 
 }

@@ -34,7 +34,7 @@ public final class BucketTerm implements Bucket {
     public BucketTerm(String key, long docCount) {
         if (key == null) {
             throw new IllegalArgumentException("key is null");
-        };
+        }
         this.key = key;
         this.docCount = docCount;
     }

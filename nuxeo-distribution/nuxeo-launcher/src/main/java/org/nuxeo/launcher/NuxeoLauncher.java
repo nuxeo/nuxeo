@@ -2633,7 +2633,6 @@ public abstract class NuxeoLauncher {
         try {
             clid = connectBroker.getCLID();
         } catch (NoCLID cause) {
-            ;
         }
         info = configurationGenerator.getServerConfigurator().getInfo(clid, connectBroker.getPkgList());
         if (new Version(info.distribution.version).isSnapshot()) {

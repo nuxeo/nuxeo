@@ -159,7 +159,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         try {
             return cfg.createEntityManagerFactory(properties);
         } finally {
-                TransactionHelper.resumeTransaction(tx);;
+                TransactionHelper.resumeTransaction(tx);
         }
     }
 

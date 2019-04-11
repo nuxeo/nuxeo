@@ -41,7 +41,7 @@ public class AutomationScope implements Scope {
         };
     };
 
-    protected AutomationScope() {;
+    protected AutomationScope() {
     }
 
     public void enter() {

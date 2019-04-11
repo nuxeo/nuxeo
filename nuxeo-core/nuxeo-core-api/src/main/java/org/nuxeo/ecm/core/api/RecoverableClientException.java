@@ -33,7 +33,7 @@ public class RecoverableClientException extends NuxeoException {
 
     public enum Severity {
         WARN, ERROR, FATAL
-    };
+    }
 
     protected Severity severity = Severity.ERROR;
 

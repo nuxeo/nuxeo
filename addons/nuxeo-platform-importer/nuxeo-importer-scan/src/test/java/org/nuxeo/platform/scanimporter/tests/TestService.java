@@ -62,7 +62,7 @@ public class TestService extends NXRuntimeTestCase {
         assertEquals("xpath1", desc.getFieldMappings().get(0).getSourceXPath());
         assertEquals("attr1", desc.getFieldMappings().get(0).getSourceAttribute());
         assertEquals("string", desc.getFieldMappings().get(0).getTargetType());
-        assertEquals("dc:title", desc.getFieldMappings().get(0).getTargetXPath());;
+        assertEquals("dc:title", desc.getFieldMappings().get(0).getTargetXPath());
 
         assertEquals("xpath3", desc.getBlobMappings().get(0).getSourceXPath());
         assertEquals("filePath1", desc.getBlobMappings().get(0).getSourcePathAttribute());

@@ -66,7 +66,6 @@ public class TestSidGenerator {
         field.setAccessible(true);
         field.set(null, Integer.MAX_VALUE - 1000);
         Thread.sleep(1);
-        ;
 
         for (int i = 0; i < 3000; i++) {
             long id = SIDGenerator.next();

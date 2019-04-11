@@ -33,7 +33,7 @@ public class TilingModel {
 
     public enum TilingModelEvent {
         MOVE_EVENT, TILING_INFO_UPDATED
-    };
+    }
 
     private TilingInfo tilingInfo;
 

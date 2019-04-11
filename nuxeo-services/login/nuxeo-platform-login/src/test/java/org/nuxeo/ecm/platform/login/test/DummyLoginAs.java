@@ -31,4 +31,4 @@ public class DummyLoginAs implements LoginAs {
     public LoginContext loginAs(String username) throws LoginException {
         return Framework.login(username, username);
     }
-};
+}

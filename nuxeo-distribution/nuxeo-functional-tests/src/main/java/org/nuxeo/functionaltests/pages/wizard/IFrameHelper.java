@@ -58,7 +58,7 @@ public class IFrameHelper {
                 } else {
                     return driver.switchTo().frame(iframe) != null;
                 }
-            };
+            }
         });
     }
 

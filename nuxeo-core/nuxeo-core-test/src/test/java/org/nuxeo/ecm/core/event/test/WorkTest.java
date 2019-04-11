@@ -135,7 +135,7 @@ public class WorkTest {
             }
         }
 
-    };
+    }
 
     public static abstract class BaseWork extends AbstractWork {
         private static final long serialVersionUID = 1L;

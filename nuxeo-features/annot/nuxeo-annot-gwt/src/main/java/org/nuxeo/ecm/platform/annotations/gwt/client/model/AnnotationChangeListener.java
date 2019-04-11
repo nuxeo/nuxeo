@@ -29,5 +29,5 @@ public interface AnnotationChangeListener {
 
     enum ChangeEvent {
         annotation, annotationList
-    };
+    }
 }

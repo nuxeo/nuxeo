@@ -271,7 +271,7 @@ public class SAMLAuthenticatorTest {
         try {
             profile.validateAssertion(assertion, context);
         } catch (SAMLException e) {
-            fail("Validation should have passed");;
+            fail("Validation should have passed");
         }
 
         // Disabling time skew makes validation fail
@@ -312,7 +312,7 @@ public class SAMLAuthenticatorTest {
         try {
             profile.validateAssertion(assertion, context);
         } catch (SAMLException e) {
-            fail("Validation should have passed");;
+            fail("Validation should have passed");
         }
 
         // Disabling time skew makes validation fail

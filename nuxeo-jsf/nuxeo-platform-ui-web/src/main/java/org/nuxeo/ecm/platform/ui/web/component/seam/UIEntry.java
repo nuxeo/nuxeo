@@ -41,7 +41,7 @@ public class UIEntry extends org.jboss.seam.rss.ui.UIEntry {
 
     private static final String COMPONENT_TYPE = UIEntry.class.getName();
 
-    protected static final String RSS20_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";;
+    protected static final String RSS20_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
 
     private FeedFormat feedFormat;
 

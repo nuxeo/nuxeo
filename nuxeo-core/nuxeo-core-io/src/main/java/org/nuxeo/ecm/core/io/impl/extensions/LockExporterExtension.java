@@ -35,9 +35,7 @@ public class LockExporterExtension implements ExportExtension {
             Long created = lock.getCreated().getTimeInMillis();
             String owner = lock.getOwner();
             lockElement.addElement("created").setText(created.toString());
-            ;
             lockElement.addElement("owner").setText(owner.toString());
-            ;
         }
     }
 

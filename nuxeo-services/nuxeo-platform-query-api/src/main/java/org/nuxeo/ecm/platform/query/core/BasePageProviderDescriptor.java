@@ -157,7 +157,7 @@ public abstract class BasePageProviderDescriptor {
      */
     public List<QuickFilter> getQuickFilters() {
         return (List<QuickFilter>) (List<?>) quickFilters;
-    };
+    }
 
     public boolean isSortable() {
         return sortable;

@@ -61,7 +61,7 @@ public class MockAnnoteaServer extends HttpServlet {
         StringBuilder request = new StringBuilder();
         while ((result = reader.readLine()) != null) {
             request.append(result);
-        };
+        }
         String r = request.toString();
         String desc = r.substring(r.indexOf(R_DESCRIPTION), r.indexOf(DESCRIPTION) + DESCRIPTION.length());
         response.insert(response.lastIndexOf("</r:RDF>"), desc);
