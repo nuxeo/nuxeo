@@ -18,10 +18,13 @@
  */
 package org.nuxeo.ecm.platform.importer.service;
 
+import static java.util.Objects.requireNonNullElseGet;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
+import org.nuxeo.ecm.platform.importer.service.ImporterConfigurationDescriptor.DocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -53,8 +56,9 @@ public class DefaultImporterComponent extends DefaultComponent {
             }
             importerService.setSourceNodeClass(sourceNodeClass);
 
-            Class<? extends DefaultDocumentModelFactory> docFactoryClass = descriptor.getDocumentModelFactory()
-                                                                                     .getDocumentModelFactoryClass();
+            DocumentModelFactory docFactory = requireNonNullElseGet(descriptor.getDocumentModelFactory(),
+                    DocumentModelFactory::new);
+            Class<? extends DefaultDocumentModelFactory> docFactoryClass = docFactory.getDocumentModelFactoryClass();
             if (docFactoryClass == null) {
                 docFactoryClass = DefaultDocumentModelFactory.class;
                 log.info(
@@ -62,14 +66,14 @@ public class DefaultImporterComponent extends DefaultComponent {
             }
             importerService.setDocModelFactoryClass(docFactoryClass);
 
-            String folderishType = descriptor.getDocumentModelFactory().getFolderishType();
+            String folderishType = docFactory.getFolderishType();
             if (folderishType == null) {
                 folderishType = DEFAULT_FOLDERISH_DOC_TYPE;
                 log.info("No folderish type defined, using Folder by default");
             }
             importerService.setFolderishDocType(folderishType);
 
-            String leafType = descriptor.getDocumentModelFactory().getLeafType();
+            String leafType = docFactory.getLeafType();
             if (leafType == null) {
                 leafType = DEFAULT_LEAF_DOC_TYPE;
                 log.info("No leaf type doc defined, using File by deafult");
