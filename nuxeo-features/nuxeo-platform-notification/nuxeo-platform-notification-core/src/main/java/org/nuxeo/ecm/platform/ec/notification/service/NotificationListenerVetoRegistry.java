@@ -40,7 +40,7 @@ public class NotificationListenerVetoRegistry extends ContributionFragmentRegist
 
     public NotificationListenerVetoRegistry() {
         super();
-        vetos = new HashMap<String, NotificationListenerVeto>();
+        vetos = new HashMap<>();
     }
 
     @Override

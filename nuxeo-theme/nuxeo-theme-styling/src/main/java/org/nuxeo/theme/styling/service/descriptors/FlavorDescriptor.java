@@ -99,7 +99,7 @@ public class FlavorDescriptor implements Serializable {
         clone.setAppendPresets(getAppendPresets());
         List<FlavorPresets> presets = getPresets();
         if (presets != null) {
-            List<FlavorPresets> newPresets = new ArrayList<FlavorPresets>();
+            List<FlavorPresets> newPresets = new ArrayList<>();
             for (FlavorPresets item : presets) {
                 newPresets.add(item.clone());
             }
@@ -108,7 +108,7 @@ public class FlavorDescriptor implements Serializable {
         clone.setAppendSass(getAppendSass());
         List<SassImport> sassVariables = getSassImports();
         if (sassVariables != null) {
-            List<SassImport> cSassVariables = new ArrayList<SassImport>();
+            List<SassImport> cSassVariables = new ArrayList<>();
             for (SassImport var : sassVariables) {
                 cSassVariables.add(var.clone());
             }
@@ -116,7 +116,7 @@ public class FlavorDescriptor implements Serializable {
         }
         List<IconDescriptor> favicons = getFavicons();
         if (favicons != null) {
-            List<IconDescriptor> icons = new ArrayList<IconDescriptor>();
+            List<IconDescriptor> icons = new ArrayList<>();
             for (IconDescriptor icon : favicons) {
                 icons.add(icon.clone());
             }
@@ -244,7 +244,7 @@ public class FlavorDescriptor implements Serializable {
 
         List<FlavorPresets> newPresets = src.getPresets();
         if (newPresets != null) {
-            List<FlavorPresets> merged = new ArrayList<FlavorPresets>();
+            List<FlavorPresets> merged = new ArrayList<>();
             merged.addAll(newPresets);
             boolean keepOld = src.getAppendPresets() || (newPresets.isEmpty() && !src.getAppendPresets());
             if (keepOld) {
@@ -259,7 +259,7 @@ public class FlavorDescriptor implements Serializable {
 
         List<SassImport> newSassImports = src.getSassImports();
         if (newSassImports != null) {
-            List<SassImport> merged = new ArrayList<SassImport>();
+            List<SassImport> merged = new ArrayList<>();
             merged.addAll(newSassImports);
             boolean keepOld = src.getAppendSass() || (newSassImports.isEmpty() && !src.getAppendSass());
             if (keepOld) {

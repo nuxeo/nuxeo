@@ -67,7 +67,7 @@ public class LayoutAutomaticGeneration {
         Schema schema = sm.getSchema(schemaName);
         String schemaPrefix = schema.getNamespace().prefix;
 
-        List<Field> fields = new ArrayList<Field>();
+        List<Field> fields = new ArrayList<>();
         fields.addAll(schema.getFields());
         Collections.sort(fields, new Comparator<Field>() {
             public int compare(Field f1, Field f2) {

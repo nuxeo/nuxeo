@@ -237,7 +237,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
 
         // shrink path
         sb = new StringBuffer();
-        List<PathElement> shrinkedPath = new ArrayList<PathElement>();
+        List<PathElement> shrinkedPath = new ArrayList<>();
         for (int i = paths.size() - 1; i >= 0; i--) {
             PathElement pe = paths.get(i);
             sb.append(pe.getName());
@@ -257,7 +257,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
     }
 
     protected List<PathElement> makeBackendPathFromLabel(String label) {
-        List<PathElement> pathElements = new ArrayList<PathElement>();
+        List<PathElement> pathElements = new ArrayList<>();
         label = resourcesAccessor.getMessages().get(label);
         PathElement pathLabel = new TextPathElement(label);
         // add the label of the viewId to the path

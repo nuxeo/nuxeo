@@ -130,7 +130,7 @@ public class MonitoringActionBean implements Serializable {
     }
 
     public List<ProbeInfo> getProbeInfos() {
-        List<ProbeInfo> infos = new ArrayList<ProbeInfo>();
+        List<ProbeInfo> infos = new ArrayList<>();
         ProbeManager pm = Framework.getService(ProbeManager.class);
         infos.addAll(pm.getAllProbeInfos());
         return infos;

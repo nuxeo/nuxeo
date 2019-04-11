@@ -85,7 +85,7 @@ public class HtmlPreviewConverter implements ExternalConverter {
     }
 
     protected List<String> getConverterChain(String srcMT) {
-        List<String> subConverters = new ArrayList<String>();
+        List<String> subConverters = new ArrayList<>();
 
         if (srcMT == null) {
             return null;

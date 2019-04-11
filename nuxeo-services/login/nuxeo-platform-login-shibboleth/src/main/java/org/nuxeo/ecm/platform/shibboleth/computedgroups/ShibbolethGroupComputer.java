@@ -40,7 +40,7 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
 
     @Override
     public List<String> getAllGroupIds() {
-        List<String> groupsId = new ArrayList<String>();
+        List<String> groupsId = new ArrayList<>();
         for (DocumentModel group : getAllGroups()) {
             groupsId.add(group.getId());
         }
@@ -56,7 +56,7 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
 
     @Override
     public List<String> getGroupsForUser(NuxeoPrincipalImpl nxPrincipal) {
-        List<String> groupsId = new ArrayList<String>();
+        List<String> groupsId = new ArrayList<>();
         for (DocumentModel group : getAllGroups()) {
             String el = (String) group.getPropertyValue(ShibbolethConstants.SHIBBOLETH_SCHEMA + ":"
                     + ShibbolethConstants.GROUP_EL_PROPERTY);

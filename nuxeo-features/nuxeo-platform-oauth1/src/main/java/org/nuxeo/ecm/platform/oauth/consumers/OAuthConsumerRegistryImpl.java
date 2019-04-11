@@ -113,7 +113,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
                 DirectoryService ds = Framework.getService(DirectoryService.class);
                 try (Session session = ds.open(DIRECTORY_NAME)) {
                     DocumentModelList entries = session.query(Collections.emptyMap());
-                    List<NuxeoOAuthConsumer> result = new ArrayList<NuxeoOAuthConsumer>();
+                    List<NuxeoOAuthConsumer> result = new ArrayList<>();
                     for (DocumentModel entry : entries) {
                         result.add(NuxeoOAuthConsumer.createFromDirectoryEntry(entry, null));
                     }

@@ -75,7 +75,7 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
 
     @Override
     public List<SourceNode> getChildren() {
-        List<SourceNode> children = new ArrayList<SourceNode>();
+        List<SourceNode> children = new ArrayList<>();
         File[] listFiles = file.listFiles();
         log.trace("Element " + this.getSourcePath() + " has " + listFiles.length + " children");
         // compute map from base name without extension to absolute path

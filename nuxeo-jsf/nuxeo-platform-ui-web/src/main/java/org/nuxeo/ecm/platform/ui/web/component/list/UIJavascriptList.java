@@ -213,7 +213,7 @@ public class UIJavascriptList extends UIEditableList {
                 }
             }
 
-            List<Integer> deletedIndexes = new ArrayList<Integer>();
+            List<Integer> deletedIndexes = new ArrayList<>();
             if (phaseId == PhaseId.PROCESS_VALIDATIONS) {
                 // check deleted indexes, to avoid performing validation on them
                 // A map with the new index for each row key

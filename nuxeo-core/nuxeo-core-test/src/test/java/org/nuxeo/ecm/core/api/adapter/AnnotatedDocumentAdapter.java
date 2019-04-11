@@ -38,7 +38,7 @@ public class AnnotatedDocumentAdapter implements AnnotatedDocument {
     public AnnotatedDocumentAdapter(DocumentModel doc) {
         this.doc = doc;
         // initialize adapter -> in real cases you may get a proxy to a remote service
-        annotations = new HashMap<String, Object>();
+        annotations = new HashMap<>();
     }
 
     @Override

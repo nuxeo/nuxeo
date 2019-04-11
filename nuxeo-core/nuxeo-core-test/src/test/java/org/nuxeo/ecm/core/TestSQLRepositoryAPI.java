@@ -2973,7 +2973,7 @@ public class TestSQLRepositoryAPI {
 
         // providing additional contextual data to feed a core event listener
         // with
-        Map<String, Object> context = new HashMap<String, Object>();
+        Map<String, Object> context = new HashMap<>();
         context.put("Meteo", "Today is a beautiful day");
         docModel = session.createDocumentModel("File", context);
         assertEquals("File", docModel.getType());

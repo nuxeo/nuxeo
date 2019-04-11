@@ -54,7 +54,7 @@ public class Scanner {
     public Scanner(Bundle bundle, String packageBase, String... annotations) {
         this.bundle = bundle;
         this.packageBase = packageBase == null ? "/" : packageBase;
-        this.collectors = new HashMap<String, Collection<Class<?>>>();
+        this.collectors = new HashMap<>();
         for (String annotation : annotations) {
             addCollector(annotation);
         }
@@ -103,7 +103,7 @@ public class Scanner {
     }
 
     public Set<Class<?>> getClasses() {
-        HashSet<Class<?>> result = new HashSet<Class<?>>();
+        HashSet<Class<?>> result = new HashSet<>();
         for (Collection<Class<?>> c : collectors.values()) {
             result.addAll(c);
         }
@@ -111,6 +111,6 @@ public class Scanner {
     }
 
     public Set<Class<?>> getClasses(String anno) {
-        return new HashSet<Class<?>>(collectors.get(anno));
+        return new HashSet<>(collectors.get(anno));
     }
 }

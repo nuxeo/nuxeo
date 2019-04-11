@@ -45,7 +45,7 @@ public class WidgetSelectOptionDescriptor {
     protected String itemLabel;
 
     @XNodeMap(value = "itemLabel", key = "@locale", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> itemLabels = new HashMap<String, String>();
+    protected Map<String, String> itemLabels = new HashMap<>();
 
     @XNode("@itemValue")
     protected String itemValue;

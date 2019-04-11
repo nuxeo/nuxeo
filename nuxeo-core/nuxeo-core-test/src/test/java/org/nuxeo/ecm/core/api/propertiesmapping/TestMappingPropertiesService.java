@@ -63,12 +63,12 @@ public class TestMappingPropertiesService {
         DocumentModel doc2 = createDocument("/", "doc2", "MappingDoc");
         doc1.setPropertyValue("dc:title", "testTitle");
         doc1.setPropertyValue("dc:source", "testSource");
-        List<String> contributors = new ArrayList<String>();
+        List<String> contributors = new ArrayList<>();
         contributors.add("contrib1");
         contributors.add("contrib2");
         doc1.setPropertyValue("dc:contributors", contributors.toArray(new String[1]));
-        List<Map<String, Serializable>> comments = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> comment = new HashMap<String, Serializable>();
+        List<Map<String, Serializable>> comments = new ArrayList<>();
+        Map<String, Serializable> comment = new HashMap<>();
         comment.put("author", "testAuthor");
         comment.put("text", "testText");
         comment.put("creationDate", new Date());

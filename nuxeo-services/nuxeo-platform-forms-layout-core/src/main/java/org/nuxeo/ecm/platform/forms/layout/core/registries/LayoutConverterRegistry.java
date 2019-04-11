@@ -46,13 +46,13 @@ public class LayoutConverterRegistry extends SimpleContributionRegistry<LayoutCo
     }
 
     public List<String> getLayoutNames() {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         res.addAll(currentContribs.keySet());
         return res;
     }
 
     public List<LayoutConverterDescriptor> getConverters() {
-        List<LayoutConverterDescriptor> res = new ArrayList<LayoutConverterDescriptor>();
+        List<LayoutConverterDescriptor> res = new ArrayList<>();
         for (LayoutConverterDescriptor item : currentContribs.values()) {
             if (item != null) {
                 res.add(item);

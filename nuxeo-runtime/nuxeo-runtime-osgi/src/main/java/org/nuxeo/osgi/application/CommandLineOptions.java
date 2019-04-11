@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public class CommandLineOptions {
 
-    private final LinkedHashMap<Object, String> args = new LinkedHashMap<Object, String>();
+    private final LinkedHashMap<Object, String> args = new LinkedHashMap<>();
 
     public CommandLineOptions(String[] args) {
         String op = null;

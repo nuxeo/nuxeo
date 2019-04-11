@@ -44,7 +44,7 @@ public class DirectoryDeleteConstraintDescriptor implements Serializable {
     protected Class<? extends DirectoryDeleteConstraint> klass;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> properties = new HashMap<String, String>();
+    protected Map<String, String> properties = new HashMap<>();
 
     public Class<? extends DirectoryDeleteConstraint> getKlass() {
         return klass;

@@ -141,7 +141,7 @@ public class NuxeoApp {
     }
 
     public static Collection<File> getBundleFiles(File baseDir, String bundles, String delim) throws IOException {
-        Collection<File> result = new LinkedHashSet<File>();
+        Collection<File> result = new LinkedHashSet<>();
         StringTokenizer tokenizer = new StringTokenizer(bundles, delim == null ? " \t\n\r\f" : delim);
         while (tokenizer.hasMoreTokens()) {
             String tok = tokenizer.nextToken();
@@ -177,7 +177,7 @@ public class NuxeoApp {
             return Collections.singletonList(makeFile(baseDir, fileName));
         } else if (p == 0) {
             String suffix = fileName.substring(p + 1);
-            List<File> result = new ArrayList<File>();
+            List<File> result = new ArrayList<>();
             String[] names = baseDir.list();
             if (names != null) {
                 for (String name : names) {
@@ -189,7 +189,7 @@ public class NuxeoApp {
             return result;
         } else if (p == fileName.length() - 1) {
             String prefix = fileName.substring(0, p);
-            List<File> result = new ArrayList<File>();
+            List<File> result = new ArrayList<>();
             String[] names = baseDir.list();
             if (names != null) {
                 for (String name : baseDir.list()) {
@@ -202,7 +202,7 @@ public class NuxeoApp {
         } else {
             String prefix = fileName.substring(0, p);
             String suffix = fileName.substring(p + 1);
-            List<File> result = new ArrayList<File>();
+            List<File> result = new ArrayList<>();
             String[] names = baseDir.list();
             if (names != null) {
                 for (String name : names) {

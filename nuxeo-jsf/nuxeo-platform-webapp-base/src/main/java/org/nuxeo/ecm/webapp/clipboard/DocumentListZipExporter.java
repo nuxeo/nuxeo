@@ -153,7 +153,7 @@ public class DocumentListZipExporter {
 
     private void addBlobHolderToZip(String path, ZipOutputStream out, DocumentModel doc, byte[] data,
             StringBuilder blobList, BlobHolder bh, boolean exportAllBlobs) throws IOException {
-        List<Blob> blobs = new ArrayList<Blob>();
+        List<Blob> blobs = new ArrayList<>();
 
         if (exportAllBlobs) {
             if (bh.getBlobs() != null) {

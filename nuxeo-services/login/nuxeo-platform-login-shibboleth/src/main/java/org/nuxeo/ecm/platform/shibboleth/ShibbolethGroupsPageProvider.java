@@ -44,7 +44,7 @@ public class ShibbolethGroupsPageProvider extends GroupsPageProvider {
         if ("*".equals(searchString)) {
             return searchAllGroups();
         } else if ("".equals(searchString)) {
-            return new ArrayList<DocumentModel>();
+            return new ArrayList<>();
         }
         return ShibbolethGroupHelper.searchGroup(searchString);
     }

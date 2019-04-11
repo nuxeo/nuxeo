@@ -36,7 +36,7 @@ import java.util.Map;
  */
 class MethodAnnotations {
 
-    protected final List<Entry> entries = new ArrayList<Entry>();
+    protected final List<Entry> entries = new ArrayList<>();
 
     public void addMethods(Class<?> clazz) {
         for (Method m : clazz.getDeclaredMethods()) {
@@ -105,7 +105,7 @@ class MethodAnnotations {
         Entry(Method method, Annotation[] annos) {
             this.method = method;
             parameterTypes = method.getParameterTypes();
-            this.annos = new HashMap<Class<? extends Annotation>, Annotation>();
+            this.annos = new HashMap<>();
             for (Annotation anno : annos) {
                 this.annos.put(anno.annotationType(), anno);
             }

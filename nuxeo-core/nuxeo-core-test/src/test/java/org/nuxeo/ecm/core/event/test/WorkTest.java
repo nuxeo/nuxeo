@@ -115,7 +115,7 @@ public class WorkTest {
 
         final CountDownLatch proceed = new CountDownLatch(2);
 
-        List<Boolean> existList = new ArrayList<Boolean>();
+        List<Boolean> existList = new ArrayList<>();
 
         void ready() {
             countDownAndAwait(ready);

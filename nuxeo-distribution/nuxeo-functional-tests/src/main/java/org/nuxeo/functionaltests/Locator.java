@@ -263,7 +263,7 @@ public class Locator {
     }
 
     public static FluentWait<WebDriver> getFluentWait() {
-        FluentWait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver);
+        FluentWait<WebDriver> wait = new FluentWait<>(AbstractTest.driver);
         wait.withTimeout(AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .pollingEvery(AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
         return wait;

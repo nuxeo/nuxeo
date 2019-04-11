@@ -88,8 +88,8 @@ public class StandaloneBundleLoader extends ApplicationLoader {
         try {
             loader.setExtractNestedJARs(true);
             loader.setScanForNestedJARs(true);
-            List<BundleFile> bundles = new ArrayList<BundleFile>();
-            List<BundleFile> jars = new ArrayList<BundleFile>();
+            List<BundleFile> bundles = new ArrayList<>();
+            List<BundleFile> jars = new ArrayList<>();
             loader.load(new File("/opt/jboss/server/default/deploy/nuxeo.ear"), bundles, jars);
             loader.installAll(bundles);
             System.out.println(">>>> Loading done!!!!");

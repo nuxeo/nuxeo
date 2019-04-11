@@ -47,9 +47,9 @@ public class ThumbnailServiceImpl extends DefaultComponent implements ThumbnailS
 
     protected static ThumbnailFactory defaultFactory;
 
-    protected static final Map<String, ThumbnailFactory> factoriesByDocType = new HashMap<String, ThumbnailFactory>();
+    protected static final Map<String, ThumbnailFactory> factoriesByDocType = new HashMap<>();
 
-    protected static final Map<String, ThumbnailFactory> factoriesByFacets = new HashMap<String, ThumbnailFactory>();
+    protected static final Map<String, ThumbnailFactory> factoriesByFacets = new HashMap<>();
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {

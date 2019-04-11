@@ -96,7 +96,7 @@ public class UserNotificationActions implements Serializable {
     }
 
     private void reorderSubscriptions(List<UserSubscription> allSubscriptions) {
-        Map<String, List<UserSubscription>> unsortedSubscriptions = new HashMap<String, List<UserSubscription>>();
+        Map<String, List<UserSubscription>> unsortedSubscriptions = new HashMap<>();
         for (Object obj : allSubscriptions) {
             UserSubscription us = (UserSubscription) obj;
             DocumentModel doc = getDocument(us.getDocId());
@@ -111,8 +111,8 @@ public class UserNotificationActions implements Serializable {
             }
             unsortedSubscriptions.get(path).add(us);
         }
-        SortedSet<String> sortedset = new TreeSet<String>(unsortedSubscriptions.keySet());
-        subscriptions = new ArrayList<UserSubscription>();
+        SortedSet<String> sortedset = new TreeSet<>(unsortedSubscriptions.keySet());
+        subscriptions = new ArrayList<>();
         Iterator<String> it = sortedset.iterator();
         while (it.hasNext()) {
             subscriptions.addAll(unsortedSubscriptions.get(it.next()));

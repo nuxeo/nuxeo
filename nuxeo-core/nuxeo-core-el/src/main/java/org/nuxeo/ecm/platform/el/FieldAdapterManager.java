@@ -81,7 +81,7 @@ public final class FieldAdapterManager {
             }
         } else if (value instanceof Map) {
             Map<Object, Object> map = (Map) value;
-            Map<Object, Object> newMap = new HashMap<Object, Object>();
+            Map<Object, Object> newMap = new HashMap<>();
             for (Map.Entry<Object, Object> entry : map.entrySet()) {
                 newMap.put(entry.getKey(), getValueForStorage(entry.getValue()));
             }
@@ -125,7 +125,7 @@ public final class FieldAdapterManager {
             }
         } else if (value instanceof Map) {
             Map<Object, Object> map = (Map) value;
-            Map<Object, Object> newMap = new HashMap<Object, Object>();
+            Map<Object, Object> newMap = new HashMap<>();
             for (Map.Entry<Object, Object> entry : map.entrySet()) {
                 newMap.put(entry.getKey(), getValueForDisplay(entry.getValue()));
             }

@@ -70,8 +70,8 @@ public class NuxeoWebResourceDispatcher implements ComponentSystemEventListener 
             }
             return;
         }
-        List<UIComponent> cssResources = new ArrayList<UIComponent>();
-        List<UIComponent> otherResources = new ArrayList<UIComponent>();
+        List<UIComponent> cssResources = new ArrayList<>();
+        List<UIComponent> otherResources = new ArrayList<>();
         List<UIComponent> resources = root.getComponentResources(ctx, TARGET_HEAD);
         for (UIComponent r : resources) {
             if (isCssResource(ctx, r)) {
@@ -92,7 +92,7 @@ public class NuxeoWebResourceDispatcher implements ComponentSystemEventListener 
     protected void moveResources(FacesContext ctx, UIViewRoot root, List<UIComponent> resources, String removeFrom,
             String addTo, String message) {
         // push target resources
-        List<UIComponent> existing = new ArrayList<UIComponent>(root.getComponentResources(ctx, addTo));
+        List<UIComponent> existing = new ArrayList<>(root.getComponentResources(ctx, addTo));
         for (UIComponent r : resources) {
             ComponentUtils.setRelocated(r);
             root.removeComponentResource(ctx, r, removeFrom);

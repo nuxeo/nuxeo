@@ -61,7 +61,7 @@ public class TiledImagePreviewer extends AbstractPreviewer implements MimeTypePr
 
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         if (useTiling(blob)) {
-            List<Blob> blobResults = new ArrayList<Blob>();
+            List<Blob> blobResults = new ArrayList<>();
             String htmlFile = getString().replace("$repoId$", dm.getRepositoryName());
             htmlFile = htmlFile.replace("$docId$", dm.getId());
             htmlFile = htmlFile.replace("$tileWidth$", "" + 200);

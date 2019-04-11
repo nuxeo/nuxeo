@@ -75,7 +75,7 @@ public class SortInfoListValidator implements Validator {
             if (value instanceof List) {
                 try {
                     List sortInfos = (List) value;
-                    List<String> criteria = new ArrayList<String>();
+                    List<String> criteria = new ArrayList<>();
                     for (Object sortInfo : sortInfos) {
                         String criterion = null;
                         if (sortInfo instanceof SortInfo) {

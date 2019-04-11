@@ -542,7 +542,7 @@ public class TestSQLRepositorySecurity {
         String[] browsePermissions = securityService.getPermissionsToCheck(BROWSE);
         // Check for test permission contribution
         assertTrue(Arrays.asList(browsePermissions).contains("ViewTest"));
-        List<String> docNames = new ArrayList<String>(browsePermissions.length);
+        List<String> docNames = new ArrayList<>(browsePermissions.length);
         DocumentModel root = session.getRootDocument();
         for (String permission : browsePermissions) {
             // Create a folder with only the browse permission
@@ -563,7 +563,7 @@ public class TestSQLRepositorySecurity {
         try (CloseableCoreSession joeSession = openSessionAs("joe")) {
             DocumentModelList list;
             list = joeSession.query("SELECT * FROM Folder");
-            List<String> names = new ArrayList<String>();
+            List<String> names = new ArrayList<>();
             for (DocumentModel doc : list) {
                 names.add(doc.getName());
             }

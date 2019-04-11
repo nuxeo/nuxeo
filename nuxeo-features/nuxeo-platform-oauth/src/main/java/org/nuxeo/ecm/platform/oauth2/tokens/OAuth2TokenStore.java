@@ -221,7 +221,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Framework.doPrivileged(() -> {
             try (Session session = ds.open(DIRECTORY_NAME)) {
-                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                Map<String, Serializable> filter = new HashMap<>();
                 filter.put("serviceName", serviceName);
                 filter.put("clientId", clientId);
                 filter.put("accessToken", token);

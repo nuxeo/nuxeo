@@ -141,7 +141,7 @@ public class FormData implements FormInstance {
 
     public Map<String, String[]> getMultiPartFormFields() {
         Map<String, List<FileItem>> items = getMultiPartItems();
-        Map<String, String[]> result = new HashMap<String, String[]>();
+        Map<String, String[]> result = new HashMap<>();
         for (Map.Entry<String, List<FileItem>> entry : items.entrySet()) {
             List<FileItem> list = entry.getValue();
             String[] ar = new String[list.size()];
@@ -160,14 +160,14 @@ public class FormData implements FormInstance {
                 throw new IllegalStateException("Not in a multi part form request");
             }
             try {
-                items = new HashMap<String, List<FileItem>>();
+                items = new HashMap<>();
                 ServletRequestContext ctx = new ServletRequestContext(request);
                 List<FileItem> fileItems = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(ctx);
                 for (FileItem item : fileItems) {
                     String key = item.getFieldName();
                     List<FileItem> list = items.get(key);
                     if (list == null) {
-                        list = new ArrayList<FileItem>();
+                        list = new ArrayList<>();
                         items.put(key, list);
                     }
                     list.add(item);
@@ -303,7 +303,7 @@ public class FormData implements FormInstance {
                     ar[i] = getString(list.get(i));
                 }
             } else {
-                List<Blob> blobs = new ArrayList<Blob>();
+                List<Blob> blobs = new ArrayList<>();
                 for (FileItem item : list) {
                     if (!StringUtils.isBlank(item.getName())) {
                         blobs.add(getBlob(item));
@@ -426,7 +426,7 @@ public class FormData implements FormInstance {
                     p.setValue(ar);
                 } else if ("content".equals(elType.getName())) {
                     // list of blobs
-                    List<Blob> blobs = new ArrayList<Blob>();
+                    List<Blob> blobs = new ArrayList<>();
                     if (ar.getClass().getComponentType() == String.class) { // transform
                                                                             // strings
                                                                             // to

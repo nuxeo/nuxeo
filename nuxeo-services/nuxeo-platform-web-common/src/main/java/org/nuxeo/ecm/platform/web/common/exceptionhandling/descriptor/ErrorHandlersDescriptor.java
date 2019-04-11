@@ -41,7 +41,7 @@ public class ErrorHandlersDescriptor {
     private String defaultPage;
 
     @XNodeList(value = "handlers/handler", type = ArrayList.class, componentType = ErrorHandler.class)
-    private final List<ErrorHandler> messages = new ArrayList<ErrorHandler>();
+    private final List<ErrorHandler> messages = new ArrayList<>();
 
     public String getBundle() {
         return bundle;

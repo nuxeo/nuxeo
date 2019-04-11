@@ -165,7 +165,7 @@ public class Node implements StateAccessor {
      */
     public Set<String> getAllMixinTypes() {
         // linked for deterministic result
-        Set<String> mixins = new LinkedHashSet<String>(model.getDocumentTypeFacets(getPrimaryType()));
+        Set<String> mixins = new LinkedHashSet<>(model.getDocumentTypeFacets(getPrimaryType()));
         mixins.addAll(Arrays.asList(getMixinTypes()));
         return mixins;
     }

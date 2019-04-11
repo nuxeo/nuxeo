@@ -55,8 +55,8 @@ public class JavaOperationRequest implements OperationRequest {
     public JavaOperationRequest(JavaSession session, OperationDocumentation op, Map<String, Object> ctx) {
         this.session = session;
         this.op = op;
-        params = new HashMap<String, Object>();
-        headers = new HashMap<String, String>();
+        params = new HashMap<>();
+        headers = new HashMap<>();
         this.ctx = ctx;
     }
 
@@ -83,7 +83,7 @@ public class JavaOperationRequest implements OperationRequest {
     }
 
     public List<String> getParamNames() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (Param param : op.params) {
             result.add(param.name);
         }

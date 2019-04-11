@@ -30,7 +30,7 @@ import java.util.LinkedList;
  */
 public class CounterHistoryStack implements Iterable<long[]> {
 
-    protected final LinkedList<long[]> list = new LinkedList<long[]>();
+    protected final LinkedList<long[]> list = new LinkedList<>();
 
     protected final int maxSize;
 

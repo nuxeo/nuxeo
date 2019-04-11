@@ -46,7 +46,7 @@ public class SuggesterDescriptor implements Cloneable {
     protected boolean enabled = true;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> parameters = new HashMap<String, String>();
+    protected Map<String, String> parameters = new HashMap<>();
 
     protected Suggester suggester;
 
@@ -106,7 +106,7 @@ public class SuggesterDescriptor implements Cloneable {
             runtimeContext = newDescriptor.runtimeContext;
         }
         // merged the parameters
-        Map<String, String> mergedParameters = new HashMap<String, String>();
+        Map<String, String> mergedParameters = new HashMap<>();
         mergedParameters.putAll(parameters);
         mergedParameters.putAll(newDescriptor.parameters);
         parameters = mergedParameters;

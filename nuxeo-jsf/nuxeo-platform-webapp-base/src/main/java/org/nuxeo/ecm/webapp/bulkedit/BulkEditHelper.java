@@ -60,7 +60,7 @@ public class BulkEditHelper {
             List<String> typeLayouts = Arrays.asList(type.getLayouts(mode));
             if (layouts == null) {
                 // first document
-                layouts = new ArrayList<String>();
+                layouts = new ArrayList<>();
                 layouts.addAll(typeLayouts);
             } else {
                 layouts.retainAll(typeLayouts);
@@ -78,7 +78,7 @@ public class BulkEditHelper {
             List<String> docSchemas = Arrays.asList(doc.getSchemas());
             if (schemas == null) {
                 // first document
-                schemas = new ArrayList<String>();
+                schemas = new ArrayList<>();
                 schemas.addAll(docSchemas);
             } else {
                 schemas.retainAll(docSchemas);

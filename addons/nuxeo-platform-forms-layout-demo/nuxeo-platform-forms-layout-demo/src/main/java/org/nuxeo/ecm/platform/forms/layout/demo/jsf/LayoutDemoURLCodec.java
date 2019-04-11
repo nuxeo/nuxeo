@@ -66,7 +66,7 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
     public String getUrlFromDocumentView(DocumentView docView) {
         DocumentLocation docLoc = docView.getDocumentLocation();
         if (docLoc != null) {
-            List<String> items = new ArrayList<String>();
+            List<String> items = new ArrayList<>();
             items.add(getPrefix());
             String viewId = docView.getViewId();
             if (viewId != null) {
@@ -75,7 +75,7 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
                 items.add(DEFAULT_VIEW_ID);
             }
             Map<String, String> docViewParams = docView.getParameters();
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             if (docViewParams != null) {
                 params.putAll(docViewParams);
                 params.remove("conversationId");
@@ -148,7 +148,7 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
                     viewId = DEFAULT_VIEW_ID;
                 }
 
-                Map<String, String> params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<>();
 
                 String tabId = m.group(3);
                 if (tabId != null && !"".equals(tabId)) {

@@ -171,7 +171,7 @@ public class AnnotationServiceProxy implements AnnotationsService {
             baseUrl = resolver.getBaseUrl(uri);
         }
         List<Annotation> tempResult = service.queryAnnotations(resolver.translateToGraphURI(uri), user);
-        List<Annotation> result = new ArrayList<Annotation>();
+        List<Annotation> result = new ArrayList<>();
         for (Annotation annotation : tempResult) {
             Annotation translatedAnnotation = annotationManager.translateAnnotationFromRepo(resolver, baseUrl,
                     annotation);

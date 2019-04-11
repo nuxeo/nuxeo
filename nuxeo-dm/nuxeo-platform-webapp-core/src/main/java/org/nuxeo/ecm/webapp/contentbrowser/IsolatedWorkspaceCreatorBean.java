@@ -55,7 +55,7 @@ public class IsolatedWorkspaceCreatorBean {
 
         String result = documentTemplatesActions.createDocumentFromTemplate();
         // String result = documentActions.saveDocument();
-        List<String> principalsName = new ArrayList<String>();
+        List<String> principalsName = new ArrayList<>();
         principalsName.add(currentUser.getName());
         principalsName.addAll(userManager.getAdministratorsGroups());
 

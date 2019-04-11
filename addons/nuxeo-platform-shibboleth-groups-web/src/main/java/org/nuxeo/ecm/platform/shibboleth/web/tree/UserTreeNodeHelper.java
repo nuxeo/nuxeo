@@ -41,14 +41,14 @@ public class UserTreeNodeHelper {
      * @return tree built, and an empty list if docs is null or empty.
      */
     public static List<UserTreeNode> getHierarcicalNodes(List<DocumentModel> docs) {
-        List<UserTreeNode> root = new ArrayList<UserTreeNode>();
+        List<UserTreeNode> root = new ArrayList<>();
 
         if (docs == null || docs.size() == 0) {
             return root;
         }
 
         String previousBasePath = null;
-        List<DocumentModel> nodesToCreate = new ArrayList<DocumentModel>();
+        List<DocumentModel> nodesToCreate = new ArrayList<>();
         for (DocumentModel doc : docs) {
             String id = doc.getId();
             int pos = id.lastIndexOf(getParseString());
@@ -62,7 +62,7 @@ public class UserTreeNodeHelper {
 
             if (previousBasePath != null && !currentBasePath.equals(previousBasePath)) {
                 appendNodes(root, previousBasePath, nodesToCreate);
-                nodesToCreate = new ArrayList<DocumentModel>();
+                nodesToCreate = new ArrayList<>();
             }
             nodesToCreate.add(doc);
             previousBasePath = currentBasePath;
@@ -124,7 +124,7 @@ public class UserTreeNodeHelper {
     }
 
     public static List<UserTreeNode> buildBranch(String branch, List<DocumentModel> docs) {
-        List<UserTreeNode> nodeBranch = new ArrayList<UserTreeNode>();
+        List<UserTreeNode> nodeBranch = new ArrayList<>();
         appendNodes(nodeBranch, branch, docs);
         return nodeBranch;
     }

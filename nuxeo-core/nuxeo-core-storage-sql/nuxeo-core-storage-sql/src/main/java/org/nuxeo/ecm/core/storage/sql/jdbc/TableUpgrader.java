@@ -52,7 +52,7 @@ public class TableUpgrader {
         }
     }
 
-    protected List<TableUpgrade> tableUpgrades = new ArrayList<TableUpgrade>();
+    protected List<TableUpgrade> tableUpgrades = new ArrayList<>();
 
     private JDBCMapper mapper;
 

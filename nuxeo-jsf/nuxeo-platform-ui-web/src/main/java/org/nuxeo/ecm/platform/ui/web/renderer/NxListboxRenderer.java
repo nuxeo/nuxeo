@@ -48,7 +48,7 @@ public class NxListboxRenderer extends ListboxRenderer {
         if (!disableSelect2) {
             ResponseWriter writer = context.getResponseWriter();
             writer.startElement("script", component);
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             final String placeholder = (String) component.getAttributes().get("placeholder");
             final String width = (String) component.getAttributes().get("width");
             if (placeholder != null) {

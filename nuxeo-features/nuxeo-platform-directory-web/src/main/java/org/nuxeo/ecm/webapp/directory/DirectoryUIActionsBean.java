@@ -164,7 +164,7 @@ public class DirectoryUIActionsBean implements Serializable {
                     sortField = dirService.getDirectoryIdField(dirName);
                 }
                 // sort
-                Map<String, String> orderBy = new HashMap<String, String>();
+                Map<String, String> orderBy = new HashMap<>();
                 orderBy.put(sortField, DocumentModelComparator.ORDER_ASC);
                 Collections.sort(currentDirectoryEntries,
                         new DocumentModelComparator(dirService.getDirectorySchema(dirName), orderBy));

@@ -197,7 +197,7 @@ public class SavedSearchImpl implements SavedSearch {
     protected <T> T getPropertyValue(String propertyName) {
         Serializable value = doc.getPropertyValue(propertyName);
         if (value instanceof Object[]) {
-            value = new ArrayList<Object>(Arrays.asList((Object[]) value));
+            value = new ArrayList<>(Arrays.asList((Object[]) value));
         }
         return (T) value;
     }

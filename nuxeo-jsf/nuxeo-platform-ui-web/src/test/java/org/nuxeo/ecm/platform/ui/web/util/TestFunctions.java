@@ -88,7 +88,7 @@ public class TestFunctions {
 
     @Test
     public void testPrintDurationi18n() {
-        Map<String, String> messages = new HashMap<String, String>();
+        Map<String, String> messages = new HashMap<>();
         messages.put(Functions.I18N_DURATION_PREFIX + "days", "jours");
         messages.put(Functions.I18N_DURATION_PREFIX + "hours", "heures");
         messages.put(Functions.I18N_DURATION_PREFIX + "minutes", "minutes");

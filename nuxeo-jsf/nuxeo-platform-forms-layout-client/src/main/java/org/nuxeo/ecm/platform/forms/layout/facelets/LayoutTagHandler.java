@@ -174,7 +174,7 @@ public class LayoutTagHandler extends TagHandler {
             WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
             // add additional properties put on tag
-            Map<String, Serializable> additionalProps = new HashMap<String, Serializable>();
+            Map<String, Serializable> additionalProps = new HashMap<>();
             List<String> reservedVars = Arrays.asList(reservedVarsArray);
             for (TagAttribute var : vars) {
                 String localName = var.getLocalName();
@@ -309,7 +309,7 @@ public class LayoutTagHandler extends TagHandler {
      * />
      */
     protected List<String> resolveLayoutNames(String nameValue) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         if (nameValue != null) {
             String[] split = nameValue.split(",|\\s");
             if (split != null) {
@@ -486,7 +486,7 @@ public class LayoutTagHandler extends TagHandler {
             WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
             // add additional properties put on tag
-            Map<String, Serializable> additionalProps = new HashMap<String, Serializable>();
+            Map<String, Serializable> additionalProps = new HashMap<>();
             List<String> reservedVars = Arrays.asList(reservedVarsArray);
             for (TagAttribute var : vars) {
                 String localName = var.getLocalName();
@@ -677,7 +677,7 @@ public class LayoutTagHandler extends TagHandler {
         // expose all variables through an alias tag handler
         vars.putAll(getVariablesForLayoutRendering(ctx, layoutService, layoutInstance));
 
-        List<String> blockedPatterns = new ArrayList<String>();
+        List<String> blockedPatterns = new ArrayList<>();
         blockedPatterns.add(RenderVariables.layoutVariables.layout.name());
         blockedPatterns.add(RenderVariables.layoutVariables.layoutProperty.name() + "_*");
 
@@ -718,7 +718,7 @@ public class LayoutTagHandler extends TagHandler {
     }
 
     protected Map<String, ValueExpression> getVariablesForLayoutBuild(FaceletContext ctx, String modeValue) {
-        Map<String, ValueExpression> vars = new HashMap<String, ValueExpression>();
+        Map<String, ValueExpression> vars = new HashMap<>();
         ValueExpression valueExpr = value.getValueExpression(ctx, Object.class);
         vars.put(RenderVariables.globalVariables.value.name(), valueExpr);
         // vars.put(RenderVariables.globalVariables.document.name(),
@@ -737,7 +737,7 @@ public class LayoutTagHandler extends TagHandler {
      */
     protected Map<String, ValueExpression> getVariablesForLayoutRendering(FaceletContext ctx,
             WebLayoutManager layoutService, Layout layoutInstance) {
-        Map<String, ValueExpression> vars = new HashMap<String, ValueExpression>();
+        Map<String, ValueExpression> vars = new HashMap<>();
         ExpressionFactory eFactory = ctx.getExpressionFactory();
 
         // expose layout value

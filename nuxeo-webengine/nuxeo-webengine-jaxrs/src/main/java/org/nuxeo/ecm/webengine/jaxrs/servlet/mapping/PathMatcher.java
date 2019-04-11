@@ -97,7 +97,7 @@ public class PathMatcher {
 
     public static PathMatcher compile(Path path) {
         // TODO handle / case
-        ArrayList<SegmentMatcher> matchers = new ArrayList<SegmentMatcher>();
+        ArrayList<SegmentMatcher> matchers = new ArrayList<>();
         for (String segment : path.segments) {
             if (segment.length() == 0) {
                 continue;

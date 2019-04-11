@@ -87,7 +87,7 @@ public class PictureResize {
     public Blob run(Blob blob) {
 
         SimpleBlobHolder bh = new SimpleBlobHolder(blob);
-        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+        Map<String, Serializable> parameters = new HashMap<>();
 
         parameters.put(WIDTH, maxWidth);
         parameters.put(HEIGHT, maxHeigh);

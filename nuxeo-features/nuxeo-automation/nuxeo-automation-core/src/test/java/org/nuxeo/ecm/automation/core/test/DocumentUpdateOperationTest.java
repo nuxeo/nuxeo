@@ -67,12 +67,12 @@ public class DocumentUpdateOperationTest {
         chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("type", "File");
         params.put("name", "file");
         chain.add(CreateDocument.ID).from(params);
 
-        params = new HashMap<String, Object>();
+        params = new HashMap<>();
         params.put(
                 "properties",
                 new MvelTemplate(

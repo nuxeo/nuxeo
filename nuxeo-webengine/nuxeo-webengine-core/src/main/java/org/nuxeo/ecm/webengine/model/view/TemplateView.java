@@ -80,7 +80,7 @@ public class TemplateView {
         this.ctx = ctx;
         this.target = owner;
         this.url = url;
-        bindings = new HashMap<String, Object>();
+        bindings = new HashMap<>();
         bindings.put("This", target);
         bindings.put("Context", ctx);
         bindings.put("Engine", ctx.getEngine());

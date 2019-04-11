@@ -101,7 +101,7 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
      */
     protected TagAttributes getViewTagAttributes(FaceletContext ctx, FaceletHandlerHelper helper, String id,
             Widget widget, boolean addId) {
-        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
+        List<TagAttribute> attrs = new ArrayList<>();
         FieldDefinition[] fields = widget.getFieldDefinitions();
         if (fields != null && fields.length > 0) {
             FieldDefinition field = fields[0];

@@ -60,7 +60,7 @@ public class SimpleConfigurationAdapter extends AbstractLocalConfiguration<Simpl
 
     @SuppressWarnings("unchecked")
     protected Map<String, String> computeParametersFromDocument(DocumentModel doc) {
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         try {
             List<Map<String, String>> parametersFromDocument = (List<Map<String, String>>) doc.getPropertyValue(SIMPLE_CONFIGURATION_PARAMETERS_PROPERTY);
             if (parametersFromDocument != null) {
@@ -139,10 +139,10 @@ public class SimpleConfigurationAdapter extends AbstractLocalConfiguration<Simpl
     }
 
     protected List<Map<String, String>> computeParametersForDocument(Map<String, String> parameters) {
-        List<Map<String, String>> parametersForDocument = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> parametersForDocument = new ArrayList<>();
 
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            Map<String, String> parameter = new HashMap<String, String>();
+            Map<String, String> parameter = new HashMap<>();
             parameter.put(SIMPLE_CONFIGURATION_PARAMETER_KEY, entry.getKey());
             parameter.put(SIMPLE_CONFIGURATION_PARAMETER_VALUE, entry.getValue());
             parametersForDocument.add(parameter);

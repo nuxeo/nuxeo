@@ -31,7 +31,7 @@ public class EnumerationValidator implements FieldValidator {
     protected Set<String> values;
 
     public EnumerationValidator(String expr) {
-        values = new HashSet<String>();
+        values = new HashSet<>();
         String[] vals = StringUtils.split(expr, ',', true);
         for (String v : vals) {
             values.add(v);
@@ -39,7 +39,7 @@ public class EnumerationValidator implements FieldValidator {
     }
 
     public EnumerationValidator(String[] values) {
-        this.values = new HashSet<String>();
+        this.values = new HashSet<>();
         for (String v : values) {
             this.values.add(v);
         }

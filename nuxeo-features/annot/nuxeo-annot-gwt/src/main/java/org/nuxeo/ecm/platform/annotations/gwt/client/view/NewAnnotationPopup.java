@@ -92,7 +92,7 @@ public class NewAnnotationPopup extends PopupPanel {
 
     private final ListBox listBox = new ListBox();
 
-    private final List<ListBox> fieldListBoxes = new ArrayList<ListBox>();
+    private final List<ListBox> fieldListBoxes = new ArrayList<>();
 
     private final VerticalPanel verticalPanel = new VerticalPanel();
 

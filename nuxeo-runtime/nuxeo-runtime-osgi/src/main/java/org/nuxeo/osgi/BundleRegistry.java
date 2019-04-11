@@ -47,9 +47,9 @@ public class BundleRegistry {
     private final Map<String, Set<BundleRegistration>> pendings;
 
     public BundleRegistry() {
-        bundlesById = new HashMap<Long, BundleRegistration>();
-        bundles = new LinkedHashMap<String, BundleRegistration>();
-        pendings = new HashMap<String, Set<BundleRegistration>>();
+        bundlesById = new HashMap<>();
+        bundles = new LinkedHashMap<>();
+        pendings = new HashMap<>();
     }
 
     public void addBundleAlias(String alias, String symbolicName) {
@@ -75,7 +75,7 @@ public class BundleRegistry {
     public synchronized BundleImpl[] getFragments(String symbolicName) {
         BundleRegistration reg = bundles.get(symbolicName);
 
-        ArrayList<BundleImpl> fragments = new ArrayList<BundleImpl>();
+        ArrayList<BundleImpl> fragments = new ArrayList<>();
         for (String id : reg.extendsMe) {
             fragments.add(getBundle(id));
         }
@@ -152,7 +152,7 @@ public class BundleRegistry {
         for (String dep : reg.waitingFor) {
             Set<BundleRegistration> regs = pendings.get(dep);
             if (regs == null) {
-                regs = new HashSet<BundleRegistration>();
+                regs = new HashSet<>();
                 pendings.put(dep, regs);
             }
             regs.add(reg);

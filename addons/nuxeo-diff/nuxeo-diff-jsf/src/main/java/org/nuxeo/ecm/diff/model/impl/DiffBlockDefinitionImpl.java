@@ -53,7 +53,7 @@ public class DiffBlockDefinitionImpl implements DiffBlockDefinition {
         this.name = name;
         this.templates = templates;
         if (fields == null) {
-            this.fields = new ArrayList<DiffFieldDefinition>();
+            this.fields = new ArrayList<>();
         } else {
             this.fields = fields;
         }

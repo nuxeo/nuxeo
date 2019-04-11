@@ -58,7 +58,7 @@ public class RemoveEntryOfMultiValuedPropertyTest {
     @Before
     public void setup() throws Exception {
         doc = session.createDocumentModel("/", "test", "MyDocument");
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         values.add("Test");
         values.add("Test2");
         values.add("Test2");

@@ -60,8 +60,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
 
     public TypeRegistry(TypeRegistry parent, WebEngine engine, ModuleImpl module) {
         super(parent);
-        types = new ConcurrentHashMap<String, AbstractResourceType>();
-        adapters = new ConcurrentHashMap<String, AdapterType>();
+        types = new ConcurrentHashMap<>();
+        adapters = new ConcurrentHashMap<>();
         this.module = module;
         this.engine = engine;
         // register root type
@@ -113,25 +113,25 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     public List<AdapterType> getAdapters(Resource resource) {
-        List<AdapterType> result = new ArrayList<AdapterType>();
+        List<AdapterType> result = new ArrayList<>();
         collectAdaptersFor(resource, resource.getType(), result);
         return result;
     }
 
     public List<String> getAdapterNames(Resource resource) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         collectAdapterNamesFor(resource, resource.getType(), result);
         return result;
     }
 
     public List<AdapterType> getEnabledAdapters(Resource resource) {
-        List<AdapterType> result = new ArrayList<AdapterType>();
+        List<AdapterType> result = new ArrayList<>();
         collectEnabledAdaptersFor(resource, resource.getType(), result);
         return result;
     }
 
     public List<String> getEnabledAdapterNames(Resource resource) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         collectEnabledAdapterNamesFor(resource, resource.getType(), result);
         return result;
     }
@@ -250,7 +250,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             AdapterDescriptor so = (AdapterDescriptor) object;
             AdapterDescriptor sf = (AdapterDescriptor) fragment;
             if (sf.facets != null && sf.facets.length > 0) {
-                List<String> list = new ArrayList<String>();
+                List<String> list = new ArrayList<>();
                 if (so.facets != null && so.facets.length > 0) {
                     list.addAll(Arrays.asList(so.facets));
                 }
@@ -290,7 +290,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
             DocumentType doctype = mgr.getDocumentType(type.getName());
             if (doctype != null) {
                 if (type.facets == null) {
-                    type.facets = new HashSet<String>();
+                    type.facets = new HashSet<>();
                 }
                 type.facets.addAll(doctype.getFacets());
             }

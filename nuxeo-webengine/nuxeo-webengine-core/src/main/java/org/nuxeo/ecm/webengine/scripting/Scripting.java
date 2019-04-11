@@ -51,7 +51,7 @@ public class Scripting {
 
     private static final Log log = LogFactory.getLog(Scripting.class);
 
-    private final ConcurrentMap<File, Entry> cache = new ConcurrentHashMap<File, Entry>();
+    private final ConcurrentMap<File, Entry> cache = new ConcurrentHashMap<>();
 
     // this will be lazy initialized
     private ScriptEngineManager scriptMgr;

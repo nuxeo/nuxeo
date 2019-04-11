@@ -68,7 +68,7 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
     public OperationDocumentation(String id) {
         this.id = id;
         this.url = id;
-        this.params = new ArrayList<OperationDocumentation.Param>();
+        this.params = new ArrayList<>();
     }
 
     public int compareTo(OperationDocumentation o) {

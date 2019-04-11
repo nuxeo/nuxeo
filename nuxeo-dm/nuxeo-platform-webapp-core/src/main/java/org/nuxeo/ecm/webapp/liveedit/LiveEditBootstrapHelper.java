@@ -168,10 +168,10 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     protected MimetypeRegistry mimetypeRegistry;
 
     // Event-long cache for mimetype lookups - no invalidation required
-    protected final Map<String, Boolean> cachedEditableStates = new HashMap<String, Boolean>();
+    protected final Map<String, Boolean> cachedEditableStates = new HashMap<>();
 
     // Event-long cache for document field lookups - no invalidation required
-    protected final Map<String, Boolean> cachedEditableBlobs = new HashMap<String, Boolean>();
+    protected final Map<String, Boolean> cachedEditableBlobs = new HashMap<>();
 
     /**
      * Creates the bootstrap file. It is called from the browser's addon. The URL composition tells the case and what to

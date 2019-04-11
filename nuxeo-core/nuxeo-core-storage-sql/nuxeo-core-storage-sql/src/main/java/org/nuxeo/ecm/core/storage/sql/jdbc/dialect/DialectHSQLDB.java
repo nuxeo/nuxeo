@@ -264,7 +264,7 @@ public class DialectHSQLDB extends Dialect {
 
     @Override
     public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
-        return new HashMap<String, Serializable>();
+        return new HashMap<>();
     }
 
     @Override

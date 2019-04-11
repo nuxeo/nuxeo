@@ -47,7 +47,7 @@ import javax.servlet.http.Part;
 // this should use a mock library instead
 public class MockHttpServletRequest implements HttpServletRequest {
 
-    protected Map<String, String> headers = new HashMap<String, String>();
+    protected Map<String, String> headers = new HashMap<>();
 
     @Override
     public String getAuthType() {

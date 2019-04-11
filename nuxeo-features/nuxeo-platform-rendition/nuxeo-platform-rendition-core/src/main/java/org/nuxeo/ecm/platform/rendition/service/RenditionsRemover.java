@@ -62,7 +62,7 @@ public class RenditionsRemover extends UnrestrictedSessionRunner {
 
         query = query + " AND ecm:parentId='" + proxy.getParentRef().toString() + "'";
 
-        List<String> removedProxyIds = new ArrayList<String>();
+        List<String> removedProxyIds = new ArrayList<>();
         List<DocumentModel> docs = session.query(query);
 
         // Get removed proxy ids
@@ -83,7 +83,7 @@ public class RenditionsRemover extends UnrestrictedSessionRunner {
     }
 
     protected void notifyRenditionPublished(List<String> removedProxyIds) {
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         options.put(CoreEventConstants.REPLACED_PROXY_IDS, (Serializable) removedProxyIds);
         notifyEvent(RENDITION_PROXY_PUBLISHED, proxy, options);
     }

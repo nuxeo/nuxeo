@@ -85,7 +85,7 @@ public class SegmentIOScriptResource extends ModuleRoot {
 
         SegmentIO segmentIO = Framework.getService(SegmentIO.class);
 
-        Map<String, Object> ctx = new HashMap<String, Object>();
+        Map<String, Object> ctx = new HashMap<>();
         ctx.put("writeKey", segmentIO.getWriteKey());
         ctx.put("debugMode", Boolean.toString(segmentIO.isDebugMode()));
         // get opted out condition

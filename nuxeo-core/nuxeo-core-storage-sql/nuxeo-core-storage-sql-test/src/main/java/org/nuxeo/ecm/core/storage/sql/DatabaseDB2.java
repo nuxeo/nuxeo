@@ -81,7 +81,7 @@ public class DatabaseDB2 extends DatabaseHelper {
     }
 
     public void dropSequences(Connection connection) throws SQLException {
-        List<String> sequenceNames = new ArrayList<String>();
+        List<String> sequenceNames = new ArrayList<>();
         try (Statement st = connection.createStatement()) {
             try (ResultSet rs = st.executeQuery("SELECT SEQUENCE_NAME FROM USER_SEQUENCES")) {
                 while (rs.next()) {

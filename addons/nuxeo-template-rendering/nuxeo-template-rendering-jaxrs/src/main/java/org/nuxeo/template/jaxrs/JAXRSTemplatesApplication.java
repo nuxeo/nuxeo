@@ -31,7 +31,7 @@ public class JAXRSTemplatesApplication extends WebEngineModule {
 
     @Override
     public Set<Class<?>> getClasses() {
-        Set<Class<?>> result = new HashSet<Class<?>>();
+        Set<Class<?>> result = new HashSet<>();
         result.add(RootResource.class);
         result.add(TemplateBasedResource.class);
         result.add(TemplateResource.class);
@@ -40,7 +40,7 @@ public class JAXRSTemplatesApplication extends WebEngineModule {
 
     @Override
     public Set<Object> getSingletons() {
-        Set<Object> result = new HashSet<Object>();
+        Set<Object> result = new HashSet<>();
         result.add(new BlobWriter());
         return result;
     }

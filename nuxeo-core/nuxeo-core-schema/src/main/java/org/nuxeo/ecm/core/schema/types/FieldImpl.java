@@ -61,7 +61,7 @@ public class FieldImpl implements Field {
         this.declaringType = declaringType;
         this.defaultValue = defaultValue;
         this.flags = flags;
-        this.constraints = new HashSet<Constraint>();
+        this.constraints = new HashSet<>();
         if (constraints != null) {
             this.constraints.addAll(constraints);
         }

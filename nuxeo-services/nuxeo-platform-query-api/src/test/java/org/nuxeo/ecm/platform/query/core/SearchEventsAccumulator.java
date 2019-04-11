@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.event.EventListener;
 
 public class SearchEventsAccumulator implements EventListener {
 
-    protected static List<Map<String, Serializable>> eventsData = new ArrayList<Map<String,Serializable>>();
+    protected static List<Map<String, Serializable>> eventsData = new ArrayList<>();
 
     public static void reset() {
         eventsData.clear();

@@ -104,12 +104,12 @@ public class Invalidations implements SerializableAccumulableInvalidations {
         switch (kind) {
         case MODIFIED:
             if (modified == null) {
-                modified = new HashSet<RowId>();
+                modified = new HashSet<>();
             }
             return modified;
         case DELETED:
             if (deleted == null) {
-                deleted = new HashSet<RowId>();
+                deleted = new HashSet<>();
             }
             return deleted;
         }
@@ -131,13 +131,13 @@ public class Invalidations implements SerializableAccumulableInvalidations {
         }
         if (other.modified != null) {
             if (modified == null) {
-                modified = new HashSet<RowId>();
+                modified = new HashSet<>();
             }
             modified.addAll(other.modified);
         }
         if (other.deleted != null) {
             if (deleted == null) {
-                deleted = new HashSet<RowId>();
+                deleted = new HashSet<>();
             }
             deleted.addAll(other.deleted);
         }
@@ -149,7 +149,7 @@ public class Invalidations implements SerializableAccumulableInvalidations {
             return;
         }
         if (modified == null) {
-            modified = new HashSet<RowId>();
+            modified = new HashSet<>();
         }
         modified.add(rowId);
         checkMaxSize();
@@ -160,7 +160,7 @@ public class Invalidations implements SerializableAccumulableInvalidations {
             return;
         }
         if (deleted == null) {
-            deleted = new HashSet<RowId>();
+            deleted = new HashSet<>();
         }
         deleted.add(rowId);
         checkMaxSize();

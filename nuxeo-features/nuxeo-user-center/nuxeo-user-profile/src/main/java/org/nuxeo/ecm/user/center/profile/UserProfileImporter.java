@@ -231,7 +231,7 @@ public class UserProfileImporter {
     protected Map<String, Serializable> computePropertiesMap(long lineNumber, DocumentType docType,
             Map<String, Integer> headerValues, CSVRecord record) {
 
-        Map<String, Serializable> values = new HashMap<String, Serializable>();
+        Map<String, Serializable> values = new HashMap<>();
         for (String headerValue : headerValues.keySet()) {
             String lineValue = record.get(headerValue);
             lineValue = lineValue.trim();

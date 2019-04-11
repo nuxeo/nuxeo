@@ -91,7 +91,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
     }
 
     public void deleteAnnotationFor(URI uri, Annotation annotation, NuxeoPrincipal user) {
-        List<Statement> statementsToDelete = new ArrayList<Statement>();
+        List<Statement> statementsToDelete = new ArrayList<>();
 
         boolean removeAllAnnotationStatements = true;
         List<Statement> statements = annotation.getStatements();
@@ -118,7 +118,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
         String query = GET_ANN_QUERY.replaceFirst("source", uri);
         Graph graph = relationManager.getGraphByName(AnnotationsConstants.DEFAULT_GRAPH_NAME);
         QueryResult result = graph.query(query, "sparql", null);
-        List<Statement> statements = new ArrayList<Statement>();
+        List<Statement> statements = new ArrayList<>();
         for (Map<String, Node> map : result.getResults()) {
             Statement statement = new StatementImpl(new ResourceImpl(uri), map.get("p"), map.get("o"));
             statements.add(statement);

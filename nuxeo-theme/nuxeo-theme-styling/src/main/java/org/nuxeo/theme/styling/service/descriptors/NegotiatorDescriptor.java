@@ -41,7 +41,7 @@ public class NegotiatorDescriptor implements Comparable<NegotiatorDescriptor> {
     protected int order = 0;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> properties = new HashMap<String, String>();
+    Map<String, String> properties = new HashMap<>();
 
     public Class<Negotiator> getNegotiatorClass() {
         return klass;
@@ -84,7 +84,7 @@ public class NegotiatorDescriptor implements Comparable<NegotiatorDescriptor> {
         clone.setOrder(getOrder());
         Map<String, String> props = getProperties();
         if (props != null) {
-            clone.setProperties(new HashMap<String, String>(props));
+            clone.setProperties(new HashMap<>(props));
         }
         return clone;
     }

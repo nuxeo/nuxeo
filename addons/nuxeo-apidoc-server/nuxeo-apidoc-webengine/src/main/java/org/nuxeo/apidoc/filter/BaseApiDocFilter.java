@@ -35,7 +35,7 @@ public abstract class BaseApiDocFilter implements Filter {
 
     public static final String APIDOC_FILTERS_ACTIVATED = "org.nuxeo.apidoc.activatefilter";
 
-    protected List<String> allowedConnectUrls = new ArrayList<String>();
+    protected List<String> allowedConnectUrls = new ArrayList<>();
 
     protected Boolean activated;
 

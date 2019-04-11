@@ -115,7 +115,7 @@ public class TestRoutingTaskService {
 
     @Test
     public void testService() throws Exception {
-        List<String> actorIds = new ArrayList<String>();
+        List<String> actorIds = new ArrayList<>();
         List<Task> tasks = taskService.createTask(session, administrator, targetDoc, "MyRoutingTask", actorIds, false,
                 null, null, null, null, "/");
         routing.makeRoutingTasks(session, tasks);

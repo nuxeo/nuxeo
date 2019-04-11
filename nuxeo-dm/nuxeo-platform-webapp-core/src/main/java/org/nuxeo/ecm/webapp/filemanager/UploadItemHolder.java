@@ -43,7 +43,7 @@ public class UploadItemHolder implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Collection<NxUploadedFile> uploadedFiles = new ArrayList<NxUploadedFile>();
+    protected Collection<NxUploadedFile> uploadedFiles = new ArrayList<>();
 
     protected InputStream fileUpload;
 
@@ -86,7 +86,7 @@ public class UploadItemHolder implements Serializable {
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void reset() {
-        uploadedFiles = new ArrayList<NxUploadedFile>();
+        uploadedFiles = new ArrayList<>();
         fileUpload = null;
         fileName = null;
         if (tempFile != null) {

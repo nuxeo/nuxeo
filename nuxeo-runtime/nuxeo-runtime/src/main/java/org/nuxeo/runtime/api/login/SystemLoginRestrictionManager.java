@@ -74,7 +74,7 @@ public class SystemLoginRestrictionManager {
                 }
                 allowedInstancesForSystemLogin = Arrays.asList(instanceKeys.split(TRUSTED_INSTANCES_SEP));
             } else {
-                allowedInstancesForSystemLogin = new ArrayList<String>();
+                allowedInstancesForSystemLogin = new ArrayList<>();
             }
         }
         return allowedInstancesForSystemLogin;

@@ -28,7 +28,7 @@ import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 
 public class TemplateProcessorRegistry extends ContributionFragmentRegistry<TemplateProcessorDescriptor> {
 
-    protected Map<String, TemplateProcessorDescriptor> processors = new HashMap<String, TemplateProcessorDescriptor>();
+    protected Map<String, TemplateProcessorDescriptor> processors = new HashMap<>();
 
     @Override
     public TemplateProcessorDescriptor clone(TemplateProcessorDescriptor tpd) {

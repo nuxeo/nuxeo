@@ -35,7 +35,7 @@ public class TestDependencyTree {
 
     @Before
     public void setUp() {
-        dt = new DependencyTree<String, String>();
+        dt = new DependencyTree<>();
     }
 
     @Test

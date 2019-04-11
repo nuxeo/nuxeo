@@ -41,7 +41,7 @@ public class TargetPackageImpl extends TargetImpl implements TargetPackage, Comp
 
     public TargetPackageImpl(String id, String name, String version, String refVersion, String label) {
         super(id, name, version, refVersion, label);
-        dependencies = new ArrayList<String>();
+        dependencies = new ArrayList<>();
     }
 
     public void addDependency(String dependency) {
@@ -57,7 +57,7 @@ public class TargetPackageImpl extends TargetImpl implements TargetPackage, Comp
         if (dependencies == null) {
             this.dependencies = null;
         } else {
-            this.dependencies = new ArrayList<String>(dependencies);
+            this.dependencies = new ArrayList<>(dependencies);
         }
     }
 

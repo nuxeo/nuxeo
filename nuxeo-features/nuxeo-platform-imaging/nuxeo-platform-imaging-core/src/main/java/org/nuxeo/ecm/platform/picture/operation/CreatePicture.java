@@ -76,7 +76,7 @@ public class CreatePicture {
         if (pictureTemplates == null || pictureTemplates.size() == 0) {
             return null;
         }
-        ArrayList<Map<String, Object>> templates = new ArrayList<Map<String, Object>>();
+        ArrayList<Map<String, Object>> templates = new ArrayList<>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -85,7 +85,7 @@ public class CreatePicture {
             for (String name : pictureTemplates.keySet()) {
                 String templateDef = pictureTemplates.get(name);
                 JsonNode node = mapper.readTree(templateDef);
-                Map<String, Object> map = new HashMap<String, Object>();
+                Map<String, Object> map = new HashMap<>();
                 map.put("tag", name);
                 Iterator<Entry<String, JsonNode>> it = node.fields();
                 while (it.hasNext()) {

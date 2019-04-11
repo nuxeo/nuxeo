@@ -32,13 +32,13 @@ public class BundleRegistration {
     protected final BundleImpl bundle;
 
     // XXX: explain why these three variables are lazily instantiated.
-    protected final Set<String> dependsOn = new HashSet<String>();
+    protected final Set<String> dependsOn = new HashSet<>();
 
-    protected final Set<String> dependsOnMe = new HashSet<String>();
+    protected final Set<String> dependsOnMe = new HashSet<>();
 
-    protected final Set<String> waitingFor = new HashSet<String>();
+    protected final Set<String> waitingFor = new HashSet<>();
 
-    protected final Set<String> extendsMe = new HashSet<String>();
+    protected final Set<String> extendsMe = new HashSet<>();
 
     public BundleRegistration(BundleImpl bundle) {
         this.bundle = bundle;

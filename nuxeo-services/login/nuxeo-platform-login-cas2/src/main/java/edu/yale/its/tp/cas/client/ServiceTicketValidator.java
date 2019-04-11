@@ -170,7 +170,7 @@ public class ServiceTicketValidator {
         clear();
         attemptedAuthentication = true;
 
-        Map<String, String> urlParameters = new HashMap<String, String>();
+        Map<String, String> urlParameters = new HashMap<>();
         urlParameters.put("service", service);
         urlParameters.put("ticket", st);
         if (proxyCallbackUrl != null) {

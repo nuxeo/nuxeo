@@ -103,7 +103,7 @@ public class ModuleImpl implements Module {
                                             .append('/')
                                             .append(config.name)
                                             .toString();
-        fileCache = new ConcurrentHashMap<String, ScriptFile>();
+        fileCache = new ConcurrentHashMap<>();
         loadConfiguration();
         reloadMessages();
         loadDirectoryStack();
@@ -313,7 +313,7 @@ public class ModuleImpl implements Module {
 
     public void flushSkinCache() {
         log.info("Flushing skin cache for module: " + getName());
-        fileCache = new ConcurrentHashMap<String, ScriptFile>();
+        fileCache = new ConcurrentHashMap<>();
     }
 
     public void flushTypeCache() {

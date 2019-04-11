@@ -72,7 +72,7 @@ public class MVELImporterFunction extends CoreFunctions {
             {
 
         String[] parts = data.split(regexp);
-        List<DocumentModel> result = new ArrayList<DocumentModel>();
+        List<DocumentModel> result = new ArrayList<>();
         DocumentModel root = parent;
 
         for (String part : parts) {

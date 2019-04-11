@@ -42,7 +42,7 @@ public class ObjectResolverServiceImpl extends DefaultComponent implements Objec
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        resolvers = new HashMap<String, Class<? extends ObjectResolver>>();
+        resolvers = new HashMap<>();
     }
 
     @Override

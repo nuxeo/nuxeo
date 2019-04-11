@@ -111,7 +111,7 @@ public class DirectoryEntriesTest {
 
         OperationChain chain = new OperationChain("fakeChain");
         chain.add(FetchContextDocument.ID);
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("directoryName", "continent");
         OperationParameters oparams = new OperationParameters(GetDirectoryEntries.ID, params);
         chain.add(oparams);

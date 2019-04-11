@@ -94,9 +94,9 @@ public class JavaUtilLoggingHelper {
 
     public static class LogHandler extends Handler {
 
-        final ThreadLocal<LogRecord> holder = new ThreadLocal<LogRecord>();
+        final ThreadLocal<LogRecord> holder = new ThreadLocal<>();
 
-        private final Map<String, Log> cache = new ConcurrentHashMap<String, Log>();
+        private final Map<String, Log> cache = new ConcurrentHashMap<>();
 
         protected void doPublish(LogRecord record) {
             Level level = record.getLevel();

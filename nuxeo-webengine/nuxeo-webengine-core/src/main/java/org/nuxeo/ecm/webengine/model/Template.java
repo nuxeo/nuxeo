@@ -81,7 +81,7 @@ public class Template {
 
     public Template arg(String key, Object value) {
         if (args == null) {
-            args = new HashMap<String, Object>();
+            args = new HashMap<>();
         }
         args.put(key, value);
         return this;

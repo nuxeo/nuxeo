@@ -44,7 +44,7 @@ public class ThreadSafeCacheHolder<T extends Serializable> implements Serializab
     }
 
     public ThreadSafeCacheHolder(int maxSize) {
-        cacheMap = new LRUCachingMap<String, T>(maxSize);
+        cacheMap = new LRUCachingMap<>(maxSize);
     }
 
     protected String getKey(DocumentRef docRef, String key) {

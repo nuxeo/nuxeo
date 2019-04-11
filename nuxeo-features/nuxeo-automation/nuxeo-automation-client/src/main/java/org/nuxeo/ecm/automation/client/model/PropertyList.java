@@ -33,15 +33,15 @@ public class PropertyList implements Serializable {
     protected final List<Object> list;
 
     public PropertyList() {
-        list = new ArrayList<Object>();
+        list = new ArrayList<>();
     }
 
     public PropertyList(int size) {
-        list = new ArrayList<Object>(size);
+        list = new ArrayList<>(size);
     }
 
     public PropertyList(List<Object> list) {
-        this.list = new ArrayList<Object>(list);
+        this.list = new ArrayList<>(list);
     }
 
     public int size() {

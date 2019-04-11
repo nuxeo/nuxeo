@@ -38,7 +38,7 @@ public abstract class PropertyDecoder {
 
     private static final Log log = LogFactory.getLog(PropertyDecoder.class);
 
-    private static final Map<String, PropertyDecoder> decoders = new HashMap<String, PropertyDecoder>();
+    private static final Map<String, PropertyDecoder> decoders = new HashMap<>();
 
     public static Serializable decode(String type, String value) {
         // expand value if needed
@@ -74,7 +74,7 @@ public abstract class PropertyDecoder {
     public static final PropertyDecoder LIST = new PropertyDecoder() {
         @Override
         public Serializable decode(String value) {
-            ArrayList<String> values = new ArrayList<String>();
+            ArrayList<String> values = new ArrayList<>();
             StringTokenizer tokenizer = new StringTokenizer(value, ",");
             while (tokenizer.hasMoreTokens()) {
                 String tok = tokenizer.nextToken();

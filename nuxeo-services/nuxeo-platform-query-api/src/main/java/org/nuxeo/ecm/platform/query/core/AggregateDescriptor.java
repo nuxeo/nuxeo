@@ -78,11 +78,11 @@ public class AggregateDescriptor implements AggregateDefinition {
             clone.aggregateProperties.properties.putAll(aggregateProperties.properties);
         }
         if (aggregateRanges != null) {
-            clone.aggregateRanges = new ArrayList<AggregateRangeDescriptor>(aggregateRanges.size());
+            clone.aggregateRanges = new ArrayList<>(aggregateRanges.size());
             clone.aggregateRanges.addAll(aggregateRanges);
         }
         if (aggregateDateRanges != null) {
-            clone.aggregateDateRanges = new ArrayList<AggregateRangeDateDescriptor>(aggregateDateRanges.size());
+            clone.aggregateDateRanges = new ArrayList<>(aggregateDateRanges.size());
             clone.aggregateDateRanges.addAll(aggregateDateRanges);
         }
         return clone;
@@ -91,7 +91,7 @@ public class AggregateDescriptor implements AggregateDefinition {
     @Override
     public Map<String, Integer> getAggregateDateRangeDefinitionOrderMap() {
         if (aggregateDateRangeDefinitionOrderMap == null) {
-            aggregateDateRangeDefinitionOrderMap = new HashMap<String, Integer>(getDateRanges().size());
+            aggregateDateRangeDefinitionOrderMap = new HashMap<>(getDateRanges().size());
             for (int i = 0; i < getDateRanges().size(); i++) {
                 aggregateDateRangeDefinitionOrderMap.put(getDateRanges().get(i).getKey(), i);
             }
@@ -102,7 +102,7 @@ public class AggregateDescriptor implements AggregateDefinition {
     @Override
     public Map<String, Integer> getAggregateRangeDefinitionOrderMap() {
         if (aggregateRangeDefinitionOrderMap == null) {
-            aggregateRangeDefinitionOrderMap = new HashMap<String, Integer>(getRanges().size());
+            aggregateRangeDefinitionOrderMap = new HashMap<>(getRanges().size());
             for (int i = 0; i < getRanges().size(); i++) {
                 aggregateRangeDefinitionOrderMap.put(getRanges().get(i).getKey(), i);
             }

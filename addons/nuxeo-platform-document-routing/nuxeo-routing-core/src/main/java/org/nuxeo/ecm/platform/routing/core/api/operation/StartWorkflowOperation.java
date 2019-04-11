@@ -80,7 +80,7 @@ public class StartWorkflowOperation {
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) {
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         for (DocumentModel doc : docs) {
             ids.add(doc.getId());
         }
@@ -90,14 +90,14 @@ public class StartWorkflowOperation {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) {
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         ids.add(doc.getId());
         startNewInstance(ids);
         return doc;
     }
 
     protected void startNewInstance(List<String> ids) {
-        Map<String, Serializable> vars = new HashMap<String, Serializable>();
+        Map<String, Serializable> vars = new HashMap<>();
         if (variables != null) {
             for (Entry<String, String> entry : variables.entrySet()) {
                 vars.put(entry.getKey(), entry.getValue());

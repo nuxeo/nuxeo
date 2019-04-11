@@ -122,7 +122,7 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
         Map<String, Object> fieldMap = getService().getUserMetadata(userManager.getUserIdField(), httpRequest);
 
         if (externalMapper != null) {
-            Map<String, Object> nativeObject = new HashMap<String, Object>();
+            Map<String, Object> nativeObject = new HashMap<>();
             nativeObject.putAll(fieldMap);
             nativeObject.put("userId", userId);
             externalMapper.getOrCreateAndUpdateNuxeoPrincipal(nativeObject);

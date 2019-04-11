@@ -84,7 +84,7 @@ public class DocumentListingActionsBean implements Serializable {
     protected transient DocumentsListsManager documentsListsManager;
 
     // only store 20 entries that cache chosen layout for a given document
-    protected LRUCachingMap<String, String> docTolistings = new LRUCachingMap<String, String>(20);
+    protected LRUCachingMap<String, String> docTolistings = new LRUCachingMap<>(20);
 
     protected String currentListingLayoutName = null;
 
@@ -156,7 +156,7 @@ public class DocumentListingActionsBean implements Serializable {
         }
         TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
         String[] layoutNames = typeInfo.getLayouts(BuiltinModes.VIEW, null);
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         if (layoutNames != null && layoutNames.length > 0) {
             res.addAll(Arrays.asList(layoutNames));
         } else {

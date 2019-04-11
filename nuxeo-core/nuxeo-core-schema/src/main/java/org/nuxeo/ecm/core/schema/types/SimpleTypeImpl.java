@@ -41,7 +41,7 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
         // simple types must have a not null super type
         // for example a primitive type or another simple type
         assert superType != null;
-        constraints = new HashSet<Constraint>();
+        constraints = new HashSet<>();
     }
 
     @Override

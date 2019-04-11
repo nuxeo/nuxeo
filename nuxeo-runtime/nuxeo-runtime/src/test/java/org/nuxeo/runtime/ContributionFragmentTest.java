@@ -60,7 +60,7 @@ public class ContributionFragmentTest {
 
     static class MyRegistry extends ContributionFragmentRegistry<MyContrib> {
 
-        Map<String, MyContrib> registry = new HashMap<String, MyContrib>();
+        Map<String, MyContrib> registry = new HashMap<>();
 
         @Override
         public String getContributionId(MyContrib contrib) {
@@ -82,7 +82,7 @@ public class ContributionFragmentTest {
             MyContrib clone = new MyContrib(object.getId());
             clone.title = object.title;
             if (object.args != null) {
-                clone.args = new ArrayList<String>(object.args);
+                clone.args = new ArrayList<>(object.args);
             }
             return clone;
         }
@@ -91,7 +91,7 @@ public class ContributionFragmentTest {
         public void merge(MyContrib src, MyContrib dst) {
             dst.title = src.title;
             if (dst.args == null) {
-                dst.args = new ArrayList<String>();
+                dst.args = new ArrayList<>();
             }
             if (src.args != null) {
                 dst.args.addAll(src.args);
@@ -115,15 +115,15 @@ public class ContributionFragmentTest {
         reg.addContribution(c1);
         MyContrib c11 = new MyContrib("c1");
         c11.title = "c11 title";
-        c11.args = new ArrayList<String>(Arrays.asList(new String[] { "a", "b" }));
+        c11.args = new ArrayList<>(Arrays.asList(new String[] { "a", "b" }));
         reg.addContribution(c11);
 
         MyContrib c2 = new MyContrib("c2");
         c2.title = "c2 title";
-        c2.args = new ArrayList<String>(Arrays.asList(new String[] { "a", "b" }));
+        c2.args = new ArrayList<>(Arrays.asList(new String[] { "a", "b" }));
         reg.addContribution(c2);
         MyContrib c21 = new MyContrib("c2");
-        c21.args = new ArrayList<String>(Arrays.asList(new String[] { "c", "d" }));
+        c21.args = new ArrayList<>(Arrays.asList(new String[] { "c", "d" }));
         reg.addContribution(c21);
 
         assertEquals("c1", reg.getRegistry().get("c1").getId());

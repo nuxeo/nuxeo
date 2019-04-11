@@ -258,8 +258,8 @@ public class ChainSelectOutputComponent extends UIOutput {
         String keySeparator = getKeySeparator();
         String[] columns = StringUtils.split(keyEnum, keySeparator);
 
-        List<String> keyList = new ArrayList<String>();
-        List<DirectorySelectItem> itemList = new ArrayList<DirectorySelectItem>();
+        List<String> keyList = new ArrayList<>();
+        List<DirectorySelectItem> itemList = new ArrayList<>();
         String directoryNameList = getDirectoryNameList();
         String[] directoryNames = StringUtils.split(directoryNameList, ",");
         boolean qualifiedParentKeys = getQualifiedParentKeys();
@@ -275,7 +275,7 @@ public class ChainSelectOutputComponent extends UIOutput {
 
             String directoryName = directoryNames[i];
 
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put("id", id);
 
             if (i == 0) {

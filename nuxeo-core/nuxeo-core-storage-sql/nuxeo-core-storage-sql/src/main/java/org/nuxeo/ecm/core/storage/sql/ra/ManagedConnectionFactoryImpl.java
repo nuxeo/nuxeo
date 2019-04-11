@@ -279,7 +279,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, R
      */
     public static Map<String, String> parseProperties(String expr) {
         String SPECIAL = "\u1fff"; // never present in the strings to parse
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         for (String kv : expr.replace(";;", SPECIAL).split(";")) {
             kv = kv.replace(SPECIAL, ";");
             if ("".equals(kv)) {

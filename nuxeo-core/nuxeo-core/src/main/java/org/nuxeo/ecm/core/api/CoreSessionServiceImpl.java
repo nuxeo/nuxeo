@@ -43,7 +43,7 @@ public class CoreSessionServiceImpl extends DefaultComponent implements CoreSess
     /**
      * All open {@link CoreSessionRegistrationInfo}, keyed by session id.
      */
-    private final Map<String, CoreSessionRegistrationInfo> sessions = new ConcurrentHashMap<String, CoreSessionRegistrationInfo>();
+    private final Map<String, CoreSessionRegistrationInfo> sessions = new ConcurrentHashMap<>();
 
     /**
      * Most recently closed sessions.

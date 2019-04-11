@@ -130,7 +130,7 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
     private void sendNotificationEvent(String recipient, String theMailSubject, String theMailContent)
             {
 
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
 
         // options for confirmation email
         options.put(NotificationConstants.RECIPIENTS_KEY, new String[] { recipient });

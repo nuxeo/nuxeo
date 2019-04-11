@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class BlockWriterRegistry {
 
-    protected final Map<String, BlockWriter> blockMap = new HashMap<String, BlockWriter>();
+    protected final Map<String, BlockWriter> blockMap = new HashMap<>();
 
     public void addBlock(String name, BlockWriter bw) {
         BlockWriter existingBw = blockMap.get(name);

@@ -52,7 +52,7 @@ public class AutomationModule extends WebEngineModule {
 
     protected static Set<Object> setupSingletons() {
 
-        Set<Object> result = new HashSet<Object>();
+        Set<Object> result = new HashSet<>();
 
         AutomationServer as = Framework.getService(AutomationServer.class);
 

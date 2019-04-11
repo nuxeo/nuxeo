@@ -301,14 +301,14 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         assertEquals("label.diffBlock.dublincore", diffDisplayBlock.getLabel());
 
         // Check left value
-        Map<String, Map<String, PropertyDiffDisplay>> expectedValue = new HashMap<String, Map<String, PropertyDiffDisplay>>();
-        Map<String, PropertyDiffDisplay> expectedFields = new HashMap<String, PropertyDiffDisplay>();
+        Map<String, Map<String, PropertyDiffDisplay>> expectedValue = new HashMap<>();
+        Map<String, PropertyDiffDisplay> expectedFields = new HashMap<>();
         // description
         expectedFields.put("description",
                 new PropertyDiffDisplayImpl("description", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         // subjects
-        List<Map<String, Serializable>> subjects = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> subject = new HashMap<String, Serializable>();
+        List<Map<String, Serializable>> subjects = new ArrayList<>();
+        Map<String, Serializable> subject = new HashMap<>();
         subject.put("index", 2);
         subject.put("value", new PropertyDiffDisplayImpl("Architecture", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         subjects.add(subject);
@@ -320,13 +320,13 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
                 new PropertyDiffDisplayImpl(cal.getTime(), PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         expectedValue.put("dublincore", expectedFields);
         // contributors
-        List<Map<String, Serializable>> contributors = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> contributor1 = new HashMap<String, Serializable>();
+        List<Map<String, Serializable>> contributors = new ArrayList<>();
+        Map<String, Serializable> contributor1 = new HashMap<>();
         contributor1.put("index", 1);
         contributor1.put("value",
                 new PropertyDiffDisplayImpl("Administrator", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         contributors.add(contributor1);
-        Map<String, Serializable> contributor2 = new HashMap<String, Serializable>();
+        Map<String, Serializable> contributor2 = new HashMap<>();
         contributor2.put("index", 3);
         contributor2.put("value", new PropertyDiffDisplayImpl(null, PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         contributors.add(contributor2);
@@ -335,13 +335,13 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         assertEquals(expectedValue, diffDisplayBlock.getLeftValue());
 
         // Check right value
-        expectedValue = new HashMap<String, Map<String, PropertyDiffDisplay>>();
-        expectedFields = new HashMap<String, PropertyDiffDisplay>();
+        expectedValue = new HashMap<>();
+        expectedFields = new HashMap<>();
         // description
         expectedFields.put("description", new PropertyDiffDisplayImpl(null, PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         // subjects
-        subjects = new ArrayList<Map<String, Serializable>>();
-        subject = new HashMap<String, Serializable>();
+        subjects = new ArrayList<>();
+        subject = new HashMap<>();
         subject.put("index", 2);
         subject.put("value", new PropertyDiffDisplayImpl(null, PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         subjects.add(subject);
@@ -353,13 +353,13 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
                 new PropertyDiffDisplayImpl(cal.getTime(), PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         expectedValue.put("dublincore", expectedFields);
         // contributors
-        contributors = new ArrayList<Map<String, Serializable>>();
-        contributor1 = new HashMap<String, Serializable>();
+        contributors = new ArrayList<>();
+        contributor1 = new HashMap<>();
         contributor1.put("index", 1);
         contributor1.put("value",
                 new PropertyDiffDisplayImpl("anotherAdministrator", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         contributors.add(contributor1);
-        contributor2 = new HashMap<String, Serializable>();
+        contributor2 = new HashMap<>();
         contributor2.put("index", 3);
         contributor2.put("value", new PropertyDiffDisplayImpl("jack", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         contributors.add(contributor2);

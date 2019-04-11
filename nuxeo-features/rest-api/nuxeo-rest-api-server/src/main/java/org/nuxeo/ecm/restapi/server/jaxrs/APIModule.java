@@ -47,7 +47,7 @@ public class APIModule extends WebEngineModule {
 
     @Override
     public Set<Object> getSingletons() {
-        Set<Object> result = new LinkedHashSet<Object>();
+        Set<Object> result = new LinkedHashSet<>();
 
         // writers
         result.add(new BusinessAdapterListWriter());

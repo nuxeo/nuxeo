@@ -41,7 +41,7 @@ public class AnnotationFilter implements IsSerializable {
 
     private Map<String, String> fields;
 
-    private List<String> parameters = new ArrayList<String>();
+    private List<String> parameters = new ArrayList<>();
 
     public AnnotationFilter() {
     }
@@ -64,7 +64,7 @@ public class AnnotationFilter implements IsSerializable {
 
         this.fields = fields;
         if (fields != null) {
-            List<String> fieldNames = new ArrayList<String>(fields.keySet());
+            List<String> fieldNames = new ArrayList<>(fields.keySet());
             for (String fieldName : fieldNames) {
                 if ("".equals(fields.get(fieldName))) {
                     parameters.add(fieldName);

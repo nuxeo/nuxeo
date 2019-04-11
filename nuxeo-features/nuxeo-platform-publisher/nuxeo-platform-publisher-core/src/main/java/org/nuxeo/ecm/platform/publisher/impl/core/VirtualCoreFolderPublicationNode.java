@@ -73,7 +73,7 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
     }
 
     public List<PublicationNode> getChildrenNodes() {
-        List<PublicationNode> childrenNodes = new ArrayList<PublicationNode>();
+        List<PublicationNode> childrenNodes = new ArrayList<>();
         CoreSession session = getCoreSession();
         if (session != null) {
             String query = String.format(ACCESSIBLE_CHILDREN_QUERY, NXQL.escapeString(path));

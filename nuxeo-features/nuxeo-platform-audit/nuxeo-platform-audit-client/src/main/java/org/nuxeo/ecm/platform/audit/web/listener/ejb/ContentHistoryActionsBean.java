@@ -114,7 +114,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             }
             if (logEntries != null) {
                 if (logEntries.size() > nbLogEntries) {
-                    latestLogEntries = new ArrayList<LogEntry>(logEntries.subList(0, nbLogEntries));
+                    latestLogEntries = new ArrayList<>(logEntries.subList(0, nbLogEntries));
                 } else {
                     latestLogEntries = logEntries;
                 }
@@ -188,7 +188,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
                     addLogEntry(publishingLogs.get(0));
                 }
                 // add logs from the actual version
-                filterMap = new HashMap<String, FilterMapEntry>();
+                filterMap = new HashMap<>();
                 addLogEntries(logsBean.getLogEntriesFor(runner.version.getId(), filterMap, doDefaultSort));
 
             } else {
@@ -224,8 +224,8 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
      * Post-process log entries comments to add links. e5e7b4ba-0ffb-492d-8bf2-f2f2e6683ae2
      */
     private void postProcessComments(List<LogEntry> logEntries) {
-        logEntriesComments = new HashMap<Long, String>();
-        logEntriesLinkedDocs = new HashMap<Long, LinkedDocument>();
+        logEntriesComments = new HashMap<>();
+        logEntriesLinkedDocs = new HashMap<>();
 
         CommentProcessorHelper cph = new CommentProcessorHelper(documentManager);
 
@@ -268,7 +268,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         if (logEntries != null) {
             logEntries.add(entry);
         } else {
-            logEntries = new ArrayList<LogEntry>();
+            logEntries = new ArrayList<>();
             logEntries.add(entry);
         }
     }
@@ -301,14 +301,14 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
     }
 
     private List<LogEntry> getLogsForDocUntilDate(Logs logsService, String docId, Date date, boolean doDefaultSort) {
-        filterMap = new HashMap<String, FilterMapEntry>();
+        filterMap = new HashMap<>();
         filterMap.put(BuiltinLogEntryData.LOG_EVENT_DATE, computeQueryForLogsOnDocUntilDate(date));
         return logsService.getLogEntriesFor(docId, filterMap, doDefaultSort);
     }
 
     private List<LogEntry> getLogsForDocUntilDateWithEvent(Logs logsService, String docId, Date date, String eventName,
             boolean doDefaultSort) {
-        filterMap = new HashMap<String, FilterMapEntry>();
+        filterMap = new HashMap<>();
         filterMap.put(BuiltinLogEntryData.LOG_EVENT_DATE, computeQueryForLogsOnDocAfterDate(date));
         filterMap.put(BuiltinLogEntryData.LOG_EVENT_ID, computeQueryForLogsWithEvent(eventName));
         return logsService.getLogEntriesFor(docId, filterMap, doDefaultSort);

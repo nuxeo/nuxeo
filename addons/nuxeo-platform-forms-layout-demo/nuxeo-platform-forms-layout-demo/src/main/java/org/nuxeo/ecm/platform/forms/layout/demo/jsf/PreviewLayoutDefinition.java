@@ -81,7 +81,7 @@ public class PreviewLayoutDefinition implements Serializable {
 
     public List<FieldDefinition> getFieldDefinitions() {
         if (fields != null) {
-            List<FieldDefinition> res = new ArrayList<FieldDefinition>();
+            List<FieldDefinition> res = new ArrayList<>();
             for (String field : fields) {
                 res.add(new FieldDefinitionImpl(null, field));
             }
@@ -132,7 +132,7 @@ public class PreviewLayoutDefinition implements Serializable {
 
     public Map<String, Serializable> getProperties() {
         if (properties == null) {
-            properties = new HashMap<String, Serializable>();
+            properties = new HashMap<>();
             // fill with default properties
             if (defaultProperties != null) {
                 properties.putAll(defaultProperties);
@@ -147,7 +147,7 @@ public class PreviewLayoutDefinition implements Serializable {
 
     public List<Map<String, Serializable>> getCustomProperties() {
         if (customProperties == null) {
-            customProperties = new ArrayList<Map<String, Serializable>>();
+            customProperties = new ArrayList<>();
         }
         return customProperties;
     }
@@ -157,7 +157,7 @@ public class PreviewLayoutDefinition implements Serializable {
     }
 
     public Map<String, Serializable> getWidgetProperties() {
-        Map<String, Serializable> widgetProps = new HashMap<String, Serializable>();
+        Map<String, Serializable> widgetProps = new HashMap<>();
         Map<String, Serializable> props = getProperties();
         if (props != null) {
             widgetProps.putAll(props);
@@ -174,7 +174,7 @@ public class PreviewLayoutDefinition implements Serializable {
      * "validator".
      */
     protected Map<String, Serializable> cleanUpProperties(Map<String, Serializable> props) {
-        Map<String, Serializable> res = new HashMap<String, Serializable>();
+        Map<String, Serializable> res = new HashMap<>();
         if (props != null) {
             for (Map.Entry<String, Serializable> prop : props.entrySet()) {
                 Serializable value = prop.getValue();
@@ -188,7 +188,7 @@ public class PreviewLayoutDefinition implements Serializable {
     }
 
     public Map<String, Serializable> getNewCustomProperty() {
-        Map<String, Serializable> prop = new HashMap<String, Serializable>();
+        Map<String, Serializable> prop = new HashMap<>();
         prop.put("key", null);
         prop.put("value", null);
         return prop;
@@ -196,7 +196,7 @@ public class PreviewLayoutDefinition implements Serializable {
 
     protected Map<String, Serializable> convertCustomProperties(List<Map<String, Serializable>> listProps,
             boolean ignoreErrors) throws ValidatorException {
-        Map<String, Serializable> values = new HashMap<String, Serializable>();
+        Map<String, Serializable> values = new HashMap<>();
         if (listProps != null) {
             for (Map<String, Serializable> entry : listProps) {
                 String key = (String) entry.get("key");

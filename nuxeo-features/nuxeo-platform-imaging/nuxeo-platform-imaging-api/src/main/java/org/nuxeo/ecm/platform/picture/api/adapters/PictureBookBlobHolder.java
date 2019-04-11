@@ -82,7 +82,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
         }
         try {
             DocumentModelList docList = session.getChildren(doc.getRef(), "Picture");
-            List<Blob> blobList = new ArrayList<Blob>(docList.size());
+            List<Blob> blobList = new ArrayList<>(docList.size());
             for (DocumentModel documentModel : docList) {
                 if ("Original".equals(title)) {
                     BlobHolder bh = documentModel.getAdapter(BlobHolder.class);

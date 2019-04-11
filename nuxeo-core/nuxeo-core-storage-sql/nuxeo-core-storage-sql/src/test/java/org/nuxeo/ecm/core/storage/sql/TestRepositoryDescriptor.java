@@ -197,7 +197,7 @@ public class TestRepositoryDescriptor {
         fti = fulltextIndexes.get(1);
         assertEquals("titraille", fti.name);
         assertNull(fti.fieldType);
-        assertEquals(new HashSet<String>(Arrays.asList("dc:title", "dc:description", "my:desc")), fti.fields);
+        assertEquals(new HashSet<>(Arrays.asList("dc:title", "dc:description", "my:desc")), fti.fields);
         assertEquals(new HashSet<String>(), fti.excludeFields);
 
         fti = fulltextIndexes.get(2);
@@ -218,9 +218,9 @@ public class TestRepositoryDescriptor {
         assertEquals(Collections.singleton("my:other"), fti.fields);
         assertEquals(new HashSet<String>(), fti.excludeFields);
 
-        assertEquals(new HashSet<String>(Arrays.asList("Folder", "Workspace", "OtherExcluded")),
+        assertEquals(new HashSet<>(Arrays.asList("Folder", "Workspace", "OtherExcluded")),
                 fulltextDescriptor.getFulltextExcludedTypes());
-        assertEquals(new HashSet<String>(Arrays.asList("Note", "File", "OtherIncluded")),
+        assertEquals(new HashSet<>(Arrays.asList("Note", "File", "OtherIncluded")),
                 fulltextDescriptor.getFulltextIncludedTypes());
     }
 

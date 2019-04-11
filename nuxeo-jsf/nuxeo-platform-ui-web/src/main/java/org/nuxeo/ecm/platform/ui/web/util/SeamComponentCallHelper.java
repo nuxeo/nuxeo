@@ -168,7 +168,7 @@ public final class SeamComponentCallHelper {
      * @throws RuntimeException
      */
     public static Object callSeamComponentByRef(Object seamRef, String methodName, Object param) {
-        List<Object> params = new ArrayList<Object>();
+        List<Object> params = new ArrayList<>();
         params.add(param);
         return callSeamComponentByRef(seamRef, methodName, params.toArray());
     }
@@ -183,7 +183,7 @@ public final class SeamComponentCallHelper {
      * @throws RuntimeException
      */
     public static Object callSeamComponentByName(String seamName, String methodName, Object param) {
-        List<Object> params = new ArrayList<Object>();
+        List<Object> params = new ArrayList<>();
         params.add(param);
         return callSeamComponentByName(seamName, methodName, params.toArray());
     }
@@ -207,7 +207,7 @@ public final class SeamComponentCallHelper {
      * Finds the method in the local interface of the Seam component.
      */
     private static Method findMethod(String name, Class cls, Object[] params) {
-        Map<Method, Integer> candidates = new HashMap<Method, Integer>();
+        Map<Method, Integer> candidates = new HashMap<>();
 
         // for (Method m : cls.getDeclaredMethods()) {
         for (Method method : cls.getMethods()) {

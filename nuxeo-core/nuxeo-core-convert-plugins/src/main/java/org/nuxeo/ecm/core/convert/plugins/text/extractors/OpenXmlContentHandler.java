@@ -30,7 +30,7 @@ public class OpenXmlContentHandler extends DefaultHandler {
 
     protected final StringBuilder sb = new StringBuilder();
 
-    protected final Stack<String> path = new Stack<String>();
+    protected final Stack<String> path = new Stack<>();
 
     protected boolean dumpText = false;
 

@@ -76,7 +76,7 @@ public class CreateDirectoryEntries extends AbstractDirectoryOperation {
         List<Map<String, Object>> entries = mapper.readValue(jsonEntries,
                 new TypeReference<List<Map<String, Object>>>() {
                 });
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         try (Session session = directoryService.open(directoryName)) {
             for (Map<String, Object> entry : entries) {
                 DocumentModel doc = session.createEntry(entry);

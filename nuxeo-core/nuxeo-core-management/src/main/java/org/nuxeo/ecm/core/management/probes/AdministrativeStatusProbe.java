@@ -39,7 +39,7 @@ public class AdministrativeStatusProbe implements Probe {
         AdministrativeStatusManager adm = Framework.getService(AdministrativeStatusManager.class);
         AdministrativeStatus status = adm.getNuxeoInstanceStatus();
 
-        Map<String, String> infos = new HashMap<String, String>();
+        Map<String, String> infos = new HashMap<>();
         infos.put("server", status.getInstanceIdentifier());
         infos.put("host", Framework.getProperty("org.nuxeo.runtime.server.host", "localhost"));
         infos.put("status", status.getState());

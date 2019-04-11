@@ -61,7 +61,7 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
     @Test
     public void shouldPutNewParameterOnExistingConfiguration() throws Exception {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("key1", "value1");
         initializeSimpleConfiguration(workspace, parameters);
 
@@ -85,7 +85,7 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
     @Test
     public void shouldReplaceExistingParameters() throws Exception {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
-        Map<String, String> existingParameters = new HashMap<String, String>();
+        Map<String, String> existingParameters = new HashMap<>();
         existingParameters.put("key1", "value1");
         existingParameters.put("key2", "value2");
         existingParameters.put("key3", "value3");
@@ -94,7 +94,7 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
         OperationContext ctx = new OperationContext(session);
         assertNotNull(ctx);
 
-        Map<String, String> newParameters = new HashMap<String, String>();
+        Map<String, String> newParameters = new HashMap<>();
         newParameters.put("key2", "newValue2");
         newParameters.put("key3", "newValue3");
         OperationChain chain = new OperationChain("testSimpleConfigurationChain");
@@ -118,7 +118,7 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
         assertNotNull(ctx);
 
         // PutSimpleConfigurationParameters
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("key1", "value1");
         parameters.put("key3", "value3");
         OperationChain chain = new OperationChain("testPutSimpleConfigurationParametersChain");

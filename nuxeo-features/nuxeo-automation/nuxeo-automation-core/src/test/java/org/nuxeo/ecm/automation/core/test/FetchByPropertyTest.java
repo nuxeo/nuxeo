@@ -125,7 +125,7 @@ public class FetchByPropertyTest {
 
         DocumentModelList docs = (DocumentModelList) service.run(ctx, chain);
         assertEquals(2, docs.size());
-        List<String> titles = new ArrayList<String>();
+        List<String> titles = new ArrayList<>();
         titles.add(docs.get(0).getTitle());
         titles.add(docs.get(1).getTitle());
         Collections.sort(titles);

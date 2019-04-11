@@ -138,11 +138,11 @@ public class ContentViewActions implements Serializable {
      */
     @SuppressWarnings("boxing")
     public List<SelectItem> getPageSizeOptions(ContentView cv) {
-        List<SelectItem> items = new ArrayList<SelectItem>();
+        List<SelectItem> items = new ArrayList<>();
         if (cv == null) {
             return items;
         }
-        List<Long> values = new ArrayList<Long>();
+        List<Long> values = new ArrayList<>();
         long maxPageSize = 0;
         PageProvider<?> pp = cv.getCurrentPageProvider();
         if (pp != null) {

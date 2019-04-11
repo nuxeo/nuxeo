@@ -147,7 +147,7 @@ public class NuxeoObjectData implements ObjectData {
     private static final int DEFAULT_MAX_RENDITIONS = 20;
 
     /** Cache for Properties objects, which are expensive to create. */
-    private Map<String, Properties> propertiesCache = new HashMap<String, Properties>();
+    private Map<String, Properties> propertiesCache = new HashMap<>();
 
     private CallContext callContext;
 
@@ -229,7 +229,7 @@ public class NuxeoObjectData implements ObjectData {
         String key = StringUtils.join(propertyIds, ',');
         Properties properties = propertiesCache.get(key);
         if (properties == null) {
-            List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
+            List<PropertyData<?>> props = new ArrayList<>();
             for (TypeDefinition t : allTypes) {
                 Map<String, PropertyDefinition<?>> propertyDefinitions = t.getPropertyDefinitions();
                 for (PropertyDefinition<?> pd : propertyDefinitions.values()) {
@@ -351,7 +351,7 @@ public class NuxeoObjectData implements ObjectData {
     public static List<RenditionData> getRenditions(DocumentModel doc, String renditionFilter, BigInteger maxItems,
             BigInteger skipCount, CallContext callContext) {
         try {
-            List<RenditionData> list = new ArrayList<RenditionData>();
+            List<RenditionData> list = new ArrayList<>();
             list.addAll(getRenditionServiceRenditions(doc, callContext));
             // rendition filter
             if (!STAR.equals(renditionFilter)) {
@@ -504,10 +504,10 @@ public class NuxeoObjectData implements ObjectData {
         if (includeRelationships != IncludeRelationships.SOURCE) {
             statement += PropertyIds.TARGET_ID + " = " + qid;
         }
-        List<ObjectData> list = new ArrayList<ObjectData>();
+        List<ObjectData> list = new ArrayList<>();
         IterableQueryResult res = null;
         try {
-            Map<String, PropertyDefinition<?>> typeInfo = new HashMap<String, PropertyDefinition<?>>();
+            Map<String, PropertyDefinition<?>> typeInfo = new HashMap<>();
             res = service.queryAndFetch(statement, false, typeInfo);
             for (Map<String, Serializable> map : res) {
                 list.add(service.makeObjectData(map, typeInfo));
@@ -534,7 +534,7 @@ public class NuxeoObjectData implements ObjectData {
             acp = new ACPImpl();
         }
         Boolean exact = Boolean.TRUE;
-        List<Ace> aces = new ArrayList<Ace>();
+        List<Ace> aces = new ArrayList<>();
         for (ACL acl : acp.getACLs()) {
             // inherited and non-local ACLs are non-direct
             boolean direct = ACL.LOCAL_ACL.equals(acl.getName());
@@ -554,7 +554,7 @@ public class NuxeoObjectData implements ObjectData {
                 }
                 Set<String> permissions = permissionMap.get(username);
                 if (permissions == null) {
-                    permissionMap.put(username, permissions = new LinkedHashSet<String>());
+                    permissionMap.put(username, permissions = new LinkedHashSet<>());
                 }
                 // derive CMIS permission from Nuxeo permissions
                 boolean isBasic = false;
@@ -587,7 +587,7 @@ public class NuxeoObjectData implements ObjectData {
                 }
                 MutableAce entry = new AccessControlEntryImpl();
                 entry.setPrincipal(new AccessControlPrincipalDataImpl(username));
-                entry.setPermissions(new ArrayList<String>(permissions));
+                entry.setPermissions(new ArrayList<>(permissions));
                 entry.setDirect(direct);
                 aces.add(entry);
             }

@@ -40,7 +40,7 @@ public class ProcessorRegistry extends ContributionFragmentRegistry<ProcessorDes
 
     private static final Log log = LogFactory.getLog(ProcessorRegistry.class);
 
-    protected final Map<String, ProcessorDescriptor> processors = new HashMap<String, ProcessorDescriptor>();
+    protected final Map<String, ProcessorDescriptor> processors = new HashMap<>();
 
     @Override
     public String getContributionId(ProcessorDescriptor contrib) {

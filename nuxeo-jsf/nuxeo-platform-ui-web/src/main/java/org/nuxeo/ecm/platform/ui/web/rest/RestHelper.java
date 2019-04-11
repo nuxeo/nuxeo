@@ -135,7 +135,7 @@ public class RestHelper implements Serializable {
         if (currentDocument != null) {
             DocumentLocation docLoc = new DocumentLocationImpl(currentDocument);
             TypeInfo typeInfo = currentDocument.getAdapter(TypeInfo.class);
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             if (currentDocument.isVersion()) {
                 params.put("version", "true");
             }
@@ -169,7 +169,7 @@ public class RestHelper implements Serializable {
 
     protected static String addConversationRequestParameters(String url, Manager conversationManager,
             String conversationId) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put(conversationManager.getConversationIdParameter(), conversationId);
         return conversationManager.encodeParameters(url, params);
     }
@@ -258,7 +258,7 @@ public class RestHelper implements Serializable {
     }
 
     public String getPrintUrl(DocumentModel doc, String defaultTheme) {
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         int separatorIndex = defaultTheme.indexOf("/");
         if (separatorIndex != -1) {
             // defaultTheme includes the default page

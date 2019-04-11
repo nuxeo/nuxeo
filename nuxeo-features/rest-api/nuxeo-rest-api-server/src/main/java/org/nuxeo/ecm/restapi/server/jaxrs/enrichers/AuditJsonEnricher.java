@@ -69,7 +69,7 @@ public class AuditJsonEnricher extends AbstractJsonEnricher<DocumentModel>  {
 
             PageProviderService ppService = Framework.getService(PageProviderService.class);
             PageProviderDefinition ppDefinition = ppService.getPageProviderDefinition(AuditAdapter.PAGE_PROVIDER_NAME);
-            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            Map<String, Serializable> props = new HashMap<>();
             props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) wrapper.getSession());
             @SuppressWarnings("unchecked")
             PageProvider<LogEntry> pp = (PageProvider<LogEntry>) ppService.getPageProvider("", ppDefinition, searchDocument, null,

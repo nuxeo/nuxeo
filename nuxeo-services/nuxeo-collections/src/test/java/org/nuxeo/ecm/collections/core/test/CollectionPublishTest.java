@@ -71,7 +71,7 @@ public class CollectionPublishTest {
         assertTrue(favoritesManager.isFavorite(testFile, session));
 
         waitForAsyncCompletion();
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         DocumentModel favoritesDoc = favoritesManager.getFavorites(session);
         List<String> list = favoritesDoc.getAdapter(Collection.class).getCollectedDocumentIds();

@@ -53,7 +53,7 @@ public class ContentViewConfigurationAdapter extends AbstractLocalConfiguration<
     @SuppressWarnings("unchecked")
     public ContentViewConfigurationAdapter(DocumentModel doc) {
         documentRef = doc.getRef();
-        typeToContentViewNames = new HashMap<String, List<String>>();
+        typeToContentViewNames = new HashMap<>();
         try {
             List<Map<String, String>> cvNamesByType = (List<Map<String, String>>) doc.getPropertyValue(CONTENT_VIEW_CONFIGURATION_NAMES_BY_TYPE);
             for (Map<String, String> typeToCv : cvNamesByType) {
@@ -62,7 +62,7 @@ public class ContentViewConfigurationAdapter extends AbstractLocalConfiguration<
                 if (typeToContentViewNames.containsKey(type)) {
                     typeToContentViewNames.get(type).add(cvName);
                 } else {
-                    List<String> cvNames = new ArrayList<String>();
+                    List<String> cvNames = new ArrayList<>();
                     cvNames.add(cvName);
                     typeToContentViewNames.put(type, cvNames);
                 }

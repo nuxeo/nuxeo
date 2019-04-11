@@ -46,7 +46,7 @@ public class TestAuditEntriesODTProcessing extends SimpleTemplateDocTestCase {
     public void testRenderWithAuditEntries() throws Exception {
 
         // build fake AuditEntries
-        ArrayList<LogEntry> auditEntries = new ArrayList<LogEntry>();
+        ArrayList<LogEntry> auditEntries = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             LogEntryImpl entry = new LogEntryImpl();
             entry.setId(i);

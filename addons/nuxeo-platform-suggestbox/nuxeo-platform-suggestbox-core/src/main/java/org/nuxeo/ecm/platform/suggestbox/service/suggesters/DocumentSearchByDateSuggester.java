@@ -59,7 +59,7 @@ public class DocumentSearchByDateSuggester implements Suggester {
 
     @Override
     public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
-        List<Suggestion> suggestions = new ArrayList<Suggestion>();
+        List<Suggestion> suggestions = new ArrayList<>();
         I18nHelper i18n = I18nHelper.instanceFor(context.messages);
 
         // TODO: use SimpleDateFormat and use the locale information from the

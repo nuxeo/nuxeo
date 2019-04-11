@@ -40,7 +40,7 @@ public abstract class AbstractActionContext implements ActionContext {
 
     protected NuxeoPrincipal currentPrincipal;
 
-    protected Map<String, Object> localVariables = new HashMap<String, Object>();
+    protected Map<String, Object> localVariables = new HashMap<>();
 
     public abstract boolean checkCondition(String expression) throws ELException;
 

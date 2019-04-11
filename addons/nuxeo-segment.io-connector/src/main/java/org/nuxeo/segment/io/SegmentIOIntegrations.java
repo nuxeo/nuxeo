@@ -15,6 +15,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class SegmentIOIntegrations {
 
     @XNodeMap(value = "integrations/integration", key = "@name", type = HashMap.class, componentType = Boolean.class)
-    Map<String, Boolean> integrations = new HashMap<String, Boolean>();
+    Map<String, Boolean> integrations = new HashMap<>();
 
 }

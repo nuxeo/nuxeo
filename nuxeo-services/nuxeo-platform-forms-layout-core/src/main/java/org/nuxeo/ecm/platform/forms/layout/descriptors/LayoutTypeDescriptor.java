@@ -44,7 +44,7 @@ public class LayoutTypeDescriptor {
     List<String> aliases;
 
     @XNodeMap(value = "templates/template", key = "@mode", type = HashMap.class, componentType = String.class)
-    Map<String, String> templates = new HashMap<String, String>();
+    Map<String, String> templates = new HashMap<>();
 
     @XNode("configuration")
     LayoutTypeConfigurationDescriptor configuration;

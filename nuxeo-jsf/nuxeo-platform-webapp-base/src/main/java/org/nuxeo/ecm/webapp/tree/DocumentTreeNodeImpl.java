@@ -110,7 +110,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
         if (children == null) {
             fetchChildren();
         }
-        List<DocumentTreeNode> childrenNodes = new ArrayList<DocumentTreeNode>();
+        List<DocumentTreeNode> childrenNodes = new ArrayList<>();
         childrenNodes.addAll(children.values());
         return childrenNodes;
     }
@@ -163,7 +163,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     @SuppressWarnings("unchecked")
     public void fetchChildren() {
-        children = new LinkedHashMap<Object, DocumentTreeNodeImpl>();
+        children = new LinkedHashMap<>();
         if (leafFilter != null && leafFilter.accept(document)) {
             // filter says this is a leaf, don't look at children
             return;
@@ -183,11 +183,11 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
             // use page providers
             PageProviderService ppService = Framework.getService(PageProviderService.class);
             List<SortInfo> sortInfos = null;
-            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            Map<String, Serializable> props = new HashMap<>();
             props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
             if (isOrderable) {
                 // override sort infos to get default sort
-                sortInfos = new ArrayList<SortInfo>();
+                sortInfos = new ArrayList<>();
                 sortInfos.add(new SortInfo("ecm:pos", true));
             }
             PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(pageProviderName,
@@ -214,7 +214,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     protected List<DocumentModel> filterAndSort(List<DocumentModel> docs, boolean doSort) {
         // filter and sort if defined
-        List<DocumentModel> res = new ArrayList<DocumentModel>();
+        List<DocumentModel> res = new ArrayList<>();
         if (docs != null) {
             if (filter == null) {
                 res.addAll(docs);

@@ -83,7 +83,7 @@ public class JobHistoryHelper {
     public void logJobStarted() {
         LogEntry entry = getNewLogEntry();
         entry.setEventId(jobStartedEventId);
-        List<LogEntry> entries = new ArrayList<LogEntry>();
+        List<LogEntry> entries = new ArrayList<>();
         entries.add(entry);
         getLogger().addLogEntries(entries);
     }
@@ -94,7 +94,7 @@ public class JobHistoryHelper {
     public void logJobEnded() {
         LogEntry entry = getNewLogEntry();
         entry.setEventId(jobEndedEventId);
-        List<LogEntry> entries = new ArrayList<LogEntry>();
+        List<LogEntry> entries = new ArrayList<>();
         entries.add(entry);
         getLogger().addLogEntries(entries);
     }
@@ -106,7 +106,7 @@ public class JobHistoryHelper {
         LogEntry entry = getNewLogEntry();
         entry.setEventId(jobFailedEventId);
         entry.setComment(errMessage);
-        List<LogEntry> entries = new ArrayList<LogEntry>();
+        List<LogEntry> entries = new ArrayList<>();
         entries.add(entry);
         getLogger().addLogEntries(entries);
     }

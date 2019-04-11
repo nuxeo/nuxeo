@@ -55,7 +55,7 @@ public class ComplexPropertyTemplate extends PropertyWrapper implements Template
 
     @Override
     public TemplateCollectionModel keys() throws TemplateModelException {
-        List<String> list = new ArrayList<String>(property.size());
+        List<String> list = new ArrayList<>(property.size());
         for (Property p : property.getChildren()) {
             list.add(p.getName());
         }
@@ -70,7 +70,7 @@ public class ComplexPropertyTemplate extends PropertyWrapper implements Template
     @Override
     public TemplateCollectionModel values() throws TemplateModelException {
         try {
-            List<Object> list = new ArrayList<Object>(property.size());
+            List<Object> list = new ArrayList<>(property.size());
             for (Property p : property.getChildren()) {
                 Object value = p.getValue();
                 list.add(value == null ? "" : value);

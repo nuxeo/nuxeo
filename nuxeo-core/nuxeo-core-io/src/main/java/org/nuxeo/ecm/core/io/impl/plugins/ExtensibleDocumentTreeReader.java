@@ -40,9 +40,9 @@ public class ExtensibleDocumentTreeReader extends DocumentModelReader {
 
     protected int pathSegmentsToRemove = 0;
 
-    protected List<DocumentModel> pendingVersions = new LinkedList<DocumentModel>();
+    protected List<DocumentModel> pendingVersions = new LinkedList<>();
 
-    protected List<ExportExtension> extensions = new ArrayList<ExportExtension>();
+    protected List<ExportExtension> extensions = new ArrayList<>();
 
     public static final String VERSION_VIRTUAL_PATH_SEGMENT = "__versions__";
 

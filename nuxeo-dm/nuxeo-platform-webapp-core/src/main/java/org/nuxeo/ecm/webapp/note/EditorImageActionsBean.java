@@ -77,16 +77,16 @@ public class EditorImageActionsBean extends InputController implements EditorIma
     private static final String PP_SEARCH_MEDIA_ALL = "search_media_all";
 
     static {
-        SIZES = new ArrayList<Map<String, String>>();
-        Map<String, String> m = new HashMap<String, String>();
+        SIZES = new ArrayList<>();
+        Map<String, String> m = new HashMap<>();
         m.put("label", "label.imageUpload.originalSize");
         m.put("value", "OriginalJpeg");
         SIZES.add(m);
-        m = new HashMap<String, String>();
+        m = new HashMap<>();
         m.put("label", "label.imageUpload.mediumSize");
         m.put("value", "Medium");
         SIZES.add(m);
-        m = new HashMap<String, String>();
+        m = new HashMap<>();
         m.put("label", "label.imageUpload.thumbnailSize");
         m.put("value", "Thumbnail");
         SIZES.add(m);
@@ -178,7 +178,7 @@ public class EditorImageActionsBean extends InputController implements EditorIma
         DocumentModel doc = navigationContext.getCurrentDocument();
         List<Map<String, Object>> filesList = (List<Map<String, Object>>) doc.getProperty("files", "files");
         int fileIndex = filesList == null ? 0 : filesList.size();
-        Map<String, Object> props = new HashMap<String, Object>();
+        Map<String, Object> props = new HashMap<>();
         Blob blob;
         try {
             blob = FileUtils.createBlob(uploadedImage);
@@ -277,7 +277,7 @@ public class EditorImageActionsBean extends InputController implements EditorIma
 
         // use page providers
         PageProviderService ppService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) documentManager);
         PageProvider<DocumentModel> pp = null;
         if (searchKeywords != null) {

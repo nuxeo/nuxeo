@@ -40,7 +40,7 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
     protected final Map<String, LinkDescriptor[]> links; // category to links mapping
 
     public LinkRegistry() {
-        links = new ConcurrentHashMap<String, LinkDescriptor[]>();
+        links = new ConcurrentHashMap<>();
     }
 
     public List<LinkDescriptor> getLinks(String category) {
@@ -48,11 +48,11 @@ public class LinkRegistry extends AbstractContributionRegistry<String, LinkDescr
         if (descriptors != null && descriptors.length > 0) {
             return Arrays.asList(descriptors);
         }
-        return new ArrayList<LinkDescriptor>();
+        return new ArrayList<>();
     }
 
     public List<LinkDescriptor> getActiveLinks(Resource context, String category) {
-        List<LinkDescriptor> result = new ArrayList<LinkDescriptor>();
+        List<LinkDescriptor> result = new ArrayList<>();
         LinkDescriptor[] descriptors = links.get(category);
         if (descriptors != null && descriptors.length > 0) {
             for (LinkDescriptor descriptor : descriptors) {

@@ -41,7 +41,7 @@ public class SessionFactoryDescriptor {
     private String fetcherName;
 
     @XNodeMap(value = "properties/property", key = "@name", type = HashMap.class, componentType = String.class)
-    private Map<String, String> properties = new HashMap<String, String>();
+    private Map<String, String> properties = new HashMap<>();
 
     public String getName() {
         return name;

@@ -26,7 +26,7 @@ import org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor;
 
 public class ContextFactoryRegistry extends ContributionFragmentRegistry<ContextExtensionFactoryDescriptor> {
 
-    protected Map<String, ContextExtensionFactoryDescriptor> factories = new HashMap<String, ContextExtensionFactoryDescriptor>();
+    protected Map<String, ContextExtensionFactoryDescriptor> factories = new HashMap<>();
 
     @Override
     public ContextExtensionFactoryDescriptor clone(ContextExtensionFactoryDescriptor desc) {

@@ -35,7 +35,7 @@ public class VideoConversionContributionHandler extends ContributionFragmentRegi
     public final Map<String, VideoConversion> registry;
 
     public VideoConversionContributionHandler() {
-        registry = new HashMap<String, VideoConversion>();
+        registry = new HashMap<>();
     }
 
     @Override

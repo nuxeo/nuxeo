@@ -71,7 +71,7 @@ public class UserSuggestionWithGroupTreeActionsBean extends UserSuggestionAction
         List<DocumentModel> groups = getGroups();
         List<DocumentModel> shibbGroups = getShibbGroups();
 
-        treeRoot = new ArrayList<UserTreeNode>();
+        treeRoot = new ArrayList<>();
         treeRoot.addAll(UserTreeNodeHelper.getHierarcicalNodes(groups));
         treeRoot.addAll(UserTreeNodeHelper.buildBranch(UserTreeNodeHelper.getShibbGroupBasePath(), shibbGroups));
     }
@@ -84,11 +84,11 @@ public class UserSuggestionWithGroupTreeActionsBean extends UserSuggestionAction
      */
     protected List<DocumentModel> getGroups() {
         try {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put("__virtualGroup", false);
 
             // parameters must be serializable so copy keySet to HashSet
-            return userManager.searchGroups(filter, new HashSet<String>(filter.keySet()));
+            return userManager.searchGroups(filter, new HashSet<>(filter.keySet()));
         } catch (SizeLimitExceededException e) {
             return Collections.emptyList();
         }

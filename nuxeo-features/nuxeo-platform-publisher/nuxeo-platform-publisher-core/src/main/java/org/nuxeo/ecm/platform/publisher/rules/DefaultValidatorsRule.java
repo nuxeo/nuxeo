@@ -43,7 +43,7 @@ public class DefaultValidatorsRule implements ValidatorsRule {
         UnrestrictedACPGetter acpg = new UnrestrictedACPGetter(doc);
         acpg.runUnrestricted();
         String[] writePermissions = doc.getCoreSession().getPermissionsToCheck(SecurityConstants.WRITE);
-        String[] reviewers = acpg.acp.listUsernamesForAnyPermission(new HashSet<String>(Arrays.asList(writePermissions)));
+        String[] reviewers = acpg.acp.listUsernamesForAnyPermission(new HashSet<>(Arrays.asList(writePermissions)));
         return reviewers;
     }
 

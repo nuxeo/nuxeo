@@ -63,7 +63,7 @@ public class TilingModel {
 
     private double oldZoom = 1;
 
-    private List<TilingModelListener> listeners = new ArrayList<TilingModelListener>();
+    private List<TilingModelListener> listeners = new ArrayList<>();
 
     private TilingInfoCallback tilingInfoCallback = new TilingInfoCallback() {
         public void tilingInfoUpdated() {

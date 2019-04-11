@@ -52,12 +52,12 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
 
     protected ComplexProperty(Property parent) {
         super(parent);
-        children = new HashMap<String, Property>();
+        children = new HashMap<>();
     }
 
     protected ComplexProperty(Property parent, int flags) {
         super(parent, flags);
-        children = new HashMap<String, Property>();
+        children = new HashMap<>();
     }
 
     /**
@@ -157,7 +157,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
     @Override
     public Serializable internalGetValue() throws PropertyException {
         // noinspection CollectionDeclaredAsConcreteClass
-        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> map = new HashMap<>();
         for (Property property : getChildren()) {
             map.put(property.getName(), property.getValue());
         }
@@ -169,7 +169,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
         if (isPhantom() || isRemoved()) {
             return getDefaultValue();
         }
-        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> map = new HashMap<>();
         for (Property property : getChildren()) {
             map.put(property.getName(), property.getValueForWrite());
         }

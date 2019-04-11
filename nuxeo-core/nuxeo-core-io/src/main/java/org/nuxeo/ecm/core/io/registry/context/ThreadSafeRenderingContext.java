@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.io.registry.reflect.Instantiations;
  */
 public final class ThreadSafeRenderingContext implements RenderingContext {
 
-    private final ThreadLocal<RenderingContext> ctx = new ThreadLocal<RenderingContext>();
+    private final ThreadLocal<RenderingContext> ctx = new ThreadLocal<>();
 
     public ThreadSafeRenderingContext() {
     }

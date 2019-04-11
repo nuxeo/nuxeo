@@ -75,11 +75,11 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         super();
         this.name = name;
         this.properties = null;
-        this.templates = new HashMap<String, String>();
+        this.templates = new HashMap<>();
         if (template != null) {
             this.templates.put(BuiltinModes.ANY, template);
         }
-        this.widgets = new HashMap<String, WidgetDefinition>();
+        this.widgets = new HashMap<>();
         if (widgetDefinition != null) {
             this.widgets.put(widgetDefinition.getName(), widgetDefinition);
             this.rows = new LayoutRowDefinition[] { new LayoutRowDefinitionImpl(null, widgetDefinition.getName()) };
@@ -99,7 +99,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         } else {
             this.rows = rows.toArray(new LayoutRowDefinition[0]);
         }
-        this.widgets = new HashMap<String, WidgetDefinition>();
+        this.widgets = new HashMap<>();
         if (widgetDefinitions != null) {
             for (WidgetDefinition widgetDef : widgetDefinitions) {
                 this.widgets.put(widgetDef.getName(), widgetDef);
@@ -287,12 +287,12 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
     public LayoutDefinition clone() {
         Map<String, Map<String, Serializable>> cprops = null;
         if (properties != null) {
-            cprops = new HashMap<String, Map<String, Serializable>>();
+            cprops = new HashMap<>();
             for (Map.Entry<String, Map<String, Serializable>> entry : properties.entrySet()) {
                 Map<String, Serializable> subProps = entry.getValue();
                 Map<String, Serializable> csubProps = null;
                 if (subProps != null) {
-                    csubProps = new HashMap<String, Serializable>();
+                    csubProps = new HashMap<>();
                     csubProps.putAll(subProps);
                 }
                 cprops.put(entry.getKey(), csubProps);
@@ -300,7 +300,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         }
         Map<String, String> ctemplates = null;
         if (templates != null) {
-            ctemplates = new HashMap<String, String>();
+            ctemplates = new HashMap<>();
             ctemplates.putAll(templates);
         }
         LayoutRowDefinition[] crows = null;
@@ -312,7 +312,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         }
         Map<String, WidgetDefinition> cwidgets = null;
         if (widgets != null) {
-            cwidgets = new LinkedHashMap<String, WidgetDefinition>();
+            cwidgets = new LinkedHashMap<>();
             for (Map.Entry<String, WidgetDefinition> entry : widgets.entrySet()) {
                 WidgetDefinition w = entry.getValue();
                 if (w != null) {
@@ -323,12 +323,12 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         }
         Map<String, List<RenderingInfo>> crenderingInfos = null;
         if (renderingInfos != null) {
-            crenderingInfos = new HashMap<String, List<RenderingInfo>>();
+            crenderingInfos = new HashMap<>();
             for (Map.Entry<String, List<RenderingInfo>> item : renderingInfos.entrySet()) {
                 List<RenderingInfo> infos = item.getValue();
                 List<RenderingInfo> clonedInfos = null;
                 if (infos != null) {
-                    clonedInfos = new ArrayList<RenderingInfo>();
+                    clonedInfos = new ArrayList<>();
                     for (RenderingInfo info : infos) {
                         clonedInfos.add(info.clone());
                     }
@@ -341,7 +341,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         clone.setType(type);
         clone.setTypeCategory(typeCategory);
         if (aliases != null) {
-            clone.setAliases(new ArrayList<String>(aliases));
+            clone.setAliases(new ArrayList<>(aliases));
         }
         clone.setDynamic(dynamic);
         return clone;

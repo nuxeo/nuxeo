@@ -75,8 +75,8 @@ public class HTMLBlobUploader implements JSFBlobUploader {
         // encode validators info
         long sizeMax = 0L;
         String sizeConstraint = null;
-        List<String> authorizedExtensions = new ArrayList<String>();
-        List<String> unauthorizedExtensions = new ArrayList<String>();
+        List<String> authorizedExtensions = new ArrayList<>();
+        List<String> unauthorizedExtensions = new ArrayList<>();
         boolean hidden = false;
         for (Validator val : parent.getValidators()) {
             if (val instanceof InputFileSizeValidator) {
@@ -96,7 +96,7 @@ public class HTMLBlobUploader implements JSFBlobUploader {
                 }
             }
         }
-        List<String> constraints = new ArrayList<String>();
+        List<String> constraints = new ArrayList<>();
         if (sizeConstraint != null) {
             constraints.add(ComponentUtils.translate(context, "label.inputFile.maxSize", sizeConstraint));
         }

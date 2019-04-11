@@ -289,8 +289,8 @@ public class CMISQLQueryMaker implements QueryMaker {
          * Find info about fragments needed.
          */
 
-        List<String> whereClauses = new LinkedList<String>();
-        List<Serializable> whereParams = new LinkedList<Serializable>();
+        List<String> whereClauses = new LinkedList<>();
+        List<Serializable> whereParams = new LinkedList<>();
 
         /*
          * Walk joins.
@@ -298,7 +298,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         List<JoinSpec> joins = query.getJoins();
         StringBuilder from = new StringBuilder();
-        List<Serializable> fromParams = new LinkedList<Serializable>();
+        List<Serializable> fromParams = new LinkedList<>();
         for (int njoin = -1; njoin < joins.size(); njoin++) {
             JoinSpec join;
             boolean outerJoin;
@@ -319,13 +319,13 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             // determine relevant primary types
 
-            List<String> types = new ArrayList<String>();
+            List<String> types = new ArrayList<>();
             TypeDefinition td = query.getTypeDefinitionFromQueryName(typeQueryName);
             if (td.getParentTypeId() != null) {
                 // don't add abstract root types
                 types.add(td.getId());
             }
-            LinkedList<TypeDefinitionContainer> typesTodo = new LinkedList<TypeDefinitionContainer>();
+            LinkedList<TypeDefinitionContainer> typesTodo = new LinkedList<>();
             typesTodo.addAll(typeManager.getTypeDescendants(td.getId(), -1, Boolean.TRUE));
             // recurse to get all subtypes
             TypeDefinitionContainer tc;
@@ -579,8 +579,8 @@ public class CMISQLQueryMaker implements QueryMaker {
          * SELECT clause.
          */
 
-        List<String> selectWhat = new ArrayList<String>();
-        List<Serializable> selectParams = new ArrayList<Serializable>(1);
+        List<String> selectWhat = new ArrayList<>();
+        List<Serializable> selectParams = new ArrayList<>(1);
         for (SqlColumn rc : realColumns) {
             selectWhat.add(rc.sql);
         }
@@ -596,7 +596,7 @@ public class CMISQLQueryMaker implements QueryMaker {
          * ORDER BY clause.
          */
 
-        List<String> orderbys = new LinkedList<String>();
+        List<String> orderbys = new LinkedList<>();
         for (SortSpec spec : query.getOrderBys()) {
             String orderby;
             CmisSelector sel = spec.getSelector();
@@ -694,7 +694,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         boolean lifeCycleTrashState = trashService.hasFeature(TRASHED_STATE_IS_DEDUCED_FROM_LIFECYCLE)
                 || trashService.hasFeature(TRASHED_STATE_IN_MIGRATION);
 
-        List<CmisSelector> addedSystemColumns = new ArrayList<CmisSelector>(2);
+        List<CmisSelector> addedSystemColumns = new ArrayList<>(2);
 
         for (String qual : allQualifiers) {
             TypeDefinition type = getTypeForQualifier(qual);
@@ -1249,10 +1249,10 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         public StringBuilder whereBuf = new StringBuilder();
 
-        public LinkedList<Serializable> whereBufParams = new LinkedList<Serializable>();
+        public LinkedList<Serializable> whereBufParams = new LinkedList<>();
 
         /** joins added by fulltext match */
-        public final List<org.nuxeo.ecm.core.storage.sql.jdbc.db.Join> ftJoins = new LinkedList<org.nuxeo.ecm.core.storage.sql.jdbc.db.Join>();
+        public final List<org.nuxeo.ecm.core.storage.sql.jdbc.db.Join> ftJoins = new LinkedList<>();
 
         @Override
         public Boolean walkNot(Tree opNode, Tree node) {

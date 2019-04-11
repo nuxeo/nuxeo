@@ -67,7 +67,7 @@ public class Main {
     }
 
     public static List<File> buildClassPath(SharedClassLoader classLoader, String rawcp) throws IOException {
-        List<File> result = new ArrayList<File>();
+        List<File> result = new ArrayList<>();
         String[] cp = rawcp.split(":");
         for (String entry : cp) {
             File entryFile;

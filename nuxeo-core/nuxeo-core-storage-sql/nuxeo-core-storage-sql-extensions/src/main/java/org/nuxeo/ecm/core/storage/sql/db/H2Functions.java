@@ -241,12 +241,12 @@ public class H2Functions extends EmbeddedFunctions {
             return result;
         }
 
-        LinkedList<String> todo = new LinkedList<String>(ids);
-        Set<String> done = new HashSet<String>();
-        Set<String> res = new HashSet<String>();
+        LinkedList<String> todo = new LinkedList<>(ids);
+        Set<String> done = new HashSet<>();
+        Set<String> res = new HashSet<>();
         List<String> debugIds = null;
         if (isLogEnabled()) {
-            debugIds = new LinkedList<String>();
+            debugIds = new LinkedList<>();
         }
         while (!todo.isEmpty()) {
             done.addAll(todo);
@@ -259,7 +259,7 @@ public class H2Functions extends EmbeddedFunctions {
                 for (String id : todo) {
                     ps.setString(i++, id);
                 }
-                todo = new LinkedList<String>();
+                todo = new LinkedList<>();
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         String id = rs.getString(1);

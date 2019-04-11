@@ -137,7 +137,7 @@ public class TestExternalLDAPSessionSecurity {
     public void superUserCanCreateEntry() throws Exception {
         dummyLogin.login(SUPER_USER);
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("username", "user0");
         map.put("password", "pass0");
         map.put("firstName", "User");

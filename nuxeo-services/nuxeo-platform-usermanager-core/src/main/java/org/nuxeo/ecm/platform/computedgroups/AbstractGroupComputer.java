@@ -50,7 +50,7 @@ public abstract class AbstractGroupComputer implements GroupComputer {
      */
     public List<String> searchGroups(Map<String, Serializable> filter, Set<String> fulltext) {
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         String grpName = (String) filter.get(getUM().getGroupIdField());
         if (grpName != null) {
             List<String> allGroupIds = getAllGroupIds();

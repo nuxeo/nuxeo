@@ -35,7 +35,7 @@ public class DocumentModelListReader extends AbstractDocumentReader {
     List<DocumentModel> docList;
 
     public DocumentModelListReader(List<DocumentModel> docs) {
-        docList = new ArrayList<DocumentModel>();
+        docList = new ArrayList<>();
         docList.addAll(docs);
     }
 

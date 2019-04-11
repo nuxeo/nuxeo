@@ -74,7 +74,7 @@ public class EventMonitoringActionBean implements Serializable {
 
     protected List<List<String>> formatStats(String stats) {
 
-        List<List<String>> result = new ArrayList<List<String>>();
+        List<List<String>> result = new ArrayList<>();
         if (stats == null || stats.length() == 0) {
             return result;
         }

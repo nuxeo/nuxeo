@@ -37,7 +37,7 @@ public class ComponentWithXPoint extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(ComponentWithXPoint.class);
 
-    final List<DummyContribution> contribs = new ArrayList<DummyContribution>();
+    final List<DummyContribution> contribs = new ArrayList<>();
 
     @Override
     public void registerExtension(Extension extension) {

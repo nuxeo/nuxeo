@@ -139,7 +139,7 @@ public class EventJob implements Job {
      * @since 7.10
      */
     private Map<String, Serializable> getWrappedMap(JobDataMap jobMap) {
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         for (String key : jobMap.getKeys()) {
             map.put(key, (Serializable) jobMap.get(key));
         }

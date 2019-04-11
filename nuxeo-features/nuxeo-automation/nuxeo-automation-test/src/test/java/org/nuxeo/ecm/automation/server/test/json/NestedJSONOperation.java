@@ -50,13 +50,13 @@ public class NestedJSONOperation {
     POJOObject pojoParam = new POJOObject();
 
     @Param(name = "map", required = false)
-    Map<String, Object> mapParam = new HashMap<String, Object>();
+    Map<String, Object> mapParam = new HashMap<>();
 
     @SuppressWarnings("unchecked")
     @OperationMethod
     public POJOObject run(List<String> newItems) {
         String mergedTexts = "Merged texts: ";
-        List<String> mergedItems = new ArrayList<String>();
+        List<String> mergedItems = new ArrayList<>();
         if (newItems != null) {
             mergedItems.addAll(newItems);
         }

@@ -36,7 +36,7 @@ public class JsonNodeToProperties implements TypeAdapter {
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
 
         JsonNode json = (JsonNode) objectToAdapt;
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
 
         Iterator<Entry<String, JsonNode>> it = json.fields();
         while (it.hasNext()) {

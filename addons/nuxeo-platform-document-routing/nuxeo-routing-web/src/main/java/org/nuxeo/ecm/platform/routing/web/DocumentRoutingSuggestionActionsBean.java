@@ -67,7 +67,7 @@ public class DocumentRoutingSuggestionActionsBean extends DocumentContextBoundAc
 
     public List<DocumentModel> getDocumentSuggestions(Object input) {
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(MAX_RESULTS_PROPERTY, PAGE_SIZE_RESULTS_KEY);
         props.put(CORE_SESSION_PROPERTY, (Serializable) documentManager);
         @SuppressWarnings("unchecked")

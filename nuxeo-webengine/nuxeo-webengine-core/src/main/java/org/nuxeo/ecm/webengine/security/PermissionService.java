@@ -52,7 +52,7 @@ public class PermissionService implements PostfixExpression.Visitor {
     }
 
     protected PermissionService() {
-        guards = new ConcurrentHashMap<String, Guard>();
+        guards = new ConcurrentHashMap<>();
     }
 
     public void registerGuard(String name, Guard guard) {

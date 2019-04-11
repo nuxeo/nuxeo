@@ -97,9 +97,9 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected String jobName;
 
-    protected List<ImporterListener> listeners = new ArrayList<ImporterListener>();
+    protected List<ImporterListener> listeners = new ArrayList<>();
 
-    protected List<ImportingDocumentFilter> importingDocumentFilters = new ArrayList<ImportingDocumentFilter>();
+    protected List<ImportingDocumentFilter> importingDocumentFilters = new ArrayList<>();
 
     protected String repositoryName;
 

@@ -78,8 +78,8 @@ public class SelectionContext {
         this.mapper = mapper;
         this.context = context;
         softMap = new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.SOFT);
-        hardMap = new HashMap<Serializable, Selection>();
-        modifiedInTransaction = new HashSet<Serializable>();
+        hardMap = new HashMap<>();
+        modifiedInTransaction = new HashSet<>();
         modifiedInTransactionCount = registry.counter(MetricRegistry.name("nuxeo", "repositories",
                 context.session.repository.getName(), "caches", "selections", "modified"));
         cacheHitCount = registry.counter(MetricRegistry.name("nuxeo", "repositories",
@@ -244,8 +244,8 @@ public class SelectionContext {
             // ask the actual selection to the mapper
             List<Row> rows = mapper.readSelectionRows(selType, selId, null, criterion, false);
             List<Fragment> frags = context.getFragmentsFromFetchedRows(rows, false);
-            fragments = new ArrayList<SimpleFragment>(frags.size());
-            List<Serializable> ids = new ArrayList<Serializable>(frags.size());
+            fragments = new ArrayList<>(frags.size());
+            List<Serializable> ids = new ArrayList<>(frags.size());
             for (Fragment fragment : frags) {
                 fragments.add((SimpleFragment) fragment);
                 ids.add(fragment.getId());

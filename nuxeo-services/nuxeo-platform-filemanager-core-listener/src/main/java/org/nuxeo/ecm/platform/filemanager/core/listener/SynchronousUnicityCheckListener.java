@@ -45,7 +45,7 @@ public class SynchronousUnicityCheckListener extends AbstractUnicityChecker impl
             return;
         }
 
-        List<String> uuids = new ArrayList<String>();
+        List<String> uuids = new ArrayList<>();
         if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
                 || DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
             EventContext ctx = event.getContext();

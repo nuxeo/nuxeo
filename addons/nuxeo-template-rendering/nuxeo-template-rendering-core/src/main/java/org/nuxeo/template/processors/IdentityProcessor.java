@@ -36,7 +36,7 @@ public class IdentityProcessor extends AbstractTemplateProcessor {
 
     @Override
     public List<TemplateInput> getInitialParametersDefinition(Blob blob) {
-        return new ArrayList<TemplateInput>();
+        return new ArrayList<>();
     }
 
 }

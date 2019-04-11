@@ -60,7 +60,7 @@ public class PermissionListManager implements Serializable {
         if (null == availablePermissions) {
             log.debug("Factory method called...");
 
-            List<SelectItem> jsfModelList = new ArrayList<SelectItem>();
+            List<SelectItem> jsfModelList = new ArrayList<>();
 
             List<String> permissions = documentManager.getAvailableSecurityPermissions();
 

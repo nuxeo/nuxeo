@@ -43,7 +43,7 @@ public class DummyRegistry implements ParserConfigRegistry {
     @Override
     public List<AttributeConfigDescriptor> getAttributConfigs() {
         if (attConfig == null) {
-            attConfig = new ArrayList<AttributeConfigDescriptor>();
+            attConfig = new ArrayList<>();
 
             attConfig.add(new AttributeConfigDescriptor("titre", "dc:title", "text()", null)); // use xpath
             attConfig.add(new AttributeConfigDescriptor("dossierActe", "dc:source",
@@ -54,7 +54,7 @@ public class DummyRegistry implements ParserConfigRegistry {
 
             attConfig.add(new AttributeConfigDescriptor("signature", "dc:format", "@formatSignature", null));
 
-            Map<String, String> complex = new HashMap<String, String>();
+            Map<String, String> complex = new HashMap<>();
             complex.put("filename", "@nom");
             complex.put("mimetype", "mimetype/text()");
             complex.put("content", "@nom");
@@ -69,7 +69,7 @@ public class DummyRegistry implements ParserConfigRegistry {
     @Override
     public List<DocConfigDescriptor> getDocCreationConfigs() {
         if (docConfig == null) {
-            docConfig = new ArrayList<DocConfigDescriptor>();
+            docConfig = new ArrayList<>();
             docConfig.add(new DocConfigDescriptor("seance", "Workspace", null, "@idSeance")); // pure xpath
 
             String findParent = "#{" + "nodes = currentElement.selectNodes('@refSeance');" + "if (nodes.size()>0) {"

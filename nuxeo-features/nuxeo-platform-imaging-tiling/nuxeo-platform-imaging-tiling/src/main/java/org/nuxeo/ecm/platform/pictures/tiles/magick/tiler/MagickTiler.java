@@ -137,7 +137,7 @@ public class MagickTiler implements PictureTiler {
             throw new NuxeoException(e);
         }
 
-        Map<String, String> infoMap = new HashMap<String, String>();
+        Map<String, String> infoMap = new HashMap<>();
         infoMap.put(PictureTilesImpl.TILE_OUTPUT_DIR_KEY, outputDirPath);
         infoMap.put(PictureTilesImpl.X_TILES_KEY, Integer.toString(cropCoords[4]));
         infoMap.put(PictureTilesImpl.Y_TILES_KEY, Integer.toString(cropCoords[5]));

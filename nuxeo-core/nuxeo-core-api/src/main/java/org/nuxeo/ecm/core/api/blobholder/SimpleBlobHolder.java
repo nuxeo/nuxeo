@@ -48,7 +48,7 @@ public class SimpleBlobHolder extends AbstractBlobHolder {
     }
 
     public SimpleBlobHolder(Blob blob) {
-        blobs = new ArrayList<Blob>();
+        blobs = new ArrayList<>();
         blobs.add(blob);
         init(blobs);
     }

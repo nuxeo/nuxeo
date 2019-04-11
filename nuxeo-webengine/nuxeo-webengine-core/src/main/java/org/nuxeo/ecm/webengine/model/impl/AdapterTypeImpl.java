@@ -111,7 +111,7 @@ public class AdapterTypeImpl extends AbstractResourceType implements AdapterType
         }
         String[] facets = ws.facets();
         if (facets != null && facets.length > 0) {
-            this.facets = new HashSet<String>(Arrays.asList(facets));
+            this.facets = new HashSet<>(Arrays.asList(facets));
         }
         targetType = ws.targetType();
         String[] targetFacets = ws.targetFacets();

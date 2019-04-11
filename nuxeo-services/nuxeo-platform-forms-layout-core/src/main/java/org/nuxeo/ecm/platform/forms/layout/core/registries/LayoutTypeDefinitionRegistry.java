@@ -48,7 +48,7 @@ public class LayoutTypeDefinitionRegistry extends SimpleContributionRegistry<Lay
     }
 
     public List<LayoutTypeDefinition> getDefinitions() {
-        List<LayoutTypeDefinition> res = new ArrayList<LayoutTypeDefinition>();
+        List<LayoutTypeDefinition> res = new ArrayList<>();
         for (LayoutTypeDefinition item : currentContribs.values()) {
             if (item != null) {
                 res.add(item);

@@ -58,12 +58,12 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend impleme
     }
 
     protected void registerSimpleBackends(List<DocumentModel> docs) {
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
         for (DocumentModel doc : docs) {
             paths.add(doc.getPathAsString());
         }
 
-        List<String> heads = new ArrayList<String>();
+        List<String> heads = new ArrayList<>();
         for (int idx = 0; idx < paths.size(); idx++) {
             String path = paths.get(idx);
             if (isHead(path, paths, idx)) {
@@ -130,17 +130,17 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend impleme
     public LinkedList<String> getVirtualFolderNames() {
         initIfNeed();
         if (orderedBackendNames == null) {
-            return new LinkedList<String>();
+            return new LinkedList<>();
         }
         return orderedBackendNames;
     }
 
     protected void registerBackend(Backend backend) {
         if (backendMap == null) {
-            backendMap = new ConcurrentHashMap<String, Backend>();
+            backendMap = new ConcurrentHashMap<>();
         }
         if (orderedBackendNames == null) {
-            orderedBackendNames = new LinkedList<String>();
+            orderedBackendNames = new LinkedList<>();
         }
         backendMap.put(backend.getBackendDisplayName(), backend);
         orderedBackendNames.add(backend.getBackendDisplayName());
@@ -168,8 +168,8 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend impleme
 
     protected void initIfNeed() {
         if (backendMap == null || orderedBackendNames == null) {
-            backendMap = new HashMap<String, Backend>();
-            orderedBackendNames = new LinkedList<String>();
+            backendMap = new HashMap<>();
+            orderedBackendNames = new LinkedList<>();
             init();
         }
     }

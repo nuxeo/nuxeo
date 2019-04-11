@@ -89,7 +89,7 @@ public class UserManagerDescriptor implements Serializable {
     @XNode("users/searchFields@append")
     public boolean userSearchFieldsAppend;
 
-    public Map<String, MatchType> userSearchFields = new LinkedHashMap<String, MatchType>();
+    public Map<String, MatchType> userSearchFields = new LinkedHashMap<>();
 
     @XNodeList(value = "users/searchFields/exactMatchSearchField", componentType = String.class, type = String[].class)
     public void setExactMatchUserSearchFields(String[] fields) {
@@ -146,7 +146,7 @@ public class UserManagerDescriptor implements Serializable {
     @XNode("groups/searchFields@append")
     public boolean groupSearchFieldsAppend;
 
-    public Map<String, MatchType> groupSearchFields = new LinkedHashMap<String, MatchType>();
+    public Map<String, MatchType> groupSearchFields = new LinkedHashMap<>();
 
     @XNodeList(value = "groups/searchFields/exactMatchSearchField", componentType = String.class, type = String[].class)
     public void setExactMatchGroupSearchFields(String[] fields) {

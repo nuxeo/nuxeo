@@ -476,7 +476,7 @@ public class LoginScreenConfig implements Serializable {
 
         Boolean append = newConfig.isAppendSupportedLocales();
         List<String> newLocales = newConfig.getSupportedLocales();
-        Set<String> mergedLocales = new HashSet<String>();
+        Set<String> mergedLocales = new HashSet<>();
         if (!Boolean.FALSE.equals(append) && supportedLocales != null) {
             mergedLocales.addAll(supportedLocales);
         }
@@ -508,20 +508,20 @@ public class LoginScreenConfig implements Serializable {
         clone.muted = muted;
         clone.newsIframeUrl = newsIframeUrl;
         if (providers != null) {
-            clone.providers = new ArrayList<LoginProviderLink>();
+            clone.providers = new ArrayList<>();
             for (LoginProviderLink l : providers) {
                 clone.providers.add(l.clone());
             }
         }
         if (startupPages != null) {
-            clone.startupPages = new HashMap<String, LoginStartupPage>();
+            clone.startupPages = new HashMap<>();
             for (Map.Entry<String, LoginStartupPage> startupPage : startupPages.entrySet()) {
                 clone.startupPages.put(startupPage.getKey(), startupPage.getValue().clone());
             }
         }
         clone.removeNews = removeNews;
         if (videos != null) {
-            clone.videos = new ArrayList<LoginVideo>();
+            clone.videos = new ArrayList<>();
             for (LoginVideo v : videos) {
                 clone.videos.add(v.clone());
             }

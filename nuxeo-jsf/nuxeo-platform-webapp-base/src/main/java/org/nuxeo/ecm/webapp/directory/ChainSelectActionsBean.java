@@ -71,7 +71,7 @@ public class ChainSelectActionsBean implements ChainSelectActions, Serializable 
         int size = chainSelect.getSize();
         String clientId = chainSelect.getClientId(context);
 
-        LinkedHashMap<String, Selection> map = new LinkedHashMap<String, Selection>();
+        LinkedHashMap<String, Selection> map = new LinkedHashMap<>();
         for (Selection selection : chainSelect.getComponentValue()) {
             map.put(selection.getValue(chainSelect.getKeySeparator()), selection);
         }
@@ -116,7 +116,7 @@ public class ChainSelectActionsBean implements ChainSelectActions, Serializable 
     public void delete(ActionEvent event) {
         FacesContext context = FacesContext.getCurrentInstance();
         ChainSelect chainSelect = getChainSelect(event);
-        List<Selection> componentValueList = new ArrayList<Selection>();
+        List<Selection> componentValueList = new ArrayList<>();
         componentValueList.addAll(Arrays.asList(chainSelect.getComponentValue()));
 
         String value = context.getExternalContext().getRequestParameterMap().get(ChainSelectStatus.REMOVE_ID);

@@ -59,7 +59,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
     @Override
     public DocumentModelList getAttachedDocuments(CoreSession session) {
         List<String> docIds = getDocumentRoute(session).getAttachedDocuments();
-        List<DocumentRef> refs = new ArrayList<DocumentRef>();
+        List<DocumentRef> refs = new ArrayList<>();
         for (String id : docIds) {
             IdRef idRef = new IdRef(id);
             if (session.exists(idRef)) {

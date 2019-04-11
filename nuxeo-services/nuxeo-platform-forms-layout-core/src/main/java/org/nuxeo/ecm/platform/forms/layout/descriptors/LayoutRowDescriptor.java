@@ -54,7 +54,7 @@ public class LayoutRowDescriptor {
     WidgetReferenceDescriptor[] widgets = new WidgetReferenceDescriptor[0];
 
     @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
-    Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();
+    Map<String, PropertiesDescriptor> properties = new HashMap<>();
 
     public String getName() {
         return name;

@@ -184,7 +184,7 @@ public class ChainSelectListboxComponent extends UIInput implements ClientBehavi
         if (index == 0 || getChain().getSelection(0).getColumnValue(index - 1) != null) {
             return rebuildOptions();
         }
-        return new HashMap<String, DirectorySelectItem>();
+        return new HashMap<>();
     }
 
     public Boolean getDisplayIdAndLabel() {
@@ -310,7 +310,7 @@ public class ChainSelectListboxComponent extends UIInput implements ClientBehavi
 
         index = getIndex();
 
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+        Map<String, Serializable> filter = new HashMap<>();
         Boolean displayObsolete = getBooleanProperty("displayObsoleteEntries", Boolean.FALSE);
         if (!displayObsolete) {
             filter.put("obsolete", 0);
@@ -369,7 +369,7 @@ public class ChainSelectListboxComponent extends UIInput implements ClientBehavi
             Collections.sort(list, new DirectorySelectItemComparator(ordering));
         }
 
-        LinkedHashMap<String, DirectorySelectItem> options = new LinkedHashMap<String, DirectorySelectItem>();
+        LinkedHashMap<String, DirectorySelectItem> options = new LinkedHashMap<>();
         options.clear();
         for (DirectorySelectItem item : list) {
             options.put((String) item.getValue(), item);

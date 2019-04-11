@@ -53,7 +53,7 @@ public class PublicationTreeConfigDescriptor implements Serializable {
     private String factory;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> parameters = new HashMap<String, String>();
+    Map<String, String> parameters = new HashMap<>();
 
     public PublicationTreeConfigDescriptor() {
     }
@@ -64,7 +64,7 @@ public class PublicationTreeConfigDescriptor implements Serializable {
         title = other.title;
         validatorsRule = other.validatorsRule;
         factory = other.factory;
-        parameters = new HashMap<String, String>(other.parameters);
+        parameters = new HashMap<>(other.parameters);
     }
 
     public String getName() {

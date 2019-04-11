@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class SimpleEventBundlePipeDispatcher implements EventBundleDispatcher {
 
-    protected List<EventBundlePipe> pipes = new ArrayList<EventBundlePipe>();
+    protected List<EventBundlePipe> pipes = new ArrayList<>();
 
     protected Map<String, String> parameters;
 

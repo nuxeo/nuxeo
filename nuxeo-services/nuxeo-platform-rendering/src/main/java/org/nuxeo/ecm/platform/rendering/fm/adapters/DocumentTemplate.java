@@ -100,7 +100,7 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
     }
 
     public Collection<Object> getRawValues() throws TemplateModelException {
-        List<Object> values = new ArrayList<Object>();
+        List<Object> values = new ArrayList<>();
         Collection<DefaultDocumentView.Field> fields = DefaultDocumentView.DEFAULT.getFields().values();
         for (DefaultDocumentView.Field field : fields) {
             values.add(field.getValue(doc));

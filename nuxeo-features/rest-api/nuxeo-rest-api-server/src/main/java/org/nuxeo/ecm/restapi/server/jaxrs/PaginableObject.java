@@ -79,7 +79,7 @@ public abstract class PaginableObject<T> extends DefaultObject {
         }
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
 
         return getPaginableEntries((PageProvider<T>) pps.getPageProvider("", ppDefinition, getSearchDocument(), null,

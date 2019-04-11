@@ -68,7 +68,7 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
             String appURL = getCas2Authenticator().getAppURL(httpRequest);
 
             try {
-                Map<String, String> urlParameters = new HashMap<String, String>();
+                Map<String, String> urlParameters = new HashMap<>();
                 urlParameters.put("service", appURL);
                 String location = URIUtils.addParametersToURIQuery(authURL, urlParameters);
                 httpResponse.sendRedirect(location);

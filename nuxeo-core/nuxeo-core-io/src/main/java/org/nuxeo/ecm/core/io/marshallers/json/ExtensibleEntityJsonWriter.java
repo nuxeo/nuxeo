@@ -94,7 +94,7 @@ public abstract class ExtensibleEntityJsonWriter<EntityType> extends AbstractJso
                             if (!hasEnrichers) {
                                 hasEnrichers = true;
                                 jg.writeObjectFieldStart("contextParameters");
-                                enriched = new Enriched<EntityType>(entity);
+                                enriched = new Enriched<>(entity);
                             }
                             OutputStreamWithJsonWriter out = new OutputStreamWithJsonWriter(jg);
                             writer.write(enriched, Enriched.class, this.genericType, APPLICATION_JSON_TYPE, out);

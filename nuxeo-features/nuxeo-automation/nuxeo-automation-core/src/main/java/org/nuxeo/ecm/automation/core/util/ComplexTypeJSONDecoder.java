@@ -70,7 +70,7 @@ public class ComplexTypeJSONDecoder {
     }
 
     public static List<Object> decodeList(ListType lt, ArrayNode jsonArray) {
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
         Type currentObjectType = lt.getFieldType();
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonNode node = jsonArray.get(i);
@@ -96,7 +96,7 @@ public class ComplexTypeJSONDecoder {
 
     public static Object decode(ComplexType ct, ObjectNode jsonObject) {
 
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
 
         String jsonType = "";
         if (jsonObject.has("type")) {

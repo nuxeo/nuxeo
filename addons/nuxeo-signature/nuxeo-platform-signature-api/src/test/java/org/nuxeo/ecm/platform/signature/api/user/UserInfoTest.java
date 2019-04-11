@@ -40,7 +40,7 @@ public class UserInfoTest {
     public void testGetDN() throws Exception {
 
         Map<CNField, String> userFields;
-        userFields = new HashMap<CNField, String>();
+        userFields = new HashMap<>();
         userFields.put(CNField.C, "US");
         userFields.put(CNField.O, "Nuxeo");
         userFields.put(CNField.OU, "IT");
@@ -52,7 +52,7 @@ public class UserInfoTest {
         assertEquals(ui.getDN(userFields), ("C=US, O=Nuxeo, OU=IT, CN=Wojciech Sulejman"));
 
         Map<CNField, String> userFields2;
-        userFields2 = new HashMap<CNField, String>();
+        userFields2 = new HashMap<>();
         userFields2.put(CNField.OU, "IT");
         userFields2.put(CNField.Email, "wsulejman@nuxeo.com");
         userFields2.put(CNField.O, "Nuxeo");

@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class Attachment {
 
-    private final Map<String, Object> map = new HashMap<String, Object>();
+    private final Map<String, Object> map = new HashMap<>();
 
     public Attachment(String name, String content) {
         map.put("name", name);

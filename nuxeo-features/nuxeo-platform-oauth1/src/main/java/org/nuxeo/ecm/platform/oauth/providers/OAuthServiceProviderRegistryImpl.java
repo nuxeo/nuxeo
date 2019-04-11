@@ -55,7 +55,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
 
     protected static final Random RANDOM = new SecureRandom();
 
-    protected Map<String, NuxeoOAuthServiceProvider> inMemoryProviders = new HashMap<String, NuxeoOAuthServiceProvider>();
+    protected Map<String, NuxeoOAuthServiceProvider> inMemoryProviders = new HashMap<>();
 
     @Override
     public NuxeoOAuthServiceProvider getProvider(String gadgetUri, String serviceName) {
@@ -129,7 +129,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
         DirectoryService ds = Framework.getService(DirectoryService.class);
         NuxeoOAuthServiceProvider provider = null;
         try (Session session = ds.open(DIRECTORY_NAME)) {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             if (gadgetUri != null) {
                 filter.put("gadgetUrl", gadgetUri);
             }
@@ -140,7 +140,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
             if (entries == null || entries.size() == 0) {
                 String bareGadgetUrl = getBareGadgetUri(gadgetUri);
                 if (bareGadgetUrl != null && !bareGadgetUrl.equals(gadgetUri)) {
-                    Set<String> urlfilter = new HashSet<String>();
+                    Set<String> urlfilter = new HashSet<>();
                     urlfilter.add("gadgetUrl");
                     return getEntry(bareGadgetUrl, serviceName, urlfilter);
                 }
@@ -206,7 +206,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
     @Override
     public List<NuxeoOAuthServiceProvider> listProviders() {
 
-        List<NuxeoOAuthServiceProvider> result = new ArrayList<NuxeoOAuthServiceProvider>();
+        List<NuxeoOAuthServiceProvider> result = new ArrayList<>();
         for (NuxeoOAuthServiceProvider provider : inMemoryProviders.values()) {
             result.add(provider);
         }

@@ -47,7 +47,7 @@ public class CollectionsPage extends HomePage {
     }
 
     public List<String> getCollectionNames() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (WebElement collectionRow : getCollectionRows()) {
             result.add(collectionRow.findElement(By.xpath("td[3]")).getText());
         }

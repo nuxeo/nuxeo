@@ -41,7 +41,7 @@ public class TestLDAPSessionUsingSSL extends LDAPDirectoryTestCase {
             DocumentModelList entries = session.getEntries();
             assertNotNull(entries);
             assertEquals(4, entries.size());
-            List<String> entryIds = new ArrayList<String>();
+            List<String> entryIds = new ArrayList<>();
             for (DocumentModel entry : entries) {
                 entryIds.add(entry.getId());
             }

@@ -42,7 +42,7 @@ public class ComplexPropertyDiff extends PropertyDiff {
     public ComplexPropertyDiff() {
 
         this.propertyType = PropertyType.COMPLEX;
-        diffMap = new HashMap<String, PropertyDiff>();
+        diffMap = new HashMap<>();
     }
 
     /**
@@ -51,7 +51,7 @@ public class ComplexPropertyDiff extends PropertyDiff {
     public ComplexPropertyDiff(String propertyType) {
 
         this.propertyType = propertyType;
-        diffMap = new HashMap<String, PropertyDiff>();
+        diffMap = new HashMap<>();
     }
 
     /**

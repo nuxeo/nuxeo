@@ -41,7 +41,7 @@ public class IndividualMetadataCollector extends MetadataCollector {
     public void addPropertyFile(File propertyFile, String contextPath) throws IOException {
         Properties mdProperties = new Properties();
         mdProperties.load(new FileInputStream(propertyFile));
-        Map<String, String> stringMap = new HashMap<String, String>();
+        Map<String, String> stringMap = new HashMap<>();
         Enumeration<?> names = mdProperties.propertyNames();
         while (names.hasMoreElements()) {
             String name = (String) names.nextElement();

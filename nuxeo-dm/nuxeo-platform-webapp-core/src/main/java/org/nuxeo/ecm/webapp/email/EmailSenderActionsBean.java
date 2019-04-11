@@ -96,7 +96,7 @@ public class EmailSenderActionsBean extends InputController implements EmailSend
         } else {
             NuxeoPrincipal currentUser = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
             fromEmail = currentUser.getEmail();
-            List<NuxeoPrincipal> listEmails = new ArrayList<NuxeoPrincipal>();
+            List<NuxeoPrincipal> listEmails = new ArrayList<>();
             for (String user : principalListManager.getSelectedUsers()) {
                 NuxeoPrincipal principal = userManager.getPrincipal(user);
                 listEmails.add(principal);

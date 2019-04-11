@@ -69,12 +69,12 @@ public class ChainSelect extends UIInput implements ResettableComponent {
     private static final Log log = LogFactory.getLog(ChainSelect.class);
 
     // Direct access from ChainSelectStatus
-    Map<Integer, NestedChainSelectComponentInfo> compInfos = new HashMap<Integer, NestedChainSelectComponentInfo>();
+    Map<Integer, NestedChainSelectComponentInfo> compInfos = new HashMap<>();
 
     /**
      * The keys of the selected items in chain controls.
      */
-    private List<String> keyList = new ArrayList<String>();
+    private List<String> keyList = new ArrayList<>();
 
     private String onchange;
 
@@ -243,7 +243,7 @@ public class ChainSelect extends UIInput implements ResettableComponent {
             } else {
                 if (!multiParentSelect) {
                     // remove the "" entry from the submitted value
-                    List<String> list = new ArrayList<String>(Arrays.asList(value));
+                    List<String> list = new ArrayList<>(Arrays.asList(value));
                     list.remove("");
                     value = list.toArray(new String[list.size()]);
                 }
@@ -576,8 +576,8 @@ public class ChainSelect extends UIInput implements ResettableComponent {
     }
 
     public Selection createSelection(String[] columns) {
-        List<String> keyList = new ArrayList<String>();
-        List<DirectorySelectItem> itemList = new ArrayList<DirectorySelectItem>();
+        List<String> keyList = new ArrayList<>();
+        List<DirectorySelectItem> itemList = new ArrayList<>();
         for (int i = 0; i < columns.length; i++) {
             String id = columns[i];
 
@@ -600,7 +600,7 @@ public class ChainSelect extends UIInput implements ResettableComponent {
                 }
             }
 
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put("id", id);
 
             if (i == 0) {

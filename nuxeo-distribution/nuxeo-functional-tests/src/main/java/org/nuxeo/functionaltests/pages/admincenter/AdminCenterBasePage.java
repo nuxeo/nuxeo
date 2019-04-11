@@ -139,7 +139,7 @@ public class AdminCenterBasePage extends AbstractPage {
     public List<String> getAvailableSubTabs() {
         List<WebElement> elements = driver.findElements(
                 By.xpath("//div[@id='nxw_adminCenterSubTabs_panel']//li/form/a/span"));
-        List<String> tabs = new ArrayList<String>();
+        List<String> tabs = new ArrayList<>();
 
         for (WebElement el : elements) {
             tabs.add(el.getText());

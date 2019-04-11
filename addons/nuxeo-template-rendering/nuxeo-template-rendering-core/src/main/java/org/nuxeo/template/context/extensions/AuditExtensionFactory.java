@@ -53,7 +53,7 @@ public class AuditExtensionFactory implements ContextExtensionFactory {
             if (Framework.isTestModeSet() && testAuditEntries != null) {
                 auditEntries = testAuditEntries;
             } else {
-                auditEntries = new ArrayList<LogEntry>();
+                auditEntries = new ArrayList<>();
                 log.warn("Can not add Audit info to rendering context");
             }
         }

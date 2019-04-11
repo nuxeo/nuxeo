@@ -96,7 +96,7 @@ public class JSONContentViewState {
         if (queryParams != null) {
             // NXP-10347 + NXP-17544: serialize to String all params that will be serialized to String by
             // NXQLQueryBuilder anyway, for consistency
-            List<Object> serParams = new ArrayList<Object>();
+            List<Object> serParams = new ArrayList<>();
             for (Object queryParam : queryParams) {
                 if (queryParam == null) {
                     serParams.add(null);
@@ -178,7 +178,7 @@ public class JSONContentViewState {
 
         JSONArray jsonQueryParams = jsonObject.getJSONArray("queryParameters");
         if (jsonQueryParams != null && !jsonQueryParams.isEmpty()) {
-            List<Object> queryParams = new ArrayList<Object>();
+            List<Object> queryParams = new ArrayList<>();
             for (Object item : jsonQueryParams) {
                 if (item instanceof JSONNull) {
                     queryParams.add(null);
@@ -198,7 +198,7 @@ public class JSONContentViewState {
         JSONArray jsonSortInfos = jsonObject.getJSONArray("sortInfos");
 
         if (jsonSortInfos != null && !jsonSortInfos.isEmpty()) {
-            List<SortInfo> sortInfos = new ArrayList<SortInfo>();
+            List<SortInfo> sortInfos = new ArrayList<>();
             for (Object item : jsonSortInfos) {
                 sortInfos.add(getSortInfoFromJSON((JSONObject) item));
             }
@@ -209,7 +209,7 @@ public class JSONContentViewState {
 
         JSONArray jsonResultColumns = jsonObject.optJSONArray("resultColumns");
         if (jsonResultColumns != null) {
-            List<String> resultColumns = new ArrayList<String>();
+            List<String> resultColumns = new ArrayList<>();
             resultColumns.addAll(jsonResultColumns);
             state.setResultColumns(resultColumns);
         }
@@ -326,7 +326,7 @@ public class JSONContentViewState {
             }
         } else if (o instanceof JSONArray) {
             JSONArray jsonArray = (JSONArray) o;
-            ArrayList<Serializable> list = new ArrayList<Serializable>();
+            ArrayList<Serializable> list = new ArrayList<>();
             for (Object aJsonArray : jsonArray) {
                 Serializable pValue = getDocumentPropertyValue(aJsonArray);
                 if (pValue != null) {
@@ -336,7 +336,7 @@ public class JSONContentViewState {
             return list;
         } else if (o instanceof JSONObject) {
             JSONObject jsonObject = (JSONObject) o;
-            HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+            HashMap<String, Serializable> map = new HashMap<>();
             Iterator<String> keys = jsonObject.keys();
             while (keys.hasNext()) {
                 String key = keys.next();

@@ -61,7 +61,7 @@ public class DocumentationWO extends DefaultObject {
                 (String) ctx.getProperty("distId"), fulltext, null);
         Map<String, String> categories = ds.getCategories();
 
-        Map<String, List<DocumentationItem>> docs = new HashMap<String, List<DocumentationItem>>();
+        Map<String, List<DocumentationItem>> docs = new HashMap<>();
 
         for (DocumentationItem item : items) {
 
@@ -70,7 +70,7 @@ public class DocumentationWO extends DefaultObject {
             if (docs.containsKey(catLabel)) {
                 docs.get(catLabel).add(item);
             } else {
-                List<DocumentationItem> itemList = new ArrayList<DocumentationItem>();
+                List<DocumentationItem> itemList = new ArrayList<>();
                 itemList.add(item);
                 docs.put(catLabel, itemList);
             }

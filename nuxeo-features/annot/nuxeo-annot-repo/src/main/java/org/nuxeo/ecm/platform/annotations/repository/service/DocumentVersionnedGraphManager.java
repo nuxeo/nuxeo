@@ -83,7 +83,7 @@ public class DocumentVersionnedGraphManager implements GraphManagerEventListener
     }
 
     private static void copyGraphFor(URI current, URI copied, NuxeoPrincipal user) {
-        List<Statement> newStatements = new ArrayList<Statement>();
+        List<Statement> newStatements = new ArrayList<>();
         AnnotationsService service = Framework.getService(AnnotationsService.class);
         List<Annotation> annotations = service.queryAnnotations(current, user);
         log.debug("Copying annotations graph from " + current + " to " + copied + " for " + annotations.size()

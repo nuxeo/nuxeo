@@ -117,7 +117,7 @@ public class CollectionAsynchronousCheckinRestoreTest extends CollectionTestCase
     }
 
     protected List<DocumentModel> refresh(CoreSession session, List<DocumentModel> docs) {
-        List<DocumentModel> result = new ArrayList<DocumentModel>(docs.size());
+        List<DocumentModel> result = new ArrayList<>(docs.size());
         for (DocumentModel doc : docs) {
             result.add(session.getDocument(doc.getRef()));
         }

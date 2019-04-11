@@ -619,16 +619,16 @@ public class NuxeoSession implements Session {
                         context.getRenditionFilterString(), BigInteger.valueOf(maxNumItems),
                         BigInteger.valueOf(skipCount), null);
                 // convert objects
-                List<QueryResult> page = new ArrayList<QueryResult>();
+                List<QueryResult> page = new ArrayList<>();
                 if (results.getObjects() != null) {
                     for (ObjectData data : results.getObjects()) {
                         page.add(new QueryResultImpl(NuxeoSession.this, data));
                     }
                 }
-                return new Page<QueryResult>(page, results.getNumItems(), results.hasMoreItems());
+                return new Page<>(page, results.getNumItems(), results.hasMoreItems());
             }
         };
-        return new CollectionIterable<QueryResult>(pageFetcher);
+        return new CollectionIterable<>(pageFetcher);
     }
 
     @Override
@@ -662,7 +662,7 @@ public class NuxeoSession implements Session {
                         Boolean.valueOf(includeSubRelationshipTypes), relationshipDirection, typeId, null, null,
                         BigInteger.valueOf(maxNumItems), BigInteger.valueOf(skipCount), null);
                 // convert objects
-                List<Relationship> page = new ArrayList<Relationship>();
+                List<Relationship> page = new ArrayList<>();
                 if (relations.getObjects() != null) {
                     for (ObjectData data : relations.getObjects()) {
                         CmisObject ob;
@@ -678,10 +678,10 @@ public class NuxeoSession implements Session {
                         page.add((Relationship) ob);
                     }
                 }
-                return new Page<Relationship>(page, relations.getNumItems(), relations.hasMoreItems());
+                return new Page<>(page, relations.getNumItems(), relations.hasMoreItems());
             }
         };
-        return new CollectionIterable<Relationship>(pageFetcher);
+        return new CollectionIterable<>(pageFetcher);
     }
 
     @Override
@@ -835,7 +835,7 @@ public class NuxeoSession implements Session {
     @Override
     public List<BulkUpdateObjectIdAndChangeToken> bulkUpdateProperties(List<CmisObject> objects,
             Map<String, ?> properties, List<String> addSecondaryTypeIds, List<String> removeSecondaryTypeIds) {
-        List<BulkUpdateObjectIdAndChangeToken> idts = new ArrayList<BulkUpdateObjectIdAndChangeToken>(objects.size());
+        List<BulkUpdateObjectIdAndChangeToken> idts = new ArrayList<>(objects.size());
         for (CmisObject object : objects) {
             idts.add(new BulkUpdateObjectIdAndChangeTokenImpl(object.getId(), object.getChangeToken()));
         }

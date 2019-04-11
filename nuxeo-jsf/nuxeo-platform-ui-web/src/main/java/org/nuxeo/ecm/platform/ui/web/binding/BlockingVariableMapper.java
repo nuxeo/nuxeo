@@ -97,7 +97,7 @@ public class BlockingVariableMapper extends VariableMapper {
     @Override
     public ValueExpression setVariable(String variable, ValueExpression expression) {
         if (vars == null) {
-            vars = new LinkedHashMap<String, ValueExpression>();
+            vars = new LinkedHashMap<>();
         }
         return vars.put(variable, expression);
     }
@@ -120,7 +120,7 @@ public class BlockingVariableMapper extends VariableMapper {
 
     public void setBlockedPatterns(List<String> blockedPatterns) {
         if (blockedPatterns != null) {
-            this.blockedPatterns = new ArrayList<String>();
+            this.blockedPatterns = new ArrayList<>();
             this.blockedPatterns.addAll(blockedPatterns);
         } else {
             this.blockedPatterns = null;
@@ -132,7 +132,7 @@ public class BlockingVariableMapper extends VariableMapper {
             return;
         }
         if (this.blockedPatterns == null) {
-            this.blockedPatterns = new ArrayList<String>();
+            this.blockedPatterns = new ArrayList<>();
         }
         this.blockedPatterns.add(blockedPattern);
     }

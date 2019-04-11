@@ -34,7 +34,7 @@ public class TestDirectorySelectItemComparator {
     @SuppressWarnings("unchecked")
     @Test
     public void testLocalizedItems() {
-        ArrayList<DirectorySelectItem> items = new ArrayList<DirectorySelectItem>();
+        ArrayList<DirectorySelectItem> items = new ArrayList<>();
         List<DirectorySelectItem> dupItems;
         items.add(new DirectorySelectItem("mark0", "Tache", 0));
         items.add(new DirectorySelectItem("tackle", "tacle", 0));

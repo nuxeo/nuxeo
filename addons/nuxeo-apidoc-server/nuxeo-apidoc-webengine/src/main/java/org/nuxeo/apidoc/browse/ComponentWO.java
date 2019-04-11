@@ -73,7 +73,7 @@ public class ComponentWO extends NuxeoArtifactWebObject {
     }
 
     public List<ServiceWO> getServices() {
-        List<ServiceWO> result = new ArrayList<ServiceWO>();
+        List<ServiceWO> result = new ArrayList<>();
         ComponentInfo ci = getTargetComponentInfo();
         for (ServiceInfo si : ci.getServices()) {
             result.add((ServiceWO) ctx.newObject("service", si.getId()));
@@ -82,7 +82,7 @@ public class ComponentWO extends NuxeoArtifactWebObject {
     }
 
     public List<ExtensionPointWO> getExtensionPoints() {
-        List<ExtensionPointWO> result = new ArrayList<ExtensionPointWO>();
+        List<ExtensionPointWO> result = new ArrayList<>();
         ComponentInfo ci = getTargetComponentInfo();
         for (ExtensionPointInfo ei : ci.getExtensionPoints()) {
             result.add((ExtensionPointWO) ctx.newObject("extensionPoint", ei.getId()));
@@ -91,7 +91,7 @@ public class ComponentWO extends NuxeoArtifactWebObject {
     }
 
     public List<ContributionWO> getContributions() {
-        List<ContributionWO> result = new ArrayList<ContributionWO>();
+        List<ContributionWO> result = new ArrayList<>();
         ComponentInfo ci = getTargetComponentInfo();
         for (ExtensionInfo ei : ci.getExtensions()) {
             result.add((ContributionWO) ctx.newObject("contribution", ei.getId()));

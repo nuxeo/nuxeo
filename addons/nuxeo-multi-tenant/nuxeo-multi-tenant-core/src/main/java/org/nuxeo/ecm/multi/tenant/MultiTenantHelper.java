@@ -110,7 +110,7 @@ public class MultiTenantHelper {
      * matching.
      */
     public static String getTenantDocumentPath(CoreSession session, final String tenantId) {
-        final List<String> paths = new ArrayList<String>();
+        final List<String> paths = new ArrayList<>();
         String path = pathCache.getIfPresent(tenantId);
         if (path == null) {
             new UnrestrictedSessionRunner(session) {

@@ -76,7 +76,7 @@ public class AbstractGraphRouteTest {
     }
 
     protected Map<String, Serializable> transition(String name, String target, String condition) {
-        Map<String, Serializable> m = new HashMap<String, Serializable>();
+        Map<String, Serializable> m = new HashMap<>();
         m.put(GraphNode.PROP_TRANS_NAME, name);
         m.put(GraphNode.PROP_TRANS_TARGET, target);
         m.put(GraphNode.PROP_TRANS_CONDITION, condition);
@@ -99,7 +99,7 @@ public class AbstractGraphRouteTest {
     }
 
     protected Map<String, Serializable> button(String name, String label, String filter, Boolean validate) {
-        Map<String, Serializable> m = new HashMap<String, Serializable>();
+        Map<String, Serializable> m = new HashMap<>();
         m.put(GraphNode.PROP_BTN_NAME, name);
         m.put(GraphNode.PROP_BTN_LABEL, label);
         m.put(GraphNode.PROP_BTN_FILTER, filter);

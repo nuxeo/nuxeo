@@ -57,7 +57,7 @@ public class DocumentModelChildrenIterator implements DocumentModelIterator {
 
         // fetch all the children ids now
         List<DocumentRef> refs = session.getChildrenRefs(parentRef, null);
-        List<String> ids = new ArrayList<String>(refs.size());
+        List<String> ids = new ArrayList<>(refs.size());
         for (DocumentRef ref : refs) {
             ids.add(ref.toString()); // always an IdRef
         }

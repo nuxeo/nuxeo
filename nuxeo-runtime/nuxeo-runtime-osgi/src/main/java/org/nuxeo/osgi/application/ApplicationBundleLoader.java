@@ -114,8 +114,8 @@ public class ApplicationBundleLoader {
             }
         }
         if (scan) {
-            List<BundleFile> bundles = new ArrayList<BundleFile>();
-            List<BundleFile> jars = new ArrayList<BundleFile>();
+            List<BundleFile> bundles = new ArrayList<>();
+            List<BundleFile> jars = new ArrayList<>();
             scanAndLoad(classPath, bundles, jars);
             writeCache(file, bundles, jars);
             app.installAll(bundles);
@@ -185,7 +185,7 @@ public class ApplicationBundleLoader {
 
     public void fastLoad(File file) throws IOException, BundleException {
         BufferedReader reader = null;
-        List<BundleFile> bundles = new ArrayList<BundleFile>();
+        List<BundleFile> bundles = new ArrayList<>();
         try {
             reader = new BufferedReader(new FileReader(file));
             List<BundleFile> list = bundles;

@@ -350,7 +350,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 6.0
      */
     private void waitSelect2() throws TimeoutException {
-        Wait<WebElement> wait = new FluentWait<WebElement>(
+        Wait<WebElement> wait = new FluentWait<>(
                 !multiple ? driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH))
                         : element.findElement(By.xpath(S2_MULTIPLE_INPUT_XPATH))).withTimeout(SELECT2_LOADING_TIMEOUT,
                                 TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(

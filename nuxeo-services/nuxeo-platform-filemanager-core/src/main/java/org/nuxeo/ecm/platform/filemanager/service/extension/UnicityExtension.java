@@ -34,7 +34,7 @@ public class UnicityExtension implements Serializable {
 
     private static final long serialVersionUID = 7764225025169187266L;
 
-    public static final List<String> DEFAULT_FIELDS = new ArrayList<String>();
+    public static final List<String> DEFAULT_FIELDS = new ArrayList<>();
 
     @XNode("algo")
     protected String algo;

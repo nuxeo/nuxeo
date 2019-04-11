@@ -81,7 +81,7 @@ public class ScanedFileSourceNode extends FileSourceNode {
 
     @Override
     public List<SourceNode> getChildren() throws IOException {
-        List<SourceNode> children = new ArrayList<SourceNode>();
+        List<SourceNode> children = new ArrayList<>();
 
         ScannedFileMapperService sfms = Framework.getService(ScannedFileMapperService.class);
         for (File child : file.listFiles()) {

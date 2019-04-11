@@ -60,7 +60,7 @@ public class SummaryImpl extends HashMap<String, SummaryEntry> implements Summar
 
             if (summaryEntry.getParent() != null && summaryEntry.getParent().equals(parentEntry)) {
                 if (children == null) {
-                    children = new ArrayList<SummaryEntry>();
+                    children = new ArrayList<>();
                 }
                 children.add(get(pathRef));
             }
@@ -91,7 +91,7 @@ public class SummaryImpl extends HashMap<String, SummaryEntry> implements Summar
 
     public String toFlatList() {
         StringBuilder sb = new StringBuilder();
-        List<SummaryEntry> entryList = new ArrayList<SummaryEntry>();
+        List<SummaryEntry> entryList = new ArrayList<>();
         Set<String> key = keySet();
         for (String docRef : key) {
             entryList.add(get(docRef));

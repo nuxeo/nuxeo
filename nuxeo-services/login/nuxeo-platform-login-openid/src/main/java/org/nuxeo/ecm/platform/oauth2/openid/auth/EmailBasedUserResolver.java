@@ -53,7 +53,7 @@ public class EmailBasedUserResolver extends UserResolver {
 
         try {
             UserManager userManager = Framework.getService(UserManager.class);
-            Map<String, Serializable> query = new HashMap<String, Serializable>();
+            Map<String, Serializable> query = new HashMap<>();
             query.put(userManager.getUserEmailField(), userInfo.getEmail());
 
             DocumentModelList users = Framework.doPrivileged(() -> userManager.searchUsers(query, null));

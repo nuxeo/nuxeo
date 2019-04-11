@@ -126,8 +126,8 @@ public class TestStateHelper {
         assertEqualsStrict(a, b);
 
         // Lists
-        ArrayList<Serializable> la = new ArrayList<Serializable>();
-        ArrayList<Serializable> lb = new ArrayList<Serializable>();
+        ArrayList<Serializable> la = new ArrayList<>();
+        ArrayList<Serializable> lb = new ArrayList<>();
         assertEqualsStrict(la, lb);
         la.add(new State());
         assertNotEqualsStrict(la, lb);

@@ -166,10 +166,10 @@ public interface RowMapper {
         public final Set<RowId> deletesDependent;
 
         public RowBatch() {
-            creates = new LinkedList<Row>();
-            updates = new HashSet<RowUpdate>();
-            deletes = new HashSet<RowId>();
-            deletesDependent = new HashSet<RowId>();
+            creates = new LinkedList<>();
+            updates = new HashSet<>();
+            deletes = new HashSet<>();
+            deletesDependent = new HashSet<>();
         }
 
         public boolean isEmpty() {

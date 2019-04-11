@@ -111,7 +111,7 @@ public class Helper {
             session.removeDocument(defaultDomain);
         }
 
-        Map<String, String> info = new HashMap<String, String>();
+        Map<String, String> info = new HashMap<>();
 
         DocumentModel folder1 = session.createDocumentModel("/", "testfolder1", "Folder");
         folder1.setPropertyValue("dc:title", "testfolder1_Title");

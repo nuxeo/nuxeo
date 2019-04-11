@@ -52,7 +52,7 @@ public abstract class SuperKeyedRegistry<K, V> {
     private final Object lock = new Object();
 
     public SuperKeyedRegistry() {
-        registry = new HashMap<K, V>();
+        registry = new HashMap<>();
     }
 
     public void put(K key, V value) {
@@ -94,7 +94,7 @@ public abstract class SuperKeyedRegistry<K, V> {
         Map<K, Object> _lookup = lookup;
         if (_lookup == null) {
             synchronized (lock) {
-                lookup = new ConcurrentHashMap<K, Object>(registry);
+                lookup = new ConcurrentHashMap<>(registry);
                 _lookup = lookup;
             }
         }

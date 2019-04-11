@@ -33,7 +33,7 @@ public abstract class AbstractRunner implements ElementRunner {
 
     protected List<DocumentRouteElement> getChildrenElement(CoreSession session, DocumentRouteElement element) {
         DocumentModelList children = session.getChildren(element.getDocument().getRef());
-        List<DocumentRouteElement> elements = new ArrayList<DocumentRouteElement>();
+        List<DocumentRouteElement> elements = new ArrayList<>();
         for (DocumentModel model : children) {
             elements.add(model.getAdapter(DocumentRouteElement.class));
         }

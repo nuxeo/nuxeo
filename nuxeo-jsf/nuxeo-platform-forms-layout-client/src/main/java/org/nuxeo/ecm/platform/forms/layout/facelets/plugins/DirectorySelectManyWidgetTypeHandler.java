@@ -99,7 +99,7 @@ public class DirectorySelectManyWidgetTypeHandler extends AbstractDirectorySelec
         }
 
         // build directory item attributes, using widget properties
-        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
+        List<TagAttribute> attrs = new ArrayList<>();
         for (Map.Entry<String, Serializable> property : properties.entrySet()) {
             if (!"value".equals(property.getKey())) {
                 Serializable value = property.getValue();

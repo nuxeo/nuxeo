@@ -43,7 +43,7 @@ public class ImageMagickContentDiffer implements MimeTypeContentDiffer {
             throws ContentDiffException {
 
         try {
-            List<Blob> blobResults = new ArrayList<Blob>();
+            List<Blob> blobResults = new ArrayList<>();
             StringWriter sw = new StringWriter();
 
             String html = DiffPictures.buildDiffHtml(leftDoc, rightDoc, xpath);

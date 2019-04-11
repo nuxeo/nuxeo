@@ -66,7 +66,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
 
     protected static final Log log = LogFactory.getLog(LoginComponent.class);
 
-    private final Map<String, SecurityDomain> domains = new Hashtable<String, SecurityDomain>();
+    private final Map<String, SecurityDomain> domains = new Hashtable<>();
 
     private SecurityDomain systemLogin;
 
@@ -161,7 +161,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
 
     private LoginContext systemLogin(String username) throws LoginException {
         if (systemLogin != null) {
-            Set<Principal> principals = new HashSet<Principal>();
+            Set<Principal> principals = new HashSet<>();
             SystemID sysId = new SystemID(username);
             principals.add(sysId);
             Subject subject = new Subject(false, principals, new HashSet<String>(), new HashSet<String>());

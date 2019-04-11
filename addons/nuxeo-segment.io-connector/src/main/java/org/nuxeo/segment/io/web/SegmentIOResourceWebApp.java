@@ -27,7 +27,7 @@ public class SegmentIOResourceWebApp extends WebEngineModule {
 
     @Override
     public Set<Class<?>> getClasses() {
-        Set<Class<?>> result = new HashSet<Class<?>>();
+        Set<Class<?>> result = new HashSet<>();
         result.add(SegmentIOScriptResource.class);
         return result;
     }

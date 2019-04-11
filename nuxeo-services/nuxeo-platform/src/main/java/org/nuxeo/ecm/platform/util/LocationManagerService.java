@@ -39,7 +39,7 @@ public class LocationManagerService extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(LocationManagerService.class);
 
-    private Map<String, RepositoryLocation> locations = new HashMap<String, RepositoryLocation>();
+    private Map<String, RepositoryLocation> locations = new HashMap<>();
 
     @Override
     public void registerExtension(Extension extension) {

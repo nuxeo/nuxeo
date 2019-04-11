@@ -141,7 +141,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
 
     protected void createTask(DocumentModel document, CoreSession session, NuxeoPrincipal principal) {
         String[] actorIds = getValidatorsFor(document);
-        Map<String, String> variables = new HashMap<String, String>();
+        Map<String, String> variables = new HashMap<>();
         variables.put(Task.TaskVariableName.needi18n.name(), "true");
         variables.put(Task.TaskVariableName.taskType.name(), PUBLISH_TASK_TYPE);
         variables.put(TaskService.VariableName.documentId.name(), document.getId());
@@ -217,7 +217,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
             }
         }
         DocumentModel liveDoc = getLiveDocument(session, document);
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         if (initiator != null) {
             properties.put(NotificationConstants.RECIPIENTS_KEY, new String[] { initiator });
         }

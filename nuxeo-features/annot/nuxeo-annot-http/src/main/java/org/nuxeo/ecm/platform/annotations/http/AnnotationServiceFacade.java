@@ -62,7 +62,7 @@ public class AnnotationServiceFacade {
         } catch (URISyntaxException e) {
             throw new NuxeoException(e);
         }
-        List<Statement> statements = new ArrayList<Statement>();
+        List<Statement> statements = new ArrayList<>();
         for (Annotation annotation : annotations) {
             statements.addAll(annotation.getStatements());
         }

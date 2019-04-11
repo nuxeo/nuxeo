@@ -37,7 +37,7 @@ public class DirectoryTreeRegistry extends ContributionFragmentRegistry<Director
 
     private static final Log log = LogFactory.getLog(DirectoryTreeRegistry.class);
 
-    protected Map<String, DirectoryTreeDescriptor> registry = new HashMap<String, DirectoryTreeDescriptor>();
+    protected Map<String, DirectoryTreeDescriptor> registry = new HashMap<>();
 
     @Override
     public String getContributionId(DirectoryTreeDescriptor contrib) {
@@ -75,7 +75,7 @@ public class DirectoryTreeRegistry extends ContributionFragmentRegistry<Director
     // API
 
     public List<String> getDirectoryTrees() {
-        List<String> directoryTrees = new ArrayList<String>();
+        List<String> directoryTrees = new ArrayList<>();
         for (DirectoryTreeDescriptor desc : registry.values()) {
             if (Boolean.TRUE.equals(desc.getEnabled())) {
                 directoryTrees.add(desc.getName());
@@ -98,7 +98,7 @@ public class DirectoryTreeRegistry extends ContributionFragmentRegistry<Director
      * Returns only the enabled Directory Trees marked as being also Navigation Trees.
      */
     public List<String> getNavigationDirectoryTrees() {
-        List<String> directoryTrees = new ArrayList<String>();
+        List<String> directoryTrees = new ArrayList<>();
         for (DirectoryTreeDescriptor desc : registry.values()) {
             if (Boolean.TRUE.equals(desc.getEnabled()) && desc.isNavigationTree()) {
                 directoryTrees.add(desc.getName());

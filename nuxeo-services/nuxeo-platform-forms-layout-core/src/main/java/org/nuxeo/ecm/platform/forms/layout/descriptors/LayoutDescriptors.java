@@ -44,7 +44,7 @@ public class LayoutDescriptors implements Serializable {
         if (layouts == null) {
             return null;
         }
-        List<LayoutDefinition> res = new ArrayList<LayoutDefinition>();
+        List<LayoutDefinition> res = new ArrayList<>();
         for (LayoutDescriptor item : layouts) {
             res.add(item.getLayoutDefinition());
         }

@@ -45,7 +45,7 @@ public class RunOnListItemWithTx {
     protected List<String> getOrCreateList(String name) {
         List<String> list = (List<String>) ctx.get(name);
         if (list == null) {
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
             ctx.put(name, list);
         }
         return list;

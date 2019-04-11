@@ -248,7 +248,7 @@ public class TableReference extends AbstractReference {
                 session.logger.logSQL(sql, Collections.<Serializable> singleton(filterValue));
             }
 
-            List<String> ids = new LinkedList<String>();
+            List<String> ids = new LinkedList<>();
             try (PreparedStatement ps = session.sqlConnection.prepareStatement(sql)) {
                 ps.setString(1, filterValue);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -316,8 +316,8 @@ public class TableReference extends AbstractReference {
     public void setIdsFor(String idsColumn, List<String> ids, String filterColumn, String filterValue,
             SQLSession session) {
 
-        List<String> idsToDelete = new LinkedList<String>();
-        Set<String> idsToAdd = new HashSet<String>();
+        List<String> idsToDelete = new LinkedList<>();
+        Set<String> idsToAdd = new HashSet<>();
         if (ids != null) { // ids may be null
             idsToAdd.addAll(ids);
         }

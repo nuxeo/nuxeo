@@ -107,7 +107,7 @@ public class XMLSerializer {
 
     public static List<TemplateInput> readFromXml(String xml) throws DocumentException {
 
-        List<TemplateInput> result = new ArrayList<TemplateInput>();
+        List<TemplateInput> result = new ArrayList<>();
 
         Document xmlDoc = DocumentHelper.parseText(xml);
 

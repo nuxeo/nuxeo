@@ -66,7 +66,7 @@ public class DefaultCreationContainerListProvider extends AbstractCreationContai
 
     @SuppressWarnings("unchecked")
     public DocumentModelList getCreationContainerList(CoreSession documentManager, String docType) {
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) documentManager);
 
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);

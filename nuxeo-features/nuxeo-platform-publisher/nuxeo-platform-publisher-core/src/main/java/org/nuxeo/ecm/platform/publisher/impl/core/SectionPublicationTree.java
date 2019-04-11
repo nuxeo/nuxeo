@@ -87,7 +87,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
     }
 
     public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) {
-        List<PublishedDocument> publishedDocs = new ArrayList<PublishedDocument>();
+        List<PublishedDocument> publishedDocs = new ArrayList<>();
         DocumentModelList proxies = getCoreSession().getProxies(docLoc.getDocRef(), null);
         for (DocumentModel proxy : proxies) {
             if (proxy.getPathAsString().startsWith(rootPath)) {

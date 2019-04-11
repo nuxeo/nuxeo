@@ -61,7 +61,7 @@ public class RepoStatInfo {
     protected float speed;
 
     public RepoStatInfo() {
-        docsPerTypes = new ConcurrentHashMap<String, Long>();
+        docsPerTypes = new ConcurrentHashMap<>();
         t1 = System.currentTimeMillis();
     }
 
@@ -99,7 +99,7 @@ public class RepoStatInfo {
     }
 
     public List<String> getDocTypes() {
-        List<String> types = new ArrayList<String>();
+        List<String> types = new ArrayList<>();
         types.addAll(docsPerTypes.keySet());
         Collections.sort(types);
         return types;

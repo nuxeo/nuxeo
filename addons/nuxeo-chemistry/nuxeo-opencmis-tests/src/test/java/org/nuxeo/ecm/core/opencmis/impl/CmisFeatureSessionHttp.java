@@ -72,7 +72,7 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
     public Session setUpCmisSession(String repositoryName) {
 
         SessionFactory sf = SessionFactoryImpl.newInstance();
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
 
         params.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS, CmisBindingFactory.STANDARD_AUTHENTICATION_PROVIDER);
 

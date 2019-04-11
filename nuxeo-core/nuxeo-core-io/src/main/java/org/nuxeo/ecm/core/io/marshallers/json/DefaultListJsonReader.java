@@ -100,7 +100,7 @@ public abstract class DefaultListJsonReader<EntityType> extends EntityJsonReader
     @Override
     protected List<EntityType> readEntity(JsonNode jn) throws IOException {
         Reader<EntityType> entryReader = registry.getReader(ctx, elClazz, elGenericType, APPLICATION_JSON_TYPE);
-        List<EntityType> result = new ArrayList<EntityType>();
+        List<EntityType> result = new ArrayList<>();
         JsonNode entriesNode = jn.get("entries");
         if (entriesNode != null && !entriesNode.isNull() && entriesNode.isArray()) {
             JsonNode entryNode = null;

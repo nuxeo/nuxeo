@@ -36,17 +36,17 @@ public class TestQueryResult {
 
     @Test
     public void testInit() {
-        List<String> variableNames = new ArrayList<String>();
+        List<String> variableNames = new ArrayList<>();
         variableNames.add("subject");
         variableNames.add("object");
 
-        List<Map<String, Node>> results = new ArrayList<Map<String, Node>>();
-        Map<String, Node> res1 = new HashMap<String, Node>();
+        List<Map<String, Node>> results = new ArrayList<>();
+        Map<String, Node> res1 = new HashMap<>();
         res1.put("subject", new ResourceImpl("http://toto"));
         res1.put("object", new ResourceImpl("http://titi"));
         results.add(res1);
 
-        Map<String, Node> res2 = new HashMap<String, Node>();
+        Map<String, Node> res2 = new HashMap<>();
         res2.put("subject", new ResourceImpl("http://toto"));
         res2.put("object", new LiteralImpl("lalala"));
         results.add(res2);

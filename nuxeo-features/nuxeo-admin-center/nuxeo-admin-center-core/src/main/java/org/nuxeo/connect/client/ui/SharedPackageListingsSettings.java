@@ -43,7 +43,7 @@ public class SharedPackageListingsSettings implements Serializable {
      */
     private static final Map<String, RequestResolver> resolvers;
 
-    protected Map<String, ListingFilterSetting> settings = new HashMap<String, ListingFilterSetting>();
+    protected Map<String, ListingFilterSetting> settings = new HashMap<>();
 
     public static final String SESSION_KEY = "org.nuxeo.connect.client.ui.PackageListingSettings";
 

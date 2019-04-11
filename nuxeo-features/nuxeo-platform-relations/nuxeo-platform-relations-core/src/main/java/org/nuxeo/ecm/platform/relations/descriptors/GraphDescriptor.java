@@ -43,10 +43,10 @@ public class GraphDescriptor implements GraphDescription, Serializable {
     @XNode("@type")
     public String graphType;
 
-    public Map<String, String> options = new HashMap<String, String>();
+    public Map<String, String> options = new HashMap<>();
 
     @XNodeMap(value = "namespaces/namespace", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> namespaces = new HashMap<String, String>();
+    public Map<String, String> namespaces = new HashMap<>();
 
     @Override
     public String getName() {
@@ -66,7 +66,7 @@ public class GraphDescriptor implements GraphDescription, Serializable {
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
     public void setOptions(Map<String, String> options) {
         // expand vars on the options
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         for (Map.Entry<String, String> entry : options.entrySet()) {
             String value = entry.getValue();
             map.put(entry.getKey(), Framework.getRuntime().expandVars(value));

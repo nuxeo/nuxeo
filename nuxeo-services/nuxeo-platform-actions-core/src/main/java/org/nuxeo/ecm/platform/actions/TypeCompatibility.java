@@ -37,7 +37,7 @@ public class TypeCompatibility {
     String type;
 
     @XNodeList(value = "category", type = ArrayList.class, componentType = String.class)
-    private List<String> categories = new ArrayList<String>();
+    private List<String> categories = new ArrayList<>();
 
     public String getType() {
         return type;

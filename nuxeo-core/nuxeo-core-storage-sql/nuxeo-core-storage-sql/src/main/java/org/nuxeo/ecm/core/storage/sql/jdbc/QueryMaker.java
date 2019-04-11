@@ -72,7 +72,7 @@ public interface QueryMaker {
 
         public SQLInfoSelect selectInfo;
 
-        public List<Serializable> selectParams = new LinkedList<Serializable>();
+        public List<Serializable> selectParams = new LinkedList<>();
 
     }
 

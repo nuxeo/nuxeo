@@ -97,7 +97,7 @@ public final class TranscodedVideo extends Video {
      * Used when saving this {@code TranscodedVideo} to a {@code DocumentModel} property.
      */
     public Map<String, Serializable> toMap() {
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         map.put(NAME, name);
         map.put(CONTENT, (Serializable) blob);
         map.put(INFO, (Serializable) videoInfo.toMap());

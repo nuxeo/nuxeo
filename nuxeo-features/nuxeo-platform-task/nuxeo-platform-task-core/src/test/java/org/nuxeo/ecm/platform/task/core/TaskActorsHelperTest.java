@@ -60,7 +60,7 @@ public class TaskActorsHelperTest {
         assertTrue(actors.contains("user:joe"));
 
         // Test unprefixed group names
-        List<String> groups = new ArrayList<String>();
+        List<String> groups = new ArrayList<>();
         groups.add("marketing");
         groups.add("sales");
         principal.setGroups(groups);

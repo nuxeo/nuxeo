@@ -67,7 +67,7 @@ public class Select2Converter implements Serializable, Converter {
             // resulting list will be unmodifiable and this might cause an error
             // if something try to add elements. Let's make sure it'll be
             // modifiable
-            return new ArrayList<String>(Arrays.asList(values));
+            return new ArrayList<>(Arrays.asList(values));
         }
     }
 

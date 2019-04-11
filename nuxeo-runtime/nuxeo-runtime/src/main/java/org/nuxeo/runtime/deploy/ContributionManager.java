@@ -50,7 +50,7 @@ public class ContributionManager extends DependencyTree<String, Contribution> {
             ExtensibleContribution c = (ExtensibleContribution) contrib;
             baseId = c.getBaseContributionId();
         }
-        Collection<String> deps = new ArrayList<String>();
+        Collection<String> deps = new ArrayList<>();
         if (baseId != null) {
             deps.add(baseId);
         }

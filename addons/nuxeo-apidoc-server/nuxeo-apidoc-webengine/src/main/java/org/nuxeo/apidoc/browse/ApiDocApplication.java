@@ -35,7 +35,7 @@ public class ApiDocApplication extends WebEngineModule {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = super.getClasses();
-        classes = classes == null ? new HashSet<Class<?>>() : new HashSet<Class<?>>(classes);
+        classes = classes == null ? new HashSet<>() : new HashSet<>(classes);
         classes.add(DocumentationItemReader.class);
         classes.add(ArchiveFileWriter.class);
         return classes;

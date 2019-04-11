@@ -120,8 +120,8 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
         } else {
             ExpiringConcurrentCache.ExpiryChecker<URL, Record> checker = (refreshPeriod > 0) ? new ExpiryChecker()
                     : new NeverExpired();
-            _faceletCache = new ExpiringConcurrentCache<URL, Record>(faceletFactory, checker);
-            _metadataFaceletCache = new ExpiringConcurrentCache<URL, Record>(metadataFaceletFactory, checker);
+            _faceletCache = new ExpiringConcurrentCache<>(faceletFactory, checker);
+            _metadataFaceletCache = new ExpiringConcurrentCache<>(metadataFaceletFactory, checker);
         }
     }
 

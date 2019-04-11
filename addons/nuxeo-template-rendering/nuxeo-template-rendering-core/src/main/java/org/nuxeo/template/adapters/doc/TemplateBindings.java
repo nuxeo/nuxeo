@@ -107,7 +107,7 @@ public class TemplateBindings extends ArrayList<TemplateBinding> {
 
     public List<String> getNames() {
 
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (TemplateBinding tb : this) {
             names.add(tb.getName());
         }
@@ -115,7 +115,7 @@ public class TemplateBindings extends ArrayList<TemplateBinding> {
     }
 
     public void save(DocumentModel doc) {
-        List<Map<String, Serializable>> bindings = new ArrayList<Map<String, Serializable>>();
+        List<Map<String, Serializable>> bindings = new ArrayList<>();
         for (TemplateBinding tb : this) {
             bindings.add(tb.getAsMap());
         }

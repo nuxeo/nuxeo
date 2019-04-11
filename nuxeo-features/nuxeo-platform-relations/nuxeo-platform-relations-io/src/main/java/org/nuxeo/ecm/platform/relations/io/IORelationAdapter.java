@@ -124,7 +124,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
 
     protected List<Statement> getMatchingStatements(Graph graph, Resource resource) {
         // TODO filter using properties
-        List<Statement> matching = new ArrayList<Statement>();
+        List<Statement> matching = new ArrayList<>();
         Statement incomingPattern = new StatementImpl(null, null, resource);
         matching.addAll(graph.getStatements(incomingPattern));
         Statement outgoingPattern = new StatementImpl(resource, null, null);
@@ -193,7 +193,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
     protected List<Statement> filterMatchingStatements(List<Statement> statements) {
         List<Statement> newStatements = null;
         if (statements != null) {
-            newStatements = new ArrayList<Statement>();
+            newStatements = new ArrayList<>();
             for (Statement stmt : statements) {
                 Statement newStmt = getFilteredStatement(stmt);
                 if (newStmt != null) {
@@ -246,9 +246,9 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
                 log.error("Cannot resolve graph " + graphName);
                 return null;
             }
-            Map<DocumentRef, Set<Resource>> docResources = new HashMap<DocumentRef, Set<Resource>>();
-            List<Statement> statements = new ArrayList<Statement>();
-            Set<Resource> allResources = new HashSet<Resource>();
+            Map<DocumentRef, Set<Resource>> docResources = new HashMap<>();
+            List<Statement> statements = new ArrayList<>();
+            Set<Resource> allResources = new HashSet<>();
             for (DocumentRef docRef : sources) {
                 DocumentModel doc = session.getDocument(docRef);
                 Map<String, Object> context = Collections.<String, Object> singletonMap(
@@ -265,7 +265,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             // resources
             IORelationGraphHelper graphHelper = new IORelationGraphHelper(namespaces, statements);
             Graph memoryGraph = graphHelper.getGraph();
-            List<Statement> toRemove = new ArrayList<Statement>();
+            List<Statement> toRemove = new ArrayList<>();
             if (getBooleanProperty(IORelationAdapterProperties.IGNORE_EXTERNAL)) {
                 for (Statement stmt : memoryGraph.getStatements()) {
                     Subject subject = stmt.getSubject();
@@ -313,7 +313,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         if (map.containsKey(docRef)) {
             map.get(docRef).add(resource);
         } else {
-            Set<Resource> set = new HashSet<Resource>();
+            Set<Resource> set = new HashSet<>();
             set.add(resource);
             map.put(docRef, set);
         }
@@ -338,7 +338,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         graphHelper.read(in);
         // find documents related to given statements
         List<Statement> statements = filterMatchingStatements(graphHelper.getStatements());
-        Map<DocumentRef, Set<Resource>> docResources = new HashMap<DocumentRef, Set<Resource>>();
+        Map<DocumentRef, Set<Resource>> docResources = new HashMap<>();
         for (Statement statement : statements) {
             Subject subject = statement.getSubject();
             addResourceEntry(relManager, docResources, subject);
@@ -398,7 +398,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             // variables for date update
             Literal newDate = RelationDate.getLiteralDate(new Date());
             String[] dateUris = getStringArrayProperty(IORelationAdapterProperties.UPDATE_DATE_METADATA);
-            List<Resource> dateProperties = new ArrayList<Resource>();
+            List<Resource> dateProperties = new ArrayList<>();
             if (dateUris != null) {
                 for (String dateUri : dateUris) {
                     dateProperties.add(new ResourceImpl(dateUri));
@@ -439,7 +439,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
                             ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
                     Resource newResource = relManager.getResource(qnameRes.getNamespace(), newDoc, context);
                     Statement newStatement;
-                    List<Statement> newOutgoing = new ArrayList<Statement>();
+                    List<Statement> newOutgoing = new ArrayList<>();
                     for (Statement stmt : outgoing) {
                         newStatement = (Statement) stmt.clone();
                         newStatement.setSubject(newResource);
@@ -449,7 +449,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
                         newOutgoing.add(newStatement);
                     }
                     graph.add(newOutgoing);
-                    List<Statement> newIncoming = new ArrayList<Statement>();
+                    List<Statement> newIncoming = new ArrayList<>();
                     for (Statement stmt : incoming) {
                         newStatement = (Statement) stmt.clone();
                         newStatement.setObject(newResource);

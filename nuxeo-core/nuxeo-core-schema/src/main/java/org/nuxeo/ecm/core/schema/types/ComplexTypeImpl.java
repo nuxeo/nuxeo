@@ -37,10 +37,10 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
     private static final long serialVersionUID = 1L;
 
     /** The fields held by this complex type. */
-    protected final Map<QName, Field> fields = new HashMap<QName, Field>();
+    protected final Map<QName, Field> fields = new HashMap<>();
 
     /** The map of name or prefixed name to field. */
-    protected volatile Map<String, Field> fieldsByName = new HashMap<String, Field>();
+    protected volatile Map<String, Field> fieldsByName = new HashMap<>();
 
     protected final Namespace ns;
 
@@ -136,14 +136,14 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
             // should be dealt with a BlobProperty, this is hardcoded here.
             return null;
         }
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         for (Field field : fields.values()) {
             Object value;
             Type type = field.getType();
             if (type.isComplexType()) {
                 value = type.newInstance();
             } else if (type.isListType()) {
-                value = new ArrayList<Object>();
+                value = new ArrayList<>();
             } else {
                 value = field.getDefaultValue();
             }

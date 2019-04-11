@@ -51,19 +51,19 @@ public class TransformMessageAction implements MessageAction {
 
     private static final Log log = LogFactory.getLog(TransformMessageAction.class);
 
-    protected final Map<String, Map<String, Object>> schemas = new HashMap<String, Map<String, Object>>();
+    protected final Map<String, Map<String, Object>> schemas = new HashMap<>();
 
-    protected final Map<String, Object> mailSchema = new HashMap<String, Object>();
+    protected final Map<String, Object> mailSchema = new HashMap<>();
 
-    protected final Map<String, Object> dcSchema = new HashMap<String, Object>();
+    protected final Map<String, Object> dcSchema = new HashMap<>();
 
-    protected final Map<String, Object> filesSchema = new HashMap<String, Object>();
+    protected final Map<String, Object> filesSchema = new HashMap<>();
 
-    protected final List<Map<String, Object>> files = new ArrayList<Map<String, Object>>();
+    protected final List<Map<String, Object>> files = new ArrayList<>();
 
     protected StringBuilder text = new StringBuilder();
 
-    private final HashMap<String, List<Part>> messageBodyParts = new HashMap<String, List<Part>>();
+    private final HashMap<String, List<Part>> messageBodyParts = new HashMap<>();
 
     public TransformMessageAction() {
         messageBodyParts.put("text", new ArrayList<Part>());
@@ -80,7 +80,7 @@ public class TransformMessageAction implements MessageAction {
             log.debug("Transforming message" + message.getSubject());
         }
         if (message.getFrom() != null && message.getFrom().length != 0) {
-            List<String> contributors = new ArrayList<String>();
+            List<String> contributors = new ArrayList<>();
             for (Address ad : message.getFrom()) {
                 contributors.add(safelyDecodeText(ad.toString()));
             }
@@ -89,7 +89,7 @@ public class TransformMessageAction implements MessageAction {
             dcSchema.put("created", message.getReceivedDate());
         }
         if (message.getAllRecipients() != null && message.getAllRecipients().length != 0) {
-            List<String> recipients = new ArrayList<String>();
+            List<String> recipients = new ArrayList<>();
             for (Address address : message.getAllRecipients()) {
                 recipients.add(safelyDecodeText(address.toString()));
             }
@@ -232,7 +232,7 @@ public class TransformMessageAction implements MessageAction {
 
     private void setFile(String fileName, InputStream inputStream) throws IOException {
         log.debug("* adding attachment: " + fileName);
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         Blob fileBlob = Blobs.createBlob(inputStream);
         fileBlob.setFilename(fileName);
         map.put("file", fileBlob);

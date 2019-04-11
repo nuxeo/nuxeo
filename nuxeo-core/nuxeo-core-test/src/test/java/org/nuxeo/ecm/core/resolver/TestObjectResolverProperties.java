@@ -240,7 +240,7 @@ public class TestObjectResolverProperties {
     public void testComplexReferenceList() {
         Property list = doc.getProperty("res:colorComplexList");
         assertNull(list.getObjectResolver());
-        Map<String, String> element = new HashMap<String, String>();
+        Map<String, String> element = new HashMap<>();
         element.put("color1", PrimaryColor.RED.name());
         element.put("color2", SecondaryColor.ORANGE.name());
         list.addValue(element);

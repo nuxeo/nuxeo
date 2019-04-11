@@ -97,7 +97,7 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
             // the HTTP header
             String directoryName = Framework.getService(UserManager.class).getUserDirectoryName();
             try (Session userDir = Framework.getService(DirectoryService.class).open(directoryName)) {
-                Map<String, Serializable> queryFilters = new HashMap<String, Serializable>();
+                Map<String, Serializable> queryFilters = new HashMap<>();
                 queryFilters.put(credentialFieldName, userName);
                 DocumentModelList result = userDir.query(queryFilters);
                 if (result.isEmpty()) {

@@ -72,7 +72,7 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
      * @return the version labels
      */
     public List<String> getVersionLabels() {
-        List<String> versionLabels = new ArrayList<String>();
+        List<String> versionLabels = new ArrayList<>();
         List<WebElement> trElements;
         try {
             trElements = documentVersionsForm.findElement(By.tagName("tbody")).findElements(By.tagName("tr"));

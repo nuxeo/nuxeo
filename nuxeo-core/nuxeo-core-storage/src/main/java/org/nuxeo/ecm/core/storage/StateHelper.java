@@ -329,7 +329,7 @@ public class StateHelper {
      * @param threadSafe if {@code true}, then thread-safe datastructures are used
      */
     public static List<Serializable> deepCopy(List<Serializable> list, boolean threadSafe) {
-        List<Serializable> copy = threadSafe ? new CopyOnWriteArrayList<Serializable>() : new ArrayList<Serializable>(
+        List<Serializable> copy = threadSafe ? new CopyOnWriteArrayList<>() : new ArrayList<>(
                 list.size());
         for (Serializable v : list) {
             copy.add(deepCopy(v, threadSafe));

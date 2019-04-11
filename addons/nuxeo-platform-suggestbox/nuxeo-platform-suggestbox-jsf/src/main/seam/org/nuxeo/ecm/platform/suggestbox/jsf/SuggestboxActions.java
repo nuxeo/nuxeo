@@ -84,7 +84,7 @@ public class SuggestboxActions extends DocumentContextBoundActionBean implements
     // keep suggestions in cache for maximum 10 seconds to avoid useless and
     // costly re-computation of the suggestions by rich:suggestionbox at
     // selection time
-    protected Cached<List<Suggestion>> cachedSuggestions = new Cached<List<Suggestion>>(10000);
+    protected Cached<List<Suggestion>> cachedSuggestions = new Cached<>(10000);
 
     protected String searchKeywords = "";
 

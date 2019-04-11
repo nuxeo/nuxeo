@@ -35,7 +35,7 @@ public class ProxiesDescriptor {
     private String type;
 
     @XNodeList(value = "schema@name", type = HashSet.class, componentType = String.class)
-    private Set<String> schemas = new HashSet<String>(0);
+    private Set<String> schemas = new HashSet<>(0);
 
     /* empty constructor needed by XMap */
     public ProxiesDescriptor() {

@@ -127,9 +127,9 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
     @Override
     public ObjectId deleteContentStream(boolean refresh) {
-        Holder<String> objectIdHolder = new Holder<String>(getId());
+        Holder<String> objectIdHolder = new Holder<>(getId());
         String changeToken = getPropertyValue(PropertyIds.CHANGE_TOKEN);
-        Holder<String> changeTokenHolder = new Holder<String>(changeToken);
+        Holder<String> changeTokenHolder = new Holder<>(changeToken);
 
         service.deleteContentStream(getRepositoryId(), objectIdHolder, changeTokenHolder, null);
 
@@ -284,9 +284,9 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
     @Override
     public ObjectId setContentStream(ContentStream contentStream, boolean overwrite, boolean refresh) {
-        Holder<String> objectIdHolder = new Holder<String>(getId());
+        Holder<String> objectIdHolder = new Holder<>(getId());
         String changeToken = getPropertyValue(PropertyIds.CHANGE_TOKEN);
-        Holder<String> changeTokenHolder = new Holder<String>(changeToken);
+        Holder<String> changeTokenHolder = new Holder<>(changeToken);
 
         service.setContentStream(getRepositoryId(), objectIdHolder, Boolean.valueOf(overwrite), changeTokenHolder,
                 contentStream, null);
@@ -313,7 +313,7 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
             return null;
         }
 
-        List<ContentStreamHash> result = new ArrayList<ContentStreamHash>(hashes.size());
+        List<ContentStreamHash> result = new ArrayList<>(hashes.size());
         for (String hash : hashes) {
             result.add(new ContentStreamHashImpl(hash));
         }

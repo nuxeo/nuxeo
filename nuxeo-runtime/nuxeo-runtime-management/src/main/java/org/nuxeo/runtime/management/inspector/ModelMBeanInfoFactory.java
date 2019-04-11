@@ -28,7 +28,7 @@ import javax.management.modelmbean.ModelMBeanInfo;
 
 public class ModelMBeanInfoFactory {
 
-    private final Map<Class<?>, ModelMBeanInfo> infos = new HashMap<Class<?>, ModelMBeanInfo>();
+    private final Map<Class<?>, ModelMBeanInfo> infos = new HashMap<>();
 
     public ModelMBeanInfoFactory() {
         super(); // enabled breaking

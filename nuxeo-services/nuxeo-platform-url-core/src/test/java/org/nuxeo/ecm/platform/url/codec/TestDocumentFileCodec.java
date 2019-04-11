@@ -43,7 +43,7 @@ public class TestDocumentFileCodec {
     public void testGetUrlFromDocumentView() {
         DocumentFileCodec codec = new DocumentFileCodec("nxfile");
         DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, "file:content");
         params.put(DocumentFileCodec.FILENAME_KEY, "mydoc.odt");
         DocumentView docView = new DocumentViewImpl(docLoc, null, params);
@@ -57,7 +57,7 @@ public class TestDocumentFileCodec {
     public void testGetUrlFromDocumentViewEncoding() {
         DocumentFileCodec codec = new DocumentFileCodec("nxfile");
         DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, "file:content");
         params.put(DocumentFileCodec.FILENAME_KEY, "my doc \u00e9.odt");
         DocumentView docView = new DocumentViewImpl(docLoc, null, params);
@@ -71,7 +71,7 @@ public class TestDocumentFileCodec {
     public void testGetUrlFromDocumentViewWithReservedAndParams() {
         DocumentFileCodec codec = new DocumentFileCodec("nxfile");
         DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, "file:content");
         params.put(DocumentFileCodec.FILENAME_KEY, "my [doc]? \u00e9.odt");
         params.put("foo", "bar");

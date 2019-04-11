@@ -159,7 +159,7 @@ public class PostCommitEventExecutor {
 
         Callable<Boolean> callable = !bulk ? new EventBundleRunner(listeners, bundle) : new EventBundleBulkRunner(
                 listeners, bundle);
-        FutureTask<Boolean> futureTask = new FutureTask<Boolean>(callable);
+        FutureTask<Boolean> futureTask = new FutureTask<>(callable);
         try {
             executor.execute(futureTask);
         } catch (RejectedExecutionException e) {

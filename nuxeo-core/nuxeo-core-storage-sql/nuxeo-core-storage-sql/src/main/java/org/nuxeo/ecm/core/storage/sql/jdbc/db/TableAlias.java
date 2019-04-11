@@ -110,7 +110,7 @@ public class TableAlias implements Table {
     @Override
     public Collection<Column> getColumns() {
         Collection<Column> columns = table.getColumns();
-        List<Column> result = new ArrayList<Column>(columns.size());
+        List<Column> result = new ArrayList<>(columns.size());
         for (Column column : columns) {
             result.add(new Column(column, this));
         }

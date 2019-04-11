@@ -38,7 +38,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class LogEntryGen {
 
     protected static Map<String, ExtendedInfo> createExtendedInfos() {
-        Map<String, ExtendedInfo> infos = new HashMap<String, ExtendedInfo>();
+        Map<String, ExtendedInfo> infos = new HashMap<>();
         ExtendedInfo info = ExtendedInfoImpl.createExtendedInfo((long) 1);
         infos.put("id", info);
         return infos;

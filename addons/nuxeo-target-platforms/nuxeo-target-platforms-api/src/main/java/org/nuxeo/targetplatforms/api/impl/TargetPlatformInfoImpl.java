@@ -53,7 +53,7 @@ public class TargetPlatformInfoImpl extends TargetInfoImpl implements TargetPlat
         if (availablePackagesInfo == null) {
             return Collections.emptyList();
         }
-        return new ArrayList<String>(availablePackagesInfo.keySet());
+        return new ArrayList<>(availablePackagesInfo.keySet());
     }
 
     @Override
@@ -62,7 +62,7 @@ public class TargetPlatformInfoImpl extends TargetInfoImpl implements TargetPlat
         if (availablePackagesInfo == null) {
             return Collections.<String, TargetPackageInfo> emptyMap();
         }
-        return new LinkedHashMap<String, TargetPackageInfo>(availablePackagesInfo);
+        return new LinkedHashMap<>(availablePackagesInfo);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class TargetPlatformInfoImpl extends TargetInfoImpl implements TargetPlat
             return;
         }
         if (availablePackagesInfo == null) {
-            availablePackagesInfo = new LinkedHashMap<String, TargetPackageInfo>();
+            availablePackagesInfo = new LinkedHashMap<>();
         }
         availablePackagesInfo.put(packInfo.getId(), packInfo);
     }

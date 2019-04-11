@@ -91,7 +91,7 @@ public class UpdateManager {
 
     public synchronized void load() throws PackageException {
         if (!file.isFile()) {
-            registry = new HashMap<String, Entry>();
+            registry = new HashMap<>();
             return;
         }
         try {

@@ -315,7 +315,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
     protected Map<String, Serializable> escalationRule(String id, String condition, String chain,
             boolean multipleExecution) {
-        Map<String, Serializable> m = new HashMap<String, Serializable>();
+        Map<String, Serializable> m = new HashMap<>();
         m.put(GraphNode.PROP_ESCALATION_RULE_ID, id);
         m.put(GraphNode.PROP_ESCALATION_RULE_CONDITION, condition);
         m.put(GraphNode.PROP_ESCALATION_RULE_CHAIN, chain);

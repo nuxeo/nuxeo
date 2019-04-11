@@ -48,7 +48,7 @@ public class ApplicationHost extends Application {
 
     protected final String name;
 
-    protected final Map<String, Boolean> features = new HashMap<String, Boolean>();
+    protected final Map<String, Boolean> features = new HashMap<>();
 
     protected final List<ApplicationFragment> apps;
 
@@ -69,10 +69,10 @@ public class ApplicationHost extends Application {
 
     public ApplicationHost(String name) {
         this.name = name;
-        apps = new ArrayList<ApplicationFragment>();
-        class2Bundles = new HashMap<Class<?>, Bundle>();
-        listeners = new ArrayList<Reloadable>();
-        extensions = new HashMap<String, ResourceExtension>();
+        apps = new ArrayList<>();
+        class2Bundles = new HashMap<>();
+        listeners = new ArrayList<>();
+        extensions = new HashMap<>();
     }
 
     public BundleResource getExtension(BundleResource target, String segment) {
@@ -152,7 +152,7 @@ public class ApplicationHost extends Application {
             fragment.reload();
         }
         // TODO this will not work with extension subresources - find a fix
-        class2Bundles = new HashMap<Class<?>, Bundle>();
+        class2Bundles = new HashMap<>();
         for (Reloadable listener : listeners) {
             listener.reload();
         }
@@ -175,7 +175,7 @@ public class ApplicationHost extends Application {
 
     @Override
     public synchronized Set<Class<?>> getClasses() {
-        HashSet<Class<?>> result = new HashSet<Class<?>>();
+        HashSet<Class<?>> result = new HashSet<>();
         for (ApplicationFragment app : getApplications()) {
             try {
                 for (Class<?> clazz : app.getClasses()) {
@@ -193,7 +193,7 @@ public class ApplicationHost extends Application {
 
     @Override
     public synchronized Set<Object> getSingletons() {
-        HashSet<Object> result = new HashSet<Object>();
+        HashSet<Object> result = new HashSet<>();
         result.add(new TemplateViewMessageBodyWriter());
         result.add(new ViewMessageBodyWriter());
         for (ApplicationFragment app : getApplications()) {

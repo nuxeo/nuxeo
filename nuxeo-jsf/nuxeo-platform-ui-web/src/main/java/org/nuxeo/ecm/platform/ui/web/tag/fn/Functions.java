@@ -483,7 +483,7 @@ public final class Functions {
     public static String printFormattedDuration(Object durationObj, Map<String, String> i18nLabels) {
 
         if (i18nLabels == null) {
-            i18nLabels = new HashMap<String, String>();
+            i18nLabels = new HashMap<>();
         }
         double duration = 0.0;
         if (durationObj instanceof Float) {
@@ -617,7 +617,7 @@ public final class Functions {
 
     public static String userUrl(String patternName, String username, String viewId, boolean newConversation,
             HttpServletRequest req) {
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("username", username);
         DocumentView docView = new DocumentViewImpl(null, viewId, parameters);
 
@@ -645,7 +645,7 @@ public final class Functions {
     }
 
     public static List<Object> combineLists(List<? extends Object>... lists) {
-        List<Object> combined = new ArrayList<Object>();
+        List<Object> combined = new ArrayList<>();
         for (List<? extends Object> list : lists) {
             combined.addAll(list);
         }

@@ -52,7 +52,7 @@ public abstract class AbstractType implements Type {
         this.name = name;
         this.schema = schema;
         this.superType = superType;
-        constraints = new HashSet<Constraint>();
+        constraints = new HashSet<>();
     }
 
     @Override
@@ -97,7 +97,7 @@ public abstract class AbstractType implements Type {
         if (type == null) {
             return EMPTY_SUPERTYPES;
         }
-        List<Type> types = new ArrayList<Type>();
+        List<Type> types = new ArrayList<>();
         while (type != null) {
             types.add(type);
             type = type.getSuperType();
@@ -152,7 +152,7 @@ public abstract class AbstractType implements Type {
 
     @Override
     public Set<Constraint> getConstraints() {
-        Set<Constraint> constraints = new HashSet<Constraint>();
+        Set<Constraint> constraints = new HashSet<>();
         if (getSuperType() instanceof SimpleType) {
             SimpleType superType = (SimpleType) getSuperType();
             constraints.addAll(superType.getConstraints());

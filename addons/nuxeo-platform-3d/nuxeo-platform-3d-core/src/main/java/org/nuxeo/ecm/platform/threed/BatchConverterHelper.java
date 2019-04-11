@@ -198,7 +198,7 @@ public class BatchConverterHelper {
     public static final List<BlobHolder> getResources(BlobHolder batch) {
         List<Blob> blobs = batch.getBlobs();
         return ((List<Integer>) batch.getProperty("resourceIndexes")).stream().map(blobs::get).map(resource -> {
-            Map<String, Serializable> infoTexture = new HashMap<String, Serializable>();
+            Map<String, Serializable> infoTexture = new HashMap<>();
             ImagingService imagingService = Framework.getService(ImagingService.class);
             ImageInfo imageInfo = imagingService.getImageInfo(resource);
             if (imageInfo == null) {

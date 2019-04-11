@@ -57,7 +57,7 @@ public class LifeCycleTransitionConfiguration {
     }
 
     public Collection<LifeCycleTransition> getTransitions() {
-        Collection<LifeCycleTransition> transitions = new ArrayList<LifeCycleTransition>();
+        Collection<LifeCycleTransition> transitions = new ArrayList<>();
 
         NodeList transitionsElements = element.getElementsByTagName(TAG_TRANSITIONS);
         if (transitionsElements.getLength() <= 0) {

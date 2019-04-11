@@ -49,7 +49,7 @@ public class ScanFileBlobHolder extends SimpleBlobHolder {
 
     public ScanFileBlobHolder(Blob blob, String targetType) {
         super(blob);
-        this.properties = new HashMap<String, Serializable>();
+        this.properties = new HashMap<>();
         this.targetType = targetType;
     }
 

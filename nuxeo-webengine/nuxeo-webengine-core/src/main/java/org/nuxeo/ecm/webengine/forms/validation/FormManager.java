@@ -49,9 +49,9 @@ public class FormManager implements InvocationHandler, Form {
 
     public FormManager(FormDescriptor fd) {
         this.fd = fd;
-        unknownKeys = new ArrayList<String>();
-        map = new HashMap<String, Object>(); // remove any previous data
-        fields = new HashMap<String, String[]>(); // remove any previous data
+        unknownKeys = new ArrayList<>();
+        map = new HashMap<>(); // remove any previous data
+        fields = new HashMap<>(); // remove any previous data
         // TODO when implementing file upload - remove here any previously created file
     }
 
@@ -146,7 +146,7 @@ public class FormManager implements InvocationHandler, Form {
         throw new UnsupportedOperationException("Method unsupported: " + method);
     }
 
-    protected static Map<Class<?>, FormDescriptor> forms = new Hashtable<Class<?>, FormDescriptor>();
+    protected static Map<Class<?>, FormDescriptor> forms = new Hashtable<>();
 
     @SuppressWarnings("unchecked")
     public static <T> T newProxy(Class<T> type) {
@@ -156,7 +156,7 @@ public class FormManager implements InvocationHandler, Form {
     }
 
     public void flushCache() {
-        forms = new Hashtable<Class<?>, FormDescriptor>();
+        forms = new Hashtable<>();
     }
 
     static FormDescriptor getDescriptor(Class<?> type) {

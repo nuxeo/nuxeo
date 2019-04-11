@@ -40,15 +40,15 @@ public abstract class BaseDocumentsListsManager implements Serializable {
     private transient DocumentsListsPersistenceManager persistenceManager;
 
     // ListName => DocumentModel List
-    protected final Map<String, List<DocumentModel>> documentsLists = new HashMap<String, List<DocumentModel>>();
+    protected final Map<String, List<DocumentModel>> documentsLists = new HashMap<>();
 
-    protected final Map<String, List<DocumentModel>> documentsListsPerConversation = new HashMap<String, List<DocumentModel>>();
+    protected final Map<String, List<DocumentModel>> documentsListsPerConversation = new HashMap<>();
 
     // EventName => ListName
-    protected final Map<String, List<String>> documentsLists_events = new HashMap<String, List<String>>();
+    protected final Map<String, List<String>> documentsLists_events = new HashMap<>();
 
     // ListName => List Descriptor
-    protected final Map<String, DocumentsListDescriptor> documentsLists_descriptors = new HashMap<String, DocumentsListDescriptor>();
+    protected final Map<String, DocumentsListDescriptor> documentsLists_descriptors = new HashMap<>();
 
     protected DocumentsListsService getService() {
         return (DocumentsListsService) Framework.getRuntime().getComponent(DocumentsListsService.NAME);
@@ -141,7 +141,7 @@ public abstract class BaseDocumentsListsManager implements Serializable {
             if (documentsLists_events.containsKey(eventName)) {
                 documentsLists_events.get(eventName).add(listName);
             } else {
-                List<String> suscribersList = new ArrayList<String>();
+                List<String> suscribersList = new ArrayList<>();
                 suscribersList.add(listName);
                 documentsLists_events.put(eventName, suscribersList);
             }
@@ -149,7 +149,7 @@ public abstract class BaseDocumentsListsManager implements Serializable {
     }
 
     public List<String> getWorkingListNamesForCategory(String categoryName) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
 
         for (String listName : documentsLists_descriptors.keySet()) {
             if (documentsLists_descriptors.get(listName).getCategory().equals(categoryName)) {
@@ -284,7 +284,7 @@ public abstract class BaseDocumentsListsManager implements Serializable {
             return null;
         }
 
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for (DocumentModel doc : documentsLists.get(listName)) {
             String dt = doc.getType();
             if (!res.contains(dt)) {

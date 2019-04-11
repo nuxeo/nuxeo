@@ -29,7 +29,7 @@ import java.util.List;
  */
 public abstract class CompositeContribution extends ExtensibleContribution {
 
-    protected final List<CompositeContribution> contributionFragments = new ArrayList<CompositeContribution>();
+    protected final List<CompositeContribution> contributionFragments = new ArrayList<>();
 
     private boolean isContributionEnabled;
 

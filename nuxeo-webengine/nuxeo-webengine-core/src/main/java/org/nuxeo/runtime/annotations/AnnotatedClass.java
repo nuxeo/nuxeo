@@ -42,8 +42,8 @@ public class AnnotatedClass<T> {
 
     public AnnotatedClass(Class<T> clazz) {
         this.clazz = clazz;
-        methods = new HashMap<Method, AnnotatedMethod>();
-        annotations = new HashMap<Class<? extends Annotation>, Annotation>();
+        methods = new HashMap<>();
+        annotations = new HashMap<>();
     }
 
     public Class<?> getAnnotatedClass() {
@@ -109,7 +109,7 @@ public class AnnotatedClass<T> {
     }
 
     public AnnotatedMethod[] getDeclaredAnnotatedMethods() {
-        ArrayList<AnnotatedMethod> result = new ArrayList<AnnotatedMethod>();
+        ArrayList<AnnotatedMethod> result = new ArrayList<>();
         for (AnnotatedMethod am : methods.values()) {
             if (am.method.getDeclaringClass() == clazz) {
                 result.add(am);
@@ -120,7 +120,7 @@ public class AnnotatedClass<T> {
 
     // TODO: cache this?
     public AnnotatedMethod[] getAnnotatedMethods(Class<? extends Annotation> annotationClass) {
-        ArrayList<AnnotatedMethod> result = new ArrayList<AnnotatedMethod>();
+        ArrayList<AnnotatedMethod> result = new ArrayList<>();
         for (AnnotatedMethod am : methods.values()) {
             if (am.annotations.containsKey(annotationClass)) {
                 result.add(am);
@@ -130,7 +130,7 @@ public class AnnotatedClass<T> {
     }
 
     public AnnotatedMethod[] getDeclaredAnnotatedMethods(Class<? extends Annotation> annotationClass) {
-        ArrayList<AnnotatedMethod> result = new ArrayList<AnnotatedMethod>();
+        ArrayList<AnnotatedMethod> result = new ArrayList<>();
         for (AnnotatedMethod am : methods.values()) {
             if (am.method.getDeclaringClass() == clazz && am.annotations.containsKey(annotationClass)) {
                 result.add(am);

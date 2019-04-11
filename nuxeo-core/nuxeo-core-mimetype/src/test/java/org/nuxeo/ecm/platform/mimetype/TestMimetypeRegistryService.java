@@ -70,12 +70,12 @@ public class TestMimetypeRegistryService {
     private static MimetypeEntryImpl getMimetypeSample() {
         String normalizedMimetype = "application/msword";
 
-        List<String> mimetypes = new ArrayList<String>();
+        List<String> mimetypes = new ArrayList<>();
         mimetypes.add("application/msword");
         // fake
         mimetypes.add("app/whatever-word");
 
-        List<String> extensions = new ArrayList<String>();
+        List<String> extensions = new ArrayList<>();
         extensions.add("doc");
         extensions.add("xml");
 

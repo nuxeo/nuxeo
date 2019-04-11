@@ -26,7 +26,7 @@ import org.jboss.seam.mock.MockHttpServletResponse;
 
 public class MockHttpResponse extends MockHttpServletResponse {
 
-    protected final Map<String, String> headers = new HashMap<String, String>();
+    protected final Map<String, String> headers = new HashMap<>();
 
     @Override
     public void setHeader(String key, String value) {

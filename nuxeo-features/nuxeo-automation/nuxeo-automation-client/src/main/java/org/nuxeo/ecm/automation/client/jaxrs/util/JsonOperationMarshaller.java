@@ -74,7 +74,7 @@ public class JsonOperationMarshaller {
         if (tok == JsonToken.END_ARRAY) {
             return null;
         }
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         do {
             list.add(jp.getText());
             tok = jp.nextToken();

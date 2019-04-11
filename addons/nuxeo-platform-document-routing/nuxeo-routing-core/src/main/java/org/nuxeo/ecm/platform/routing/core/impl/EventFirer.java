@@ -39,7 +39,7 @@ public class EventFirer {
     static public void fireEvent(CoreSession coreSession, DocumentRouteElement element,
             Map<String, Serializable> eventProperties, String eventName) {
         if (eventProperties == null) {
-            eventProperties = new HashMap<String, Serializable>();
+            eventProperties = new HashMap<>();
         }
         eventProperties.put(DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY, element);
         eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
@@ -57,7 +57,7 @@ public class EventFirer {
     static public void fireEvent(CoreSession coreSession, List<DocumentModel> docs,
             Map<String, Serializable> eventProperties, String eventName) {
         if (eventProperties == null) {
-            eventProperties = new HashMap<String, Serializable>();
+            eventProperties = new HashMap<>();
         }
         eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
         for (DocumentModel doc : docs) {

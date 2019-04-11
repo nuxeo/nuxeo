@@ -93,7 +93,7 @@ public class SuggestionServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        Set<String> userSet = new HashSet<String>(Arrays.asList("username", "password", "firstName", "lastName"));
+        Set<String> userSet = new HashSet<>(Arrays.asList("username", "password", "firstName", "lastName"));
         userDesc = new MemoryDirectoryDescriptor();
         userDesc.name = "userDirectory";
         userDesc.schemaName = "user";
@@ -103,7 +103,7 @@ public class SuggestionServiceTest {
         directoryService.registerDirectoryDescriptor(userDesc);
         userdir = directoryService.getDirectory("userDirectory");
 
-        Set<String> groupSet = new HashSet<String>(Arrays.asList("groupname", "grouplabel", "members"));
+        Set<String> groupSet = new HashSet<>(Arrays.asList("groupname", "grouplabel", "members"));
         groupDesc = new MemoryDirectoryDescriptor();
         groupDesc.name = "groupDirectory";
         groupDesc.schemaName = "group";
@@ -132,25 +132,25 @@ public class SuggestionServiceTest {
 
     protected void makeSomeUsersAndGroups() {
         try (Session userSession = userdir.getSession()) {
-            Map<String, Object> john = new HashMap<String, Object>();
+            Map<String, Object> john = new HashMap<>();
             john.put("username", "john");
             john.put("firstName", "John");
             john.put("lastName", "Lennon");
             userSession.createEntry(john);
 
-            Map<String, Object> bob = new HashMap<String, Object>();
+            Map<String, Object> bob = new HashMap<>();
             bob.put("username", "bob");
             bob.put("firstName", "Bob");
             bob.put("lastName", "Marley");
             userSession.createEntry(bob);
 
-            Map<String, Object> noname = new HashMap<String, Object>();
+            Map<String, Object> noname = new HashMap<>();
             noname.put("username", "noname");
             userSession.createEntry(noname);
         }
 
         try (Session groupSession = groupDir.getSession()) {
-            Map<String, Object> musicians = new HashMap<String, Object>();
+            Map<String, Object> musicians = new HashMap<>();
             musicians.put("groupname", "musicians");
             musicians.put("grouplabel", "Musicians");
             musicians.put("members", Arrays.asList("john", "bob"));
@@ -264,7 +264,7 @@ public class SuggestionServiceTest {
         Framework.doPrivileged(() -> {
             try (Session userSession = userdir.getSession()) {
                 for (int i = 0; i < 10; i++) {
-                    Map<String, Object> user = new HashMap<String, Object>();
+                    Map<String, Object> user = new HashMap<>();
                     user.put("username", String.format("user%d", i));
                     user.put("firstName", "Nemo");
                     user.put("lastName", "Homonym");
@@ -355,7 +355,7 @@ public class SuggestionServiceTest {
     }
 
     protected Map<String, String> getTestMessages() {
-        Map<String, String> messages = new HashMap<String, String>();
+        Map<String, String> messages = new HashMap<>();
         messages.put("label.searchDocumentsByKeyword", "Search documents with keywords: '{0}'");
         messages.put("label.search.beforeDate_fsd_dc_created", "Search documents created before {0}");
         messages.put("label.search.afterDate_fsd_dc_created", "Search documents created after {0}");

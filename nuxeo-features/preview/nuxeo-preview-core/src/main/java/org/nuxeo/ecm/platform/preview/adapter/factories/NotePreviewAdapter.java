@@ -33,7 +33,7 @@ import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 public class NotePreviewAdapter implements PreviewAdapterFactory {
 
     public HtmlPreviewAdapter getAdapter(DocumentModel doc) {
-        List<String> xpaths = new ArrayList<String>();
+        List<String> xpaths = new ArrayList<>();
         xpaths.add("note:note");
         PreprocessedHtmlPreviewAdapter adapter = new NoteHtmlPreviewAdapter(xpaths);
         adapter.setAdaptedDocument(doc);

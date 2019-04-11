@@ -33,7 +33,7 @@ public class AutomaticRenderViewContributionHandler extends ContributionFragment
     public final Map<String, AutomaticRenderView> registry;
 
     public AutomaticRenderViewContributionHandler() {
-        registry = new HashMap<String, AutomaticRenderView>();
+        registry = new HashMap<>();
     }
 
     @Override

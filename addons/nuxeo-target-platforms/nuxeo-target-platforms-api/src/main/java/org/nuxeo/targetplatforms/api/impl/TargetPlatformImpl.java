@@ -57,7 +57,7 @@ public class TargetPlatformImpl extends TargetImpl implements TargetPlatform {
         if (availablePackages == null) {
             return Collections.emptyList();
         }
-        return new ArrayList<String>(availablePackages.keySet());
+        return new ArrayList<>(availablePackages.keySet());
     }
 
     @Override
@@ -65,7 +65,7 @@ public class TargetPlatformImpl extends TargetImpl implements TargetPlatform {
         if (availablePackages == null) {
             return Collections.emptyList();
         }
-        return new ArrayList<TargetPackage>(availablePackages.values());
+        return new ArrayList<>(availablePackages.values());
     }
 
     public void addAvailablePackage(TargetPackage pack) {
@@ -73,14 +73,14 @@ public class TargetPlatformImpl extends TargetImpl implements TargetPlatform {
             return;
         }
         if (availablePackages == null) {
-            availablePackages = new LinkedHashMap<String, TargetPackage>();
+            availablePackages = new LinkedHashMap<>();
         }
         availablePackages.put(pack.getId(), pack);
     }
 
     public void setAvailablePackages(Map<String, TargetPackage> tps) {
         if (availablePackages == null) {
-            availablePackages = new LinkedHashMap<String, TargetPackage>();
+            availablePackages = new LinkedHashMap<>();
         } else {
             availablePackages.clear();
         }
@@ -108,7 +108,7 @@ public class TargetPlatformImpl extends TargetImpl implements TargetPlatform {
             this.testVersions = testVersions;
         } else {
             // dereference
-            this.testVersions = new ArrayList<String>(testVersions);
+            this.testVersions = new ArrayList<>(testVersions);
         }
     }
 

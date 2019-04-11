@@ -94,13 +94,13 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
     protected final Map<String, LayoutConverterRegistry> layoutConvertersByCat;
 
     public LayoutStoreImpl() {
-        widgetTypeDefsByCat = new HashMap<String, WidgetTypeDefinitionRegistry>();
-        layoutTypeDefsByCat = new HashMap<String, LayoutTypeDefinitionRegistry>();
-        widgetTypesByCat = new HashMap<String, WidgetTypeRegistry>();
-        layoutsByCat = new HashMap<String, LayoutDefinitionRegistry>();
-        widgetsByCat = new HashMap<String, WidgetDefinitionRegistry>();
-        widgetConvertersByCat = new HashMap<String, WidgetConverterRegistry>();
-        layoutConvertersByCat = new HashMap<String, LayoutConverterRegistry>();
+        widgetTypeDefsByCat = new HashMap<>();
+        layoutTypeDefsByCat = new HashMap<>();
+        widgetTypesByCat = new HashMap<>();
+        layoutsByCat = new HashMap<>();
+        widgetsByCat = new HashMap<>();
+        widgetConvertersByCat = new HashMap<>();
+        layoutConvertersByCat = new HashMap<>();
     }
 
     // Runtime component API
@@ -243,12 +243,12 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     @Override
     public List<String> getCategories() {
-        Set<String> cats = new HashSet<String>();
+        Set<String> cats = new HashSet<>();
         cats.addAll(widgetTypeDefsByCat.keySet());
         cats.addAll(widgetTypesByCat.keySet());
         cats.addAll(layoutsByCat.keySet());
         cats.addAll(widgetsByCat.keySet());
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         res.addAll(cats);
         Collections.sort(res);
         return res;
@@ -429,7 +429,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     @Override
     public List<WidgetTypeDefinition> getWidgetTypeDefinitions(String category) {
-        List<WidgetTypeDefinition> res = new ArrayList<WidgetTypeDefinition>();
+        List<WidgetTypeDefinition> res = new ArrayList<>();
         WidgetTypeDefinitionRegistry reg = widgetTypeDefsByCat.get(category);
         if (reg != null) {
             Collection<WidgetTypeDefinition> defs = reg.getDefinitions();
@@ -451,7 +451,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     @Override
     public List<LayoutTypeDefinition> getLayoutTypeDefinitions(String category) {
-        List<LayoutTypeDefinition> res = new ArrayList<LayoutTypeDefinition>();
+        List<LayoutTypeDefinition> res = new ArrayList<>();
         LayoutTypeDefinitionRegistry reg = layoutTypeDefsByCat.get(category);
         if (reg != null) {
             Collection<LayoutTypeDefinition> defs = reg.getDefinitions();
@@ -488,8 +488,8 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     @Override
     public List<LayoutDefinitionConverter> getLayoutConverters(String category) {
-        List<LayoutDefinitionConverter> res = new ArrayList<LayoutDefinitionConverter>();
-        List<String> orderedConverterNames = new ArrayList<String>();
+        List<LayoutDefinitionConverter> res = new ArrayList<>();
+        List<String> orderedConverterNames = new ArrayList<>();
         LayoutConverterRegistry reg = layoutConvertersByCat.get(category);
         if (reg != null) {
             List<LayoutConverterDescriptor> descs = reg.getConverters();
@@ -517,8 +517,8 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     @Override
     public List<WidgetDefinitionConverter> getWidgetConverters(String category) {
-        List<WidgetDefinitionConverter> res = new ArrayList<WidgetDefinitionConverter>();
-        List<String> orderedConverterNames = new ArrayList<String>();
+        List<WidgetDefinitionConverter> res = new ArrayList<>();
+        List<String> orderedConverterNames = new ArrayList<>();
         WidgetConverterRegistry reg = widgetConvertersByCat.get(category);
         if (reg != null) {
             List<WidgetConverterDescriptor> descs = reg.getConverters();

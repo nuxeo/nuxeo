@@ -68,7 +68,7 @@ public class BlobTemplate extends PropertyWrapper implements TemplateHashModelEx
     @Override
     public TemplateCollectionModel values() throws TemplateModelException {
         try {
-            List<Object> list = new ArrayList<Object>(keys.length);
+            List<Object> list = new ArrayList<>(keys.length);
             if (blob != null) {
                 list.add(blob.getFilename());
                 list.add(blob.getString());

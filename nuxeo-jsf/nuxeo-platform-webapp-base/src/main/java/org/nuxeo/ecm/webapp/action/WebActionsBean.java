@@ -109,8 +109,8 @@ public class WebActionsBean implements WebActions, Serializable {
 
     @Override
     public List<Action> getActions(ActionContext context, String category, boolean removeFiltered, boolean postFilter) {
-        List<Action> list = new ArrayList<Action>();
-        List<String> categories = new ArrayList<String>();
+        List<Action> list = new ArrayList<>();
+        List<String> categories = new ArrayList<>();
         if (category != null) {
             String[] split = category.split(",|\\s");
             if (split != null) {

@@ -59,10 +59,10 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     protected UserConfig config = UserConfig.DEFAULT;
 
-    public final List<String> roles = new LinkedList<String>();
+    public final List<String> roles = new LinkedList<>();
 
     // group not stored in the backend and added at login time
-    public List<String> virtualGroups = new LinkedList<String>();
+    public List<String> virtualGroups = new LinkedList<>();
 
     // transitive closure of the "member of group" relation
     public List<String> allGroups;
@@ -194,7 +194,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     @Override
     public void setGroups(List<String> groups) {
         if (virtualGroups != null && !virtualGroups.isEmpty()) {
-            List<String> groupsToWrite = new ArrayList<String>();
+            List<String> groupsToWrite = new ArrayList<>();
             for (String group : groups) {
                 if (!virtualGroups.contains(group)) {
                     groupsToWrite.add(group);
@@ -218,7 +218,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     @SuppressWarnings("unchecked")
     @Override
     public List<String> getGroups() {
-        List<String> groups = new LinkedList<String>();
+        List<String> groups = new LinkedList<>();
         List<String> storedGroups;
         try {
             storedGroups = (List<String>) dataModel.getData(config.groupsKey);
@@ -235,7 +235,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     @Deprecated
     @Override
     public List<String> getRoles() {
-        return new ArrayList<String>(roles);
+        return new ArrayList<>(roles);
     }
 
     @Override
@@ -308,14 +308,14 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     @Override
     public List<String> getAllGroups() {
-        return new ArrayList<String>(allGroups);
+        return new ArrayList<>(allGroups);
     }
 
     public void updateAllGroups() {
         UserManager userManager = Framework.getService(UserManager.class);
-        Set<String> checkedGroups = new HashSet<String>();
-        List<String> groupsToProcess = new ArrayList<String>();
-        List<String> resultingGroups = new ArrayList<String>();
+        Set<String> checkedGroups = new HashSet<>();
+        List<String> groupsToProcess = new ArrayList<>();
+        List<String> resultingGroups = new ArrayList<>();
         groupsToProcess.addAll(getGroups());
 
         while (!groupsToProcess.isEmpty()) {
@@ -359,7 +359,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
             }
         }
 
-        allGroups = new ArrayList<String>(resultingGroups);
+        allGroups = new ArrayList<>(resultingGroups);
 
         // set isAdministrator boolean according to groups declared on user
         // manager
@@ -375,11 +375,11 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     public List<String> getVirtualGroups() {
-        return new ArrayList<String>(virtualGroups);
+        return new ArrayList<>(virtualGroups);
     }
 
     public void setVirtualGroups(List<String> virtualGroups, boolean updateAllGroups) {
-        this.virtualGroups = new ArrayList<String>(virtualGroups);
+        this.virtualGroups = new ArrayList<>(virtualGroups);
         if (updateAllGroups) {
             updateAllGroups();
         }

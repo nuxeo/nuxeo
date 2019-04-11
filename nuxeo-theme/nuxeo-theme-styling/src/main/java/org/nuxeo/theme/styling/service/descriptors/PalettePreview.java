@@ -45,7 +45,7 @@ public class PalettePreview {
     public PalettePreview clone() {
         PalettePreview clone = new PalettePreview();
         if (colors != null) {
-            List<String> newColors = new ArrayList<String>();
+            List<String> newColors = new ArrayList<>();
             newColors.addAll(colors);
             clone.setColors(newColors);
         }

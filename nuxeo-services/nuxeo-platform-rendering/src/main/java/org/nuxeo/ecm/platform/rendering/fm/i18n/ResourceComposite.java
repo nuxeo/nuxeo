@@ -35,7 +35,7 @@ import java.util.ResourceBundle;
  */
 public class ResourceComposite extends ResourceBundle {
 
-    final Map<Locale, ResourceBundle> map = new HashMap<Locale, ResourceBundle>();
+    final Map<Locale, ResourceBundle> map = new HashMap<>();
 
     final ClassLoader cl;
 

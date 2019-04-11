@@ -54,9 +54,9 @@ public class ModuleManager {
 
     public ModuleManager(WebEngine engine) {
         this.engine = engine;
-        modules = new ConcurrentHashMap<String, ModuleConfiguration>();
-        paths = new ConcurrentHashMap<String, ModuleConfiguration>();
-        roots = new ConcurrentHashMap<String, ModuleConfiguration>();
+        modules = new ConcurrentHashMap<>();
+        paths = new ConcurrentHashMap<>();
+        roots = new ConcurrentHashMap<>();
     }
 
     /**

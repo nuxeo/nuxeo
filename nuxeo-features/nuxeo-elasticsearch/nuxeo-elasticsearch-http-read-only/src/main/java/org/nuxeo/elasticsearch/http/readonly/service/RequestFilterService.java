@@ -47,7 +47,7 @@ public class RequestFilterService extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
-        requestFilters = new ConcurrentHashMap<String, Class>();
+        requestFilters = new ConcurrentHashMap<>();
     }
 
     @Override

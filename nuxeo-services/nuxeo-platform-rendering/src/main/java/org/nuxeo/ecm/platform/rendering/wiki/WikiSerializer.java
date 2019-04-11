@@ -43,9 +43,9 @@ public class WikiSerializer {
 
     protected final CommonWikiParser parser;
 
-    protected final Map<String, WikiMacro> macros = new HashMap<String, WikiMacro>();
+    protected final Map<String, WikiMacro> macros = new HashMap<>();
 
-    protected final List<WikiFilter> filters = new ArrayList<WikiFilter>();
+    protected final List<WikiFilter> filters = new ArrayList<>();
 
     public WikiSerializer() {
         parser = new CommonWikiParser();

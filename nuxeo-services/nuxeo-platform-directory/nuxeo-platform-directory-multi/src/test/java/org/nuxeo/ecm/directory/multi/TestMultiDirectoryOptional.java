@@ -91,19 +91,19 @@ public class TestMultiDirectoryOptional {
         desc1 = new MemoryDirectoryDescriptor();
         desc1.name = "dir1";
         desc1.schemaName = "schema1";
-        desc1.schemaSet = new HashSet<String>(Arrays.asList("uid", "password", "foo"));
+        desc1.schemaSet = new HashSet<>(Arrays.asList("uid", "password", "foo"));
         desc1.idField = "uid";
         desc1.passwordField = "password";
         directoryService.registerDirectoryDescriptor(desc1);
         memdir1 = (MemoryDirectory) directoryService.getDirectory("dir1");
 
         try (Session dir1 = memdir1.getSession()) {
-            e = new HashMap<String, Object>();
+            e = new HashMap<>();
             e.put("uid", "2");
             e.put("password", "pw2");
             e.put("foo", "foo2");
             dir1.createEntry(e);
-            e = new HashMap<String, Object>();
+            e = new HashMap<>();
             e.put("uid", "baz");
             e.put("password", "pwbaz");
             e.put("foo", "baz");
@@ -114,18 +114,18 @@ public class TestMultiDirectoryOptional {
         desc2 = new MemoryDirectoryDescriptor();
         desc2.name = "dir2";
         desc2.schemaName = "schema2";
-        desc2.schemaSet = new HashSet<String>(Arrays.asList("id", "bar"));
+        desc2.schemaSet = new HashSet<>(Arrays.asList("id", "bar"));
         desc2.idField = "id";
         desc2.passwordField = null;
         directoryService.registerDirectoryDescriptor(desc2);
         memdir2 = (MemoryDirectory) directoryService.getDirectory("dir2");
 
         try (Session dir2 = memdir2.getSession()) {
-            e = new HashMap<String, Object>();
+            e = new HashMap<>();
             e.put("id", "1");
             e.put("bar", "bar1");
             dir2.createEntry(e);
-            e = new HashMap<String, Object>();
+            e = new HashMap<>();
             e.put("id", "2");
             e.put("bar", "bar2");
             dir2.createEntry(e);
@@ -135,20 +135,20 @@ public class TestMultiDirectoryOptional {
         desc3 = new MemoryDirectoryDescriptor();
         desc3.name = "dir3";
         desc3.schemaName = "schema3";
-        desc3.schemaSet = new HashSet<String>(Arrays.asList("uid", "thepass", "thefoo", "thebar"));
+        desc3.schemaSet = new HashSet<>(Arrays.asList("uid", "thepass", "thefoo", "thebar"));
         desc3.idField = "uid";
         desc3.passwordField = "thepass";
         directoryService.registerDirectoryDescriptor(desc3);
         memdir3 = (MemoryDirectory) directoryService.getDirectory("dir3");
 
         try (Session dir3 = memdir3.getSession()) {
-            e = new HashMap<String, Object>();
+            e = new HashMap<>();
             e.put("uid", "3");
             e.put("thepass", "pw3");
             e.put("thefoo", "foo3");
             e.put("thebar", "bar3");
             dir3.createEntry(e);
-            e = new HashMap<String, Object>();
+            e = new HashMap<>();
             e.put("uid", "4");
             e.put("thepass", "pw4");
             e.put("thefoo", "foo4");
@@ -228,7 +228,7 @@ public class TestMultiDirectoryOptional {
                 Session dir2 = memdir2.getSession();
                 Session dir3 = memdir3.getSession()) {
             // multi-subdir create
-            Map<String, Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<>();
             map.put("uid", "5");
             map.put("thefoo", "foo5");
             map.put("thebar", "bar5");
@@ -251,7 +251,7 @@ public class TestMultiDirectoryOptional {
             assertNull(dir3.getEntry("5"));
 
             // create another with colliding id
-            map = new HashMap<String, Object>();
+            map = new HashMap<>();
             map.put("uid", "5");
             try {
                 entry = dir.createEntry(map);
@@ -379,7 +379,7 @@ public class TestMultiDirectoryOptional {
 
     @Test
     public void testQuery() throws Exception {
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+        Map<String, Serializable> filter = new HashMap<>();
         DocumentModelList entries;
         DocumentModel e;
 
@@ -446,7 +446,7 @@ public class TestMultiDirectoryOptional {
 
     @Test
     public void testGetProjection() throws Exception {
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+        Map<String, Serializable> filter = new HashMap<>();
         List<String> list;
 
         // empty filter means everything (like getEntries)

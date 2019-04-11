@@ -63,11 +63,11 @@ public class LifeCycleFilter implements Filter {
      */
     public LifeCycleFilter(String lifeCycle, boolean isRequired) {
         if (isRequired) {
-            accepted = new ArrayList<String>();
+            accepted = new ArrayList<>();
             excluded = null;
             accepted.add(lifeCycle);
         } else {
-            excluded = new ArrayList<String>();
+            excluded = new ArrayList<>();
             accepted = null;
             excluded.add(lifeCycle);
         }

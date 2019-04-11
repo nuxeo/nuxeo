@@ -37,11 +37,11 @@ public class RandomTextGenerator {
 
     protected DictionaryHolder dictionaryHolder;
 
-    protected Map<String, String> paragraphCache = new HashMap<String, String>();
+    protected Map<String, String> paragraphCache = new HashMap<>();
 
-    protected Map<String, String> pageCache = new HashMap<String, String>();
+    protected Map<String, String> pageCache = new HashMap<>();
 
-    protected Map<String, String> blockCache = new HashMap<String, String>();
+    protected Map<String, String> blockCache = new HashMap<>();
 
     protected static final int PARAGRAPH_CACHE_SIZE = 100;
 

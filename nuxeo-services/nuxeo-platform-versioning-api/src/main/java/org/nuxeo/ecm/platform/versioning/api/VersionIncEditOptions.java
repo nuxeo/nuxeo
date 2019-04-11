@@ -37,7 +37,7 @@ public class VersionIncEditOptions implements Serializable {
 
     private VersioningActions defaultVersioningAction;
 
-    private final List<VersioningActions> options = new ArrayList<VersioningActions>();
+    private final List<VersioningActions> options = new ArrayList<>();
 
     /**
      * Returns action to be presented by default to user.
@@ -78,7 +78,7 @@ public class VersionIncEditOptions implements Serializable {
      * @since 5.7.3
      */
     public Map<String, String> getOptionsForDisplay() {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         if (options != null) {
             for (VersioningActions option : options) {
                 String label = "label.versioning.option." + option.toString();

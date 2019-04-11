@@ -65,7 +65,7 @@ public class TestServiceProviderService {
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(OAuthServiceProviderRegistryImpl.DIRECTORY_NAME)) {
-            Map<String, Object> init = new HashMap<String, Object>();
+            Map<String, Object> init = new HashMap<>();
 
             init.put("gadgetUrl", "http://127.0.0.1:8080/nuxeo/gadget1");
             init.put("serviceName", "");

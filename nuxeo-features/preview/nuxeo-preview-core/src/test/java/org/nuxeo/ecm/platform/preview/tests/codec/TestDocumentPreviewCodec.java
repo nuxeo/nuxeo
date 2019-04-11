@@ -68,7 +68,7 @@ public class TestDocumentPreviewCodec {
         final String expectedUrl = "restAPI/preview/" + serverName + "/" + uuid + "/" + propertyPath + "/";
 
         DocumentLocation docLoc = new DocumentLocationImpl(serverName, new IdRef(uuid));
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("PROPERTY_PATH_KEY", propertyPath);
         DocumentView docView = new DocumentViewImpl(docLoc, null, params);
 

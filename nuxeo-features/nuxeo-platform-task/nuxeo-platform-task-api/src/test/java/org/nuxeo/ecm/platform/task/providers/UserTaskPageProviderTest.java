@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.task.providers.UserTaskPageProvider;
 
 public class UserTaskPageProviderTest {
 
-    protected Map<String, Serializable> properties = new HashMap<String, Serializable>();
+    protected Map<String, Serializable> properties = new HashMap<>();
 
     protected UserTaskPageProvider userTaskPageProviver = new UserTaskPageProvider();
 

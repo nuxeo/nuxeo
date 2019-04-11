@@ -36,8 +36,8 @@ public class UserEntryImpl implements UserEntry {
 
     public UserEntryImpl(String username) {
         this.username = username;
-        granted = new HashSet<String>();
-        denied = new HashSet<String>();
+        granted = new HashSet<>();
+        denied = new HashSet<>();
     }
 
     @Override

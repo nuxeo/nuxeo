@@ -49,7 +49,7 @@ public class TemplateBasedRenditionProvider implements RenditionProvider {
     public List<Blob> render(DocumentModel doc, RenditionDefinition definition) {
         TemplateBasedDocument tbd = doc.getAdapter(TemplateBasedDocument.class);
         String template = tbd.getTemplateNameForRendition(definition.getName());
-        List<Blob> blobs = new ArrayList<Blob>();
+        List<Blob> blobs = new ArrayList<>();
         if (template != null) {
             Blob rendered = tbd.renderWithTemplate(template);
             blobs.add(rendered);

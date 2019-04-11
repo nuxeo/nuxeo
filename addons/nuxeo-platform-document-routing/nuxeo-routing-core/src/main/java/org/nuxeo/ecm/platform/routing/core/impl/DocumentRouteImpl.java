@@ -52,7 +52,7 @@ public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl implement
     protected void fireWorkflowCompletionEvent(CoreSession session) {
         EventFirer.fireEvent(session, this, null, DocumentRoutingConstants.Events.afterRouteFinish.name());
 
-        Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+        Map<String, Serializable> eventProperties = new HashMap<>();
 
         // First compute duration
         long duration = RoutingAuditHelper.computeDurationSinceWfStarted(getDocument().getId());

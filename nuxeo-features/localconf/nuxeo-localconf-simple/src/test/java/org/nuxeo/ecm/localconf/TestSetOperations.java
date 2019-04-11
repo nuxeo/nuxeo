@@ -58,7 +58,7 @@ public class TestSetOperations extends AbstractSimpleConfigurationTest {
     @Test
     public void shouldSetContextVariableFromSimpleConfiguration() throws Exception {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("key1", "value1");
         parameters.put("key2", "value2");
         initializeSimpleConfiguration(workspace, parameters);
@@ -80,7 +80,7 @@ public class TestSetOperations extends AbstractSimpleConfigurationTest {
     @Test
     public void shouldNotUseDefaultValueIfParameterExists() throws Exception {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("key1", "value1");
         initializeSimpleConfiguration(workspace, parameters);
 
@@ -102,7 +102,7 @@ public class TestSetOperations extends AbstractSimpleConfigurationTest {
     @Test
     public void shouldUseDefaultValueIfParameterDoesNotExist() throws Exception {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("key1", "value1");
         initializeSimpleConfiguration(workspace, parameters);
 

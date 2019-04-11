@@ -105,7 +105,7 @@ public class Select2ActionsBean implements Serializable {
     protected static final String SELECT2_RESOURCES_MARKER = "SELECT2_RESOURCES_MARKER";
 
     private static List<String> formatList(JSONArray array, String key) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         if (array != null) {
             for (int i = 0; i < array.size(); i++) {
                 result.add(array.getJSONObject(i).getString(key));
@@ -131,7 +131,7 @@ public class Select2ActionsBean implements Serializable {
 
     private static Map<String, String> getDefaultFormattersMap(final String suggestionFormatterName,
             String selectionFormatterName) {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         result.put(Select2Common.SUGGESTION_FORMATTER, suggestionFormatterName);
         result.put(Select2Common.SELECTION_FORMATTER, selectionFormatterName);
         return result;
@@ -142,7 +142,7 @@ public class Select2ActionsBean implements Serializable {
      */
     protected static Map<String, String> getContextParameter(final DocumentModel doc) {
         DocumentIdCodec documentIdCodec = new DocumentIdCodec();
-        Map<String, String> contextParameters = new HashMap<String, String>();
+        Map<String, String> contextParameters = new HashMap<>();
         contextParameters.put("documentURL", documentIdCodec.getUrlFromDocumentView(new DocumentViewImpl(doc)));
         return contextParameters;
     }
@@ -788,7 +788,7 @@ public class Select2ActionsBean implements Serializable {
             } else {
                 AutomationService as = Framework.getService(AutomationService.class);
                 try (OperationContext ctx = new OperationContext(session)) {
-                    Map<String, Object> params = new HashMap<String, Object>();
+                    Map<String, Object> params = new HashMap<>();
 
                     params.put("value", storedReference);
                     params.put("xpath", idProperty);

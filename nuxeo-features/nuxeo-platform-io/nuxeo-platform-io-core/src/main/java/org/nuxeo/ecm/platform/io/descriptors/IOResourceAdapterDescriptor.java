@@ -45,14 +45,14 @@ public class IOResourceAdapterDescriptor {
     String className;
 
     // single properties map
-    Map<String, String> properties = new HashMap<String, String>();
+    Map<String, String> properties = new HashMap<>();
 
     @XNodeMap(value = "properties", key = "@name", type = HashMap.class, componentType = PropertyListDescriptor.class)
-    Map<String, PropertyListDescriptor> listProperties = new HashMap<String, PropertyListDescriptor>();
+    Map<String, PropertyListDescriptor> listProperties = new HashMap<>();
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public void setProperties(Map<String, String> properties) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         for (Map.Entry<String, String> entry : properties.entrySet()) {
             String value = entry.getValue();
             map.put(entry.getKey(), Framework.getRuntime().expandVars(value));
@@ -69,7 +69,7 @@ public class IOResourceAdapterDescriptor {
     }
 
     public Map<String, Serializable> getProperties() {
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         map.putAll(properties);
         for (Map.Entry<String, PropertyListDescriptor> prop : listProperties.entrySet()) {
             map.put(prop.getKey(), prop.getValue().getValues());

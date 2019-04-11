@@ -129,8 +129,8 @@ public class TestUserManagerWithContext extends UserManagerTestCase {
     @Test
     public void testShouldReturnOnlyGroupsFromTenantA() throws Exception {
 
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        HashSet<String> fulltext = new HashSet<String>();
+        Map<String, Serializable> filter = new HashMap<>();
+        HashSet<String> fulltext = new HashSet<>();
         DocumentModel fakeDoc = getContextDoc();
 
         DocumentModelList groups = mtum.searchGroups(filter, fulltext, null);

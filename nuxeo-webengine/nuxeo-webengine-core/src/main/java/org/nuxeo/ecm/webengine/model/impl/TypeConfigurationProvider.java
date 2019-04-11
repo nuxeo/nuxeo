@@ -37,9 +37,9 @@ public class TypeConfigurationProvider {
     protected final List<TypeRegistry> registries;
 
     public TypeConfigurationProvider() {
-        types = new ArrayList<TypeDescriptor>();
-        services = new ArrayList<AdapterDescriptor>();
-        registries = new Vector<TypeRegistry>();
+        types = new ArrayList<>();
+        services = new ArrayList<>();
+        registries = new Vector<>();
     }
 
     public void flushCache() {

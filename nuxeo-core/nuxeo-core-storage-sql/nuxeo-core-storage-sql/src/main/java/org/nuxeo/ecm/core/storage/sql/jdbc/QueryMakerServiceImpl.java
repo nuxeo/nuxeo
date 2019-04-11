@@ -39,7 +39,7 @@ public class QueryMakerServiceImpl extends DefaultComponent implements QueryMake
 
     public static final String XP = "queryMaker";
 
-    protected final List<QueryMakerDescriptor> descriptors = new ArrayList<QueryMakerDescriptor>(2);
+    protected final List<QueryMakerDescriptor> descriptors = new ArrayList<>(2);
 
     protected List<Class<? extends QueryMaker>> queryMakers;
 
@@ -84,10 +84,10 @@ public class QueryMakerServiceImpl extends DefaultComponent implements QueryMake
     public synchronized List<Class<? extends QueryMaker>> getQueryMakers() {
         if (queryMakers == null) {
             // recompute queryMakers
-            queryMakers = new ArrayList<Class<? extends QueryMaker>>(2);
-            List<QueryMakerDescriptor> qmdl = new ArrayList<QueryMakerDescriptor>(descriptors);
+            queryMakers = new ArrayList<>(2);
+            List<QueryMakerDescriptor> qmdl = new ArrayList<>(descriptors);
             Collections.reverse(qmdl);
-            Set<String> done = new HashSet<String>();
+            Set<String> done = new HashSet<>();
             for (QueryMakerDescriptor descriptor : qmdl) {
                 if (!done.add(descriptor.name)) {
                     continue;

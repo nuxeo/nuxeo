@@ -37,7 +37,7 @@ public class GwtTestSimpleParsingWithEntities extends AbstractDocumentGWTTest {
 
     private final AnnotatedDocument annotatedDocument = new AnnotatedDocument(null);
 
-    private final List<Annotation> annotations = new ArrayList<Annotation>();
+    private final List<Annotation> annotations = new ArrayList<>();
 
     public void testParse() {
         createDocument();

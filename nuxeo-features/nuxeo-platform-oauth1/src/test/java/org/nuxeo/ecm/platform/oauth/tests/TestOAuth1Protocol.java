@@ -276,7 +276,7 @@ public class TestOAuth1Protocol {
             assertEquals(SC_MOVED_TEMPORARILY, response.getStatus());
             URI uri = response.getLocation();
 
-            Map<String, String> parameters = new LinkedHashMap<String, String>();
+            Map<String, String> parameters = new LinkedHashMap<>();
             parameters.put("oauth_token", rToken.getToken());
             parameters.put("oauth_verifier", rToken.getVerifier());
             String expected = URIUtils.addParametersToURIQuery(CALLBACK_URL, parameters);

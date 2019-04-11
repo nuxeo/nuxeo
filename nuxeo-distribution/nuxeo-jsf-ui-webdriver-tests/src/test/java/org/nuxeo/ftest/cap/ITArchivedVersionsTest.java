@@ -121,7 +121,7 @@ public class ITArchivedVersionsTest extends AbstractTest {
 
         // Check version labels
         List<String> versionLabels = archivedVersionsPage.getVersionLabels();
-        List<String> expectedVersionLabels = new ArrayList<String>();
+        List<String> expectedVersionLabels = new ArrayList<>();
         expectedVersionLabels.add("1.0");
         expectedVersionLabels.add("2.0");
         assertEquals(expectedVersionLabels, versionLabels);

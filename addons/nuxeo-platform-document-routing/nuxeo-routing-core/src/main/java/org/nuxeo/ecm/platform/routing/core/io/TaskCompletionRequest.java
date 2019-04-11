@@ -58,7 +58,7 @@ public class TaskCompletionRequest {
     }
 
     public Map<String, Object> getDataMap() {
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
         if (getVariables() != null) {
             data.put(Constants.VAR_WORKFLOW, getVariables());
             data.put(Constants.VAR_WORKFLOW_NODE, getVariables());

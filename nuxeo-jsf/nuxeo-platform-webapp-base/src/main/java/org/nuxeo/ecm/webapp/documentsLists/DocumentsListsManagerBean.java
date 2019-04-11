@@ -199,7 +199,7 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager impleme
 
     @Override
     public List<String> getWorkingListNamesForCategory(String categoryName) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         result.addAll(super.getWorkingListNamesForCategory(categoryName));
         result.addAll(conversationDocumentsListsManager.getWorkingListNamesForCategory(categoryName));

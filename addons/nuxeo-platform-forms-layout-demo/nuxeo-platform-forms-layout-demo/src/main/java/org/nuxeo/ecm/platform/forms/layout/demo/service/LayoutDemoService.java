@@ -41,11 +41,11 @@ public class LayoutDemoService extends DefaultComponent implements LayoutDemoMan
 
     public static final String WIDGET_TYPES_EP_NAME = "widgettypes";
 
-    private final Map<String, DemoWidgetType> widgetTypeRegistry = new HashMap<String, DemoWidgetType>();
+    private final Map<String, DemoWidgetType> widgetTypeRegistry = new HashMap<>();
 
-    private final Map<String, List<String>> widgetTypesByCategory = new HashMap<String, List<String>>();
+    private final Map<String, List<String>> widgetTypesByCategory = new HashMap<>();
 
-    private final Map<String, String> widgetTypeByViewId = new HashMap<String, String>();
+    private final Map<String, String> widgetTypeByViewId = new HashMap<>();
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
@@ -85,7 +85,7 @@ public class LayoutDemoService extends DefaultComponent implements LayoutDemoMan
             if (byCat != null && !byCat.contains(name)) {
                 byCat.add(name);
             } else {
-                byCat = new ArrayList<String>();
+                byCat = new ArrayList<>();
                 byCat.add(name);
             }
             widgetTypesByCategory.put(category, byCat);
@@ -132,7 +132,7 @@ public class LayoutDemoService extends DefaultComponent implements LayoutDemoMan
 
     public List<DemoWidgetType> getWidgetTypes(String category) {
         List<String> wTypes = widgetTypesByCategory.get(category);
-        List<DemoWidgetType> res = new ArrayList<DemoWidgetType>();
+        List<DemoWidgetType> res = new ArrayList<>();
         if (wTypes != null) {
             for (String wType : wTypes) {
                 res.add(widgetTypeRegistry.get(wType));

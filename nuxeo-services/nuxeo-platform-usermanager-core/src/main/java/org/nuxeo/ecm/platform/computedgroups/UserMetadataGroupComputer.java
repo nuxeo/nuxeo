@@ -52,12 +52,12 @@ public class UserMetadataGroupComputer extends AbstractGroupComputer {
 
     @Override
     public List<String> getAllGroupIds() {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     @Override
     public List<String> getGroupMembers(String groupId) {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -65,10 +65,10 @@ public class UserMetadataGroupComputer extends AbstractGroupComputer {
         String value = (String) user.getModel().getPropertyValue(xpath);
 
         if (value == null || "".equals(value.trim())) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
 
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         result.add(String.format(groupPattern, value));
 
         return result;
@@ -76,12 +76,12 @@ public class UserMetadataGroupComputer extends AbstractGroupComputer {
 
     @Override
     public List<String> getParentsGroupNames(String arg0) {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     @Override
     public List<String> getSubGroupsNames(String arg0) {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     @Override

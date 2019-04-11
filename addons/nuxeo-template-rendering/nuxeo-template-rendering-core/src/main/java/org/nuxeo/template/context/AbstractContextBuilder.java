@@ -39,7 +39,7 @@ public abstract class AbstractContextBuilder {
 
     public Map<String, Object> build(DocumentModel doc, DocumentWrapper nuxeoWrapper, String templateName) {
 
-        Map<String, Object> ctx = new HashMap<String, Object>();
+        Map<String, Object> ctx = new HashMap<>();
 
         CoreSession session = doc.getCoreSession();
 

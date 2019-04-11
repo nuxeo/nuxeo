@@ -95,7 +95,7 @@ public class ServiceReferenceImpl implements ServiceReference {
 
     public synchronized void setProperties(Dictionary<String, ?> dict) {
         if (props == null) {
-            props = new HashMap<String, Object>();
+            props = new HashMap<>();
         }
         Enumeration<String> en = dict.keys();
         while (en.hasMoreElements()) {

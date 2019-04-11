@@ -50,7 +50,7 @@ public class AnnotationsFulltextInjector {
         @SuppressWarnings("unchecked")
         List<Map<String, String>> relatedResources = doc.getProperty(RELATED_TEXT_LIST_PROPERTY).getValue(List.class);
         String resourceIdToRemove = annotationId == null ? null : makeResourceId(annotationId);
-        List<Map<String, String>> resourcesToRemove = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> resourcesToRemove = new ArrayList<>();
         for (Map<String, String> resource : relatedResources) {
             String resourceId = resource.get(RELATED_TEXT_ID_PROPERTY);
             if (resourceIdToRemove != null) {
@@ -88,7 +88,7 @@ public class AnnotationsFulltextInjector {
         }
         @SuppressWarnings("unchecked")
         List<Map<String, String>> relatedResources = doc.getProperty(RELATED_TEXT_LIST_PROPERTY).getValue(List.class);
-        HashMap<String, String> resource = new HashMap<String, String>();
+        HashMap<String, String> resource = new HashMap<>();
         resource.put(RELATED_TEXT_ID_PROPERTY, makeResourceId(annotationId));
         resource.put(RELATED_TEXT_PROPERTY, annotationBody);
         relatedResources.add(resource);

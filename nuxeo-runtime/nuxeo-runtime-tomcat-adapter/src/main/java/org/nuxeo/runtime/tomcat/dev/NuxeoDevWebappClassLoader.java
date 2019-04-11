@@ -70,12 +70,12 @@ public class NuxeoDevWebappClassLoader extends NuxeoWebappClassLoader implements
 
     public NuxeoDevWebappClassLoader() {
         super();
-        this.children = new ArrayList<LocalClassLoader>();
+        this.children = new ArrayList<>();
     }
 
     public NuxeoDevWebappClassLoader(ClassLoader parent) {
         super(parent);
-        this.children = new ArrayList<LocalClassLoader>();
+        this.children = new ArrayList<>();
     }
 
     public void setBootstrap(DevFrameworkBootstrap bootstrap) {
@@ -169,7 +169,7 @@ public class NuxeoDevWebappClassLoader extends NuxeoWebappClassLoader implements
 
     @Override
     public Enumeration<URL> getResources(String name) throws IOException {
-        CompoundEnumeration<URL> enums = new CompoundEnumeration<URL>();
+        CompoundEnumeration<URL> enums = new CompoundEnumeration<>();
         enums.add(super.getResources(name));
         for (LocalClassLoader cl : getChildren()) {
             enums.add(cl.getLocalResources(name));
@@ -193,7 +193,7 @@ public class NuxeoDevWebappClassLoader extends NuxeoWebappClassLoader implements
 
     protected static class CompoundEnumeration<E> implements Enumeration<E> {
 
-        private final List<Enumeration<E>> enums = new ArrayList<Enumeration<E>>();
+        private final List<Enumeration<E>> enums = new ArrayList<>();
 
         private int index = 0;
 

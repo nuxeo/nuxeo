@@ -106,7 +106,7 @@ public class RelationTabSubPage extends DocumentBasePage {
             }
         };
 
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)
+        Wait<WebDriver> wait = new FluentWait<>(driver)
                                                                 .withTimeout(CREATE_FORM_LOADING_TIMEOUT,
                                                                         TimeUnit.SECONDS)
                                                                 .pollingEvery(100, TimeUnit.MILLISECONDS)
@@ -156,7 +156,7 @@ public class RelationTabSubPage extends DocumentBasePage {
 
         org.junit.Assert.assertTrue(isObjectDocumentChecked());
 
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(SELECT2_CHANGE_TIMEOUT, TimeUnit.SECONDS)
+        Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(SELECT2_CHANGE_TIMEOUT, TimeUnit.SECONDS)
                                                                 .pollingEvery(100, TimeUnit.MILLISECONDS)
                                                                 .ignoring(StaleElementReferenceException.class);
 

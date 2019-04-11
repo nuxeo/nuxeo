@@ -37,7 +37,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 public class TypeRegistry extends ContributionFragmentRegistry<Type> {
 
-    protected Map<String, Type> types = new HashMap<String, Type>();
+    protected Map<String, Type> types = new HashMap<>();
 
     protected Map<String, DocumentTypeDescriptor> dtds = new HashMap<>();
 
@@ -127,7 +127,7 @@ public class TypeRegistry extends ContributionFragmentRegistry<Type> {
 
             // Code added to delete the denied SubType from allowed subtypes
 
-            List<String> result = new ArrayList<String>();
+            List<String> result = new ArrayList<>();
             String[] deniedSubTypes = newType.getDeniedSubTypes();
             Map<String, SubType> oldTypeAllowedSubTypes = oldType.getAllowedSubTypes();
             boolean toAdd = true;
@@ -148,7 +148,7 @@ public class TypeRegistry extends ContributionFragmentRegistry<Type> {
                 }
             }
 
-            Map<String, SubType> mapResult = new HashMap<String, SubType>();
+            Map<String, SubType> mapResult = new HashMap<>();
             for (String resultTypeName : result) {
                 mapResult.put(resultTypeName, oldTypeAllowedSubTypes.get(resultTypeName));
             }
@@ -180,12 +180,12 @@ public class TypeRegistry extends ContributionFragmentRegistry<Type> {
             oldType.setLayouts(layouts);
         } else {
             if (layouts != null) {
-                Map<String, Layouts> layoutsMerged = new HashMap<String, Layouts>(oldType.getLayouts());
+                Map<String, Layouts> layoutsMerged = new HashMap<>(oldType.getLayouts());
                 for (Map.Entry<String, Layouts> entry : layouts.entrySet()) {
                     String key = entry.getKey();
                     Layouts newLayouts = entry.getValue();
                     if (layoutsMerged.containsKey(key) && newLayouts.getAppend()) {
-                        List<String> allLayouts = new ArrayList<String>();
+                        List<String> allLayouts = new ArrayList<>();
                         for (String layoutName : layoutsMerged.get(key).getLayouts()) {
                             allLayouts.add(layoutName);
                         }
@@ -208,13 +208,13 @@ public class TypeRegistry extends ContributionFragmentRegistry<Type> {
             oldType.setContentViews(contentViews);
         } else {
             if (contentViews != null) {
-                Map<String, DocumentContentViews> cvMerged = new HashMap<String, DocumentContentViews>(
+                Map<String, DocumentContentViews> cvMerged = new HashMap<>(
                         oldType.getContentViews());
                 for (Map.Entry<String, DocumentContentViews> entry : contentViews.entrySet()) {
                     String key = entry.getKey();
                     DocumentContentViews newContentViews = entry.getValue();
                     if (cvMerged.containsKey(key) && newContentViews.getAppend()) {
-                        List<DocumentContentView> allContentViews = new ArrayList<DocumentContentView>();
+                        List<DocumentContentView> allContentViews = new ArrayList<>();
                         for (DocumentContentView cv : cvMerged.get(key).getContentViews()) {
                             allContentViews.add(cv);
                         }

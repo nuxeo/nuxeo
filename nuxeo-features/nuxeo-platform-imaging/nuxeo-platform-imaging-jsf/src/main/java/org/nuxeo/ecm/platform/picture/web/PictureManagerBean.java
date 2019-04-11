@@ -123,11 +123,11 @@ public class PictureManagerBean implements PictureManager, Serializable {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void initSelectItems() {
-        selectItems = new ArrayList<Map<String, Object>>();
+        selectItems = new ArrayList<>();
         DocumentModel doc = getCurrentDocument();
         ArrayList<Map<String, Object>> views = (ArrayList) doc.getProperty("picture", "views");
         for (int i = 0; i < views.size(); i++) {
-            Map<String, Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<>();
             map.put("title", views.get(i).get("title"));
             map.put("idx", i);
             selectItems.add(map);

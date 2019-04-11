@@ -162,7 +162,7 @@ public class PictureViewImpl implements PictureView {
 
     @Override
     public Map<String, Serializable> asMap() {
-        Map<String, Serializable> m = new HashMap<String, Serializable>();
+        Map<String, Serializable> m = new HashMap<>();
         m.put(PictureView.FIELD_TITLE, getTitle());
         m.put(PictureView.FIELD_DESCRIPTION, getDescription());
         m.put(PictureView.FIELD_TAG, getTag());

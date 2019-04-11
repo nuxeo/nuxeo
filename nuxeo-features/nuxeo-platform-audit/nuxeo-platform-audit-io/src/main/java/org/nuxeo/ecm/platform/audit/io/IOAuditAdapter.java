@@ -83,7 +83,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
             return null;
         }
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
-            Map<DocumentRef, List<LogEntry>> docLogs = new HashMap<DocumentRef, List<LogEntry>>();
+            Map<DocumentRef, List<LogEntry>> docLogs = new HashMap<>();
 
             Logs logService = Framework.getService(Logs.class);
 
@@ -117,7 +117,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         }
         IOAuditResources auditResources = (IOAuditResources) resources;
 
-        List<LogEntry> logEntries = new ArrayList<LogEntry>();
+        List<LogEntry> logEntries = new ArrayList<>();
 
         Map<DocumentRef, List<LogEntry>> docLogs = auditResources.getLogsMap();
 
@@ -143,13 +143,13 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         }
 
         // will put each log entry to its correspondent document ref
-        Map<DocumentRef, List<LogEntry>> docLogs = new HashMap<DocumentRef, List<LogEntry>>();
+        Map<DocumentRef, List<LogEntry>> docLogs = new HashMap<>();
         for (LogEntry logEntry : allEntries) {
             DocumentRef docRef = new IdRef(logEntry.getDocUUID());
 
             List<LogEntry> logEntries = docLogs.get(docRef);
             if (logEntries == null) {
-                logEntries = new ArrayList<LogEntry>();
+                logEntries = new ArrayList<>();
                 docLogs.put(docRef, logEntries);
             }
             logEntries.add(logEntry);
@@ -186,7 +186,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         }
 
         IOAuditResources auditResources = (IOAuditResources) resources;
-        Map<DocumentRef, List<LogEntry>> newResourcesMap = new HashMap<DocumentRef, List<LogEntry>>();
+        Map<DocumentRef, List<LogEntry>> newResourcesMap = new HashMap<>();
 
         for (Map.Entry<DocumentRef, List<LogEntry>> entry : auditResources.getLogsMap().entrySet()) {
             DocumentRef oldRef = entry.getKey();

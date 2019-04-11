@@ -51,7 +51,7 @@ public class TabActionsSelection implements Serializable {
      * Use a linked has map to preserve order when using several selections as sub tabs management needs order to be
      * preserved.
      */
-    protected Map<String, Action> currentTabActions = new LinkedHashMap<String, Action>();
+    protected Map<String, Action> currentTabActions = new LinkedHashMap<>();
 
     /**
      * Returns the current action for given category.
@@ -148,8 +148,8 @@ public class TabActionsSelection implements Serializable {
         StringBuffer builder = new StringBuffer();
         boolean first = true;
         // resolve sub tabs
-        Map<String, List<Action>> actionsToEncode = new LinkedHashMap<String, List<Action>>();
-        Map<String, String> subTabToCategories = new HashMap<String, String>();
+        Map<String, List<Action>> actionsToEncode = new LinkedHashMap<>();
+        Map<String, String> subTabToCategories = new HashMap<>();
         for (Map.Entry<String, Action> currentTabAction : currentTabActions.entrySet()) {
             String category = currentTabAction.getKey();
             Action action = currentTabAction.getValue();
@@ -159,12 +159,12 @@ public class TabActionsSelection implements Serializable {
                 String cat = subTabToCategories.get(category);
                 List<Action> subActions = actionsToEncode.get(cat);
                 if (subActions == null) {
-                    subActions = new ArrayList<Action>();
+                    subActions = new ArrayList<>();
                     actionsToEncode.put(cat, subActions);
                 }
                 subActions.add(action);
             } else {
-                List<Action> actionsList = new ArrayList<Action>();
+                List<Action> actionsList = new ArrayList<>();
                 actionsList.add(action);
                 actionsToEncode.put(category, actionsList);
             }

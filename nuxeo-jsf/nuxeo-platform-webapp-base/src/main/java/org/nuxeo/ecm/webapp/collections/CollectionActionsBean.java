@@ -115,7 +115,7 @@ public class CollectionActionsBean implements Serializable {
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
 
-        List<DocumentModel> documentListToBeAdded = new ArrayList<DocumentModel>(docUidsToBeAdded.size());
+        List<DocumentModel> documentListToBeAdded = new ArrayList<>(docUidsToBeAdded.size());
 
         for (String uid : docUidsToBeAdded) {
             documentListToBeAdded.add(session.getDocument(new IdRef(uid)));

@@ -652,7 +652,7 @@ public class JsonAssert {
         length(expecteds.length);
         JsonNode jn = null;
         Iterator<JsonNode> it = jsonNode.elements();
-        Map<String, Integer> expectedMap = new HashMap<String, Integer>();
+        Map<String, Integer> expectedMap = new HashMap<>();
         for (String value : expecteds) {
             Integer count = expectedMap.get(value);
             if (count == null) {
@@ -661,8 +661,8 @@ public class JsonAssert {
             count++;
             expectedMap.put(value, count);
         }
-        Map<String, Integer> foundMap = new HashMap<String, Integer>();
-        List<String> founds = new ArrayList<String>();
+        Map<String, Integer> foundMap = new HashMap<>();
+        List<String> founds = new ArrayList<>();
         while (it.hasNext()) {
             jn = it.next();
             String value = jn.isNull() ? null : jn.asText();
@@ -705,7 +705,7 @@ public class JsonAssert {
     public JsonAssert childrenContains(String path, String... values) throws IOException {
         List<String> founds = getAll(path, jsonNode);
         Assert.assertEquals("found more or less element thant expected : found=" + founds, values.length, founds.size());
-        Map<String, Integer> expectedMap = new HashMap<String, Integer>();
+        Map<String, Integer> expectedMap = new HashMap<>();
         for (String value : values) {
             Integer count = expectedMap.get(value);
             if (count == null) {
@@ -714,7 +714,7 @@ public class JsonAssert {
             count++;
             expectedMap.put(value, count);
         }
-        Map<String, Integer> foundMap = new HashMap<String, Integer>();
+        Map<String, Integer> foundMap = new HashMap<>();
         for (String value : founds) {
             Integer count = foundMap.get(value);
             if (count == null) {
@@ -731,7 +731,7 @@ public class JsonAssert {
      * utility for {@link #childrenContains(String, String...)}
      */
     private List<String> getAll(String path, JsonNode node) throws IOException {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         if (!node.isArray()) {
             int index = path.indexOf('.');
             if (index < 0) {

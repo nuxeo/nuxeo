@@ -44,7 +44,7 @@ public class RestletPluginDescriptor {
     private Boolean enabled = Boolean.TRUE;
 
     @XNodeList(value = "urlPatterns/urlPattern", type = ArrayList.class, componentType = String.class)
-    private List<String> urlPatterns = new ArrayList<String>();
+    private List<String> urlPatterns = new ArrayList<>();
 
     @XNode("@useSeam")
     private boolean useSeam;

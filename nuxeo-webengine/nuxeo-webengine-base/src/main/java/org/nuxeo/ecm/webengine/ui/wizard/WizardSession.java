@@ -51,7 +51,7 @@ public class WizardSession extends HashMap<String, Object> {
         }
         this.id = wizardId;
         this.lastPage = pages[0];
-        this.pages = new HashMap<String, WizardPage>();
+        this.pages = new HashMap<>();
         for (int i = 0; i < pages.length; i++) {
             WizardPage p = pages[i];
             p.setIndex(i);

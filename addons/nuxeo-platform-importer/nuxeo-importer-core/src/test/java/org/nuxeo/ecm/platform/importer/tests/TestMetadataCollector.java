@@ -35,11 +35,11 @@ import org.nuxeo.ecm.platform.importer.properties.MetadataCollector;
 
 public class TestMetadataCollector {
 
-    Map<String, String> props1 = new HashMap<String, String>();
+    Map<String, String> props1 = new HashMap<>();
 
-    Map<String, String> props2 = new HashMap<String, String>();
+    Map<String, String> props2 = new HashMap<>();
 
-    Map<String, String> props3 = new HashMap<String, String>();
+    Map<String, String> props3 = new HashMap<>();
 
     MetadataCollector mc = new MetadataCollector();
 

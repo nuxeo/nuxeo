@@ -311,7 +311,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             if (!lpd.getInitialized()) {
                 Map<String, String> existingParams = lp.getParameters();
                 if (existingParams == null) {
-                    existingParams = new HashMap<String, String>();
+                    existingParams = new HashMap<>();
                 }
                 Map<String, String> loginParams = userIdent.getLoginParameters();
                 if (loginParams != null) {

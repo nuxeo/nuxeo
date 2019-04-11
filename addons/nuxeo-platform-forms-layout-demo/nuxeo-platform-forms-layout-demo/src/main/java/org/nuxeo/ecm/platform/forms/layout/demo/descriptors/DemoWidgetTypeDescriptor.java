@@ -138,7 +138,7 @@ public class DemoWidgetTypeDescriptor implements Serializable {
     }
 
     public List<DemoLayout> getDemoLayouts() {
-        List<DemoLayout> res = new ArrayList<DemoLayout>();
+        List<DemoLayout> res = new ArrayList<>();
         res.addAll(demoLayouts);
         return res;
     }

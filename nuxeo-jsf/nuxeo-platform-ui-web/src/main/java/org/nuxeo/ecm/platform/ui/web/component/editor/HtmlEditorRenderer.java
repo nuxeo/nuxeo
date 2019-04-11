@@ -151,7 +151,7 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
     }
 
     protected static String generateOptions(Map<String, String> options) {
-        List<String> strOptions = new ArrayList<String>();
+        List<String> strOptions = new ArrayList<>();
         for (Map.Entry<String, String> option : options.entrySet()) {
             strOptions.add(option.getKey() + ": \"" + option.getValue() + "\"");
         }

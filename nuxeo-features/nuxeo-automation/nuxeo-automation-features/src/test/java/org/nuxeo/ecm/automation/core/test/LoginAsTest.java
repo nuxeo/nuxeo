@@ -77,7 +77,7 @@ public class LoginAsTest {
         DocumentModel userModel = mgr.getBareUserModel();
         String schemaName = mgr.getUserSchemaName();
         userModel.setProperty(schemaName, "username", "Foo");
-        ArrayList<String> groups = new ArrayList<String>();
+        ArrayList<String> groups = new ArrayList<>();
         groups.add("administrators");
         userModel.setProperty("user", "groups", groups);
         userModel = mgr.createUser(userModel);

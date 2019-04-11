@@ -61,7 +61,7 @@ public class NegotiationDescriptor {
     }
 
     public List<NegotiatorDescriptor> getNegotiators() {
-        List<NegotiatorDescriptor> res = new ArrayList<NegotiatorDescriptor>();
+        List<NegotiatorDescriptor> res = new ArrayList<>();
         if (negotiators != null) {
             res.addAll(negotiators);
         }
@@ -76,7 +76,7 @@ public class NegotiationDescriptor {
     public void merge(NegotiationDescriptor src) {
         List<NegotiatorDescriptor> negotiators = src.negotiators;
         if (negotiators != null) {
-            List<NegotiatorDescriptor> merged = new ArrayList<NegotiatorDescriptor>();
+            List<NegotiatorDescriptor> merged = new ArrayList<>();
             merged.addAll(negotiators);
             boolean keepOld = src.isAppend() || (negotiators.isEmpty() && !src.isAppend());
             if (keepOld) {
@@ -97,7 +97,7 @@ public class NegotiationDescriptor {
         clone.setAppend(isAppend());
         List<NegotiatorDescriptor> negotiators = this.negotiators;
         if (negotiators != null) {
-            List<NegotiatorDescriptor> cnegociators = new ArrayList<NegotiatorDescriptor>();
+            List<NegotiatorDescriptor> cnegociators = new ArrayList<>();
             for (NegotiatorDescriptor neg : negotiators) {
                 cnegociators.add(neg.clone());
             }

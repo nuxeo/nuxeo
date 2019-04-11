@@ -184,7 +184,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
         if (statements == null) {
             return null;
         }
-        List<StatementInfo> infoList = new ArrayList<StatementInfo>();
+        List<StatementInfo> infoList = new ArrayList<>();
         for (Statement statement : statements) {
             Subject subject = statement.getSubject();
             // TODO: filter on doc visibility (?)

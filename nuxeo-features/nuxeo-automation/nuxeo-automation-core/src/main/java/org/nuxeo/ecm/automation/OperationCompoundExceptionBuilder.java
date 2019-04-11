@@ -29,7 +29,7 @@ import java.util.List;
 @Deprecated
 public class OperationCompoundExceptionBuilder {
 
-    protected final List<OperationException> accumulated = new LinkedList<OperationException>();
+    protected final List<OperationException> accumulated = new LinkedList<>();
 
     protected OperationException newThrowable(List<OperationException> causes) {
         return new OperationCompoundException(getMessages(causes),

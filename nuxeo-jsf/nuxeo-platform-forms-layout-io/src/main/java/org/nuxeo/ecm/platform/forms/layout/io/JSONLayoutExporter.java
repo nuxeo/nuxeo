@@ -180,7 +180,7 @@ public class JSONLayoutExporter {
         String handlerClass = jsonDef.optString("handlerClassName");
         Map<String, String> properties = importStringProps(jsonDef.optJSONObject("properties"));
         WidgetTypeConfiguration conf = importWidgetTypeConfiguration(jsonDef.optJSONObject("configuration"));
-        List<String> aliases = new ArrayList<String>();
+        List<String> aliases = new ArrayList<>();
         JSONArray jaliases = jsonDef.optJSONArray("aliases");
         if (jaliases != null) {
             aliases.addAll(jaliases);
@@ -273,7 +273,7 @@ public class JSONLayoutExporter {
 
         Map<String, List<LayoutDefinition>> fieldLayouts = conf.getFieldLayouts();
         if (fieldLayouts != null) {
-            List<String> modes = new ArrayList<String>(fieldLayouts.keySet());
+            List<String> modes = new ArrayList<>(fieldLayouts.keySet());
             // sort so that order is deterministic
             Collections.sort(modes);
             JSONObject layouts = new JSONObject();
@@ -303,7 +303,7 @@ public class JSONLayoutExporter {
         JSONObject props = new JSONObject();
         Map<String, List<LayoutDefinition>> confLayouts = conf.getPropertyLayouts();
         if (confLayouts != null) {
-            List<String> modes = new ArrayList<String>(confLayouts.keySet());
+            List<String> modes = new ArrayList<>(confLayouts.keySet());
             // sort so that order is deterministic
             Collections.sort(modes);
             JSONObject layouts = new JSONObject();
@@ -359,7 +359,7 @@ public class JSONLayoutExporter {
 
         res.setProperties(importProps(conf.optJSONObject("confProperties")));
 
-        List<String> confSupportedModes = new ArrayList<String>();
+        List<String> confSupportedModes = new ArrayList<>();
         JSONArray supportedModes = conf.optJSONArray("supportedModes");
         if (supportedModes != null) {
             confSupportedModes.addAll(supportedModes);
@@ -368,7 +368,7 @@ public class JSONLayoutExporter {
 
         res.setAcceptingSubWidgets(conf.optBoolean("acceptingSubWidgets", false));
         res.setHandlingLabels(conf.optBoolean("handlingLabels", false));
-        List<String> confSupportedControls = new ArrayList<String>();
+        List<String> confSupportedControls = new ArrayList<>();
         JSONArray supportedControls = conf.optJSONArray("supportedControls");
         if (supportedControls != null) {
             confSupportedControls.addAll(supportedControls);
@@ -379,10 +379,10 @@ public class JSONLayoutExporter {
         JSONObject fields = conf.optJSONObject("fields");
         boolean list = false;
         boolean complex = false;
-        List<String> confSupportedTypes = new ArrayList<String>();
-        List<String> confDefaultTypes = new ArrayList<String>();
-        List<FieldDefinition> defaultFieldDefinitions = new ArrayList<FieldDefinition>();
-        Map<String, List<LayoutDefinition>> fieldLayouts = new HashMap<String, List<LayoutDefinition>>();
+        List<String> confSupportedTypes = new ArrayList<>();
+        List<String> confDefaultTypes = new ArrayList<>();
+        List<FieldDefinition> defaultFieldDefinitions = new ArrayList<>();
+        Map<String, List<LayoutDefinition>> fieldLayouts = new HashMap<>();
         if (fields != null && !fields.isNullObject()) {
             list = fields.optBoolean("list", false);
             complex = fields.optBoolean("complex", false);
@@ -404,7 +404,7 @@ public class JSONLayoutExporter {
             if (layouts != null && !layouts.isNullObject()) {
                 for (Object item : layouts.keySet()) {
                     String mode = (String) item;
-                    List<LayoutDefinition> layoutDefs = new ArrayList<LayoutDefinition>();
+                    List<LayoutDefinition> layoutDefs = new ArrayList<>();
                     JSONArray modeLayouts = layouts.getJSONArray(mode);
                     if (modeLayouts != null && !mode.isEmpty()) {
                         for (Object subitem : modeLayouts) {
@@ -423,20 +423,20 @@ public class JSONLayoutExporter {
         res.setFieldLayouts(fieldLayouts);
 
         JSONArray cats = conf.optJSONArray("categories");
-        List<String> confCats = new ArrayList<String>();
+        List<String> confCats = new ArrayList<>();
         if (cats != null) {
             confCats.addAll(cats);
         }
         res.setCategories(confCats);
 
         JSONObject props = conf.optJSONObject("properties");
-        Map<String, List<LayoutDefinition>> confLayouts = new HashMap<String, List<LayoutDefinition>>();
+        Map<String, List<LayoutDefinition>> confLayouts = new HashMap<>();
         if (props != null && !props.isNullObject()) {
             JSONObject layouts = props.optJSONObject("layouts");
             if (layouts != null && !layouts.isNullObject()) {
                 for (Object item : layouts.keySet()) {
                     String mode = (String) item;
-                    List<LayoutDefinition> layoutDefs = new ArrayList<LayoutDefinition>();
+                    List<LayoutDefinition> layoutDefs = new ArrayList<>();
                     JSONArray modeLayouts = layouts.getJSONArray(mode);
                     if (modeLayouts != null && !mode.isEmpty()) {
                         for (Object subitem : modeLayouts) {
@@ -497,7 +497,7 @@ public class JSONLayoutExporter {
         String name = jsonDef.optString("name");
         Map<String, String> templates = importStringProps(jsonDef.optJSONObject("templates"));
         LayoutTypeConfiguration conf = importLayoutTypeConfiguration(jsonDef.optJSONObject("configuration"));
-        List<String> aliases = new ArrayList<String>();
+        List<String> aliases = new ArrayList<>();
         JSONArray jaliases = jsonDef.optJSONArray("aliases");
         if (jaliases != null) {
             aliases.addAll(jaliases);
@@ -563,7 +563,7 @@ public class JSONLayoutExporter {
         JSONObject props = new JSONObject();
         Map<String, List<LayoutDefinition>> confLayouts = conf.getPropertyLayouts();
         if (confLayouts != null) {
-            List<String> modes = new ArrayList<String>(confLayouts.keySet());
+            List<String> modes = new ArrayList<>(confLayouts.keySet());
             // sort so that order is deterministic
             Collections.sort(modes);
             JSONObject layouts = new JSONObject();
@@ -616,7 +616,7 @@ public class JSONLayoutExporter {
         res.setDemoId(demoId);
         res.setDemoPreviewEnabled(demoPreviewEnabled);
 
-        List<String> confSupportedModes = new ArrayList<String>();
+        List<String> confSupportedModes = new ArrayList<>();
         JSONArray supportedModes = conf.optJSONArray("supportedModes");
         if (supportedModes != null) {
             confSupportedModes.addAll(supportedModes);
@@ -624,7 +624,7 @@ public class JSONLayoutExporter {
         res.setSupportedModes(confSupportedModes);
 
         res.setHandlingLabels(conf.optBoolean("handlingLabels", false));
-        List<String> confSupportedControls = new ArrayList<String>();
+        List<String> confSupportedControls = new ArrayList<>();
         JSONArray supportedControls = conf.optJSONArray("supportedControls");
         if (supportedControls != null) {
             confSupportedControls.addAll(supportedControls);
@@ -633,20 +633,20 @@ public class JSONLayoutExporter {
         res.setContainingForm(conf.optBoolean("containingForm", false));
 
         JSONArray cats = conf.optJSONArray("categories");
-        List<String> confCats = new ArrayList<String>();
+        List<String> confCats = new ArrayList<>();
         if (cats != null) {
             confCats.addAll(cats);
         }
         res.setCategories(confCats);
 
         JSONObject props = conf.optJSONObject("properties");
-        Map<String, List<LayoutDefinition>> confLayouts = new HashMap<String, List<LayoutDefinition>>();
+        Map<String, List<LayoutDefinition>> confLayouts = new HashMap<>();
         if (props != null && !props.isNullObject()) {
             JSONObject layouts = props.optJSONObject("layouts");
             if (layouts != null && !layouts.isNullObject()) {
                 for (Object item : layouts.keySet()) {
                     String mode = (String) item;
-                    List<LayoutDefinition> layoutDefs = new ArrayList<LayoutDefinition>();
+                    List<LayoutDefinition> layoutDefs = new ArrayList<>();
                     JSONArray modeLayouts = layouts.getJSONArray(mode);
                     if (modeLayouts != null && !mode.isEmpty()) {
                         for (Object subitem : modeLayouts) {
@@ -707,7 +707,7 @@ public class JSONLayoutExporter {
 
         JSONArray rows = new JSONArray();
         LayoutRowDefinition[] defRows = layoutDef.getRows();
-        List<WidgetReference> widgetsToExport = new ArrayList<WidgetReference>();
+        List<WidgetReference> widgetsToExport = new ArrayList<>();
         if (defRows != null) {
             int rowIndex = -1;
             for (LayoutRowDefinition layoutRowDef : defRows) {
@@ -800,7 +800,7 @@ public class JSONLayoutExporter {
         Map<String, String> templates = importStringProps(layoutDef.optJSONObject("templates"));
         Map<String, Map<String, Serializable>> properties = importPropsByMode(layoutDef.optJSONObject("properties"));
 
-        List<LayoutRowDefinition> rows = new ArrayList<LayoutRowDefinition>();
+        List<LayoutRowDefinition> rows = new ArrayList<>();
         JSONArray jrows = layoutDef.optJSONArray("rows");
         if (jrows != null) {
             for (Object item : jrows) {
@@ -808,7 +808,7 @@ public class JSONLayoutExporter {
             }
         }
 
-        List<WidgetDefinition> widgets = new ArrayList<WidgetDefinition>();
+        List<WidgetDefinition> widgets = new ArrayList<>();
         JSONArray jwidgets = layoutDef.optJSONArray("widgets");
         if (jwidgets != null) {
             for (Object item : jwidgets) {
@@ -818,7 +818,7 @@ public class JSONLayoutExporter {
 
         Map<String, List<RenderingInfo>> renderingInfos = importRenderingInfosByMode(layoutDef.optJSONObject("renderingInfos"));
 
-        List<String> aliases = new ArrayList<String>();
+        List<String> aliases = new ArrayList<>();
         JSONArray jaliases = layoutDef.optJSONArray("aliases");
         if (jaliases != null) {
             aliases.addAll(jaliases);
@@ -880,7 +880,7 @@ public class JSONLayoutExporter {
 
         Map<String, Map<String, Serializable>> properties = importPropsByMode(layoutRowDef.optJSONObject("properties"));
 
-        List<WidgetReference> widgets = new ArrayList<WidgetReference>();
+        List<WidgetReference> widgets = new ArrayList<>();
         JSONArray jwidgets = layoutRowDef.optJSONArray("widgets");
         if (jwidgets != null) {
             for (Object item : jwidgets) {
@@ -1010,7 +1010,7 @@ public class JSONLayoutExporter {
         boolean handlingLabels = widgetDef.optBoolean("handlingLabels", false);
         Map<String, String> modes = importStringProps(widgetDef.optJSONObject("widgetModes"));
 
-        List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
+        List<FieldDefinition> fieldDefinitions = new ArrayList<>();
         JSONArray jfields = widgetDef.optJSONArray("fields");
         if (jfields != null) {
             for (Object item : jfields) {
@@ -1018,7 +1018,7 @@ public class JSONLayoutExporter {
             }
         }
 
-        List<WidgetDefinition> subWidgets = new ArrayList<WidgetDefinition>();
+        List<WidgetDefinition> subWidgets = new ArrayList<>();
         JSONArray jsubwidgets = widgetDef.optJSONArray("subWidgets");
         if (jsubwidgets != null) {
             for (Object item : jsubwidgets) {
@@ -1026,7 +1026,7 @@ public class JSONLayoutExporter {
             }
         }
 
-        List<WidgetReference> subWidgetRefs = new ArrayList<WidgetReference>();
+        List<WidgetReference> subWidgetRefs = new ArrayList<>();
         JSONArray jsubwidgetRefs = widgetDef.optJSONArray("subWidgetRefs");
         if (jsubwidgetRefs != null) {
             for (Object item : jsubwidgetRefs) {
@@ -1039,7 +1039,7 @@ public class JSONLayoutExporter {
         Map<String, Map<String, Serializable>> controls = importPropsByMode(widgetDef.optJSONObject("controls"));
 
         // select options
-        List<WidgetSelectOption> selectOptions = new ArrayList<WidgetSelectOption>();
+        List<WidgetSelectOption> selectOptions = new ArrayList<>();
         JSONArray jselectOptions = widgetDef.optJSONArray("selectOptions");
         if (jselectOptions != null) {
             for (Object item : jselectOptions) {
@@ -1049,7 +1049,7 @@ public class JSONLayoutExporter {
 
         Map<String, List<RenderingInfo>> renderingInfos = importRenderingInfosByMode(widgetDef.optJSONObject("renderingInfos"));
 
-        List<String> aliases = new ArrayList<String>();
+        List<String> aliases = new ArrayList<>();
         JSONArray jaliases = widgetDef.optJSONArray("aliases");
         if (jaliases != null) {
             aliases.addAll(jaliases);
@@ -1294,7 +1294,7 @@ public class JSONLayoutExporter {
         String var = selectOption.optString("var", null);
         String itemLabel = selectOption.optString("itemLabel", null);
 
-        Map<String, String> labels = new HashMap<String, String>();
+        Map<String, String> labels = new HashMap<>();
         JSONObject jsonLabels = selectOption.optJSONObject("itemLabels");
         if (jsonLabels != null && !jsonLabels.isNullObject()) {
             labels.putAll(jsonLabels);
@@ -1324,7 +1324,7 @@ public class JSONLayoutExporter {
     public static JSONObject exportPropsByModeToJson(Map<String, Map<String, Serializable>> propsByMode) {
         JSONObject props = new JSONObject();
         if (propsByMode != null) {
-            List<String> defModes = new ArrayList<String>(propsByMode.keySet());
+            List<String> defModes = new ArrayList<>(propsByMode.keySet());
             // sort so that order is deterministic
             Collections.sort(defModes);
             for (String defMode : defModes) {
@@ -1336,7 +1336,7 @@ public class JSONLayoutExporter {
 
     @SuppressWarnings("unchecked")
     public static Map<String, Map<String, Serializable>> importPropsByMode(JSONObject propsByMode) {
-        Map<String, Map<String, Serializable>> props = new HashMap<String, Map<String, Serializable>>();
+        Map<String, Map<String, Serializable>> props = new HashMap<>();
         if (propsByMode != null && !propsByMode.isNullObject()) {
             List<String> defModes = new ArrayList<String>(propsByMode.keySet());
             // sort so that order is deterministic
@@ -1352,7 +1352,7 @@ public class JSONLayoutExporter {
     public static JSONObject exportPropsToJson(Map<String, Serializable> defProps) {
         JSONObject props = new JSONObject();
         if (defProps != null) {
-            List<String> defPropNames = new ArrayList<String>(defProps.keySet());
+            List<String> defPropNames = new ArrayList<>(defProps.keySet());
             // sort so that order is deterministic
             Collections.sort(defPropNames);
             for (String defPropName : defPropNames) {
@@ -1377,7 +1377,7 @@ public class JSONLayoutExporter {
 
     @SuppressWarnings("unchecked")
     public static Map<String, Serializable> importProps(JSONObject defProps) {
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         if (defProps != null && !defProps.isNullObject()) {
             List<String> defPropNames = new ArrayList<String>(defProps.keySet());
             // sort so that order is deterministic
@@ -1385,7 +1385,7 @@ public class JSONLayoutExporter {
             for (String defPropName : defPropNames) {
                 Object value = defProps.opt(defPropName);
                 if (value instanceof JSONArray) {
-                    ArrayList<Object> listValue = new ArrayList<Object>();
+                    ArrayList<Object> listValue = new ArrayList<>();
                     listValue.addAll(((JSONArray) value));
                 } else {
                     props.put(defPropName, value.toString());
@@ -1398,7 +1398,7 @@ public class JSONLayoutExporter {
     public static JSONObject exportStringPropsToJson(Map<String, String> defProps) {
         JSONObject props = new JSONObject();
         if (defProps != null) {
-            List<String> defPropNames = new ArrayList<String>(defProps.keySet());
+            List<String> defPropNames = new ArrayList<>(defProps.keySet());
             // sort so that order is deterministic
             Collections.sort(defPropNames);
             for (String defPropName : defPropNames) {
@@ -1409,7 +1409,7 @@ public class JSONLayoutExporter {
     }
 
     public static Map<String, String> importStringProps(JSONObject defProps) {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         if (defProps != null && !defProps.isNullObject()) {
             for (Object item : defProps.keySet()) {
                 String key = (String) item;
@@ -1422,7 +1422,7 @@ public class JSONLayoutExporter {
     public static JSONObject exportRenderingInfosByModeToJson(Map<String, List<RenderingInfo>> infosByMode) {
         JSONObject props = new JSONObject();
         if (infosByMode != null) {
-            List<String> defModes = new ArrayList<String>(infosByMode.keySet());
+            List<String> defModes = new ArrayList<>(infosByMode.keySet());
             // sort so that order is deterministic
             Collections.sort(defModes);
             for (String defMode : defModes) {
@@ -1434,7 +1434,7 @@ public class JSONLayoutExporter {
 
     @SuppressWarnings("unchecked")
     public static Map<String, List<RenderingInfo>> importRenderingInfosByMode(JSONObject infosByMode) {
-        Map<String, List<RenderingInfo>> props = new HashMap<String, List<RenderingInfo>>();
+        Map<String, List<RenderingInfo>> props = new HashMap<>();
         if (infosByMode != null && !infosByMode.isNullObject()) {
             List<String> defModes = new ArrayList<String>(infosByMode.keySet());
             // sort so that order is deterministic
@@ -1457,7 +1457,7 @@ public class JSONLayoutExporter {
     }
 
     public static List<RenderingInfo> importRenderingInfos(JSONArray jinfos) {
-        List<RenderingInfo> infos = new ArrayList<RenderingInfo>();
+        List<RenderingInfo> infos = new ArrayList<>();
         if (jinfos != null) {
             for (Object item : jinfos) {
                 infos.add(importRenderingInfo((JSONObject) item));

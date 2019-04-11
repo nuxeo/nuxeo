@@ -322,7 +322,7 @@ public class SmartNXQLQueryActions implements Serializable {
 
     public void undoQueryPartChanges(ActionEvent event) {
         if (redoQueryPartHistory == null) {
-            redoQueryPartHistory = new HistoryList<String>(HISTORY_CAPACITY);
+            redoQueryPartHistory = new HistoryList<>(HISTORY_CAPACITY);
         }
         undoHistoryChanges(event, queryPartHistory, redoQueryPartHistory);
     }
@@ -350,7 +350,7 @@ public class SmartNXQLQueryActions implements Serializable {
 
     protected void addToQueryPartHistory(String queryPart) {
         if (queryPartHistory == null) {
-            queryPartHistory = new HistoryList<String>(HISTORY_CAPACITY);
+            queryPartHistory = new HistoryList<>(HISTORY_CAPACITY);
         }
         addToHistory(queryPart, queryPartHistory);
     }

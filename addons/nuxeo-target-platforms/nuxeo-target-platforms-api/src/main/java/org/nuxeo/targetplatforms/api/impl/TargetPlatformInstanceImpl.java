@@ -56,7 +56,7 @@ public class TargetPlatformInstanceImpl extends TargetImpl implements TargetPlat
         if (enabledPackages == null) {
             return Collections.emptyList();
         }
-        return new ArrayList<String>(enabledPackages.keySet());
+        return new ArrayList<>(enabledPackages.keySet());
     }
 
     @Override
@@ -72,14 +72,14 @@ public class TargetPlatformInstanceImpl extends TargetImpl implements TargetPlat
             return;
         }
         if (enabledPackages == null) {
-            enabledPackages = new LinkedHashMap<String, TargetPackage>();
+            enabledPackages = new LinkedHashMap<>();
         }
         enabledPackages.put(pack.getId(), pack);
     }
 
     public void setEnabledPackages(Map<String, TargetPackage> packages) {
         if (enabledPackages == null) {
-            enabledPackages = new LinkedHashMap<String, TargetPackage>();
+            enabledPackages = new LinkedHashMap<>();
         } else {
             enabledPackages.clear();
         }

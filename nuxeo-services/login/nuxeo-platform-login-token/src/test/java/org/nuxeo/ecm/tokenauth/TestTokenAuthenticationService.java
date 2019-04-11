@@ -183,7 +183,7 @@ public class TestTokenAuthenticationService {
 
         DocumentModelList tokenBindings = tokenAuthenticationService.getTokenBindings("joe");
         assertEquals(3, tokenBindings.size());
-        Set<AuthenticationToken> expectedTokenBindings = new HashSet<AuthenticationToken>();
+        Set<AuthenticationToken> expectedTokenBindings = new HashSet<>();
         expectedTokenBindings.add(new AuthenticationToken(token1, "joe", "myFavoriteApp", "Ubuntu box 64 bits",
                 "This is my personal Linux box", "rw"));
         expectedTokenBindings.add(new AuthenticationToken(token2, "joe", "myFavoriteApp", "Windows box 32 bits",

@@ -175,7 +175,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
             // put in cache
             Map<FilterRule, Boolean> precomputed = (Map<FilterRule, Boolean>) context.getLocalVariable(PRECOMPUTED_KEY);
             if (precomputed == null) {
-                precomputed = new HashMap<FilterRule, Boolean>();
+                precomputed = new HashMap<>();
                 context.putLocalVariable(PRECOMPUTED_KEY, precomputed);
             }
             precomputed.put(rule, Boolean.valueOf(result));

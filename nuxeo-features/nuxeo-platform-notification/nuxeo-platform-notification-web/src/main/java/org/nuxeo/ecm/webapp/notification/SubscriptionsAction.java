@@ -96,7 +96,7 @@ public class SubscriptionsAction extends InputController implements Serializable
         List<String> subscriptions = getSelectedNotifications();
         log.debug("Selected notifications : " + subscriptions);
 
-        List<SelectableSubscription> notifsResult = new ArrayList<SelectableSubscription>();
+        List<SelectableSubscription> notifsResult = new ArrayList<>();
         for (Notification notification : notifs) {
             String notifName = notification.getName();
             if (subscriptions.contains(notifName)) {
@@ -113,7 +113,7 @@ public class SubscriptionsAction extends InputController implements Serializable
      */
     @Factory("inheritedNotifications")
     public void loadInheritedNotifications() throws ClassNotFoundException {
-        inheritedNotifications = new ArrayList<Notification>();
+        inheritedNotifications = new ArrayList<>();
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         for (String group : principal.getAllGroups()) {

@@ -130,7 +130,7 @@ public class TestPublishRelationsListener {
     protected void addSomeRelations(Resource documentResource) {
         Resource otherDocResource = relationManager.getResource(RelationConstants.DOCUMENT_NAMESPACE, doc2, null);
 
-        List<Statement> originalStatements = new ArrayList<Statement>();
+        List<Statement> originalStatements = new ArrayList<>();
         originalStatements.add(new StatementImpl(documentResource, conformsTo, new LiteralImpl("some conformance")));
         originalStatements.add(new StatementImpl(otherDocResource, conformsTo, documentResource));
         relationManager.getGraphByName(RelationConstants.GRAPH_NAME).add(originalStatements);

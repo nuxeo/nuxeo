@@ -51,7 +51,7 @@ public class OAuth2UserTokensActions extends DirectoryBasedEditor implements Ser
 
     private static final long serialVersionUID = 1L;
 
-    private Map<String, Serializable> filter = new HashMap<String, Serializable>();
+    private Map<String, Serializable> filter = new HashMap<>();
 
     @In(create = true)
     protected NuxeoPrincipal currentUser;

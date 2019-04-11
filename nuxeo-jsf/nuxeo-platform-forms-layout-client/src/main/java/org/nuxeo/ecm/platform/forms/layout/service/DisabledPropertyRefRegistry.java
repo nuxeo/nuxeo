@@ -42,7 +42,7 @@ public class DisabledPropertyRefRegistry extends ContributionFragmentRegistry<Di
     public DisabledPropertyRefRegistry() {
         super();
         // use linked has map since there is no ordering support, not make sure
-        this.refs = new LinkedHashMap<String, DisabledPropertyRefDescriptor>();
+        this.refs = new LinkedHashMap<>();
     }
 
     @Override

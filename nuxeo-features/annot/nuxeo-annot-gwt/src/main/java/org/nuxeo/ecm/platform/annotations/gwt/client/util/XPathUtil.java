@@ -84,7 +84,7 @@ public class XPathUtil {
     }
 
     public List<Node> getNode(String xpath, Document document) {
-        List<Node> nodes = new ArrayList<Node>();
+        List<Node> nodes = new ArrayList<>();
         if (xpath.startsWith("//")) {
             xpath = xpath.substring(2);
             NodeList<Element> n = document.getElementsByTagName(xpath);

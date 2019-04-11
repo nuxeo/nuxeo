@@ -50,9 +50,9 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 public class JsonGraphRoute extends UnrestrictedSessionRunner {
 
     public static Map<String, Object> getGraphElementsAsMap(GraphRoute route, Locale locale) {
-        Map<String, Object> graph = new HashMap<String, Object>();
-        List<NodeView> nodeViews = new ArrayList<NodeView>();
-        List<TransitionView> tranViews = new ArrayList<TransitionView>();
+        Map<String, Object> graph = new HashMap<>();
+        List<NodeView> nodeViews = new ArrayList<>();
+        List<TransitionView> tranViews = new ArrayList<>();
 
         for (GraphNode node : route.getNodes()) {
             nodeViews.add(new NodeView(node, locale));

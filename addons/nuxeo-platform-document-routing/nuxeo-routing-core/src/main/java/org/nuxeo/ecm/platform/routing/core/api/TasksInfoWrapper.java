@@ -41,7 +41,7 @@ public class TasksInfoWrapper implements List<GraphNode.TaskInfo>, Serializable 
     protected List<GraphNode.TaskInfo> tasks;
 
     public TasksInfoWrapper() {
-        tasks = new ArrayList<GraphNode.TaskInfo>();
+        tasks = new ArrayList<>();
     }
 
     public TasksInfoWrapper(List<GraphNode.TaskInfo> tasks) {

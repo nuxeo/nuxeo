@@ -74,7 +74,7 @@ public class DnDOperationsTest {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(blobs);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("currentDocument", file.getId());
 
         ctx.putAll(params);
@@ -105,7 +105,7 @@ public class DnDOperationsTest {
         ctx = new OperationContext(session);
         ctx.setInput(blobs);
 
-        params = new HashMap<String, Object>();
+        params = new HashMap<>();
         params.put("currentDocument", file.getId());
         ctx.putAll(params);
 

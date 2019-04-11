@@ -40,7 +40,7 @@ public class AuditEventFirer {
     static public void fireEvent(CoreSession coreSession, DocumentRouteElement element,
             Map<String, Serializable> eventProperties, String eventName, DocumentModel doc) {
         if (eventProperties == null) {
-            eventProperties = new HashMap<String, Serializable>();
+            eventProperties = new HashMap<>();
         }
         eventProperties.put(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY,
                 element.getDocumentRoute(coreSession).getDocument().getId());

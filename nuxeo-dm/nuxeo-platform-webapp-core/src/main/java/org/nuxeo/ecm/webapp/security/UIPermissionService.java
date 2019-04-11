@@ -42,7 +42,7 @@ public class UIPermissionService extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(UIPermissionService.class);
 
-    private final Map<String, String[]> permissionMap = new HashMap<String, String[]>();
+    private final Map<String, String[]> permissionMap = new HashMap<>();
 
     private String[] defaultPermissionList = new String[0];
 

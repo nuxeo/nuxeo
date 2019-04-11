@@ -94,7 +94,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
             treeModels = null;
         }
         if (treeModels == null) {
-            treeModels = new HashMap<String, DirectoryTreeNode>();
+            treeModels = new HashMap<>();
             treeModelsTimestamp = dirTreeService.getLastModified();
         }
         // lazy loading of tree models
@@ -147,7 +147,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
 
     public List<DirectoryTreeNode> getDirectoryTrees() {
         if (directoryTrees == null) {
-            directoryTrees = new LinkedList<DirectoryTreeNode>();
+            directoryTrees = new LinkedList<>();
             for (String treeName : getDirectoryTreeNames()) {
                 directoryTrees.add(get(treeName));
             }
@@ -196,7 +196,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
 
     public String getLabelFor(String directoryTreeName, String fullPath, boolean includeDirectoryTreeLabel) {
         DirectoryTreeNode rootNode = get(directoryTreeName);
-        List<String> labels = new ArrayList<String>();
+        List<String> labels = new ArrayList<>();
         computeLabels(labels, rootNode, fullPath, includeDirectoryTreeLabel);
         List<String> translatedLabels = translateLabels(labels);
         return StringUtils.join(translatedLabels, "/");
@@ -219,7 +219,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     }
 
     protected List<String> translateLabels(List<String> labels) {
-        List<String> translatedLabels = new ArrayList<String>(labels.size());
+        List<String> translatedLabels = new ArrayList<>(labels.size());
         for (String label : labels) {
             translatedLabels.add(messages.get(label));
         }

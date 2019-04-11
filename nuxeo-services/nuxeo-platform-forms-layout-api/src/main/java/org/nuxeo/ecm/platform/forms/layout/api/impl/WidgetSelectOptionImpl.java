@@ -137,7 +137,7 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
         WidgetSelectOptionImpl clone = new WidgetSelectOptionImpl(value, var, itemLabel, itemValue, itemDisabled,
                 itemRendered);
         if (labels != null) {
-            clone.setItemLabels(new HashMap<String, String>(labels));
+            clone.setItemLabels(new HashMap<>(labels));
         }
         return clone;
     }

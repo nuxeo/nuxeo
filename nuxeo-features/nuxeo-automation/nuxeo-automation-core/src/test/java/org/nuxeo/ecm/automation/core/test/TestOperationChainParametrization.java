@@ -96,7 +96,7 @@ public class TestOperationChainParametrization {
             chain.add("o2").set("message", "Hello 2!");
             chain.add("oChainCtx").set("message", "expr:@{ChainParameters['messageChain']}");
             // Setting parameters of the chain
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
             params.put("messageChain", "Hello i'm a chain!");
             chain.addChainParameters(params);
             // Checking if chain parameter is taken into account
@@ -113,7 +113,7 @@ public class TestOperationChainParametrization {
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(src);
             // Setting parameters of the chain
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
             params.put("messageChain", "Hello i'm a chain!");
             // Checking if chain parameter is taken into account
             DocumentModel doc = (DocumentModel) service.run(ctx, "contributedchain", params);

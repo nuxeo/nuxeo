@@ -47,11 +47,11 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements 
 
     private static final Log log = LogFactory.getLog(PreviewAdapterManagerComponent.class);
 
-    protected Map<String, PreviewAdapterFactory> factoryRegistry = new HashMap<String, PreviewAdapterFactory>();
+    protected Map<String, PreviewAdapterFactory> factoryRegistry = new HashMap<>();
 
-    protected Map<String, MimeTypePreviewer> previewerFactory = new HashMap<String, MimeTypePreviewer>();
+    protected Map<String, MimeTypePreviewer> previewerFactory = new HashMap<>();
 
-    protected List<BlobPostProcessor> blobPostProcessors = new ArrayList<BlobPostProcessor>();
+    protected List<BlobPostProcessor> blobPostProcessors = new ArrayList<>();
 
     // Component and EP management
 

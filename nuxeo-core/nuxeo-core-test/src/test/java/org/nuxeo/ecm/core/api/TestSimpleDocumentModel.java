@@ -58,7 +58,7 @@ public class TestSimpleDocumentModel {
     @Test
     public void testPropertyUpdatedAreDirty3() throws Exception {
         SimpleDocumentModel doc = new SimpleDocumentModel();
-        Map<String, Object> values = new HashMap<String, Object>();
+        Map<String, Object> values = new HashMap<>();
         values.put("title", "toto");
         doc.setProperties("dublincore", values);
         assertTrue(doc.getProperty("dc:title").isDirty());
@@ -109,7 +109,7 @@ public class TestSimpleDocumentModel {
     @Test
     public void testPropertyUpdatedWithSameValueAreDirty7() throws Exception {
         SimpleDocumentModel doc = new SimpleDocumentModel();
-        Map<String, Object> values = new HashMap<String, Object>();
+        Map<String, Object> values = new HashMap<>();
         values.put("title", null);
         doc.setProperties("dublincore", values);
         assertTrue(doc.getProperty("dc:title").isDirty());

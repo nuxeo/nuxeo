@@ -34,7 +34,7 @@ public class DefaultRequestDumper implements RequestDumper {
 
     private static final Log log = LogFactory.getLog(DefaultRequestDumper.class);
 
-    protected List<String> attributes = new ArrayList<String>();
+    protected List<String> attributes = new ArrayList<>();
 
     public String getDump(HttpServletRequest request) {
         StringBuilder builder = new StringBuilder();

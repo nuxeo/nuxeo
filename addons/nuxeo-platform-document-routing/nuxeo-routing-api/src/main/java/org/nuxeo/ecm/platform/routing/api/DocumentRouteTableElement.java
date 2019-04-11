@@ -44,7 +44,7 @@ public class DocumentRouteTableElement {
 
     protected boolean isFirstChild;
 
-    protected List<RouteFolderElement> firstChildList = new ArrayList<RouteFolderElement>();
+    protected List<RouteFolderElement> firstChildList = new ArrayList<>();
 
     public DocumentRouteTableElement(DocumentRouteElement element, RouteTable table, int depth,
             RouteFolderElement parent, boolean isFirstChild) {

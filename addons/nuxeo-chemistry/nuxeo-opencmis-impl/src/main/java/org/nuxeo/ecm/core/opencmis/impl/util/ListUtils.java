@@ -63,7 +63,7 @@ public class ListUtils {
         if (max < 0) {
             max = defaultMax;
         }
-        BatchedList<T> res = new BatchedList<T>();
+        BatchedList<T> res = new BatchedList<>();
         res.setNumItems(list.size());
         if (skip >= list.size()) {
             res.setHasMoreItems(false);

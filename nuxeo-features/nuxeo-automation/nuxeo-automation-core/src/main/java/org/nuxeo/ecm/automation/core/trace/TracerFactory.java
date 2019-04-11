@@ -78,7 +78,7 @@ public class TracerFactory implements TracerFactoryMBean {
 
         protected OperationType chain;
 
-        protected Map<Integer, Trace> traces = new HashMap<Integer, Trace>();
+        protected Map<Integer, Trace> traces = new HashMap<>();
 
         protected ChainTraces(OperationType chain) {
             this.chain = chain;

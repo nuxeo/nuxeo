@@ -39,7 +39,7 @@ public class FileChangeNotifier {
 
     private final Timer timer = new Timer("FileChangeNotifier");
 
-    private final Map<String, FileEntry> files = new Hashtable<String, FileEntry>();
+    private final Map<String, FileEntry> files = new Hashtable<>();
 
     public void start(int startAfter, int interval) {
         timer.scheduleAtFixedRate(new WatchTask(), startAfter, interval);

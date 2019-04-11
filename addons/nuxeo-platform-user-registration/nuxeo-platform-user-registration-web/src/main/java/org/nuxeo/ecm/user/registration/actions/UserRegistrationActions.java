@@ -187,7 +187,7 @@ public class UserRegistrationActions implements Serializable {
 
     public void acceptRegistrationRequest(DocumentModel request) {
         try {
-            Map<String, Serializable> additionalInfo = new HashMap<String, Serializable>();
+            Map<String, Serializable> additionalInfo = new HashMap<>();
             additionalInfo.put("enterPasswordUrl", getEnterPasswordUrl());
             // Determine the document url to add it into the email
             String docId = (String) request.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD);
@@ -209,7 +209,7 @@ public class UserRegistrationActions implements Serializable {
 
     public void rejectRegistrationRequest(DocumentModel request) {
         try {
-            Map<String, Serializable> additionalInfo = new HashMap<String, Serializable>();
+            Map<String, Serializable> additionalInfo = new HashMap<>();
             additionalInfo.put("validationBaseURL", getValidationBaseUrl());
             userRegistrationService.rejectRegistrationRequest(request.getId(), additionalInfo);
             // EventManager.raiseEventsOnDocumentChange(request);
@@ -379,7 +379,7 @@ public class UserRegistrationActions implements Serializable {
     }
 
     protected Map<String, Serializable> getAdditionalsParameters() {
-        Map<String, Serializable> additionalsInfo = new HashMap<String, Serializable>();
+        Map<String, Serializable> additionalsInfo = new HashMap<>();
         try {
             additionalsInfo.put(UserInvitationComponent.PARAM_ORIGINATING_USER , documentManager.getPrincipal().getName());
             additionalsInfo.put("docinfo:documentTitle", navigationContext.getCurrentDocument().getTitle());

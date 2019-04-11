@@ -54,7 +54,7 @@ public class AnnotationController {
 
     private static AnnotatedDocument annotatedDocument;
 
-    private static final List<AnnotationPopupEventListener> annotationPopupListeners = new ArrayList<AnnotationPopupEventListener>();
+    private static final List<AnnotationPopupEventListener> annotationPopupListeners = new ArrayList<>();
 
     private String xPointerFilter;
 

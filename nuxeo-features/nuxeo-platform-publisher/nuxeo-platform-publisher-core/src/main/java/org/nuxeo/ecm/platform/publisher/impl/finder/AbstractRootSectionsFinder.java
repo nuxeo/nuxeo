@@ -99,7 +99,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
 
         if (unrestrictedDefaultSectionRoot.isEmpty() && addDefaultSectionRoots) {
             DocumentModelList defaultSectionRoots = getDefaultSectionRoots(session);
-            unrestrictedDefaultSectionRoot = new ArrayList<String>();
+            unrestrictedDefaultSectionRoot = new ArrayList<>();
             for (DocumentModel root : defaultSectionRoots) {
                 unrestrictedDefaultSectionRoot.add(root.getPathAsString());
             }
@@ -122,7 +122,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
 
         if (unrestrictedDefaultSectionRoot.isEmpty() && addDefaultSectionRoots) {
             DocumentModelList defaultSectionRoots = getDefaultSectionRoots(session);
-            unrestrictedDefaultSectionRoot = new ArrayList<String>();
+            unrestrictedDefaultSectionRoot = new ArrayList<>();
             for (DocumentModel root : defaultSectionRoots) {
                 unrestrictedDefaultSectionRoot.add(root.getPathAsString());
             }
@@ -138,8 +138,8 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
 
     protected DocumentModelList getFiltredSectionRoots(List<String> rootPaths, boolean onlyHeads)
             {
-        List<DocumentRef> filtredDocRef = new ArrayList<DocumentRef>();
-        List<DocumentRef> trashedDocRef = new ArrayList<DocumentRef>();
+        List<DocumentRef> filtredDocRef = new ArrayList<>();
+        List<DocumentRef> trashedDocRef = new ArrayList<>();
 
         for (String rootPath : rootPaths) {
             DocumentRef rootRef = new PathRef(rootPath);
@@ -196,7 +196,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
         if (workspace.hasSchema(SCHEMA_PUBLISHING)) {
             String[] sectionIdsArray = (String[]) workspace.getPropertyValue(SECTIONS_PROPERTY_NAME);
 
-            List<String> sectionIdsList = new ArrayList<String>();
+            List<String> sectionIdsList = new ArrayList<>();
 
             if (sectionIdsArray != null && sectionIdsArray.length > 0) {
                 sectionIdsList = Arrays.asList(sectionIdsArray);
@@ -226,7 +226,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
         if (sectionRootTypes == null) {
             sectionRootTypes = getTypeNamesForFacet(FacetNames.MASTER_PUBLISH_SPACE);
             if (sectionRootTypes == null) {
-                sectionRootTypes = new HashSet<String>();
+                sectionRootTypes = new HashSet<>();
             }
         }
         return sectionRootTypes;
@@ -245,7 +245,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
         if (sectionTypes == null) {
             sectionTypes = getTypeNamesForFacet(FacetNames.MASTER_PUBLISH_SPACE);
             if (sectionTypes == null) {
-                sectionTypes = new HashSet<String>();
+                sectionTypes = new HashSet<>();
             }
         }
         return sectionTypes;

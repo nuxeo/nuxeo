@@ -79,7 +79,7 @@ public class OSGiAdapter {
     }
 
     public OSGiAdapter(File workingDir, File dataDir, Properties properties) {
-        services = new ConcurrentHashMap<String, ServiceRegistration>();
+        services = new ConcurrentHashMap<>();
         this.workingDir = workingDir;
         this.dataDir = dataDir;
         this.dataDir.mkdirs();

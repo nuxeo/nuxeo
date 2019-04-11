@@ -99,7 +99,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             Map<String, ValueExpression> variables = getVariablesForRendering(ctx, helper, widget, widgetTagConfigId,
                     template);
 
-            List<String> blockedPatterns = new ArrayList<String>();
+            List<String> blockedPatterns = new ArrayList<>();
             blockedPatterns.add(RenderVariables.widgetVariables.field.name() + "*");
             blockedPatterns.add(RenderVariables.widgetVariables.fieldOrValue.name());
             blockedPatterns.add(RenderVariables.widgetVariables.widgetProperty.name() + "_*");
@@ -121,7 +121,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
      */
     protected Map<String, ValueExpression> getVariablesForRendering(FaceletContext ctx, FaceletHandlerHelper helper,
             Widget widget, String widgetTagConfigId, String template) {
-        Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+        Map<String, ValueExpression> variables = new HashMap<>();
         ExpressionFactory eFactory = ctx.getExpressionFactory();
 
         FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
@@ -149,7 +149,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
         // expose widget properties too
         WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
-        Map<String, ValueExpression> mappedExpressions = new HashMap<String, ValueExpression>();
+        Map<String, ValueExpression> mappedExpressions = new HashMap<>();
         for (Map.Entry<String, Serializable> prop : widget.getProperties().entrySet()) {
             String key = prop.getKey();
             String name = RenderVariables.widgetVariables.widgetProperty.name() + "_" + key;

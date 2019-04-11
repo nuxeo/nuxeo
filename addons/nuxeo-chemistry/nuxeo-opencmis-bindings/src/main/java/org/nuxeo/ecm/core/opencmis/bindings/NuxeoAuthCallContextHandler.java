@@ -45,7 +45,7 @@ public class NuxeoAuthCallContextHandler implements CallContextHandler, Serializ
     @Override
     public Map<String, String> getCallContextMap(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         if (principal != null) {
             result.put(CallContext.USERNAME, principal.getName());
         }

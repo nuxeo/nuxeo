@@ -99,7 +99,7 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
                     String msg = v.getMessage(locale);
                     throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
                 } else {
-                    Set<FacesMessage> messages = new LinkedHashSet<FacesMessage>(violations.size());
+                    Set<FacesMessage> messages = new LinkedHashSet<>(violations.size());
                     for (ConstraintViolation v : violations) {
                         String msg = v.getMessage(locale);
                         messages.add(new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));

@@ -47,8 +47,8 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     private final List<Entry<K, T>> resolved;
 
     public DependencyTree() {
-        registry = new Hashtable<K, Entry<K, T>>();
-        resolved = new Vector<Entry<K, T>>();
+        registry = new Hashtable<>();
+        resolved = new Vector<>();
     }
 
     @Override
@@ -63,7 +63,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     public Entry<K, T> add(K key, T object, Collection<K> requires) {
         Entry<K, T> entry = registry.get(key);
         if (entry == null) {
-            entry = new Entry<K, T>(key, object);
+            entry = new Entry<>(key, object);
             registry.put(key, entry);
         } else if (entry.object == null) {
             entry.object = object;
@@ -179,7 +179,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     }
 
     public List<T> getRegisteredObjects() {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
         Collection<Entry<K, T>> entries = getEntries();
         for (Entry<K, T> entry : entries) {
             list.add(entry.object);
@@ -188,7 +188,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     }
 
     public List<Entry<K, T>> getPendingEntries() {
-        List<Entry<K, T>> result = new ArrayList<Entry<K, T>>();
+        List<Entry<K, T>> result = new ArrayList<>();
         for (Map.Entry<K, Entry<K, T>> entry : registry.entrySet()) {
             Entry<K, T> val = entry.getValue();
             if (!val.isResolved()) {
@@ -199,7 +199,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     }
 
     public List<T> getPendingObjects() {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
         List<Entry<K, T>> entries = getPendingEntries();
         for (Entry<K, T> entry : entries) {
             list.add(entry.object);
@@ -208,7 +208,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     }
 
     public List<Entry<K, T>> getMissingRequirements() {
-        List<Entry<K, T>> result = new ArrayList<Entry<K, T>>();
+        List<Entry<K, T>> result = new ArrayList<>();
         for (Map.Entry<K, Entry<K, T>> entry : registry.entrySet()) {
             Entry<K, T> val = entry.getValue();
             if (!val.isRegistered()) {
@@ -226,7 +226,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     }
 
     public List<T> getResolvedObjects() {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
         List<Entry<K, T>> entries = resolved;
         for (Entry<K, T> entry : entries) {
             list.add(entry.object);
@@ -265,7 +265,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
                         continue;
                     }
                 } else {
-                    reqEntry = new Entry<K, T>(req, null); // placeholder entry
+                    reqEntry = new Entry<>(req, null); // placeholder entry
                     registry.put(req, reqEntry);
                 }
                 // dependencies not satisfied
@@ -327,7 +327,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
 
         public final void addWaitingFor(Entry<K, T> entry) {
             if (waitsFor == null) {
-                waitsFor = new HashSet<Entry<K, T>>();
+                waitsFor = new HashSet<>();
             }
             waitsFor.add(entry);
         }
@@ -343,7 +343,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
 
         public final void addDependsOnMe(Entry<K, T> entry) {
             if (dependsOnMe == null) {
-                dependsOnMe = new HashSet<Entry<K, T>>();
+                dependsOnMe = new HashSet<>();
             }
             dependsOnMe.add(entry);
         }

@@ -42,9 +42,9 @@ public class ContentViewRegistry extends ContributionFragmentRegistry<ContentVie
 
     protected static final Log log = LogFactory.getLog(ContentViewRegistry.class);
 
-    protected final Map<String, ContentViewDescriptor> contentViews = new HashMap<String, ContentViewDescriptor>();
+    protected final Map<String, ContentViewDescriptor> contentViews = new HashMap<>();
 
-    protected final Map<String, Set<String>> contentViewsByFlag = new HashMap<String, Set<String>>();
+    protected final Map<String, Set<String>> contentViewsByFlag = new HashMap<>();
 
     @Override
     public String getContributionId(ContentViewDescriptor contrib) {
@@ -83,7 +83,7 @@ public class ContentViewRegistry extends ContributionFragmentRegistry<ContentVie
             for (String flag : flags) {
                 Set<String> items = contentViewsByFlag.get(flag);
                 if (items == null) {
-                    items = new LinkedHashSet<String>();
+                    items = new LinkedHashSet<>();
                 }
                 items.add(name);
                 contentViewsByFlag.put(flag, items);

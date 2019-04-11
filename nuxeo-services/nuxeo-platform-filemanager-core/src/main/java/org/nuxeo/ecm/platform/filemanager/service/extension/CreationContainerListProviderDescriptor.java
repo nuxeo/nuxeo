@@ -38,7 +38,7 @@ public class CreationContainerListProviderDescriptor {
     protected String className;
 
     @XNodeList(value = "docType", type = ArrayList.class, componentType = String.class)
-    protected List<String> docTypes = new ArrayList<String>();
+    protected List<String> docTypes = new ArrayList<>();
 
     public String getName() {
         return name;

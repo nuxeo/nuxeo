@@ -59,7 +59,7 @@ public class RichTextEditorActions implements Serializable {
 
     public String convertToHtml(String text, String mimeType) {
         BlobHolder bh = new SimpleBlobHolder(Blobs.createBlob(text, mimeType, "UTF-8"));
-        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+        Map<String, Serializable> parameters = new HashMap<>();
         parameters.put("bodyContentOnly", Boolean.TRUE);
         try {
             bh = Framework.getService(ConversionService.class).convertToMimeType("text/html", bh, parameters);

@@ -40,8 +40,8 @@ public class PropStatBuilderExt {
     private Set<String> names;
 
     public PropStatBuilderExt() {
-        properties = new LinkedList<Object>();
-        names = new HashSet<String>();
+        properties = new LinkedList<>();
+        names = new HashSet<>();
     }
 
     public PropStatBuilderExt creationDate(Date dateTime) {
@@ -119,7 +119,7 @@ public class PropStatBuilderExt {
 
     public PropStat notFound(Prop allprops) {
         boolean empty = true;
-        List<Object> notFound = new ArrayList<Object>();
+        List<Object> notFound = new ArrayList<>();
         for (Object prop : allprops.getProperties()) {
             if (prop instanceof Element) {
                 Element element = (Element) prop;

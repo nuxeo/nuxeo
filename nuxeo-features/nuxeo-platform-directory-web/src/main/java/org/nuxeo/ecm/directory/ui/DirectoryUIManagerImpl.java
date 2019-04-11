@@ -63,7 +63,7 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements Director
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        registry = new LinkedHashMap<String, DirectoryUI>();
+        registry = new LinkedHashMap<>();
     }
 
     @Override
@@ -108,7 +108,7 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements Director
     }
 
     public List<String> getDirectoryNames() {
-        List<String> dirNames = new ArrayList<String>(registry.keySet());
+        List<String> dirNames = new ArrayList<>(registry.keySet());
         Collections.sort(dirNames, String.CASE_INSENSITIVE_ORDER);
         return dirNames;
     }

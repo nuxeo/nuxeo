@@ -95,7 +95,7 @@ public class PrincipalListManager implements Serializable {
 
     protected SelectItem[] availablePrincipals;
 
-    protected Map<String, String> principalTypes = new HashMap<String, String>();
+    protected Map<String, String> principalTypes = new HashMap<>();
 
     protected String selectedPrincipal;
 
@@ -121,8 +121,8 @@ public class PrincipalListManager implements Serializable {
     protected transient boolean previousSearchOverflow;
 
     public PrincipalListManager() {
-        iconPath = new HashMap<String, String>();
-        iconAlt = new HashMap<String, String>();
+        iconPath = new HashMap<>();
+        iconAlt = new HashMap<>();
         iconPath.put(USER_TYPE, USER_ICON);
         iconPath.put(GROUP_TYPE, GROUP_ICON);
 
@@ -153,7 +153,7 @@ public class PrincipalListManager implements Serializable {
             return null;
         }
         if (principalTypes == null) {
-            principalTypes = new HashMap<String, String>();
+            principalTypes = new HashMap<>();
         }
         String type = principalTypes.get(name);
         if (type == null) {
@@ -236,7 +236,7 @@ public class PrincipalListManager implements Serializable {
             groups = new DocumentModelListImpl();
         }
 
-        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(users.size() + groups.size());
+        List<Map<String, Object>> result = new ArrayList<>(users.size() + groups.size());
 
         for (DocumentModel user : users) {
             if (user == null) {
@@ -253,7 +253,7 @@ public class PrincipalListManager implements Serializable {
             }
             label.append(')');
 
-            Map<String, Object> entry = new HashMap<String, Object>();
+            Map<String, Object> entry = new HashMap<>();
             entry.put("label", label.toString());
             entry.put("id", name);
             entry.put("icon", "icons/user.png");
@@ -261,7 +261,7 @@ public class PrincipalListManager implements Serializable {
         }
 
         for (DocumentModel group : groups) {
-            Map<String, Object> entry = new HashMap<String, Object>();
+            Map<String, Object> entry = new HashMap<>();
             try {
                 entry.put("label",
                         group.getProperty(userManager.getGroupSchemaName(), userManager.getGroupLabelField()));
@@ -293,7 +293,7 @@ public class PrincipalListManager implements Serializable {
 
     public String addToSelectedUsers(String userName) {
         if (selectedUsers == null) {
-            selectedUsers = new ArrayList<String>();
+            selectedUsers = new ArrayList<>();
         }
 
         if (!selectedUsers.contains(userName)) {
@@ -304,7 +304,7 @@ public class PrincipalListManager implements Serializable {
 
     public String removeFromSelectedUsers(String userName) {
         if (selectedUsers == null) {
-            selectedUsers = new ArrayList<String>();
+            selectedUsers = new ArrayList<>();
         }
 
         if (selectedUsers.contains(userName)) {
@@ -315,7 +315,7 @@ public class PrincipalListManager implements Serializable {
 
     public List<String> getSelectedUsers() {
         if (selectedUsers == null) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         return selectedUsers;
     }

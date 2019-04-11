@@ -906,7 +906,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         // change secondary prop
         Properties props = createProperties("my2:string", "bar");
-        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        Holder<String> objectIdHolder = new Holder<>(ob.getId());
         Holder<String> changeTokenHolder = getChangeTokenHolder(p);
         objService.updateProperties(repositoryId, objectIdHolder, changeTokenHolder, props, null);
 

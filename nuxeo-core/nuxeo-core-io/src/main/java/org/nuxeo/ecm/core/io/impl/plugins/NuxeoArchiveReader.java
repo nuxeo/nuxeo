@@ -69,7 +69,7 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
 
     private List<String> zipIndex;
 
-    private final Collection<File> filesToDelete = new ArrayList<File>();
+    private final Collection<File> filesToDelete = new ArrayList<>();
 
     /**
      * Create a {@link NuxeoArchiveReader} from an {@link InputStream}.
@@ -111,7 +111,7 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
     }
 
     protected void buildOrderedZipIndex() {
-        zipIndex = new ArrayList<String>();
+        zipIndex = new ArrayList<>();
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
         while (entries.hasMoreElements()) {
@@ -163,7 +163,7 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
 
         // find the direct children entry that are part of the same document
         // since archive is modifiable we can not rely on the Extra bits thing
-        List<String> childEntries = new ArrayList<String>();
+        List<String> childEntries = new ArrayList<>();
         int depth = new Path(idxname).removeTrailingSeparator().segmentCount();
         for (String path : zipIndex) {
             if (path.startsWith(idxname)) {

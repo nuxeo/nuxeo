@@ -822,7 +822,7 @@ public class ConnectBroker {
                                 + "current directory or to NUXEO_HOME) " + "package with name or ID "
                                 + packageFileName);
                     }
-                } else if (!downloadPackages(new ArrayList<String>(Collections.singleton(pkgId)))) {
+                } else if (!downloadPackages(new ArrayList<>(Collections.singleton(pkgId)))) {
                     throw new PackageException("Could not download package " + pkgId);
                 }
                 pkg = service.getPackage(pkgId);

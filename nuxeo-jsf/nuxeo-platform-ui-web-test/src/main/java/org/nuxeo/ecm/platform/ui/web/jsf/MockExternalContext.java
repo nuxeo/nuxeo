@@ -124,7 +124,7 @@ public class MockExternalContext extends ExternalContext {
 
     @Override
     public Map<String, Object> getRequestMap() {
-        return new HashMap<String, Object>();
+        return new HashMap<>();
     }
 
     @Override

@@ -30,7 +30,7 @@ public class ProbeStatus {
 
     protected final boolean success;
 
-    protected final Map<String, String> infos = new HashMap<String, String>();
+    protected final Map<String, String> infos = new HashMap<>();
 
     public static final String DEFAULT_INFO_FIELD = "info";
 
@@ -61,7 +61,7 @@ public class ProbeStatus {
     }
 
     public static ProbeStatus newError(Throwable t) {
-        Map<String, String> infos = new HashMap<String, String>();
+        Map<String, String> infos = new HashMap<>();
         infos.put(ERROR_FIELD, t.toString());
         infos.put(DEFAULT_INFO_FIELD, "Caught error " + t.toString());
         return new ProbeStatus(infos, FALSE);

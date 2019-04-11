@@ -54,7 +54,7 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         if (facets == null) {
             this.facets = Collections.emptySet();
         } else {
-            this.facets = new HashSet<String>(facets);
+            this.facets = new HashSet<>(facets);
         }
         this.prefetchInfo = prefetchInfo;
     }

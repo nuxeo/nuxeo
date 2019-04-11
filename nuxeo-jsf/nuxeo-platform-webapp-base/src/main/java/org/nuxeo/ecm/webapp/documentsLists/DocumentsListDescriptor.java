@@ -70,7 +70,7 @@ public class DocumentsListDescriptor implements Serializable {
 
     // empty constructor needed for descriptor instantiation
     public DocumentsListDescriptor() {
-        eventsName = new ArrayList<String>();
+        eventsName = new ArrayList<>();
         imageURL = VirtualHostHelper.getContextPathProperty() + "/icons/clipboard.gif";
     }
 

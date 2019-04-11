@@ -51,7 +51,7 @@ public class DocumentAttributeFilterFactory {
 
     public static final String MUTABLE_DOC = "Mutable Document";
 
-    protected static final Map<String, Filter> filters = new HashMap<String, Filter>();
+    protected static final Map<String, Filter> filters = new HashMap<>();
     static {
         filters.put(REGULAR_DOC, new RegularDocFilter());
         filters.put(LINK_DOC, new LinkDocFilter());

@@ -209,7 +209,7 @@ public class DialectDerby extends Dialect {
             }
         }
         FulltextMatchInfo info = new FulltextMatchInfo();
-        info.joins = new ArrayList<Join>(1);
+        info.joins = new ArrayList<>(1);
         if (nthMatch == 1) {
             // Need only one JOIN involving the fulltext table
             info.joins.add(new Join(Join.INNER, ft.getQuotedName(), null, null, ftMain.getFullQuotedName(),
@@ -273,7 +273,7 @@ public class DialectDerby extends Dialect {
 
     @Override
     public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put("idType", "VARCHAR(36)");
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("fulltextSearchEnabled", Boolean.valueOf(!fulltextSearchDisabled));

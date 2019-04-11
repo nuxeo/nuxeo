@@ -42,7 +42,7 @@ public class RotationPictureConverter implements Converter {
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         ImagingService service = Framework.getService(ImagingService.class);
-        List<Blob> results = new ArrayList<Blob>();
+        List<Blob> results = new ArrayList<>();
         List<Blob> sources = blobHolder.getBlobs();
         int angle = (Integer) parameters.get(ImagingConvertConstants.OPTION_ROTATE_ANGLE);
         for (Blob source : sources) {

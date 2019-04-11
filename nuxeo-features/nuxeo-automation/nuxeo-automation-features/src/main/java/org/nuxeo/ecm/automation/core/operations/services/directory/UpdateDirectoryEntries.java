@@ -77,7 +77,7 @@ public class UpdateDirectoryEntries extends AbstractDirectoryOperation {
         List<Map<String, Object>> entries = mapper.readValue(jsonEntries,
                 new TypeReference<List<Map<String, Object>>>() {
                 });
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
 
         Directory directory = directoryService.getDirectory(directoryName);
         String idField = directory.getIdField();

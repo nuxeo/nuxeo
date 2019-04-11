@@ -118,7 +118,7 @@ public class TestPageProviderAggregates {
     @Test
     public void testAggregateSelection() throws Exception {
         PageProviderDefinition ppd = pps.getPageProviderDefinition("TEST_AGGREGATES");
-        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (AbstractSession) session);
         DocumentModel searchDoc = session.createDocumentModel("/", "doc", "AdvancedSearch");
         String[] query = { "for search", "you know" };
@@ -130,7 +130,7 @@ public class TestPageProviderAggregates {
         List<AggregateDefinition> aggDefs = pp.getAggregateDefinitions();
         assertEquals(5, aggDefs.size());
         for (AggregateDefinition def : aggDefs) {
-            AggregateBase<Bucket> agg = new AggregateBase<Bucket>(def, pp.getSearchDocumentModel());
+            AggregateBase<Bucket> agg = new AggregateBase<>(def, pp.getSearchDocumentModel());
             switch (agg.getId()) {
             case "source_agg":
                 assertEquals("Aggregate(source_agg, terms, dc:source, [for search, you know], null)", agg.toString());

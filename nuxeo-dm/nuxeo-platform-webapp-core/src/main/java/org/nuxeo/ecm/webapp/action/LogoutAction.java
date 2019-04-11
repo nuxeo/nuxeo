@@ -65,7 +65,7 @@ public class LogoutAction extends InputController implements Serializable {
      * @return the next page that is going to be displayed
      */
     public static String logout() throws IOException {
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext eContext = context.getExternalContext();
         HttpServletRequest request = (HttpServletRequest) eContext.getRequest();

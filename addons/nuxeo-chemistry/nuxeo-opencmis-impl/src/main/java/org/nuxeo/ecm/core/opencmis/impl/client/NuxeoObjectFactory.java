@@ -124,7 +124,7 @@ public class NuxeoObjectFactory implements ObjectFactory {
         } else {
             @SuppressWarnings("unchecked")
             List<String> sts = (List<String>) propData.getValues();
-            secondaryTypes = new ArrayList<SecondaryType>(sts.size());
+            secondaryTypes = new ArrayList<>(sts.size());
             for (String st : sts) {
                 secondaryTypes.add((SecondaryType) session.getTypeDefinition(st));
             }
@@ -152,7 +152,7 @@ public class NuxeoObjectFactory implements ObjectFactory {
 
     @Override
     public <T> Property<T> createProperty(PropertyDefinition<T> type, List<T> values) {
-        return new PropertyImpl<T>(type, values);
+        return new PropertyImpl<>(type, values);
     }
 
     @Override
@@ -188,7 +188,7 @@ public class NuxeoObjectFactory implements ObjectFactory {
         if (policies == null) {
             return null;
         }
-        List<String> policyIds = new ArrayList<String>(policies.size());
+        List<String> policyIds = new ArrayList<>(policies.size());
         for (Policy p : policies) {
             policyIds.add(p.getId());
         }
@@ -256,7 +256,7 @@ public class NuxeoObjectFactory implements ObjectFactory {
                 return of.createPropertyIntegerData(key, (List<BigInteger>) values);
             } else if ((firstValue instanceof Byte) || (firstValue instanceof Short) || (firstValue instanceof Integer)
                     || (firstValue instanceof Long)) {
-                List<BigInteger> list = new ArrayList<BigInteger>(values.size());
+                List<BigInteger> list = new ArrayList<>(values.size());
                 for (Object v : values) {
                     list.add(BigInteger.valueOf(((Number) v).longValue()));
                 }
@@ -279,7 +279,7 @@ public class NuxeoObjectFactory implements ObjectFactory {
         if (properties == null || properties.getProperties() == null) {
             return null;
         }
-        return new ArrayList<PropertyData<?>>(properties.getPropertyList());
+        return new ArrayList<>(properties.getPropertyList());
     }
 
     @Override

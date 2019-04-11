@@ -61,9 +61,9 @@ public class MockFacesContext extends FacesContext {
 
     protected Application app = new MockApplication();
 
-    protected Map<String, Object> variables = new HashMap<String, Object>();
+    protected Map<String, Object> variables = new HashMap<>();
 
-    protected Map<String, Object> expressions = new HashMap<String, Object>();
+    protected Map<String, Object> expressions = new HashMap<>();
 
     public void mapVariable(String key, Object value) {
         variables.put(key, value);

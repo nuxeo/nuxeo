@@ -228,7 +228,7 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
 
             // get principals list to apply rights to
             if (selectedOwnerModel.equals("me")) {
-                principalsName = new ArrayList<String>();
+                principalsName = new ArrayList<>();
                 principalsName.add(currentUser.getName());
             } else {
                 principalsName = principalListManager.getSelectedUsers();
@@ -294,7 +294,7 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
 
             // get principals list to apply rights to
             if (selectedOwnerModel.equals("me")) {
-                principalsName = new ArrayList<String>();
+                principalsName = new ArrayList<>();
                 principalsName.add(currentUser.getName());
             } else {
                 principalsName = principalListManager.getSelectedUsers();

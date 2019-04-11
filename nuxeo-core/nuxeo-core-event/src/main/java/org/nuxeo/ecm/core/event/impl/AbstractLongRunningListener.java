@@ -56,7 +56,7 @@ public abstract class AbstractLongRunningListener implements PostCommitFiltering
     @Override
     public void handleEvent(EventBundle events) {
 
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
 
         if (events instanceof ReconnectedEventBundleImpl) {
 

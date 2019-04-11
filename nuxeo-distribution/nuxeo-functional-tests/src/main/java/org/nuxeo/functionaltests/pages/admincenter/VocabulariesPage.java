@@ -106,7 +106,7 @@ public class VocabulariesPage extends AdminCenterBasePage {
      */
     public List<String> getDirectoriesList() {
         Select directoriesListSelect = new Select(directoriesListSelectElement);
-        ArrayList<String> directoryList = new ArrayList<String>();
+        ArrayList<String> directoryList = new ArrayList<>();
         List<WebElement> list = directoriesListSelect.getOptions();
         for (WebElement webElement : list) {
             directoryList.add(webElement.getText());

@@ -86,7 +86,7 @@ public class ConfigurableUserMapper extends AbstractMapper {
     @Override
     public DocumentModel updateNuxeoUserFromUserResource(String uid, UserResource user) throws NuxeoException {
 
-        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        Map<String, Serializable> params = new HashMap<>();
         params.put("uid", uid);
         NuxeoPrincipal principal = mapperService.getOrCreateAndUpdateNuxeoPrincipal(MAPPING_NAME, user, false, true,
                 params);

@@ -55,7 +55,7 @@ public class LifeCycleStateConfiguration {
     }
 
     private static Collection<String> getAllowedTransitionsFor(Element element) {
-        Collection<String> transitions = new ArrayList<String>();
+        Collection<String> transitions = new ArrayList<>();
         NodeList elements = element.getElementsByTagName(TAG_TRANSITION);
         int len = elements.getLength();
         for (int i = 0; i < len; i++) {
@@ -66,7 +66,7 @@ public class LifeCycleStateConfiguration {
     }
 
     public Collection<LifeCycleState> getStates() {
-        Collection<LifeCycleState> states = new ArrayList<LifeCycleState>();
+        Collection<LifeCycleState> states = new ArrayList<>();
         NodeList elements = element.getElementsByTagName(TAG_STATE);
         int len = elements.getLength();
         for (int i = 0; i < len; i++) {

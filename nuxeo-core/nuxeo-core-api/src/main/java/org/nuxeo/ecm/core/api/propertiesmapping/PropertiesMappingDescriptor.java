@@ -35,7 +35,7 @@ public class PropertiesMappingDescriptor {
     protected String name;
 
     @XNodeMap(value = "property", key = "@path", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> properties = new HashMap<String, String>();
+    protected Map<String, String> properties = new HashMap<>();
 
     public String getName() {
         return name;

@@ -66,7 +66,7 @@ public class CollectionOperationsTestCase {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
                 "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
-        List<DocumentModel> result = new ArrayList<DocumentModel>();
+        List<DocumentModel> result = new ArrayList<>();
         for (int i = 1; i <= nbFile; i++) {
             DocumentModel testFile = session.createDocumentModel(testWorkspace.getPath().toString(),
                     TEST_FILE_NAME + i, "File");

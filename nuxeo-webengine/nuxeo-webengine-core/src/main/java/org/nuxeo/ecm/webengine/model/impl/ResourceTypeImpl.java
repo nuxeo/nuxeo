@@ -74,7 +74,7 @@ public class ResourceTypeImpl extends AbstractResourceType {
         }
         String[] facets = wo.facets();
         if (facets != null && facets.length > 0) {
-            this.facets = new HashSet<String>(Arrays.asList(facets));
+            this.facets = new HashSet<>(Arrays.asList(facets));
         }
     }
 

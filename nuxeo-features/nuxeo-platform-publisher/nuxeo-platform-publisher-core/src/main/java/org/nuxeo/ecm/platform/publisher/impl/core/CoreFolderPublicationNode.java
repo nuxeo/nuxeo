@@ -91,7 +91,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
 
     public List<PublishedDocument> getChildrenDocuments() {
         DocumentModelList children = getSortedChildren(true);
-        List<PublishedDocument> childrenDocs = new ArrayList<PublishedDocument>();
+        List<PublishedDocument> childrenDocs = new ArrayList<>();
         for (DocumentModel child : children) {
             childrenDocs.add(factory.wrapDocumentModel(child));
         }

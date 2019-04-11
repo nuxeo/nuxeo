@@ -32,7 +32,7 @@ public class ExpressionContext extends ELContext {
 
     private static class MyVariableMapper extends VariableMapper {
 
-        protected final Map<String, ValueExpression> map = new HashMap<String, ValueExpression>();
+        protected final Map<String, ValueExpression> map = new HashMap<>();
 
         @Override
         public ValueExpression resolveVariable(String variable) {
@@ -47,7 +47,7 @@ public class ExpressionContext extends ELContext {
 
     private static class MyFunctionMapper extends FunctionMapper {
 
-        private final Map<String, Method> map = new HashMap<String, Method>();
+        private final Map<String, Method> map = new HashMap<>();
 
         @SuppressWarnings("unused")
         public void setFunction(String prefix, String localName, Method method) {

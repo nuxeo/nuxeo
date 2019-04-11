@@ -54,7 +54,7 @@ public class CheckBoxAggregateElements implements AggregateElement {
 
     @Override
     public Map<String, Integer> getAggregates() {
-        Map<String, Integer> result = new HashMap<String, Integer>();
+        Map<String, Integer> result = new HashMap<>();
         for (WebElement e : element.findElements(By.xpath("tbody/tr/td"))) {
             String label;
             Integer count;

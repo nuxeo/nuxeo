@@ -28,7 +28,7 @@ import org.nuxeo.template.api.descriptor.OutputFormatDescriptor;
 
 public class OutputFormatRegistry extends ContributionFragmentRegistry<OutputFormatDescriptor> {
 
-    protected Map<String, OutputFormatDescriptor> outputFormats = new HashMap<String, OutputFormatDescriptor>();
+    protected Map<String, OutputFormatDescriptor> outputFormats = new HashMap<>();
 
     @Override
     public OutputFormatDescriptor clone(OutputFormatDescriptor outFormat) {

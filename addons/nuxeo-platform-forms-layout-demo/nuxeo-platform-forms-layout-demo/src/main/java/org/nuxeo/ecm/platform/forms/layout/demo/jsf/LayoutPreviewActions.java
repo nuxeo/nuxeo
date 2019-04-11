@@ -55,7 +55,7 @@ public class LayoutPreviewActions {
 
     public String getPreviewLayoutURL(PreviewLayoutDefinition previewLayoutDef, String layoutMode, String layoutTemplate)
             throws UnsupportedEncodingException {
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("layoutDefinition", getEncodedLayoutDefinition(previewLayoutDef));
         parameters.put("layoutMode", layoutMode);
         parameters.put("layoutTemplate", layoutTemplate);

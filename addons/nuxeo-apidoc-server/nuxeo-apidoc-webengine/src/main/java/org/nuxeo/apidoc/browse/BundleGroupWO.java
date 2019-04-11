@@ -56,7 +56,7 @@ public class BundleGroupWO extends NuxeoArtifactWebObject {
     }
 
     public List<BundleWO> getBundles() {
-        List<BundleWO> result = new ArrayList<BundleWO>();
+        List<BundleWO> result = new ArrayList<>();
 
         BundleGroup group = getTargetBundleGroup();
         for (String bid : group.getBundleIds()) {
@@ -66,7 +66,7 @@ public class BundleGroupWO extends NuxeoArtifactWebObject {
     }
 
     public List<BundleGroupWO> getSubGroups() {
-        List<BundleGroupWO> result = new ArrayList<BundleGroupWO>();
+        List<BundleGroupWO> result = new ArrayList<>();
 
         BundleGroup group = getTargetBundleGroup();
         for (BundleGroup bg : group.getSubGroups()) {

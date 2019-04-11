@@ -192,7 +192,7 @@ public class TestFieldDiffHelper extends DiffTestCase {
 
         // Complex list
         PropertyDiff propertyDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        List<PropertyHierarchyNode> propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
+        List<PropertyHierarchyNode> propertyHierarchy = new ArrayList<>();
         propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX_LIST, "0"));
         propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX, "stringItem"));
         FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff, propertyHierarchy);
@@ -204,7 +204,7 @@ public class TestFieldDiffHelper extends DiffTestCase {
 
         // Complex with nested list
         propertyDiff = new ComplexPropertyDiff();
-        propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
+        propertyHierarchy = new ArrayList<>();
         propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX, "listItem"));
         propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.SCALAR_LIST, "1"));
         FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff, propertyHierarchy);
@@ -215,7 +215,7 @@ public class TestFieldDiffHelper extends DiffTestCase {
 
         // Complex with nested complex
         propertyDiff = new ComplexPropertyDiff();
-        propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
+        propertyHierarchy = new ArrayList<>();
         propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX, "complexItem"));
         propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX, "subComplexItem"));
         FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff, propertyHierarchy);
@@ -227,7 +227,7 @@ public class TestFieldDiffHelper extends DiffTestCase {
 
         // Complex with nested content
         propertyDiff = new ComplexPropertyDiff();
-        propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
+        propertyHierarchy = new ArrayList<>();
         propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.COMPLEX, "complexItem"));
         propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.CONTENT, "subContentItem"));
         FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff, propertyHierarchy);
@@ -239,7 +239,7 @@ public class TestFieldDiffHelper extends DiffTestCase {
 
         // Content
         propertyDiff = new ContentPropertyDiff();
-        propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
+        propertyHierarchy = new ArrayList<>();
         propertyHierarchy.add(new PropertyHierarchyNode(PropertyType.CONTENT, "encoding"));
         FieldDiffHelper.applyPropertyHierarchyToDiff(propertyDiff, propertyHierarchy);
 

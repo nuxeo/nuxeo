@@ -40,9 +40,9 @@ public class FormDescriptor {
 
     protected FormValidator validator;
 
-    protected Map<String, Field> fields = new HashMap<String, Field>();
+    protected Map<String, Field> fields = new HashMap<>();
 
-    protected HashSet<String> requiredFields = new HashSet<String>();
+    protected HashSet<String> requiredFields = new HashSet<>();
 
     public FormDescriptor(Class<?> type) throws ReflectiveOperationException {
         Method[] methods = type.getMethods(); // get all inherited public methods
@@ -161,7 +161,7 @@ public class FormDescriptor {
         }
 
         Object[] validateArray(String[] values) throws ValidationException {
-            List<Object> result = new ArrayList<Object>();
+            List<Object> result = new ArrayList<>();
             for (String value : values) {
                 result.add(validate(value));
             }

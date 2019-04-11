@@ -45,7 +45,7 @@ public class AnnoteaDecoratorVisitor implements DecoratorVisitor {
 
     private boolean previousIsCarriageReturnElement;
 
-    private static List<String> carriagesReturnedElements = new ArrayList<String>();
+    private static List<String> carriagesReturnedElements = new ArrayList<>();
     static {
         carriagesReturnedElements.add("div");
         carriagesReturnedElements.add("br");

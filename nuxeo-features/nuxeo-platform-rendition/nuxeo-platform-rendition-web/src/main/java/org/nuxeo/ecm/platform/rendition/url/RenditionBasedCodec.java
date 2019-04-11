@@ -105,7 +105,7 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
             String query = pathMatcher.group(4);
             Map<String, String> params = URIUtils.getRequestParameters(query);
             if (params == null) {
-                params = new HashMap<String, String>();
+                params = new HashMap<>();
             }
             params.put(RENDITION_PARAM_NAME, renditionName);
             final DocumentLocation docLoc = new DocumentLocationImpl(server, docRef);
@@ -129,7 +129,7 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
                         params = URIUtils.getRequestParameters(query);
                     }
                     if (params == null) {
-                        params = new HashMap<String, String>();
+                        params = new HashMap<>();
                     }
                     params.put(RENDITION_PARAM_NAME, renditionName);
 
@@ -144,7 +144,7 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
     protected String getUrlFromDocumentViewWithId(DocumentView docView) {
         DocumentLocation docLoc = docView.getDocumentLocation();
         if (docLoc != null) {
-            List<String> items = new ArrayList<String>();
+            List<String> items = new ArrayList<>();
             items.add(getPrefix());
             items.add(docLoc.getServerName());
             IdRef docRef = docLoc.getIdRef();
@@ -186,7 +186,7 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
 
         DocumentLocation docLoc = docView.getDocumentLocation();
         if (docLoc != null) {
-            List<String> items = new ArrayList<String>();
+            List<String> items = new ArrayList<>();
             items.add(getPrefix());
             items.add(docLoc.getServerName());
             PathRef docRef = docLoc.getPathRef();

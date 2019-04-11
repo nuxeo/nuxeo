@@ -49,7 +49,7 @@ public class PPTX2TextConverter extends XmlZip2TextConverter {
     protected void readXmlZipContent(ZipInputStream zis, XMLReader reader, StringBuilder sb) throws IOException,
             SAXException {
 
-        Set<PresentationSlide> slides = new TreeSet<PresentationSlide>();
+        Set<PresentationSlide> slides = new TreeSet<>();
 
         ZipEntry zipEntry = zis.getNextEntry();
         while (zipEntry != null) {

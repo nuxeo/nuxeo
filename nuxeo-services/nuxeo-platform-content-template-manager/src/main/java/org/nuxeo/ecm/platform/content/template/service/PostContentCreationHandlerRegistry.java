@@ -40,7 +40,7 @@ public class PostContentCreationHandlerRegistry extends
 
     private static final Log log = LogFactory.getLog(PostContentCreationHandlerRegistry.class);
 
-    protected Map<String, PostContentCreationHandlerDescriptor> postContentCreationHandlerDescriptors = new HashMap<String, PostContentCreationHandlerDescriptor>();
+    protected Map<String, PostContentCreationHandlerDescriptor> postContentCreationHandlerDescriptors = new HashMap<>();
 
     @Override
     public String getContributionId(PostContentCreationHandlerDescriptor contrib) {
@@ -87,11 +87,11 @@ public class PostContentCreationHandlerRegistry extends
     }
 
     public List<PostContentCreationHandler> getOrderedHandlers() {
-        List<PostContentCreationHandlerDescriptor> descs = new ArrayList<PostContentCreationHandlerDescriptor>(
+        List<PostContentCreationHandlerDescriptor> descs = new ArrayList<>(
                 postContentCreationHandlerDescriptors.values());
         Collections.sort(descs);
 
-        List<PostContentCreationHandler> handlers = new ArrayList<PostContentCreationHandler>();
+        List<PostContentCreationHandler> handlers = new ArrayList<>();
         for (PostContentCreationHandlerDescriptor desc : descs) {
             try {
                 handlers.add(desc.getClazz().getDeclaredConstructor().newInstance());

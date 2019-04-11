@@ -111,7 +111,7 @@ public class JenaGraph implements Graph {
 
     private boolean databaseTransactionEnabled;
 
-    private Map<String, String> namespaces = new HashMap<String, String>();
+    private Map<String, String> namespaces = new HashMap<>();
 
     /**
      * Class holding graph and connection so that we can close the connection after having used the graph.
@@ -409,7 +409,7 @@ public class JenaGraph implements Graph {
      */
     private List<Statement> getNXRelationsStatements(Model graph,
             List<com.hp.hpl.jena.rdf.model.Statement> jenaStatements) {
-        List<Statement> nuxStmts = new ArrayList<Statement>();
+        List<Statement> nuxStmts = new ArrayList<>();
         for (com.hp.hpl.jena.rdf.model.Statement jenaStmt : jenaStatements) {
             // NXP-2665: remove reified statements are they're as properties in
             // nuxeo logic
@@ -500,7 +500,7 @@ public class JenaGraph implements Graph {
                     // no properties
                     graph.add(jenaStmt);
                 } else {
-                    List<com.hp.hpl.jena.rdf.model.Statement> stmts = new ArrayList<com.hp.hpl.jena.rdf.model.Statement>();
+                    List<com.hp.hpl.jena.rdf.model.Statement> stmts = new ArrayList<>();
                     stmts.add(jenaStmt);
                     // create reified statement if it does not exist
                     com.hp.hpl.jena.graph.Node reifiedStmt = graph.getAnyReifiedStatement(jenaStmt).asNode();
@@ -621,7 +621,7 @@ public class JenaGraph implements Graph {
             graph.enterCriticalSection(Lock.READ);
             SimpleSelector selector = getJenaSelector(graph, new StatementImpl(null, predicate, object));
             ResIterator it = graph.listSubjectsWithProperty(selector.getPredicate(), selector.getObject());
-            List<Node> res = new ArrayList<Node>();
+            List<Node> res = new ArrayList<>();
             while (it.hasNext()) {
                 res.add(getNXRelationsNode(it.nextResource().asNode()));
             }
@@ -647,7 +647,7 @@ public class JenaGraph implements Graph {
             SimpleSelector selector = getJenaSelector(graph, new StatementImpl(subject, null, object));
             StmtIterator it = graph.listStatements(selector);
             List<Statement> statements = getNXRelationsStatements(graph, it.toList());
-            List<Node> res = new ArrayList<Node>();
+            List<Node> res = new ArrayList<>();
             for (Statement stmt : statements) {
                 Node predicate = stmt.getPredicate();
                 if (!res.contains(predicate)) {
@@ -676,7 +676,7 @@ public class JenaGraph implements Graph {
             graph.enterCriticalSection(Lock.READ);
             SimpleSelector selector = getJenaSelector(graph, new StatementImpl(subject, predicate, null));
             NodeIterator it = graph.listObjectsOfProperty(selector.getSubject(), selector.getPredicate());
-            List<Node> res = new ArrayList<Node>();
+            List<Node> res = new ArrayList<>();
             while (it.hasNext()) {
                 res.add(getNXRelationsNode(it.nextNode().asNode()));
             }
@@ -776,7 +776,7 @@ public class JenaGraph implements Graph {
             graph.removeAll();
             // XXX AT: remove reification quadlets explicitly
             RSIterator it = graph.listReifiedStatements();
-            List<ReifiedStatement> rss = new ArrayList<ReifiedStatement>();
+            List<ReifiedStatement> rss = new ArrayList<>();
             while (it.hasNext()) {
                 rss.add(it.nextRS());
             }
@@ -815,10 +815,10 @@ public class JenaGraph implements Graph {
             ResultSet jenaResults = qe.execSelect();
             Integer count = 0;
             List<String> variableNames = jenaResults.getResultVars();
-            List<Map<String, Node>> nuxResults = new ArrayList<Map<String, Node>>();
+            List<Map<String, Node>> nuxResults = new ArrayList<>();
             while (jenaResults.hasNext()) {
                 QuerySolution soln = jenaResults.nextSolution();
-                Map<String, Node> nuxSol = new HashMap<String, Node>();
+                Map<String, Node> nuxSol = new HashMap<>();
                 for (String varName : variableNames) {
                     RDFNode x = soln.get(varName);
                     nuxSol.put(varName, getNXRelationsNode(x.asNode()));

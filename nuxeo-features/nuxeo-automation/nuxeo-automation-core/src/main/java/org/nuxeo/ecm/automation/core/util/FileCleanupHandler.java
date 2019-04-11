@@ -35,7 +35,7 @@ public class FileCleanupHandler implements CleanupHandler {
     protected List<File> files;
 
     public FileCleanupHandler() {
-        files = new ArrayList<File>();
+        files = new ArrayList<>();
     }
 
     public FileCleanupHandler(File file) {

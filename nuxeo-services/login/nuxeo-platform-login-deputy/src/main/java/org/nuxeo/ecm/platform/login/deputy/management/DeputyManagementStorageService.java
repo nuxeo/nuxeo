@@ -99,7 +99,7 @@ public class DeputyManagementStorageService implements DeputyManager {
 
         try {
             DocumentModelList allEntries = dirSession.getEntries();
-            List<String> ids = new ArrayList<String>();
+            List<String> ids = new ArrayList<>();
             for (DocumentModel entry : allEntries) {
                 ids.add(entry.getId());
             }
@@ -115,13 +115,13 @@ public class DeputyManagementStorageService implements DeputyManager {
 
     @Override
     public List<String> getPossiblesAlternateLogins(String userName) {
-        List<String> users = new ArrayList<String>();
-        List<String> outdatedEntriesId = new ArrayList<String>();
+        List<String> users = new ArrayList<>();
+        List<String> outdatedEntriesId = new ArrayList<>();
 
         initPersistentService();
 
         try {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put(DIR_COL_DEPUTY, userName);
 
             DocumentModelList entries = null;
@@ -164,7 +164,7 @@ public class DeputyManagementStorageService implements DeputyManager {
 
     @Override
     public List<String> getAvalaibleDeputyIds(String userName) {
-        List<String> deputies = new ArrayList<String>();
+        List<String> deputies = new ArrayList<>();
 
         for (DocumentModel entry : getAvalaibleMandates(userName)) {
             String alternateId = (String) entry.getProperty(directorySchema, DIR_COL_DEPUTY);
@@ -176,12 +176,12 @@ public class DeputyManagementStorageService implements DeputyManager {
 
     @Override
     public List<DocumentModel> getAvalaibleMandates(String userName) {
-        List<DocumentModel> deputies = new ArrayList<DocumentModel>();
+        List<DocumentModel> deputies = new ArrayList<>();
 
         initPersistentService();
 
         try {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put(DIR_COL_USERID, userName);
             return dirSession.query(filter);
         } catch (DirectoryException e) {

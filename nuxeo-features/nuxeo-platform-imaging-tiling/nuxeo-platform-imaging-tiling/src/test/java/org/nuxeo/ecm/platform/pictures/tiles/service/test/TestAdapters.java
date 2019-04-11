@@ -125,7 +125,7 @@ public class TestAdapters {
         Blob image = Blobs.createBlob(file);
 
         List<Map<String, Object>> viewsList = getDefaultViewsList(image);
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("title", "OriginalJpeg");
         map.put("description", "OriginalJpeg Size");
         map.put("filename", "test.jpg");
@@ -144,8 +144,8 @@ public class TestAdapters {
     }
 
     protected List<Map<String, Object>> getDefaultViewsList(Blob image) {
-        List<Map<String, Object>> viewsList = new ArrayList<Map<String, Object>>();
-        Map<String, Object> map = new HashMap<String, Object>();
+        List<Map<String, Object>> viewsList = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("title", "Medium");
         map.put("description", "Medium Size");
         map.put("filename", "test.jpg");
@@ -155,7 +155,7 @@ public class TestAdapters {
         image.setFilename("Medium" + "_" + "test.jpg");
         map.put("content", image);
         viewsList.add(map);
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         map.put("title", "Thumbnail");
         map.put("description", "Thumbnail Size");
         map.put("filename", "test.jpg");

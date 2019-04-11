@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public class AdapterManager {
 
-    protected final Set<AdapterFactory<?>> factories = new HashSet<AdapterFactory<?>>();
+    protected final Set<AdapterFactory<?>> factories = new HashSet<>();
 
     // put(BusinessObjectService.class,
     public <T> T getAdapter(Session session, Class<T> adapterType) {

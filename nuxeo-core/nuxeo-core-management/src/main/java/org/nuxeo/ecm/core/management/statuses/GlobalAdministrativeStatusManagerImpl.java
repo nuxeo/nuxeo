@@ -33,11 +33,11 @@ public class GlobalAdministrativeStatusManagerImpl implements GlobalAdministrati
 
     protected final AdministrativeStatusPersister persister = new DocumentModelStatusPersister();
 
-    protected final Map<String, AdministrativeStatusManager> managers = new HashMap<String, AdministrativeStatusManager>();
+    protected final Map<String, AdministrativeStatusManager> managers = new HashMap<>();
 
-    protected final List<AdministrableServiceDescriptor> descriptors = new ArrayList<AdministrableServiceDescriptor>();
+    protected final List<AdministrableServiceDescriptor> descriptors = new ArrayList<>();
 
-    protected final Map<String, AdministrableServiceDescriptor> descriptorsByServiceId = new HashMap<String, AdministrableServiceDescriptor>();
+    protected final Map<String, AdministrableServiceDescriptor> descriptorsByServiceId = new HashMap<>();
 
     @Override
     public String getLocalNuxeoInstanceIdentifier() {

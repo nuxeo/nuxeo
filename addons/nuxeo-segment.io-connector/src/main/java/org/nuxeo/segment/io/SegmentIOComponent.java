@@ -128,7 +128,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     }
 
     protected void computeEvent2Mappers() {
-        event2Mappers = new HashMap<String, List<SegmentIOMapper>>();
+        event2Mappers = new HashMap<>();
         for (SegmentIOMapper mapper : mappers.values()) {
             for (String event : mapper.events) {
                 List<SegmentIOMapper> m4event = event2Mappers.get(event);
@@ -377,7 +377,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     @Override
     public Map<String, List<SegmentIOMapper>> getMappers(List<String> events) {
-        Map<String, List<SegmentIOMapper>> targetMappers = new HashMap<String, List<SegmentIOMapper>>();
+        Map<String, List<SegmentIOMapper>> targetMappers = new HashMap<>();
         for (String event : events) {
             if (event2Mappers.containsKey(event)) {
                 targetMappers.put(event, event2Mappers.get(event));

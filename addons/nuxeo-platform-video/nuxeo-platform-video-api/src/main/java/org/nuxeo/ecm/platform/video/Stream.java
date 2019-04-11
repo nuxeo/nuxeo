@@ -55,7 +55,7 @@ public class Stream {
     }
 
     private Stream(Map<String, Serializable> m) {
-        attributes = new HashMap<String, Serializable>(m);
+        attributes = new HashMap<>(m);
     }
 
     /**

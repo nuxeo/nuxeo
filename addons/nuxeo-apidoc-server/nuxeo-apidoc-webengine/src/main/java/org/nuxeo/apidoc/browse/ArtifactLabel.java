@@ -78,7 +78,7 @@ public class ArtifactLabel implements Comparable<ArtifactLabel> {
 
     public static ArtifactLabel createLabelFromComponent(String component) {
         String label = component;
-        List<String> prefixes = new ArrayList<String>();
+        List<String> prefixes = new ArrayList<>();
         prefixes.add("org.nuxeo.ecm.platform.web.common.");
         prefixes.add("org.nuxeo.ecm.platform.ui.web.");
         prefixes.add("org.nuxeo.ecm.platform.");

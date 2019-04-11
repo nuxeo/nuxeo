@@ -65,7 +65,7 @@ public class GuardDescriptor {
 
     public GuardDescriptor(String name) {
         id = name;
-        guards = new HashMap<String, Guard>();
+        guards = new HashMap<>();
     }
 
     public Map<String, Guard> getGuards() {

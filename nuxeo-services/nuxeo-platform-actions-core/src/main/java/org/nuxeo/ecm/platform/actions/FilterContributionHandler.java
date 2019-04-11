@@ -62,7 +62,7 @@ public class FilterContributionHandler extends ContributionFragmentRegistry<Defa
     @Override
     public void merge(DefaultActionFilter src, DefaultActionFilter dst) {
         if (src.getAppend()) {
-            List<FilterRule> mergedRules = new ArrayList<FilterRule>();
+            List<FilterRule> mergedRules = new ArrayList<>();
             mergedRules.addAll(Arrays.asList(dst.getRules()));
             mergedRules.addAll(Arrays.asList(src.getRules()));
             dst.setRules(mergedRules.toArray(new FilterRule[mergedRules.size()]));

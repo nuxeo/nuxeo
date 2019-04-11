@@ -128,7 +128,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
             pageSizeBinding = genDesc.getPageSizeBinding();
             searchDocumentType = genDesc.getSearchDocumentType();
         }
-        List<String> allQueryParams = new ArrayList<String>();
+        List<String> allQueryParams = new ArrayList<>();
         if (queryParams != null) {
             allQueryParams.addAll(Arrays.asList(queryParams));
         }
@@ -176,7 +176,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
 
     @Override
     public Set<ContentViewHeader> getContentViewHeaders() {
-        Set<ContentViewHeader> res = new HashSet<ContentViewHeader>();
+        Set<ContentViewHeader> res = new HashSet<>();
         for (ContentViewDescriptor desc : contentViewReg.getContentViews()) {
             res.add(getContentViewHeader(desc));
         }
@@ -185,7 +185,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
 
     @Override
     public Set<String> getContentViewNames(String flag) {
-        Set<String> res = new LinkedHashSet<String>();
+        Set<String> res = new LinkedHashSet<>();
         Set<String> items = contentViewReg.getContentViewsByFlag(flag);
         if (items != null) {
             res.addAll(items);
@@ -196,7 +196,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
     @Override
     public Set<ContentViewHeader> getContentViewHeaders(String flag) {
         Set<String> cvs = getContentViewNames(flag);
-        Set<ContentViewHeader> res = new HashSet<ContentViewHeader>();
+        Set<ContentViewHeader> res = new HashSet<>();
         for (String cv : cvs) {
             ContentViewHeader header = getContentViewHeader(cv);
             if (header != null) {
@@ -222,7 +222,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
 
     public Map<String, Serializable> resolvePageProviderProperties(Map<String, String> stringProps) {
         // resolve properties
-        Map<String, Serializable> resolvedProps = new HashMap<String, Serializable>();
+        Map<String, Serializable> resolvedProps = new HashMap<>();
         for (Map.Entry<String, String> prop : stringProps.entrySet()) {
             resolvedProps.put(prop.getKey(), resolveProperty(prop.getValue()));
         }

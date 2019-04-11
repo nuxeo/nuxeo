@@ -77,7 +77,7 @@ public class ChainSelectOne extends ChainSelectBase {
         if (value != null) {
             String[] keys = StringUtils.split(value, getKeySeparator());
             List<DirectoryEntry> nodes = resolveKeys(keys);
-            List<String> labels = new ArrayList<String>();
+            List<String> labels = new ArrayList<>();
             for (DirectoryEntry node : nodes) {
                 String itemValue = node.getId();
                 String itemLabel = node.getLabel();

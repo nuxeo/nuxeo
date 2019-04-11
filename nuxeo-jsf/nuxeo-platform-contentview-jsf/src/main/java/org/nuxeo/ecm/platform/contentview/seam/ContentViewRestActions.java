@@ -83,7 +83,7 @@ public class ContentViewRestActions implements Serializable {
     }
 
     public List<SortInfo> getSortInfos(String sortColumn, boolean ascending) {
-        List<SortInfo> sortInfos = new ArrayList<SortInfo>();
+        List<SortInfo> sortInfos = new ArrayList<>();
         sortInfos.add(new SortInfo(sortColumn, ascending));
         return sortInfos;
     }

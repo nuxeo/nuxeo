@@ -71,10 +71,10 @@ public class BundleWO extends NuxeoArtifactWebObject {
     }
 
     public List<ComponentWO> getComponents() {
-        List<ComponentWO> result = new ArrayList<ComponentWO>();
+        List<ComponentWO> result = new ArrayList<>();
         BundleInfo bundle = getTargetBundleInfo();
 
-        List<ComponentInfo> cis = new ArrayList<ComponentInfo>(bundle.getComponents());
+        List<ComponentInfo> cis = new ArrayList<>(bundle.getComponents());
         Collections.sort(cis, new ComponentInfoSorter());
 
         for (ComponentInfo ci : cis) {

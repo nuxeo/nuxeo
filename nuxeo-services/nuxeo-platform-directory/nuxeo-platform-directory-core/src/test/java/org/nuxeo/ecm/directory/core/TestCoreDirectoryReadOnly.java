@@ -74,11 +74,11 @@ public class TestCoreDirectoryReadOnly {
 
     @Test
     public void testReadOnlyEntryInQueryResults() throws Exception {
-        Map<String, String> orderBy = new HashMap<String, String>();
+        Map<String, String> orderBy = new HashMap<>();
         orderBy.put(TestCoreDirectory.UID_FIELD, "asc");
         DocumentModelComparator comp = new DocumentModelComparator(orderBy);
 
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+        Map<String, Serializable> filter = new HashMap<>();
 
         DocumentModelList results = dirSystemReadOnlySession.query(filter);
         Collections.sort(results, comp);

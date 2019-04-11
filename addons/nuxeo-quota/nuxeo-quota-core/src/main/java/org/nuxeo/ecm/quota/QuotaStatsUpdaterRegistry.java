@@ -36,14 +36,14 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class QuotaStatsUpdaterRegistry extends ContributionFragmentRegistry<QuotaStatsUpdaterDescriptor> {
 
-    protected Map<String, QuotaStatsUpdater> quotaStatsUpdaters = new HashMap<String, QuotaStatsUpdater>();
+    protected Map<String, QuotaStatsUpdater> quotaStatsUpdaters = new HashMap<>();
 
     public QuotaStatsUpdater getQuotaStatsUpdater(String name) {
         return quotaStatsUpdaters.get(name);
     }
 
     public List<QuotaStatsUpdater> getQuotaStatsUpdaters() {
-        return new ArrayList<QuotaStatsUpdater>(quotaStatsUpdaters.values());
+        return new ArrayList<>(quotaStatsUpdaters.values());
     }
 
     @Override

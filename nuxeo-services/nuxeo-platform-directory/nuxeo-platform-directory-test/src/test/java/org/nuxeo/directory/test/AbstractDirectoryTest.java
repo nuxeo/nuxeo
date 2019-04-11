@@ -442,7 +442,7 @@ public abstract class AbstractDirectoryTest {
             assertEquals(3, session.getEntries().size());
 
             // delete with nonexisting email
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<>();
             map.put("email", "nosuchemail");
             session.deleteEntry("user_1", map);
             // still there
@@ -526,7 +526,7 @@ public abstract class AbstractDirectoryTest {
         try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("username", "er_");
-            Set<String> set = new HashSet<String>();
+            Set<String> set = new HashSet<>();
             set.add("username");
             DocumentModelList list = session.query(filter, set);
             assertEquals(2, list.size());

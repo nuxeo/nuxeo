@@ -51,7 +51,7 @@ public class RootSectionsManager {
         if (currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
             String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
 
-            List<String> sectionIdsList = new ArrayList<String>();
+            List<String> sectionIdsList = new ArrayList<>();
 
             if (sectionIdsArray != null && sectionIdsArray.length > 0) {
                 sectionIdsList = Arrays.asList(sectionIdsArray);
@@ -70,12 +70,12 @@ public class RootSectionsManager {
         if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
             String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
 
-            List<String> sectionIdsList = new ArrayList<String>();
+            List<String> sectionIdsList = new ArrayList<>();
 
             if (sectionIdsArray != null && sectionIdsArray.length > 0) {
                 sectionIdsList = Arrays.asList(sectionIdsArray);
                 // make it resizable
-                sectionIdsList = new ArrayList<String>(sectionIdsList);
+                sectionIdsList = new ArrayList<>(sectionIdsList);
             }
 
             sectionIdsList.add(sectionId);
@@ -94,12 +94,12 @@ public class RootSectionsManager {
         if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
             String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
 
-            List<String> sectionIdsList = new ArrayList<String>();
+            List<String> sectionIdsList = new ArrayList<>();
 
             if (sectionIdsArray != null && sectionIdsArray.length > 0) {
                 sectionIdsList = Arrays.asList(sectionIdsArray);
                 // make it resizable
-                sectionIdsList = new ArrayList<String>(sectionIdsList);
+                sectionIdsList = new ArrayList<>(sectionIdsList);
             }
 
             if (!sectionIdsList.isEmpty()) {

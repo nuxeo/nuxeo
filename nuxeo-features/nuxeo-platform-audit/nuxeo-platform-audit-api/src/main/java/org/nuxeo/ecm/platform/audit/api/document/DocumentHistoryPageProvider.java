@@ -72,7 +72,7 @@ public class DocumentHistoryPageProvider extends AuditPageProvider {
 
         List<SortInfo> sort = super.getSortInfos();
         if (sort == null || sort.size() == 0) {
-            sort = new ArrayList<SortInfo>();
+            sort = new ArrayList<>();
             sort.add(new SortInfo("log.eventDate", true));
             sort.add(new SortInfo("log.id", true));
         }

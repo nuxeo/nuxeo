@@ -65,12 +65,12 @@ public class DefaultDocumentView implements DocumentView {
     protected final Map<String, Field> fields;
 
     public DefaultDocumentView() {
-        fields = new HashMap<String, Field>();
+        fields = new HashMap<>();
         initialize();
     }
 
     public DefaultDocumentView(Map<String, Field> fields) {
-        this.fields = fields == null ? new HashMap<String, Field>() : fields;
+        this.fields = fields == null ? new HashMap<>() : fields;
     }
 
     protected void initialize() {
@@ -140,7 +140,7 @@ public class DefaultDocumentView implements DocumentView {
     }
 
     public Collection<String> keys(DocumentModel doc) {
-        Collection<String> keys = new ArrayList<String>(fields.keySet());
+        Collection<String> keys = new ArrayList<>(fields.keySet());
         keys.addAll(Arrays.asList(doc.getSchemas()));
         return keys;
     }

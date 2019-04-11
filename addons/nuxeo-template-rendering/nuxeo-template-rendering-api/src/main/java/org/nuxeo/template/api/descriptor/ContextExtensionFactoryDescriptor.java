@@ -46,7 +46,7 @@ public class ContextExtensionFactoryDescriptor implements Serializable {
     protected boolean enabled = true;
 
     @XNodeList(value = "aliasName", type = ArrayList.class, componentType = String.class)
-    protected List<String> aliasNames = new ArrayList<String>();
+    protected List<String> aliasNames = new ArrayList<>();
 
     protected ContextExtensionFactory factory;
 

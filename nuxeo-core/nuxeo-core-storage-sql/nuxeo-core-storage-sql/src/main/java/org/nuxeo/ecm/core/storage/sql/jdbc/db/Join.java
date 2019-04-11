@@ -66,10 +66,10 @@ public class Join implements Serializable, Comparable<Join> {
     public String on2;
 
     /** Additional WHERE clauses. */
-    public final List<String> whereClauses = new LinkedList<String>();
+    public final List<String> whereClauses = new LinkedList<>();
 
     /** Additional WHERE clauses parameters. */
-    public final List<Serializable> whereParams = new LinkedList<Serializable>();
+    public final List<Serializable> whereParams = new LinkedList<>();
 
     private Join(int kind, String table, String tableAlias, String tableParam) {
         this.kind = kind;

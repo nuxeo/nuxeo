@@ -41,7 +41,7 @@ public class PropertiesPaletteParser extends PaletteParser {
     }
 
     public static Map<String, String> parse(byte[] bytes) {
-        Map<String, String> entries = new LinkedHashMap<String, String>();
+        Map<String, String> entries = new LinkedHashMap<>();
         Properties properties = getProperties(bytes);
         for (Object propertyName : properties.keySet()) {
             String key = (String) propertyName;

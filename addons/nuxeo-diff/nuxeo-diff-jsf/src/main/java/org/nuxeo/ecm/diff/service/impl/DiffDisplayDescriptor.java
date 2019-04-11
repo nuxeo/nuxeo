@@ -41,7 +41,7 @@ public class DiffDisplayDescriptor {
     public boolean enabled = true;
 
     @XNodeList(value = "diffBlocks/diffBlock", type = ArrayList.class, componentType = DiffBlockReferenceDescriptor.class)
-    public List<DiffBlockReferenceDescriptor> diffBlocks = new ArrayList<DiffBlockReferenceDescriptor>();
+    public List<DiffBlockReferenceDescriptor> diffBlocks = new ArrayList<>();
 
     public String getType() {
         return type;

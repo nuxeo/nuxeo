@@ -48,7 +48,7 @@ public class LazyRenditionWorkSample extends AbstractRenditionBuilderWork {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
-        List<Blob> blobs = new ArrayList<Blob>();
+        List<Blob> blobs = new ArrayList<>();
         StringBlob blob = new StringBlob("I am really lazy");
         blob.setFilename("LazyBoy.txt");
         blobs.add(blob);

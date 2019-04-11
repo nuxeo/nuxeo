@@ -82,13 +82,13 @@ public class MarshallerInspector implements Comparable<MarshallerInspector> {
 
     private Instantiations instantiation;
 
-    private List<MediaType> supports = new ArrayList<MediaType>();
+    private List<MediaType> supports = new ArrayList<>();
 
     private Constructor<?> constructor;
 
-    private List<Field> serviceFields = new ArrayList<Field>();
+    private List<Field> serviceFields = new ArrayList<>();
 
-    private List<Field> contextFields = new ArrayList<Field>();
+    private List<Field> contextFields = new ArrayList<>();
 
     private Object singleton;
 
@@ -342,7 +342,7 @@ public class MarshallerInspector implements Comparable<MarshallerInspector> {
      */
     private Object getThreadInstance(RenderingContext ctx) {
         if (threadInstance == null) {
-            threadInstance = new ThreadLocal<Object>();
+            threadInstance = new ThreadLocal<>();
         }
         Object instance = threadInstance.get();
         if (instance == null) {

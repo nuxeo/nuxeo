@@ -57,7 +57,7 @@ public class AnnotationManager {
     }
 
     public Annotation translateAnnotationFromRepo(UriResolver resolver, String baseUrl, Annotation annotation) {
-        List<Statement> results = new ArrayList<Statement>();
+        List<Statement> results = new ArrayList<>();
         for (Statement statement : annotation.getStatements()) {
             Node node = statement.getSubject();
             if (node instanceof Resource) {
@@ -87,7 +87,7 @@ public class AnnotationManager {
     }
 
     public Annotation translateAnnotationToRepo(UriResolver resolver, Annotation annotation) {
-        List<Statement> results = new ArrayList<Statement>();
+        List<Statement> results = new ArrayList<>();
         for (Statement statement : annotation.getStatements()) {
             Node node = statement.getSubject();
             if (node instanceof Resource) {

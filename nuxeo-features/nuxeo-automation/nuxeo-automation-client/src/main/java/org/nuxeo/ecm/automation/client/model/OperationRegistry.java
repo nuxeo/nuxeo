@@ -55,7 +55,7 @@ public class OperationRegistry implements Serializable {
     }
 
     public Map<String, OperationDocumentation> getOperations() {
-        Map<String, OperationDocumentation> map = new HashMap<String, OperationDocumentation>(ops);
+        Map<String, OperationDocumentation> map = new HashMap<>(ops);
         map.putAll(chains);
         return map;
     }

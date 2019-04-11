@@ -60,7 +60,7 @@ public class MockPageProvider extends AbstractPageProvider<MockPagedListItem> {
         if (pageSize > 0) {
             usedPageSize = pageSize;
         }
-        currentItems = new ArrayList<MockPagedListItem>();
+        currentItems = new ArrayList<>();
         long offset = getCurrentPageOffset();
         for (long i = offset; i < offset + usedPageSize && i < givenResultsCount; i++) {
             currentItems.add(getItem(i));

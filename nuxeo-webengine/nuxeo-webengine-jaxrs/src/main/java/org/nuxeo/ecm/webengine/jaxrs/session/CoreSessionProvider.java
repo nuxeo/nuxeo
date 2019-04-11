@@ -35,7 +35,7 @@ public abstract class CoreSessionProvider<REF extends SessionRef> {
     protected Map<String, REF> sessions;
 
     protected CoreSessionProvider() {
-        this.sessions = new HashMap<String, REF>();
+        this.sessions = new HashMap<>();
     }
 
     /**

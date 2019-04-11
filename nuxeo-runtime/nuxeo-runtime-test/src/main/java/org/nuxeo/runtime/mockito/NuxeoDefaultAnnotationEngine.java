@@ -40,7 +40,7 @@ import org.mockito.internal.configuration.MockitoAnnotationsMockAnnotationProces
  */
 public class NuxeoDefaultAnnotationEngine extends DefaultAnnotationEngine {
 
-    private final Map<Class<? extends Annotation>, FieldAnnotationProcessor<?>> annotationProcessorMap = new HashMap<Class<? extends Annotation>, FieldAnnotationProcessor<?>>();
+    private final Map<Class<? extends Annotation>, FieldAnnotationProcessor<?>> annotationProcessorMap = new HashMap<>();
 
     public NuxeoDefaultAnnotationEngine() {
         registerAnnotationProcessor(Mock.class, new NuxeoServiceMockAnnotationProcessor());

@@ -74,7 +74,7 @@ public class PortalSSOAuthInterceptor extends RequestInterceptor {
         }
 
         String base64HashedToken = Base64.encodeBase64String(hashedToken);
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("NX_TS", String.valueOf(ts));
         headers.put("NX_RD", String.valueOf(random));
         headers.put("NX_TOKEN", base64HashedToken);

@@ -101,7 +101,7 @@ public class ModuleConfiguration {
     public File directory;
 
     @XNodeList(value = "fragments/directory", type = ArrayList.class, componentType = File.class, nullByDefault = false)
-    public List<File> fragmentDirectories = new ArrayList<File>();
+    public List<File> fragmentDirectories = new ArrayList<>();
 
     /**
      * The module configuration file (this will be set by the module config parser)

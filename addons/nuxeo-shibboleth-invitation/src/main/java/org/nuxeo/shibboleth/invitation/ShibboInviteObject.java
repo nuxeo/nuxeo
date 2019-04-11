@@ -135,7 +135,7 @@ public class ShibboInviteObject extends ModuleRoot {
                     ctx.getMessage("label.error.requestNotExisting", requestId));
         }
 
-        Map<String, String> data = new HashMap<String, String>();
+        Map<String, String> data = new HashMap<>();
         data.put("RequestId", requestId);
         data.put("ConfigurationName", configurationName);
         String webappName = VirtualHostHelper.getWebAppName(getContext().getRequest());
@@ -150,7 +150,7 @@ public class ShibboInviteObject extends ModuleRoot {
     }
 
     protected Template redisplayFormWithMessage(String messageType, String formName, String message, FormData data) {
-        Map<String, String> savedData = new HashMap<String, String>();
+        Map<String, String> savedData = new HashMap<>();
         for (String key : data.getKeys()) {
             savedData.put(key, data.getString(key));
         }

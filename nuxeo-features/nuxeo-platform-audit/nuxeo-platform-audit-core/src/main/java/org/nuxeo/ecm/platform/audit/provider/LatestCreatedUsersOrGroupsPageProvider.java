@@ -55,7 +55,7 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
         if (currentPage != null) {
             return currentPage;
         }
-        currentPage = new ArrayList<DocumentModel>();
+        currentPage = new ArrayList<>();
         PageProviderService pps = Framework.getService(PageProviderService.class);
         CoreSession coreSession = (CoreSession) getProperties().get(CORE_SESSION_PROPERTY);
         PageProvider<?> pp = pps.getPageProvider(LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER, null, getPageSize(),

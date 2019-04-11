@@ -148,7 +148,7 @@ public class PublishRelationsListener implements EventListener {
             Graph graph = rmanager.getGraphByName(graphName);
 
             // collect existing relations to or from the source resource
-            List<Statement> newStatements = new ArrayList<Statement>();
+            List<Statement> newStatements = new ArrayList<>();
             for (Statement stmt : graph.getStatements(replacedResource, null, null)) {
                 if (!isCopyFromSource(stmt, sourceResource)) {
                     // do not copy previous relations that come from a
@@ -189,7 +189,7 @@ public class PublishRelationsListener implements EventListener {
             Graph graph = rmanager.getGraphByName(graphName);
 
             // collect existing relations to or from the source document
-            List<Statement> newStatements = new ArrayList<Statement>();
+            List<Statement> newStatements = new ArrayList<>();
             for (Statement stmt : graph.getStatements(sourceResource, null, null)) {
                 stmt.setSubject(publishedResource);
                 stmt.addProperty(RelationConstants.COPY_FROM_WORK_VERSION, sourceResource);

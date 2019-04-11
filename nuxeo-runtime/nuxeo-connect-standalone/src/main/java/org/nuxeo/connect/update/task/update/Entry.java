@@ -41,7 +41,7 @@ public class Entry implements Iterable<Version> {
 
     public Entry(String key) {
         this.key = key;
-        versions = new ArrayList<Version>();
+        versions = new ArrayList<>();
     }
 
     public final boolean isEmpty() {

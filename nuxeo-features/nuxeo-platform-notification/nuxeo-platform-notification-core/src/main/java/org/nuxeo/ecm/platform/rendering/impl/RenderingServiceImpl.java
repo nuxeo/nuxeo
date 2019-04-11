@@ -47,7 +47,7 @@ public class RenderingServiceImpl extends DefaultComponent implements RenderingS
 
     public static final String EP_RENDER_ENGINES = "engines";
 
-    private final Map<String, RenderingEngine> engines = new HashMap<String, RenderingEngine>();
+    private final Map<String, RenderingEngine> engines = new HashMap<>();
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
@@ -81,7 +81,7 @@ public class RenderingServiceImpl extends DefaultComponent implements RenderingS
     }
 
     public Collection<RenderingResult> process(RenderingContext renderingCtx) throws RenderingException {
-        List<RenderingResult> ret = new ArrayList<RenderingResult>();
+        List<RenderingResult> ret = new ArrayList<>();
 
         for (RenderingEngine engine : engines.values()) {
             if (renderingCtx.accept(engine)) {

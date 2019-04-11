@@ -40,7 +40,7 @@ import org.nuxeo.ecm.core.schema.types.QName;
 @SuppressWarnings("unchecked")
 public class ValueExporter implements PropertyVisitor {
 
-    private final Map<String, Serializable> result = new HashMap<String, Serializable>();
+    private final Map<String, Serializable> result = new HashMap<>();
 
     private final boolean prefixed;
 

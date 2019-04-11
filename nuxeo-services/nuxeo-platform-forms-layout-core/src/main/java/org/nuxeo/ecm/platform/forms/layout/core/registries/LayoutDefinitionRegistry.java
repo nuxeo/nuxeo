@@ -43,7 +43,7 @@ public class LayoutDefinitionRegistry extends SimpleContributionRegistry<LayoutD
     }
 
     public List<String> getLayoutNames() {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         res.addAll(currentContribs.keySet());
         return res;
     }

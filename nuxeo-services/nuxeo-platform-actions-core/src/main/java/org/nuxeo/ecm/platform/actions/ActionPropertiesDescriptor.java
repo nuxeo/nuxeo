@@ -43,16 +43,16 @@ public class ActionPropertiesDescriptor implements Serializable {
     boolean append;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> properties = new HashMap<String, String>();
+    Map<String, String> properties = new HashMap<>();
 
     @XNodeMap(value = "propertyList", key = "@name", type = HashMap.class, componentType = ActionPropertyListDescriptor.class)
-    Map<String, ActionPropertyListDescriptor> listProperties = new HashMap<String, ActionPropertyListDescriptor>();
+    Map<String, ActionPropertyListDescriptor> listProperties = new HashMap<>();
 
     @XNodeMap(value = "propertyMap", key = "@name", type = HashMap.class, componentType = ActionPropertiesDescriptor.class)
-    Map<String, ActionPropertiesDescriptor> mapProperties = new HashMap<String, ActionPropertiesDescriptor>();
+    Map<String, ActionPropertiesDescriptor> mapProperties = new HashMap<>();
 
     public HashMap<String, Serializable> getAllProperties() {
-        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> map = new HashMap<>();
         map.putAll(properties);
         for (Map.Entry<String, ActionPropertyListDescriptor> prop : listProperties.entrySet()) {
             map.put(prop.getKey(), prop.getValue().getValues());
@@ -124,16 +124,16 @@ public class ActionPropertiesDescriptor implements Serializable {
     public ActionPropertiesDescriptor clone() {
         ActionPropertiesDescriptor clone = new ActionPropertiesDescriptor();
         if (properties != null) {
-            clone.properties = new HashMap<String, String>(properties);
+            clone.properties = new HashMap<>(properties);
         }
         if (listProperties != null) {
-            clone.listProperties = new HashMap<String, ActionPropertyListDescriptor>();
+            clone.listProperties = new HashMap<>();
             for (Map.Entry<String, ActionPropertyListDescriptor> item : listProperties.entrySet()) {
                 clone.listProperties.put(item.getKey(), item.getValue().clone());
             }
         }
         if (mapProperties != null) {
-            clone.mapProperties = new HashMap<String, ActionPropertiesDescriptor>();
+            clone.mapProperties = new HashMap<>();
             for (Map.Entry<String, ActionPropertiesDescriptor> item : mapProperties.entrySet()) {
                 clone.mapProperties.put(item.getKey(), item.getValue().clone());
             }

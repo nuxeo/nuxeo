@@ -98,7 +98,7 @@ public class HotReloadMessages extends Messages {
             public Set<Map.Entry<String, String>> entrySet() {
                 ResourceBundle bundle = seamResourceBundle;
                 Enumeration<String> keys = bundle.getKeys();
-                Map<String, String> map = new HashMap<String, String>();
+                Map<String, String> map = new HashMap<>();
                 while (keys.hasMoreElements()) {
                     String key = keys.nextElement();
                     map.put(key, get(key));
@@ -115,7 +115,7 @@ public class HotReloadMessages extends Messages {
             public Set<String> keySet() {
                 ResourceBundle bundle = seamResourceBundle;
                 Enumeration<String> keys = bundle.getKeys();
-                return new HashSet<String>(Collections.list(keys));
+                return new HashSet<>(Collections.list(keys));
             }
 
             @Override

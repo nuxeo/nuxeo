@@ -126,7 +126,7 @@ public class VCSLockManager implements LockManager {
         serializationLock = new ReentrantLock();
         // we can cache things locally if there are no outside invalidations (due to clustering)
         caching = !Framework.getService(ClusterService.class).isEnabled();
-        lockCache = caching ? new LRUCache<Serializable, Lock>(CACHE_SIZE) : null;
+        lockCache = caching ? new LRUCache<>(CACHE_SIZE) : null;
     }
 
     /**

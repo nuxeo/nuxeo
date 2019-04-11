@@ -93,10 +93,10 @@ public class ServletRegistry {
     protected Bundle bundle;
 
     private ServletRegistry() {
-        this.servlets = new ArrayList<ServletDescriptor>();
-        this.filters = new ArrayList<FilterSetDescriptor>();
-        this.resources = new HashMap<String, List<ResourcesDescriptor>>();
-        this.contexts = new HashMap<String, BundleHttpContext>();
+        this.servlets = new ArrayList<>();
+        this.filters = new ArrayList<>();
+        this.resources = new HashMap<>();
+        this.contexts = new HashMap<>();
     }
 
     public synchronized ServletDescriptor[] getServletDescriptors() {
@@ -117,7 +117,7 @@ public class ServletRegistry {
     }
 
     public List<FilterSetDescriptor> getFiltersFor(String name) {
-        ArrayList<FilterSetDescriptor> list = new ArrayList<FilterSetDescriptor>();
+        ArrayList<FilterSetDescriptor> list = new ArrayList<>();
         for (FilterSetDescriptor filter : getFilterSetDescriptors()) {
             if (name.equals(filter.targetServlet)) {
                 list.add(filter);
@@ -177,7 +177,7 @@ public class ServletRegistry {
     public synchronized void addResources(ResourcesDescriptor rd) {
         List<ResourcesDescriptor> list = resources.get(rd.getServlet());
         if (list == null) {
-            list = new ArrayList<ResourcesDescriptor>();
+            list = new ArrayList<>();
         }
         list.add(rd);
         // update context
@@ -220,7 +220,7 @@ public class ServletRegistry {
             if (rd != null) {
                 ctx.setResources(rd.toArray(new ResourcesDescriptor[rd.size()]));
             }
-            Hashtable<String, String> params = new Hashtable<String, String>();
+            Hashtable<String, String> params = new Hashtable<>();
             if (sd.name != null) {
                 params.putAll(sd.getInitParams());
                 params.put(SERVLET_NAME, sd.name);

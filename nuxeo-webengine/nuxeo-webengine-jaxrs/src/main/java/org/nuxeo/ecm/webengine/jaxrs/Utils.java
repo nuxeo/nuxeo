@@ -54,7 +54,7 @@ public class Utils {
     public static Class<?>[] loadClasses(String classRefs, char sep) throws ClassNotFoundException,
             BundleNotFoundException {
         StringBuilder buf = null;
-        ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+        ArrayList<Class<?>> classes = new ArrayList<>();
         char[] chars = classRefs.toCharArray();
         for (int i = 0; i < chars.length; i++) {
             char c = chars[i];

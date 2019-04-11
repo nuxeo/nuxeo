@@ -87,7 +87,7 @@ public class RoutingAuditRequestFilter extends AuditRequestFilter {
             if (!principal.isAdministrator()) {
                 DocumentRoutingService documentRoutingService = Framework.getService(DocumentRoutingService.class);
                 List<DocumentRoute> wfModels = documentRoutingService.getAvailableDocumentRouteModel(session);
-                List<String> modelNames = new ArrayList<String>();
+                List<String> modelNames = new ArrayList<>();
                 for (DocumentRoute model : wfModels) {
                     if (session.hasPermission(model.getDocument().getRef(), DocumentRoutingConstants.CAN_DATA_VISU)) {
                         modelNames.add(model.getModelName());

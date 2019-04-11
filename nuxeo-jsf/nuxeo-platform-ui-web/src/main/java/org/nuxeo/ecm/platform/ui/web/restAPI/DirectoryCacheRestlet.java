@@ -64,7 +64,7 @@ public class DirectoryCacheRestlet extends BaseNuxeoRestlet {
 
         try {
             DirectoryService service = Framework.getService(DirectoryService.class);
-            List<Directory> directories = new LinkedList<Directory>();
+            List<Directory> directories = new LinkedList<>();
             Form form = req.getResourceRef().getQueryAsForm();
 
             if (form.getNames().contains(DIRECTORY_NAME_QUERY_PARAM)) {

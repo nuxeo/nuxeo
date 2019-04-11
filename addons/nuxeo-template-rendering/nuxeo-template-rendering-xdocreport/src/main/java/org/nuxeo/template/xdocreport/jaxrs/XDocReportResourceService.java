@@ -78,7 +78,7 @@ public class XDocReportResourceService extends AbstractResourceService implement
         root.setType(ResourceType.CATEGORY);
         root.setName("Nuxeo");
         root.setId("nuxeo");
-        List<Resource> children = new ArrayList<Resource>();
+        List<Resource> children = new ArrayList<>();
         List<TemplateSourceDocument> templates = getTemplates();
         for (TemplateSourceDocument template : templates) {
             children.add(ResourceWrapper.wrap(template));
@@ -92,7 +92,7 @@ public class XDocReportResourceService extends AbstractResourceService implement
     public String listModels() throws IOException {
         SchemaManager sm = Framework.getService(SchemaManager.class);
         DocumentType[] docTypes = sm.getDocumentTypes();
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
 
         for (DocumentType dt : docTypes) {
             names.add(dt.getName());

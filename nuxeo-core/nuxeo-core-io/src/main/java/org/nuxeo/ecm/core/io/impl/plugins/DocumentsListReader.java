@@ -50,7 +50,7 @@ public class DocumentsListReader extends DocumentModelReader {
 
     public static DocumentsListReader createDocumentsListReader(CoreSession session, Collection<DocumentRef> docRefsList) {
 
-        List<DocumentModel> list = new ArrayList<DocumentModel>();
+        List<DocumentModel> list = new ArrayList<>();
 
         for (DocumentRef docRef : docRefsList) {
             DocumentModel doc = session.getDocument(docRef);

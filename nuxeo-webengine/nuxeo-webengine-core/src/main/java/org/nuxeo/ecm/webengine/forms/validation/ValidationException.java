@@ -44,19 +44,19 @@ public class ValidationException extends Exception {
 
     public ValidationException(String message) {
         super(message);
-        invalidFields = new HashMap<String, String>();
-        requiredFields = new HashMap<String, String>();
+        invalidFields = new HashMap<>();
+        requiredFields = new HashMap<>();
     }
 
     public ValidationException(String message, Throwable cause) {
         super(message, cause);
-        invalidFields = new HashMap<String, String>();
-        requiredFields = new HashMap<String, String>();
+        invalidFields = new HashMap<>();
+        requiredFields = new HashMap<>();
     }
 
     public ValidationException() {
-        invalidFields = new HashMap<String, String>();
-        requiredFields = new HashMap<String, String>();
+        invalidFields = new HashMap<>();
+        requiredFields = new HashMap<>();
     }
 
     @Override

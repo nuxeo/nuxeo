@@ -159,7 +159,7 @@ public class TestIORelationAdapter {
 
     private static JenaGraph getMemoryGraph() {
         JenaGraph graph = new JenaGraph();
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
         namespaces.put("dcterms", "http://purl.org/dc/terms/");
         namespaces.put("uid", "http://www.ecm.org/uid/");
@@ -276,7 +276,7 @@ public class TestIORelationAdapter {
         assertNotNull(adapter);
         List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(doc1Ref) });
         IOResources resources = adapter.extractResources(repoName, sources);
-        Map<DocumentRef, DocumentRef> docRefMap = new HashMap<DocumentRef, DocumentRef>();
+        Map<DocumentRef, DocumentRef> docRefMap = new HashMap<>();
         docRefMap.put(new IdRef(doc1Ref), new IdRef(doc1RefCopy));
         DocumentTranslationMap map = new DocumentTranslationMapImpl(repoName, repoName, docRefMap);
         IORelationResources ioRes = (IORelationResources) adapter.translateResources(repoName, resources, map);
@@ -297,7 +297,7 @@ public class TestIORelationAdapter {
         assertNotNull(adapter);
         List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(doc1Ref) });
         IOResources resources = adapter.extractResources(repoName, sources);
-        Map<DocumentRef, DocumentRef> docRefMap = new HashMap<DocumentRef, DocumentRef>();
+        Map<DocumentRef, DocumentRef> docRefMap = new HashMap<>();
         docRefMap.put(new IdRef(doc1Ref), new IdRef(doc1Ref));
         DocumentTranslationMap map = new DocumentTranslationMapImpl(repoName, repoName, docRefMap);
         IORelationResources ioRes = (IORelationResources) adapter.translateResources(repoName, resources, map);
@@ -318,7 +318,7 @@ public class TestIORelationAdapter {
         assertNotNull(adapter);
         List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(doc1Ref) });
         IOResources resources = adapter.extractResources(repoName, sources);
-        Map<DocumentRef, DocumentRef> docRefMap = new HashMap<DocumentRef, DocumentRef>();
+        Map<DocumentRef, DocumentRef> docRefMap = new HashMap<>();
         docRefMap.put(new IdRef(doc1Ref), new IdRef(doc1RefCopy));
         DocumentTranslationMap map = new DocumentTranslationMapImpl(repoName, repoName, docRefMap);
         IORelationResources ioRes = (IORelationResources) adapter.translateResources(repoName, resources, map);

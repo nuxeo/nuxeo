@@ -32,7 +32,7 @@ public class PropertyMapSetter {
 
     protected final Map<String, Object> map;
 
-    protected final Set<String> dirties = new HashSet<String>();
+    protected final Set<String> dirties = new HashSet<>();
 
     public PropertyMapSetter(PropertyMap propertyMap) {
         map = propertyMap.map;
@@ -44,7 +44,7 @@ public class PropertyMapSetter {
      * @return PropertyMap
      */
     public PropertyMap getDirties() {
-        Map<String, Object> resultMap = new HashMap<String, Object>();
+        Map<String, Object> resultMap = new HashMap<>();
         for (String key : dirties) {
             Object value = map.get(key);
             resultMap.put(key, value);

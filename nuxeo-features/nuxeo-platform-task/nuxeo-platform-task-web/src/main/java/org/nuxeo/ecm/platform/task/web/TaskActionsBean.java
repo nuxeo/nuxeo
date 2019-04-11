@@ -95,11 +95,11 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     @Factory(value = "currentSingleTasks", scope = ScopeType.EVENT)
     public List<Task> getCurrentDocumentTasks() {
         if (tasks == null) {
-            tasks = new ArrayList<Task>();
+            tasks = new ArrayList<>();
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             if (currentDocument != null) {
                 NuxeoPrincipal principal = documentManager.getPrincipal();
-                List<String> actors = new ArrayList<String>();
+                List<String> actors = new ArrayList<>();
                 actors.addAll(TaskActorsHelper.getTaskActors(principal));
                 tasks = taskService.getTaskInstances(currentDocument, actors, true, documentManager);
             }
@@ -110,7 +110,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     @Factory(value = "currentDashBoardItems", scope = ScopeType.EVENT)
     public List<DashBoardItem> getCurrentDashBoardItems() {
         if (items == null) {
-            items = new ArrayList<DashBoardItem>();
+            items = new ArrayList<>();
             for (Task task : getCurrentDocumentTasks()) {
                 DashBoardItem item = new DashBoardItemImpl(task, navigationContext.getCurrentDocument(),
                         localeSelector.getLocale());
@@ -123,7 +123,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     @Factory(value = "currentDashBoardItemsExceptPublishingTasks", scope = ScopeType.EVENT)
     public List<DashBoardItem> getCurrentDashBoardItemsExceptPublishingTasks() {
         if (items == null) {
-            items = new ArrayList<DashBoardItem>();
+            items = new ArrayList<>();
             for (Task task : getCurrentDocumentTasks()) {
                 String taskType = task.getVariable(Task.TaskVariableName.taskType.name());
                 if (!"publish_moderate".equals(taskType)) {

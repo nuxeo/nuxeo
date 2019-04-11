@@ -124,7 +124,7 @@ public class DataModelImpl implements DataModel {
 
     @Override
     public Collection<String> getDirtyFields() {
-        Collection<String> dirtyFields = new ArrayList<String>();
+        Collection<String> dirtyFields = new ArrayList<>();
         for (Property prop : dp.getChildren()) {
             if (prop.isDirty()) {
                 dirtyFields.add(prop.getName());

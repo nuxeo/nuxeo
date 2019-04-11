@@ -34,7 +34,7 @@ public class ClassKeyedRegistry<V> extends SuperKeyedRegistry<Class<?>, V> {
 
     @Override
     protected List<Class<?>> getSuperKeys(Class<?> key) {
-        List<Class<?>> result = new ArrayList<Class<?>>();
+        List<Class<?>> result = new ArrayList<>();
         Class<?> cl = key.getSuperclass();
         if (cl != null) {
             result.add(cl);

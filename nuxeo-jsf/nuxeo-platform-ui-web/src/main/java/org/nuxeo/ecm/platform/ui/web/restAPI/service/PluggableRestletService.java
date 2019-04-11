@@ -48,7 +48,7 @@ public class PluggableRestletService extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
-        restletsDescriptors = new HashMap<String, RestletPluginDescriptor>();
+        restletsDescriptors = new HashMap<>();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class PluggableRestletService extends DefaultComponent {
     }
 
     public List<String> getContributedRestletNames() {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
 
         res.addAll(restletsDescriptors.keySet());
         return res;

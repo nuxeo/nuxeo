@@ -38,7 +38,7 @@ public class AnnotationManager {
     }
 
     protected Map<Class<?>, AnnotatedClass<?>> createCache() {
-        return new ConcurrentHashMap<Class<?>, AnnotatedClass<?>>();
+        return new ConcurrentHashMap<>();
     }
 
     public void flushCache() {
@@ -62,7 +62,7 @@ public class AnnotationManager {
     }
 
     public <T> AnnotatedClass<T> load(Class<T> clazz) {
-        AnnotatedClass<T> aclass = new AnnotatedClass<T>(clazz);
+        AnnotatedClass<T> aclass = new AnnotatedClass<>(clazz);
         Class<?> zuper = clazz.getSuperclass();
         MethodAnnotations mannos = new MethodAnnotations();
 

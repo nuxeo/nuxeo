@@ -419,7 +419,7 @@ public class TransactionHelper {
         }
     }
 
-    private static ThreadLocal<List<Exception>> suppressedExceptions = new ThreadLocal<List<Exception>>();
+    private static ThreadLocal<List<Exception>> suppressedExceptions = new ThreadLocal<>();
 
     /**
      * After this, some exceptions during transaction commit may be suppressed and remembered.

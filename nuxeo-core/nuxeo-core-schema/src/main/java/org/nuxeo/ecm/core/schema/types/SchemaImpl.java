@@ -34,7 +34,7 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
 
     private static final long serialVersionUID = 1L;
 
-    private final Map<String, Type> types = new HashMap<String, Type>();
+    private final Map<String, Type> types = new HashMap<>();
 
     public boolean isVersionWritabe;
 

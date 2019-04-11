@@ -83,7 +83,7 @@ public class TestPageProviderCurrentPage {
     @Test
     public void testPageProviderCurrentPage() {
         PageProviderDefinition ppd = pps.getPageProviderDefinition(DUMMY_FETCH_DOCUMENTS);
-        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<?> pp = pps.getPageProvider(DUMMY_FETCH_DOCUMENTS, ppd, null, null, ppd.getMaxPageSize(), 0L,
             props);
@@ -114,7 +114,7 @@ public class TestPageProviderCurrentPage {
     @Test
     public void testPageProviderCurrentPageWithoutPageSize() {
         PageProviderDefinition ppd = pps.getPageProviderDefinition(DUMMY_FETCH_DOCUMENTS);
-        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<?> pp = pps.getPageProvider(DUMMY_FETCH_DOCUMENTS, ppd, null, null, 0L, 0L, props);
         // check that both pages are different

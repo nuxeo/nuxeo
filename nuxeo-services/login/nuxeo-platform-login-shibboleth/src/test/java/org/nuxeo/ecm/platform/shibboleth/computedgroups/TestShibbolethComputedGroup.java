@@ -170,7 +170,7 @@ public class TestShibbolethComputedGroup {
     }
 
     protected DocumentModel createShibbGroup(String name, String el) throws Exception {
-        Map<String, Object> group = new HashMap<String, Object>();
+        Map<String, Object> group = new HashMap<>();
         group.put("groupName", name);
         group.put("expressionLanguage", el);
         DocumentModel doc = groupDir.createEntry(group);

@@ -75,7 +75,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
     @Override
     public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws IOException {
 
-        List<TemplateInput> params = new ArrayList<TemplateInput>();
+        List<TemplateInput> params = new ArrayList<>();
         String xmlContent = readXMLContent(blob);
 
         List<String> vars = FreeMarkerVariableExtractor.extractVariables(xmlContent);
@@ -108,10 +108,10 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
         DocumentTemplate template = documentTemplateFactory.getTemplate(sourceTemplateBlob.getStream());
 
         // build fm context
-        Map<String, Object> context = new HashMap<String, Object>();
+        Map<String, Object> context = new HashMap<>();
 
         // store Blobs to be inserted
-        List<Blob> blobsToInsert = new ArrayList<Blob>();
+        List<Blob> blobsToInsert = new ArrayList<>();
 
         DocumentObjectWrapper nuxeoWrapper = new DocumentObjectWrapper(null);
 

@@ -124,7 +124,7 @@ public class AggregateBase<B extends Bucket> implements Aggregate<B> {
     @Override
     public List<Bucket> getExtendedBuckets() {
         if (extendedBuckets == null) {
-            extendedBuckets = new ArrayList<Bucket>();
+            extendedBuckets = new ArrayList<>();
             final List<String> currentSelection = getSelection();
             if (currentSelection != null) {
                 for (String s : currentSelection) {
@@ -169,7 +169,7 @@ public class AggregateBase<B extends Bucket> implements Aggregate<B> {
 
     public Map<String, Bucket> getBucketMap() {
         if (bucketMap == null && getBuckets() != null) {
-            bucketMap = new HashMap<String, Bucket>();
+            bucketMap = new HashMap<>();
             for (Bucket b : getBuckets()) {
                 bucketMap.put(b.getKey(), b);
             }

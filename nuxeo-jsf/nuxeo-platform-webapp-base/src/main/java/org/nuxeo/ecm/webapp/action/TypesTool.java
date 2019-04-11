@@ -103,7 +103,7 @@ public class TypesTool implements Serializable {
         }
         if (!set) {
             // set an empty list
-            typesMap = new HashMap<String, List<List<Type>>>();
+            typesMap = new HashMap<>();
         }
         typesMapTimestamp = typeManager.getLastModified();
     }
@@ -139,17 +139,17 @@ public class TypesTool implements Serializable {
      * {@code List} and returns the new computed {@code Map}.
      */
     protected Map<String, List<List<Type>>> organizeType(Map<String, List<Type>> types) {
-        Map<String, List<List<Type>>> newTypesMap = new HashMap<String, List<List<Type>>>();
+        Map<String, List<List<Type>>> newTypesMap = new HashMap<>();
         Set<Entry<String, List<Type>>> typeEntrySet = types.entrySet();
         for (Entry<String, List<Type>> set : typeEntrySet) {
             List<Type> typeList = set.getValue();
-            List<List<Type>> newList = new ArrayList<List<Type>>();
+            List<List<Type>> newList = new ArrayList<>();
             int index = 0;
             newList.add(index, new ArrayList<Type>());
             for (Type type : typeList) {
                 List<Type> currentList = newList.get(index);
                 if (currentList == null) {
-                    currentList = new ArrayList<Type>();
+                    currentList = new ArrayList<>();
                     newList.add(index, currentList);
                 }
                 currentList.add(type);

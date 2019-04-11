@@ -68,10 +68,10 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
 
     final DocumentModel docModel;
 
-    final Map<String, PictureView> views = new HashMap<String, PictureView>();
+    final Map<String, PictureView> views = new HashMap<>();
 
     public static Map<String, Object> viewToMap(PictureView view) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put(PictureView.FIELD_TITLE, view.getTitle());
         map.put(PictureView.FIELD_DESCRIPTION, view.getDescription());
         map.put(PictureView.FIELD_TAG, view.getTag());
@@ -133,7 +133,7 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
     @Override
     public void removeView(String name) {
         views.remove(name);
-        List<Map<String, Object>> v = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> v = new ArrayList<>();
         for (PictureView view : views.values()) {
             v.add(viewToMap(view));
         }
@@ -143,7 +143,7 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
     @Override
     public void addView(PictureView view) {
         views.put(view.getTitle(), view);
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = new ArrayList<>();
         for (PictureView pv : views.values()) {
             list.add(viewToMap(pv));
         }

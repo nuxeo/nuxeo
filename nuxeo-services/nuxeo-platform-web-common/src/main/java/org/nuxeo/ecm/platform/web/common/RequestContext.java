@@ -36,7 +36,7 @@ public class RequestContext extends HashMap<String, Object> {
 
     private static final long serialVersionUID = 1L;
 
-    private static final ThreadLocal<RequestContext> CTX = new ThreadLocal<RequestContext>();
+    private static final ThreadLocal<RequestContext> CTX = new ThreadLocal<>();
 
     public static RequestContext getActiveContext() {
         return CTX.get();
@@ -55,7 +55,7 @@ public class RequestContext extends HashMap<String, Object> {
     public RequestContext(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
-        cleanupHandlers = new ArrayList<RequestCleanupHandler>();
+        cleanupHandlers = new ArrayList<>();
         CTX.set(this);
         request.setAttribute(RequestContext.class.getName(), this);
     }
