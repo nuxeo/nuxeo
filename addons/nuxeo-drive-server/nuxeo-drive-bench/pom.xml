@@ -76,7 +76,7 @@
         <groupId>io.gatling</groupId>
         <artifactId>gatling-maven-plugin</artifactId>
         <configuration>
-          <dataFolder>src/test/resources/data</dataFolder>
+          <resourcesFolder>src/test/resources/data</resourcesFolder>
           <resultsFolder>target/gatling/results</resultsFolder>
           <simulationsFolder>src/test/scala</simulationsFolder>
         </configuration>
@@ -151,7 +151,7 @@
               <execution>
                 <id>setup-polling</id>
                 <goals>
-                  <goal>integration-test</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim00SetupPolling</simulationClass>
@@ -160,7 +160,7 @@
               <execution>
                 <id>bench-polling</id>
                 <goals>
-                  <goal>integration-test</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim10BenchPolling</simulationClass>
@@ -173,7 +173,7 @@
               <execution>
                 <id>cleanup-polling</id>
                 <goals>
-                  <goal>integration-test</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim20CleanupPolling</simulationClass>
@@ -195,7 +195,7 @@
               <execution>
                 <id>setup-remote-scan</id>
                 <goals>
-                  <goal>integration-test</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim30SetupRemoteScan</simulationClass>
@@ -204,7 +204,7 @@
               <execution>
                 <id>bench-recursive-remote-scan</id>
                 <goals>
-                  <goal>integration-test</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim40BenchRecursiveRemoteScan</simulationClass>
@@ -217,7 +217,7 @@
               <execution>
                 <id>bench-batched-remote-scan</id>
                 <goals>
-                  <goal>integration-test</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim45BenchBatchedRemoteScan</simulationClass>
@@ -243,7 +243,7 @@
               <execution>
                 <id>cleanup-remote-scan</id>
                 <goals>
-                  <goal>integration-test</goal>
+                  <goal>test</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.drive.bench.Sim50CleanupRemoteScan</simulationClass>
