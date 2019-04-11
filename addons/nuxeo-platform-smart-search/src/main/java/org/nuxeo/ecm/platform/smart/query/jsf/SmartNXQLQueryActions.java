@@ -63,6 +63,7 @@ public class SmartNXQLQueryActions implements Serializable {
     /**
      * @deprecated since 8.1: query part held/set directly on the content view search document model
      */
+    @Deprecated
     protected String queryPart;
 
     protected HistoryList<String> queryPartHistory;
@@ -116,6 +117,7 @@ public class SmartNXQLQueryActions implements Serializable {
     /**
      * @deprecated since 8.1: query part held/set directly on the content view search document model
      */
+    @Deprecated
     public void setQueryPart(String queryPart) {
         DeprecationLogger.log("Query part held/set directly on the content view search document model", "8.1");
         this.queryPart = queryPart;

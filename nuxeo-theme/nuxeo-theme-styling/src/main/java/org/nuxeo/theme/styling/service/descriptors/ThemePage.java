@@ -26,6 +26,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.5
  * @deprecated since 7.4, use {@link PageDescriptor} instead.
  */
+@Deprecated
 @XObject("themePage")
 public class ThemePage extends PageDescriptor {
 

@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @see Path
  */
+@Deprecated
 @XObject(value = "resource", order = { "@path", "@class" })
 public class ResourceBinding {
 

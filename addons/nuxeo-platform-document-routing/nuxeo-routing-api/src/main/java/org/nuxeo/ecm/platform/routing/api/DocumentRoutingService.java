@@ -483,6 +483,7 @@ public interface DocumentRoutingService {
      * @since 5.7
      * @deprecated // will be removed in 5.8, use completeTask instead
      */
+    @Deprecated
     void finishTask(CoreSession session, DocumentRoute route, Task task, boolean delete) throws DocumentRouteException;
 
     /**

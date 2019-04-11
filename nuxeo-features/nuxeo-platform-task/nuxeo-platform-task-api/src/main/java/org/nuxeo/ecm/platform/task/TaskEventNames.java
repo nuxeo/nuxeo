@@ -83,6 +83,7 @@ public final class TaskEventNames {
      *
      * @deprecated @since 5.7.3 WORKFLOW_TASK_REASSIGNED is used
      */
+    @Deprecated
     public static final String WORKFLOW_USER_ASSIGNMENT_CHANGED = "workflowUserAssignmentChanged";
 
     public static final String WORKFLOW_TASKS_COMPUTED = "workflowTasksComputed";
