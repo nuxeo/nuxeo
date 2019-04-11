@@ -33,7 +33,7 @@ public interface CacheService {
      * @param name the cache name
      * @return the cache, or {@code null} if it does not exist
      */
-    public Cache getCache(String name);
+    Cache getCache(String name);
 
     /**
      * Programmatically registers a cache with the given characteristics.
@@ -44,8 +44,7 @@ public interface CacheService {
      * @since 8.2
      * @deprecated since 9.3, seems unused, use {@link #registerCache(String)} instead.
      */
-    @Deprecated
-    public void registerCache(String name, int size, int timeout);
+    @Deprecated void registerCache(String name, int size, int timeout);
 
     /**
      * Programmatically registers a cache with the given name, with the the size and the timeout given by the default

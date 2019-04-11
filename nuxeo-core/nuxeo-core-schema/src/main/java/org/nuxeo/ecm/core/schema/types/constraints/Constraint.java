@@ -33,11 +33,11 @@ import java.util.Map;
  */
 public interface Constraint extends Serializable {
 
-    public static final String MESSAGES_BUNDLE = "messages";
+    String MESSAGES_BUNDLE = "messages";
 
-    public static final Locale MESSAGES_DEFAULT_LANG = Locale.ENGLISH;
+    Locale MESSAGES_DEFAULT_LANG = Locale.ENGLISH;
 
-    public static final String MESSAGES_KEY = "label.schema.constraint.violation";
+    String MESSAGES_KEY = "label.schema.constraint.violation";
 
     /**
      * Validates the given object against this constraint.

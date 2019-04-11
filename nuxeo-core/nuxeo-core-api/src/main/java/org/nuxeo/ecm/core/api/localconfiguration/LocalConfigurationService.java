@@ -35,7 +35,7 @@ public interface LocalConfigurationService {
      * Find the first parent of the {@code currentDoc} having the given {@code configurationFacet}, if any, and adapt it
      * on the {@code configurationClass}.
      */
-    public <T extends LocalConfiguration> T getConfiguration(Class<T> configurationClass, String configurationFacet,
+    <T extends LocalConfiguration> T getConfiguration(Class<T> configurationClass, String configurationFacet,
             DocumentModel currentDoc);
 
 }

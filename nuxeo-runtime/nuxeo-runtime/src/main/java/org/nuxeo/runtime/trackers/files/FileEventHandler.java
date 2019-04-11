@@ -28,6 +28,6 @@ import org.nuxeo.runtime.services.event.EventService;
  */
 public interface FileEventHandler {
 
-    public void onFile(File file, Object marker);
+    void onFile(File file, Object marker);
 
 }

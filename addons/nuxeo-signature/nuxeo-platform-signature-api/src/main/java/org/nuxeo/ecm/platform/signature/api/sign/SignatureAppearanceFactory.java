@@ -24,5 +24,5 @@ import com.lowagie.text.pdf.PdfSignatureAppearance;
 
 public interface SignatureAppearanceFactory {
 
-    public void format(PdfSignatureAppearance pdfSignatureAppearance, DocumentModel doc, String principal, String reason);
+    void format(PdfSignatureAppearance pdfSignatureAppearance, DocumentModel doc, String principal, String reason);
 }

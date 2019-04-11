@@ -43,6 +43,6 @@ public interface LoginAs {
      * @return
      * @throws LoginException
      */
-    public LoginContext loginAs(String username) throws LoginException;
+    LoginContext loginAs(String username) throws LoginException;
 
 }

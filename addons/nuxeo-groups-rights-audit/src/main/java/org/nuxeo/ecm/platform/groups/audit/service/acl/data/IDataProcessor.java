@@ -27,30 +27,30 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.data.DataProcessor.ProcessorStatus;
 
 public interface IDataProcessor {
-    public void analyze(CoreSession session);
+    void analyze(CoreSession session);
 
-    public void analyze(CoreSession session, DocumentModel doc, int timeout);
+    void analyze(CoreSession session, DocumentModel doc, int timeout);
 
-    public Set<String> getUserAndGroups();
+    Set<String> getUserAndGroups();
 
-    public Set<String> getPermissions();
+    Set<String> getPermissions();
 
     /** The maximum doc tree depth */
-    public int getDocumentTreeMaxDepth();
+    int getDocumentTreeMaxDepth();
 
     /**
      * The minimum doc tree depth, 0 if analysis was run on repository root, >0 if the analysis was run on a child
      * document of repository root.
      */
-    public int getDocumentTreeMinDepth();
+    int getDocumentTreeMinDepth();
 
-    public int getNumberOfDocuments();
+    int getNumberOfDocuments();
 
-    public Collection<DocumentSummary> getAllDocuments();
+    Collection<DocumentSummary> getAllDocuments();
 
     /** A status concerning data analysis */
-    public ProcessorStatus getStatus();
+    ProcessorStatus getStatus();
 
     /** Some text information related to the status */
-    public String getInformation();
+    String getInformation();
 }

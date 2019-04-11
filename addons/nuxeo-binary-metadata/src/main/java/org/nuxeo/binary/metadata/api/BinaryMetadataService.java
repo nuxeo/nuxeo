@@ -41,7 +41,7 @@ public interface BinaryMetadataService {
      * @param ignorePrefix Since 7.3
      * @return Extracted metadata.
      */
-    public Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames,
+    Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames,
             boolean ignorePrefix);
 
     /**
@@ -52,7 +52,7 @@ public interface BinaryMetadataService {
      * @param ignorePrefix Since 7.3
      * @return Extracted metadata.
      */
-    public Map<String, Object> readMetadata(Blob blob, List<String> metadataNames, boolean ignorePrefix);
+    Map<String, Object> readMetadata(Blob blob, List<String> metadataNames, boolean ignorePrefix);
 
     /**
      * Read and return metadata from a given binary with Nuxeo default processor.
@@ -61,7 +61,7 @@ public interface BinaryMetadataService {
      * @param ignorePrefix Since 7.3
      * @return Extracted metadata.
      */
-    public Map<String, Object> readMetadata(Blob blob, boolean ignorePrefix);
+    Map<String, Object> readMetadata(Blob blob, boolean ignorePrefix);
 
     /**
      * Read and return metadata from a given binary with a given processor.
@@ -71,7 +71,7 @@ public interface BinaryMetadataService {
      * @param ignorePrefix Since 7.3
      * @return Extracted metadata.
      */
-    public Map<String, Object> readMetadata(String processorName, Blob blob, boolean ignorePrefix);
+    Map<String, Object> readMetadata(String processorName, Blob blob, boolean ignorePrefix);
 
     /**
      * Write given metadata into a given binary with a given processor.
@@ -82,7 +82,7 @@ public interface BinaryMetadataService {
      * @param ignorePrefix Since 7.3
      * @return the updated blob, or {@code null} if there was an error (since 7.4)
      */
-    public Blob writeMetadata(String processorName, Blob blob, Map<String, Object> metadata, boolean ignorePrefix);
+    Blob writeMetadata(String processorName, Blob blob, Map<String, Object> metadata, boolean ignorePrefix);
 
     /**
      * Write given metadata into a given binary with a Nuxeo default processor.
@@ -92,7 +92,7 @@ public interface BinaryMetadataService {
      * @param ignorePrefix Since 7.3
      * @return the updated blob, or {@code null} if there was an error (since 7.4)
      */
-    public Blob writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix);
+    Blob writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix);
 
     /**
      * Write given metadata mapping id into a given binary with a Nuxeo default processor.
@@ -103,7 +103,7 @@ public interface BinaryMetadataService {
      * @param doc Document from properties will be read.
      * @return the updated blob, or {@code null} if there was an error (since 7.4)
      */
-    public Blob writeMetadata(String processorName, Blob blob, String mappingDescriptorId, DocumentModel doc);
+    Blob writeMetadata(String processorName, Blob blob, String mappingDescriptorId, DocumentModel doc);
 
     /**
      * Write given metadata mapping id into a given binary with a Nuxeo default processor.
@@ -113,7 +113,7 @@ public interface BinaryMetadataService {
      * @param doc Document from properties will be read.
      * @return the updated blob, or {@code null} if there was an error (since 7.4)
      */
-    public Blob writeMetadata(Blob blob, String mappingDescriptorId, DocumentModel doc);
+    Blob writeMetadata(Blob blob, String mappingDescriptorId, DocumentModel doc);
 
     /**
      * Write metadata (from a binary) into a given Nuxeo Document according to the metadata mapping and rules
@@ -123,7 +123,7 @@ public interface BinaryMetadataService {
      *
      * @param doc Nuxeo Document which metadata are written.
      */
-    public void writeMetadata(DocumentModel doc);
+    void writeMetadata(DocumentModel doc);
 
     /**
      * Apply metadata mapping and override document properties according to the contribution.
@@ -133,7 +133,7 @@ public interface BinaryMetadataService {
      * @param doc The input document.
      * @param mappingDescriptorId The metadata mapping to apply on the document.
      */
-    public void writeMetadata(DocumentModel doc, String mappingDescriptorId);
+    void writeMetadata(DocumentModel doc, String mappingDescriptorId);
 
     /**
      * Handle document and blob updates according to following rules in an event context: - Define if rule should be

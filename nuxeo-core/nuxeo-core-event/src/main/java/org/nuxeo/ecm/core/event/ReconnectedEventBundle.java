@@ -45,7 +45,7 @@ public interface ReconnectedEventBundle extends EventBundle {
      * Marker to pass and set to true in document models context data when passing it in event properties, to avoid
      * refetching it when reconnecting.
      */
-    public static final String SKIP_REFETCH_DOCUMENT_CONTEXT_KEY = "skipRefetchDocument";
+    String SKIP_REFETCH_DOCUMENT_CONTEXT_KEY = "skipRefetchDocument";
 
     /**
      * Manage cleanup after processing.

@@ -205,7 +205,7 @@ public class TestConstraintsTranslation {
         checkConstraintMessage(new TypeConstraint(DoubleType.INSTANCE));
     }
 
-    static enum Color {
+    enum Color {
         RED, GREEN, BLUE;
     }
 

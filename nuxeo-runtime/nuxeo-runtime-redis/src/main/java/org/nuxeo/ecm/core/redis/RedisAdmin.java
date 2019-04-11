@@ -35,6 +35,6 @@ public interface RedisAdmin {
      *
      * @since 6.0
      */
-    public Long clear(String prefix);
+    Long clear(String prefix);
 
 }

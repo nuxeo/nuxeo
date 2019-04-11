@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BlobUtils {
 
-    public static enum ZIP_ENTRY_ENCODING_OPTIONS {
+    public enum ZIP_ENTRY_ENCODING_OPTIONS {
         ascii
     }
 

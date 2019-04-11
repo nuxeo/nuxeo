@@ -35,7 +35,7 @@ public class WidgetDirectoryItemsConverter extends AbstractWidgetDefinitionConve
 
     public static final String DIR_NAME_PROPERTY = "directoryName";
 
-    protected static enum SUPPORTED_DIR_TYPES {
+    protected enum SUPPORTED_DIR_TYPES {
         selectOneDirectory, selectManyDirectory, selectOneRadioDirectory, selectManyCheckboxDirectory, suggestOneDirectory, suggestManyDirectory
     }
 

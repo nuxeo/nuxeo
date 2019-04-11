@@ -32,7 +32,6 @@ public interface RepositoryFactory extends Callable<Object> {
      *
      * @return a low-level Repository
      */
-    @Override
-    public Object call();
+    @Override Object call();
 
 }

@@ -39,7 +39,7 @@ public class UIMeta extends UIComponentBase {
 
     public static final String COMPONENT_TYPE = UIMeta.class.getName();
 
-    public static enum PropertyKeys {
+    public enum PropertyKeys {
         charset, content, httpequiv, name
     }
 

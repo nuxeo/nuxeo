@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 
 public interface Snapshot extends Snapshotable {
 
-    public static final String FACET = "Snapshot";
+    String FACET = "Snapshot";
 
     List<DocumentModel> getChildren();
 

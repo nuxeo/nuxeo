@@ -33,7 +33,7 @@ import org.openqa.selenium.WebElement;
  */
 public class JSListWidgetElement extends AbstractWidgetElement {
 
-    public static enum Display {
+    public enum Display {
         BLOCK_LEFT, BLOCK_TOP, TABLE, INLINE
     }
 

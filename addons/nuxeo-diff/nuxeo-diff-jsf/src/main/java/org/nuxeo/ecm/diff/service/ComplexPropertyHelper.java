@@ -137,7 +137,7 @@ public final class ComplexPropertyHelper {
         return fieldTypeName;
     }
 
-    private static final SchemaManager getSchemaManager() {
+    private static SchemaManager getSchemaManager() {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         if (schemaManager == null) {
             throw new NuxeoException("SchemaManager service is null.");

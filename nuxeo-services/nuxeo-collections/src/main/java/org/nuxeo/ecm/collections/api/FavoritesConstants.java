@@ -23,10 +23,10 @@ package org.nuxeo.ecm.collections.api;
  */
 public interface FavoritesConstants {
 
-    public static final String DEFAULT_FAVORITES_NAME = "Favorites";
+    String DEFAULT_FAVORITES_NAME = "Favorites";
 
-    public static final String DEFAULT_FAVORITES_TITLE = "label.myFavorites.title";
+    String DEFAULT_FAVORITES_TITLE = "label.myFavorites.title";
 
-    public static final String FAVORITES_TYPE = "Favorites";
+    String FAVORITES_TYPE = "Favorites";
 
 }

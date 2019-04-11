@@ -166,21 +166,21 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
      */
     ServerInfo getServerInfo();
 
-    public static ObjectWriter jsonWriter() throws IOException {
+    static ObjectWriter jsonWriter() throws IOException {
         return jsonMapper().writerFor(DistributionSnapshot.class)
                 .withoutRootName()
                 .with(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM)
                 .without(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
     }
 
-    public static ObjectReader jsonReader() throws IOException {
+    static ObjectReader jsonReader() throws IOException {
         return jsonMapper().readerFor(DistributionSnapshot.class)
                 .withoutRootName()
                 .without(JsonParser.Feature.AUTO_CLOSE_SOURCE)
                 .with(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
     }
 
-    public static ObjectMapper jsonMapper() {
+    static ObjectMapper jsonMapper() {
         final ObjectMapper mapper =
                 new ObjectMapper().registerModule(new SimpleModule()
                         .addAbstractTypeMapping(DistributionSnapshot.class, RuntimeSnapshot.class)

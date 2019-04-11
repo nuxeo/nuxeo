@@ -230,9 +230,9 @@ public interface GraphNode {
         /** While executing output phase. Not persisted. */
         RUNNING_OUTPUT;
 
-        private final String lifeCycleState;
+        private String lifeCycleState;
 
-        private final String transition;
+        private String transition;
 
         private State() {
             lifeCycleState = null;

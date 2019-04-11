@@ -37,46 +37,46 @@ import org.nuxeo.ecm.core.api.SortInfo;
  */
 public interface PageProvider<T> extends Serializable {
 
-    public static final String DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP = "nuxeo.pageprovider.default-max-page-size";
+    String DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP = "nuxeo.pageprovider.default-max-page-size";
 
     /**
      * Constant to express that the total number of result elements is unknown (usually because the query has not been
      * done yet).
      */
-    public static final long UNKNOWN_SIZE = -1;
+    long UNKNOWN_SIZE = -1;
 
     /**
      * Constant to express that the total number of result elements is unknown even after performing a query.
      *
      * @since 5.5
      */
-    public static final long UNKNOWN_SIZE_AFTER_QUERY = -2;
+    long UNKNOWN_SIZE_AFTER_QUERY = -2;
 
     /**
      * Default maximum page size value.
      *
      * @since 6.0, default value is 1000.
      */
-    public static final long DEFAULT_MAX_PAGE_SIZE = 1000;
+    long DEFAULT_MAX_PAGE_SIZE = 1000;
 
     /**
      * Page limit unknown.
      *
      * @since 5.8
      */
-    public static final long PAGE_LIMIT_UNKNOWN = -1;
+    long PAGE_LIMIT_UNKNOWN = -1;
 
     /**
      * Highlight context data property name. Used to store highlights in document context data when fetching ES results
      *
      * @since 9.1
      */
-    public static final String HIGHLIGHT_CTX_DATA = "highlight";
+    String HIGHLIGHT_CTX_DATA = "highlight";
 
     /**
      * @since 10.2
      */
-    public static final String SKIP_AGGREGATES_PROP = "skipAggregates";
+    String SKIP_AGGREGATES_PROP = "skipAggregates";
 
     /**
      * Returns the provider identifier
@@ -210,7 +210,7 @@ public interface PageProvider<T> extends Serializable {
      *
      * @since 5.5
      */
-    public void setCurrentPageOffset(long offset);
+    void setCurrentPageOffset(long offset);
 
     /**
      * Sets the current page of results to the required one.

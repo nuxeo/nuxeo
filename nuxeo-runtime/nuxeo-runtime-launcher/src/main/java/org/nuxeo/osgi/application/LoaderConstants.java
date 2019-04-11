@@ -23,36 +23,36 @@ package org.nuxeo.osgi.application;
  */
 public interface LoaderConstants {
 
-    static final String HOST_NAME = "org.nuxeo.app.host.name";
+    String HOST_NAME = "org.nuxeo.app.host.name";
 
-    static final String HOST_VERSION = "org.nuxeo.app.host.version";
+    String HOST_VERSION = "org.nuxeo.app.host.version";
 
-    static final String HOME_DIR = "org.nuxeo.app.home";
+    String HOME_DIR = "org.nuxeo.app.home";
 
-    static final String LOG_DIR = "org.nuxeo.app.log";
+    String LOG_DIR = "org.nuxeo.app.log";
 
-    static final String DATA_DIR = "org.nuxeo.app.data";
+    String DATA_DIR = "org.nuxeo.app.data";
 
-    static final String TMP_DIR = "org.nuxeo.app.tmp";
+    String TMP_DIR = "org.nuxeo.app.tmp";
 
-    static final String WEB_DIR = "org.nuxeo.app.web";
+    String WEB_DIR = "org.nuxeo.app.web";
 
-    static final String CONFIG_DIR = "org.nuxeo.app.config";
+    String CONFIG_DIR = "org.nuxeo.app.config";
 
-    static final String LIBS = "org.nuxeo.app.libs"; // class path
+    String LIBS = "org.nuxeo.app.libs"; // class path
 
-    static final String BUNDLES = "org.nuxeo.app.bundles"; // class path
+    String BUNDLES = "org.nuxeo.app.bundles"; // class path
 
-    static final String DEVMODE = "org.nuxeo.app.devmode";
+    String DEVMODE = "org.nuxeo.app.devmode";
 
-    static final String PREPROCESSING = "org.nuxeo.app.preprocessing";
+    String PREPROCESSING = "org.nuxeo.app.preprocessing";
 
-    static final String SCAN_FOR_NESTED_JARS = "org.nuxeo.app.scanForNestedJars";
+    String SCAN_FOR_NESTED_JARS = "org.nuxeo.app.scanForNestedJars";
 
-    static final String INSTALL_RELOAD_TIMER = "org.nuxeo.app.installReloadTimer";
+    String INSTALL_RELOAD_TIMER = "org.nuxeo.app.installReloadTimer";
 
-    static final String FLUSH_CACHE = "org.nuxeo.app.flushCache";
+    String FLUSH_CACHE = "org.nuxeo.app.flushCache";
 
-    static final String ARGS = "org.nuxeo.app.args";
+    String ARGS = "org.nuxeo.app.args";
 
 }

@@ -44,7 +44,7 @@ public interface TemplateBasedDocument {
      * @return the updated DocumentModel
      * @throws PropertyException
      */
-    public DocumentModel setTemplate(DocumentModel template, boolean save) throws PropertyException;
+    DocumentModel setTemplate(DocumentModel template, boolean save) throws PropertyException;
 
     /**
      * Retrieve the {@link TemplateSourceDocument} for a given template name
@@ -52,7 +52,7 @@ public interface TemplateBasedDocument {
      * @param templateName name of the template
      * @return the {@link TemplateSourceDocument}
      */
-    public TemplateSourceDocument getSourceTemplate(String templateName);
+    TemplateSourceDocument getSourceTemplate(String templateName);
 
     /**
      * Retrieve the Template {@link DocumentRef} for a given template name
@@ -60,7 +60,7 @@ public interface TemplateBasedDocument {
      * @param templateName name of the template
      * @return the associated template {@link DocumentRef}
      */
-    public DocumentRef getSourceTemplateDocRef(String templateName);
+    DocumentRef getSourceTemplateDocRef(String templateName);
 
     /**
      * Retrieve the Template {@link DocumentModel} for a given template name
@@ -68,14 +68,14 @@ public interface TemplateBasedDocument {
      * @param templateName name of the template
      * @return the associated template {@link DocumentModel}
      */
-    public DocumentModel getSourceTemplateDoc(String templateName);
+    DocumentModel getSourceTemplateDoc(String templateName);
 
     /**
      * List all {@link TemplateSourceDocument}s that are bound to the underlying {@link DocumentModel}
      *
      * @return
      */
-    public List<TemplateSourceDocument> getSourceTemplates();
+    List<TemplateSourceDocument> getSourceTemplates();
 
     /**
      * Return the template type for a given template name
@@ -83,7 +83,7 @@ public interface TemplateBasedDocument {
      * @param templateName
      * @return
      */
-    public String getTemplateType(String templateName);
+    String getTemplateType(String templateName);
 
     /**
      * Initialize the template parameters from the associated template
@@ -92,7 +92,7 @@ public interface TemplateBasedDocument {
      * @param save flag to indicate if target DocumentModel must be saved or not
      * @return the updated DocumentModel
      */
-    public DocumentModel initializeFromTemplate(String templateName, boolean save);
+    DocumentModel initializeFromTemplate(String templateName, boolean save);
 
     /**
      * Render the named template against the underlying DocumentModel and store the result in the main Blob
@@ -101,7 +101,7 @@ public interface TemplateBasedDocument {
      * @param save flag to indicate if target DocumentModel must be saved or not
      * @return the resulting {@link Blob}
      */
-    public Blob renderAndStoreAsAttachment(String templateName, boolean save);
+    Blob renderAndStoreAsAttachment(String templateName, boolean save);
 
     /**
      * Render the named template against the underlying DocumentModel
@@ -109,7 +109,7 @@ public interface TemplateBasedDocument {
      * @param templateName
      * @return the resulting {@link Blob}
      */
-    public Blob renderWithTemplate(String templateName);
+    Blob renderWithTemplate(String templateName);
 
     /**
      * Indicate of the associated Template requires parameters or not
@@ -117,7 +117,7 @@ public interface TemplateBasedDocument {
      * @param templateName
      * @return
      */
-    public boolean hasParams(String templateName);
+    boolean hasParams(String templateName);
 
     /**
      * Retrieve parameters for the associated template
@@ -125,7 +125,7 @@ public interface TemplateBasedDocument {
      * @param templateName
      * @return
      */
-    public List<TemplateInput> getParams(String templateName);
+    List<TemplateInput> getParams(String templateName);
 
     /**
      * Save parameters changes.
@@ -135,14 +135,14 @@ public interface TemplateBasedDocument {
      * @param save flag to indicate if target DocumentModel must be saved or not
      * @return
      */
-    public DocumentModel saveParams(String templateName, List<TemplateInput> params, boolean save);
+    DocumentModel saveParams(String templateName, List<TemplateInput> params, boolean save);
 
     /**
      * Return the underlying adapted {@link DocumentModel}
      *
      * @return
      */
-    public DocumentModel getAdaptedDoc();
+    DocumentModel getAdaptedDoc();
 
     /**
      * Return the {@link Blob} of the associated template
@@ -150,7 +150,7 @@ public interface TemplateBasedDocument {
      * @param templateName
      * @return
      */
-    public Blob getTemplateBlob(String templateName);
+    Blob getTemplateBlob(String templateName);
 
     /**
      * Indicate of the associated Template has editable parameters or not
@@ -158,7 +158,7 @@ public interface TemplateBasedDocument {
      * @param templateName
      * @return
      */
-    public boolean hasEditableParams(String templateName);
+    boolean hasEditableParams(String templateName);
 
     /**
      * Find the template associated to a given RenditionName
@@ -173,7 +173,7 @@ public interface TemplateBasedDocument {
      *
      * @return
      */
-    public List<String> getTemplateNames();
+    List<String> getTemplateNames();
 
     /**
      * Detach a template from the underlying {@link DocumentModel}
@@ -182,5 +182,5 @@ public interface TemplateBasedDocument {
      * @param save
      * @return
      */
-    public DocumentModel removeTemplateBinding(String templateName, boolean save);
+    DocumentModel removeTemplateBinding(String templateName, boolean save);
 }

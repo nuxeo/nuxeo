@@ -30,7 +30,7 @@ import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 
 public interface UserRegistrationService extends UserInvitationService {
 
-    public static final String CONFIGURATION_NAME = UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
+    String CONFIGURATION_NAME = UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
 
     /**
      * Stores a registration request and return a unique ID for it

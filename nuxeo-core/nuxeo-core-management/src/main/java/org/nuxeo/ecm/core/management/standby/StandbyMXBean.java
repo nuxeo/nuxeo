@@ -26,7 +26,7 @@ import javax.management.MXBean;
 @MXBean
 public interface StandbyMXBean {
 
-    public static final String NAME = "org.nuxeo:name=org.nuxeo.ecm.core.management.standby,type=service";
+    String NAME = "org.nuxeo:name=org.nuxeo.ecm.core.management.standby,type=service";
 
     void standby(int delayInSeconds) throws InterruptedException;
 

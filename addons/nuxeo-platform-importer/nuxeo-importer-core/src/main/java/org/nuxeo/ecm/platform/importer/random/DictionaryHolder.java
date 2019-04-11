@@ -28,9 +28,9 @@ import java.io.IOException;
  */
 public interface DictionaryHolder {
 
-    public int getWordCount();
+    int getWordCount();
 
-    public String getRandomWord();
+    String getRandomWord();
 
-    public void init() throws IOException;
+    void init() throws IOException;
 }

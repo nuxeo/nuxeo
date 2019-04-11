@@ -23,5 +23,5 @@ package org.nuxeo.runtime.test.runner;
  */
 public interface AFakeService {
 
-    public String getSomething();
+    String getSomething();
 }

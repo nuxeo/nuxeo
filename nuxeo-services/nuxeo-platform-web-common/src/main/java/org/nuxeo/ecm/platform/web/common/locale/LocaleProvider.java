@@ -34,7 +34,7 @@ public interface LocaleProvider {
     /**
      * @return the Locale to be used or null to let the caller decides.
      */
-    public Locale getLocale(CoreSession session);
+    Locale getLocale(CoreSession session);
 
     /**
      * Gets the locale stored in the given user profile.
@@ -47,18 +47,18 @@ public interface LocaleProvider {
      * @return the Locale to be used or a default Locale
      * @since 8.2
      */
-    public Locale getLocaleWithDefault(CoreSession session);
+    Locale getLocaleWithDefault(CoreSession session);
 
     /**
      * @return the Locale stored in userProfile or a default Locale
      * @since 8.2
      */
-    public Locale getLocaleWithDefault(DocumentModel userProfileDoc);
+    Locale getLocaleWithDefault(DocumentModel userProfileDoc);
 
     /**
      * @return the Timezone to be used or null to let the caller decides.
      */
-    public TimeZone getTimeZone(CoreSession session);
+    TimeZone getTimeZone(CoreSession session);
 
     /**
      * Returns the default locale for given requested locale.
@@ -68,6 +68,6 @@ public interface LocaleProvider {
      *
      * @since 8.4
      */
-    public Locale getLocaleWithDefault(String requestedLocale);
+    Locale getLocaleWithDefault(String requestedLocale);
 
 }

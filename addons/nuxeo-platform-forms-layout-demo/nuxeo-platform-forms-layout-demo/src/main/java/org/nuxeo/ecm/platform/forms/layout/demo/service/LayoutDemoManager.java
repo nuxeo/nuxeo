@@ -28,9 +28,9 @@ import java.util.List;
  */
 public interface LayoutDemoManager extends Serializable {
 
-    static final String APPLICATION_PATH = "layoutDemo/";
+    String APPLICATION_PATH = "layoutDemo/";
 
-    static final String PREVIEW_PATH = "layoutDemoPreview/";
+    String PREVIEW_PATH = "layoutDemoPreview/";
 
     DemoWidgetType getWidgetType(String widgetTypeName);
 

@@ -28,7 +28,7 @@ import javax.management.MXBean;
 @MXBean
 public interface TransactionMonitor extends Monitor {
 
-    public static String NAME = Defaults.instance.name(TransactionMonitor.class);
+    String NAME = Defaults.instance.name(TransactionMonitor.class);
 
     long getActiveCount();
 

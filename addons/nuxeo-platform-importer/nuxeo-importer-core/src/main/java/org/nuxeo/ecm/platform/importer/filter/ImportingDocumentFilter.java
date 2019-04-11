@@ -31,6 +31,6 @@ public interface ImportingDocumentFilter {
     /**
      * Returns {@code true} if the given {@code SourceNode} should be imported, {@code false} otherwise.
      */
-    public boolean shouldImportDocument(SourceNode sourceNode);
+    boolean shouldImportDocument(SourceNode sourceNode);
 
 }

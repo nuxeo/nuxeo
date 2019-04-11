@@ -102,7 +102,7 @@ public interface PageProviderDefinition extends Serializable {
     /**
      * @since 7.4
      */
-    public boolean isUsageTrackingEnabled();
+    boolean isUsageTrackingEnabled();
 
     /**
      * @since 8.4

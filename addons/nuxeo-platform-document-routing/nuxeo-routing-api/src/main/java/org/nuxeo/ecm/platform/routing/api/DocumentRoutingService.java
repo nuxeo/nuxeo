@@ -215,7 +215,7 @@ public interface DocumentRoutingService {
      * @return The unlocked route.
      * @since 1.9
      */
-    public DocumentRoute unlockDocumentRouteUnrestrictedSession(final DocumentRoute routeModel, CoreSession userSession);
+    DocumentRoute unlockDocumentRouteUnrestrictedSession(final DocumentRoute routeModel, CoreSession userSession);
 
     /**
      * Computes the list of elements {@link DocumentRouteTableElement} for this {@link DocumentRoute}.

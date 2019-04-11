@@ -33,7 +33,7 @@ import org.nuxeo.ecm.directory.Session;
  */
 public interface DirectoryService {
 
-    public final static String SYSTEM_DIRECTORY_TYPE = "system";
+    String SYSTEM_DIRECTORY_TYPE = "system";
 
     /**
      * Gets the directory ids.

@@ -28,11 +28,11 @@ import java.io.Serializable;
  */
 public interface PropertyDiffDisplay extends Serializable {
 
-    static final String DEFAULT_STYLE_CLASS = "noBackgroundColor";
+    String DEFAULT_STYLE_CLASS = "noBackgroundColor";
 
-    static final String RED_BACKGROUND_STYLE_CLASS = "redBackgroundColor";
+    String RED_BACKGROUND_STYLE_CLASS = "redBackgroundColor";
 
-    static final String GREEN_BACKGROUND_STYLE_CLASS = "greenBackgroundColor";
+    String GREEN_BACKGROUND_STYLE_CLASS = "greenBackgroundColor";
 
     Serializable getValue();
 

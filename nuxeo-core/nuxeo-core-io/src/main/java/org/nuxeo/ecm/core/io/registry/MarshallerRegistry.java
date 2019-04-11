@@ -93,7 +93,7 @@ public interface MarshallerRegistry {
      *
      * @since 7.2
      */
-    public void clear();
+    void clear();
 
     /**
      * Makes a marshaller class available.
@@ -102,7 +102,7 @@ public interface MarshallerRegistry {
      * @throws MarshallingException If marshaller class is null or if it's not a valid marshaller.
      * @since 7.2
      */
-    public void register(Class<?> marshaller) throws MarshallingException;
+    void register(Class<?> marshaller) throws MarshallingException;
 
     /**
      * Remove a marshaller from the registry.
@@ -111,7 +111,7 @@ public interface MarshallerRegistry {
      * @throws MarshallingException If marshaller class is null or if it's not a valid marshaller.
      * @since 7.2
      */
-    public void deregister(Class<?> marshaller) throws MarshallingException;
+    void deregister(Class<?> marshaller) throws MarshallingException;
 
     /**
      * Provides a {@link Writer} instance to manage marshalling of the given Java Type and mimetype.
@@ -123,7 +123,7 @@ public interface MarshallerRegistry {
      * @return A valid {@link Writer} instance.
      * @since 7.2
      */
-    public <T> Writer<T> getWriter(RenderingContext ctx, Class<T> marshalledClazz, Type genericType, MediaType mediatype);
+    <T> Writer<T> getWriter(RenderingContext ctx, Class<T> marshalledClazz, Type genericType, MediaType mediatype);
 
     /**
      * Provides a {@link Writer} instance to manage marshalling of the given Java Type and mimetype. It creates a new
@@ -136,7 +136,7 @@ public interface MarshallerRegistry {
      * @return A valid {@link Writer} instance.
      * @since 7.2
      */
-    public <T> Writer<T> getUniqueWriter(RenderingContext ctx, Class<T> marshalledClazz, Type genericType,
+    <T> Writer<T> getUniqueWriter(RenderingContext ctx, Class<T> marshalledClazz, Type genericType,
             MediaType mediatype);
 
     /**
@@ -149,13 +149,13 @@ public interface MarshallerRegistry {
      * @return A list of valid {@link Writer} instance.
      * @since 7.2
      */
-    public <T> Collection<Writer<T>> getAllWriters(RenderingContext ctx, Class<T> marshalledClazz, Type genericType,
+    <T> Collection<Writer<T>> getAllWriters(RenderingContext ctx, Class<T> marshalledClazz, Type genericType,
             MediaType mediatype);
 
     /**
      * see {@link #getWriter(RenderingContext, Class, Type, MediaType)}
      */
-    public <T> Writer<T> getWriter(RenderingContext ctx, Class<T> marshalledClazz, MediaType mediatype);
+    <T> Writer<T> getWriter(RenderingContext ctx, Class<T> marshalledClazz, MediaType mediatype);
 
     /**
      * Provides a {@link Reader} instance to manage marshalling of a mimetype in a Java Type.
@@ -167,7 +167,7 @@ public interface MarshallerRegistry {
      * @return A valid {@link Reader} instance.
      * @since 7.2
      */
-    public <T> Reader<T> getReader(RenderingContext ctx, Class<T> marshalledClazz, Type genericType, MediaType mediatype);
+    <T> Reader<T> getReader(RenderingContext ctx, Class<T> marshalledClazz, Type genericType, MediaType mediatype);
 
     /**
      * Provides a {@link Reader} instance to manage marshalling of a mimetype in a Java Type. It creates a new instance
@@ -180,7 +180,7 @@ public interface MarshallerRegistry {
      * @return A valid {@link Reader} instance.
      * @since 7.2
      */
-    public <T> Reader<T> getUniqueReader(RenderingContext ctx, Class<T> marshalledClazz, Type genericType,
+    <T> Reader<T> getUniqueReader(RenderingContext ctx, Class<T> marshalledClazz, Type genericType,
             MediaType mediatype);
 
     /**
@@ -193,13 +193,13 @@ public interface MarshallerRegistry {
      * @return A list of valid {@link Reader} instance.
      * @since 7.2
      */
-    public <T> Collection<Reader<T>> getAllReaders(RenderingContext ctx, Class<T> marshalledClazz, Type genericType,
+    <T> Collection<Reader<T>> getAllReaders(RenderingContext ctx, Class<T> marshalledClazz, Type genericType,
             MediaType mediatype);
 
     /**
      * see {@link #getReader(RenderingContext, Class, Type, MediaType)}
      */
-    public <T> Reader<T> getReader(RenderingContext ctx, Class<T> marshalledClazz, MediaType mediatype);
+    <T> Reader<T> getReader(RenderingContext ctx, Class<T> marshalledClazz, MediaType mediatype);
 
     /**
      * Provides an instance of a given marshaller class.
@@ -209,7 +209,7 @@ public interface MarshallerRegistry {
      * @return A valid marshaller instance.
      * @since 7.2
      */
-    public <T> T getInstance(RenderingContext ctx, Class<T> marshallerClass);
+    <T> T getInstance(RenderingContext ctx, Class<T> marshallerClass);
 
     /**
      * Provides an instance of the given marshaller class. It creates a new instance even for
@@ -220,6 +220,6 @@ public interface MarshallerRegistry {
      * @return A valid marshaller instance.
      * @since 7.2
      */
-    public <T> T getUniqueInstance(RenderingContext ctx, Class<T> marshallerClass);
+    <T> T getUniqueInstance(RenderingContext ctx, Class<T> marshallerClass);
 
 }

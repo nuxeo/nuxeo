@@ -45,7 +45,7 @@ public interface DirectoryTreeManager extends Serializable {
      *
      * @since 5.4
      */
-    public String getLabelFor(String directoryTreeName, String fullPath);
+    String getLabelFor(String directoryTreeName, String fullPath);
 
     /**
      * Returns the internationalized label for a given path of the specified Directory tree, including or not the
@@ -53,6 +53,6 @@ public interface DirectoryTreeManager extends Serializable {
      *
      * @since 5.4
      */
-    public String getLabelFor(String directoryTreeName, String fullPath, boolean includeDirectoryTreeLabel);
+    String getLabelFor(String directoryTreeName, String fullPath, boolean includeDirectoryTreeLabel);
 
 }

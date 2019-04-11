@@ -62,16 +62,16 @@ public interface QuotaStatsUpdater {
      */
     void computeInitialStatistics(CoreSession session, final QuotaStatsInitialWork currentWorker, String path);
 
-    public void setName(String name);
+    void setName(String name);
 
-    public String getName();
+    String getName();
 
-    public void setLabel(String label);
+    void setLabel(String label);
 
-    public String getLabel();
+    String getLabel();
 
-    public void setDescriptionLabel(String descriptionLabel);
+    void setDescriptionLabel(String descriptionLabel);
 
-    public String getDescriptionLabel();
+    String getDescriptionLabel();
 
 }

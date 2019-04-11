@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  */
 public interface PaginableDocumentModelList extends DocumentModelList, Paginable<DocumentModel> {
 
-    public static final String CODEC_PARAMETER_NAME = "URLCodecName";
+    String CODEC_PARAMETER_NAME = "URLCodecName";
 
     /**
      * Returns the name of what will be used to compute the document URLs, usually a codec name.

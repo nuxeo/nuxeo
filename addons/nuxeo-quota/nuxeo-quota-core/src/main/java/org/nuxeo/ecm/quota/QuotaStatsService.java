@@ -89,32 +89,32 @@ public interface QuotaStatsService {
      *
      * @since 5.7
      */
-    public long getQuotaFromParent(DocumentModel doc, CoreSession session);
+    long getQuotaFromParent(DocumentModel doc, CoreSession session);
 
     /**
      * Test to see if quota allowed. Skip user worskpaces, where validation rules don't apply.
      *
      * @since 5.7
      */
-    public boolean canSetMaxQuota(long maxQuota, DocumentModel doc, CoreSession session);
+    boolean canSetMaxQuota(long maxQuota, DocumentModel doc, CoreSession session);
 
     /**
      * Sets this maxQuota on all user workspaces
      *
      * @since 5.7
      */
-    public void launchSetMaxQuotaOnUserWorkspaces(long maxQuota, DocumentModel context, CoreSession session);
+    void launchSetMaxQuotaOnUserWorkspaces(long maxQuota, DocumentModel context, CoreSession session);
 
     /**
      * Activates the quota on user personal workspaces
      *
      * @since 5.7
      */
-    public void activateQuotaOnUserWorkspaces(long maxQuota, CoreSession session);
+    void activateQuotaOnUserWorkspaces(long maxQuota, CoreSession session);
 
     /**
      * @since 5.7
      */
-    public long getQuotaSetOnUserWorkspaces(CoreSession session);
+    long getQuotaSetOnUserWorkspaces(CoreSession session);
 
 }

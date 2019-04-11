@@ -26,7 +26,7 @@ package org.nuxeo.runtime.model;
  */
 public interface Descriptor {
 
-    public static final String UNIQUE_DESCRIPTOR_ID = "";
+    String UNIQUE_DESCRIPTOR_ID = "";
 
     /**
      * The descriptor id, descriptors with same id are merged.

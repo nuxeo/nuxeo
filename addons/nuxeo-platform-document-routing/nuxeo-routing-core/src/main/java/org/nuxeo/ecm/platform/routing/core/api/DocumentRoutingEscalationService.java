@@ -44,7 +44,7 @@ public interface DocumentRoutingEscalationService {
      * @return
      * @since 5.7.2
      */
-    public List<EscalationRule> computeEscalationRulesToExecute(GraphNode node);
+    List<EscalationRule> computeEscalationRulesToExecute(GraphNode node);
 
     /**
      * Schedules for execution an escalation rule. Uses an unrestricted session.

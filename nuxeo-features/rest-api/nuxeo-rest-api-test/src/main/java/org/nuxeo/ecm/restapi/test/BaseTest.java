@@ -60,7 +60,7 @@ public class BaseTest {
     @Inject
     protected ServletContainerFeature servletContainerFeature;
 
-    protected static enum RequestType {
+    protected enum RequestType {
         GET, POST, DELETE, PUT, POSTREQUEST
     }
 

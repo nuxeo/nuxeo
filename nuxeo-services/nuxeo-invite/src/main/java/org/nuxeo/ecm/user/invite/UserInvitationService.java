@@ -30,11 +30,11 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 public interface UserInvitationService {
 
-    public static final String REGISTRATION_CONFIGURATION_NAME = "configurationName";
+    String REGISTRATION_CONFIGURATION_NAME = "configurationName";
 
-    public static final String REGISTRATION_DATA_DOC = "registrationDoc";
+    String REGISTRATION_DATA_DOC = "registrationDoc";
 
-    public static final String REGISTRATION_DATA_USER = "registeredUser";
+    String REGISTRATION_DATA_USER = "registeredUser";
 
     public enum ValidationMethod {
         EMAIL, NONE
