@@ -118,7 +118,7 @@ public class TestDocumentAuditPageProviderOperation {
 
             sleep();
 
-            DocumentModel proxy = session.publishDocument(doc, section);
+            session.publishDocument(doc, section);
 
             sleep();
 

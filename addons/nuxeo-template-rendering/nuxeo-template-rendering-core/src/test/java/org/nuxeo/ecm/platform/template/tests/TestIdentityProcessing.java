@@ -39,7 +39,7 @@ public class TestIdentityProcessing extends SimpleTemplateDocTestCase {
         DocumentModel testDoc = adapter.getAdaptedDoc();
         assertNotNull(testDoc);
 
-        String processorType = adapter.getSourceTemplate(TEMPLATE_NAME).getTemplateType();
+        adapter.getSourceTemplate(TEMPLATE_NAME).getTemplateType();
 
         Blob newBlob = adapter.renderWithTemplate(TEMPLATE_NAME);
 

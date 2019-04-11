@@ -73,8 +73,6 @@ public class MassSecurityModifierActions implements Serializable {
     public String applySecurity(String listName) {
         // get the list
         List<DocumentModel> docs2Modify = documentsListsManager.getWorkingList(listName);
-        int nbModifiedDocs = 0;
-
         for (DocumentModel doc : docs2Modify) {
             if (!documentManager.hasPermission(doc.getParentRef(), SecurityConstants.WRITE_PROPERTIES)) {
                 continue;

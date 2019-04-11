@@ -152,7 +152,7 @@ public abstract class AbstractSAMLProfile {
                 }
             } else {
                 String requestedResponseURL = request.getAssertionConsumerServiceURL();
-                String requestedBinding = request.getProtocolBinding();
+                request.getProtocolBinding();
                 if (requestedResponseURL != null) {
                     String responseLocation;
                     if (assertionConsumerService.getResponseLocation() != null) {

@@ -94,7 +94,7 @@ public class CanRenameDuplicateTest {
             for (int i = 1; i <= 30000; ++i) {
                 String increment = String.format("%05d", i);
                 model.setPathInfo("/", "aFile-" + increment);
-                Split split = watch.start();
+                watch.start();
                 repo.createDocument(model);
             }
             log.info(watch);

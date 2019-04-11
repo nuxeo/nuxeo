@@ -109,8 +109,7 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
         String nonce = new String(Base64.decodeBase64(nonceB64.getBytes()));
         String[] nonceTokens = nonce.split(":");
 
-        @SuppressWarnings("unused")
-        long nonceExpiryTime = Long.parseLong(nonceTokens[0]);
+        Long.parseLong(nonceTokens[0]);
         // @TODO: check expiry time and do something
 
         String username = headerMap.get("username");

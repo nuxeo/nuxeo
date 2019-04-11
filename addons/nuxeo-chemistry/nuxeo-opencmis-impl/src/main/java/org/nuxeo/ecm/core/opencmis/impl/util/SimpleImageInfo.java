@@ -123,8 +123,7 @@ public class SimpleImageInfo {
                 for (int i = 1; i <= entries; i++) {
                     int tag = readInt(2, bigEndian);
                     int fieldType = readInt(2, bigEndian);
-                    @SuppressWarnings("unused")
-                    long count = readInt(4, bigEndian);
+                    readInt(4, bigEndian); // count unused
                     int valOffset;
                     if ((fieldType == 3 || fieldType == 8)) {
                         valOffset = readInt(2, bigEndian);

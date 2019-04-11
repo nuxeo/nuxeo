@@ -89,11 +89,9 @@ public class WikiTransformer implements TemplateDirectiveModel {
     public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
             throws TemplateException, IOException {
 
-        // TODO: not used for now.
-        String syntax = null;
         SimpleScalar scalar = (SimpleScalar) params.get("syntax");
         if (scalar != null) {
-            syntax = scalar.getAsString();
+            scalar.getAsString();
         }
 
         scalar = (SimpleScalar) params.get("src");

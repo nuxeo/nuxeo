@@ -246,9 +246,8 @@ public class TestLibKafka {
                 System.out.println("Error while producing message to topic :" + recordMetadata);
                 e.printStackTrace();
             } else {
-                String message = String.format("sent message to topic:%s partition:%s  offset:%s",
+                String.format("sent message to topic:%s partition:%s  offset:%s",
                         recordMetadata.topic(), recordMetadata.partition(), recordMetadata.offset());
-                // System.out.println(message);
             }
         }
     }

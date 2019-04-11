@@ -107,7 +107,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
     @Override
     public Map<String, Object> asMap() {
 
-        boolean createdFromCreateTaskOperation = isCreatedFromCreateTaskOperation();
+        isCreatedFromCreateTaskOperation();
 
         Map<String, Object> obj = new LinkedHashMap<>();
         obj.put("id", getTask().getId());

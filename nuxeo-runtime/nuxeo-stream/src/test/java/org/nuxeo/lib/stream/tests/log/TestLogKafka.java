@@ -181,7 +181,7 @@ public class TestLogKafka extends TestLog {
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
 
         KeyValueMessage msg1 = KeyValueMessage.of("id1");
-        KeyValueMessage msg2 = KeyValueMessage.of("id2");
+        KeyValueMessage.of("id2");
         for (int i = 0; i < NB_MSG; i++) {
             appender.append(i % NB_QUEUE, msg1);
         }

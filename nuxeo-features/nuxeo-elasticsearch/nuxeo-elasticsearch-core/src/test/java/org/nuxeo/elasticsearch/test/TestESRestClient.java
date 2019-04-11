@@ -52,7 +52,7 @@ public class TestESRestClient extends TestESClient {
     @Test(expected = IllegalArgumentException.class)
     public void testNoClientConfig() throws Exception {
         ElasticSearchClientConfig config = new ElasticSearchClientConfig();
-        ESClient esClient = factory.create(null, config);
+        factory.create(null, config);
         // No config so should throw IllegalArgumentException
     }
 

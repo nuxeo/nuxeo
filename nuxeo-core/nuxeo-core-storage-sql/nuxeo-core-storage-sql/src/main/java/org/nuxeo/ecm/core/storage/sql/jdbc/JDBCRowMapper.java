@@ -1044,7 +1044,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 table.getColumn(key).setToPreparedStatement(ps, i++, value);
             }
             dialect.setId(ps, i, row.id); // id last in SQL
-            int count = ps.executeUpdate();
+            ps.executeUpdate();
             countExecute();
         } catch (SQLException e) {
             throw new NuxeoException("Could not update: " + sql, e);
@@ -1137,7 +1137,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 debugValues.add(id);
                 logger.logSQL(copy.sql, debugValues);
             }
-            int count = ps.executeUpdate();
+            ps.executeUpdate();
             countExecute();
 
             // TODO DB_IDENTITY

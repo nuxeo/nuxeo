@@ -53,8 +53,7 @@ public class PackageBuilderTest extends PackageTestCase {
 
         XMap xmap = StandaloneUpdateService.createXmap();
         try {
-            PackageDefinitionImpl pdef = (PackageDefinitionImpl) xmap.load(new ByteArrayInputStream(xml.getBytes()));
-            // System.out.println(pdef);
+            xmap.load(new ByteArrayInputStream(xml.getBytes()));
         } catch (IOException e) {
             fail("Could not create package definition");
         }

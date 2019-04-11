@@ -1870,14 +1870,14 @@ public class TestSQLRepositoryQuery {
 
         createDocs();
         DocumentModel proxy = publishDoc();
-        DocumentModel version = session.getDocument(new IdRef(proxy.getSourceId()));
+        session.getDocument(new IdRef(proxy.getSourceId()));
 
         DocumentModelList dml;
         DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
         DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         DocumentModel file2 = session.getDocument(new PathRef("/testfolder1/testfile2"));
         DocumentModel file3 = session.getDocument(new PathRef("/testfolder1/testfile3"));
-        DocumentModel file4 = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
+        session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
         file1.setLock();
         session.save();
 
@@ -3649,7 +3649,7 @@ public class TestSQLRepositoryQuery {
 
         ScrollResult<String> ret1 = session.scroll("SELECT * FROM Document", 1, 1);
         ScrollResult<String> ret2 = session.scroll("SELECT * FROM Document", 1, 1);
-        ScrollResult<String> ret3 = session.scroll("SELECT * FROM Document", 1, 1);
+        session.scroll("SELECT * FROM Document", 1, 1);
         assertTrue(ret1.hasResults());
         assertEquals(1, ret1.getResults().size());
 
@@ -3735,7 +3735,6 @@ public class TestSQLRepositoryQuery {
         doc = session.createDocumentModel("/", "doc2", "File");
         session.createDocument(doc);
         session.save();
-        ScrollResult ret;
         for (int i = 0; i < NB_SCROLLS; i++) {
             session.scroll("SELECT * FROM Document", 1, 1).getScrollId();
         }

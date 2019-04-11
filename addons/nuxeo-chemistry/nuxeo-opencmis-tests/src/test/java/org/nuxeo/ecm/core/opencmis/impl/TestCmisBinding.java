@@ -3291,7 +3291,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // create live proxy
 
         Helper.sleepForAuditGranularity();
-        DocumentModel proxy = coreSession.createProxy(new PathRef("/testfolder1/testfile1"),
+        coreSession.createProxy(new PathRef("/testfolder1/testfile1"),
                 new PathRef("/testfolder2"));
         coreSession.save();
         nextTransaction();

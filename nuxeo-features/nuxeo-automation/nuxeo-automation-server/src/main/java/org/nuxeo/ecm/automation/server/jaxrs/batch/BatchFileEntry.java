@@ -217,7 +217,6 @@ public class BatchFileEntry {
                 chunkedBlob = Blobs.createBlobWithExtension(null);
                 // Temporary file made from concatenated chunks
                 tmpChunkedFile = chunkedBlob.getFile();
-                BatchManager bm = Framework.getService(BatchManager.class);
                 // Sort chunk indexes and concatenate them to build the entire blob
                 List<Integer> sortedChunkIndexes = getOrderedChunkIndexes();
                 for (int index : sortedChunkIndexes) {
@@ -280,7 +279,6 @@ public class BatchFileEntry {
         }
 
         String chunkEntryKey = key + "_" + index;
-        BatchManager bm = Framework.getService(BatchManager.class);
         transientStore.putBlobs(chunkEntryKey, Collections.singletonList(blob));
         transientStore.putParameter(key, String.valueOf(index), chunkEntryKey);
 
@@ -288,7 +286,6 @@ public class BatchFileEntry {
     }
 
     public void beforeRemove() {
-        BatchManager bm = Framework.getService(BatchManager.class);
         String tmpChunkedFilePath = (String) transientStore.getParameter(key, "tmpChunkedFilePath");
         if (tmpChunkedFilePath != null) {
             File tmpChunkedFile = new File(tmpChunkedFilePath);

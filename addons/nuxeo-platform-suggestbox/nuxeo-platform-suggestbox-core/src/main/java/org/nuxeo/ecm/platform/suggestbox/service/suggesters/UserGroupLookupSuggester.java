@@ -65,7 +65,7 @@ public class UserGroupLookupSuggester implements Suggester {
 
     @Override
     public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
-        I18nHelper i18n = I18nHelper.instanceFor(context.messages);
+        I18nHelper.instanceFor(context.messages);
         UserManager userManager = Framework.getService(UserManager.class);
         List<Suggestion> suggestions = new ArrayList<>();
         List<Suggestion> searchSuggestions = new ArrayList<>();

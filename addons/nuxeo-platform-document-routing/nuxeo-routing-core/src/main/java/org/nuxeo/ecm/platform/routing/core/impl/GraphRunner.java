@@ -319,7 +319,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
          * node (above code).
          */
         for (GraphNode node : pendingSubRoutes) {
-            DocumentRoute subRoute = node.startSubRoute();
+            node.startSubRoute();
         }
         session.save();
     }

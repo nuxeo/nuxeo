@@ -273,7 +273,7 @@ public class TestPageProvider {
         Assert.assertNotNull(p);
         Assert.assertEquals(pageSize, p.size());
         Assert.assertEquals(2, pp.getNumberOfPages());
-        DocumentModel doc = p.get(0);
+        p.get(0);
     }
 
     @Test
@@ -312,7 +312,7 @@ public class TestPageProvider {
         Assert.assertNotNull(p);
         Assert.assertEquals(pageSize, p.size());
         Assert.assertEquals(2, pp.getNumberOfPages());
-        DocumentModel doc = p.get(0);
+        p.get(0);
     }
 
     @Test
@@ -932,7 +932,7 @@ public class TestPageProvider {
         startTransaction();
 
         // get current page
-        List<DocumentModel> p = pp.getCurrentPage();
+        pp.getCurrentPage();
         Assert.assertEquals(10, pp.getResultsCount());
         Assert.assertEquals(5, pp.getNumberOfPages());
         Assert.assertTrue(pp.isNextPageAvailable());

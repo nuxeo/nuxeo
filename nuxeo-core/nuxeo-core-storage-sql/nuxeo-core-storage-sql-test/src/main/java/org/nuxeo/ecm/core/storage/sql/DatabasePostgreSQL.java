@@ -47,10 +47,9 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         String db = setProperty(DATABASE_PROPERTY, databaseName);
         String server = setProperty(SERVER_PROPERTY, DEF_SERVER);
         String port = setProperty(PORT_PROPERTY, DEF_PORT);
-        String user = setProperty(USER_PROPERTY, DEF_USER);
-        String password = setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
-        // for sql directory tests
-        String driver = setProperty(DRIVER_PROPERTY, DRIVER);
+        setProperty(USER_PROPERTY, DEF_USER);
+        setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+        setProperty(DRIVER_PROPERTY, DRIVER);
         String url = String.format("jdbc:postgresql://%s:%s/%s", server, port, db);
         setProperty(URL_PROPERTY, url);
         setProperty(ID_TYPE_PROPERTY, DEF_ID_TYPE);

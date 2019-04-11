@@ -239,7 +239,7 @@ public class TestCompareQueryAndFetch {
                                                        .addAggregate(cardinality)
                                                        .addAggregate(average)
                                                        .onlyElasticsearchResponse();
-        EsResult esRes = ess.queryAndAggregate(qb);
+        ess.queryAndAggregate(qb);
         Assert.assertNotNull(cardinality.getValue());
     }
 

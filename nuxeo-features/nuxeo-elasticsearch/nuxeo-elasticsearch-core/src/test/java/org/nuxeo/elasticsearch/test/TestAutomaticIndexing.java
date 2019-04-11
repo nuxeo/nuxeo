@@ -376,7 +376,6 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
         // we need to wait for the async fulltext indexing
-        WorkManager wm = Framework.getService(WorkManager.class);
         waitForCompletion();
 
         startTransaction();
@@ -778,7 +777,7 @@ public class TestAutomaticIndexing {
 
         folder.setPropertyValue("dc:title", "v2");
         folder = session.saveDocument(folder);
-        DocumentRef v2 = folder.checkIn(VersioningOption.MAJOR, "update");
+        folder.checkIn(VersioningOption.MAJOR, "update");
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
@@ -937,21 +936,21 @@ public class TestAutomaticIndexing {
         file1 = session.createDocument(file1);
         file1.setPropertyValue("dc:title", "v1");
         file1 = session.saveDocument(file1);
-        DocumentRef v1 = file1.checkIn(VersioningOption.MAJOR, "init v1");
+        file1.checkIn(VersioningOption.MAJOR, "init v1");
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         startTransaction();
 
         file1.setPropertyValue("dc:title", "v2");
         file1 = session.saveDocument(file1);
-        DocumentRef v2 = file1.checkIn(VersioningOption.MAJOR, "update v2");
+        file1.checkIn(VersioningOption.MAJOR, "update v2");
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         startTransaction();
 
         file1.setPropertyValue("dc:title", "v3");
         file1 = session.saveDocument(file1);
-        DocumentRef v3 = file1.checkIn(VersioningOption.MAJOR, "update v3");
+        file1.checkIn(VersioningOption.MAJOR, "update v3");
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         startTransaction();

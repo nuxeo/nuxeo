@@ -159,7 +159,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
             return;
         }
         log.info("Init Stream processor: {} with manager: {}", descriptor.getId(), descriptor.config);
-        LogManager manager = getLogManager(descriptor.config);
+        getLogManager(descriptor.config);
         StreamManager streamManager = getStreamManager(descriptor.config);
         Topology topology;
         try {

@@ -61,7 +61,7 @@ public class StaticUserMapper extends AbstractMapper {
         String fname = (String) userModel.getProperty(um.getUserSchemaName(), "firstName");
         String lname = (String) userModel.getProperty(um.getUserSchemaName(), "lastName");
         String email = (String) userModel.getProperty(um.getUserSchemaName(), "email");
-        String company = (String) userModel.getProperty(um.getUserSchemaName(), "company");
+        userModel.getProperty(um.getUserSchemaName(), "company");
 
         String displayName = fname + " " + lname;
         displayName = displayName.trim();

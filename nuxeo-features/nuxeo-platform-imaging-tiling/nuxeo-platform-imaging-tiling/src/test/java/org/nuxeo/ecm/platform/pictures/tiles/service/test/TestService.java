@@ -257,7 +257,7 @@ public class TestService {
                 for (int j = 0; j < nyt; j++) {
                     nbt++;
                     long t1 = System.currentTimeMillis();
-                    Blob tile = tiles.getTile(i, j);
+                    tiles.getTile(i, j);
                     long t2 = System.currentTimeMillis();
                     log.debug("maxTile={}, {}-{} = {}", maxTiles, i, j, t2 - t1);
                 }

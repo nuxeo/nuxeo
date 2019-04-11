@@ -664,7 +664,6 @@ public abstract class TestLog {
     @Test
     public void testLagLeak() {
         final int LOG_SIZE = 1;
-        final String GROUP = "defaultTest";
         KeyValueMessage msg1 = KeyValueMessage.of("id1");
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
@@ -869,7 +868,6 @@ public abstract class TestLog {
     public void testCodecCheck() throws Exception {
         final int LOG_SIZE = 1;
         final String GROUP = "defaultTest";
-        final String GROUP2 = "defaultTest2";
         manager.createIfNotExists(logName, LOG_SIZE);
         KeyValueMessage msg1 = KeyValueMessage.of("1234567890", "0987654321".getBytes(UTF_8));
 

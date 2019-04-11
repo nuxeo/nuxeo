@@ -116,7 +116,7 @@ public class TestIndexingCommand {
     public void testInvalidJsonDocIdNull() throws Exception {
         String json = "{\"id\": \"124\", \"type\": \"INSERT\"}";
         exception.expect(IllegalArgumentException.class);
-        IndexingCommand cmd = IndexingCommand.fromJSON(json);
+        IndexingCommand.fromJSON(json);
     }
 
     public final class MockDocumentModel extends DocumentModelImpl {

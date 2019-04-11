@@ -133,7 +133,6 @@ public class AbstractGraphRouteTest {
 
     protected DocumentRoute instantiateAndRun(CoreSession session, List<String> docIds, Map<String, Serializable> map)
             {
-        DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
         DocumentRoute route = validate(routeDoc, session);
         // create instance and start
         String id = Framework.getService(DocumentRoutingService.class).createNewInstance(

@@ -723,7 +723,7 @@ public class TestSQLRepositoryVersioning {
         assertNull(lastVersionDocument);
 
         // republish
-        DocumentModel newProxy = session.publishDocument(doc, folder);
+        session.publishDocument(doc, folder);
         checkVersions(doc, "0.2");
         lastVersionDocument = session.getLastDocumentVersion(doc.getRef());
         assertNotNull(lastVersionDocument);
@@ -740,7 +740,7 @@ public class TestSQLRepositoryVersioning {
         checkVersions(doc);
 
         // publish
-        DocumentModel proxy = session.publishDocument(doc, folder);
+        session.publishDocument(doc, folder);
         checkVersions(doc, "0.1");
         DocumentModel lastVersion = session.getLastDocumentVersion(doc.getRef());
         assertNotNull(lastVersion);
@@ -758,7 +758,7 @@ public class TestSQLRepositoryVersioning {
         assertNull(lastVersionDocument);
 
         // republish
-        DocumentModel newProxy = session.publishDocument(copy, folder);
+        session.publishDocument(copy, folder);
         checkVersions(copy, "0.1");
         lastVersion = session.getLastDocumentVersion(copy.getRef());
         assertNotNull(lastVersion);
@@ -940,7 +940,7 @@ public class TestSQLRepositoryVersioning {
         DocumentRef ci1 = session.checkIn(co, VersioningOption.MAJOR, "first check-in");
         session.checkOut(co);
         maybeSleepToNextSecond();
-        DocumentRef ci2 = session.checkIn(co, VersioningOption.MAJOR, "second check-in");
+        session.checkIn(co, VersioningOption.MAJOR, "second check-in");
         waitForFulltextIndexing();
         maybeSleepToNextSecond();
         session.restoreToVersion(co, ci1);
@@ -1001,7 +1001,7 @@ public class TestSQLRepositoryVersioning {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         session.save();
-        DocumentRef v1ref = session.checkIn(doc.getRef(), VersioningOption.MAJOR, null);
+        session.checkIn(doc.getRef(), VersioningOption.MAJOR, null);
         session.checkOut(doc.getRef());
         maybeSleepToNextSecond();
         DocumentRef v2ref = session.checkIn(doc.getRef(), VersioningOption.MINOR, null);

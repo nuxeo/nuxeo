@@ -39,8 +39,7 @@ public class GwtTestPortAmsterdamParsing extends AbstractDocumentGWTTest {
             annotatedDocument.decorate(annotation);
         }
         String resultInnerHtml = RootPanel.get("insidediv").getElement().getInnerHTML();
-        @SuppressWarnings("unused")
-        String debugString = resultInnerHtml.substring(resultInnerHtml.indexOf("<p"));
+        resultInnerHtml.substring(resultInnerHtml.indexOf("<p"));
         assertTrue(resultInnerHtml.contains("<span class=\"decorate decorate0\"> Les rêves qui les hantent</span><br>"
                 + "<span class=\"decorate decorate0\"> Au large d'Amsterda</span>m"));
     }

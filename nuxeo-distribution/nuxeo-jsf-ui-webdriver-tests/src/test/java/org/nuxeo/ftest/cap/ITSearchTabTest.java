@@ -362,7 +362,6 @@ public class ITSearchTabTest extends AbstractTest {
     public void testSearchWithUpdatedPermissionsOnRootDocument() throws UserNotConnectedException {
 
         String testuser = "testuser";
-        String testpassword = "testpassword";
         String testgroup = "testgroup";
 
         RestHelper.createUser(testuser, testuser);

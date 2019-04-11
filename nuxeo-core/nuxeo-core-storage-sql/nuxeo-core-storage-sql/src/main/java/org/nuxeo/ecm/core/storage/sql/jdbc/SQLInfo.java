@@ -762,7 +762,7 @@ public class SQLInfo {
         // if (separateMainTable)
         // maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFK);
         maker.newColumn(Model.MAIN_KEY, ColumnType.NODEID);
-        Column column = maker.newColumn(Model.HIER_PARENT_KEY, ColumnType.NODEIDFKNULL);
+        maker.newColumn(Model.HIER_PARENT_KEY, ColumnType.NODEIDFKNULL);
         maker.newColumn(Model.HIER_CHILD_POS_KEY, ColumnType.INTEGER);
         maker.newColumn(Model.HIER_CHILD_NAME_KEY, ColumnType.STRING);
         maker.newColumn(Model.HIER_CHILD_ISPROPERTY_KEY, ColumnType.BOOLEAN); // notnull

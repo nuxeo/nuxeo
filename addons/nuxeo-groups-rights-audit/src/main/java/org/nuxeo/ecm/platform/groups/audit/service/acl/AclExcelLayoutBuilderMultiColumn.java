@@ -235,7 +235,7 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
     protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls) {
         for (String user : userAcls.keySet()) {
             List<Pair<String, Boolean>> acls = new ArrayList<>(userAcls.get(user));
-            int last = acls.size() - 1;
+            acls.size();
 
             // TODO: IF ACLS not contain an ACL that should be first or last,
             // thus showing border, post draw white cells

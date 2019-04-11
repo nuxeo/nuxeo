@@ -130,7 +130,7 @@ public class TestGridFSBinaryManager {
         GridFSBinaryManager binaryManager = getBinaryManager();
 
         // store binary
-        byte[] bytes = CONTENT.getBytes("UTF-8");
+        CONTENT.getBytes("UTF-8");
         Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
 

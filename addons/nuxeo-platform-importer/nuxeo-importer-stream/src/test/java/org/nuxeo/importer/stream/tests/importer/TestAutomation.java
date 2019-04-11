@@ -200,7 +200,6 @@ public abstract class TestAutomation {
         final int nbBlobs = 10;
         final int nbDocuments = 20;
         final int nbThreads = 2;
-        final String marker = "youknowforsearch";
 
         OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = new HashMap<>();

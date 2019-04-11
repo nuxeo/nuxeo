@@ -82,7 +82,7 @@ public class TestExtractor {
         File xmlFile = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext(
                 "apidoc-sample-fragment-contrib.xml");
         String xml = FileUtils.readFileToString(xmlFile, StandardCharsets.UTF_8);
-        String html = XMLContributionParser.prettyfy(xml);
+        XMLContributionParser.prettyfy(xml);
     }
 
     @Test

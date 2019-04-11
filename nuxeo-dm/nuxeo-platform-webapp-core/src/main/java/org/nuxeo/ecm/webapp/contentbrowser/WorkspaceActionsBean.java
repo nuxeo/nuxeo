@@ -211,16 +211,14 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
     @Override
     @End
     public String createWorkspace() {
-        String navResult = null;
-
         if (useTemplateFlag == null || !useTemplateFlag || selectedTemplateId == null
                 || selectedTemplateId.equals("none")) {
             // create the new Workspace without Template
             // and navigate to it
-            navResult = documentTemplatesActions.createDocumentFromTemplate(tmpWorkspace, null);
+            documentTemplatesActions.createDocumentFromTemplate(tmpWorkspace, null);
         } else {
             // create the workspace from template
-            navResult = documentTemplatesActions.createDocumentFromTemplate(tmpWorkspace, selectedTemplateId);
+            documentTemplatesActions.createDocumentFromTemplate(tmpWorkspace, selectedTemplateId);
         }
 
         if (!selectedSecurityModel.equals("inherit")) {
@@ -254,12 +252,10 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
 
     @End(beforeRedirect = true)
     public String createWorkspaceOld() {
-        String navResult = null;
-
         if (!useTemplateFlag || selectedTemplateId.equals("none")) {
             // create the new Workspace without Template
             // and navigate to it
-            navResult = documentActions.saveDocument(tmpWorkspace);
+            documentActions.saveDocument(tmpWorkspace);
         } else {
             // create the workspace from template
 
@@ -286,7 +282,7 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
             documentManager.save();
 
             // navigate to the newly created doc
-            navResult = navigationContext.navigateToDocument(created, "after-create");
+            navigationContext.navigateToDocument(created, "after-create");
         }
 
         if (!selectedSecurityModel.equals("inherit")) {
