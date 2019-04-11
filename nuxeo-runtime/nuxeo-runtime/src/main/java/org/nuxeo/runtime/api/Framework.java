@@ -528,22 +528,6 @@ public final class Framework {
     }
 
     /**
-     * Strategy is not customizable anymore.
-     *
-     * @deprecated
-     * @since 6.0
-     * @see #trackFile(File, Object)
-     * @see org.nuxeo.runtime.trackers.files.FileEventTracker.SafeFileDeleteStrategy
-     * @param file The file to delete
-     * @param marker the marker Object
-     * @param fileDeleteStrategy ignored deprecated parameter
-     */
-    @Deprecated
-    public static void trackFile(File file, Object marker, FileDeleteStrategy fileDeleteStrategy) {
-        trackFile(file, marker);
-    }
-
-    /**
      * @since 6.0
      */
     protected static void checkRuntimeInitialized() {
