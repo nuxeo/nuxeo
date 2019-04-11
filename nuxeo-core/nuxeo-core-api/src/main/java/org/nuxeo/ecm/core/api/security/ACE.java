@@ -37,6 +37,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class ACE implements Serializable, Cloneable {
 
+    private static final long serialVersionUID = 1L;
+
     public enum Status {
         PENDING, EFFECTIVE, ARCHIVED
     }

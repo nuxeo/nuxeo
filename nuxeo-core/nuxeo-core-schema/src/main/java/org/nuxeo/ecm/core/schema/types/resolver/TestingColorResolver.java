@@ -26,6 +26,8 @@ import java.util.Map;
 
 public class TestingColorResolver extends AbstractObjectResolver implements ObjectResolver {
 
+    private static final long serialVersionUID = 1L;
+
     public enum MODE {
         PRIMARY, SECONDARY
     }

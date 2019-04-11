@@ -284,6 +284,8 @@ public interface GraphNode {
 
     class Transition implements Comparable<Transition>, Serializable {
 
+        private static final long serialVersionUID = 1L;
+
         public GraphNode source;
 
         public MapProperty prop;
@@ -518,6 +520,8 @@ public interface GraphNode {
      * @since 5.7.3
      */
     class TaskInfo implements Comparable<TaskInfo>, Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         protected String taskDocId;
 

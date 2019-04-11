@@ -26,6 +26,8 @@ import org.openqa.selenium.WebDriverException;
  */
 @SuppressWarnings("serial")
 public class TimeoutException extends WebDriverException {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Time out a test, indicating why the timeout occurred.
      */

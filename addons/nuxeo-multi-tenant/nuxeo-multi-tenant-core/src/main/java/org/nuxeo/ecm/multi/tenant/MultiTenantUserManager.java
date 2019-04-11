@@ -32,6 +32,8 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
  */
 public class MultiTenantUserManager extends UserManagerWithComputedGroups {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     protected NuxeoPrincipal makePrincipal(DocumentModel userEntry, boolean anonymous, List<String> groups)
             {

@@ -28,6 +28,8 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class LoginInfo implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     public static final LoginInfo ANONYNMOUS = new LoginInfo("Anonymous");
 
     protected String username;

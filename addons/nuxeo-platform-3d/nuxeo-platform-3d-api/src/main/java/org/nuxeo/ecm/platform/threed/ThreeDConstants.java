@@ -55,6 +55,8 @@ public class ThreeDConstants {
     public static final String STATIC_3D_PCTURE_TITLE = "Static3D";
 
     public static final List SUPPORTED_EXTENSIONS = new ArrayList<String>() {
+        private static final long serialVersionUID = 1L;
+
         {
             add(EXTENSION_COLLADA);
             add(EXTENSION_3DSTUDIO);

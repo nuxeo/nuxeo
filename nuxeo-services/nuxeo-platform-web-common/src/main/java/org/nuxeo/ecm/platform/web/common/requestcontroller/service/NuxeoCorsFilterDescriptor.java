@@ -46,6 +46,8 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 @XObject(value = "corsConfig")
 public class NuxeoCorsFilterDescriptor implements Serializable, Cloneable {
 
+    private static final long serialVersionUID = 1L;
+
     private static final String PROPERTIES_PREFIX = "cors.";
 
     @XNode("@name")

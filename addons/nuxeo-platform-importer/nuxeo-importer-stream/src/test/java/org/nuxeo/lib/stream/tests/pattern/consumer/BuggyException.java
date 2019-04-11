@@ -22,6 +22,8 @@ package org.nuxeo.lib.stream.tests.pattern.consumer;
  * @since 9.1
  */
 public class BuggyException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+
     public BuggyException(String message) {
         super(message);
     }

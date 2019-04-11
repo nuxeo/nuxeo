@@ -30,6 +30,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class GroupsPageProvider extends AbstractGroupsPageProvider<DocumentModel> {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     public List<DocumentModel> getCurrentPage() {
         return computeCurrentPage();

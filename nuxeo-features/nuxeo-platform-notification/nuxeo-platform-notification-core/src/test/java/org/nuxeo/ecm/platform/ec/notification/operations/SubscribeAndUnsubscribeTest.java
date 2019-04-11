@@ -129,7 +129,9 @@ public class SubscribeAndUnsubscribeTest {
     @Test
     public void testSelectiveSubscribeAndUnsubscribeOperations() throws OperationException {
         Map<String, Object> params = new HashMap<>();
-        params.put("notifications", new StringList(new ArrayList<String>() {{ add("Creation"); }}));
+        params.put("notifications", new StringList(new ArrayList<String>() {private static final long serialVersionUID = 1L;
+
+        { add("Creation"); }}));
 
         OperationChain chain = new OperationChain("test-chain");
         chain.add(SubscribeOperation.ID).from(params);

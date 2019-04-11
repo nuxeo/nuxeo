@@ -35,6 +35,7 @@ import java.sql.SQLException;
 @Deprecated
 public class SQLOperatorFilter extends SQLComplexFilter {
 
+    private static final long serialVersionUID = 1L;
     private Serializable value;
 
     public SQLOperatorFilter(String operator, Serializable value) {

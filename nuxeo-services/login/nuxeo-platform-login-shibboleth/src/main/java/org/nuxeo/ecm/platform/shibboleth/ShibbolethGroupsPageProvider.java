@@ -33,6 +33,8 @@ import org.nuxeo.ecm.platform.usermanager.providers.GroupsPageProvider;
  */
 public class ShibbolethGroupsPageProvider extends GroupsPageProvider {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     protected List<DocumentModel> searchAllGroups() {
         return ShibbolethGroupHelper.getGroups();

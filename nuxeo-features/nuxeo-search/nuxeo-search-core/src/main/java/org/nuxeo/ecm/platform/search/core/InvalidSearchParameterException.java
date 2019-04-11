@@ -25,6 +25,8 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  */
 public class InvalidSearchParameterException extends NuxeoException {
 
+    private static final long serialVersionUID = 1L;
+
     public InvalidSearchParameterException(String message) {
         super(message);
     }

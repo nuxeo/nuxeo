@@ -36,6 +36,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RootSectionsPublicationTree extends SectionPublicationTree {
 
+    private static final long serialVersionUID = 1L;
+
     protected DocumentModel currentDocument;
 
     protected RootSectionFinder rootFinder;

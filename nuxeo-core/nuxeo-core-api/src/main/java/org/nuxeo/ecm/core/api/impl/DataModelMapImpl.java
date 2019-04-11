@@ -32,4 +32,6 @@ import org.nuxeo.ecm.core.api.DataModelMap;
 @Deprecated
 public class DataModelMapImpl extends HashMap<String, DataModel> implements DataModelMap {
 
+    private static final long serialVersionUID = 1L;
+
 }

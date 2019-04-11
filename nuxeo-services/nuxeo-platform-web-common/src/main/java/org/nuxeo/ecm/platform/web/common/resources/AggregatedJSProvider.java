@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 @Deprecated
 public class AggregatedJSProvider extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     private static final Log log = LogFactory.getLog(AggregatedJSProvider.class);
 
     @Override

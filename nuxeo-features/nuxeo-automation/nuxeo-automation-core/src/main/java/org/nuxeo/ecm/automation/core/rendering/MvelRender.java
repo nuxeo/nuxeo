@@ -74,6 +74,7 @@ public class MvelRender implements Renderer {
     @SuppressWarnings("serial")
     private static class Cache extends LinkedHashMap<String, CompiledTemplate> {
 
+        private static final long serialVersionUID = 1L;
         protected int maxCachedItems;
 
         private Cache() {

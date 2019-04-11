@@ -44,6 +44,7 @@ import org.w3c.dom.Element;
  */
 public class MetadataServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
     protected static final Log log = LogFactory.getLog(MetadataServlet.class);
 
     @Override

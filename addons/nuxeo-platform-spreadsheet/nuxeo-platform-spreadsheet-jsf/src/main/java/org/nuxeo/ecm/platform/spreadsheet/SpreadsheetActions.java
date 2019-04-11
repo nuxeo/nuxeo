@@ -44,6 +44,7 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 @Scope(EVENT)
 public class SpreadsheetActions implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @In(create = true)
     protected ContentViewService contentViewService;
 

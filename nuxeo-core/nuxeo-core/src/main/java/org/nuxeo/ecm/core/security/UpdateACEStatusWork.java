@@ -53,6 +53,8 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
  */
 public class UpdateACEStatusWork extends AbstractWork {
 
+    private static final long serialVersionUID = 1L;
+
     public static final int DEFAULT_BATCH_SIZE = 20;
 
     public static final String CATEGORY = "updateACEStatus";

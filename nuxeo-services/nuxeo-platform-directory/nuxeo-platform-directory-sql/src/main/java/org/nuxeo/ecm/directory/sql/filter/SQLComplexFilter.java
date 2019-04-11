@@ -39,6 +39,8 @@ import org.nuxeo.ecm.directory.DirectoryException;
 @Deprecated
 public abstract class SQLComplexFilter implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     protected String operator;
 
     protected Serializable value;

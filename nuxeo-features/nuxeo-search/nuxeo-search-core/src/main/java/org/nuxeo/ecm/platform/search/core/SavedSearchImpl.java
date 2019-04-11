@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class SavedSearchImpl implements SavedSearch {
 
+    private static final long serialVersionUID = 1L;
     private DocumentModel doc;
 
     public SavedSearchImpl(DocumentModel doc) {

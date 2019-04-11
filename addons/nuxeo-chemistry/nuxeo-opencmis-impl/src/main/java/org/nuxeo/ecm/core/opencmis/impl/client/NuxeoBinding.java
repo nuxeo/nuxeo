@@ -32,6 +32,8 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
  */
 public class NuxeoBinding implements CmisBinding {
 
+    private static final long serialVersionUID = 1L;
+
     private static final BindingsObjectFactory OBJECT_FACTORY = new BindingsObjectFactoryImpl();
 
     public final CmisService service;

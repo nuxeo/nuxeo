@@ -34,6 +34,8 @@ import org.nuxeo.ecm.core.api.PropertyException;
  */
 public abstract class AbstractExternalBlobAdapter implements ExternalBlobAdapter {
 
+    private static final long serialVersionUID = 1L;
+
     protected String prefix;
 
     protected Map<String, String> properties;

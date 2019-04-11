@@ -44,6 +44,8 @@ import org.nuxeo.runtime.api.Framework;
 @Install(precedence = FRAMEWORK)
 public class CollectionBulkEditActions implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     public static final String SELECTION_EDITED = "selectionEdited";
 
     public static final String DOCUMENTS_IMPORTED = "documentImported";

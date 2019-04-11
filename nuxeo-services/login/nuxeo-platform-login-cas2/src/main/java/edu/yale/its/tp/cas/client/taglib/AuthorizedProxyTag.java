@@ -47,6 +47,8 @@ public class AuthorizedProxyTag extends BodyTagSupport {
     // *********************************************************************
     // Tag logic
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     public int doEndTag() throws JspTagException {
         String authorizedProxy = null;

@@ -591,6 +591,7 @@ public class TestAggregates {
 
     private static class DummyLengthBlob extends AbstractBlob {
 
+        private static final long serialVersionUID = 1L;
         private final long length;
 
         public DummyLengthBlob(long length) {

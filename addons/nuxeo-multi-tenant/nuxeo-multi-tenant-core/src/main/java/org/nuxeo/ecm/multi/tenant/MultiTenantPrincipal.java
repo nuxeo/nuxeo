@@ -28,6 +28,8 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
  */
 public class MultiTenantPrincipal extends NuxeoPrincipalImpl {
 
+    private static final long serialVersionUID = 1L;
+
     public MultiTenantPrincipal(NuxeoPrincipalImpl principal) {
         super(principal.getName(), principal.isAnonymous(), principal.isAdministrator());
         setConfig(principal.getConfig());

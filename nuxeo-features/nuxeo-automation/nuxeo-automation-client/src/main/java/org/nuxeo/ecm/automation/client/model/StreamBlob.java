@@ -27,6 +27,7 @@ import java.io.InputStream;
 @SuppressWarnings("serial")
 public class StreamBlob extends Blob {
 
+    private static final long serialVersionUID = 1L;
     protected final InputStream in;
 
     public StreamBlob(InputStream in, String name, String ctype) {

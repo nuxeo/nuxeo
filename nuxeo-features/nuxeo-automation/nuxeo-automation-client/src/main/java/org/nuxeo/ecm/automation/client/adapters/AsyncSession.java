@@ -70,6 +70,8 @@ public class AsyncSession implements Session {
      */
     public class CompletableRequest extends Request {
 
+        private static final long serialVersionUID = 1L;
+
         protected CompletableFuture<CompletableRequest> future;
 
         protected int status;
@@ -144,6 +146,7 @@ public class AsyncSession implements Session {
      */
     public class AsyncRequest extends CompletableRequest {
 
+        private static final long serialVersionUID = 1L;
         protected static final String ASYNC_ADAPTER = "/@async";
 
         public AsyncRequest(int method, String url, String entity) {
