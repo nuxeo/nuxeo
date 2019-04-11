@@ -42,7 +42,7 @@ public class PageSelections<T> {
     public PageSelections(Collection<? extends PageSelection<T>> c) {
         super();
         if (c != null) {
-            this.entries = new ArrayList<PageSelection<T>>(c);
+            this.entries = new ArrayList<>(c);
         }
     }
 

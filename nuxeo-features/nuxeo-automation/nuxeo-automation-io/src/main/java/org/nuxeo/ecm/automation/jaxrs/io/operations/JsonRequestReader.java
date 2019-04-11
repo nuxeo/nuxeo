@@ -69,7 +69,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
     @Deprecated
     public static final MediaType targetMediaTypeNXReq = new MediaType("application", "json+nxrequest");
 
-    protected static final HashMap<String, InputResolver<?>> inputResolvers = new HashMap<String, InputResolver<?>>();
+    protected static final HashMap<String, InputResolver<?>> inputResolvers = new HashMap<>();
 
     static {
         addInputResolver(new DocumentInputResolver());

@@ -44,7 +44,7 @@ public class TestDocumentPathCodec {
     private DocumentView getDocumentView(String id, String path, String view) {
         DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef(id), new PathRef(path));
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("tabId", "TAB_CONTENT");
         DocumentView docView = new DocumentViewImpl(docLoc, view, params);
         return docView;
@@ -208,7 +208,7 @@ public class TestDocumentPathCodec {
     public void testGetUrlWithoutPathRef() {
         DocumentPathCodec codec = new DocumentPathCodec();
         DocumentLocation docLoc = new DocumentLocationImpl("demo", null);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("tabId", "TAB_CONTENT");
         DocumentView docView = new DocumentViewImpl(docLoc, "view_documents", params);
 

@@ -49,7 +49,7 @@ public class UIComment implements Comparable, Serializable {
     public UIComment(UIComment parent, DocumentModel docModel) {
         this.parent = parent;
         comment = docModel;
-        children = new ArrayList<UIComment>();
+        children = new ArrayList<>();
     }
 
     public String getId() {

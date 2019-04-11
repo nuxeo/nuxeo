@@ -39,7 +39,7 @@ public class DummyDispatcher extends SimpleEventBundlePipeDispatcher  {
     public void init(List<EventPipeDescriptor> pipeDescriptors, Map<String, String> parameters) {
         super.init(pipeDescriptors, parameters);
         DummyDispatcher.pipeDescriptors = pipeDescriptors;
-        eventBundles = new ArrayList<EventBundle>();
+        eventBundles = new ArrayList<>();
     }
 
     @Override

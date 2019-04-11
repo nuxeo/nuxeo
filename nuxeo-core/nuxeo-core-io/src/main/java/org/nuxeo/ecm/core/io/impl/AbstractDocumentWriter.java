@@ -48,7 +48,7 @@ public abstract class AbstractDocumentWriter implements DocumentWriter {
         }
         String newRepo = null;
         String oldRepo = null;
-        Map<DocumentRef, DocumentRef> newRefs = new HashMap<DocumentRef, DocumentRef>();
+        Map<DocumentRef, DocumentRef> newRefs = new HashMap<>();
         for (ExportedDocument doc : docs) {
             DocumentTranslationMap newMap = write(doc);
             if (newMap != null) {
@@ -72,7 +72,7 @@ public abstract class AbstractDocumentWriter implements DocumentWriter {
         }
         String newRepo = null;
         String oldRepo = null;
-        Map<DocumentRef, DocumentRef> newRefs = new HashMap<DocumentRef, DocumentRef>();
+        Map<DocumentRef, DocumentRef> newRefs = new HashMap<>();
         for (ExportedDocument doc : docs) {
             DocumentTranslationMap newMap = write(doc);
             if (newMap != null) {

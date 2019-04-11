@@ -33,11 +33,11 @@ public class Documents implements Serializable, OperationInput, Iterable<Documen
     protected List<Document> docs;
 
     public Documents() {
-        docs = new ArrayList<Document>();
+        docs = new ArrayList<>();
     }
 
     public Documents(int size) {
-        docs = new ArrayList<Document>(size);
+        docs = new ArrayList<>(size);
     }
 
     public Documents(Documents docs) {

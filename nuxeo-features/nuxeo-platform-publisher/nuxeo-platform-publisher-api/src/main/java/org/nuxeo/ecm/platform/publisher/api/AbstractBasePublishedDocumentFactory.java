@@ -57,7 +57,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
         this.parameters = parameters;
         this.validatorsRule = validatorsRule;
         if (this.parameters == null) {
-            this.parameters = new HashMap<String, String>();
+            this.parameters = new HashMap<>();
         }
     }
 
@@ -148,7 +148,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
             category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
         }
         if (properties == null) {
-            properties = new HashMap<String, Serializable>();
+            properties = new HashMap<>();
         }
         properties.put(CoreEventConstants.REPOSITORY_NAME, dm.getRepositoryName());
         properties.put(CoreEventConstants.SESSION_ID, coreSession.getSessionId());

@@ -229,7 +229,7 @@ public class SQLStatement {
                         SQLStatement statement = new SQLStatement(sql, tags);
                         List<SQLStatement> catStatements = statements.get(category);
                         if (catStatements == null) {
-                            statements.put(category, catStatements = new LinkedList<SQLStatement>());
+                            statements.put(category, catStatements = new LinkedList<>());
                         }
                         catStatements.add(statement);
                         break;

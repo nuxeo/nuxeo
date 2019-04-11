@@ -95,7 +95,7 @@ public class TestDocumentTemplate {
     public void testIteratorOnDocumentTemplate() throws Exception {
 
         StringWriter writer = new StringWriter();
-        Map<String, Object> input = new HashMap<String, Object>();
+        Map<String, Object> input = new HashMap<>();
         input.put("doc", doc);
 
         engine.render("testdata/testlists.ftl", input, writer);

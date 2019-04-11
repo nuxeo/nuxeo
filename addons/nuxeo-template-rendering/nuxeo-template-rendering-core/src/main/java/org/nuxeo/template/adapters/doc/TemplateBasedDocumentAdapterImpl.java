@@ -163,7 +163,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
 
     @Override
     public List<TemplateSourceDocument> getSourceTemplates() {
-        List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
+        List<TemplateSourceDocument> result = new ArrayList<>();
         for (TemplateBinding binding : bindings) {
             TemplateSourceDocument template = getSourceTemplate(binding.getName());
             if (template != null) {
@@ -196,7 +196,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
 
         // copy Params but set as readonly all params set in template
         List<TemplateInput> params = tmpl.getParams();
-        List<TemplateInput> myParams = new ArrayList<TemplateInput>();
+        List<TemplateInput> myParams = new ArrayList<>();
         for (TemplateInput param : params) {
             boolean readOnly = param.isSet() && !tmpl.allowInstanceOverride();
             TemplateInput myParam = param.getCopy(readOnly);
@@ -357,10 +357,10 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
                 return XMLSerializer.readFromXml(xml);
             } catch (DocumentException e) {
                 log.error("Unable to parse parameters", e);
-                return new ArrayList<TemplateInput>();
+                return new ArrayList<>();
             }
         }
-        return new ArrayList<TemplateInput>();
+        return new ArrayList<>();
     }
 
     @Override

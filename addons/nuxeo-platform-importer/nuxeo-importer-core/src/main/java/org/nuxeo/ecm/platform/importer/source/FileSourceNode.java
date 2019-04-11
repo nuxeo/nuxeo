@@ -53,7 +53,7 @@ public class FileSourceNode implements SourceNode {
 
     public List<SourceNode> getChildren() throws IOException {
 
-        List<SourceNode> children = new ArrayList<SourceNode>();
+        List<SourceNode> children = new ArrayList<>();
 
         for (File child : file.listFiles()) {
             children.add(new FileSourceNode(child));

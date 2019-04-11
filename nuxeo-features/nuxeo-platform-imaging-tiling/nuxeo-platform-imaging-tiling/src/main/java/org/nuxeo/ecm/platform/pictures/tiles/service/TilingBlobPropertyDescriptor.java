@@ -43,7 +43,7 @@ public class TilingBlobPropertyDescriptor implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNodeMap(value = "blobProperty", key = "@docType", type = HashMap.class, componentType = String.class)
-    public Map<String, String> blobProperties = new HashMap<String, String>();
+    public Map<String, String> blobProperties = new HashMap<>();
 
     public Map<String, String> getBlobProperties() {
         return blobProperties;

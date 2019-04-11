@@ -93,7 +93,7 @@ public class TemplateInitListener implements EventListener {
                         if ("none".equals(targetTemplateUid)) {
                             targetTemplateUid = null;
                         }
-                        List<String> templatesUids = new ArrayList<String>();
+                        List<String> templatesUids = new ArrayList<>();
 
                         if (targetTemplateUid != null) {
                             templatesUids.add(targetTemplateUid);

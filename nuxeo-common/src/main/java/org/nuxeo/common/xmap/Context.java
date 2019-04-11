@@ -33,7 +33,7 @@ public class Context extends ArrayList<Object> {
 
     private static final long serialVersionUID = 1L;
 
-    private final HashMap<String, Object> properties = new HashMap<String, Object>();
+    private final HashMap<String, Object> properties = new HashMap<>();
 
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         if (className.startsWith("[")) {

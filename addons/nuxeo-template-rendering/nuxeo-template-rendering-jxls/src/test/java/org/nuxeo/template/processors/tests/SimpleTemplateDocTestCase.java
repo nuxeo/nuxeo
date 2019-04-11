@@ -89,7 +89,7 @@ public abstract class SimpleTemplateDocTestCase {
         testDoc.setProperty("dublincore", "description", "some description");
 
         // set dc:subjects
-        List<String> subjects = new ArrayList<String>();
+        List<String> subjects = new ArrayList<>();
         subjects.add("Subject 1");
         subjects.add("Subject 2");
         subjects.add("Subject 3");
@@ -99,8 +99,8 @@ public abstract class SimpleTemplateDocTestCase {
         File imgFile = FileUtils.getResourceFileFromContext("data/android.jpg");
         Blob imgBlob = Blobs.createBlob(imgFile);
         imgBlob.setFilename("android.jpg");
-        List<Map<String, Serializable>> blobs = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> blob1 = new HashMap<String, Serializable>();
+        List<Map<String, Serializable>> blobs = new ArrayList<>();
+        Map<String, Serializable> blob1 = new HashMap<>();
         blob1.put("file", (Serializable) imgBlob);
         blobs.add(blob1);
         testDoc.setPropertyValue("files:files", (Serializable) blobs);
@@ -118,7 +118,7 @@ public abstract class SimpleTemplateDocTestCase {
 
     protected List<TemplateInput> getTestParams() {
 
-        List<TemplateInput> params = new ArrayList<TemplateInput>();
+        List<TemplateInput> params = new ArrayList<>();
         TemplateInput input1 = new TemplateInput("StringVar", "John Smith");
         TemplateInput input2 = new TemplateInput("DateVar", new Date());
         TemplateInput input3 = new TemplateInput("Description");

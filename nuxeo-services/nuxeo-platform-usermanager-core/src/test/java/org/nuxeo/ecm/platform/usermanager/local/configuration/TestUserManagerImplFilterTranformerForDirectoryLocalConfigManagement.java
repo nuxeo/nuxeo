@@ -60,8 +60,8 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
 
     @Test
     public void testShouldThrowExceptionIfFilterOrFulltextNull() {
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        HashSet<String> fulltext = new HashSet<String>();
+        Map<String, Serializable> filter = new HashMap<>();
+        HashSet<String> fulltext = new HashSet<>();
 
         try {
             umtm.queryTransformer(userManager, null, null, null);
@@ -87,8 +87,8 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
 
     @Test
     public void testShouldReturnAFilterNotChangedIfNoDirectoryLocalConfig() {
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        HashSet<String> fulltext = new HashSet<String>();
+        Map<String, Serializable> filter = new HashMap<>();
+        HashSet<String> fulltext = new HashSet<>();
 
         umtm.queryTransformer(userManager, filter, fulltext, null);
         assertEquals(0, filter.size());
@@ -102,7 +102,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
         assertEquals(1, fulltext.size());
 
         filter.put("groupname", "test");
-        fulltext = new HashSet<String>();
+        fulltext = new HashSet<>();
         fulltext.add("test");
         umtm.queryTransformer(userManager, filter, fulltext, null);
         assertEquals(1, filter.size());
@@ -121,8 +121,8 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
     public void testShouldReturnAFilterWithSuffixAdded() {
         DocumentModel fakeDoc = new SimpleDocumentModel();
 
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        HashSet<String> fulltext = new HashSet<String>();
+        Map<String, Serializable> filter = new HashMap<>();
+        HashSet<String> fulltext = new HashSet<>();
 
         umtm.queryTransformer(userManager, filter, fulltext, fakeDoc);
         assertEquals(1, filter.size());
@@ -130,8 +130,8 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
         assertEquals(1, fulltext.size());
         assertTrue(fulltext.contains("groupname"));
 
-        filter = new HashMap<String, Serializable>();
-        fulltext = new HashSet<String>();
+        filter = new HashMap<>();
+        fulltext = new HashSet<>();
 
         filter.put("groupname", "test");
         umtm.queryTransformer(userManager, filter, fulltext, fakeDoc);

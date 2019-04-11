@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class QuotaSizeServiceImpl extends DefaultComponent implements QuotaSizeService {
 
-    private Set<String> excludedPathList = new HashSet<String>();
+    private Set<String> excludedPathList = new HashSet<>();
 
     private static Logger LOG = LoggerFactory.getLogger(QuotaSizeServiceImpl.class);
 

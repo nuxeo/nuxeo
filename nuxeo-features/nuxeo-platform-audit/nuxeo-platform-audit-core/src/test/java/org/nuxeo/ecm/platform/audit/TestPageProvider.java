@@ -96,7 +96,7 @@ public class TestPageProvider {
 
         AuditLogger logger = Framework.getService(AuditLogger.class);
         assertNotNull(logger);
-        List<LogEntry> entries = new ArrayList<LogEntry>();
+        List<LogEntry> entries = new ArrayList<>();
 
         for (String suffix : entriesIdx) {
             LogEntry entry = new LogEntryImpl();
@@ -261,7 +261,7 @@ public class TestPageProvider {
 
         DocumentModel searchDoc = session.createDocumentModel("File");
         searchDoc.setPathInfo("/", "dummy");
-        List<String> cats = new ArrayList<String>();
+        List<String> cats = new ArrayList<>();
         cats.add("category7");
         cats.add("category3");
         searchDoc.setPropertyValue("dc:subjects", (Serializable) cats);

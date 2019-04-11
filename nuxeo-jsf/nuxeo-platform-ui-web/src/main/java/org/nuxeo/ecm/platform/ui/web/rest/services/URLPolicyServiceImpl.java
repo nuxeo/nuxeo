@@ -72,12 +72,12 @@ public class URLPolicyServiceImpl implements URLPolicyService {
     public URLPolicyServiceImpl() {
         // make sure the descriptors list order follows registration order, as
         // order may have an impact on resolved pattern
-        descriptors = new LinkedHashMap<String, URLPatternDescriptor>();
+        descriptors = new LinkedHashMap<>();
     }
 
     protected List<URLPatternDescriptor> getURLPatternDescriptors() {
         // TODO: add cache
-        List<URLPatternDescriptor> lst = new ArrayList<URLPatternDescriptor>();
+        List<URLPatternDescriptor> lst = new ArrayList<>();
         for (URLPatternDescriptor desc : descriptors.values()) {
             if (desc.getEnabled()) {
                 // add default at first

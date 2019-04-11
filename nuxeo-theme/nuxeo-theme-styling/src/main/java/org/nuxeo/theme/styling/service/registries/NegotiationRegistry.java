@@ -31,7 +31,7 @@ import org.nuxeo.theme.styling.service.descriptors.NegotiationDescriptor;
  */
 public class NegotiationRegistry extends ContributionFragmentRegistry<NegotiationDescriptor> {
 
-    protected Map<String, NegotiationDescriptor> negotations = new HashMap<String, NegotiationDescriptor>();
+    protected Map<String, NegotiationDescriptor> negotations = new HashMap<>();
 
     @Override
     public String getContributionId(NegotiationDescriptor contrib) {

@@ -341,7 +341,7 @@ public class SetTagHandler extends AliasTagHandler {
     }
 
     protected List<String> resolveBlockPatterns(String value) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         if (value != null) {
             String[] split = StringUtils.split(value, ',');
             if (split != null) {

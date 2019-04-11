@@ -68,7 +68,7 @@ public class DirectoryContentProvider implements ContentProvider {
     public Object[] getChildren(Object obj) {
         if (obj == null || obj instanceof DocumentModel) {
             DocumentModel parent = (DocumentModel) obj;
-            Map<String, Serializable> args = new HashMap<String, Serializable>();
+            Map<String, Serializable> args = new HashMap<>();
             createQuery(parent, args);
             DocumentModelList list = session.query(args);
             return list.toArray(new DocumentModel[list.size()]);

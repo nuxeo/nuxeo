@@ -90,7 +90,7 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
     @Override
     public TemplateCollectionModel keys() throws TemplateModelException {
         if (keys == null) {
-            List<String> keysCol = new ArrayList<String>();
+            List<String> keysCol = new ArrayList<>();
             keysCol.addAll(DocumentFieldAccessor.getFieldNames());
             String[] schemas = doc.getSchemas();
             keysCol.addAll(Arrays.asList(schemas));
@@ -102,7 +102,7 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
 
     @Override
     public TemplateCollectionModel values() throws TemplateModelException {
-        List<Object> values = new ArrayList<Object>();
+        List<Object> values = new ArrayList<>();
         for (DocumentFieldAccessor accessor : DocumentFieldAccessor.getAcessors()) {
             values.add(accessor.getValue(doc));
         }

@@ -39,7 +39,7 @@ public class IOAuditResources implements IOResources {
 
     private static final long serialVersionUID = 8095413628515011558L;
 
-    private Map<DocumentRef, List<LogEntry>> docLogs = new HashMap<DocumentRef, List<LogEntry>>();
+    private Map<DocumentRef, List<LogEntry>> docLogs = new HashMap<>();
 
     public IOAuditResources(Map<DocumentRef, List<LogEntry>> docLogs) {
         this.docLogs = docLogs;

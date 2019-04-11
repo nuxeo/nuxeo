@@ -57,9 +57,9 @@ public class RestRequest {
 
     protected String repositoryName;
 
-    protected List<String> schemas = new ArrayList<String>();
+    protected List<String> schemas = new ArrayList<>();
 
-    protected Map<String, Object> headers = new HashMap<String, Object>();
+    protected Map<String, Object> headers = new HashMap<>();
 
     protected MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
 

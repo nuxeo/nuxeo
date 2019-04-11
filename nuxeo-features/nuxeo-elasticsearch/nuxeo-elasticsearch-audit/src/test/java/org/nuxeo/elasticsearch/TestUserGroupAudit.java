@@ -112,7 +112,7 @@ public class TestUserGroupAudit {
         groupModel.setProperty("group", "groupname", "StaticGroup");
         userManager.createGroup(groupModel);
 
-        List<String> staticGroups = new ArrayList<String>();
+        List<String> staticGroups = new ArrayList<>();
         staticGroups.add("StaticGroup");
         newUser = userManager.getUserModel(userName);
         newUser.setProperty("user", "groups", staticGroups);
@@ -188,7 +188,7 @@ public class TestUserGroupAudit {
 
         LogEntryGen.flushAndSync();
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
         PageProvider<?> pp = pps.getPageProvider(

@@ -70,7 +70,7 @@ public class SuggesterGroupContribTest {
 
         // check 'searchbox' suggesterGroup's suggesters
         List<SuggesterGroupItemDescriptor> suggesters = sgd.getSuggesters();
-        List<SuggesterGroupItemDescriptor> expectedSuggesters = new ArrayList<SuggesterGroupItemDescriptor>();
+        List<SuggesterGroupItemDescriptor> expectedSuggesters = new ArrayList<>();
         /*
          * expectedSuggesters.add(new SuggesterGroupItemDescriptor( "searchByKeywords"));
          */

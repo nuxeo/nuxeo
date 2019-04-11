@@ -34,7 +34,7 @@ import org.javasimon.Counter;
  */
 public class CounterHistoryRecorder extends CallbackSkeleton {
 
-    protected Map<String, CounterHistoryStack> counterHistory = new ConcurrentHashMap<String, CounterHistoryStack>();
+    protected Map<String, CounterHistoryStack> counterHistory = new ConcurrentHashMap<>();
 
     protected int historyLength = 100;
 

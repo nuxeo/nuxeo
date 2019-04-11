@@ -94,7 +94,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     @Test
     public void shouldRetrieveParametersFromSimpleConfiguration() {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("key1", "value1");
         parameters.put("key2", "value2");
         initializeSimpleConfiguration(workspace, parameters);
@@ -116,13 +116,13 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     @Test
     public void shouldMergeSimpleConfigurations() {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
-        Map<String, String> parentParameters = new HashMap<String, String>();
+        Map<String, String> parentParameters = new HashMap<>();
         parentParameters.put("key1", "value1");
         parentParameters.put("key2", "value2");
         initializeSimpleConfiguration(parentWorkspace, parentParameters);
 
         DocumentModel childWorkspace = session.getDocument(CHILD_WORKSPACE_REF);
-        Map<String, String> childParameters = new HashMap<String, String>();
+        Map<String, String> childParameters = new HashMap<>();
         childParameters.put("key3", "value3");
         childParameters.put("key4", "value4");
         initializeSimpleConfiguration(childWorkspace, childParameters);
@@ -146,13 +146,13 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     @Test
     public void childSimpleConfigurationShouldOverriderParentSimpleConfiguration() {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
-        Map<String, String> parentParameters = new HashMap<String, String>();
+        Map<String, String> parentParameters = new HashMap<>();
         parentParameters.put("key1", "parentValue1");
         parentParameters.put("key2", "parentValue2");
         initializeSimpleConfiguration(parentWorkspace, parentParameters);
 
         DocumentModel childWorkspace = session.getDocument(CHILD_WORKSPACE_REF);
-        Map<String, String> childParameters = new HashMap<String, String>();
+        Map<String, String> childParameters = new HashMap<>();
         childParameters.put("key2", "childValue2");
         childParameters.put("key4", "childValue4");
         initializeSimpleConfiguration(childWorkspace, childParameters);
@@ -205,7 +205,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
         SimpleConfigurationAdapter adapter = (SimpleConfigurationAdapter) simpleConfiguration;
         assertEquals(0, adapter.parameters.size());
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("key1", "value1");
         parameters.put("key2", "value2");
         parameters.put("key3", "value3");
@@ -231,7 +231,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
         SimpleConfigurationAdapter adapter = (SimpleConfigurationAdapter) simpleConfiguration;
         assertEquals(0, adapter.parameters.size());
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("key1", "value1");
         parameters.put("key2", "value2");
 
@@ -251,7 +251,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     }
 
     protected Map<String, String> convertParametersListToMap(List<Map<String, String>> parametersList) {
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         if (parametersList != null) {
             for (Map<String, String> parameter : parametersList) {
                 parameters.put(parameter.get(SIMPLE_CONFIGURATION_PARAMETER_KEY),
@@ -276,7 +276,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
             SimpleConfigurationAdapter adapter = (SimpleConfigurationAdapter) simpleConfiguration;
             assertEquals(0, adapter.parameters.size());
 
-            Map<String, String> parameters = new HashMap<String, String>();
+            Map<String, String> parameters = new HashMap<>();
             parameters.put("key1", "value1");
             parameters.put("key2", "value2");
 

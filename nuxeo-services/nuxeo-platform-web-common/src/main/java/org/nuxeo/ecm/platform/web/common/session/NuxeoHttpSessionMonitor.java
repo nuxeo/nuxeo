@@ -60,7 +60,7 @@ public class NuxeoHttpSessionMonitor {
         return instance;
     }
 
-    protected Map<String, SessionInfo> sessionTracker = new ConcurrentHashMap<String, SessionInfo>();
+    protected Map<String, SessionInfo> sessionTracker = new ConcurrentHashMap<>();
 
     protected void increaseRequestCounter() {
         globalRequestCounter += 1;
@@ -140,7 +140,7 @@ public class NuxeoHttpSessionMonitor {
 
     public List<SessionInfo> getSortedSessions() {
 
-        List<SessionInfo> sortedSessions = new ArrayList<SessionInfo>();
+        List<SessionInfo> sortedSessions = new ArrayList<>();
         for (SessionInfo si : getTrackedSessions()) {
             if (si.getLoginName() != null) {
                 sortedSessions.add(si);
@@ -151,7 +151,7 @@ public class NuxeoHttpSessionMonitor {
     }
 
     public List<SessionInfo> getSortedSessions(long maxInactivity) {
-        List<SessionInfo> sortedSessions = new ArrayList<SessionInfo>();
+        List<SessionInfo> sortedSessions = new ArrayList<>();
         for (SessionInfo si : getTrackedSessions()) {
             if (si.getLoginName() != null && si.getInactivityInS() < maxInactivity) {
                 sortedSessions.add(si);

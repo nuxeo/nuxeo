@@ -113,7 +113,7 @@ public class ChainSelectListboxRenderer extends Renderer {
         }
         RenderKitUtils.renderOnchange(context, comp, false);
 
-        List<String> valueList = new ArrayList<String>();
+        List<String> valueList = new ArrayList<>();
 
         int index = comp.getIndex();
         Selection[] selections = chain.getSelections();

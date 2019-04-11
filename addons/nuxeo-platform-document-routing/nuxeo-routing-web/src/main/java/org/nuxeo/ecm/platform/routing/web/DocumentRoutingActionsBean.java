@@ -223,7 +223,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      */
     public List<DocumentRoute> getRelatedRoutes() {
         queryForRelatedRoutes();
-        List<DocumentRoute> routes = new ArrayList<DocumentRoute>(relatedRoutes.size());
+        List<DocumentRoute> routes = new ArrayList<>(relatedRoutes.size());
         for (DocumentModel doc : relatedRoutes) {
             routes.add(doc.getAdapter(DocumentRoute.class));
         }
@@ -321,7 +321,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     @Deprecated
     protected List<DocumentRouteTableElement> computeRelatedRouteElements() {
         if (relatedRoutes.isEmpty()) {
-            return new ArrayList<DocumentRouteTableElement>();
+            return new ArrayList<>();
         }
         DocumentModel relatedRouteDocumentModel = documentManager.getDocument(new IdRef(relatedRoutes.get(0).getId()));
         DocumentRoute currentRoute = relatedRouteDocumentModel.getAdapter(DocumentRoute.class);
@@ -357,7 +357,7 @@ public class DocumentRoutingActionsBean implements Serializable {
             return null;
         }
 
-        List<String> documentIds = new ArrayList<String>();
+        List<String> documentIds = new ArrayList<>();
         documentIds.add(navigationContext.getCurrentDocument().getId());
         route.setAttachedDocuments(documentIds);
         getDocumentRoutingService().createNewInstance(route.getDocument().getName(), documentIds, documentManager, true);
@@ -745,7 +745,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         // xxx move me in serice with query
         DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(docRouteElementId,
                 documentManager);
-        List<DocumentModel> filteredChildren = new ArrayList<DocumentModel>();
+        List<DocumentModel> filteredChildren = new ArrayList<>();
         for (DocumentModel documentModel : orderedChildren) {
             if (type.equals(documentModel.getType())) {
                 filteredChildren.add(documentModel);

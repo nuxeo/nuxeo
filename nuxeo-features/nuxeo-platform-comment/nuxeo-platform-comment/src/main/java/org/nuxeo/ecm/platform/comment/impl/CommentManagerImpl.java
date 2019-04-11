@@ -115,7 +115,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
             statementList.addAll(graph.getStatements(null, null, oldDocResource));
         }
 
-        List<DocumentModel> commentList = new ArrayList<DocumentModel>();
+        List<DocumentModel> commentList = new ArrayList<>();
         for (Statement stmt : statementList) {
             QNameResourceImpl subject = (QNameResourceImpl) stmt.getSubject();
 
@@ -359,7 +359,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
             statementList.addAll(graph.getStatements(oldDocResource, predicate, null));
         }
 
-        List<DocumentModel> docList = new ArrayList<DocumentModel>();
+        List<DocumentModel> docList = new ArrayList<>();
         for (Statement stmt : statementList) {
             QNameResourceImpl subject = (QNameResourceImpl) stmt.getObject();
             DocumentModel docModel = (DocumentModel) relationManager.getResourceRepresentation(config.documentNamespace,

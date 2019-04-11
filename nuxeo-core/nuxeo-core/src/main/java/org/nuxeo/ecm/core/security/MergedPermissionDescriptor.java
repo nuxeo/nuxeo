@@ -27,9 +27,9 @@ public class MergedPermissionDescriptor {
 
     private String name;
 
-    private final List<String> subPermissions = new ArrayList<String>();
+    private final List<String> subPermissions = new ArrayList<>();
 
-    private final List<String> aliasPermissions = new ArrayList<String>();
+    private final List<String> aliasPermissions = new ArrayList<>();
 
     public MergedPermissionDescriptor(PermissionDescriptor pd) {
         mergeDescriptor(pd);

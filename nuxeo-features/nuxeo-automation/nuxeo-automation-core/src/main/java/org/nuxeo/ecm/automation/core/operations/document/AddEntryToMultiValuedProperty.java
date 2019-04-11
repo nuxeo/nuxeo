@@ -83,7 +83,7 @@ public class AddEntryToMultiValuedProperty extends AbstractOperationMultiValuedP
 
     private Serializable addValueIntoList(List<Serializable> array, Object valueToAdd) {
 
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
 
         if (array != null) {
             list.addAll(array);

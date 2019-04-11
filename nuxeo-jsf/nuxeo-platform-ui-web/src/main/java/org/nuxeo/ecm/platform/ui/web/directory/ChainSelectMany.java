@@ -105,7 +105,7 @@ public class ChainSelectMany extends ChainSelectBase {
 
         String[] oldValue = StringUtils.split(allValues, ",");
 
-        List<String> valueList = new ArrayList<String>(Arrays.asList(oldValue));
+        List<String> valueList = new ArrayList<>(Arrays.asList(oldValue));
 
         if (addButtonClicked) {
             String[] selection = getSelection();
@@ -178,7 +178,7 @@ public class ChainSelectMany extends ChainSelectBase {
             for (String value : values) {
                 String[] keys = StringUtils.split(value, getKeySeparator());
                 List<DirectoryEntry> nodes = resolveKeys(keys);
-                List<String> labels = new ArrayList<String>();
+                List<String> labels = new ArrayList<>();
                 for (DirectoryEntry node : nodes) {
                     String itemValue = node.getId();
                     String itemLabel = node.getLabel();
@@ -249,7 +249,7 @@ public class ChainSelectMany extends ChainSelectBase {
             for (String value : values) {
                 String[] keys = StringUtils.split(value, getKeySeparator());
                 List<DirectoryEntry> nodes = resolveKeys(keys);
-                List<String> labels = new ArrayList<String>();
+                List<String> labels = new ArrayList<>();
                 for (DirectoryEntry node : nodes) {
                     String itemValue = node.getId();
                     String itemLabel = node.getLabel();

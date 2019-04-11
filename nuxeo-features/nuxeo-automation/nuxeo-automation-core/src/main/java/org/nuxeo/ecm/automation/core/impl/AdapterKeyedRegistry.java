@@ -35,7 +35,7 @@ public class AdapterKeyedRegistry extends SuperKeyedRegistry<TypeAdapterKey, Typ
     protected final Set<Class<?>> blacklist;
 
     public AdapterKeyedRegistry() {
-        blacklist = new HashSet<Class<?>>();
+        blacklist = new HashSet<>();
         blacklist.add(Serializable.class);
         blacklist.add(Cloneable.class);
         blacklist.add(Comparable.class);
@@ -48,7 +48,7 @@ public class AdapterKeyedRegistry extends SuperKeyedRegistry<TypeAdapterKey, Typ
 
     @Override
     protected List<TypeAdapterKey> getSuperKeys(TypeAdapterKey key) {
-        List<TypeAdapterKey> result = new ArrayList<TypeAdapterKey>();
+        List<TypeAdapterKey> result = new ArrayList<>();
         Class<?> cl = key.input.getSuperclass();
         if (cl != null) {
             result.add(new TypeAdapterKey(cl, key.output));

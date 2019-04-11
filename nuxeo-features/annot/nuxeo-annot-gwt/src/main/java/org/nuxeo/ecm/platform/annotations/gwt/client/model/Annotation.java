@@ -51,7 +51,7 @@ public class Annotation {
 
     private int id;
 
-    private Map<String, String> fields = new HashMap<String, String>();
+    private Map<String, String> fields = new HashMap<>();
 
     private Container startContainer;
 

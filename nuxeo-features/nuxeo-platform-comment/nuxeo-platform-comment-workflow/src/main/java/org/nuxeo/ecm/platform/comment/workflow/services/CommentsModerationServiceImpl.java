@@ -54,7 +54,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         if (moderators == null || moderators.isEmpty()) {
             throw new NuxeoException("No moderators defined");
         }
-        Map<String, String> vars = new HashMap<String, String>();
+        Map<String, String> vars = new HashMap<>();
         vars.put(CommentsConstants.COMMENT_ID, commentID);
         vars.put(Task.TaskVariableName.needi18n.name(), "true");
         vars.put(Task.TaskVariableName.taskType.name(), CommentConstants.COMMENT_TASK_TYPE);
@@ -91,7 +91,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
             taskService.acceptTask(session, session.getPrincipal(), moderationTask, null);
         }
 
-        Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
+        Map<String, Serializable> eventInfo = new HashMap<>();
         eventInfo.put("emailDetails", "test");
         notifyEvent(session, CommentsConstants.COMMENT_PUBLISHED, null, null, null, doc);
     }
@@ -123,7 +123,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         }
 
         if (properties == null) {
-            properties = new HashMap<String, Serializable>();
+            properties = new HashMap<>();
         }
 
         properties.put(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());

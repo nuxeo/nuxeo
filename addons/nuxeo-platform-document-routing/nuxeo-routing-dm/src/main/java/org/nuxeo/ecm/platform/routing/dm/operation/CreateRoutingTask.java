@@ -125,7 +125,7 @@ public class CreateRoutingTask {
         }
 
         // create the task, passing operation chains in task variables
-        Map<String, String> taskVariables = new HashMap<String, String>();
+        Map<String, String> taskVariables = new HashMap<>();
         taskVariables.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, step.getDocument().getId());
         taskVariables.put(OperationTaskVariableName.createdFromCreateTaskOperation.name(), "true");
         if (!StringUtils.isEmpty(acceptOperationChain)) {
@@ -214,7 +214,7 @@ public class CreateRoutingTask {
     }
 
     protected List<String> getAllActors(List<String> actors) {
-        List<String> allActors = new ArrayList<String>();
+        List<String> allActors = new ArrayList<>();
         for (String actor : actors) {
             if (userManager.getGroup(actor) != null) {
                 List<String> allSimpleUsers = userManager.getUsersInGroupAndSubGroups(actor);

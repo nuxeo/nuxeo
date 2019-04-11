@@ -46,7 +46,7 @@ public class UserService extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(UserService.class);
 
-    private final List<UserManagerDescriptor> descriptors = new LinkedList<UserManagerDescriptor>();
+    private final List<UserManagerDescriptor> descriptors = new LinkedList<>();
 
     private UserManager userManager;
 
@@ -69,7 +69,7 @@ public class UserService extends DefaultComponent {
         merged.userDirectoryName = "userDirectory";
         merged.userEmailField = "email";
 
-        merged.userSearchFields = new HashMap<String, MatchType>();
+        merged.userSearchFields = new HashMap<>();
         merged.userSearchFields.put("username", MatchType.SUBSTRING);
         merged.userSearchFields.put("firstName", MatchType.SUBSTRING);
         merged.userSearchFields.put("lastName", MatchType.SUBSTRING);
@@ -80,7 +80,7 @@ public class UserService extends DefaultComponent {
         merged.groupSubGroupsField = "subGroups";
         merged.groupParentGroupsField = "parentGroups";
 
-        merged.groupSearchFields = new HashMap<String, MatchType>();
+        merged.groupSearchFields = new HashMap<>();
         merged.groupSearchFields.put("groupname", MatchType.SUBSTRING);
         merged.groupSearchFields.put("grouplabel", MatchType.SUBSTRING);
 

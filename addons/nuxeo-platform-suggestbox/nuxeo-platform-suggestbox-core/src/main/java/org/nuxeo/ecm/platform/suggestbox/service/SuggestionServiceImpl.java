@@ -45,7 +45,7 @@ public class SuggestionServiceImpl extends DefaultComponent implements Suggestio
 
     @Override
     public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
-        List<Suggestion> suggestions = new ArrayList<Suggestion>();
+        List<Suggestion> suggestions = new ArrayList<>();
         SuggesterGroupDescriptor suggesterGroup = suggesterGroups.getSuggesterGroupDescriptor(context.suggesterGroup);
         if (suggesterGroup == null) {
             log.warn("No registered SuggesterGroup with id: " + context.suggesterGroup);

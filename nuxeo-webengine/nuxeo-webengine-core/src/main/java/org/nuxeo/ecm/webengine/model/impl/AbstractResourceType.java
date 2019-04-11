@@ -80,7 +80,7 @@ public abstract class AbstractResourceType implements ResourceType {
         this.clazz = clazz;
         this.constructor = constructor;
         this.visibility = visibility;
-        templateCache = new ConcurrentHashMap<String, ScriptFile>();
+        templateCache = new ConcurrentHashMap<>();
         AnnotationManager mgr = engine.getAnnotationManager();
         loadAnnotations(mgr);
     }
@@ -153,7 +153,7 @@ public abstract class AbstractResourceType implements ResourceType {
 
     @Override
     public void flushCache() {
-        templateCache = new ConcurrentHashMap<String, ScriptFile>();
+        templateCache = new ConcurrentHashMap<>();
     }
 
     protected void loadGuardFromAnnoation(Class<?> c) {

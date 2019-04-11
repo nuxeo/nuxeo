@@ -55,7 +55,7 @@ public class TestSnapshotOperations extends AbstractTestSnapshot {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(folderB1);
 
-        HashMap<String, Object> params = new HashMap<String, Object>();
+        HashMap<String, Object> params = new HashMap<>();
         params.put("versioning option", VersioningOption.MAJOR.name());
         DocumentModel version = (DocumentModel) as.run(ctx, CreateTreeSnapshot.ID, params);
 

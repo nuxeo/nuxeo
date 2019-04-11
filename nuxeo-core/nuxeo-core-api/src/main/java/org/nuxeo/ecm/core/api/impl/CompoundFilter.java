@@ -55,7 +55,7 @@ public class CompoundFilter implements Filter {
      */
     public CompoundFilter(List<Filter> filters) {
         if (filters == null) {
-            this.filters = new ArrayList<Filter>();
+            this.filters = new ArrayList<>();
         } else {
             this.filters = filters;
         }

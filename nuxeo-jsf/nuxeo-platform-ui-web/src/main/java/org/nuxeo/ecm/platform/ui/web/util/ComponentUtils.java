@@ -544,9 +544,9 @@ public final class ComponentUtils {
         List<String> selectedList = Arrays.asList(selected);
 
         SelectItem[] all = (SelectItem[]) sourceItems.getValue();
-        List<SelectItem> toMove = new ArrayList<SelectItem>();
-        List<SelectItem> toKeep = new ArrayList<SelectItem>();
-        List<String> hiddenIds = new ArrayList<String>();
+        List<SelectItem> toMove = new ArrayList<>();
+        List<SelectItem> toKeep = new ArrayList<>();
+        List<String> hiddenIds = new ArrayList<>();
         if (all != null) {
             for (SelectItem item : all) {
                 String itemId = item.getValue().toString();
@@ -565,13 +565,13 @@ public final class ComponentUtils {
         sourceSelect.setSelectedValues(new Object[0]);
 
         // change right values
-        List<SelectItem> newSelectItems = new ArrayList<SelectItem>();
+        List<SelectItem> newSelectItems = new ArrayList<>();
         SelectItem[] oldSelectItems = (SelectItem[]) targetItems.getValue();
         if (oldSelectItems == null) {
             newSelectItems.addAll(toMove);
         } else {
             newSelectItems.addAll(Arrays.asList(oldSelectItems));
-            List<String> oldIds = new ArrayList<String>();
+            List<String> oldIds = new ArrayList<>();
             for (SelectItem oldItem : oldSelectItems) {
                 String id = oldItem.getValue().toString();
                 oldIds.add(id);
@@ -609,9 +609,9 @@ public final class ComponentUtils {
     public static void moveAllItems(UISelectItems sourceItems, UISelectItems targetItems,
             UIEditableList hiddenTargetList, boolean setTargetIds) {
         SelectItem[] all = (SelectItem[]) sourceItems.getValue();
-        List<SelectItem> toMove = new ArrayList<SelectItem>();
-        List<SelectItem> toKeep = new ArrayList<SelectItem>();
-        List<String> hiddenIds = new ArrayList<String>();
+        List<SelectItem> toMove = new ArrayList<>();
+        List<SelectItem> toKeep = new ArrayList<>();
+        List<String> hiddenIds = new ArrayList<>();
         if (all != null) {
             for (SelectItem item : all) {
                 if (!item.isDisabled()) {
@@ -625,13 +625,13 @@ public final class ComponentUtils {
         sourceItems.setValue(toKeep.toArray(new SelectItem[] {}));
 
         // change right values
-        List<SelectItem> newSelectItems = new ArrayList<SelectItem>();
+        List<SelectItem> newSelectItems = new ArrayList<>();
         SelectItem[] oldSelectItems = (SelectItem[]) targetItems.getValue();
         if (oldSelectItems == null) {
             newSelectItems.addAll(toMove);
         } else {
             newSelectItems.addAll(Arrays.asList(oldSelectItems));
-            List<String> oldIds = new ArrayList<String>();
+            List<String> oldIds = new ArrayList<>();
             for (SelectItem oldItem : oldSelectItems) {
                 String id = oldItem.getValue().toString();
                 oldIds.add(id);

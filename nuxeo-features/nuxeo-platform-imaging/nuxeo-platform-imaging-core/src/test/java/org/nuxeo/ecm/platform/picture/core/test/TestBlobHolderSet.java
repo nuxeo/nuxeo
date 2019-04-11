@@ -76,8 +76,8 @@ public class TestBlobHolderSet {
     }
 
     private List<Map<String, Serializable>> createViews() throws IOException {
-        List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        List<Map<String, Serializable>> views = new ArrayList<>();
+        Map<String, Serializable> map = new HashMap<>();
         map.put("title", "Original");
         map.put("content",
                 (Serializable) Blobs.createBlob(

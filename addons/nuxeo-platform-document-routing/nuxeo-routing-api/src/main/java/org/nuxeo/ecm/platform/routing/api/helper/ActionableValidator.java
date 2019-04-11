@@ -44,7 +44,7 @@ public class ActionableValidator {
 
     protected CoreSession session;
 
-    protected Map<String, Serializable> additionalProperties = new HashMap<String, Serializable>();
+    protected Map<String, Serializable> additionalProperties = new HashMap<>();
 
     public ActionableValidator(ActionableObject actionnable, CoreSession session) {
         this.actionnable = actionnable;

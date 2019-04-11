@@ -143,7 +143,7 @@ public class DocumentLayoutTagHandler extends TagHandler {
 
         FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         TagAttribute modeAttr = helper.createAttribute("mode", modeValue);
-        List<FaceletHandler> handlers = new ArrayList<FaceletHandler>();
+        List<FaceletHandler> handlers = new ArrayList<>();
         FaceletHandler leaf = nextHandler;
         for (String layoutName : layoutNames) {
             TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(

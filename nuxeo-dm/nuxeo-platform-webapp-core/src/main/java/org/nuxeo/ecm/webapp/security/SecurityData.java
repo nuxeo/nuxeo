@@ -60,17 +60,17 @@ public class SecurityData implements Serializable {
 
     private static final Log log = LogFactory.getLog(SecurityData.class);
 
-    protected Map<String, List<String>> currentDocGrant = new HashMap<String, List<String>>();
+    protected Map<String, List<String>> currentDocGrant = new HashMap<>();
 
-    protected Map<String, List<String>> currentDocDeny = new HashMap<String, List<String>>();
+    protected Map<String, List<String>> currentDocDeny = new HashMap<>();
 
-    protected Map<String, List<String>> parentDocsGrant = new HashMap<String, List<String>>();
+    protected Map<String, List<String>> parentDocsGrant = new HashMap<>();
 
-    protected Map<String, List<String>> parentDocsDeny = new HashMap<String, List<String>>();
+    protected Map<String, List<String>> parentDocsDeny = new HashMap<>();
 
-    protected final List<String> currentDocumentUsers = new ArrayList<String>();
+    protected final List<String> currentDocumentUsers = new ArrayList<>();
 
-    protected final List<String> parentDocumentsUsers = new ArrayList<String>();
+    protected final List<String> parentDocumentsUsers = new ArrayList<>();
 
     protected String documentType = "";
 
@@ -147,10 +147,10 @@ public class SecurityData implements Serializable {
     }
 
     protected Map<String, List<String>> buildLabelMap(Map<String, List<String>> permissions) {
-        Map<String, List<String>> labelMap = new HashMap<String, List<String>>();
+        Map<String, List<String>> labelMap = new HashMap<>();
 
         for (String user : permissions.keySet()) {
-            List<String> labels = new ArrayList<String>();
+            List<String> labels = new ArrayList<>();
             for (String perm : permissions.get(user)) {
                 labels.add(labeler.makeLabel(perm));
             }
@@ -160,7 +160,7 @@ public class SecurityData implements Serializable {
     }
 
     public void rebuildUserLists() {
-        List<String> users = new ArrayList<String>();
+        List<String> users = new ArrayList<>();
         users.addAll(currentDocGrant.keySet());
         for (String user : currentDocDeny.keySet()) {
             if (!users.contains(user)) {
@@ -213,7 +213,7 @@ public class SecurityData implements Serializable {
                 }
             } else {
                 // add the user and create a new list of rights for him
-                List<String> permissions = new ArrayList<String>();
+                List<String> permissions = new ArrayList<>();
                 permissions.add(permissionName);
                 currentDocGrant.put(principalName, permissions);
             }
@@ -237,7 +237,7 @@ public class SecurityData implements Serializable {
                 }
             } else {
                 // add the user and create a new list of rights for him
-                List<String> permissions = new ArrayList<String>();
+                List<String> permissions = new ArrayList<>();
                 permissions.add(permissionName);
                 currentDocDeny.put(principalName, permissions);
             }
@@ -349,7 +349,7 @@ public class SecurityData implements Serializable {
                 }
             } else {
                 // add the user and create a new list of rights for him
-                List<String> permissions = new ArrayList<String>();
+                List<String> permissions = new ArrayList<>();
                 permissions.add(permissionName);
                 parentDocsGrant.put(principalName, permissions);
             }
@@ -373,7 +373,7 @@ public class SecurityData implements Serializable {
                 }
             } else {
                 // add the user and create a new list of rights for him
-                List<String> permissions = new ArrayList<String>();
+                List<String> permissions = new ArrayList<>();
                 permissions.add(permissionName);
                 parentDocsDeny.put(principalName, permissions);
             }

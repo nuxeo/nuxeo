@@ -42,7 +42,7 @@ public class XMLFileSourceNode extends FileSourceNode {
 
     @Override
     public List<SourceNode> getChildren() {
-        List<SourceNode> children = new ArrayList<SourceNode>();
+        List<SourceNode> children = new ArrayList<>();
 
         File[] childrenFile = file.listFiles();
         for (File child : childrenFile) {

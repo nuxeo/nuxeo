@@ -231,7 +231,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
                 fireSeamEvent(USERS_LISTING_CHANGED);
             } else {
                 UserInvitationService userRegistrationService = Framework.getService(UserInvitationService.class);
-                Map<String, Serializable> additionalInfos = new HashMap<String, Serializable>();
+                Map<String, Serializable> additionalInfos = new HashMap<>();
                 additionalInfos.put(UserInvitationComponent.PARAM_ORIGINATING_USER , currentUser.getName());
                 // Wrap the form as an invitation to the user
                 UserAdapter newUserAdapter = new UserAdapterImpl(newUser, userManager);

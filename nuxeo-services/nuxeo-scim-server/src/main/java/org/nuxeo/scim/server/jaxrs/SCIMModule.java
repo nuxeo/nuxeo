@@ -47,7 +47,7 @@ public class SCIMModule extends WebEngineModule {
 
     @Override
     public Set<Object> getSingletons() {
-        Set<Object> result = new HashSet<Object>();
+        Set<Object> result = new HashSet<>();
         result.add(new UserResourceWriter());
         result.add(new ResourcesWriter());
         result.add(new UserResourceReader());

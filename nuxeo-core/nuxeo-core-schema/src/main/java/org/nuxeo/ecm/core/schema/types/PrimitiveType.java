@@ -81,7 +81,7 @@ public abstract class PrimitiveType extends AbstractType implements SimpleType {
 
     @Override
     public Set<Constraint> getConstraints() {
-        Set<Constraint> constraints = new HashSet<Constraint>();
+        Set<Constraint> constraints = new HashSet<>();
         constraints.add(new TypeConstraint(this));
         return constraints;
     }

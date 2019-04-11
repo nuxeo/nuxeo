@@ -72,7 +72,7 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
 
     @Override
     public synchronized ResourceStoreClassLoader clone() {
-        return new ResourceStoreClassLoader(getParent(), new LinkedHashSet<ResourceStore>(cp));
+        return new ResourceStoreClassLoader(getParent(), new LinkedHashSet<>(cp));
     }
 
     public ResourceStore[] getStores() {
@@ -133,7 +133,7 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
     protected Enumeration<URL> findResources(String name) throws IOException {
         ResourceStore[] _stores = stores; // use a local variable
         if (_stores != null) {
-            List<URL> result = new ArrayList<URL>();
+            List<URL> result = new ArrayList<>();
             for (final ResourceStore store : _stores) {
                 final URL url = store.getURL(name);
                 if (url != null) {

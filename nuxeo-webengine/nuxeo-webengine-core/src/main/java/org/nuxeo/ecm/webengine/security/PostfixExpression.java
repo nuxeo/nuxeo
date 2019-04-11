@@ -70,7 +70,7 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
     }
 
     public Object visit(Visitor visitor) {
-        LinkedList<Object> stack = new LinkedList<Object>();
+        LinkedList<Object> stack = new LinkedList<>();
         for (Token token : expr) {
             if (token.type == ARG) {
                 stack.add(visitor.createParameter(token));
@@ -139,7 +139,7 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
 
     protected void parse(String expr) throws ParseException {
         OpStack stack = new OpStack();
-        List<Token> result = new ArrayList<Token>();
+        List<Token> result = new ArrayList<>();
         StringTokenizer tok = new StringTokenizer(expr, " \t\n\r\f()", true);
         while (tok.hasMoreTokens()) {
             String token = tok.nextToken();

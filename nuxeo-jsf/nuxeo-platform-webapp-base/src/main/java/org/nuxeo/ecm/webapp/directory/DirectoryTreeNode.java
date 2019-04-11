@@ -111,7 +111,7 @@ public class DirectoryTreeNode {
         } else {
             // unselect all previous selection that are either more
             // generic or more specific
-            List<String> valuesToRemove = new ArrayList<String>();
+            List<String> valuesToRemove = new ArrayList<>();
             String valueSlash = value + "/";
             for (String existingSelection : values) {
                 String existingSelectionSlash = existingSelection + "/";
@@ -194,7 +194,7 @@ public class DirectoryTreeNode {
             // return last computed state
             return children;
         }
-        children = new ArrayList<DirectoryTreeNode>();
+        children = new ArrayList<>();
         if (isLastLevel()) {
             return children;
         }
@@ -250,14 +250,14 @@ public class DirectoryTreeNode {
                 Schema schema = schemaManager.getSchema(schemaName);
                 if (schema.hasField(PARENT_FIELD_ID)) {
                     // filter on empty parent
-                    Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                    Map<String, Serializable> filter = new HashMap<>();
                     filter.put(PARENT_FIELD_ID, "");
                     childrenEntries = session.query(filter);
                 } else {
                     childrenEntries = session.getEntries();
                 }
             } else {
-                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                Map<String, Serializable> filter = new HashMap<>();
                 String[] bitsOfPath = path.split("/");
                 filter.put(PARENT_FIELD_ID, bitsOfPath[level - 1]);
                 childrenEntries = session.query(filter);

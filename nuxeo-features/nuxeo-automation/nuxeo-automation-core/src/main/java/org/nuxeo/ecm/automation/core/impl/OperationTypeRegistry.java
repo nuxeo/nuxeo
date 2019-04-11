@@ -35,7 +35,7 @@ public class OperationTypeRegistry extends ContributionFragmentRegistry<Operatio
      * Modifiable operation registry. Modifying the registry is using a lock and it's thread safe. Modifications are
      * removing the cache.
      */
-    protected final Map<String, OperationType> operations = new HashMap<String, OperationType>();
+    protected final Map<String, OperationType> operations = new HashMap<>();
 
     /**
      * Read only cache for operation lookup. Thread safe. Not using synchronization if cache already created.
@@ -95,7 +95,7 @@ public class OperationTypeRegistry extends ContributionFragmentRegistry<Operatio
         if (lookup == null) {
             synchronized (this) {
                 if (lookup == null) {
-                    lookup = new HashMap<String, OperationType>(operations);
+                    lookup = new HashMap<>(operations);
                 }
             }
         }

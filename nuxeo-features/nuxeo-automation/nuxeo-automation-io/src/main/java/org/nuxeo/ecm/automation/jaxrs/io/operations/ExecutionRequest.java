@@ -46,7 +46,7 @@ public class ExecutionRequest {
     public ExecutionRequest(Object input) {
         restOperationContext = new RestOperationContext();
         this.input = input;
-        params = new HashMap<String, Object>();
+        params = new HashMap<>();
     }
 
     public void setInput(Object input) {

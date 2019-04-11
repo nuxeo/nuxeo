@@ -106,7 +106,7 @@ public abstract class AbstractUnicityChecker {
 
         DocumentEventContext ctx = new DocumentEventContext(session, principal, newDoc);
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
 
         props.put("category", DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);
         props.put("duplicatedDocLocation", (Serializable) existingDocs);

@@ -33,7 +33,7 @@ public class UpdateOptions {
         Match<String> match = JarUtils.findJarVersion(name);
         // FIXME: hack to get the Studio snapshot version...
         if (match == null && pkgId != null && pkgId.endsWith("-" + UpdateManager.STUDIO_SNAPSHOT_VERSION)) {
-            match = new Match<String>();
+            match = new Match<>();
             match.object = pkgId.substring(0, pkgId.length() - ("-" + UpdateManager.STUDIO_SNAPSHOT_VERSION).length());
             match.version = UpdateManager.STUDIO_SNAPSHOT_VERSION;
         }

@@ -138,7 +138,7 @@ public class PageDescriptor {
     }
 
     public List<String> getResources() {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         // BBB
         if (styles != null) {
             for (String style : styles) {
@@ -184,7 +184,7 @@ public class PageDescriptor {
      * @since 7.4
      */
     public List<String> getResourceBundles() {
-        List<String> all = new ArrayList<String>();
+        List<String> all = new ArrayList<>();
         if (bundles != null) {
             all.addAll(bundles);
         }
@@ -240,7 +240,7 @@ public class PageDescriptor {
 
         List<String> newStyles = src.getStyles();
         if (newStyles != null) {
-            List<String> merged = new ArrayList<String>();
+            List<String> merged = new ArrayList<>();
             merged.addAll(newStyles);
             boolean keepOld = src.getAppendStyles() || (newStyles.isEmpty() && !src.getAppendStyles());
             if (keepOld) {
@@ -255,7 +255,7 @@ public class PageDescriptor {
 
         List<String> newFlavors = src.getFlavors();
         if (newFlavors != null) {
-            List<String> merged = new ArrayList<String>();
+            List<String> merged = new ArrayList<>();
             merged.addAll(newFlavors);
             boolean keepOld = src.getAppendFlavors() || (newFlavors.isEmpty() && !src.getAppendFlavors());
             if (keepOld) {
@@ -270,7 +270,7 @@ public class PageDescriptor {
 
         List<String> newResources = src.resources;
         if (newResources != null) {
-            List<String> merged = new ArrayList<String>();
+            List<String> merged = new ArrayList<>();
             merged.addAll(newResources);
             boolean keepOld = src.getAppendResources() || (newResources.isEmpty() && !src.getAppendResources());
             if (keepOld) {
@@ -285,7 +285,7 @@ public class PageDescriptor {
 
         List<String> newBundles = src.bundles;
         if (newBundles != null) {
-            List<String> merged = new ArrayList<String>();
+            List<String> merged = new ArrayList<>();
             merged.addAll(newBundles);
             boolean keepOld = src.getAppendResources() || (newBundles.isEmpty() && !src.getAppendResources());
             if (keepOld) {
@@ -308,19 +308,19 @@ public class PageDescriptor {
         clone.setAppendStyles(getAppendStyles());
         List<String> styles = getStyles();
         if (styles != null) {
-            clone.setStyles(new ArrayList<String>(styles));
+            clone.setStyles(new ArrayList<>(styles));
         }
         clone.setAppendFlavors(getAppendFlavors());
         List<String> flavors = getFlavors();
         if (flavors != null) {
-            clone.setFlavors(new ArrayList<String>(flavors));
+            clone.setFlavors(new ArrayList<>(flavors));
         }
         clone.setAppendResources(getAppendResources());
         if (resources != null) {
-            clone.setResources(new ArrayList<String>(resources));
+            clone.setResources(new ArrayList<>(resources));
         }
         if (bundles != null) {
-            clone.setResourceBundles(new ArrayList<String>(bundles));
+            clone.setResourceBundles(new ArrayList<>(bundles));
         }
         return clone;
     }

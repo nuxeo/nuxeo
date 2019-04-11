@@ -91,7 +91,7 @@ public class ReadDirectoryEntries extends AbstractDirectoryOperation {
 
         List<String> ids = mapper.readValue(jsonEntries, new TypeReference<List<String>>() {
         });
-        List<Map<String, Object>> entries = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> entries = new ArrayList<>();
 
         Directory directory = directoryService.getDirectory(directoryName);
         String schemaName = directory.getSchema();
@@ -100,7 +100,7 @@ public class ReadDirectoryEntries extends AbstractDirectoryOperation {
             for (String id : ids) {
                 DocumentModel entry = session.getEntry(id);
                 if (entry != null) {
-                    Map<String, Object> m = new HashMap<String, Object>();
+                    Map<String, Object> m = new HashMap<>();
                     for (Field field : schema.getFields()) {
                         QName fieldName = field.getName();
                         String key = fieldName.getLocalName();

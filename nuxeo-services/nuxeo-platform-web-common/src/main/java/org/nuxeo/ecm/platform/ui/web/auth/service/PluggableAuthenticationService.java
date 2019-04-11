@@ -88,20 +88,20 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     private List<String> authChain;
 
-    private final Map<String, SpecificAuthChainDescriptor> specificAuthChains = new HashMap<String, SpecificAuthChainDescriptor>();
+    private final Map<String, SpecificAuthChainDescriptor> specificAuthChains = new HashMap<>();
 
-    private final List<OpenUrlDescriptor> openUrls = new ArrayList<OpenUrlDescriptor>();
+    private final List<OpenUrlDescriptor> openUrls = new ArrayList<>();
 
-    private final List<String> startupURLs = new ArrayList<String>();
+    private final List<String> startupURLs = new ArrayList<>();
 
     private LoginScreenConfigRegistry loginScreenConfigRegistry;
 
     @Override
     public void activate(ComponentContext context) {
-        authenticatorsDescriptors = new HashMap<String, AuthenticationPluginDescriptor>();
-        authChain = new ArrayList<String>();
-        authenticators = new HashMap<String, NuxeoAuthenticationPlugin>();
-        sessionManagers = new HashMap<String, NuxeoAuthenticationSessionManager>();
+        authenticatorsDescriptors = new HashMap<>();
+        authChain = new ArrayList<>();
+        authenticators = new HashMap<>();
+        sessionManagers = new HashMap<>();
         defaultSessionManager = new DefaultSessionManager();
         loginScreenConfigRegistry = new LoginScreenConfigRegistry();
     }
@@ -320,7 +320,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public List<NuxeoAuthenticationPlugin> getPluginChain() {
-        List<NuxeoAuthenticationPlugin> result = new ArrayList<NuxeoAuthenticationPlugin>();
+        List<NuxeoAuthenticationPlugin> result = new ArrayList<>();
 
         for (String pluginName : authChain) {
             if (authenticatorsDescriptors.containsKey(pluginName)

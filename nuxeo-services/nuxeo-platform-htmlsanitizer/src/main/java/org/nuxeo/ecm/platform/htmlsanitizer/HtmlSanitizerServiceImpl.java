@@ -49,16 +49,16 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements HtmlSa
     public static final String SANITIZER_XP = "sanitizer";
 
     /** All policies registered. */
-    public LinkedList<HtmlSanitizerAntiSamyDescriptor> allPolicies = new LinkedList<HtmlSanitizerAntiSamyDescriptor>();
+    public LinkedList<HtmlSanitizerAntiSamyDescriptor> allPolicies = new LinkedList<>();
 
     /** Effective policy. */
     public PolicyFactory policy;
 
     /** All sanitizers registered. */
-    public List<HtmlSanitizerDescriptor> allSanitizers = new ArrayList<HtmlSanitizerDescriptor>(1);
+    public List<HtmlSanitizerDescriptor> allSanitizers = new ArrayList<>(1);
 
     /** Effective sanitizers. */
-    public List<HtmlSanitizerDescriptor> sanitizers = new ArrayList<HtmlSanitizerDescriptor>(1);
+    public List<HtmlSanitizerDescriptor> sanitizers = new ArrayList<>(1);
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {

@@ -52,7 +52,7 @@ public class Version {
 
     public Version(String version) {
         this.version = version;
-        packages = new HashMap<String, UpdateOptions>();
+        packages = new HashMap<>();
     }
 
     public final Map<String, UpdateOptions> getPackages() {

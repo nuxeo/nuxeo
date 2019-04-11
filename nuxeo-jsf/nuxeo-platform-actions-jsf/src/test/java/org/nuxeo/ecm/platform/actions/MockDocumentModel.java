@@ -38,7 +38,7 @@ public final class MockDocumentModel extends DocumentModelImpl {
 
     public MockDocumentModel(String type, String[] facets) {
         super(type);
-        this.facets = new HashSet<String>();
+        this.facets = new HashSet<>();
         this.facets.addAll(Arrays.asList(facets));
     }
 

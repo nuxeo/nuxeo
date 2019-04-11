@@ -150,7 +150,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             if (clausesString.equals(NAME_DEFAULT)) {
                 defaultProviderId = providerId;
             } else {
-                List<Clause> clauses = new ArrayList<Clause>(2);
+                List<Clause> clauses = new ArrayList<>(2);
                 for (String name : clausesString.split(",")) {
                     Matcher m = NAME_PATTERN.matcher(name);
                     if (m.matches()) {

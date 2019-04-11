@@ -31,7 +31,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class EventRegistry extends ContributionFragmentRegistry<EventHandler> {
 
-    protected Map<String, List<EventHandler>> handlers = new HashMap<String, List<EventHandler>>();
+    protected Map<String, List<EventHandler>> handlers = new HashMap<>();
 
     protected volatile Map<String, List<EventHandler>> lookup;
 
@@ -52,7 +52,7 @@ public class EventRegistry extends ContributionFragmentRegistry<EventHandler> {
     protected void putEventHandler(String eventId, EventHandler handler) {
         List<EventHandler> handlers = this.handlers.get(eventId);
         if (handlers == null) {
-            handlers = new ArrayList<EventHandler>();
+            handlers = new ArrayList<>();
         }
         if (!handlers.contains(handler)) {
             handlers.add(handler);
@@ -102,7 +102,7 @@ public class EventRegistry extends ContributionFragmentRegistry<EventHandler> {
         if (_lookup == null) {
             synchronized (this) {
                 if (lookup == null) {
-                    lookup = new HashMap<String, List<EventHandler>>(handlers);
+                    lookup = new HashMap<>(handlers);
                 }
                 _lookup = lookup;
             }

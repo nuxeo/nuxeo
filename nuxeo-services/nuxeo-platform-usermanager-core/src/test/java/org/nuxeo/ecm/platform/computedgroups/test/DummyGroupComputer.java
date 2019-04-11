@@ -27,7 +27,7 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 public class DummyGroupComputer extends AbstractGroupComputer {
 
-    List<String> grpNames = new ArrayList<String>();
+    List<String> grpNames = new ArrayList<>();
 
     public DummyGroupComputer() {
         grpNames.add("Grp1");
@@ -36,7 +36,7 @@ public class DummyGroupComputer extends AbstractGroupComputer {
 
     public List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
 
-        List<String> grps = new ArrayList<String>();
+        List<String> grps = new ArrayList<>();
         if (nuxeoPrincipal.getName().contains("1")) {
             grps.add("Grp1");
         }
@@ -48,7 +48,7 @@ public class DummyGroupComputer extends AbstractGroupComputer {
     }
 
     public List<String> getGroupMembers(String groupName) {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
 
         if ("Grp1".equals(groupName)) {
             names.add("User1");

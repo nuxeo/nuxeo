@@ -57,7 +57,7 @@ public class MapValueExpression extends ValueExpression {
 
     @Override
     public Object getValue(ELContext elContext) throws PropertyNotFoundException {
-        Map<String, Serializable> res = new HashMap<String, Serializable>();
+        Map<String, Serializable> res = new HashMap<>();
         if (map != null) {
             for (Map.Entry<String, ValueExpression> entry : map.entrySet()) {
                 ValueExpression ve = entry.getValue();

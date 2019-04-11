@@ -42,7 +42,7 @@ public class TemplateView {
 
     private static final FreemarkerEngine engine = new FreemarkerEngine(null, new Locator());
 
-    private static final Map<String, TemplateView> locators = new HashMap<String, TemplateView>();
+    private static final Map<String, TemplateView> locators = new HashMap<>();
 
     public static URL resolveFile(File file) throws ViewNotFoundException {
         if (!file.isFile()) {
@@ -106,7 +106,7 @@ public class TemplateView {
     }
 
     public TemplateView(Object owner, URL url) {
-        vars = new HashMap<String, Object>();
+        vars = new HashMap<>();
         this.url = url;
         if (owner != null) {
             forObject(owner);

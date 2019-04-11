@@ -137,7 +137,7 @@ public class RoutingTaskActionsBean implements Serializable {
     @RequestParameter("button")
     protected String button;
 
-    protected Map<String, TaskInfo> tasksInfoCache = new HashMap<String, TaskInfo>();
+    protected Map<String, TaskInfo> tasksInfoCache = new HashMap<>();
 
     protected Task currentTask;
 
@@ -183,7 +183,7 @@ public class RoutingTaskActionsBean implements Serializable {
 
     public List<Action> getTaskButtons(Task task) {
         List<Button> buttons = getTaskInfo(task, true).buttons;
-        List<Action> actions = new ArrayList<Action>();
+        List<Action> actions = new ArrayList<>();
 
         DocumentModel workflowInstance = documentManager.getDocument(new IdRef(task.getProcessId()));
         GraphRoute workflow = workflowInstance.getAdapter(GraphRoute.class);
@@ -202,7 +202,7 @@ public class RoutingTaskActionsBean implements Serializable {
             if (StringUtils.isNotEmpty(button.getFilter())) {
                 ActionContext actionContext = actionContextProvider.createActionContext();
                 if (node != null) {
-                    Map<String, Object> workflowContextualInfo = new HashMap<String, Object>();
+                    Map<String, Object> workflowContextualInfo = new HashMap<>();
                     workflowContextualInfo.putAll(node.getWorkflowContextualInfo(documentManager, true));
                     actionContext.putAllLocalVariables(workflowContextualInfo);
                 }
@@ -217,7 +217,7 @@ public class RoutingTaskActionsBean implements Serializable {
 
     public String endTask(Task task) {
         // collect form data
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
         Map<String, Serializable> formVariables = getFormVariables(task);
         if (getFormVariables(task) != null) {
             data.put("WorkflowVariables", getFormVariables(task));
@@ -338,7 +338,7 @@ public class RoutingTaskActionsBean implements Serializable {
                 DocumentModel doc = session.getDocument(new IdRef(routeDocId));
                 GraphRoute route = doc.getAdapter(GraphRoute.class);
                 GraphNode node = route.getNode(nodeId);
-                HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+                HashMap<String, Serializable> map = new HashMap<>();
                 if (getFormVariables) {
                     map.putAll(node.getVariables());
                     map.putAll(route.getVariables());
@@ -367,7 +367,7 @@ public class RoutingTaskActionsBean implements Serializable {
      * @since 5.6
      */
     public List<Action> getTaskActions(Task task) {
-        return new ArrayList<Action>(getTaskActionsMap(task).values());
+        return new ArrayList<>(getTaskActionsMap(task).values());
     }
 
     // temp method because Studio also refers to empty layouts
@@ -397,7 +397,7 @@ public class RoutingTaskActionsBean implements Serializable {
      * @since 5.6
      */
     public Map<String, Action> getTaskActionsMap(Task task) {
-        Map<String, Action> actions = new LinkedHashMap<String, Action>();
+        Map<String, Action> actions = new LinkedHashMap<>();
         TaskInfo taskInfo = getTaskInfo(task, true);
         String layout = taskInfo.layout;
         List<Button> buttons = taskInfo.buttons;
@@ -405,7 +405,7 @@ public class RoutingTaskActionsBean implements Serializable {
         boolean addLayout = !isLayoutEmpty(layout);
         Map<String, Serializable> props = null;
         if (addLayout) {
-            props = new HashMap<String, Serializable>();
+            props = new HashMap<>();
             props.put("layout", layout);
             props.put("formVariables", taskInfo.formVariables);
         }
@@ -417,7 +417,7 @@ public class RoutingTaskActionsBean implements Serializable {
                 String id = getTaskActionId(task, buttonId);
                 Action action = new Action(id, Action.EMPTY_CATEGORIES);
                 action.setLabel(button.getLabel());
-                Map<String, Serializable> actionProps = new HashMap<String, Serializable>();
+                Map<String, Serializable> actionProps = new HashMap<>();
                 actionProps.put("buttonId", buttonId);
                 if (addLayout) {
                     actionProps.putAll(props);
@@ -490,9 +490,9 @@ public class RoutingTaskActionsBean implements Serializable {
      */
     @SuppressWarnings("boxing")
     public List<Action> getTaskActions(String selectionListName) {
-        Map<String, Action> actions = new LinkedHashMap<String, Action>();
-        Map<String, Map<String, Action>> actionsPerTaskType = new LinkedHashMap<String, Map<String, Action>>();
-        Map<String, Integer> actionsCounter = new HashMap<String, Integer>();
+        Map<String, Action> actions = new LinkedHashMap<>();
+        Map<String, Map<String, Action>> actionsPerTaskType = new LinkedHashMap<>();
+        Map<String, Integer> actionsCounter = new HashMap<>();
         List<DocumentModel> docs = documentsListsManager.getWorkingList(selectionListName);
         boolean cachePerType = Boolean.TRUE.equals(
                 Boolean.valueOf(Framework.getProperty(CACHE_ACTIONS_PER_TASK_TYPE_PROP_NAME)));
@@ -534,7 +534,7 @@ public class RoutingTaskActionsBean implements Serializable {
                 actions.putAll(actionsPerType);
             }
         }
-        List<Action> res = new ArrayList<Action>(actions.values());
+        List<Action> res = new ArrayList<>(actions.values());
         for (Action action : res) {
             if (!actionsCounter.get(action.getId()).equals(taskDocsNum)) {
                 action.setAvailable(false);
@@ -551,7 +551,7 @@ public class RoutingTaskActionsBean implements Serializable {
     @SuppressWarnings("unchecked")
     public String endTasks(String selectionListName, Action taskAction) {
         // collect form data
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
         String buttonId = (String) taskAction.getProperties().get("buttonId");
         Map<String, Serializable> formVariables = (Map<String, Serializable>) taskAction.getProperties()
                                                                                         .get("formVariables");
@@ -702,8 +702,8 @@ public class RoutingTaskActionsBean implements Serializable {
      */
     @SuppressWarnings("deprecation")
     public List<String> getCurrentTaskTargetDocumentsIds() {
-        Set<String> uniqueTargetDocIds = new HashSet<String>();
-        List<String> docIds = new ArrayList<String>();
+        Set<String> uniqueTargetDocIds = new HashSet<>();
+        List<String> docIds = new ArrayList<>();
         if (currentTask == null) {
             return docIds;
         }

@@ -78,7 +78,7 @@ public class VocabularyTreeActions implements Serializable {
     public VocabularyTreeNode get(String vocabularyName, boolean displayObsoleteEntries, char keySeparator,
             String orderingField) {
         if (treeModels == null) {
-            treeModels = new HashMap<String, VocabularyTreeNode>();
+            treeModels = new HashMap<>();
         }
         VocabularyTreeNode treeModel = treeModels.get(vocabularyName);
         if (treeModel != null) {
@@ -110,7 +110,7 @@ public class VocabularyTreeActions implements Serializable {
     public String getLabelFor(String vocabularyName, String path, char keySeparator) {
         Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
         String schemaName = null;
-        List<String> labels = new ArrayList<String>();
+        List<String> labels = new ArrayList<>();
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try (Session session = directoryService.open(vocabularyName)) {
             schemaName = directoryService.getDirectorySchema(vocabularyName);

@@ -80,7 +80,7 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements Fileabl
     @Override
     public NuxeoFileableObject move(ObjectId sourceFolder, ObjectId targetFolder, OperationContext context) {
         // context ignored
-        Holder<String> objectIdHolder = new Holder<String>(getId());
+        Holder<String> objectIdHolder = new Holder<>(getId());
         if (sourceFolder == null) {
             throw new CmisInvalidArgumentException("Missing source folder");
         }

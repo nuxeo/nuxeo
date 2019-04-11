@@ -56,7 +56,7 @@ public class TestFilterDirectories {
         assertNotNull(unfiltredSession.getEntry("2"));
         assertNotNull(unfiltredSession.getEntry("5"));
 
-        Map<String, Serializable> queryFilter = new HashMap<String, Serializable>();
+        Map<String, Serializable> queryFilter = new HashMap<>();
         queryFilter.put("lang", "en");
         assertEquals(2, unfiltredSession.query(queryFilter).size());
 

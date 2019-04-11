@@ -35,7 +35,7 @@ public class TestParseProperties {
 
     @Test
     public void test() throws Exception {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         assertEquals(props, parse(""));
 
         String expr = "key1=val1";

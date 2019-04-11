@@ -90,7 +90,7 @@ public class BOAdapter extends DefaultAdapter {
         if (list instanceof Paginable) {
             adapters = new PaginableWithDelegate((Paginable<DocumentModel>) list);
         } else {
-            adapters = new ArrayList<BusinessAdapter>();
+            adapters = new ArrayList<>();
         }
 
         for (DocumentModel docItem : list) {

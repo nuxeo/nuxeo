@@ -197,7 +197,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             String digest = new NuxeoPropertyDataContentStreamDigest((PropertyDefinition<String>) pd, doc).getFirstValue();
             List<String> hashes;
             if (digest == null) {
-                hashes = new ArrayList<String>();
+                hashes = new ArrayList<>();
             } else {
                 hashes = Arrays.asList(new ContentStreamHashImpl(ContentStreamHashImpl.ALGORITHM_MD5, digest).getPropertyValue());
             }

@@ -134,7 +134,7 @@ public class VirtualFolderResource extends AbstractResource {
             return Response.status(207).entity(new MultiStatus(response)).build();
         }
 
-        List<net.java.dev.webdav.jaxrs.xml.elements.Response> responses = new ArrayList<net.java.dev.webdav.jaxrs.xml.elements.Response>();
+        List<net.java.dev.webdav.jaxrs.xml.elements.Response> responses = new ArrayList<>();
         responses.add(response);
 
         for (String name : rootFolderNames) {

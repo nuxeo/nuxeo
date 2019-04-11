@@ -67,7 +67,7 @@ public class CoreEventImpl implements CoreEvent {
         }
         this.source = source;
         if (info == null) {
-            this.info = new HashMap<String, Object>();
+            this.info = new HashMap<>();
         } else {
             this.info = new HashMap<String, Object>(info);
         }

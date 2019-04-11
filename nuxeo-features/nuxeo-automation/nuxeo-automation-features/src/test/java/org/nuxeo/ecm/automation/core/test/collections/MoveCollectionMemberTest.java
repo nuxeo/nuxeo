@@ -66,7 +66,7 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
     protected List<DocumentModel> getCollectionMembersByQuery() {
         // Check order from query
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         @SuppressWarnings("unchecked")
         PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pps.getPageProvider(

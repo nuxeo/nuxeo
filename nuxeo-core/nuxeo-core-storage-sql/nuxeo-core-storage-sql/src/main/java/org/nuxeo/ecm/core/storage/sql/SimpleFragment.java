@@ -133,7 +133,7 @@ public final class SimpleFragment extends Fragment {
         for (int i = 0; i < row.size; i++) {
             if (!same(oldvalues[i], row.values[i])) {
                 if (keys == null) {
-                    keys = new LinkedList<String>();
+                    keys = new LinkedList<>();
                 }
                 keys.add(row.keys[i]);
             }

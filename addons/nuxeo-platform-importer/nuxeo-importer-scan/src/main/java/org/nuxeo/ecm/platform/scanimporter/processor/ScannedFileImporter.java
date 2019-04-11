@@ -56,7 +56,7 @@ public class ScannedFileImporter {
     protected static ReentrantReadWriteLock processedLock = new ReentrantReadWriteLock();
 
     public ScannedFileImporter() {
-        processedDescriptors = new ArrayList<String>();
+        processedDescriptors = new ArrayList<>();
     }
 
     public static void addProcessedDescriptor(String fileDesc) {
@@ -102,7 +102,7 @@ public class ScannedFileImporter {
                 }
             }
         }
-        processedDescriptors = new ArrayList<String>();
+        processedDescriptors = new ArrayList<>();
     }
 
     public void doImport() {

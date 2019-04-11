@@ -43,7 +43,7 @@ public class ReferencePageProviderDescriptor implements Serializable {
     boolean enabled = true;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> properties = new HashMap<String, String>();
+    Map<String, String> properties = new HashMap<>();
 
     @XNodeList(value = "parameter", type = String[].class, componentType = String.class)
     String[] queryParameters;
@@ -74,7 +74,7 @@ public class ReferencePageProviderDescriptor implements Serializable {
         clone.enabled = isEnabled();
         Map<String, String> props = getProperties();
         if (props != null) {
-            clone.properties = new HashMap<String, String>();
+            clone.properties = new HashMap<>();
             clone.properties.putAll(props);
         }
         String[] params = getQueryParameters();

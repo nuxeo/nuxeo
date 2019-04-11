@@ -108,7 +108,7 @@ public abstract class ChainSelectBase extends UIInput implements NamingContainer
 
     protected String defaultRootKey;
 
-    protected Map<String, String[]> selectionMap = new HashMap<String, String[]>();
+    protected Map<String, String[]> selectionMap = new HashMap<>();
 
     protected ChainSelectBase() {
         HtmlSelectOneListbox select = new HtmlSelectOneListbox();
@@ -210,7 +210,7 @@ public abstract class ChainSelectBase extends UIInput implements NamingContainer
         if (level <= selectedKeys.length) {
             items = getDirectoryEntries(level, selectedKeys);
         } else {
-            items = new ArrayList<DirectoryEntry>();
+            items = new ArrayList<>();
         }
 
         UISelectItem emptyItem = new UISelectItem();
@@ -258,13 +258,13 @@ public abstract class ChainSelectBase extends UIInput implements NamingContainer
 
         assert level <= selectedKeys.length;
 
-        List<DirectoryEntry> result = new ArrayList<DirectoryEntry>();
+        List<DirectoryEntry> result = new ArrayList<>();
         String directoryName = getDirectory(level);
 
         DirectoryService service = DirectoryHelper.getDirectoryService();
         try (Session session = service.open(directoryName)) {
             String schema = service.getDirectorySchema(directoryName);
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
 
             if (level == 0) {
                 if (schema.equals(XVOCABULARY_SCHEMA)) {
@@ -285,7 +285,7 @@ public abstract class ChainSelectBase extends UIInput implements NamingContainer
             }
 
             Set<String> emptySet = Collections.emptySet();
-            Map<String, String> orderBy = new LinkedHashMap<String, String>();
+            Map<String, String> orderBy = new LinkedHashMap<>();
 
             // adding sorting suport
             if (schema.equals(VOCABULARY_SCHEMA) || schema.equals(XVOCABULARY_SCHEMA)) {
@@ -311,7 +311,7 @@ public abstract class ChainSelectBase extends UIInput implements NamingContainer
      * @return
      */
     public List<DirectoryEntry> resolveKeys(String[] keys) {
-        List<DirectoryEntry> result = new ArrayList<DirectoryEntry>();
+        List<DirectoryEntry> result = new ArrayList<>();
 
         DirectoryService service = DirectoryHelper.getDirectoryService();
         for (int level = 0; level < keys.length; level++) {
@@ -574,7 +574,7 @@ public abstract class ChainSelectBase extends UIInput implements NamingContainer
     public abstract String[] getSelection();
 
     protected void decodeSelection(FacesContext context) {
-        List<String> selectedKeyList = new ArrayList<String>();
+        List<String> selectedKeyList = new ArrayList<>();
         Map<String, String> parameters = context.getExternalContext().getRequestParameterMap();
 
         String[] selection = getSelection();

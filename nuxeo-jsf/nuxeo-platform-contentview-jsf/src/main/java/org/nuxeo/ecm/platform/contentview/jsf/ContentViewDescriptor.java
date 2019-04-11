@@ -444,7 +444,7 @@ public class ContentViewDescriptor {
         if (resultLayouts != null) {
             Boolean appendResultLayout = newDesc.getAppendResultLayouts();
             if (Boolean.TRUE.equals(appendResultLayout) || resultLayouts.isEmpty()) {
-                List<ContentViewLayout> allLayouts = new ArrayList<ContentViewLayout>();
+                List<ContentViewLayout> allLayouts = new ArrayList<>();
                 if (this.resultLayouts != null) {
                     allLayouts.addAll(this.resultLayouts);
                 }
@@ -541,7 +541,7 @@ public class ContentViewDescriptor {
         clone.pagination = getPagination();
         List<String> actionCats = getActionCategories();
         if (actionCats != null) {
-            clone.actionCategories = new ArrayList<String>();
+            clone.actionCategories = new ArrayList<>();
             clone.actionCategories.addAll(actionCats);
         }
         clone.searchDocument = getSearchDocumentBinding();
@@ -552,7 +552,7 @@ public class ContentViewDescriptor {
         clone.appendResultLayouts = getAppendResultLayouts();
         List<ContentViewLayout> resultLayouts = getResultLayouts();
         if (resultLayouts != null) {
-            clone.resultLayouts = new ArrayList<ContentViewLayout>();
+            clone.resultLayouts = new ArrayList<>();
             for (ContentViewLayout item : resultLayouts) {
                 clone.resultLayouts.add(item.clone());
             }
@@ -561,7 +561,7 @@ public class ContentViewDescriptor {
         clone.resultLayout = getResultLayoutBinding();
         List<String> flags = getFlags();
         if (flags != null) {
-            clone.flags = new ArrayList<String>();
+            clone.flags = new ArrayList<>();
             clone.flags.addAll(flags);
         }
         clone.cacheKey = getCacheKey();
@@ -573,12 +573,12 @@ public class ContentViewDescriptor {
         clone.showFilterForm = getShowFilterForm();
         List<String> refresh = getRefreshEventNames();
         if (refresh != null) {
-            clone.refreshEventNames = new ArrayList<String>();
+            clone.refreshEventNames = new ArrayList<>();
             clone.refreshEventNames.addAll(refresh);
         }
         List<String> reset = getResetEventNames();
         if (reset != null) {
-            clone.resetEventNames = new ArrayList<String>();
+            clone.resetEventNames = new ArrayList<>();
             clone.resetEventNames.addAll(reset);
         }
         clone.waitForExecution = getWaitForExecution();

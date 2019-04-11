@@ -45,7 +45,7 @@ public class TranslationProperties extends Properties {
     public TranslationProperties() {
         super();
         duplicates = new Properties();
-        singleLabels = new HashSet<String>();
+        singleLabels = new HashSet<>();
     }
 
     /**

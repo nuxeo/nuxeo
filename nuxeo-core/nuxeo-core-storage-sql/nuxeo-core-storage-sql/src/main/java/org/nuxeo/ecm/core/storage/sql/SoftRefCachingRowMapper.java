@@ -161,7 +161,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     protected ACLRow[] sortACLRows(ACLRow[] acls) {
-        List<ACLRow> list = new ArrayList<ACLRow>(Arrays.asList(acls));
+        List<ACLRow> list = new ArrayList<>(Arrays.asList(acls));
         Collections.sort(list, ACLRowPositionComparator.INSTANCE);
         ACLRow[] res = new ACLRow[acls.length];
         return list.toArray(res);
@@ -289,9 +289,9 @@ public class SoftRefCachingRowMapper implements RowMapper {
      */
     @Override
     public List<? extends RowId> read(Collection<RowId> rowIds, boolean cacheOnly) {
-        List<RowId> res = new ArrayList<RowId>(rowIds.size());
+        List<RowId> res = new ArrayList<>(rowIds.size());
         // find which are in cache, and which not
-        List<RowId> todo = new LinkedList<RowId>();
+        List<RowId> todo = new LinkedList<>();
         for (RowId rowId : rowIds) {
             Row row = cacheGet(rowId);
             if (row == null) {

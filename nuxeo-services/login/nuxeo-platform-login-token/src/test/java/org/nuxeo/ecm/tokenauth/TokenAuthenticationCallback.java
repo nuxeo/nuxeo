@@ -101,7 +101,7 @@ public class TokenAuthenticationCallback implements TokenCallback {
 
     @Override
     public Map<String, String> getTokenParams() {
-        Map<String, String> tokenParams = new HashMap<String, String>();
+        Map<String, String> tokenParams = new HashMap<>();
         tokenParams.put(USERNAME_KEY, userName);
         tokenParams.put(APPLICATION_NAME_KEY, applicationName);
         tokenParams.put(DEVICE_ID_KEY, deviceId);

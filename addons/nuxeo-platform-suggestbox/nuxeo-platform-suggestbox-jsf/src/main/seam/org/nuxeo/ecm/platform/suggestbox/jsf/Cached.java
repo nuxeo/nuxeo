@@ -80,6 +80,6 @@ public class Cached<T> implements Serializable {
      * Empty marker to be used as default value
      */
     public static <E> Cached<E> expired(long expireMillis) {
-        return new Cached<E>(expireMillis);
+        return new Cached<>(expireMillis);
     }
 }

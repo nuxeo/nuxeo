@@ -86,8 +86,8 @@ public class ContextFunctions {
             return key;
         }
 
-        List<String> vocs = new ArrayList<String>();
-        List<String> keys = new ArrayList<String>();
+        List<String> vocs = new ArrayList<>();
+        List<String> keys = new ArrayList<>();
         if (voc_name.contains("/")) {
             String[] parts = voc_name.split("\\/");
             for (String part : parts) {
@@ -102,7 +102,7 @@ public class ContextFunctions {
             keys.add(key);
         }
 
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
 
         for (int i = 0; i < vocs.size(); i++) {
             String voc = vocs.get(i);

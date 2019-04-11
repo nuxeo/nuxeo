@@ -51,7 +51,7 @@ public class RuntimeInventoryAdapter implements RuntimeInventoryMBean {
     }
 
     public Set<String> getAvailableComponents() {
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         for (RegistrationInfo info : availableComponents()) {
             names.add(info.getName().getRawName());
         }
@@ -67,7 +67,7 @@ public class RuntimeInventoryAdapter implements RuntimeInventoryMBean {
     }
 
     public Set<String> getPendingComponentsName() {
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         for (ComponentName componentName : pendingComponentsName()) {
             names.add(componentName.getRawName());
         }

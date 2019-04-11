@@ -32,7 +32,7 @@ import org.apache.commons.logging.Log;
  */
 public class CommandProcessorImpl implements CommandProcessor {
 
-    final List<Command> commands = new ArrayList<Command>();
+    final List<Command> commands = new ArrayList<>();
 
     Log log;
 

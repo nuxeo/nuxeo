@@ -64,7 +64,7 @@ public class TestExpressionEvaluator {
     private final ExpressionContext context = new ExpressionContext();
 
     private static Map<String, SampleBean> createSampleMap() {
-        Map<String, SampleBean> sampleMap = new HashMap<String, SampleBean>();
+        Map<String, SampleBean> sampleMap = new HashMap<>();
         sampleMap.put("key", createSampleBean());
         return sampleMap;
     }

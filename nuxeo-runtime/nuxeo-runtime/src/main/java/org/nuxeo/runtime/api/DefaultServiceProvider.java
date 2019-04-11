@@ -46,7 +46,7 @@ public class DefaultServiceProvider implements ServiceProvider {
         return provider;
     }
 
-    protected final Map<Class<?>, ServiceRef> registry = new Hashtable<Class<?>, ServiceRef>();
+    protected final Map<Class<?>, ServiceRef> registry = new Hashtable<>();
 
     @Override
     @SuppressWarnings("unchecked")

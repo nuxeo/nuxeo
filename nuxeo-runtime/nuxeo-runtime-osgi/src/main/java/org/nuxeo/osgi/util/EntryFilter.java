@@ -93,7 +93,7 @@ public abstract class EntryFilter {
         if (pattern == null || pattern.equals("*")) {
             return ANY;
         }
-        ArrayList<String> parts = new ArrayList<String>();
+        ArrayList<String> parts = new ArrayList<>();
         int s = 0;
         boolean startAny = false;
         boolean endAny = false;

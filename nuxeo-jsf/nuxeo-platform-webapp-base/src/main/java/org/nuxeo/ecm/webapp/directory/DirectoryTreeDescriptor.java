@@ -225,7 +225,7 @@ public class DirectoryTreeDescriptor {
         Action a = new Action(ACTION_ID_PREFIX + getName(), cats);
         a.setType("rest_document_link");
         a.setLabel(getLabel());
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("ajaxSupport", "true");
         props.put("link", "/incl/single_directory_tree_explorer.xhtml");
         ActionPropertiesDescriptor pdesc = new ActionPropertiesDescriptor();

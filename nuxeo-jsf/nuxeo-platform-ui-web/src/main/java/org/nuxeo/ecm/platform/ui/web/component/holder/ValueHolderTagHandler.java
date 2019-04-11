@@ -99,7 +99,7 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
 
             if (!StringUtils.isBlank(varName)) {
                 varSet = true;
-                List<String> blockedPatterns = new ArrayList<String>();
+                List<String> blockedPatterns = new ArrayList<>();
                 blockedPatterns.add(varName);
                 alias.setBlockedPatterns(blockedPatterns);
             }

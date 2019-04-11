@@ -63,7 +63,7 @@ public class LayoutDescriptor {
     String typeCategory;
 
     @XNodeMap(value = "templates/template", key = "@mode", type = HashMap.class, componentType = String.class)
-    Map<String, String> templates = new HashMap<String, String>();
+    Map<String, String> templates = new HashMap<>();
 
     @XNodeList(value = "rows/row", type = LayoutRowDescriptor[].class, componentType = LayoutRowDescriptor.class)
     LayoutRowDescriptor[] rows = new LayoutRowDescriptor[0];
@@ -72,13 +72,13 @@ public class LayoutDescriptor {
     LayoutRowDescriptor[] rowsAsColumns = new LayoutRowDescriptor[0];
 
     @XNodeMap(value = "widget", key = "@name", type = HashMap.class, componentType = WidgetDescriptor.class)
-    Map<String, WidgetDescriptor> widgets = new HashMap<String, WidgetDescriptor>();
+    Map<String, WidgetDescriptor> widgets = new HashMap<>();
 
     @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
-    Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();
+    Map<String, PropertiesDescriptor> properties = new HashMap<>();
 
     @XNodeMap(value = "renderingInfos", key = "@mode", type = HashMap.class, componentType = RenderingInfosDescriptor.class)
-    Map<String, RenderingInfosDescriptor> renderingInfos = new HashMap<String, RenderingInfosDescriptor>();
+    Map<String, RenderingInfosDescriptor> renderingInfos = new HashMap<>();
 
     @XNodeList(value = "categories/category", type = String[].class, componentType = String.class)
     String[] categories = new String[0];
@@ -187,13 +187,13 @@ public class LayoutDescriptor {
     public LayoutDefinition getLayoutDefinition() {
         Map<String, String> ctemplates = null;
         if (templates != null) {
-            ctemplates = new HashMap<String, String>();
+            ctemplates = new HashMap<>();
             ctemplates.putAll(templates);
         }
         LayoutRowDefinition[] crows = getRows();
         Map<String, WidgetDefinition> cwidgets = null;
         if (widgets != null) {
-            cwidgets = new LinkedHashMap<String, WidgetDefinition>();
+            cwidgets = new LinkedHashMap<>();
             for (Map.Entry<String, WidgetDescriptor> entry : widgets.entrySet()) {
                 WidgetDescriptor w = entry.getValue();
                 cwidgets.put(entry.getKey(), getWidgetDefinition(w));
@@ -201,12 +201,12 @@ public class LayoutDescriptor {
         }
         Map<String, List<RenderingInfo>> crenderingInfos = null;
         if (renderingInfos != null) {
-            crenderingInfos = new HashMap<String, List<RenderingInfo>>();
+            crenderingInfos = new HashMap<>();
             for (Map.Entry<String, RenderingInfosDescriptor> item : renderingInfos.entrySet()) {
                 RenderingInfosDescriptor infos = item.getValue();
                 List<RenderingInfo> clonedInfos = null;
                 if (infos != null) {
-                    clonedInfos = new ArrayList<RenderingInfo>();
+                    clonedInfos = new ArrayList<>();
                     for (RenderingInfoDescriptor info : infos.getRenderingInfos()) {
                         clonedInfos.add(info.getRenderingInfo());
                     }
@@ -219,7 +219,7 @@ public class LayoutDescriptor {
         clone.setType(getType());
         clone.setTypeCategory(getTypeCategory());
         if (aliases != null) {
-            clone.setAliases(new ArrayList<String>(aliases));
+            clone.setAliases(new ArrayList<>(aliases));
         }
         return clone;
     }

@@ -161,7 +161,7 @@ public class NuxeoTypeHelper {
      */
     protected NuxeoTypeHelper(String id, String parentId, BaseTypeId baseTypeId, DocumentType documentType,
             String nuxeoTypeId, boolean creatable, CmisVersion cmisVersion) {
-        propertyToSchema = new HashMap<String, String>();
+        propertyToSchema = new HashMap<>();
         this.cmisVersion = cmisVersion;
         constructBaseDocumentType(id, parentId, baseTypeId, documentType, nuxeoTypeId, creatable);
     }
@@ -170,7 +170,7 @@ public class NuxeoTypeHelper {
      * Helper to construct one CMIS type from a secondary type.
      */
     protected NuxeoTypeHelper(String id, String nuxeoTypeId, CmisVersion cmisVersion) {
-        propertyToSchema = new HashMap<String, String>();
+        propertyToSchema = new HashMap<>();
         this.cmisVersion = cmisVersion;
         constructBaseSecondaryType(id, nuxeoTypeId);
     }

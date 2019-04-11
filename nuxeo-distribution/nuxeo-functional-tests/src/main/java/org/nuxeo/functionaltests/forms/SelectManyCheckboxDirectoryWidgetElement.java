@@ -40,7 +40,7 @@ public class SelectManyCheckboxDirectoryWidgetElement extends WidgetElement {
     @Override
     public void setInput(WebElement elt, String value) {
         List<WebElement> options = getInputElement().findElements(By.xpath(".//input[@type='checkbox']"));
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         if (StringUtils.isBlank(value)) {
             for (WebElement option : options) {
                 if (option.isSelected()) {

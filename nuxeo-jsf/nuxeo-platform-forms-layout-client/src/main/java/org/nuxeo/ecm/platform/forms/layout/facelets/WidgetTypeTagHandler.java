@@ -144,7 +144,7 @@ public class WidgetTypeTagHandler extends TagHandler {
         WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
         // compute field definitions
-        List<FieldDefinition> fieldsValue = new ArrayList<FieldDefinition>();
+        List<FieldDefinition> fieldsValue = new ArrayList<>();
         if (field != null) {
             Object fieldValue = field.getObject(ctx, Object.class);
             if (fieldValue instanceof FieldDefinition) {
@@ -170,7 +170,7 @@ public class WidgetTypeTagHandler extends TagHandler {
 
         // build handler
         List<String> reservedVars = Arrays.asList(reservedVarsArray);
-        Map<String, Serializable> widgetProps = new HashMap<String, Serializable>();
+        Map<String, Serializable> widgetProps = new HashMap<>();
         if (properties != null) {
             Map<String, Serializable> propertiesValue = (Map<String, Serializable>) properties.getObject(ctx,
                     Map.class);

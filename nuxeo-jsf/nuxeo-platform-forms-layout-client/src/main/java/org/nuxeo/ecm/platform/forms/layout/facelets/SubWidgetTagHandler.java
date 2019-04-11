@@ -147,7 +147,7 @@ public class SubWidgetTagHandler extends TagHandler {
             }
 
             // expose widget variables
-            Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+            Map<String, ValueExpression> variables = new HashMap<>();
             ExpressionFactory eFactory = ctx.getExpressionFactory();
             ValueExpression subWidgetVe = eFactory.createValueExpression(subWidget, Widget.class);
             Integer level = null;
@@ -178,7 +178,7 @@ public class SubWidgetTagHandler extends TagHandler {
                 }
             }
 
-            List<String> blockedPatterns = new ArrayList<String>();
+            List<String> blockedPatterns = new ArrayList<>();
             blockedPatterns.add(RenderVariables.widgetVariables.widget.name());
             blockedPatterns.add(RenderVariables.widgetVariables.widgetIndex.name() + "*");
             blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name() + "_*");

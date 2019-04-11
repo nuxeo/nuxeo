@@ -39,7 +39,7 @@ public class FragmentRegistry extends DependencyTree<String, FragmentDescriptor>
     private static final Log log = LogFactory.getLog(FragmentRegistry.class);
 
     // this is needed to handle requiredBy dependencies
-    protected final Map<String, FragmentDescriptor> fragments = new HashMap<String, FragmentDescriptor>();
+    protected final Map<String, FragmentDescriptor> fragments = new HashMap<>();
 
     public void add(FragmentDescriptor fragment) {
         if (fragments.containsKey(fragment.name)) {
@@ -123,7 +123,7 @@ public class FragmentRegistry extends DependencyTree<String, FragmentDescriptor>
                     FragmentDescriptor fdRegBy = fragments.get(reqBy);
                     if (fdRegBy != null) {
                         if (fdRegBy.requires == null) {
-                            fdRegBy.requires = new ArrayList<String>();
+                            fdRegBy.requires = new ArrayList<>();
                         }
                         fdRegBy.requires.add(fd.name);
                     }

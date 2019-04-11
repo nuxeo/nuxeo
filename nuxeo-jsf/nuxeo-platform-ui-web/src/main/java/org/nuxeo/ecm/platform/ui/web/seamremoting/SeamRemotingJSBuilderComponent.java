@@ -37,7 +37,7 @@ public class SeamRemotingJSBuilderComponent extends DefaultComponent implements 
 
     public static final String EP_REMOTABLE_SEAMBEANS = "remotableSeamBeans";
 
-    protected static final List<String> beanNames = new ArrayList<String>();
+    protected static final List<String> beanNames = new ArrayList<>();
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {

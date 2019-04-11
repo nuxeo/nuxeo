@@ -160,7 +160,7 @@ public class AnnotationImpl implements Annotation, Serializable {
 
     @Override
     public void setSubject(Resource resource) {
-        List<Statement> statements = new ArrayList<Statement>();
+        List<Statement> statements = new ArrayList<>();
         for (Statement statement : graph.getStatements()) {
             statement.setSubject(resource);
             statements.add(statement);

@@ -53,7 +53,7 @@ public class UserGroupLookupSuggester implements Suggester {
 
     protected SuggesterDescriptor descriptor;
 
-    protected List<String> searchFields = new ArrayList<String>();
+    protected List<String> searchFields = new ArrayList<>();
 
     protected final String searchLabelPrefix = "label.searchDocumentsByUser_";
 
@@ -67,8 +67,8 @@ public class UserGroupLookupSuggester implements Suggester {
     public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
         I18nHelper i18n = I18nHelper.instanceFor(context.messages);
         UserManager userManager = Framework.getService(UserManager.class);
-        List<Suggestion> suggestions = new ArrayList<Suggestion>();
-        List<Suggestion> searchSuggestions = new ArrayList<Suggestion>();
+        List<Suggestion> suggestions = new ArrayList<>();
+        List<Suggestion> searchSuggestions = new ArrayList<>();
         try {
             int count = 0;
             for (DocumentModel userDoc : userManager.searchUsers(userInput)) {

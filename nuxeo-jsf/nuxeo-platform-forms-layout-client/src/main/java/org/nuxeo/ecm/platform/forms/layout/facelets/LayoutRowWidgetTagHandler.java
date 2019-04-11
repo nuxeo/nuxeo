@@ -177,7 +177,7 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             }
 
             // expose widget variables
-            Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+            Map<String, ValueExpression> variables = new HashMap<>();
             ExpressionFactory eFactory = ctx.getExpressionFactory();
             ValueExpression widgetVe = eFactory.createValueExpression(widget, Widget.class);
             variables.put(RenderVariables.widgetVariables.widget.name(), widgetVe);
@@ -205,7 +205,7 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
                 }
             }
 
-            List<String> blockedPatterns = new ArrayList<String>();
+            List<String> blockedPatterns = new ArrayList<>();
             blockedPatterns.add(RenderVariables.widgetVariables.widget.name() + "*");
             blockedPatterns.add(RenderVariables.widgetVariables.widgetIndex.name() + "*");
             blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name() + "_*");

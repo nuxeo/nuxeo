@@ -150,7 +150,7 @@ public class FrameworkBootstrap implements LoaderConstants {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void initializeEnvironment() throws IOException {
         System.setProperty(HOME_DIR, home.getAbsolutePath());
-        env = new HashMap<String, Object>();
+        env = new HashMap<>();
         // initialize with default values
         env.put(BUNDLES, DEFAULT_BUNDLES_CP);
         env.put(LIBS, DEFAULT_LIBS_CP);
@@ -192,7 +192,7 @@ public class FrameworkBootstrap implements LoaderConstants {
      * @return the list of bundle files.
      */
     protected List<File> buildClassPath() throws IOException {
-        List<File> bundleFiles = new ArrayList<File>();
+        List<File> bundleFiles = new ArrayList<>();
         String libsCp = (String) env.get(LIBS);
         if (libsCp != null) {
             buildLibsClassPath(libsCp);

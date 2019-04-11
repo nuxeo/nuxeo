@@ -33,7 +33,7 @@ import org.nuxeo.theme.styling.service.descriptors.PageDescriptor;
  */
 public class PageRegistry extends ContributionFragmentRegistry<PageDescriptor> {
 
-    protected Map<String, PageDescriptor> pageResources = new HashMap<String, PageDescriptor>();
+    protected Map<String, PageDescriptor> pageResources = new HashMap<>();
 
     @Override
     public String getContributionId(PageDescriptor contrib) {
@@ -81,7 +81,7 @@ public class PageRegistry extends ContributionFragmentRegistry<PageDescriptor> {
     }
 
     public List<PageDescriptor> getPages() {
-        List<PageDescriptor> res = new ArrayList<PageDescriptor>();
+        List<PageDescriptor> res = new ArrayList<>();
         for (PageDescriptor page : pageResources.values()) {
             if (page != null) {
                 res.add(page);
@@ -96,7 +96,7 @@ public class PageRegistry extends ContributionFragmentRegistry<PageDescriptor> {
      * @since 7.10
      */
     public List<String> getPageNames() {
-        return new ArrayList<String>(pageResources.keySet());
+        return new ArrayList<>(pageResources.keySet());
     }
 
     /**

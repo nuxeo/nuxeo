@@ -110,7 +110,7 @@ public class ACLCollectionIO implements CollectionIO {
     @Override
     public void executeInserts(PreparedStatement ps, List<RowUpdate> rowus, List<Column> columns,
             boolean supportsBatchUpdates, String sql, JDBCConnection connection) throws SQLException {
-        List<Serializable> debugValues = connection.logger.isLogEnabled() ? new ArrayList<Serializable>() : null;
+        List<Serializable> debugValues = connection.logger.isLogEnabled() ? new ArrayList<>() : null;
         boolean batched = supportsBatchUpdates && rowus.size() > 1;
         String loggedSql = batched ? sql + " -- BATCHED" : sql;
         int batch = 0;

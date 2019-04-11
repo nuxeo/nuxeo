@@ -46,7 +46,7 @@ public class SchemaDiffImpl implements SchemaDiff {
      * Instantiates a new schema diff impl.
      */
     public SchemaDiffImpl() {
-        schemaDiff = new HashMap<String, PropertyDiff>();
+        schemaDiff = new HashMap<>();
     }
 
     public Map<String, PropertyDiff> getSchemaDiff() {
@@ -58,7 +58,7 @@ public class SchemaDiffImpl implements SchemaDiff {
     }
 
     public List<String> getFieldNames() {
-        return new ArrayList<String>(schemaDiff.keySet());
+        return new ArrayList<>(schemaDiff.keySet());
     }
 
     public PropertyDiff getFieldDiff(String field) {

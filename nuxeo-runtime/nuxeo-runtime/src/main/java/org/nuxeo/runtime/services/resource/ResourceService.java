@@ -86,7 +86,7 @@ public class ResourceService extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
-        registry = new ConcurrentHashMap<String, URL>();
+        registry = new ConcurrentHashMap<>();
     }
 
     @Override

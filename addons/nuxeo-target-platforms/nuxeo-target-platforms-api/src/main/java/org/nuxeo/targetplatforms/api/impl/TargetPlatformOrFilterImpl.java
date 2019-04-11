@@ -41,7 +41,7 @@ public class TargetPlatformOrFilterImpl implements TargetPlatformFilter {
     }
 
     public TargetPlatformOrFilterImpl(Collection<TargetPlatformFilter> filters) {
-        this.filters = new HashSet<TargetPlatformFilter>();
+        this.filters = new HashSet<>();
         if (filters != null) {
             this.filters.addAll(filters);
         }

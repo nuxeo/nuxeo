@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  */
 public class DummyVirusScanner implements ScanService {
 
-    protected static List<String> doneFiles = new ArrayList<String>();
+    protected static List<String> doneFiles = new ArrayList<>();
 
     @Override
     public ScanResult scanBlob(Blob blob) {

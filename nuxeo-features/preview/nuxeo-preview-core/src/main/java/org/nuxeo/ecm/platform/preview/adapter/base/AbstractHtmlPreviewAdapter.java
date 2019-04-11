@@ -139,7 +139,7 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
     protected abstract List<Blob> getPreviewBlobs(String xpath) throws PreviewException;
 
     protected List<Blob> postProcessBlobs(List<Blob> blobs) throws PreviewException {
-        List<Blob> processedBlobs = new ArrayList<Blob>();
+        List<Blob> processedBlobs = new ArrayList<>();
         for (Blob blob : blobs) {
             for (BlobPostProcessor processor : getPreviewManager().getBlobPostProcessors()) {
                 blob = processor.process(blob);

@@ -58,7 +58,7 @@ public class EventManager implements Serializable {
      * @return events fired
      */
     public static List<String> raiseEventsOnGoingHome() {
-        List<String> eventsFired = new ArrayList<String>();
+        List<String> eventsFired = new ArrayList<>();
 
         Events evtManager = Events.instance();
 
@@ -79,7 +79,7 @@ public class EventManager implements Serializable {
      * @return events fired
      */
     public static List<String> raiseEventsOnLocationSelectionChanged() {
-        List<String> eventsFired = new ArrayList<String>();
+        List<String> eventsFired = new ArrayList<>();
 
         Events evtManager = Events.instance();
 
@@ -102,7 +102,7 @@ public class EventManager implements Serializable {
      * @return events fired
      */
     public static List<String> raiseEventsOnDocumentSelected(DocumentModel document) {
-        List<String> eventsFired = new ArrayList<String>();
+        List<String> eventsFired = new ArrayList<>();
 
         if (document == null) {
             // XXX AT: kind of BBB, not sure why this was used like this
@@ -147,7 +147,7 @@ public class EventManager implements Serializable {
      * @return events fired
      */
     public static List<String> raiseEventsOnDocumentChange(DocumentModel document) {
-        List<String> eventsFired = new ArrayList<String>();
+        List<String> eventsFired = new ArrayList<>();
         // TODO: parameterize on document type
         Events evtManager = Events.instance();
         log.debug("Fire Event: " + EventNames.DOCUMENT_CHANGED);
@@ -176,7 +176,7 @@ public class EventManager implements Serializable {
      * @return events fired
      */
     public static List<String> raiseEventsOnDocumentChildrenChange(DocumentModel document) {
-        List<String> eventsFired = new ArrayList<String>();
+        List<String> eventsFired = new ArrayList<>();
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, document);
         eventsFired.add(EventNames.DOCUMENT_CHILDREN_CHANGED);
         return eventsFired;

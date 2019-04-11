@@ -121,7 +121,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
                 pipe.setReader(reader);
                 return pipe.run();
             } else {
-                List<DocumentTranslationMap> maps = new ArrayList<DocumentTranslationMap>();
+                List<DocumentTranslationMap> maps = new ArrayList<>();
                 for (DocumentRef rootSource : sources) {
                     // create a tree reader for each doc
                     reader = new DocumentTreeReader(coreSession, rootSource);
@@ -157,7 +157,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
             pipe.setWriter(writer);
             pipe.setReader(customDocReader);
 
-            List<DocumentTranslationMap> maps = new ArrayList<DocumentTranslationMap>();
+            List<DocumentTranslationMap> maps = new ArrayList<>();
             DocumentTranslationMap map = pipe.run();
             if (map != null) {
                 maps.add(map);

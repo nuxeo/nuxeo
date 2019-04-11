@@ -48,7 +48,7 @@ public abstract class ImportTestCase {
     @Inject
     protected CoreSession session;
 
-    protected List<File> tmp = new ArrayList<File>();
+    protected List<File> tmp = new ArrayList<>();
 
     protected String deployTestFiles(String name) throws IOException {
         File src = new File(org.nuxeo.common.utils.FileUtils.getResourcePathFromContext("data/" + name));

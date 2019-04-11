@@ -71,7 +71,7 @@ public class TaskDashBoardActions implements Serializable {
 
     public Collection<DashBoardItem> computeDashboardItems() {
         if (currentUserTasks == null) {
-            currentUserTasks = new ArrayList<DashBoardItem>();
+            currentUserTasks = new ArrayList<>();
             List<Task> tasks = taskService.getCurrentTaskInstances(documentManager);
             if (tasks != null) {
                 for (Task task : tasks) {

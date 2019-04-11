@@ -109,7 +109,7 @@ public class ConversionCacheGCManager {
 
         Set<String> cacheKeys = ConversionCacheHolder.getCacheKeys();
 
-        Map<Date, String> sortingMap = new HashMap<Date, String>();
+        Map<Date, String> sortingMap = new HashMap<>();
 
         for (String key : cacheKeys) {
             ConversionCacheEntry cacheEntry = ConversionCacheHolder.getCacheEntry(key);
@@ -117,7 +117,7 @@ public class ConversionCacheGCManager {
             sortingMap.put(cacheEntry.getLastAccessedTime(), key);
         }
 
-        List<Date> accessTimeList = new ArrayList<Date>();
+        List<Date> accessTimeList = new ArrayList<>();
         accessTimeList.addAll(sortingMap.keySet());
         Collections.sort(accessTimeList);
 

@@ -70,8 +70,8 @@ public class WidgetTypeResource {
     }
 
     protected Map<String, List<WidgetTypeDefinition>> getWidgetTypesByCategory() {
-        Map<String, List<WidgetTypeDefinition>> cats = new HashMap<String, List<WidgetTypeDefinition>>();
-        List<WidgetTypeDefinition> unknownCatWidgets = new ArrayList<WidgetTypeDefinition>();
+        Map<String, List<WidgetTypeDefinition>> cats = new HashMap<>();
+        List<WidgetTypeDefinition> unknownCatWidgets = new ArrayList<>();
         for (WidgetTypeDefinition wTypeDef : widgetTypes) {
             List<String> categories = null;
             WidgetTypeConfiguration conf = wTypeDef.getConfiguration();
@@ -83,7 +83,7 @@ public class WidgetTypeResource {
                 for (String cat : categories) {
                     List<WidgetTypeDefinition> list = cats.get(cat);
                     if (list == null) {
-                        list = new ArrayList<WidgetTypeDefinition>();
+                        list = new ArrayList<>();
                     }
                     list.add(wTypeDef);
                     cats.put(cat, list);
@@ -98,9 +98,9 @@ public class WidgetTypeResource {
             cats.put("unknown", unknownCatWidgets);
         }
         // sort by category key
-        List<String> sortedKeys = new ArrayList<String>(cats.keySet());
+        List<String> sortedKeys = new ArrayList<>(cats.keySet());
         Collections.sort(sortedKeys);
-        Map<String, List<WidgetTypeDefinition>> res = new LinkedHashMap<String, List<WidgetTypeDefinition>>();
+        Map<String, List<WidgetTypeDefinition>> res = new LinkedHashMap<>();
         for (String key : sortedKeys) {
             res.put(key, cats.get(key));
         }
@@ -122,7 +122,7 @@ public class WidgetTypeResource {
             @QueryParam("categories") String categories, @QueryParam("version") String version,
             @QueryParam("all") Boolean all) {
         // TODO: refactor so that's cached
-        List<String> catsList = new ArrayList<String>();
+        List<String> catsList = new ArrayList<>();
         if (categories != null) {
             for (String cat : categories.split(" ")) {
                 catsList.add(cat);

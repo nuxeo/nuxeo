@@ -53,7 +53,7 @@ public class DirectoryRootObject extends DefaultObject {
     @GET
     public List<Directory> getDirectoryNames(@QueryParam("types") List<String> types) {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        List<Directory> result = new ArrayList<Directory>();
+        List<Directory> result = new ArrayList<>();
         for (Directory dir : directoryService.getDirectories()) {
             if (dir.getTypes().contains(DirectoryService.SYSTEM_DIRECTORY_TYPE)) {
                 continue;

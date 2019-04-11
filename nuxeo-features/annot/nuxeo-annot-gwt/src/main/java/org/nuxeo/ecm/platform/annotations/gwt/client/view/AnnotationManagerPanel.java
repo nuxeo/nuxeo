@@ -70,7 +70,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
 
     private VerticalPanel shownAnnotation = new VerticalPanel();
 
-    private Map<String, Integer> selectedParams = new HashMap<String, Integer>();
+    private Map<String, Integer> selectedParams = new HashMap<>();
 
     private HorizontalPanel selectedRow;
 
@@ -156,7 +156,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
                 final ListBox filterListBox = new ListBox();
                 filterListBox.setStyleName("filterListBox");
                 filterListBox.addItem("All");
-                Set<String> values = new HashSet<String>();
+                Set<String> values = new HashSet<>();
                 for (Annotation annotation : model.getUnfilteredAnnotations()) {
                     if (parameter.equals(RDFConstant.R_TYPE)) {
                         values.add(annotation.getShortType());

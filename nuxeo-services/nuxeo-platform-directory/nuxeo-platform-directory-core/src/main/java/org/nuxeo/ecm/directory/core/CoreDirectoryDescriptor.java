@@ -97,7 +97,7 @@ public class CoreDirectoryDescriptor extends BaseDirectoryDescriptor {
     }
 
     @XNodeMap(value = "fieldMapping", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> fieldMapping = new HashMap<String, String>();
+    public Map<String, String> fieldMapping = new HashMap<>();
 
     @XNodeList(value = "acl", type = ACLDescriptor[].class, componentType = ACLDescriptor.class)
     protected ACLDescriptor[] acls;

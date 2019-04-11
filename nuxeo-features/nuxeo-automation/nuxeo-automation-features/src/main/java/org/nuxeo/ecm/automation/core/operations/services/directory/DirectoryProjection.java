@@ -75,8 +75,8 @@ public class DirectoryProjection {
     @OperationMethod
     public void run() {
         try (Session session = directoryService.open(directoryName)) {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            Set<String> fulltext = new HashSet<String>();
+            Map<String, Serializable> filter = new HashMap<>();
+            Set<String> fulltext = new HashSet<>();
             if (filterProperties != null) {
                 filter.putAll(filterProperties);
                 if (fulltextFields != null) {

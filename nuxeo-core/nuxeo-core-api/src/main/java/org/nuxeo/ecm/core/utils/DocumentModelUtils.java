@@ -162,7 +162,7 @@ public final class DocumentModelUtils {
         if (schemas == null) {
             throw new IllegalStateException("schemas are not declared for docModel " + docModel);
         }
-        final Map<String, Object> allProps = new HashMap<String, Object>();
+        final Map<String, Object> allProps = new HashMap<>();
         for (String schemaName : schemas) {
             Map<String, Object> props = docModel.getProperties(schemaName);
             allProps.putAll(props);

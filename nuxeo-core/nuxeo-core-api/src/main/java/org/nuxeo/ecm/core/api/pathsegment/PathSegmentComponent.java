@@ -45,7 +45,7 @@ public class PathSegmentComponent extends DefaultComponent implements PathSegmen
 
     @Override
     public void activate(ComponentContext context) {
-        contribs = new LinkedList<Class<? extends PathSegmentService>>();
+        contribs = new LinkedList<>();
         recompute = true;
         service = null;
     }

@@ -53,7 +53,7 @@ public class FileEventsTrackingFeature implements RunnerFeature {
 
     protected Path tempPath;
 
-    protected Set<File> created = new HashSet<File>();
+    protected Set<File> created = new HashSet<>();
 
     @Override
     public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {

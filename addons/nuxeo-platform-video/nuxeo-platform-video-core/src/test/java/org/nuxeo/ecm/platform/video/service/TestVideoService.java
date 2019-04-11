@@ -109,7 +109,7 @@ public class TestVideoService {
     }
 
     protected static List<String> getTestVideoInfoOutput() {
-        List<String> output = new ArrayList<String>();
+        List<String> output = new ArrayList<>();
         output.add("Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'DELTA.mp4':");
         output.add("Duration: 00:00:08.38, start: 0.000000, bitrate: 930 kb/s");
         output.add(

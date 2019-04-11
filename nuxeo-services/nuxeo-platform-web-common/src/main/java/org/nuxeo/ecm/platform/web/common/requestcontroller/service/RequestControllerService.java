@@ -56,12 +56,12 @@ public class RequestControllerService extends DefaultComponent implements Reques
 
     private static final Log log = LogFactory.getLog(RequestControllerService.class);
 
-    protected final Map<String, FilterConfigDescriptor> grantPatterns = new LinkedHashMap<String, FilterConfigDescriptor>();
+    protected final Map<String, FilterConfigDescriptor> grantPatterns = new LinkedHashMap<>();
 
-    protected final Map<String, FilterConfigDescriptor> denyPatterns = new LinkedHashMap<String, FilterConfigDescriptor>();
+    protected final Map<String, FilterConfigDescriptor> denyPatterns = new LinkedHashMap<>();
 
     // @GuardedBy("itself")
-    protected final Map<String, RequestFilterConfig> configCache = new LRUCachingMap<String, RequestFilterConfig>(250);
+    protected final Map<String, RequestFilterConfig> configCache = new LRUCachingMap<>(250);
 
     protected final NuxeoCorsFilterDescriptorRegistry corsFilterRegistry = new NuxeoCorsFilterDescriptorRegistry();
 
@@ -169,7 +169,7 @@ public class RequestControllerService extends DefaultComponent implements Reques
 
     @Override
     public Map<String, String> getResponseHeaders() {
-        Map<String, String> headersCache = new HashMap<String, String>();
+        Map<String, String> headersCache = new HashMap<>();
         for (NuxeoHeaderDescriptor header : headersRegistry.descs.values()) {
             if (header.isEnabled()) {
                 headersCache.put(header.name, header.getValue());

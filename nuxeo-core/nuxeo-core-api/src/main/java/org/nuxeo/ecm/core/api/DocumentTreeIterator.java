@@ -60,7 +60,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
     /**
      * The sequence queue.
      */
-    protected final Queue<Iterator<DocumentModel>> queue = new LinkedList<Iterator<DocumentModel>>();
+    protected final Queue<Iterator<DocumentModel>> queue = new LinkedList<>();
 
     /**
      * Creates the iterator given the tree root.

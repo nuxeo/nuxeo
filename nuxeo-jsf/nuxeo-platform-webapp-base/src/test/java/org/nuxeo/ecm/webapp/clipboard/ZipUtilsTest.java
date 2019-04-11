@@ -76,10 +76,10 @@ public class ZipUtilsTest {
         Blob blob2 = Blobs.createBlob("123");
         blob2.setFilename("blob2.raw");
 
-        HashMap<String, Serializable> blob = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> blob = new HashMap<>();
         blob.put("file", (Serializable) blob2);
 
-        ArrayList<HashMap<String, Serializable>> blobs = new ArrayList<HashMap<String, Serializable>>();
+        ArrayList<HashMap<String, Serializable>> blobs = new ArrayList<>();
         blobs.add(blob);
 
         heavyFile.setPropertyValue("files:files", blobs);
@@ -91,7 +91,7 @@ public class ZipUtilsTest {
     @Test
     public void testExportSimpleFile() throws Exception {
         DocumentModel folder = createTestFolder();
-        List<DocumentModel> documents = new ArrayList<DocumentModel>();
+        List<DocumentModel> documents = new ArrayList<>();
         documents.add(folder);
 
         DocumentListZipExporter zipExporter = new DocumentListZipExporter();
@@ -112,7 +112,7 @@ public class ZipUtilsTest {
     @Test
     public void testExportAllBlobs() throws Exception {
         DocumentModel heavyFile = createHeavyFile();
-        List<DocumentModel> documents = new ArrayList<DocumentModel>();
+        List<DocumentModel> documents = new ArrayList<>();
         documents.add(heavyFile);
 
         DocumentListZipExporter zipExporter = new DocumentListZipExporter();

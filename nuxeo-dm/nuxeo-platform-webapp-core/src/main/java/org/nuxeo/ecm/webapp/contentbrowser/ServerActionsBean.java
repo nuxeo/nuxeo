@@ -65,7 +65,7 @@ public class ServerActionsBean implements ServerActions, Serializable {
     @Factory("availableCoreRepositories")
     public List<Repository> getAvailableRepositories() {
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-        return new ArrayList<Repository>(repositoryManager.getRepositories());
+        return new ArrayList<>(repositoryManager.getRepositories());
     }
 
     @Override

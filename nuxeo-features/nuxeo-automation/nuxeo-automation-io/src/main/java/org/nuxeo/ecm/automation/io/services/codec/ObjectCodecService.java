@@ -75,8 +75,8 @@ public class ObjectCodecService {
 
     public ObjectCodecService(JsonFactory jsonFactory) {
         this.jsonFactory = jsonFactory;
-        codecs = new HashMap<Class<?>, ObjectCodec<?>>();
-        codecsByName = new HashMap<String, ObjectCodec<?>>();
+        codecs = new HashMap<>();
+        codecsByName = new HashMap<>();
         init();
     }
 
@@ -136,7 +136,7 @@ public class ObjectCodecService {
         Map<Class<?>, ObjectCodec<?>> cache = _codecs;
         if (cache == null) {
             synchronized (this) {
-                _codecs = new HashMap<Class<?>, ObjectCodec<?>>(codecs);
+                _codecs = new HashMap<>(codecs);
                 cache = _codecs;
             }
         }
@@ -147,7 +147,7 @@ public class ObjectCodecService {
         Map<String, ObjectCodec<?>> cache = _codecsByName;
         if (cache == null) {
             synchronized (this) {
-                _codecsByName = new HashMap<String, ObjectCodec<?>>(codecsByName);
+                _codecsByName = new HashMap<>(codecsByName);
                 cache = _codecsByName;
             }
         }

@@ -53,7 +53,7 @@ public class NavTreeRegistry extends SimpleContributionRegistry<NavTreeDescripto
     // API
 
     public List<NavTreeDescriptor> getTreeDescriptors(DirectoryTreeService directoryTreeService) {
-        List<NavTreeDescriptor> allTrees = new ArrayList<NavTreeDescriptor>();
+        List<NavTreeDescriptor> allTrees = new ArrayList<>();
         allTrees.addAll(currentContribs.values());
         List<NavTreeDescriptor> directoryTrees = getDirectoryTrees(directoryTreeService);
         if (directoryTrees != null) {
@@ -68,7 +68,7 @@ public class NavTreeRegistry extends SimpleContributionRegistry<NavTreeDescripto
             return null;
         }
         List<String> treeNames = directoryTreeService.getNavigationDirectoryTrees();
-        List<NavTreeDescriptor> trees = new ArrayList<NavTreeDescriptor>();
+        List<NavTreeDescriptor> trees = new ArrayList<>();
         for (String dTreeName : treeNames) {
             DirectoryTreeDescriptor desc = directoryTreeService.getDirectoryTreeDescriptor(dTreeName);
             trees.add(new NavTreeDescriptor(dTreeName, desc.getLabel(), true));

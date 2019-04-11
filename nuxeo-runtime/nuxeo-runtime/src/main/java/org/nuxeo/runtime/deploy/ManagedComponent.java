@@ -41,7 +41,7 @@ public class ManagedComponent extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
-        contributionManagers = new HashMap<String, ContributionManager>();
+        contributionManagers = new HashMap<>();
     }
 
     @Override

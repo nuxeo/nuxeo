@@ -63,7 +63,7 @@ public class TestStatement {
         literal = NodeFactory.createLiteral("Hello");
         object = NodeFactory.createResource("http://hello");
         blank = NodeFactory.createBlank("blank");
-        properties = new HashMap<Resource, Node[]>();
+        properties = new HashMap<>();
         propertyResource = NodeFactory.createResource("http://heardBy");
         propertyValues = new Node[] { NodeFactory.createResource("http://God"), NodeFactory.createLiteral("echo") };
         properties.put(propertyResource, propertyValues);
@@ -296,7 +296,7 @@ public class TestStatement {
         assertEquals(properties, st.getProperties());
         st.addProperties(null);
         assertEquals(properties, st.getProperties());
-        Map<Resource, Node[]> newProperties = new HashMap<Resource, Node[]>();
+        Map<Resource, Node[]> newProperties = new HashMap<>();
         // set duplicates
         newProperties.putAll(properties);
         Resource otherPropertyResource = NodeFactory.createResource("http://foo");
@@ -354,7 +354,7 @@ public class TestStatement {
         // assertEquals(properties, st.getProperties());
 
         // add new properties to clone
-        Map<Resource, Node[]> newProperties = new HashMap<Resource, Node[]>();
+        Map<Resource, Node[]> newProperties = new HashMap<>();
         Node[] newValues = { NodeFactory.createLiteral("http://bar") };
         newProperties.put(propertyResource, newValues);
         clone.setProperties(newProperties);

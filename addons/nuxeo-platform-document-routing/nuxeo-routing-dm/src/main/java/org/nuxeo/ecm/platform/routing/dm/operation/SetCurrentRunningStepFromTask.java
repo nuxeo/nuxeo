@@ -74,7 +74,7 @@ public class SetCurrentRunningStepFromTask extends AbstractTaskStepOperation {
     }
 
     protected void mappCommentsFromTaskToStep(CoreSession session, DocumentModel docStep) {
-        List<String> comments = new ArrayList<String>();
+        List<String> comments = new ArrayList<>();
 
         RoutingTask task = getRoutingTask(context);
         if (task == null) {

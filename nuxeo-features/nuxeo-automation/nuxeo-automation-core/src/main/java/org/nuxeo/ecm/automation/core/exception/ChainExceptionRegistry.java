@@ -85,7 +85,7 @@ public class ChainExceptionRegistry extends ContributionFragmentRegistry<ChainEx
         Map<String, ChainException> _lookup = lookup;
         if (_lookup == null) {
             synchronized (this) {
-                lookup = new HashMap<String, ChainException>(chainExceptions);
+                lookup = new HashMap<>(chainExceptions);
                 _lookup = lookup;
             }
         }

@@ -36,7 +36,7 @@ public class TestXMLSerialization extends TestCase {
     @Test
     public void testXMLSerialization() throws Exception {
 
-        List<TemplateInput> params = new ArrayList<TemplateInput>();
+        List<TemplateInput> params = new ArrayList<>();
 
         TemplateInput input1 = new TemplateInput("field1", "Value1");
         input1.setDesciption("Some description");

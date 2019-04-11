@@ -46,7 +46,7 @@ public class DocumentDiffImpl implements DocumentDiff {
      * Instantiates a new document diff impl.
      */
     public DocumentDiffImpl() {
-        docDiff = new HashMap<String, SchemaDiff>();
+        docDiff = new HashMap<>();
     }
 
     public Map<String, SchemaDiff> getDocDiff() {
@@ -62,7 +62,7 @@ public class DocumentDiffImpl implements DocumentDiff {
     }
 
     public List<String> getSchemaNames() {
-        return new ArrayList<String>(docDiff.keySet());
+        return new ArrayList<>(docDiff.keySet());
     }
 
     public SchemaDiff getSchemaDiff(String schema) {

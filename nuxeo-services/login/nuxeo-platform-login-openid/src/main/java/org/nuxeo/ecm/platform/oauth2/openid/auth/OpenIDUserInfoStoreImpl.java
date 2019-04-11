@@ -58,7 +58,7 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
     public void storeUserInfo(String userId, OpenIDUserInfo userInfo) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
-            Map<String, Object> data = new HashMap<String, Object>();
+            Map<String, Object> data = new HashMap<>();
 
             // Generate an ID
             String userInfoId = getID(providerName, userInfo.getSubject());
@@ -120,7 +120,7 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
     public OpenIDUserInfo getUserInfo(String nuxeoLogin) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put(OPENID_PROVIDER_KEY, providerName);
             filter.put(NUXEO_LOGIN_KEY, nuxeoLogin);
             DocumentModelList entries = session.query(filter);

@@ -59,7 +59,7 @@ public class CounterMXBeanImpl extends org.javasimon.jmx.CounterMXBeanImpl imple
     }
 
     public Map<String, Serializable> sampleAsMap() {
-        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> map = new HashMap<>();
         CounterSample sample = sample();
         doFillMap(sample, map, sample.getClass());
         return map;

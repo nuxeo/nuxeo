@@ -89,7 +89,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
         String requestId = userRegistrationService.submitRegistrationRequest(userInfo,
                 buildAdditionalInfo(), UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
-        Map<String, Serializable> additionnalInfos = new HashMap<String, Serializable>();
+        Map<String, Serializable> additionnalInfos = new HashMap<>();
         additionnalInfos.put("userinfo:login", newUser);
         userRegistrationService.validateRegistration(requestId, additionnalInfos);
 

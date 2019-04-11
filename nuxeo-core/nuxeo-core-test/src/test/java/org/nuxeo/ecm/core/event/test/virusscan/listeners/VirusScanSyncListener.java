@@ -95,7 +95,7 @@ public class VirusScanSyncListener implements EventListener {
     }
 
     protected List<String> getBlobsXPath(DocumentModel doc, boolean onlyChangedBlob) {
-        List<String> propertiesPath = new ArrayList<String>();
+        List<String> propertiesPath = new ArrayList<>();
         BlobsExtractor extractor = new BlobsExtractor();
         List<Property> blobProperties = extractor.getBlobsProperties(doc);
         for (Property prop : blobProperties) {

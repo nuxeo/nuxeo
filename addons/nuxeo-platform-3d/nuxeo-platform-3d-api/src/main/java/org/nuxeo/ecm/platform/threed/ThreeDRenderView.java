@@ -90,7 +90,7 @@ public class ThreeDRenderView {
     }
 
     public Map<String, Serializable> toMap() {
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         map.put(TITLE, title);
         map.put(CONTENT, (Serializable) content);
         map.put(THUMBNAIL, (Serializable) thumbnail);

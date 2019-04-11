@@ -47,7 +47,7 @@ public class TemplateMappingFetcher extends UnrestrictedSessionRunner {
         return repoName;
     }
 
-    protected Map<String, List<String>> mapping = new HashMap<String, List<String>>();
+    protected Map<String, List<String>> mapping = new HashMap<>();
 
     protected TemplateMappingFetcher() {
         super(getRepoName());
@@ -68,7 +68,7 @@ public class TemplateMappingFetcher extends UnrestrictedSessionRunner {
                     if (mapping.containsKey(type)) {
                         mapping.get(type).add(doc.getId());
                     } else {
-                        List<String> templates = new ArrayList<String>();
+                        List<String> templates = new ArrayList<>();
                         templates.add(doc.getId());
                         mapping.put(type, templates);
                     }

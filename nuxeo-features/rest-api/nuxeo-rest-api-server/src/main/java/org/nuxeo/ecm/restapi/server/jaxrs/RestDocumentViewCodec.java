@@ -57,7 +57,7 @@ public class RestDocumentViewCodec extends AbstractDocumentViewCodec {
         DocumentLocation docLoc = docView.getDocumentLocation();
         if (docLoc != null) {
 
-            List<String> items = new ArrayList<String>();
+            List<String> items = new ArrayList<>();
             items.add(getPrefix());
             IdRef docRef = docLoc.getIdRef();
             if (docRef == null) {

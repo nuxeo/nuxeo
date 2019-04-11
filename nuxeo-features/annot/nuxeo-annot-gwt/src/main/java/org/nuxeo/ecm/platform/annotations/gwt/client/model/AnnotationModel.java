@@ -44,13 +44,13 @@ public class AnnotationModel implements AnnotationChangeNotifier {
 
     private Annotation newAnnotation;
 
-    private List<Annotation> annotations = new ArrayList<Annotation>();
+    private List<Annotation> annotations = new ArrayList<>();
 
     private List<Annotation> filteredAnnotations;
 
     private AnnotationFilter filter;
 
-    private List<AnnotationChangeListener> listeners = new ArrayList<AnnotationChangeListener>();
+    private List<AnnotationChangeListener> listeners = new ArrayList<>();
 
     public void addChangeListener(AnnotationChangeListener listener) {
         listeners.add(listener);
@@ -100,7 +100,7 @@ public class AnnotationModel implements AnnotationChangeNotifier {
     }
 
     public List<Annotation> filterAnnotations(AnnotationFilter filter) {
-        List<Annotation> filteredAnnotations = new ArrayList<Annotation>();
+        List<Annotation> filteredAnnotations = new ArrayList<>();
         for (Annotation annotation : annotations) {
             if (filter.accept(annotation)) {
                 filteredAnnotations.add(annotation);

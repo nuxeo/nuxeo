@@ -105,7 +105,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     protected List<Event> getReconnectedEvents() {
         if (reconnectedEvents == null) {
-            reconnectedEvents = new ArrayList<Event>();
+            reconnectedEvents = new ArrayList<>();
             for (Event event : sourceEventBundle) {
                 EventContext ctx = event.getContext();
                 String repositoryName = ctx.getRepositoryName();
@@ -117,7 +117,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                     session = getReconnectedCoreSession(repositoryName, originatingUsername);
                 }
 
-                List<Object> newArgs = new ArrayList<Object>();
+                List<Object> newArgs = new ArrayList<>();
                 for (Object arg : ctx.getArguments()) {
                     Object newArg = arg;
                     if (refetchDocumentModel(session, arg) && session.getPrincipal() != null) { // NOSONAR
@@ -149,7 +149,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                     ((EventContextImpl) newCtx).setArgs(newArgs.toArray());
                 }
 
-                Map<String, Serializable> newProps = new HashMap<String, Serializable>();
+                Map<String, Serializable> newProps = new HashMap<>();
                 for (Entry<String, Serializable> prop : ctx.getProperties().entrySet()) {
                     Serializable propValue = prop.getValue();
                     if (refetchDocumentModel(session, propValue)) {
@@ -253,7 +253,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
     }
 
     public List<String> getEventNames() {
-        List<String> eventNames = new ArrayList<String>();
+        List<String> eventNames = new ArrayList<>();
         for (Event event : sourceEventBundle) {
             eventNames.add(event.getName());
         }

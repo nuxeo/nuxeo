@@ -47,7 +47,7 @@ public class TestFacetFilter {
 
     @Test
     public void test() {
-        Set<String> facets = new HashSet<String>();
+        Set<String> facets = new HashSet<>();
         facets.add("A");
         facets.add("B");
         facets.add("C");
@@ -114,7 +114,7 @@ public class TestFacetFilter {
     }
 
     protected static Set<String> set(String... strings) {
-        return new HashSet<String>(Arrays.asList(strings));
+        return new HashSet<>(Arrays.asList(strings));
     }
 
     protected void checkAnd(FacetFilter f1, FacetFilter f2, Set<String> req, Set<String> exc, Boolean sc) {

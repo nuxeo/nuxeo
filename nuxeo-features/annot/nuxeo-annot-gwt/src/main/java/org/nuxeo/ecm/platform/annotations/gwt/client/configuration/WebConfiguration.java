@@ -58,13 +58,13 @@ public class WebConfiguration implements IsSerializable {
                 "http://www.w3.org/2000/10/annotationType#Advice", "Advice", "icons/annotate.png", "local"));
     }
 
-    private Map<String, AnnotationDefinition> annotationDefinitions = new HashMap<String, AnnotationDefinition>();
+    private Map<String, AnnotationDefinition> annotationDefinitions = new HashMap<>();
 
-    private Map<String, String> userInfo = new HashMap<String, String>();
+    private Map<String, String> userInfo = new HashMap<>();
 
-    private List<AnnotationFilter> filters = new ArrayList<AnnotationFilter>();
+    private List<AnnotationFilter> filters = new ArrayList<>();
 
-    private Set<String> displayedFields = new HashSet<String>();
+    private Set<String> displayedFields = new HashSet<>();
 
     private Map<String, String> fieldLabels;
 
@@ -79,12 +79,12 @@ public class WebConfiguration implements IsSerializable {
     }
 
     public List<AnnotationDefinition> getAnnotationDefinitions() {
-        List<AnnotationDefinition> list = new ArrayList<AnnotationDefinition>(annotationDefinitions.values());
+        List<AnnotationDefinition> list = new ArrayList<>(annotationDefinitions.values());
         return Collections.unmodifiableList(list);
     }
 
     public List<AnnotationDefinition> getAnnotationDefinitions(AnnotationDefinitionFilter filter) {
-        List<AnnotationDefinition> types = new ArrayList<AnnotationDefinition>();
+        List<AnnotationDefinition> types = new ArrayList<>();
         for (AnnotationDefinition type : annotationDefinitions.values()) {
             if (filter.accept(type)) {
                 types.add(type);
@@ -103,7 +103,7 @@ public class WebConfiguration implements IsSerializable {
     }
 
     private AnnotationDefinition getFirsTannotationDefinition() {
-        List<AnnotationDefinition> l = new ArrayList<AnnotationDefinition>(annotationDefinitions.values());
+        List<AnnotationDefinition> l = new ArrayList<>(annotationDefinitions.values());
         return l.isEmpty() ? null : l.get(0);
     }
 
@@ -123,7 +123,7 @@ public class WebConfiguration implements IsSerializable {
     }
 
     public void addFilter(int order, String name, String icon, String type, String author, Map<String, String> fields) {
-        Map<String, String> newFields = new HashMap<String, String>();
+        Map<String, String> newFields = new HashMap<>();
         for (String fieldName : fields.keySet()) {
             String value = getValue(fields.get(fieldName));
             if (value != null) {

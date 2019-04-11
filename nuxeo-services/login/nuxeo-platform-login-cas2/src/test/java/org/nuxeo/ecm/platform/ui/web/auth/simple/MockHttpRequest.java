@@ -30,7 +30,7 @@ import org.jboss.seam.util.IteratorEnumeration;
 
 public class MockHttpRequest extends MockHttpServletRequest {
 
-    protected final Map<String, String[]> headers = new HashMap<String, String[]>();
+    protected final Map<String, String[]> headers = new HashMap<>();
 
     public MockHttpRequest(HttpSession session) {
         super(session);

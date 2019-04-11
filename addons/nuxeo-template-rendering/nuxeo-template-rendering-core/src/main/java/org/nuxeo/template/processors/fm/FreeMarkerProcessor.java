@@ -146,7 +146,7 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements Te
 
     @Override
     public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws IOException {
-        List<TemplateInput> params = new ArrayList<TemplateInput>();
+        List<TemplateInput> params = new ArrayList<>();
 
         if (blob != null) {
             String xmlContent = blob.getString();

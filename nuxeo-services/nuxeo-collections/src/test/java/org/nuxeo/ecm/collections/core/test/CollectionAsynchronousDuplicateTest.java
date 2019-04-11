@@ -70,7 +70,7 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
      */
     protected void testCopyFolderContainingACollection(int nbMembers) throws InterruptedException {
 
-        List<DocumentModel> files = new ArrayList<DocumentModel>();
+        List<DocumentModel> files = new ArrayList<>();
         testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         DocumentModel folder = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FOLDER, "Folder");

@@ -46,7 +46,7 @@ public final class DocumentsListsUtils {
      * Returns list of the document types contained in the list of document.
      */
     public static List<String> getTypesInList(List<DocumentModel> documentsList) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for (DocumentModel doc : documentsList) {
             String dt = doc.getType();
             if (!res.contains(dt)) {
@@ -60,7 +60,7 @@ public final class DocumentsListsUtils {
      * Returns list of DocumentRef corresponding to the list of documents.
      */
     public static List<DocumentRef> getDocRefs(List<DocumentModel> documentsList) {
-        List<DocumentRef> references = new ArrayList<DocumentRef>();
+        List<DocumentRef> references = new ArrayList<>();
 
         for (DocumentModel docModel : documentsList) {
             references.add(docModel.getRef());
@@ -123,7 +123,7 @@ public final class DocumentsListsUtils {
      * Returns the list of parents documentRef.
      */
     public static List<DocumentRef> getParentRefFromDocumentList(List<DocumentModel> documentList) {
-        List<DocumentRef> parentRefs = new ArrayList<DocumentRef>();
+        List<DocumentRef> parentRefs = new ArrayList<>();
 
         for (DocumentModel doc : documentList) {
             if (!parentRefs.contains(doc.getParentRef())) {

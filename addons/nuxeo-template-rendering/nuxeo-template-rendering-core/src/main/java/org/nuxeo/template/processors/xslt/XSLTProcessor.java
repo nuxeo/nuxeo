@@ -106,7 +106,7 @@ public class XSLTProcessor extends AbstractTemplateProcessor implements Template
 
     @Override
     public List<TemplateInput> getInitialParametersDefinition(Blob blob) {
-        return new ArrayList<TemplateInput>();
+        return new ArrayList<>();
     }
 
 }

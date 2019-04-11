@@ -131,7 +131,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
                 Map<String, Map> conversationMap = TypedCollections.dynamicallyCastMap(
                         (Map) sessionMap.get(CONVERSATION_VIEW_MAP), String.class, Map.class);
                 if (conversationMap == null) {
-                    conversationMap = new LRUMap<String, Map>(getNbOfConversationsInSession(ctx));
+                    conversationMap = new LRUMap<>(getNbOfConversationsInSession(ctx));
                     sessionMap.put(CONVERSATION_VIEW_MAP, conversationMap);
                 }
 
@@ -144,7 +144,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
                                     + conversationMap.keySet().iterator().next() + ")");
                         }
                     }
-                    logicalMap = new LRUMap<String, Map>(numberOfLogicalViews);
+                    logicalMap = new LRUMap<>(numberOfLogicalViews);
                     conversationMap.put(conversationId, logicalMap);
                 }
 
@@ -169,7 +169,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
                 Map<String, Object[]> actualMap = TypedCollections.dynamicallyCastMap(logicalMap.get(idInLogicalMap),
                         String.class, Object[].class);
                 if (actualMap == null) {
-                    actualMap = new LRUMap<String, Object[]>(numberOfViews);
+                    actualMap = new LRUMap<>(numberOfViews);
                     logicalMap.put(idInLogicalMap, actualMap);
                 }
 

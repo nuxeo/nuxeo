@@ -46,7 +46,7 @@ import javax.servlet.http.Part;
 
 public class DummyHttpServletRequest implements HttpServletRequest {
 
-    protected Map<String, String> headers = new HashMap<String, String>();
+    protected Map<String, String> headers = new HashMap<>();
 
     protected String uri;
 

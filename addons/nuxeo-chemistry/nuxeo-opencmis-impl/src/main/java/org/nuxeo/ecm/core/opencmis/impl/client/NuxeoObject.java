@@ -253,7 +253,7 @@ public abstract class NuxeoObject implements CmisObject {
             throw new IllegalArgumentException("New name must not be empty!");
         }
 
-        Map<String, Object> prop = new HashMap<String, Object>();
+        Map<String, Object> prop = new HashMap<>();
         prop.put(PropertyIds.NAME, newName);
 
         return updateProperties(prop);
@@ -265,7 +265,7 @@ public abstract class NuxeoObject implements CmisObject {
             throw new IllegalArgumentException("New name must not be empty!");
         }
 
-        Map<String, Object> prop = new HashMap<String, Object>();
+        Map<String, Object> prop = new HashMap<>();
         prop.put(PropertyIds.NAME, newName);
 
         return updateProperties(prop, refresh);
@@ -279,16 +279,16 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public <T> Property<T> getProperty(String id) {
-        return new NuxeoProperty<T>(this, id);
+        return new NuxeoProperty<>(this, id);
     }
 
     @Override
     public List<Property<?>> getProperties() {
-        List<Property<?>> list = new ArrayList<Property<?>>();
+        List<Property<?>> list = new ArrayList<>();
         for (ObjectType t : allTypes) {
             Collection<PropertyDefinition<?>> defs = t.getPropertyDefinitions().values();
             for (PropertyDefinition<?> pd : defs) {
-                list.add(new NuxeoProperty<Object>(this, pd.getId()));
+                list.add(new NuxeoProperty<>(this, pd.getId()));
             }
         }
         return list;
@@ -356,7 +356,7 @@ public abstract class NuxeoObject implements CmisObject {
         if (renditions == null) {
             return Collections.emptyList();
         }
-        List<Rendition> res = new ArrayList<Rendition>(renditions.size());
+        List<Rendition> res = new ArrayList<>(renditions.size());
         for (RenditionData ren : renditions) {
             long length = ren.getBigLength() == null ? -1 : ren.getBigLength().longValue();
             int height = ren.getBigHeight() == null ? -1 : ren.getBigHeight().intValue();

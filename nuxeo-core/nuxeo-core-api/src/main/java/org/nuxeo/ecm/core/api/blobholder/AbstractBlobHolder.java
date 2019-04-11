@@ -50,7 +50,7 @@ public abstract class AbstractBlobHolder implements BlobHolder {
 
         Blob blob = getBlob();
         if (blob != null) {
-            blobs = new ArrayList<Blob>();
+            blobs = new ArrayList<>();
             blobs.add(blob);
         }
 

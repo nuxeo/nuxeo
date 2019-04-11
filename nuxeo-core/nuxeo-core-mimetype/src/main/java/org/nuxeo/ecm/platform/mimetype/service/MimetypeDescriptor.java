@@ -84,7 +84,7 @@ public class MimetypeDescriptor {
     }
 
     public List<String> getExtensions() {
-        List<String> exts = new ArrayList<String>();
+        List<String> exts = new ArrayList<>();
         NodeList elements = mimetypes.getElementsByTagName("extension");
         int len = elements.getLength();
         for (int i = 0; i < len; i++) {
@@ -106,7 +106,7 @@ public class MimetypeDescriptor {
     }
 
     public List<String> getMimetypes() {
-        List<String> mtypes = new ArrayList<String>();
+        List<String> mtypes = new ArrayList<>();
         NodeList elements = mimetypes.getElementsByTagName("mimetype");
         int len = elements.getLength();
         for (int i = 0; i < len; i++) {

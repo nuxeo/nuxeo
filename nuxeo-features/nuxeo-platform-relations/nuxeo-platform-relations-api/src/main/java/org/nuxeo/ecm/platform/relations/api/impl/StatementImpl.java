@@ -52,7 +52,7 @@ public class StatementImpl implements Statement {
 
     protected Node object;
 
-    protected Map<Resource, Node[]> properties = new HashMap<Resource, Node[]>();
+    protected Map<Resource, Node[]> properties = new HashMap<>();
 
     /**
      * Constructor for NULL statement.
@@ -128,7 +128,7 @@ public class StatementImpl implements Statement {
     }
 
     public Map<String, Node[]> getStringProperties() {
-        Map<String, Node[]> stringProps = new HashMap<String, Node[]>();
+        Map<String, Node[]> stringProps = new HashMap<>();
         for (Map.Entry<Resource, Node[]> property : properties.entrySet()) {
             stringProps.put(property.getKey().getUri(), property.getValue());
         }
@@ -183,7 +183,7 @@ public class StatementImpl implements Statement {
 
     public void deleteProperty(Resource property, Node value) {
         if (properties.containsKey(property)) {
-            List<Node> valuesList = new ArrayList<Node>();
+            List<Node> valuesList = new ArrayList<>();
             valuesList.addAll(Arrays.asList(properties.get(property)));
             valuesList.remove(value);
             if (valuesList.isEmpty()) {
@@ -196,7 +196,7 @@ public class StatementImpl implements Statement {
 
     public void deleteProperties(Resource property, Node[] values) {
         if (properties.containsKey(property) && values != null && values.length > 0) {
-            List<Node> valuesList = new ArrayList<Node>();
+            List<Node> valuesList = new ArrayList<>();
             valuesList.addAll(Arrays.asList(properties.get(property)));
             valuesList.removeAll(Arrays.asList(values));
             if (valuesList.isEmpty()) {
@@ -218,7 +218,7 @@ public class StatementImpl implements Statement {
     public void addProperty(Resource property, Node value) {
         if (property != null && value != null) {
             if (properties.containsKey(property)) {
-                List<Node> valuesList = new ArrayList<Node>();
+                List<Node> valuesList = new ArrayList<>();
                 valuesList.addAll(Arrays.asList(properties.get(property)));
                 if (!valuesList.contains(value)) {
                     valuesList.add(value);
@@ -235,7 +235,7 @@ public class StatementImpl implements Statement {
         if (property != null && values != null && values.length > 0) {
             if (properties.containsKey(property)) {
                 // add only missing nodes
-                List<Node> valuesList = new ArrayList<Node>();
+                List<Node> valuesList = new ArrayList<>();
                 valuesList.addAll(Arrays.asList(properties.get(property)));
                 boolean changed = false;
                 for (Node value : values) {
@@ -293,7 +293,7 @@ public class StatementImpl implements Statement {
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
-        Map<Resource, Node[]> clonedProperties = new HashMap<Resource, Node[]>();
+        Map<Resource, Node[]> clonedProperties = new HashMap<>();
         for (Map.Entry<Resource, Node[]> property : properties.entrySet()) {
             clonedProperties.put(property.getKey(), property.getValue().clone());
         }

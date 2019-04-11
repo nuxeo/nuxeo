@@ -48,7 +48,7 @@ public class ContextListenerDelayer implements ServletContextListener {
      * We don't call the constructor directly -- the servlet container does so we have to hold a list of all the objects
      * of this type created. this number should be 1, be we track "all of them" just in case.
      */
-    private static ArrayList<ContextListenerDelayer> created = new ArrayList<ContextListenerDelayer>();
+    private static ArrayList<ContextListenerDelayer> created = new ArrayList<>();
 
     /*
      * We have to keep track of whether or not activate has been called already because in some packagings (jetty) the

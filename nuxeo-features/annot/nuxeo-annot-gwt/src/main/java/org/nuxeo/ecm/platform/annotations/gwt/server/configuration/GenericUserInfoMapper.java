@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 public class GenericUserInfoMapper implements UserInfoMapper {
 
     public Map<String, String> getUserInfo(NuxeoPrincipal principal) {
-        Map<String, String> userInfo = new HashMap<String, String>();
+        Map<String, String> userInfo = new HashMap<>();
         userInfo.put("userName", principal.getName());
         return userInfo;
     }

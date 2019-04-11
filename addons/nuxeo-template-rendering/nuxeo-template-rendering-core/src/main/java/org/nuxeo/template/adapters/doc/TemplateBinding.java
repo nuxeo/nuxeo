@@ -103,7 +103,7 @@ public class TemplateBinding {
     }
 
     public Map<String, Serializable> getAsMap() {
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         map.put(TEMPLATE_NAME_KEY, name);
         map.put(TEMPLATE_ID_KEY, templateId);
         map.put(TEMPLATE_DATA_KEY, data);

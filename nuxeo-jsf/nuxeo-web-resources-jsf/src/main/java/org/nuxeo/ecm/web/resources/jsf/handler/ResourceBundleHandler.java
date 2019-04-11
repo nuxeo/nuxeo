@@ -73,7 +73,7 @@ public class ResourceBundleHandler extends PageResourceHandler {
             return;
         }
 
-        List<String> bundles = new ArrayList<String>();
+        List<String> bundles = new ArrayList<>();
         if (name != null) {
             String bundleName = name.getValue(ctx);
             if (!StringUtils.isBlank(bundleName)) {

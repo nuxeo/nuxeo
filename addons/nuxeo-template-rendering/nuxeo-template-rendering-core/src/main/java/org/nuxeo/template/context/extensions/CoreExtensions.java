@@ -38,7 +38,7 @@ public class CoreExtensions {
 
     public List<Object> getChildren() {
         List<DocumentModel> children = doc.getCoreSession().getChildren(doc.getRef());
-        List<Object> docs = new ArrayList<Object>();
+        List<Object> docs = new ArrayList<>();
         for (DocumentModel child : children) {
             docs.add(nuxeoWrapper.wrap(child));
         }

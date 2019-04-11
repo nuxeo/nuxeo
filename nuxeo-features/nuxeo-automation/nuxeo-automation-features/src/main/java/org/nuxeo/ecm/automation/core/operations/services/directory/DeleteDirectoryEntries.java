@@ -85,7 +85,7 @@ public class DeleteDirectoryEntries extends AbstractDirectoryOperation {
 
         List<String> entries = mapper.readValue(jsonEntries, new TypeReference<List<String>>() {
         });
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         try (Session session = directoryService.open(directoryName)) {
             for (String entryId : entries) {
                 if (markObsolete) {

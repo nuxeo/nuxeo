@@ -29,7 +29,7 @@ public class InvalidationsPropagator {
     public final ArrayList<InvalidationsQueue> queues; // used synchronized
 
     public InvalidationsPropagator() {
-        queues = new ArrayList<InvalidationsQueue>();
+        queues = new ArrayList<>();
     }
 
     public synchronized void addQueue(InvalidationsQueue queue) {

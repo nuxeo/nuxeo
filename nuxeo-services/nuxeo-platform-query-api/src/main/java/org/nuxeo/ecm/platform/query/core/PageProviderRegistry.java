@@ -35,7 +35,7 @@ public class PageProviderRegistry extends ContributionFragmentRegistry<PageProvi
 
     private static final Log log = LogFactory.getLog(PageProviderRegistry.class);
 
-    protected Map<String, PageProviderDefinition> providers = new HashMap<String, PageProviderDefinition>();
+    protected Map<String, PageProviderDefinition> providers = new HashMap<>();
 
     @Override
     public String getContributionId(PageProviderDefinition contrib) {

@@ -36,7 +36,7 @@ public class RequestDumpDescriptor {
     Class<? extends RequestDumper> klass;
 
     @XNodeList(value = "notListed/attribute", type = ArrayList.class, componentType = String.class)
-    List<String> attributes = new ArrayList<String>();
+    List<String> attributes = new ArrayList<>();
 
     public Class<? extends RequestDumper> getKlass() {
         return klass;

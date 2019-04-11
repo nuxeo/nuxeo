@@ -83,7 +83,7 @@ public class DirectoryRegistry {
     protected void contributionChanged(BaseDirectoryDescriptor contrib) {
         LinkedList<String> todo = new LinkedList<>();
         todo.add(contrib.name);
-        Set<String> done = new HashSet<String>();
+        Set<String> done = new HashSet<>();
         while (!todo.isEmpty()) {
             String id = todo.removeFirst();
             if (!done.add(id)) {

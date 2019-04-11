@@ -50,10 +50,10 @@ public class MailBox {
      */
     public static List<MailBox> fetchPersonsFromList(List<String> values, boolean isStrict) {
         if (values == null) {
-            return new ArrayList<MailBox>();
+            return new ArrayList<>();
         }
 
-        List<MailBox> result = new ArrayList<MailBox>();
+        List<MailBox> result = new ArrayList<>();
         for (String info : values) {
             result.addAll(fetchPersonsFromString(info, isStrict));
         }
@@ -69,7 +69,7 @@ public class MailBox {
      * without prefix if not found considered the string as an email address.
      */
     public static List<MailBox> fetchPersonsFromString(String value, boolean isStrict) {
-        List<MailBox> result = new ArrayList<MailBox>();
+        List<MailBox> result = new ArrayList<>();
 
         // if strict waiting simply the user account or direct email address
         if (isStrict) {

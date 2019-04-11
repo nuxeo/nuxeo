@@ -36,7 +36,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("plugin")
 public class FileImporterDescriptor implements Serializable {
 
-    public static final List<String> DEFAULT_FILTER = new ArrayList<String>();
+    public static final List<String> DEFAULT_FILTER = new ArrayList<>();
 
     private static final long serialVersionUID = 1L;
 

@@ -34,7 +34,7 @@ public class CompositeTypeImpl extends ComplexTypeImpl implements CompositeType 
     private static final long serialVersionUID = 1L;
 
     /** The schemas for this composite type. */
-    protected Map<String, Schema> schemas = new LinkedHashMap<String, Schema>();
+    protected Map<String, Schema> schemas = new LinkedHashMap<>();
 
     /**
      * Constructs a composite type. Schemas must include those from the super type.

@@ -419,7 +419,7 @@ public class TestConnectBroker {
         checkPackagesState(PackageState.REMOTE, "M-1.0.1");
 
         // WHEN trying to download it
-        boolean isSuccessful = connectBroker.downloadPackages(new ArrayList<String>(Collections.singleton("M-1.0.1")));
+        boolean isSuccessful = connectBroker.downloadPackages(new ArrayList<>(Collections.singleton("M-1.0.1")));
         assertThat(isSuccessful).isFalse();
 
         // THEN it fails and the package is still remote
@@ -434,7 +434,7 @@ public class TestConnectBroker {
         checkPackagesState(PackageState.DOWNLOADED, "M-1.0.0-SNAPSHOT");
 
         // WHEN trying to re-download it
-        isSuccessful = connectBroker.downloadPackages(new ArrayList<String>(Collections.singleton("M-1.0.0-SNAPSHOT")));
+        isSuccessful = connectBroker.downloadPackages(new ArrayList<>(Collections.singleton("M-1.0.0-SNAPSHOT")));
         assertThat(isSuccessful).isTrue();
 
         // THEN request is successful but the download is skipped and a message is displayed

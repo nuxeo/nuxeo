@@ -39,7 +39,7 @@ public class PathCache {
 
     private int maxSize;
 
-    private Map<String, Value> pathToUuidCache = new ConcurrentHashMap<String, Value>();
+    private Map<String, Value> pathToUuidCache = new ConcurrentHashMap<>();
 
     private CoreSession session;
 
@@ -84,7 +84,7 @@ public class PathCache {
     }
 
     public void remove(String path) {
-        Map<String, Value> cacheCopy = new HashMap<String, Value>(pathToUuidCache);
+        Map<String, Value> cacheCopy = new HashMap<>(pathToUuidCache);
         for (String key : cacheCopy.keySet()) {
             if (key.startsWith(path)) {
                 pathToUuidCache.remove(key);
@@ -93,7 +93,7 @@ public class PathCache {
     }
 
     private int clean() {
-        Map<String, Value> tmpMap = new HashMap<String, Value>(pathToUuidCache);
+        Map<String, Value> tmpMap = new HashMap<>(pathToUuidCache);
         for (String key : tmpMap.keySet()) {
             if ((pathToUuidCache.get(key).getExpiredTime()) < System.currentTimeMillis()) {
                 remove(key);

@@ -37,7 +37,7 @@ public class Defaults<A extends Annotation> implements InvocationHandler {
 
     @SuppressWarnings("unchecked")
     public static <A extends Annotation> A of(Class<A> type, Iterable<A> annotations) {
-        return (A) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { type }, new Defaults<A>(annotations));
+        return (A) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { type }, new Defaults<>(annotations));
     }
 
     @SafeVarargs

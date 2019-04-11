@@ -645,7 +645,7 @@ public class CoreOperationsTest {
             try (OperationContext ctx = new OperationContext(session)) {
                 String input = "dummyInput";
                 ctx.setInput(input);
-                ArrayList<String> users = new ArrayList<String>();
+                ArrayList<String> users = new ArrayList<>();
                 users.add("foo");
                 users.add("bar");
                 ctx.put("users", users);

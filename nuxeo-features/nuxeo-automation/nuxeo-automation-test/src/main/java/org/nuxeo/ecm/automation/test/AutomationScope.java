@@ -36,7 +36,7 @@ public class AutomationScope implements Scope {
 
     protected final ThreadLocal<Map<Key<?>, Object>> values = new ThreadLocal<Map<Key<?>, Object>>() {
         protected Map<Key<?>, Object> initialValue() {
-            return new HashMap<Key<?>, Object>();
+            return new HashMap<>();
         };
     };
 

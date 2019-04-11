@@ -71,7 +71,7 @@ public class RemoveRoutingTask {
     }
 
     protected List<Task> fetchTasks() {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         DocumentModelList docList = (DocumentModelList) ctx.get(OperationTaskVariableName.taskDocuments.name());
         if (docList != null) {
             for (DocumentModel documentModel : docList) {
@@ -85,7 +85,7 @@ public class RemoveRoutingTask {
     }
 
     protected List<Task> fetchTasksFromStep() {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         DocumentRouteStep step = (DocumentRouteStep) ctx.get(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
         DocumentModelList list = coreSession.query(String.format(
                 "Select * from TaskDoc WHERE nt:task_variables/*/key like '%s' AND nt:task_variables/*/value like '%s'",

@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
  */
 public class DummyPipe implements EventBundlePipe {
 
-    public static List<Event> receivedEvents = new ArrayList<Event>();
+    public static List<Event> receivedEvents = new ArrayList<>();
 
     @Override
     public void initPipe(String name, Map<String, String> params) {

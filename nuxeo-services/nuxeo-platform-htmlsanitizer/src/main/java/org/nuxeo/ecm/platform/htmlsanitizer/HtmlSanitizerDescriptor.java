@@ -39,10 +39,10 @@ public class HtmlSanitizerDescriptor {
     public boolean override = false;
 
     @XNodeList(value = "type", type = ArrayList.class, componentType = String.class)
-    public final List<String> types = new ArrayList<String>();
+    public final List<String> types = new ArrayList<>();
 
     @XNodeList(value = "field", type = ArrayList.class, componentType = FieldDescriptor.class)
-    public final List<FieldDescriptor> fields = new ArrayList<FieldDescriptor>();
+    public final List<FieldDescriptor> fields = new ArrayList<>();
 
     @Override
     public String toString() {

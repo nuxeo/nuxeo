@@ -75,7 +75,7 @@ public class GetQuotaStatisticsOperation {
     public String toJSON(QuotaInfo quotaInfo, Locale locale) {
         NumberFormat nf = NumberFormat.getInstance();
         nf.setMaximumFractionDigits(2);
-        List<QuotaStat> stats = new ArrayList<QuotaStat>();
+        List<QuotaStat> stats = new ArrayList<>();
         stats.add(new QuotaStat(quotaInfo.getLiveSize().getValue(), getI18nLabel("label.quota.liveSize", locale) + ":"
                 + nf.format(quotaInfo.getLiveSize().getValueInUnit()) + " " + getI18nLabel(quotaInfo.getLiveSize().getUnit(), locale)));
         stats.add(new QuotaStat(quotaInfo.getTrashSize().getValue(), getI18nLabel("label.quota.trashSize", locale)

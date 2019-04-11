@@ -287,7 +287,7 @@ public class LockActionsBean implements LockActions {
     @Override
     public Map<String, Serializable> getLockDetails(DocumentModel document) {
         if (lockDetails == null || !StringUtils.equals(documentId, document.getId())) {
-            lockDetails = new HashMap<String, Serializable>();
+            lockDetails = new HashMap<>();
             documentId = document.getId();
             Lock lock = documentManager.getLockInfo(document.getRef());
             if (lock == null) {

@@ -110,7 +110,7 @@ public class SortInfo implements Serializable {
         if (sortInfo == null) {
             return null;
         }
-        Map<String, Serializable> res = new HashMap<String, Serializable>();
+        Map<String, Serializable> res = new HashMap<>();
         res.put(SORT_COLUMN_NAME, sortInfo.getSortColumn());
         res.put(SORT_ASCENDING_NAME, Boolean.valueOf(sortInfo.getSortAscending()));
         return res;

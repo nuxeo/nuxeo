@@ -62,7 +62,7 @@ public class TestWordXMLRawProcessing {
 
     protected List<TemplateInput> getTestParams() {
 
-        List<TemplateInput> params = new ArrayList<TemplateInput>();
+        List<TemplateInput> params = new ArrayList<>();
         TemplateInput input1 = new TemplateInput("sName_of_Licensee", "John Smith");
         TemplateInput input2 = new TemplateInput("s_effective_date", new Date());
         TemplateInput input3 = new TemplateInput("name_of_the_call");

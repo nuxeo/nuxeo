@@ -87,7 +87,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements Te
     @Override
     public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws IOException {
 
-        List<TemplateInput> params = new ArrayList<TemplateInput>();
+        List<TemplateInput> params = new ArrayList<>();
         String xmlContent = null;
 
         if (OOO_TEMPLATE_TYPE.equals(getTemplateFormat(blob))) {

@@ -53,7 +53,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
 
     public static final String DIRECTORY_NAME = "oauthTokens";
 
-    protected Map<String, OAuthToken> requestTokenStore = new HashMap<String, OAuthToken>();
+    protected Map<String, OAuthToken> requestTokenStore = new HashMap<>();
 
     @Override
     public OAuthToken addVerifierToRequestToken(String token, Long duration) {
@@ -87,7 +87,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
     public NuxeoOAuthToken getClientAccessToken(String appId, String owner) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put("appId", appId);
             filter.put("clientId", owner);
             filter.put("clientToken", 1);
@@ -106,7 +106,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
     public void removeClientAccessToken(String appId, String owner) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put("appId", appId);
             filter.put("clientId", owner);
             filter.put("clientToken", 1);
@@ -205,11 +205,11 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
 
     @Override
     public List<OAuthToken> listAccessTokenForConsumer(String consumerKey) {
-        List<OAuthToken> result = new ArrayList<OAuthToken>();
+        List<OAuthToken> result = new ArrayList<>();
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put("consumerKey", consumerKey);
             filter.put("clientToken", 0);
             DocumentModelList entries = session.query(filter);
@@ -224,7 +224,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
 
     @Override
     public List<OAuthToken> listAccessTokenForUser(String login) {
-        List<OAuthToken> result = new ArrayList<OAuthToken>();
+        List<OAuthToken> result = new ArrayList<>();
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
             Map<String, Serializable> filter = new HashMap<>();

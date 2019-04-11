@@ -142,7 +142,7 @@ public class LayoutRowTagHandler extends TagHandler {
         int rowCounter = 0;
         for (LayoutRow row : rows) {
             // expose row variables
-            Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+            Map<String, ValueExpression> variables = new HashMap<>();
             ValueExpression rowVe = ctx.getExpressionFactory().createValueExpression(row, LayoutRow.class);
             variables.put(RenderVariables.rowVariables.layoutRow.name(), rowVe);
             variables.put(RenderVariables.columnVariables.layoutColumn.name(), rowVe);
@@ -151,7 +151,7 @@ public class LayoutRowTagHandler extends TagHandler {
             variables.put(RenderVariables.rowVariables.layoutRowIndex.name(), rowIndexVe);
             variables.put(RenderVariables.columnVariables.layoutColumnIndex.name(), rowIndexVe);
 
-            List<String> blockedPatterns = new ArrayList<String>();
+            List<String> blockedPatterns = new ArrayList<>();
             blockedPatterns.add(RenderVariables.rowVariables.layoutRow.name());
             blockedPatterns.add(RenderVariables.rowVariables.layoutRowIndex.name());
             blockedPatterns.add(RenderVariables.columnVariables.layoutColumn.name());

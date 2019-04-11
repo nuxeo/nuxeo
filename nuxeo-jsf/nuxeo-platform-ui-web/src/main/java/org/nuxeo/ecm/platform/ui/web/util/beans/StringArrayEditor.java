@@ -30,7 +30,7 @@ public class StringArrayEditor extends PropertyEditorSupport {
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
         StringTokenizer tokenizer = new StringTokenizer(text, ",");
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         while (tokenizer.hasMoreTokens()) {
             list.add(tokenizer.nextToken());
         }

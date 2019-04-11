@@ -74,10 +74,10 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        filters = new HashMap<String, Filter>();
-        leafFilters = new HashMap<String, Filter>();
-        sorters = new HashMap<String, Sorter>();
-        pageProviderNames = new HashMap<String, String>();
+        filters = new HashMap<>();
+        leafFilters = new HashMap<>();
+        sorters = new HashMap<>();
+        pageProviderNames = new HashMap<>();
     }
 
     @Override

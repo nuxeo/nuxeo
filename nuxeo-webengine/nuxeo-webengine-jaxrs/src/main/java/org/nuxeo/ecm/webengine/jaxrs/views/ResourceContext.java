@@ -39,7 +39,7 @@ import org.osgi.framework.Bundle;
  */
 public class ResourceContext {
 
-    private static ThreadLocal<ResourceContext> perThreadContext = new ThreadLocal<ResourceContext>();
+    private static ThreadLocal<ResourceContext> perThreadContext = new ThreadLocal<>();
 
     public final static void setContext(ResourceContext context) {
         perThreadContext.set(context);
@@ -72,7 +72,7 @@ public class ResourceContext {
     public ResourceContext(ApplicationHost app) {
         // TODO rendering in app
         this.app = app;
-        bundleStack = new LinkedList<Bundle>();
+        bundleStack = new LinkedList<>();
         // this.bundleStack.add(app.getBundle());
     }
 

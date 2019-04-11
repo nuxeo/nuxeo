@@ -75,7 +75,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
         Object varValue = saveRequestMapVarValue();
         try {
             // build select items
-            List<DirectorySelectItem> items = new ArrayList<DirectorySelectItem>();
+            List<DirectorySelectItem> items = new ArrayList<>();
             String dirName = getDirectoryName();
             if (StringUtils.isBlank(dirName)) {
                 items.add(new DirectorySelectItem("", "ERROR: mising directoryName property "
@@ -133,10 +133,10 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
     public List<DirectorySelectItem> createAllDirectorySelectItems(String separator) {
         Object varValue = saveRequestMapVarValue();
         try {
-            List<DirectorySelectItem> items = new ArrayList<DirectorySelectItem>();
+            List<DirectorySelectItem> items = new ArrayList<>();
             try (Session directorySession = DirectorySelectItemFactory.getDirectorySession(getDirectoryName())) {
                 if (directorySession != null) {
-                    Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                    Map<String, Serializable> filter = new HashMap<>();
                     if (!isDisplayObsoleteEntries()) {
                         filter.put("obsolete", 0);
                     }
@@ -146,7 +146,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
                     DocumentModelList entries = directorySession.query(filter);
                     for (DocumentModel entry : entries) {
                         if (entry != null) {
-                            List<DocumentModel> entryL = new ArrayList<DocumentModel>();
+                            List<DocumentModel> entryL = new ArrayList<>();
                             entryL.add(entry);
                             DirectorySelectItem res = createSelectItemForEntry(entry, separator, entry);
                             if (res != null) {

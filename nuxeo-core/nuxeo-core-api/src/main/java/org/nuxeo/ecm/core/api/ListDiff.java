@@ -50,7 +50,7 @@ public class ListDiff implements Serializable {
 
     private static final long serialVersionUID = 2239608903749525011L;
 
-    final List<Entry> diff = new ArrayList<Entry>();
+    final List<Entry> diff = new ArrayList<>();
 
     public ListDiff() {
 

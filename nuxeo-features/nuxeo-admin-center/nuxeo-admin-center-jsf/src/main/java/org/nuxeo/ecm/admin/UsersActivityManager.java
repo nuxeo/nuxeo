@@ -66,7 +66,7 @@ public class UsersActivityManager implements Serializable {
     // Audit Management
 
     public List<SelectItem> getAuditTimeRanges() {
-        List<SelectItem> ranges = new ArrayList<SelectItem>();
+        List<SelectItem> ranges = new ArrayList<>();
 
         for (int i = 1; i < 13; i++) {
             ranges.add(new SelectItem(i + "h", "label.timerange." + i + "h"));
@@ -81,7 +81,7 @@ public class UsersActivityManager implements Serializable {
     }
 
     public List<SelectItem> getAuditCategories() {
-        List<SelectItem> ranges = new ArrayList<SelectItem>();
+        List<SelectItem> ranges = new ArrayList<>();
 
         ranges.add(new SelectItem("NuxeoAuthentication", "label.audit.auth"));
         ranges.add(new SelectItem("eventDocumentCategory", "label.audit.doc"));
@@ -149,7 +149,7 @@ public class UsersActivityManager implements Serializable {
     // User's Http Sessions
 
     public List<SelectItem> getHttpSessionsTimeRanges() {
-        List<SelectItem> ranges = new ArrayList<SelectItem>();
+        List<SelectItem> ranges = new ArrayList<>();
 
         ranges.add(new SelectItem(5 * 60 + "s", "label.timerange." + 5 + "m"));
         ranges.add(new SelectItem(10 * 60 + "s", "label.timerange." + 10 + "m"));

@@ -47,7 +47,7 @@ public class CropPictureConverter implements Converter {
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         ImagingService service = Framework.getService(ImagingService.class);
         List<Blob> sources = blobHolder.getBlobs();
-        List<Blob> results = new ArrayList<Blob>(sources.size());
+        List<Blob> results = new ArrayList<>(sources.size());
         Serializable h = parameters.get(ImagingConvertConstants.OPTION_RESIZE_HEIGHT);
         int height = ConverterUtils.getInteger(h);
         Serializable w = parameters.get(ImagingConvertConstants.OPTION_RESIZE_WIDTH);

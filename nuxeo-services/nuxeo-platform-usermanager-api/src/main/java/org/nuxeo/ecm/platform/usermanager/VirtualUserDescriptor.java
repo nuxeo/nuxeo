@@ -62,7 +62,7 @@ public class VirtualUserDescriptor implements VirtualUser {
     public Map<String, String> properties;
 
     @XNodeMap(value = "propertyList", key = "@name", type = HashMap.class, componentType = PropertyListDescriptor.class)
-    public Map<String, PropertyListDescriptor> listProperties = new HashMap<String, PropertyListDescriptor>();
+    public Map<String, PropertyListDescriptor> listProperties = new HashMap<>();
 
     @XNodeList(value = "group", type = ArrayList.class, componentType = String.class)
     public List<String> groups;
@@ -76,7 +76,7 @@ public class VirtualUserDescriptor implements VirtualUser {
     }
 
     public Map<String, Serializable> getProperties() {
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.putAll(properties);
         for (Map.Entry<String, PropertyListDescriptor> prop : listProperties.entrySet()) {
             props.put(prop.getKey(), prop.getValue().getValues());

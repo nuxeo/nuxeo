@@ -105,7 +105,7 @@ public abstract class AbstractDirectorySelectWidgetTypeHandler extends AbstractS
         TagAttributes result;
         if (BuiltinWidgetModes.isLikePlainMode(mode)) {
             // use attributes without id and with
-            List<String> excludedProperties = new ArrayList<String>();
+            List<String> excludedProperties = new ArrayList<>();
             // In case of plain mode css style attributes are to be excluded
             excludedProperties.add("styleClass");
             result = helper.getTagAttributes(widget, excludedProperties, true);

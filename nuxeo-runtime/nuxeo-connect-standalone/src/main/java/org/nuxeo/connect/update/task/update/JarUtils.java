@@ -43,7 +43,7 @@ public class JarUtils {
     public static Match<String> findJarVersion(String name) {
         Matcher m = JAR_NAME.matcher(name);
         if (m.matches()) {
-            Match<String> result = new Match<String>();
+            Match<String> result = new Match<>();
             result.object = m.group(1);
             result.version = m.group(2);
             return result;
@@ -51,7 +51,7 @@ public class JarUtils {
         // try to find without version
         m = JAR_WITHOUT_VERSION_NAME.matcher(name);
         if (m.matches()) {
-            Match<String> result = new Match<String>();
+            Match<String> result = new Match<>();
             result.object = m.group(1);
             result.version = UpdateManager.STUDIO_SNAPSHOT_VERSION;
             return result;
@@ -71,13 +71,13 @@ public class JarUtils {
             String studioSnapshotName = filePattern.getName().concat(".jar");
             for (File f : files) {
                 if (fm.match(f.getName())) {
-                    Match<File> result = new Match<File>();
+                    Match<File> result = new Match<>();
                     result.version = fm.getValue();
                     result.object = f;
                     return result;
                 }
                 if (studioSnapshotName.equals(f.getName())) {
-                    Match<File> result = new Match<File>();
+                    Match<File> result = new Match<>();
                     result.version = UpdateManager.STUDIO_SNAPSHOT_VERSION;
                     result.object = f;
                     return result;

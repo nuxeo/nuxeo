@@ -88,7 +88,7 @@ public class QueryAndFetchOperationTest {
 
         OperationContext ctx = new OperationContext(session);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
 
         String providerName = "CURRENT_DOCUMENT_CHILDREN_FETCH";
 
@@ -119,7 +119,7 @@ public class QueryAndFetchOperationTest {
 
         OperationContext ctx = new OperationContext(session);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
 
         String providerName = "CURRENT_DOCUMENT_CHILDREN_FETCH_NAMED_PARAMS";
 
@@ -148,7 +148,7 @@ public class QueryAndFetchOperationTest {
 
         OperationContext ctx = new OperationContext(session);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
 
         String providerName = "CURRENT_DOCUMENT_CHILDREN_FETCH_NAMED_PARAMS_WITH_DOC";
 
@@ -177,7 +177,7 @@ public class QueryAndFetchOperationTest {
 
         OperationContext ctx = new OperationContext(session);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
 
         params.put("query", "select * from Document");
         params.put("pageSize", 2);

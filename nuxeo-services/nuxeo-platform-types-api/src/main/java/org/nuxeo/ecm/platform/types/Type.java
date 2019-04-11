@@ -72,7 +72,7 @@ public class Type implements Serializable {
     @XNodeList(value = "subtypes/type", type = ArrayList.class, componentType = SubType.class)
     public void addSubType(List<SubType> subTypes) {
         if (allowedSubTypes == null) {
-            allowedSubTypes = new HashMap<String, SubType>();
+            allowedSubTypes = new HashMap<>();
         }
 
         for (SubType currentSubType : subTypes) {
@@ -250,7 +250,7 @@ public class Type implements Serializable {
 
     @XNodeList(value = "views/view", type = TypeView[].class, componentType = TypeView.class)
     public void setViews(TypeView[] views) {
-        this.views = new HashMap<String, TypeView>();
+        this.views = new HashMap<>();
         for (TypeView view : views) {
             this.views.put(view.getId(), view);
         }
@@ -346,7 +346,7 @@ public class Type implements Serializable {
         clone.setLabel(getLabel());
         Map<String, SubType> subs = getAllowedSubTypes();
         if (subs != null) {
-            Map<String, SubType> csubs = new HashMap<String, SubType>();
+            Map<String, SubType> csubs = new HashMap<>();
             for (Map.Entry<String, SubType> item : subs.entrySet()) {
                 csubs.put(item.getKey(), item.getValue().clone());
             }
@@ -362,7 +362,7 @@ public class Type implements Serializable {
         clone.setDescription(getDescription());
         clone.setCategory(getCategory());
         if (views != null) {
-            Map<String, TypeView> cviews = new HashMap<String, TypeView>();
+            Map<String, TypeView> cviews = new HashMap<>();
             for (Map.Entry<String, TypeView> item : views.entrySet()) {
                 cviews.put(item.getKey(), item.getValue().clone());
             }
@@ -375,7 +375,7 @@ public class Type implements Serializable {
         // do not clone old layout definition, nobody's using it anymore
         Map<String, Layouts> layouts = getLayouts();
         if (layouts != null) {
-            Map<String, Layouts> clayouts = new HashMap<String, Layouts>();
+            Map<String, Layouts> clayouts = new HashMap<>();
             for (Map.Entry<String, Layouts> item : layouts.entrySet()) {
                 clayouts.put(item.getKey(), item.getValue().clone());
             }
@@ -383,7 +383,7 @@ public class Type implements Serializable {
         }
         Map<String, DocumentContentViews> cvs = getContentViews();
         if (cvs != null) {
-            Map<String, DocumentContentViews> ccvs = new HashMap<String, DocumentContentViews>();
+            Map<String, DocumentContentViews> ccvs = new HashMap<>();
             for (Map.Entry<String, DocumentContentViews> item : cvs.entrySet()) {
                 ccvs.put(item.getKey(), item.getValue().clone());
             }

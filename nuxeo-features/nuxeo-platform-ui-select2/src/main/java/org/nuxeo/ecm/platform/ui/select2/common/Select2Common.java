@@ -58,10 +58,10 @@ public class Select2Common extends SuggestConstants {
 
     public static final String PLACEHOLDER = "placeholder";
 
-    public static final List<String> SELECT2_USER_WIDGET_TYPE_LIST = new ArrayList<String>(
+    public static final List<String> SELECT2_USER_WIDGET_TYPE_LIST = new ArrayList<>(
             Arrays.asList("singleUserSuggestion", "multipleUsersSuggestion"));
 
-    public static final List<String> SELECT2_DOC_WIDGET_TYPE_LIST = new ArrayList<String>(
+    public static final List<String> SELECT2_DOC_WIDGET_TYPE_LIST = new ArrayList<>(
             Arrays.asList("singleDocumentSuggestion", "multipleDocumentsSuggestion"));
 
     public static final String SUGGESTION_FORMATTER = "suggestionFormatter";
@@ -72,10 +72,10 @@ public class Select2Common extends SuggestConstants {
 
     public static final String DOC_DEFAULT_SUGGESTION_FORMATTER = "docEntryDefaultFormatter";
 
-    public static final List<String> SELECT2_DIR_WIDGET_TYPE_LIST = new ArrayList<String>(
+    public static final List<String> SELECT2_DIR_WIDGET_TYPE_LIST = new ArrayList<>(
             Arrays.asList("suggestOneDirectory", "suggestManyDirectory"));
 
-    public static final List<String> SELECT2_DEFAULT_DOCUMENT_SCHEMAS = new ArrayList<String>(
+    public static final List<String> SELECT2_DEFAULT_DOCUMENT_SCHEMAS = new ArrayList<>(
             Arrays.asList("dublincore", "common"));
 
     public static final String DIR_DEFAULT_SUGGESTION_FORMATTER = "dirEntryDefaultFormatter";
@@ -118,7 +118,7 @@ public class Select2Common extends SuggestConstants {
      * @since 5.8
      */
     public static String[] getSchemas(final String schemaNames) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         result.addAll(Select2Common.SELECT2_DEFAULT_DOCUMENT_SCHEMAS);
         String[] temp = null;
         if (schemaNames != null && !schemaNames.isEmpty()) {

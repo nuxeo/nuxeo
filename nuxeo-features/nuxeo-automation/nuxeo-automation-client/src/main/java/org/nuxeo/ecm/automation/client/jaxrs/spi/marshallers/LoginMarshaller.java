@@ -73,7 +73,7 @@ public class LoginMarshaller implements JsonMarshaller<LoginInfo> {
     }
 
     protected Set<String> readGroups(JsonParser jp) throws IOException {
-        HashSet<String> groups = new HashSet<String>();
+        HashSet<String> groups = new HashSet<>();
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {
             groups.add(jp.getText());

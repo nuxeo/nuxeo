@@ -99,7 +99,7 @@ public class CoreProviderTest {
 
         try (OperationContext ctx = new OperationContext(session)) {
 
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
 
             String providerName = "simpleProviderTest1";
 
@@ -134,7 +134,7 @@ public class CoreProviderTest {
 
         try (OperationContext ctx = new OperationContext(session)) {
 
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
 
             String providerName = "simpleProviderTest2";
 
@@ -176,7 +176,7 @@ public class CoreProviderTest {
 
         try (OperationContext ctx = new OperationContext(session)) {
 
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
 
             params.put("query", "select * from Document");
             params.put("pageSize", 2);
@@ -199,7 +199,7 @@ public class CoreProviderTest {
 
         try (OperationContext ctx = new OperationContext(session)) {
 
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
 
             params.put("query", "select * from Document where dc:contributors = ?");
             params.put("pageSize", 2);
@@ -232,7 +232,7 @@ public class CoreProviderTest {
 
         try (OperationContext ctx = new OperationContext(session)) {
 
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
 
             params.put("query", "select * from Document");
             params.put("pageSize", 2);
@@ -264,7 +264,7 @@ public class CoreProviderTest {
     }
 
     protected Map<String, Object> getNamedParamsProps(String providerName, String propName, String propValue) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("providerName", providerName);
         if (propName != null) {
             Map<String, String> namedParameters = new HashMap<>();
@@ -404,7 +404,7 @@ public class CoreProviderTest {
     @Test
     public void testPageProviderWithNamedParametersComplex() throws Exception {
         try (OperationContext ctx = new OperationContext(session)) {
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
             params.put("providerName", "namedParamProviderComplex");
             Map<String, String> namedParameters = new HashMap<>();
             namedParameters.put("parameter1", "WS1");
@@ -449,7 +449,7 @@ public class CoreProviderTest {
     @Test
     public void canUseINOperatorWithQueryParams() throws OperationException {
         try (OperationContext ctx = new OperationContext(session)) {
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
             params.put("providerName", "searchWithInOperatorAndQueryParams");
             StringList list = new StringList();
             list.add("\"Art/Architecture\", \"Art/Culture\"");

@@ -68,7 +68,7 @@ public class StaticUserMapper extends AbstractMapper {
         userResource.setDisplayName(displayName);
         Collection<Entry<String>> emails = new ArrayList<>();
         if (email != null) {
-            emails.add(new Entry<String>(email, "string"));
+            emails.add(new Entry<>(email, "string"));
             userResource.setEmails(emails);
         }
 
@@ -82,7 +82,7 @@ public class StaticUserMapper extends AbstractMapper {
         List<String> groupIds = um.getPrincipal(userId).getAllGroups();
         Collection<Entry<String>> groups = new ArrayList<>();
         for (String groupId : groupIds) {
-            groups.add(new Entry<String>(groupId, "string"));
+            groups.add(new Entry<>(groupId, "string"));
         }
         userResource.setGroups(groups);
 

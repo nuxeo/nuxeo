@@ -146,7 +146,7 @@ public class SimpleBackend extends AbstractCoreBackend {
     public LinkedList<String> getVirtualFolderNames() {
         if (orderedBackendNames == null) {
             List<DocumentModel> children = getChildren(new PathRef(rootPath));
-            orderedBackendNames = new LinkedList<String>();
+            orderedBackendNames = new LinkedList<>();
             if (children != null) {
                 for (DocumentModel model : children) {
                     orderedBackendNames.add(model.getName());
@@ -437,7 +437,7 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     @Override
     public List<DocumentModel> getChildren(DocumentRef ref) {
-        List<DocumentModel> result = new ArrayList<DocumentModel>();
+        List<DocumentModel> result = new ArrayList<>();
         List<DocumentModel> children = getSession(true).getChildren(ref);
         for (DocumentModel child : children) {
             if (child.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION)) {

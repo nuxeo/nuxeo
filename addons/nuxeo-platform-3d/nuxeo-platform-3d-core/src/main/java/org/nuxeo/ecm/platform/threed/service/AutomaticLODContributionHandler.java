@@ -33,7 +33,7 @@ public class AutomaticLODContributionHandler extends ContributionFragmentRegistr
     public final Map<String, AutomaticLOD> registry;
 
     public AutomaticLODContributionHandler() {
-        registry = new HashMap<String, AutomaticLOD>();
+        registry = new HashMap<>();
     }
 
     @Override

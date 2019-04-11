@@ -144,7 +144,7 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
         if (session != null) {
             try {
                 DocumentModelList list = session.query(query, null, range, offset, true);
-                List<ResultItem> resultItems = new ArrayList<ResultItem>(list.size());
+                List<ResultItem> resultItems = new ArrayList<>(list.size());
                 for (DocumentModel doc : list) {
                     if (doc == null) {
                         continue;

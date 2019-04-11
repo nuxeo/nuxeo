@@ -63,7 +63,7 @@ public class FileWithNonHeritedIndividalMetaDataSourceNode extends FileSourceNod
 
     @Override
     public List<SourceNode> getChildren() {
-        List<SourceNode> children = new ArrayList<SourceNode>();
+        List<SourceNode> children = new ArrayList<>();
         File[] listFiles = file.listFiles();
         for (File child : listFiles) {
             if (isPropertyFile(child)) {
@@ -94,7 +94,7 @@ public class FileWithNonHeritedIndividalMetaDataSourceNode extends FileSourceNod
 
     protected Map<String, Serializable> loadPropertyFile(File propertyFile) {
         Properties mdProperties = new Properties();
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
 
         try {
             mdProperties.load(new FileInputStream(propertyFile));
@@ -115,7 +115,7 @@ public class FileWithNonHeritedIndividalMetaDataSourceNode extends FileSourceNod
         if (value.contains(ARRAY_SEPARATOR)) {
             prop = value.split(REGEXP_ARRAY_SEPARATOR);
         } else if (value.contains(LIST_SEPARATOR)) {
-            List<Serializable> lstprop = new ArrayList<Serializable>();
+            List<Serializable> lstprop = new ArrayList<>();
             String[] parts = value.split(REGEXP_LIST_SEPARATOR);
             for (String part : parts) {
                 lstprop.add(parseFromString(part));

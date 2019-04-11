@@ -41,7 +41,7 @@ public class WidgetConverterRegistry extends SimpleContributionRegistry<WidgetCo
     }
 
     public List<String> getLayoutNames() {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         res.addAll(currentContribs.keySet());
         return res;
     }
@@ -52,7 +52,7 @@ public class WidgetConverterRegistry extends SimpleContributionRegistry<WidgetCo
     }
 
     public List<WidgetConverterDescriptor> getConverters() {
-        List<WidgetConverterDescriptor> res = new ArrayList<WidgetConverterDescriptor>();
+        List<WidgetConverterDescriptor> res = new ArrayList<>();
         for (WidgetConverterDescriptor item : currentContribs.values()) {
             if (item != null) {
                 res.add(item);

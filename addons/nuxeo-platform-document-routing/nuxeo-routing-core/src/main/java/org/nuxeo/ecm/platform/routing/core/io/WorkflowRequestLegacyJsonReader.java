@@ -57,7 +57,7 @@ public class WorkflowRequestLegacyJsonReader extends EntityJsonReader<WorkflowRe
     @Override
     protected WorkflowRequest readEntity(JsonNode jn) throws IOException {
         String workflowModelName = getStringField(jn, "workflowModelName");
-        List<String> attachedDocumentIds = new ArrayList<String>();
+        List<String> attachedDocumentIds = new ArrayList<>();
         JsonNode attachedDocumentIdsNode = jn.get("attachedDocumentIds");
         if (attachedDocumentIdsNode != null) {
             for (Iterator<JsonNode> it = attachedDocumentIdsNode.elements(); it.hasNext();) {

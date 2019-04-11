@@ -49,7 +49,7 @@ public abstract class AbstractIOResourceAdapter implements IOResourceAdapter {
     protected Map<String, Serializable> properties;
 
     protected AbstractIOResourceAdapter() {
-        properties = new HashMap<String, Serializable>();
+        properties = new HashMap<>();
     }
 
     public Map<String, Serializable> getProperties() {

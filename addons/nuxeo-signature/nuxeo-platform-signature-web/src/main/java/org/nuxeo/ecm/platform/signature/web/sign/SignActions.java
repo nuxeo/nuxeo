@@ -193,7 +193,7 @@ public class SignActions implements Serializable {
         navigationContext.saveCurrentDocument();
 
         // write to the audit log
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         String comment = DOCUMENT_SIGNED_COMMENT;
         notifyEvent(DOCUMENT_SIGNED, currentDoc, properties, comment);
 

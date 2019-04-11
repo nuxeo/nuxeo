@@ -31,7 +31,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class OpenIDProviderFragmentRegistry extends ContributionFragmentRegistry<OpenIDConnectProviderDescriptor> {
 
-    protected final Map<String, OpenIDConnectProviderDescriptor> providers = new HashMap<String, OpenIDConnectProviderDescriptor>();
+    protected final Map<String, OpenIDConnectProviderDescriptor> providers = new HashMap<>();
 
     @Override
     public OpenIDConnectProviderDescriptor clone(OpenIDConnectProviderDescriptor source) {

@@ -37,9 +37,9 @@ import org.nuxeo.ecm.platform.routing.api.helper.ActionableValidator;
  */
 @Deprecated
 public class WaitingStepRuntimePersister {
-    protected static final List<String> runningSteps = new ArrayList<String>();
+    protected static final List<String> runningSteps = new ArrayList<>();
 
-    protected static final List<String> doneSteps = new ArrayList<String>();
+    protected static final List<String> doneSteps = new ArrayList<>();
 
     static public void addStepId(String id) {
         if (runningSteps.contains(id)) {
@@ -75,7 +75,7 @@ public class WaitingStepRuntimePersister {
             throw new RuntimeException("Asking to resume a non peristed step.");
         }
 
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put("nextStepPos", nextStepPos);
         ActionableValidator validator = new ActionableValidator(new SimpleDecisionalActionableObject(id), session,
                 properties);

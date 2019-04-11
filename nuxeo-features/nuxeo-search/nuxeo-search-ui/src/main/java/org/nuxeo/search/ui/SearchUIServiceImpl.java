@@ -170,7 +170,7 @@ public class SearchUIServiceImpl implements SearchUIService {
     @SuppressWarnings("unchecked")
     protected List<DocumentModel> getDocuments(String pageProviderName, CoreSession session, Object... parameters) {
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put("coreSession", (Serializable) session);
         return ((PageProvider<DocumentModel>) pageProviderService.getPageProvider(pageProviderName, null, null, null,
                 properties, parameters)).getCurrentPage();

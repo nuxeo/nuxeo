@@ -167,7 +167,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
      */
     protected void reconstructTableModel() {
         List<String> items = getCurrentDocumentUsers();
-        entries = new PageSelections<String>();
+        entries = new PageSelections<>();
         if (items != null) {
             for (String item : items) {
                 if (SecurityConstants.EVERYONE.equals(item)) {
@@ -179,7 +179,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
                         continue;
                     }
                 }
-                entries.add(new PageSelection<String>(item, false));
+                entries.add(new PageSelection<>(item, false));
             }
         }
     }
@@ -396,7 +396,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
      * @since 6.0
      */
     private List<PageSelection<String>> getSelectedRows() {
-        List<PageSelection<String>> selectedRows = new ArrayList<PageSelection<String>>();
+        List<PageSelection<String>> selectedRows = new ArrayList<>();
 
         if (!getDataTableModel().isEmpty()) {
             for (PageSelection<String> entry : getDataTableModel().getEntries()) {
@@ -437,7 +437,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
     }
 
     protected List<SelectItem> asSelectItems(String... permissions) {
-        List<SelectItem> items = new ArrayList<SelectItem>();
+        List<SelectItem> items = new ArrayList<>();
         for (String perm : permissions) {
             String label = labeler.makeLabel(perm);
             SelectItem it = new SelectItem(perm, resourcesAccessor.getMessages().get(label));
@@ -541,7 +541,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         // 2 - this filtering should at some point be applied to acp and saved
         // back in a batch?
 
-        List<String> returnList = new ArrayList<String>();
+        List<String> returnList = new ArrayList<>();
         for (String entry : usersGroups2Validate) {
             if (entry.equals(SecurityConstants.EVERYONE)) {
                 returnList.add(entry);
@@ -579,7 +579,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
 
     private void addUserGroupInCache(String entry) {
         if (cachedValidatedUserAndGroups == null) {
-            cachedValidatedUserAndGroups = new ArrayList<String>();
+            cachedValidatedUserAndGroups = new ArrayList<>();
         }
         cachedValidatedUserAndGroups.add(entry);
     }
@@ -593,7 +593,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
 
     private void addUserGroupInDeletedCache(String entry) {
         if (cachedDeletedUserAndGroups == null) {
-            cachedDeletedUserAndGroups = new ArrayList<String>();
+            cachedDeletedUserAndGroups = new ArrayList<>();
         }
 
         cachedDeletedUserAndGroups.add(entry);
@@ -607,7 +607,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         if (currentUser.isAdministrator()) {
             return true;
         } else {
-            List<String> principals = new ArrayList<String>();
+            List<String> principals = new ArrayList<>();
             principals.add(currentUser.getName());
             principals.addAll(currentUser.getAllGroups());
 
@@ -632,7 +632,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
     protected String[] getPermissionsToCheck() {
         if (CACHED_PERMISSION_TO_CHECK == null) {
             PermissionProvider pprovider = Framework.getService(PermissionProvider.class);
-            List<String> aggregatedPerms = new LinkedList<String>();
+            List<String> aggregatedPerms = new LinkedList<>();
             for (String seedPerm : SEED_PERMISSIONS_TO_CHECK) {
                 aggregatedPerms.add(seedPerm);
                 String[] compoundPerms = pprovider.getPermissionGroups(seedPerm);

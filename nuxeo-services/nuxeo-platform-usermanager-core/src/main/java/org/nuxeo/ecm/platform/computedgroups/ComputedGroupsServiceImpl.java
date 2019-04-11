@@ -50,9 +50,9 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
 
     public static final String CHAIN_EP = "computerChain";
 
-    protected static Map<String, GroupComputerDescriptor> computers = new HashMap<String, GroupComputerDescriptor>();
+    protected static Map<String, GroupComputerDescriptor> computers = new HashMap<>();
 
-    protected static List<String> computerNames = new ArrayList<String>();
+    protected static List<String> computerNames = new ArrayList<>();
 
     protected boolean allowOverride = true;
 
@@ -61,8 +61,8 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        computers = new HashMap<String, GroupComputerDescriptor>();
-        computerNames = new ArrayList<String>();
+        computers = new HashMap<>();
+        computerNames = new ArrayList<>();
     }
 
     @Override
@@ -106,7 +106,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
 
     @Override
     public List<String> computeGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
-        List<String> userGroups = new ArrayList<String>();
+        List<String> userGroups = new ArrayList<>();
         for (String computerName : computerNames) {
             userGroups.addAll(computers.get(computerName).getComputer().getGroupsForUser(nuxeoPrincipal));
         }
@@ -116,9 +116,9 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     @Override
     public void updateGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
         List<String> computedGroups = computeGroupsForUser(nuxeoPrincipal);
-        Set<String> virtualGroups = new HashSet<String>(nuxeoPrincipal.getVirtualGroups());
+        Set<String> virtualGroups = new HashSet<>(nuxeoPrincipal.getVirtualGroups());
         virtualGroups.addAll(computedGroups);
-        nuxeoPrincipal.setVirtualGroups(new ArrayList<String>(virtualGroups));
+        nuxeoPrincipal.setVirtualGroups(new ArrayList<>(virtualGroups));
     }
 
     @Override
@@ -149,7 +149,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
 
     @Override
     public List<String> computeGroupIds() {
-        List<String> groupIds = new ArrayList<String>();
+        List<String> groupIds = new ArrayList<>();
         for (String name : computerNames) {
             GroupComputerDescriptor desc = computers.get(name);
             List<String> foundGroupIds = desc.getComputer().getAllGroupIds();
@@ -162,7 +162,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
 
     @Override
     public List<String> getComputedGroupMembers(String groupName) {
-        List<String> members = new ArrayList<String>();
+        List<String> members = new ArrayList<>();
         for (String name : computerNames) {
             GroupComputerDescriptor desc = computers.get(name);
             List<String> foundMembers = desc.getComputer().getGroupMembers(groupName);
@@ -175,7 +175,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
 
     @Override
     public List<String> getComputedGroupParent(String groupName) {
-        List<String> parents = new ArrayList<String>();
+        List<String> parents = new ArrayList<>();
         for (String name : computerNames) {
             GroupComputerDescriptor desc = computers.get(name);
             List<String> foundParents = desc.getComputer().getParentsGroupNames(groupName);
@@ -188,7 +188,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
 
     @Override
     public List<String> getComputedGroupSubGroups(String groupName) {
-        List<String> subGroups = new ArrayList<String>();
+        List<String> subGroups = new ArrayList<>();
         for (String name : computerNames) {
             GroupComputerDescriptor desc = computers.get(name);
             List<String> foundSubGroups = desc.getComputer().getSubGroupsNames(groupName);
@@ -200,7 +200,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
     }
 
     public List<GroupComputerDescriptor> getComputerDescriptors() {
-        List<GroupComputerDescriptor> result = new ArrayList<GroupComputerDescriptor>();
+        List<GroupComputerDescriptor> result = new ArrayList<>();
         for (String name : computerNames) {
             result.add(computers.get(name));
         }
@@ -214,7 +214,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
 
     @Override
     public List<String> searchComputedGroups(Map<String, Serializable> filter, Set<String> fulltext) {
-        List<String> foundGroups = new ArrayList<String>();
+        List<String> foundGroups = new ArrayList<>();
         for (String name : computerNames) {
             GroupComputerDescriptor desc = computers.get(name);
             foundGroups.addAll(desc.getComputer().searchGroups(filter, fulltext));

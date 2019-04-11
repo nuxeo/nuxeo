@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class WorkflowRequest {
 
-    protected List<String> attachedDocumentIds = new ArrayList<String>();
+    protected List<String> attachedDocumentIds = new ArrayList<>();
 
     protected Map<String, Serializable> variables;
 

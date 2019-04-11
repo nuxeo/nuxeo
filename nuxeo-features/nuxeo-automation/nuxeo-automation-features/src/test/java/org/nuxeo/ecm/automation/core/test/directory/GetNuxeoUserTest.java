@@ -91,7 +91,7 @@ public class GetNuxeoUserTest {
 
         // test with params
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("login", "jdoe");
 
         OperationChain chain = new OperationChain("fakeChain");

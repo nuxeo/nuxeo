@@ -30,7 +30,7 @@ public abstract class BaseLoginModule implements LoginPlugin {
 
     protected String pluginName;
 
-    protected Map<String, String> parameters = new HashMap<String, String>();
+    protected Map<String, String> parameters = new HashMap<>();
 
     // Not used.
     public String getLoginPage() {

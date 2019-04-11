@@ -112,7 +112,7 @@ public class IOLogEntryBase {
      */
     @SuppressWarnings({ "unchecked" })
     protected static List<LogEntry> readDocument(Document doc) {
-        List<LogEntry> logEntries = new ArrayList<LogEntry>();
+        List<LogEntry> logEntries = new ArrayList<>();
 
         AuditLogger audit = Framework.getService(AuditLogger.class);
 
@@ -184,7 +184,7 @@ public class IOLogEntryBase {
     }
 
     public static List<LogEntry> translate(List<LogEntry> docLogs, DocumentRef newRef) {
-        List<LogEntry> newList = new ArrayList<LogEntry>();
+        List<LogEntry> newList = new ArrayList<>();
         for (LogEntry logEntry : docLogs) {
             LogEntry newLogEntry = translate(logEntry, newRef);
             newList.add(newLogEntry);

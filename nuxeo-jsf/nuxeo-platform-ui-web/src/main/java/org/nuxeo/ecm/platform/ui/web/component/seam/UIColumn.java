@@ -147,7 +147,7 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
 
     @SuppressWarnings("unchecked")
     public static <T> List<T> getAllChildrenOfType(List<UIComponent> children, Class<T> childType) {
-        List<T> matches = new ArrayList<T>();
+        List<T> matches = new ArrayList<>();
         for (UIComponent child : children) {
             if (childType.isAssignableFrom(child.getClass())) {
                 matches.add((T) child);

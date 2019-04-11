@@ -144,7 +144,7 @@ final class StampState implements Externalizable {
         Map<DualKey, Object> comparant = Collections.emptyMap();
         if (rows == comparant) {
             // =-=AEW Better default sizes
-            rows = new HashMap<DualKey, Object>(109);
+            rows = new HashMap<>(109);
         }
 
         DualKey dk = new DualKey(currencyObj, key);
@@ -334,7 +334,7 @@ final class StampState implements Externalizable {
             return;
         }
 
-        Map<DualKey, Object> map = new HashMap<DualKey, Object>(rows.size());
+        Map<DualKey, Object> map = new HashMap<>(rows.size());
         map.putAll(rows);
 
         if (log.isDebugEnabled()) {

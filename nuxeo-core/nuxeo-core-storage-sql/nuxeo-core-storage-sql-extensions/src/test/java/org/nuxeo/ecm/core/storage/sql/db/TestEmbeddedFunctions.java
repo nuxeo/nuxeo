@@ -34,11 +34,11 @@ import org.junit.Test;
 public class TestEmbeddedFunctions {
 
     public static void checkSplit(String string, String... expected) {
-        assertEquals(new HashSet<String>(Arrays.asList(expected)), EmbeddedFunctions.split(string));
+        assertEquals(new HashSet<>(Arrays.asList(expected)), EmbeddedFunctions.split(string));
     }
 
     public static void checkSplit(char sep, String string, String... expected) {
-        assertEquals(new HashSet<String>(Arrays.asList(expected)), EmbeddedFunctions.split(string, sep));
+        assertEquals(new HashSet<>(Arrays.asList(expected)), EmbeddedFunctions.split(string, sep));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class TestEmbeddedFunctions {
     }
 
     protected static void checkParseFullText(String expected, String text) {
-        assertEquals(new HashSet<String>(Arrays.asList(expected.split(" "))), EmbeddedFunctions.parseFullText(text));
+        assertEquals(new HashSet<>(Arrays.asList(expected.split(" "))), EmbeddedFunctions.parseFullText(text));
     }
 
     @Test

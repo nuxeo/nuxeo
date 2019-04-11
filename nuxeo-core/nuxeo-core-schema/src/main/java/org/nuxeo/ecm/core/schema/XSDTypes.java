@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
  */
 public class XSDTypes {
 
-    private static final Map<String, SimpleType> xsdBaseTypes = new HashMap<String, SimpleType>();
+    private static final Map<String, SimpleType> xsdBaseTypes = new HashMap<>();
 
     // Utility class.
     private XSDTypes() {

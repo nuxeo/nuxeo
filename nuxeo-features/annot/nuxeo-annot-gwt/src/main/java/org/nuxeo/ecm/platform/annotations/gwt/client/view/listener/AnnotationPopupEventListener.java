@@ -132,7 +132,7 @@ public class AnnotationPopupEventListener implements EventListener {
 
     }
 
-    private static final Map<Annotation, AnnotationPopupEventListener> LISTENERS = new HashMap<Annotation, AnnotationPopupEventListener>();
+    private static final Map<Annotation, AnnotationPopupEventListener> LISTENERS = new HashMap<>();
 
     private final Annotation annotation;
 

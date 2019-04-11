@@ -43,7 +43,7 @@ public class VocabularyEntryList implements Serializable {
 
     public VocabularyEntryList(String name) {
         this.name = name;
-        entries = new ArrayList<VocabularyEntry>();
+        entries = new ArrayList<>();
     }
 
     public String getName() {
@@ -59,7 +59,7 @@ public class VocabularyEntryList implements Serializable {
     }
 
     public List<VocabularyEntry> getEntries(String parent) {
-        List<VocabularyEntry> result = new ArrayList<VocabularyEntry>();
+        List<VocabularyEntry> result = new ArrayList<>();
         for (VocabularyEntry entry : entries) {
             if (parent.equals(entry.getParent())) {
                 result.add(entry);

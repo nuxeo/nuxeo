@@ -81,7 +81,7 @@ public class TestAuditPageProviderWithElasticSearch {
     }
 
     protected Map<String, ExtendedInfo> createExtendedInfos() {
-        Map<String, ExtendedInfo> infos = new HashMap<String, ExtendedInfo>();
+        Map<String, ExtendedInfo> infos = new HashMap<>();
         ExtendedInfo info = ExtendedInfoImpl.createExtendedInfo(Long.valueOf(1));
         infos.put("id", info);
         return infos;

@@ -52,7 +52,7 @@ public class ExtensibleDocumentWriter extends DocumentModelWriter {
         super(session, parentPath);
     }
 
-    protected List<ImportExtension> extensions = new ArrayList<ImportExtension>();
+    protected List<ImportExtension> extensions = new ArrayList<>();
 
     public void registerExtension(ImportExtension ext) {
         extensions.add(ext);

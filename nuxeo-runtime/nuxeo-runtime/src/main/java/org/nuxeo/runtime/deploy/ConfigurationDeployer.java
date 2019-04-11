@@ -53,7 +53,7 @@ public class ConfigurationDeployer implements FileChangeListener {
 
     public ConfigurationDeployer(FileChangeNotifier notifier) {
         this.notifier = notifier;
-        urls = new HashMap<String, Entry>();
+        urls = new HashMap<>();
         if (notifier != null) {
             notifier.addListener(this);
         }

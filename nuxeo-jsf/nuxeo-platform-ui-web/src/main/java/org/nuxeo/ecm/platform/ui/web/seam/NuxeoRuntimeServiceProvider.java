@@ -54,7 +54,7 @@ public class NuxeoRuntimeServiceProvider implements ServiceProvider {
     private static final Log log = LogFactory.getLog(NuxeoRuntimeServiceProvider.class);
 
     @SuppressWarnings("rawtypes")
-    protected static Map<String, Class> name2ServiceClassCache = new HashMap<String, Class>();
+    protected static Map<String, Class> name2ServiceClassCache = new HashMap<>();
 
     protected static ReentrantLock name2ServiceClassLock = new ReentrantLock();
 

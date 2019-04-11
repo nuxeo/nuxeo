@@ -91,7 +91,7 @@ public class TestImportOperation {
 
     @Test
     public void testImportOperation() throws OperationException, InterruptedException {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("path", testFolder.getPathAsString());
 
         chain = new OperationChain("test-chain");

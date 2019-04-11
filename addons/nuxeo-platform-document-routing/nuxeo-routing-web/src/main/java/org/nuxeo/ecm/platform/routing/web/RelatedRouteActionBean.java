@@ -52,11 +52,11 @@ public class RelatedRouteActionBean {
         if (currentDoc != null) {
             return findRelatedRoute(currentDoc.getId());
         }
-        return new ArrayList<DocumentModel>();
+        return new ArrayList<>();
     }
 
     public List<DocumentModel> findRelatedRoute(String documentId) {
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        List<DocumentModel> docs = new ArrayList<>();
         if (documentId == null || "".equals(documentId)) {
             return docs;
         }

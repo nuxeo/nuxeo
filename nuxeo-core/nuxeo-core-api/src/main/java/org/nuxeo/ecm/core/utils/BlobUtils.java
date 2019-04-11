@@ -122,7 +122,7 @@ public class BlobUtils {
 
     protected static void zip(List<Blob> blobs, ZipOutputStream out) throws IOException {
         // use a set to avoid zipping entries with same names
-        Collection<String> names = new HashSet<String>();
+        Collection<String> names = new HashSet<>();
         int cnt = 1;
         for (Blob blob : blobs) {
             String entry = getFileName(blob);

@@ -78,7 +78,7 @@ public class EditableListBean {
             log.error("Component binding not set, cannot perform action");
             return;
         }
-        Map<String, String> requestMap = new HashMap<String, String>();
+        Map<String, String> requestMap = new HashMap<>();
         requestMap.put(FOR_PARAMETER_NAME, listComponentId);
         requestMap.put(INDEX_PARAMETER_NAME, index);
         requestMap.put(TYPE_PARAMETER_NAME, type);
@@ -296,7 +296,7 @@ public class EditableListBean {
      */
     // don't make it static so that jsf can call it
     public List<Object> getDummyList() {
-        List<Object> dummy = new ArrayList<Object>(1);
+        List<Object> dummy = new ArrayList<>(1);
         dummy.add("dummy");
         return dummy;
     }

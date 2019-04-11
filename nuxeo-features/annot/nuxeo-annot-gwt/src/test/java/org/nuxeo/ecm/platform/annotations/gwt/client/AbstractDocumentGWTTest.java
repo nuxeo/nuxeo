@@ -43,7 +43,7 @@ public abstract class AbstractDocumentGWTTest extends GWTTestCase {
     public void gwtSetUp() {
         com.google.gwt.user.client.Element bodyElem = RootPanel.getBodyElement();
 
-        List<com.google.gwt.user.client.Element> toRemove = new ArrayList<com.google.gwt.user.client.Element>();
+        List<com.google.gwt.user.client.Element> toRemove = new ArrayList<>();
         for (int i = 0, n = DOM.getChildCount(bodyElem); i < n; ++i) {
             com.google.gwt.user.client.Element elem = DOM.getChild(bodyElem, i);
             String nodeName = getNodeName(elem);
@@ -82,7 +82,7 @@ public abstract class AbstractDocumentGWTTest extends GWTTestCase {
     }
 
     public List<Annotation> getAnnotations(String[] xpointers) {
-        List<Annotation> annotations = new ArrayList<Annotation>();
+        List<Annotation> annotations = new ArrayList<>();
         int counter = 0;
         for (String pointer : xpointers) {
             Annotation annotation = getDefaultAnnotation();

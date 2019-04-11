@@ -99,7 +99,7 @@ public class CUserDescriptor {
                 "TJ", "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB",
                 "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW" };
         List<String> countryCodeList = Arrays.asList(validCountryCodes);
-        Set<String> validCountryCodeSet = new HashSet<String>(countryCodeList);
+        Set<String> validCountryCodeSet = new HashSet<>(countryCodeList);
         return validCountryCodeSet.contains(countryCode);
     }
 

@@ -40,7 +40,7 @@ public class DefaultVersioningRuleDescriptor implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNodeMap(value = "options", key = "@lifeCycleState", type = HashMap.class, componentType = SaveOptionsDescriptor.class)
-    public Map<String, SaveOptionsDescriptor> options = new HashMap<String, SaveOptionsDescriptor>();
+    public Map<String, SaveOptionsDescriptor> options = new HashMap<>();
 
     @XNode("initialState")
     public InitialStateDescriptor initialState;

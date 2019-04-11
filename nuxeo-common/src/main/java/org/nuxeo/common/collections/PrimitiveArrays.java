@@ -214,49 +214,49 @@ public final class PrimitiveArrays {
         if (arrType.isPrimitive()) {
             if (arrType == Integer.TYPE) {
                 int[] ar = (int[]) array;
-                List<Integer> result = new ArrayList<Integer>(ar.length);
+                List<Integer> result = new ArrayList<>(ar.length);
                 for (int v : ar) {
                     result.add(v);
                 }
                 return result;
             } else if (arrType == Long.TYPE) {
                 long[] ar = (long[]) array;
-                List<Long> result = new ArrayList<Long>(ar.length);
+                List<Long> result = new ArrayList<>(ar.length);
                 for (long v : ar) {
                     result.add(v);
                 }
                 return result;
             } else if (arrType == Double.TYPE) {
                 double[] ar = (double[]) array;
-                List<Double> result = new ArrayList<Double>(ar.length);
+                List<Double> result = new ArrayList<>(ar.length);
                 for (double v : ar) {
                     result.add(v);
                 }
                 return result;
             } else if (arrType == Float.TYPE) {
                 float[] ar = (float[]) array;
-                List<Float> result = new ArrayList<Float>(ar.length);
+                List<Float> result = new ArrayList<>(ar.length);
                 for (float v : ar) {
                     result.add(v);
                 }
                 return result;
             } else if (arrType == Character.TYPE) {
                 char[] ar = (char[]) array;
-                List<Character> result = new ArrayList<Character>(ar.length);
+                List<Character> result = new ArrayList<>(ar.length);
                 for (char v : ar) {
                     result.add(v);
                 }
                 return result;
             } else if (arrType == Byte.TYPE) {
                 byte[] ar = (byte[]) array;
-                List<Byte> result = new ArrayList<Byte>(ar.length);
+                List<Byte> result = new ArrayList<>(ar.length);
                 for (byte v : ar) {
                     result.add(v);
                 }
                 return result;
             } else if (arrType == Short.TYPE) {
                 short[] ar = (short[]) array;
-                List<Short> result = new ArrayList<Short>(ar.length);
+                List<Short> result = new ArrayList<>(ar.length);
                 for (short v : ar) {
                     result.add(v);
                 }

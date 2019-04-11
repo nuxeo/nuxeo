@@ -49,7 +49,7 @@ public class Main extends ModuleRoot {
 
     @GET
     public Object doGet() {
-        List<ModuleShortcut> list = new ArrayList<ModuleShortcut>();
+        List<ModuleShortcut> list = new ArrayList<>();
         for (ModuleConfiguration mc : ctx.getEngine().getModuleManager().getModules()) {
             List<ModuleShortcut> items = mc.getShortcuts();
             if (items != null && !items.isEmpty()) {

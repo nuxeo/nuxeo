@@ -55,19 +55,19 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
     private List<SecurityPolicy> policies;
 
     public SecurityPolicyServiceImpl() {
-        policyDescriptors = new Hashtable<String, SecurityPolicyDescriptor>();
+        policyDescriptors = new Hashtable<>();
     }
 
     private void computePolicies() {
-        policies = new ArrayList<SecurityPolicy>();
-        List<SecurityPolicyDescriptor> orderedDescriptors = new ArrayList<SecurityPolicyDescriptor>();
+        policies = new ArrayList<>();
+        List<SecurityPolicyDescriptor> orderedDescriptors = new ArrayList<>();
         for (SecurityPolicyDescriptor descriptor : policyDescriptors.values()) {
             if (descriptor.isEnabled()) {
                 orderedDescriptors.add(descriptor);
             }
         }
         Collections.sort(orderedDescriptors);
-        List<String> policyNames = new ArrayList<String>();
+        List<String> policyNames = new ArrayList<>();
         for (SecurityPolicyDescriptor descriptor : orderedDescriptors) {
             if (descriptor.isEnabled()) {
                 try {
@@ -121,7 +121,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
 
     @Override
     public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers(String repositoryName) {
-        List<SQLQuery.Transformer> transformers = new LinkedList<SQLQuery.Transformer>();
+        List<SQLQuery.Transformer> transformers = new LinkedList<>();
         for (SecurityPolicy policy : getPolicies()) {
             if (policy.isExpressibleInQuery(repositoryName)) {
                 transformers.add(policy.getQueryTransformer(repositoryName));

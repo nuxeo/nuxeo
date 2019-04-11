@@ -42,7 +42,7 @@ public class ActionFilterRegistry implements Serializable {
     private final Map<String, ActionFilter> filters;
 
     public ActionFilterRegistry() {
-        filters = new HashMap<String, ActionFilter>();
+        filters = new HashMap<>();
     }
 
     public synchronized void addFilter(ActionFilter filter) {

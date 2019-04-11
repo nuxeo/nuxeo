@@ -58,7 +58,7 @@ public class TilingPreviewPanel extends Composite implements TilingModelListener
 
     private final TilingModel model;
 
-    private final Map<String, Image> images = new HashMap<String, Image>();
+    private final Map<String, Image> images = new HashMap<>();
 
     public TilingPreviewPanel(TilingController tilingController, TilingModel tilingModel) {
         controller = tilingController;

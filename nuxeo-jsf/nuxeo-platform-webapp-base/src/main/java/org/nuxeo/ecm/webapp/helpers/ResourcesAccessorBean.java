@@ -59,7 +59,7 @@ public class ResourcesAccessorBean implements ResourcesAccessor {
     public Map<String, String> getMessages() {
         if (messages == null) {
             log.warn("Unable to get message map");
-            return new HashMap<String, String>();
+            return new HashMap<>();
         } else {
             return messages;
         }

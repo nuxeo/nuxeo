@@ -84,7 +84,7 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
         @Override
         @SuppressWarnings("unchecked")
         public Object transform(Object input) {
-            Set<String> output = new HashSet<String>();
+            Set<String> output = new HashSet<>();
             TransformedSet.decorate(output, ComponentNameTransformer.INSTANCE).addAll((Collection<?>) input);
             return output;
         }
@@ -93,7 +93,7 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
     @Override
     @SuppressWarnings("unchecked")
     public Map<String, Set<String>> getPendingComponents() {
-        Map<String, Set<String>> returnedMap = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> returnedMap = new HashMap<>();
         Map<ComponentName, Set<ComponentName>> pendingRegistrations = doGetRuntime().getComponentManager().getPendingRegistrations();
         if (pendingRegistrations.size() != 0) {
             TransformedMap.decorate(returnedMap, ComponentNameTransformer.INSTANCE, ComponentNamesTransformer.INSTANCE).putAll(
@@ -117,7 +117,7 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
     @SuppressWarnings("unchecked")
     public Set<String> getResolvedComponents() {
         Collection<RegistrationInfo> registrations = doGetRuntime().getComponentManager().getRegistrations();
-        Set<String> returnedNames = new HashSet<String>(registrations.size());
+        Set<String> returnedNames = new HashSet<>(registrations.size());
         if (registrations.size() > 0) {
             TransformedCollection.decorate(returnedNames, RegistrationTransformer.INSTANCE).addAll(registrations);
         }

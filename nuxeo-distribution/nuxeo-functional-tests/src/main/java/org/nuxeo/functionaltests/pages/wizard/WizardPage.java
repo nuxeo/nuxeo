@@ -83,7 +83,7 @@ public class WizardPage extends AbstractWizardPage {
 
     public List<String> getErrors() {
         List<WebElement> errorsEl = driver.findElements(By.xpath("//div[@class='errBlock']/div[@class='errItem']"));
-        List<String> errors = new ArrayList<String>();
+        List<String> errors = new ArrayList<>();
         for (WebElement errorEl : errorsEl) {
             if (errorEl.getText() != null && errorEl.getText().length() > 0) {
                 errors.add(errorEl.getText());
@@ -94,7 +94,7 @@ public class WizardPage extends AbstractWizardPage {
 
     public List<String> getInfos() {
         List<WebElement> infosEl = driver.findElements(By.xpath("//div[@class='infoBlock']/div[@class='infoItem']"));
-        List<String> infos = new ArrayList<String>();
+        List<String> infos = new ArrayList<>();
         for (WebElement infoEl : infosEl) {
             if (infoEl.getText() != null && infoEl.getText().length() > 0) {
                 infos.add(infoEl.getText());

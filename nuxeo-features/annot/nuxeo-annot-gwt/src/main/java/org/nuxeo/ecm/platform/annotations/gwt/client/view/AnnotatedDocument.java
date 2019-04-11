@@ -55,9 +55,9 @@ import com.google.gwt.user.client.Window;
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  */
 public class AnnotatedDocument implements AnnotationChangeListener {
-    private List<Annotation> annotations = new ArrayList<Annotation>();
+    private List<Annotation> annotations = new ArrayList<>();
 
-    private List<Annotation> decoratedAnnotations = new ArrayList<Annotation>();
+    private List<Annotation> decoratedAnnotations = new ArrayList<>();
 
     private static XPathUtil xPathUtil = new XPathUtil();
 
@@ -319,7 +319,7 @@ public class AnnotatedDocument implements AnnotationChangeListener {
     }
 
     private List<Element> getElementsToRemove(NodeList<Element> nodes, String className) {
-        List<Element> elementsToRemove = new ArrayList<Element>();
+        List<Element> elementsToRemove = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); ++i) {
             Element element = nodes.getItem(i);
             CSSClassManager manager = new CSSClassManager(element);

@@ -59,12 +59,12 @@ public class FacetFilter implements Filter {
         if (required == null) {
             this.required = Collections.emptySet();
         } else {
-            this.required = new HashSet<String>(required);
+            this.required = new HashSet<>(required);
         }
         if (excluded == null) {
             this.excluded = Collections.emptySet();
         } else {
-            this.excluded = new HashSet<String>(excluded);
+            this.excluded = new HashSet<>(excluded);
         }
         shortcut = findShortcut();
     }
@@ -96,13 +96,13 @@ public class FacetFilter implements Filter {
         if (filter1.required.isEmpty() && filter2.required.isEmpty()) {
             required = Collections.emptySet();
         } else {
-            required = new HashSet<String>(filter1.required);
+            required = new HashSet<>(filter1.required);
             required.addAll(filter2.required);
         }
         if (filter1.excluded.isEmpty() && filter2.excluded.isEmpty()) {
             excluded = Collections.emptySet();
         } else {
-            excluded = new HashSet<String>(filter1.excluded);
+            excluded = new HashSet<>(filter1.excluded);
             excluded.addAll(filter2.excluded);
         }
         shortcut = findShortcut();
@@ -113,7 +113,7 @@ public class FacetFilter implements Filter {
             // no condition, always matches
             return Boolean.TRUE;
         }
-        Collection<String> intersection = new HashSet<String>(required);
+        Collection<String> intersection = new HashSet<>(required);
         intersection.retainAll(excluded);
         if (!intersection.isEmpty()) {
             // non-empty intersection, filter can never match

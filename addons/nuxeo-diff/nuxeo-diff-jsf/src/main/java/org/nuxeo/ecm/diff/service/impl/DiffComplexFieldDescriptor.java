@@ -87,7 +87,7 @@ public class DiffComplexFieldDescriptor {
     }
 
     protected List<DiffFieldItemDefinition> getDiffFieldItemDefinitions(List<DiffFieldItemDescriptor> itemDescriptors) {
-        List<DiffFieldItemDefinition> diffFieldItemDefinitions = new ArrayList<DiffFieldItemDefinition>();
+        List<DiffFieldItemDefinition> diffFieldItemDefinitions = new ArrayList<>();
         for (DiffFieldItemDescriptor itemDescriptor : itemDescriptors) {
             diffFieldItemDefinitions.add(itemDescriptor.getDiffFieldItemDefinition());
         }

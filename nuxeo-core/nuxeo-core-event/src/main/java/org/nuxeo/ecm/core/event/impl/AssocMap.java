@@ -32,7 +32,7 @@ import java.util.Set;
  */
 public class AssocMap {
 
-    protected final Map<String, Set<String>> peers = new HashMap<String, Set<String>>();
+    protected final Map<String, Set<String>> peers = new HashMap<>();
 
     public synchronized void put(String x, String y) {
         Set<String> px = peers.get(x);
@@ -47,7 +47,7 @@ public class AssocMap {
             px.add(y);
             peers.put(y, px);
         } else { // both members are already in relation with other members
-            Set<String> set = new HashSet<String>();
+            Set<String> set = new HashSet<>();
             set.addAll(px);
             set.addAll(py);
             for (String key : set.toArray(new String[set.size()])) {

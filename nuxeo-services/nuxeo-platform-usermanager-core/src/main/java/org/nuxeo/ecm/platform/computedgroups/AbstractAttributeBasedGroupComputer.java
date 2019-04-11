@@ -42,7 +42,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends AbstractGroupC
 
     public List<String> getAllGroupIds() {
 
-        List<String> companies = new ArrayList<String>();
+        List<String> companies = new ArrayList<>();
         for (String userId : getUM().getUserIds()) {
             DocumentModel doc = getUM().getUserModel(userId);
             if (doc != null) {
@@ -58,12 +58,12 @@ public abstract class AbstractAttributeBasedGroupComputer extends AbstractGroupC
 
     public List<String> getGroupMembers(String groupName) {
 
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+        Map<String, Serializable> filter = new HashMap<>();
         filter.put(getAttributeForGroupComputation(), groupName);
 
         DocumentModelList users = getUM().searchUsers(filter, null);
 
-        List<String> memberIds = new ArrayList<String>();
+        List<String> memberIds = new ArrayList<>();
 
         for (DocumentModel user : users) {
             memberIds.add(user.getId());
@@ -72,7 +72,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends AbstractGroupC
     }
 
     public List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
-        List<String> grpNames = new ArrayList<String>();
+        List<String> grpNames = new ArrayList<>();
         String property = (String) nuxeoPrincipal.getModel().getProperty(getUM().getUserSchemaName(),
                 getAttributeForGroupComputation());
         if (property != null && !"".equals(property.trim())) {
@@ -92,12 +92,12 @@ public abstract class AbstractAttributeBasedGroupComputer extends AbstractGroupC
     @Override
     public List<String> searchGroups(Map<String, Serializable> filter, Set<String> fulltext) {
 
-        List<String> companies = new ArrayList<String>();
+        List<String> companies = new ArrayList<>();
 
         String grpName = (String) filter.get(getUM().getGroupIdField());
         if (grpName != null) {
-            Map<String, Serializable> gFilter = new HashMap<String, Serializable>();
-            Set<String> gFulltext = new HashSet<String>();
+            Map<String, Serializable> gFilter = new HashMap<>();
+            Set<String> gFulltext = new HashSet<>();
             gFilter.put(getAttributeForGroupComputation(), grpName);
             gFulltext.add(getAttributeForGroupComputation());
             for (DocumentModel userDoc : getUM().searchUsers(gFilter, gFulltext)) {

@@ -121,9 +121,9 @@ public class JsonMarshalling {
 
     protected static JsonFactory factory = newJsonFactory();
 
-    protected static final Map<String, JsonMarshaller<?>> marshallersByType = new ConcurrentHashMap<String, JsonMarshaller<?>>();
+    protected static final Map<String, JsonMarshaller<?>> marshallersByType = new ConcurrentHashMap<>();
 
-    protected static final Map<Class<?>, JsonMarshaller<?>> marshallersByJavaType = new ConcurrentHashMap<Class<?>, JsonMarshaller<?>>();
+    protected static final Map<Class<?>, JsonMarshaller<?>> marshallersByJavaType = new ConcurrentHashMap<>();
 
     public static JsonFactory getFactory() {
         return factory;
@@ -199,9 +199,9 @@ public class JsonMarshalling {
     }
 
     public static OperationRegistry readRegistry(String content) throws IOException {
-        HashMap<String, OperationDocumentation> ops = new HashMap<String, OperationDocumentation>();
-        HashMap<String, OperationDocumentation> chains = new HashMap<String, OperationDocumentation>();
-        HashMap<String, String> paths = new HashMap<String, String>();
+        HashMap<String, OperationDocumentation> ops = new HashMap<>();
+        HashMap<String, OperationDocumentation> chains = new HashMap<>();
+        HashMap<String, String> paths = new HashMap<>();
 
         JsonToken tok;
         try (JsonParser jp = factory.createParser(content)) {

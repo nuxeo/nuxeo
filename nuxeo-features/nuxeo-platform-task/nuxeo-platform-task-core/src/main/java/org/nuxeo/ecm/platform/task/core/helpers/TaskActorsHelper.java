@@ -48,7 +48,7 @@ public final class TaskActorsHelper {
      */
     public static List<String> getTaskActors(NuxeoPrincipal principal) {
 
-        List<String> actors = new ArrayList<String>();
+        List<String> actors = new ArrayList<>();
 
         String name = principal.getName();
         actors.add(name);

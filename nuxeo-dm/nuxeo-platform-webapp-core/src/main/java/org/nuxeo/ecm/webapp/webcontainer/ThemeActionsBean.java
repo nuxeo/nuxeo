@@ -79,7 +79,7 @@ public class ThemeActionsBean implements ThemeActions {
         if (currentFavicons == null) {
             String flavor = getCurrentFlavor();
             FlavorDescriptor f = themeStylingService.getFlavor(flavor);
-            currentFavicons = new ArrayList<IconDescriptor>();
+            currentFavicons = new ArrayList<>();
             if (f != null) {
                 List<IconDescriptor> icons = f.getFavicons();
                 currentFavicons.addAll(icons);

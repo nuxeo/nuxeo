@@ -62,7 +62,7 @@ public class NotNullConstraint extends AbstractConstraint {
      */
     @Override
     public Description getDescription() {
-        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        Map<String, Serializable> params = new HashMap<>();
         return new Description(NotNullConstraint.NAME, params);
     }
 

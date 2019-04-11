@@ -55,10 +55,10 @@ public class TemplateProcessorDescriptor implements Serializable {
     protected boolean enabled = true;
 
     @XNodeList(value = "supportedMimeType", type = ArrayList.class, componentType = String.class)
-    protected List<String> supportedMimeTypes = new ArrayList<String>();
+    protected List<String> supportedMimeTypes = new ArrayList<>();
 
     @XNodeList(value = "supportedExtension", type = ArrayList.class, componentType = String.class)
-    protected List<String> supportedExtensions = new ArrayList<String>();
+    protected List<String> supportedExtensions = new ArrayList<>();
 
     public boolean init() {
         if (getProcessor() == null) {

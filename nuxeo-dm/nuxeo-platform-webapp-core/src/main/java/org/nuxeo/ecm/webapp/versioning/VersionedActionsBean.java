@@ -146,11 +146,11 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         } else {
             doc = currentDocument;
         }
-        List<PageSelection<VersionModel>> versionModelSelections = new ArrayList<PageSelection<VersionModel>>();
+        List<PageSelection<VersionModel>> versionModelSelections = new ArrayList<>();
         for (VersionModel versionModel : documentVersioning.getItemVersioningHistory(doc)) {
-            versionModelSelections.add(new PageSelection<VersionModel>(versionModel, isVersionSelected(versionModel)));
+            versionModelSelections.add(new PageSelection<>(versionModel, isVersionSelected(versionModel)));
         }
-        versionModelList = new PageSelections<VersionModel>(versionModelSelections);
+        versionModelList = new PageSelections<>(versionModelSelections);
     }
 
     /**
@@ -341,7 +341,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         documentManager.save();
         resetVersions();
         // remove from all lists
-        documentsListsManager.removeFromAllLists(new ArrayList<DocumentModel>(currentVersionSelection));
+        documentsListsManager.removeFromAllLists(new ArrayList<>(currentVersionSelection));
         facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get("feedback.versioning.versionsRemoved"));
         return null;

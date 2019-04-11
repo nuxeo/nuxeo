@@ -51,9 +51,9 @@ public class ClassPath implements ClassPathScanner.Callback {
     protected final File nestedJARsDir;
 
     public ClassPath(SharedClassLoader loader, File nestedJARsDir) {
-        bundles = new ArrayList<BundleFile>();
-        jars = new ArrayList<BundleFile>();
-        nestedJars = new ArrayList<BundleFile>();
+        bundles = new ArrayList<>();
+        jars = new ArrayList<>();
+        nestedJars = new ArrayList<>();
         this.loader = loader;
         this.nestedJARsDir = nestedJARsDir;
         nestedJARsDir.mkdirs();

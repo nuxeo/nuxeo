@@ -53,13 +53,13 @@ public class ModelMBeanIntrospector {
 
     protected ModelMBeanInfo managementInfo;
 
-    protected final Map<String, ModelMBeanAttributeInfo> attributesInfo = new HashMap<String, ModelMBeanAttributeInfo>();
+    protected final Map<String, ModelMBeanAttributeInfo> attributesInfo = new HashMap<>();
 
-    protected final Map<String, ModelMBeanConstructorInfo> constructorsInfo = new HashMap<String, ModelMBeanConstructorInfo>();
+    protected final Map<String, ModelMBeanConstructorInfo> constructorsInfo = new HashMap<>();
 
-    protected final Map<String, ModelMBeanOperationInfo> operationsInfo = new HashMap<String, ModelMBeanOperationInfo>();
+    protected final Map<String, ModelMBeanOperationInfo> operationsInfo = new HashMap<>();
 
-    protected final Map<String, ModelMBeanNotificationInfo> notificationsInfo = new HashMap<String, ModelMBeanNotificationInfo>();
+    protected final Map<String, ModelMBeanNotificationInfo> notificationsInfo = new HashMap<>();
 
     public ModelMBeanIntrospector(Class<?> clazz) {
         this.clazz = clazz;
@@ -71,7 +71,7 @@ public class ModelMBeanIntrospector {
         }
 
         // Collect ifaces
-        Set<Class<?>> ifaces = new HashSet<Class<?>>(1);
+        Set<Class<?>> ifaces = new HashSet<>(1);
         if (clazz.isInterface()) {
             ifaces.add(clazz);
         } else {

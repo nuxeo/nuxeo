@@ -46,7 +46,7 @@ public class SchemaDescriptor {
     }
 
     public static Set<String> getSchemaNames(SchemaDescriptor[] sds) {
-        Set<String> set = new LinkedHashSet<String>();
+        Set<String> set = new LinkedHashSet<>();
         for (SchemaDescriptor sd : sds) {
             set.add(sd.name);
         }

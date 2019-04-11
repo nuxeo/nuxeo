@@ -72,7 +72,7 @@ public class CheckSenderAction implements MessageAction {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try (Session session = directoryService.open("userDirectory")) {
 
-            Map<String, Serializable> map = new HashMap<String, Serializable>();
+            Map<String, Serializable> map = new HashMap<>();
             map.put("email", address);
             DocumentModelList list = session.query(map);
             if (list == null || list.isEmpty()) {

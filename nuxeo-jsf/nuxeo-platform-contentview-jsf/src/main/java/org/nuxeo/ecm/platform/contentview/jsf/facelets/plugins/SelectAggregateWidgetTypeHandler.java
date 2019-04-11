@@ -59,7 +59,7 @@ public abstract class SelectAggregateWidgetTypeHandler extends AbstractSelectWid
     protected FaceletHandler getOptionsFaceletHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
             WidgetSelectOption[] selectOptions) {
         FaceletHandler leaf = new LeafFaceletHandler();
-        List<FaceletHandler> selectItems = new ArrayList<FaceletHandler>();
+        List<FaceletHandler> selectItems = new ArrayList<>();
         FaceletHandler firstItem = getFirstHandler(ctx, helper, widget, leaf);
         final boolean hasOtherOptions = selectOptions != null && selectOptions.length > 0;
         if (firstItem != null) {
@@ -124,9 +124,9 @@ public abstract class SelectAggregateWidgetTypeHandler extends AbstractSelectWid
             TagHandler componentHandler) {
         WidgetSelectOption[] selectOptions = widget.getSelectOptions();
         if (selectOptions != null && selectOptions.length != 0) {
-            List<String> blockedPatterns = new ArrayList<String>(1);
+            List<String> blockedPatterns = new ArrayList<>(1);
             blockedPatterns.add(LABELS);
-            Map<String, String> labels = new HashMap<String, String>();
+            Map<String, String> labels = new HashMap<>();
             for (WidgetSelectOption selectOption : selectOptions) {
                 if (selectOption == null) {
                     continue;
@@ -148,7 +148,7 @@ public abstract class SelectAggregateWidgetTypeHandler extends AbstractSelectWid
                     labels.put(selectOption.getItemValue(), selectOption.getItemLabel());
                 }
             }
-            Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+            Map<String, ValueExpression> variables = new HashMap<>();
             variables.put(LABELS, ctx.getExpressionFactory().createValueExpression(labels, HashMap.class));
             return helper.getAliasTagHandler(widget.getTagConfigId(), variables, blockedPatterns, componentHandler);
         } else {

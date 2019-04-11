@@ -96,11 +96,11 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         super();
         this.name = name;
         this.type = type;
-        this.labels = new HashMap<String, String>();
+        this.labels = new HashMap<>();
         if (label != null) {
             this.labels.put(BuiltinModes.ANY, label);
         }
-        this.helpLabels = new HashMap<String, String>();
+        this.helpLabels = new HashMap<>();
         if (helpLabel != null) {
             this.helpLabels.put(BuiltinModes.ANY, helpLabel);
         }
@@ -111,7 +111,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         } else {
             this.fieldDefinitions = fieldDefinitions.toArray(new FieldDefinition[0]);
         }
-        this.properties = new HashMap<String, Map<String, Serializable>>();
+        this.properties = new HashMap<>();
         if (properties != null) {
             this.properties.put(BuiltinModes.ANY, properties);
         }
@@ -266,7 +266,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
             return widgetModeProps;
         } else {
             // take mode values, and override with widget mode values
-            Map<String, Serializable> res = new HashMap<String, Serializable>(modeProps);
+            Map<String, Serializable> res = new HashMap<>(modeProps);
             res.putAll(widgetModeProps);
             return res;
         }
@@ -380,7 +380,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     }
 
     public static Map<String, Serializable> getProperties(Map<String, Map<String, Serializable>> properties, String mode) {
-        Map<String, Serializable> res = new HashMap<String, Serializable>();
+        Map<String, Serializable> res = new HashMap<>();
         if (properties != null) {
             Map<String, Serializable> propsInAnyMode = properties.get(BuiltinModes.ANY);
             if (propsInAnyMode != null) {
@@ -413,7 +413,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     }
 
     public static List<RenderingInfo> getRenderingInfos(Map<String, List<RenderingInfo>> infos, String mode) {
-        List<RenderingInfo> res = new ArrayList<RenderingInfo>();
+        List<RenderingInfo> res = new ArrayList<>();
         if (infos != null) {
             List<RenderingInfo> inAnyMode = infos.get(BuiltinModes.ANY);
             if (inAnyMode != null) {
@@ -461,12 +461,12 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     public WidgetDefinition clone() {
         Map<String, Map<String, Serializable>> cprops = null;
         if (properties != null) {
-            cprops = new HashMap<String, Map<String, Serializable>>();
+            cprops = new HashMap<>();
             for (Map.Entry<String, Map<String, Serializable>> entry : properties.entrySet()) {
                 Map<String, Serializable> subProps = entry.getValue();
                 Map<String, Serializable> csubProps = null;
                 if (subProps != null) {
-                    csubProps = new HashMap<String, Serializable>();
+                    csubProps = new HashMap<>();
                     csubProps.putAll(subProps);
                 }
                 cprops.put(entry.getKey(), csubProps);
@@ -474,12 +474,12 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         }
         Map<String, Map<String, Serializable>> ccontrols = null;
         if (controls != null) {
-            ccontrols = new HashMap<String, Map<String, Serializable>>();
+            ccontrols = new HashMap<>();
             for (Map.Entry<String, Map<String, Serializable>> entry : controls.entrySet()) {
                 Map<String, Serializable> subControls = entry.getValue();
                 Map<String, Serializable> csubControls = null;
                 if (subControls != null) {
-                    csubControls = new HashMap<String, Serializable>();
+                    csubControls = new HashMap<>();
                     csubControls.putAll(subControls);
                 }
                 ccontrols.put(entry.getKey(), csubControls);
@@ -487,17 +487,17 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         }
         Map<String, String> clabels = null;
         if (labels != null) {
-            clabels = new HashMap<String, String>();
+            clabels = new HashMap<>();
             clabels.putAll(labels);
         }
         Map<String, String> chelpLabels = null;
         if (helpLabels != null) {
-            chelpLabels = new HashMap<String, String>();
+            chelpLabels = new HashMap<>();
             chelpLabels.putAll(helpLabels);
         }
         Map<String, String> cmodes = null;
         if (modes != null) {
-            cmodes = new HashMap<String, String>();
+            cmodes = new HashMap<>();
             cmodes.putAll(modes);
         }
         FieldDefinition[] cfieldDefinitions = null;
@@ -509,12 +509,12 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         }
         Map<String, Map<String, Serializable>> cwidgetProps = null;
         if (widgetModeProperties != null) {
-            cwidgetProps = new HashMap<String, Map<String, Serializable>>();
+            cwidgetProps = new HashMap<>();
             for (Map.Entry<String, Map<String, Serializable>> entry : widgetModeProperties.entrySet()) {
                 Map<String, Serializable> subProps = entry.getValue();
                 Map<String, Serializable> csubProps = null;
                 if (subProps != null) {
-                    csubProps = new HashMap<String, Serializable>();
+                    csubProps = new HashMap<>();
                     csubProps.putAll(subProps);
                 }
                 cwidgetProps.put(entry.getKey(), csubProps);
@@ -543,12 +543,12 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         }
         Map<String, List<RenderingInfo>> crenderingInfos = null;
         if (renderingInfos != null) {
-            crenderingInfos = new HashMap<String, List<RenderingInfo>>();
+            crenderingInfos = new HashMap<>();
             for (Map.Entry<String, List<RenderingInfo>> item : renderingInfos.entrySet()) {
                 List<RenderingInfo> infos = item.getValue();
                 List<RenderingInfo> clonedInfos = null;
                 if (infos != null) {
-                    clonedInfos = new ArrayList<RenderingInfo>();
+                    clonedInfos = new ArrayList<>();
                     for (RenderingInfo info : infos) {
                         clonedInfos.add(info.clone());
                     }
@@ -564,7 +564,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         clone.setHandlingLabels(handlingLabels);
         clone.setControls(ccontrols);
         if (aliases != null) {
-            clone.setAliases(new ArrayList<String>(aliases));
+            clone.setAliases(new ArrayList<>(aliases));
         }
         clone.setDynamic(dynamic);
         clone.setGlobal(global);

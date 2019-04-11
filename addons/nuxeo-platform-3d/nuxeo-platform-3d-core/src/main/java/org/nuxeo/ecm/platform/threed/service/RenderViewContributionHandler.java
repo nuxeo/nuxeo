@@ -33,7 +33,7 @@ public class RenderViewContributionHandler extends ContributionFragmentRegistry<
     public final Map<String, RenderView> registry;
 
     public RenderViewContributionHandler() {
-        registry = new HashMap<String, RenderView>();
+        registry = new HashMap<>();
     }
 
     @Override

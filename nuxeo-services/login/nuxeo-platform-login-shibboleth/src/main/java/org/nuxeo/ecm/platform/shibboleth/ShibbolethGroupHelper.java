@@ -113,14 +113,14 @@ public class ShibbolethGroupHelper {
 
     public static DocumentModelList searchGroup(String fullText) {
         try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
-            Map<String, Serializable> filters = new HashMap<String, Serializable>();
+            Map<String, Serializable> filters = new HashMap<>();
             if (fullText != null && !"".equals(fullText)) {
                 filters.put(ShibbolethConstants.GROUP_ID_PROPERTY, fullText);
             }
 
-            Map<String, String> orderBy = new HashMap<String, String>();
+            Map<String, String> orderBy = new HashMap<>();
             orderBy.put(ShibbolethConstants.GROUP_ID_PROPERTY, DocumentModelComparator.ORDER_ASC);
-            return session.query(filters, new HashSet<String>(filters.keySet()), orderBy);
+            return session.query(filters, new HashSet<>(filters.keySet()), orderBy);
         }
     }
 

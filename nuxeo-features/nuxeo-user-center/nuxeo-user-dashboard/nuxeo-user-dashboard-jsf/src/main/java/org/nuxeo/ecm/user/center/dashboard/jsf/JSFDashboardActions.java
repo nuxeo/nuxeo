@@ -79,7 +79,7 @@ public class JSFDashboardActions implements Serializable {
     @SuppressWarnings("unchecked")
     public List<DocumentModel> getUserDomains() {
         if (documentManager == null) {
-            return new ArrayList<DocumentModel>();
+            return new ArrayList<>();
         }
         if (availableDomains == null) {
             ContentView cv = contentViewActions.getContentView(USER_DOMAINS_CONTENT_VIEW);

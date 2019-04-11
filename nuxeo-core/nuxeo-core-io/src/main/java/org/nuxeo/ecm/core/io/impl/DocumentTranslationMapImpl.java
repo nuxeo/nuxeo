@@ -69,7 +69,7 @@ public class DocumentTranslationMapImpl implements DocumentTranslationMap {
     @Override
     public void put(DocumentRef oldRef, DocumentRef newRef) {
         if (map == null) {
-            map = new HashMap<DocumentRef, DocumentRef>();
+            map = new HashMap<>();
         }
         map.put(oldRef, newRef);
     }
@@ -80,7 +80,7 @@ public class DocumentTranslationMapImpl implements DocumentTranslationMap {
             return;
         }
         if (map == null) {
-            map = new HashMap<DocumentRef, DocumentRef>();
+            map = new HashMap<>();
         }
         map.putAll(refs);
     }

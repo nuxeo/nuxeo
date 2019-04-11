@@ -68,7 +68,7 @@ public class PatternConstraint extends AbstractConstraint {
      */
     @Override
     public Description getDescription() {
-        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        Map<String, Serializable> params = new HashMap<>();
         params.put(PNAME_PATTERN, pattern.pattern());
         return new Description(PatternConstraint.NAME, params);
     }
@@ -86,7 +86,7 @@ public class PatternConstraint extends AbstractConstraint {
         // test whether there's a custom translation for this field constraint specific translation
         // the expected key is label.schema.constraint.violation.[ConstraintName]
         // follow the AbstractConstraint behavior otherwise
-        List<String> pathTokens = new ArrayList<String>();
+        List<String> pathTokens = new ArrayList<>();
         pathTokens.add(MESSAGES_KEY);
         pathTokens.add(PatternConstraint.NAME);
         String key = StringUtils.join(pathTokens, '.');

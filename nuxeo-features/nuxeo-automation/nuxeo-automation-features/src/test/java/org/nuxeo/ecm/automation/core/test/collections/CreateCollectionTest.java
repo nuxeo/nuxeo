@@ -52,7 +52,7 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
 
     @Test
     public void testCreateCollectionWithoutPath() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", COLLECTION_NAME);
         params.put("description", COLLECTION_DESCRIPTION);
 
@@ -69,7 +69,7 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
 
     @Test
     public void testCreateCollectionWithPath() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", COLLECTION_NAME);
         params.put("description", COLLECTION_DESCRIPTION);
 
@@ -94,7 +94,7 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
         session.createDocument(doc);
         session.save();
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", COLLECTION_NAME);
         params.put("description", COLLECTION_DESCRIPTION);
 

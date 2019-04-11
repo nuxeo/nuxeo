@@ -67,7 +67,7 @@ public class AuditLog {
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) {
-        List<LogEntry> entries = new ArrayList<LogEntry>();
+        List<LogEntry> entries = new ArrayList<>();
         Date date = new Date();
         String uname = ctx.getPrincipal().getActingUser();
         for (DocumentModel doc : docs) {

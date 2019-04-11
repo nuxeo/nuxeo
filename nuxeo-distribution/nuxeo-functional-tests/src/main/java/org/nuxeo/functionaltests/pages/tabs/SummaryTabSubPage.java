@@ -154,7 +154,7 @@ public class SummaryTabSubPage extends AbstractPage {
      * @since 5.8
      */
     public List<String> getContributors() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (WebElement contributor : contributors) {
             result.add(contributor.getText());
         }

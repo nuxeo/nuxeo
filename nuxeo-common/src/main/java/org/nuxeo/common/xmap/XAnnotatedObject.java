@@ -58,7 +58,7 @@ public class XAnnotatedObject {
             this.ctor = this.klass.getDeclaredConstructor();
             ctor.setAccessible(true);
             path = new Path(xob.value());
-            members = new ArrayList<XAnnotatedMember>();
+            members = new ArrayList<>();
             String[] order = xob.order();
             if (order.length > 0) {
                 sorter = new Sorter(order);
@@ -112,7 +112,7 @@ class Sorter implements Comparator<XAnnotatedMember>, Serializable {
 
     private static final long serialVersionUID = -2546984283687927308L;
 
-    private final Map<String, Integer> order = new HashMap<String, Integer>();
+    private final Map<String, Integer> order = new HashMap<>();
 
     Sorter(String[] order) {
         for (int i = 0; i < order.length; i++) {

@@ -328,11 +328,11 @@ public class WidgetTagHandler extends MetaTagHandler {
             if (devHandler != null) {
                 // expose the widget variable to sub dev handler
                 String widgetTagConfigId = widget.getTagConfigId();
-                Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+                Map<String, ValueExpression> variables = new HashMap<>();
                 ExpressionFactory eFactory = ctx.getExpressionFactory();
                 ValueExpression widgetVe = eFactory.createValueExpression(widget, Widget.class);
                 variables.put(RenderVariables.widgetVariables.widget.name(), widgetVe);
-                List<String> blockedPatterns = new ArrayList<String>();
+                List<String> blockedPatterns = new ArrayList<>();
                 blockedPatterns.add(RenderVariables.widgetVariables.widget.name() + "*");
                 FaceletHandler devAliasHandler = helper.getAliasFaceletHandler(widgetTagConfigId, variables,
                         blockedPatterns, devHandler);
@@ -364,7 +364,7 @@ public class WidgetTagHandler extends MetaTagHandler {
         } else {
             if (fillVariables) {
                 // expose widget variables
-                Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+                Map<String, ValueExpression> variables = new HashMap<>();
 
                 ValueExpression valueExpr;
                 if (value == null) {

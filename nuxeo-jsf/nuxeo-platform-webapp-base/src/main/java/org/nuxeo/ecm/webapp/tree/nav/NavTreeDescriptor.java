@@ -141,7 +141,7 @@ public class NavTreeDescriptor implements Serializable, Comparable<NavTreeDescri
                 new String[] { DirectoryTreeDescriptor.NAV_ACTION_CATEGORY });
         a.setType("rest_document_link");
         a.setLabel(getTreeLabel());
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("ajaxSupport", "true");
         if (isDirectoryTreeBased()) {
             props.put("link", "/incl/single_directory_tree_explorer.xhtml");

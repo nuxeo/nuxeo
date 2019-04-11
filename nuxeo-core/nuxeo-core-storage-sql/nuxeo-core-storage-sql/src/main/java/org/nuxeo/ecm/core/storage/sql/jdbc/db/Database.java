@@ -46,8 +46,8 @@ public class Database implements Serializable {
 
     public Database(Dialect dialect) {
         this.dialect = dialect;
-        tables = new LinkedHashMap<String, Table>();
-        physicalTables = new HashSet<String>();
+        tables = new LinkedHashMap<>();
+        physicalTables = new HashSet<>();
     }
 
     public Table addTable(String name) throws IllegalArgumentException {

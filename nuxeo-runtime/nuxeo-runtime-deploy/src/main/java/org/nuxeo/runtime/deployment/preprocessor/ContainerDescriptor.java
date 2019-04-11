@@ -64,7 +64,7 @@ public class ContainerDescriptor {
     public final FragmentRegistry fragments = new FragmentRegistry();
 
     // sub containers
-    public final List<ContainerDescriptor> subContainers = new ArrayList<ContainerDescriptor>();
+    public final List<ContainerDescriptor> subContainers = new ArrayList<>();
 
     public CommandProcessor install;
 

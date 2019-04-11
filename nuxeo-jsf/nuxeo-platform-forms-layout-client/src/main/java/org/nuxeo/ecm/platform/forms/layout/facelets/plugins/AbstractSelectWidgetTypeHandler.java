@@ -174,7 +174,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends AbstractWidgetType
     protected FaceletHandler getOptionsFaceletHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
             WidgetSelectOption[] selectOptions) {
         FaceletHandler leaf = new LeafFaceletHandler();
-        List<FaceletHandler> selectItems = new ArrayList<FaceletHandler>();
+        List<FaceletHandler> selectItems = new ArrayList<>();
         FaceletHandler firstItem = getFirstHandler(ctx, helper, widget, leaf);
         if (firstItem != null) {
             selectItems.add(firstItem);

@@ -43,7 +43,7 @@ public class TestFMXmlProcessing extends SimpleTemplateDocTestCase {
         DocumentModel testDoc = adapter.getAdaptedDoc();
         assertNotNull(testDoc);
 
-        List<TemplateInput> params = new ArrayList<TemplateInput>();
+        List<TemplateInput> params = new ArrayList<>();
         TemplateInput input = new TemplateInput("variable1", "YoVar1");
         params.add(input);
 

@@ -35,7 +35,7 @@ public class RemoteThrowable extends Throwable {
         super(message);
     }
 
-    protected final HashMap<String, JsonNode> otherNodes = new HashMap<String, JsonNode>();
+    protected final HashMap<String, JsonNode> otherNodes = new HashMap<>();
 
     public Map<String, JsonNode> getOtherNodes() {
         return otherNodes;

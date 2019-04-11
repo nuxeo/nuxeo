@@ -45,7 +45,7 @@ public class DocumentsListsService extends DefaultComponent {
     }
 
     public List<String> getDocumentsListDescriptorsName() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (String k : descriptors.keySet()) {
             if (descriptors.get(k).getEnabled()) {
                 list.add(k);
@@ -56,7 +56,7 @@ public class DocumentsListsService extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
-        descriptors = new HashMap<String, DocumentsListDescriptor>();
+        descriptors = new HashMap<>();
     }
 
     @Override

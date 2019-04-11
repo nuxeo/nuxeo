@@ -162,7 +162,7 @@ public class Selection {
      */
     public void addExisting(Serializable id) {
         if (existing == null) {
-            existing = new HashSet<Serializable>();
+            existing = new HashSet<>();
         }
         if (existing.contains(id) || (created != null && created.contains(id))) {
             // the id is already known here, this happens if the fragment was
@@ -180,7 +180,7 @@ public class Selection {
      */
     public void addCreated(Serializable id) {
         if (created == null) {
-            created = new HashSet<Serializable>();
+            created = new HashSet<>();
             // move to hard map
             softMap.remove(selId);
             hardMap.put(selId, this);
@@ -204,7 +204,7 @@ public class Selection {
     public void addExistingComplete(List<Serializable> actualExisting) {
         assert !complete;
         complete = true;
-        existing = new HashSet<Serializable>(actualExisting);
+        existing = new HashSet<>(actualExisting);
     }
 
     /**
@@ -231,7 +231,7 @@ public class Selection {
             existing.remove(id);
         }
         if (deleted == null) {
-            deleted = new HashSet<Serializable>();
+            deleted = new HashSet<>();
             // move to hard map
             softMap.remove(selId);
             hardMap.put(selId, this);
@@ -247,7 +247,7 @@ public class Selection {
     public void flush() {
         if (created != null) {
             if (existing == null) {
-                existing = new HashSet<Serializable>();
+                existing = new HashSet<>();
             }
             existing.addAll(created);
             warnIfBig(created.size());
@@ -344,7 +344,7 @@ public class Selection {
             return null;
         }
         // fetch fragments and maybe filter
-        List<SimpleFragment> filtered = new LinkedList<SimpleFragment>();
+        List<SimpleFragment> filtered = new LinkedList<>();
         if (existing != null) {
             for (Serializable id : existing) {
                 SimpleFragment fragment = getFragment(id);

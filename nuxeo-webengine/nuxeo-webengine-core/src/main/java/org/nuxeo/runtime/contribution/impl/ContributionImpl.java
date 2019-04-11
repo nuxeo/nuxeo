@@ -43,15 +43,15 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
 
     protected final K primaryKey;
 
-    protected final List<T> mainFragments = new ArrayList<T>();
+    protected final List<T> mainFragments = new ArrayList<>();
 
-    protected final List<T> fragments = new ArrayList<T>();
+    protected final List<T> fragments = new ArrayList<>();
 
     // the contributions I depend on
-    protected final Set<Contribution<K, T>> dependencies = new HashSet<Contribution<K, T>>();
+    protected final Set<Contribution<K, T>> dependencies = new HashSet<>();
 
     // the contributions that are waiting for me
-    protected final Set<Contribution<K, T>> dependents = new HashSet<Contribution<K, T>>();
+    protected final Set<Contribution<K, T>> dependents = new HashSet<>();
 
     // the unresolved dependencies that are blocking my registration
     // TODO: this member can be removed since we can obtain unresolved deps from dependencies set.
@@ -91,7 +91,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
     }
 
     public Set<Contribution<K, T>> getUnresolvedDependencies() {
-        Set<Contribution<K, T>> set = new HashSet<Contribution<K, T>>();
+        Set<Contribution<K, T>> set = new HashSet<>();
         for (Contribution<K, T> dep : dependencies) {
             if (dep.isResolved()) {
                 set.add(dep);

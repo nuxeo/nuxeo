@@ -51,7 +51,7 @@ public class GroupComputerChainDescriptor implements Serializable {
         if (computerNames != null) {
             return computerNames;
         } else {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
     }
 

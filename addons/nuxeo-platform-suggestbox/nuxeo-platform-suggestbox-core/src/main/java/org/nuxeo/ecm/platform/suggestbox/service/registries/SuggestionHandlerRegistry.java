@@ -32,7 +32,7 @@ public class SuggestionHandlerRegistry extends ContributionFragmentRegistry<Sugg
 
     private static final Log log = LogFactory.getLog(SuggestionHandlerRegistry.class);
 
-    protected final Map<String, SuggestionHandlerDescriptor> suggestionHandlerDescriptors = new LinkedHashMap<String, SuggestionHandlerDescriptor>();
+    protected final Map<String, SuggestionHandlerDescriptor> suggestionHandlerDescriptors = new LinkedHashMap<>();
 
     public Collection<SuggestionHandlerDescriptor> getHandlers() {
         return suggestionHandlerDescriptors.values();

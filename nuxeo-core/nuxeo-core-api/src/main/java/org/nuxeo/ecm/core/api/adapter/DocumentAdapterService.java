@@ -73,7 +73,7 @@ public class DocumentAdapterService extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
-        adapters = new ConcurrentHashMap<Class<?>, DocumentAdapterDescriptor>();
+        adapters = new ConcurrentHashMap<>();
     }
 
     @Override

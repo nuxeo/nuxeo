@@ -120,7 +120,7 @@ public class PopupHelper implements Serializable {
     @WebRemote
     public List<String> getAvailableActionId(String popupDocId) {
         List<Action> availableActions = getAvailablePopupActions(popupDocId);
-        List<String> availableActionsIds = new ArrayList<String>(availableActions.size());
+        List<String> availableActionsIds = new ArrayList<>(availableActions.size());
         for (Action act : availableActions) {
             availableActionsIds.add(act.getId());
         }
@@ -129,16 +129,16 @@ public class PopupHelper implements Serializable {
 
     @WebRemote
     public List<String> getUnavailableActionId(String popupDocId) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         List<Action> allActions = getUnfiltredPopupActions();
-        List<String> allActionsIds = new ArrayList<String>(allActions.size());
+        List<String> allActionsIds = new ArrayList<>(allActions.size());
         for (Action act : allActions) {
             allActionsIds.add(act.getId());
         }
 
         List<Action> availableActions = getAvailablePopupActions(popupDocId);
-        List<String> availableActionsIds = new ArrayList<String>(availableActions.size());
+        List<String> availableActionsIds = new ArrayList<>(availableActions.size());
         for (Action act : availableActions) {
             availableActionsIds.add(act.getId());
         }
@@ -173,7 +173,7 @@ public class PopupHelper implements Serializable {
 
     @WebRemote
     public String getNavigationURL(String docId, String tabId) {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
 
         if (tabId != null) {
             params.put("tabId", tabId);
@@ -186,7 +186,7 @@ public class PopupHelper implements Serializable {
 
     @WebRemote
     public String getNavigationURLOnContainer(String tabId) {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         if (tabId != null) {
             params.put("tabId", tabId);
         }
@@ -217,7 +217,7 @@ public class PopupHelper implements Serializable {
 
     @WebRemote
     public String getNavigationURLOnPopupdoc2(String tabId, String subTabId) {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         if (tabId != null) {
             params.put("tabId", tabId);
         }
@@ -228,7 +228,7 @@ public class PopupHelper implements Serializable {
     }
 
     protected Map<String, String> getCurrentTabParameters() {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         String tabId = webActions.getCurrentTabId();
         if (tabId != null) {
             params.put("tabId", tabId);
@@ -261,7 +261,7 @@ public class PopupHelper implements Serializable {
     public String deleteDocument(String docId) {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
         currentParent = getFirstParentAfterDelete(doc);
-        List<DocumentModel> docsToDelete = new ArrayList<DocumentModel>(1);
+        List<DocumentModel> docsToDelete = new ArrayList<>(1);
         docsToDelete.add(doc);
         return deleteActions.deleteSelection(docsToDelete);
     }

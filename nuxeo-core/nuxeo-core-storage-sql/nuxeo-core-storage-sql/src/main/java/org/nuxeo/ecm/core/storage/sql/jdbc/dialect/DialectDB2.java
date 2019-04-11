@@ -221,7 +221,7 @@ public class DialectDB2 extends Dialect {
 
     @Override
     public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put("idType", "VARCHAR(36)");
         properties.put("argIdType", "VARCHAR(36)"); // in function args
         return properties;

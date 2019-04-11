@@ -78,7 +78,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
 
     public static final String ADMINISTRATOR_USERNAME = "Administrator";
 
-    public final List<String> groupsToAdd = new ArrayList<String>();
+    public final List<String> groupsToAdd = new ArrayList<>();
 
     @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
@@ -312,7 +312,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             if (!lpd.getInitialized()) {
                 Map<String, String> existingParams = lp.getParameters();
                 if (existingParams == null) {
-                    existingParams = new HashMap<String, String>();
+                    existingParams = new HashMap<>();
                 }
                 Map<String, String> loginParams = userIdent.getLoginParameters();
                 if (loginParams != null) {

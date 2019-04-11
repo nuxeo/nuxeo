@@ -36,7 +36,7 @@ public class OAuthProvidersTokensActionBean extends DirectoryBasedEditor {
 
     @Override
     protected Map<String, Serializable> getQueryFilter() {
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+        Map<String, Serializable> filter = new HashMap<>();
         filter.put("clientToken", 1);
         return filter;
     }

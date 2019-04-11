@@ -76,7 +76,7 @@ public class RemoveEntryOfMultiValuedProperty extends AbstractOperationMultiValu
             log.info(String.format("Value \"%s\" not found in %s, can't remove it", value, doc.getPathAsString()));
             return doc;
         }
-        List<Serializable> list = new ArrayList<Serializable>(array);
+        List<Serializable> list = new ArrayList<>(array);
 
         if (!list.contains(value)) {
             log.info(String.format("Value \"%s\" not found in %s, can't remove it", value, doc.getPathAsString()));

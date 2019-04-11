@@ -66,7 +66,7 @@ public class TestUserProfileCreation {
 
         DocumentModel user;
         try (Session userDir = directoryService.getDirectory("userDirectory").getSession()) {
-            Map<String, Object> user1 = new HashMap<String, Object>();
+            Map<String, Object> user1 = new HashMap<>();
             user1.put("username", "user1");
             user1.put("groups", Arrays.asList(new String[] { "members" }));
             user = userDir.createEntry(user1);

@@ -370,7 +370,7 @@ public class ImportActions implements Serializable {
     public void processUpload(FileUploadEvent uploadEvent) {
         try {
             if (uploadedFiles == null) {
-                uploadedFiles = new ArrayList<NxUploadedFile>();
+                uploadedFiles = new ArrayList<>();
             }
             Blob blob = FileManageActionsBean.getBlob(uploadEvent);
             uploadedFiles.add(new NxUploadedFile(blob));

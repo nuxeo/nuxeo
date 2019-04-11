@@ -198,7 +198,7 @@ public class ExistingResource extends AbstractResource {
         }
 
         Backend root = BackendHelper.getBackend("/", request);
-        Set<String> names = new HashSet<String>(root.getVirtualFolderNames());
+        Set<String> names = new HashSet<>(root.getVirtualFolderNames());
         Path destinationPath = new Path(destination);
         String[] segments = destinationPath.segments();
         int removeSegments = 0;

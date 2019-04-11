@@ -78,7 +78,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
-    protected Map<String, List<DocumentTreeNode>> trees = new HashMap<String, List<DocumentTreeNode>>();
+    protected Map<String, List<DocumentTreeNode>> trees = new HashMap<>();
 
     protected String currentDocumentPath;
 
@@ -135,7 +135,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
         }
         List<DocumentTreeNode> currentTree = trees.get(treeName);
         if (currentTree == null) {
-            currentTree = new ArrayList<DocumentTreeNode>();
+            currentTree = new ArrayList<>();
             DocumentModel globalRoot = null;
             DocumentModel firstAccessibleParent = null;
             if (currentDocument != null) {

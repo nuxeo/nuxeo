@@ -113,7 +113,7 @@ public class TestMultiTemplating {
         testDoc.setProperty("dublincore", "description", "some description");
 
         // set dc:subjects
-        List<String> subjects = new ArrayList<String>();
+        List<String> subjects = new ArrayList<>();
         subjects.add("Subject 1");
         subjects.add("Subject 2");
         subjects.add("Subject 3");

@@ -40,7 +40,7 @@ public class TestFullTextUtils {
     }
 
     protected static void checkParseFullText(String expected, String text) {
-        assertEquals(new HashSet<String>(Arrays.asList(expected.split(" "))), FullTextUtils.parseFullText(text, true));
+        assertEquals(new HashSet<>(Arrays.asList(expected.split(" "))), FullTextUtils.parseFullText(text, true));
     }
 
     @Test

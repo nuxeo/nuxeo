@@ -212,7 +212,7 @@ public class RepeatTagHandler extends TagHandler {
 
         FaceletHandler handler;
         if (renderTime(ctx)) {
-            List<TagAttribute> repeatAttrs = new ArrayList<TagAttribute>();
+            List<TagAttribute> repeatAttrs = new ArrayList<>();
             TagAttribute itemsAttr = getItemsAttribute();
             repeatAttrs.add(createAttribute(config, "value", itemsAttr != null ? itemsAttr.getValue() : null));
             repeatAttrs.addAll(copyAttributes(config, id, var, begin, end, step, varStatusAttr, tranzient));
@@ -221,7 +221,7 @@ public class RepeatTagHandler extends TagHandler {
                     UIRepeat.COMPONENT_TYPE, null);
             handler = new ComponentHandler(repeatConfig);
         } else {
-            List<TagAttribute> forEachAttrs = new ArrayList<TagAttribute>();
+            List<TagAttribute> forEachAttrs = new ArrayList<>();
             forEachAttrs.add(createAttribute(config, "items", "#{" + getVarName("items") + "}"));
             forEachAttrs.addAll(copyAttributes(config, var, begin, end, step, varStatusAttr, tranzient));
             TagConfig forEachConfig = TagConfigFactory.createTagConfig(config, tagId,
@@ -261,7 +261,7 @@ public class RepeatTagHandler extends TagHandler {
     }
 
     protected List<TagAttribute> copyAttributes(TagConfig tagConfig, TagAttribute... attributes) {
-        List<TagAttribute> res = new ArrayList<TagAttribute>();
+        List<TagAttribute> res = new ArrayList<>();
         if (attributes != null) {
             for (TagAttribute attr : attributes) {
                 if (attr != null) {

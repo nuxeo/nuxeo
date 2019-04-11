@@ -39,9 +39,9 @@ import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
  */
 public class AnnotationScanner {
 
-    protected final Set<Class<?>> visitedClasses = new HashSet<Class<?>>();
+    protected final Set<Class<?>> visitedClasses = new HashSet<>();
 
-    protected final Map<Class<?>, List<Annotation>> classes = new Hashtable<Class<?>, List<Annotation>>();
+    protected final Map<Class<?>, List<Annotation>> classes = new Hashtable<>();
 
     public synchronized void scan(Class<?> clazz) {
         if (classes.containsKey(clazz)) {
@@ -94,7 +94,7 @@ public class AnnotationScanner {
             return classes.get(clazz);
         }
         visitedClasses.add(clazz);
-        List<Annotation> result = new ArrayList<Annotation>(); // collect only the annotation on this class
+        List<Annotation> result = new ArrayList<>(); // collect only the annotation on this class
         try {
             Annotation[] data = clazz.getAnnotations();
             result.addAll(Arrays.asList(data));

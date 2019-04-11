@@ -37,7 +37,7 @@ public class TestObjectResolverConstraint {
     @BeforeClass
     public static void setUp() {
         TestingColorResolver resolver = new TestingColorResolver();
-        HashMap<String, String> parameters = new HashMap<String, String>();
+        HashMap<String, String> parameters = new HashMap<>();
         parameters.put(COLOR_MODE, MODE.PRIMARY.name());
         resolver.configure(parameters);
         constraint = new ObjectResolverConstraint(resolver);

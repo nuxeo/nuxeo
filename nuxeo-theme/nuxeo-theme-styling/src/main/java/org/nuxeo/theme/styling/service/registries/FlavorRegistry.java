@@ -34,7 +34,7 @@ import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
  */
 public class FlavorRegistry extends ContributionFragmentRegistry<FlavorDescriptor> {
 
-    protected Map<String, FlavorDescriptor> themePageFlavors = new HashMap<String, FlavorDescriptor>();
+    protected Map<String, FlavorDescriptor> themePageFlavors = new HashMap<>();
 
     @Override
     public String getContributionId(FlavorDescriptor contrib) {
@@ -74,7 +74,7 @@ public class FlavorRegistry extends ContributionFragmentRegistry<FlavorDescripto
     }
 
     public List<FlavorDescriptor> getFlavorsExtending(String flavor) {
-        List<FlavorDescriptor> res = new ArrayList<FlavorDescriptor>();
+        List<FlavorDescriptor> res = new ArrayList<>();
         for (FlavorDescriptor f : themePageFlavors.values()) {
             if (f != null) {
                 String extendsFlavor = f.getExtendsFlavor();

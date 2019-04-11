@@ -94,7 +94,7 @@ public final class BundleManifestReader {
     }
 
     public static Dictionary<String, String> getDefaultHeaders(String symbolicName) {
-        Dictionary<String, String> headers = new Hashtable<String, String>();
+        Dictionary<String, String> headers = new Hashtable<>();
         headers.put(Constants.BUNDLE_SYMBOLICNAME, symbolicName);
         headers.put(Constants.BUNDLE_ACTIVATOR, NullActivator.class.getName());
         return headers;
@@ -106,7 +106,7 @@ public final class BundleManifestReader {
         if (symbolicName == null) {
             throw new BundleException("Missing " + Constants.BUNDLE_SYMBOLICNAME);
         }
-        Hashtable<String, String> headers = new Hashtable<String, String>();
+        Hashtable<String, String> headers = new Hashtable<>();
         parseSymbolicName(headers, symbolicName);
         String val = attrs.getValue(Constants.BUNDLE_ACTIVATOR);
         if (val != null) {

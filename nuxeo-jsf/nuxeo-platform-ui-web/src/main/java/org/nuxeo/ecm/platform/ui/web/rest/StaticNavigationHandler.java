@@ -55,9 +55,9 @@ public class StaticNavigationHandler {
 
     private static final Log log = LogFactory.getLog(StaticNavigationHandler.class);
 
-    private final HashMap<String, String> outcomeToViewId = new HashMap<String, String>();
+    private final HashMap<String, String> outcomeToViewId = new HashMap<>();
 
-    private final HashMap<String, String> viewIdToOutcome = new HashMap<String, String>();
+    private final HashMap<String, String> viewIdToOutcome = new HashMap<>();
 
     public StaticNavigationHandler(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
         boolean created = false;

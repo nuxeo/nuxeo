@@ -46,7 +46,7 @@ public class RDFParser {
     private static final String nx = "http://www.nuxeo.org/document/uid/";
 
     public List<Annotation> getAnnotationList(String response) {
-        List<Annotation> result = new ArrayList<Annotation>();
+        List<Annotation> result = new ArrayList<>();
         Document document = XMLParser.parse(response);
         NodeList rdfNodes = document.getElementsByTagName("RDF");
         if (rdfNodes.getLength() == 0) {
@@ -77,8 +77,8 @@ public class RDFParser {
 
     public Annotation getAnnotation(String annotationUUID, NodeList list) {
         Annotation annotation = new Annotation(annotationUUID);
-        Map<String, Statement> map = new HashMap<String, Statement>();
-        Map<String, String> fields = new HashMap<String, String>();
+        Map<String, Statement> map = new HashMap<>();
+        Map<String, String> fields = new HashMap<>();
         for (int x = 0; x < list.getLength(); x++) {
             Node node = list.item(x);
             if (node.getNodeName().equals("#text") || node.getNodeType() != Node.ELEMENT_NODE) {

@@ -44,9 +44,9 @@ public class TestRootSectionFinder {
     @Inject
     protected CoreSession session;
 
-    Set<String> sectionRootTypes = new HashSet<String>();
+    Set<String> sectionRootTypes = new HashSet<>();
 
-    Set<String> sectionTypes = new HashSet<String>();
+    Set<String> sectionTypes = new HashSet<>();
 
     @Test
     public void testBuildQuery() throws Exception {
@@ -93,7 +93,7 @@ public class TestRootSectionFinder {
         }
 
         public void setSectionTypes() {
-            sectionTypes = new HashSet<String>();
+            sectionTypes = new HashSet<>();
             sectionTypes.add("Section");
         }
 

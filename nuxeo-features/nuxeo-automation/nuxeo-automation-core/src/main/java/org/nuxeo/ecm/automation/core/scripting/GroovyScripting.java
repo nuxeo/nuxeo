@@ -62,12 +62,12 @@ public class GroovyScripting {
             cfg.setRecompileGroovySource(true);
         }
         loader = new GroovyClassLoader(parent, cfg);
-        cache = new ConcurrentHashMap<File, Entry>();
+        cache = new ConcurrentHashMap<>();
     }
 
     public GroovyScripting(ClassLoader parent, CompilerConfiguration cfg) {
         loader = new GroovyClassLoader(parent, cfg);
-        cache = new ConcurrentHashMap<File, Entry>();
+        cache = new ConcurrentHashMap<>();
     }
 
     public void addClasspath(String cp) {
@@ -79,7 +79,7 @@ public class GroovyScripting {
     }
 
     public void clearCache() {
-        cache = new ConcurrentHashMap<File, Entry>();
+        cache = new ConcurrentHashMap<>();
         loader.clearCache();
     }
 

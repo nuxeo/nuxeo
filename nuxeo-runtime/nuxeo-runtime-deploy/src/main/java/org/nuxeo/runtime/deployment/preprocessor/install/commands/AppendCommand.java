@@ -91,7 +91,7 @@ public class AppendCommand implements Command {
         if (pattern == null) {
             append(srcFile, dstFile, addNewLine);
         } else {
-            ArrayList<File> files = new ArrayList<File>();
+            ArrayList<File> files = new ArrayList<>();
             FileUtils.collectFiles(srcFile, pattern, files);
             for (File file : files) {
                 append(file, dstFile, false);

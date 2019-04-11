@@ -71,7 +71,7 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
         List<WebAnnotationDefinitionDescriptor> types = config.getEnabledWebAnnotationDefinitions();
 
         for (WebAnnotationDefinitionDescriptor type : types) {
-            Map<String, String[]> fields = new HashMap<String, String[]>();
+            Map<String, String[]> fields = new HashMap<>();
             for (WebAnnotationFieldDescriptor field : type.getFields()) {
                 fields.put(field.getName(), field.getChoices());
             }

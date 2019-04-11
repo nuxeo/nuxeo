@@ -108,7 +108,7 @@ public class DocumentSuggestionActions implements Serializable {
             ppName = pageProviderName;
         }
         PageProviderService ppService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) documentManager);
         // resolve additional parameters
         PageProviderDefinition ppDef = ppService.getPageProviderDefinition(ppName);

@@ -38,7 +38,7 @@ public class FieldsBuilder {
     }
 
     public FieldsBuilder() {
-        map = new HashMap<String, String[]>();
+        map = new HashMap<>();
     }
 
     public FieldsBuilder(Map<String, String[]> map) {

@@ -93,7 +93,7 @@ public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder implem
 
             DocumentModelList sectionRootsFromWorkspaceConfig = getSectionRootsFromWorkspaceConfig(parentDocumentModel,
                     session);
-            unrestrictedSectionRootFromWorkspaceConfig = new ArrayList<String>();
+            unrestrictedSectionRootFromWorkspaceConfig = new ArrayList<>();
             for (DocumentModel root : sectionRootsFromWorkspaceConfig) {
                 unrestrictedSectionRootFromWorkspaceConfig.add(root.getPathAsString());
             }

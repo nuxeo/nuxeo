@@ -28,7 +28,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 public class SuggesterRegistry extends ContributionFragmentRegistry<SuggesterDescriptor> {
 
-    protected final Map<String, SuggesterDescriptor> suggesterDescriptors = new HashMap<String, SuggesterDescriptor>();
+    protected final Map<String, SuggesterDescriptor> suggesterDescriptors = new HashMap<>();
 
     public SuggesterDescriptor getSuggesterDescriptor(String name) {
         return suggesterDescriptors.get(name);

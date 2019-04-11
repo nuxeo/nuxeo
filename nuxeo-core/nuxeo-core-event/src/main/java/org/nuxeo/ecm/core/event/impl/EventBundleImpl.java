@@ -43,8 +43,8 @@ public class EventBundleImpl implements EventBundle {
     protected final Set<String> eventNames;
 
     public EventBundleImpl(VMID sourceVMID) {
-        events = new ArrayList<Event>();
-        eventNames = new HashSet<String>();
+        events = new ArrayList<>();
+        eventNames = new HashSet<>();
         vmid = sourceVMID;
     }
 

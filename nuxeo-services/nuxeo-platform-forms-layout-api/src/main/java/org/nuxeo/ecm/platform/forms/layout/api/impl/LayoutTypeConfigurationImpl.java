@@ -173,7 +173,7 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
 
     public Map<String, Serializable> getDefaultPropertyValues(String mode) {
         if (defaultPropertyValues != null) {
-            Map<String, Serializable> res = new HashMap<String, Serializable>();
+            Map<String, Serializable> res = new HashMap<>();
             Map<String, Serializable> anyProps = defaultPropertyValues.get(BuiltinModes.ANY);
             if (anyProps != null) {
                 res.putAll(anyProps);
@@ -194,7 +194,7 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
     protected List<LayoutDefinition> getLayouts(Map<String, List<LayoutDefinition>> allLayouts, String mode,
             String additionalMode) {
         if (allLayouts != null) {
-            List<LayoutDefinition> res = new ArrayList<LayoutDefinition>();
+            List<LayoutDefinition> res = new ArrayList<>();
             if (additionalMode != null) {
                 List<LayoutDefinition> defaultLayouts = allLayouts.get(additionalMode);
                 if (defaultLayouts != null) {

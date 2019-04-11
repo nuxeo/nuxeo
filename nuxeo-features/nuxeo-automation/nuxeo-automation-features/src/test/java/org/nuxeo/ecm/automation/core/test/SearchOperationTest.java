@@ -253,7 +253,7 @@ public class SearchOperationTest {
     }
 
     protected Map<String, Object> getNamedParamsProps(String propName, String propValue) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         if (propName != null) {
             Map<String, String> namedParameters = new HashMap<>();
             namedParameters.put(propName, propValue);

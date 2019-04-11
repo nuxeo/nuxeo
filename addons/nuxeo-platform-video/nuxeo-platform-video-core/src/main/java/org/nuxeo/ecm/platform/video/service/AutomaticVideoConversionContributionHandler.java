@@ -35,7 +35,7 @@ public class AutomaticVideoConversionContributionHandler extends ContributionFra
     public final Map<String, AutomaticVideoConversion> registry;
 
     public AutomaticVideoConversionContributionHandler() {
-        registry = new HashMap<String, AutomaticVideoConversion>();
+        registry = new HashMap<>();
     }
 
     @Override

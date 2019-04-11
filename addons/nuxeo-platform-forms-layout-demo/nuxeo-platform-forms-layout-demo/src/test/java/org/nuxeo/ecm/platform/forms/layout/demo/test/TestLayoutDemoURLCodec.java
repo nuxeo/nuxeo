@@ -43,7 +43,7 @@ public class TestLayoutDemoURLCodec {
         LayoutDemoURLCodec codec = new LayoutDemoURLCodec();
         codec.setPrefix("applicationPrefix");
         DocumentLocation docLoc = new DocumentLocationImpl(null, null);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("tabId", "TAB_CONTENT");
         params.put("conversationId", "3");
         DocumentView docView = new DocumentViewImpl(docLoc, "view_documents", params);

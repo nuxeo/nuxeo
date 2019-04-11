@@ -57,7 +57,7 @@ public final class DateRangeParser {
     }
 
     private static Map<String, Integer> parseQuery(String query) throws AuditQueryException {
-        Map<String, Integer> parsed = new HashMap<String, Integer>();
+        Map<String, Integer> parsed = new HashMap<>();
 
         query = query.trim();
         query = query.replace(" ", "");

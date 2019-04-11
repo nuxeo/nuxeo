@@ -45,12 +45,12 @@ public class TestMimetype {
     public void setUp() {
         String normalizedMimetype = MimetypeRegistry.PDF_MIMETYPE;
 
-        List<String> mimetypes = new ArrayList<String>();
+        List<String> mimetypes = new ArrayList<>();
         mimetypes.add(MimetypeRegistry.PDF_MIMETYPE);
         // fake
         mimetypes.add("app/whatever-pdf");
 
-        List<String> extensions = new ArrayList<String>();
+        List<String> extensions = new ArrayList<>();
         extensions.add("pdf");
         extensions.add("fake");
 

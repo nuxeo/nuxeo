@@ -212,8 +212,8 @@ public class CoreDirectorySession extends BaseSession {
                     } else {
 
                         DataModel dataModel = docModel.getDataModel(schemaName);
-                        Map<String, Object> updatedProps = new HashMap<String, Object>();
-                        List<String> updatedRefs = new LinkedList<String>();
+                        Map<String, Object> updatedProps = new HashMap<>();
+                        List<String> updatedRefs = new LinkedList<>();
 
                         for (String field : docModel.getProperties(schemaName).keySet()) {
                             String schemaField = getMappedPrefixedFieldName(field);

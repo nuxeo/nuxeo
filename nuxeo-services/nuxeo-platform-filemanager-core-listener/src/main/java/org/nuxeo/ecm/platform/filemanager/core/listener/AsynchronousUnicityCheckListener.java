@@ -55,7 +55,7 @@ public class AsynchronousUnicityCheckListener extends AbstractUnicityChecker imp
 
         if (events.containsEventName(DocumentEventTypes.DOCUMENT_CREATED)
                 || events.containsEventName(DocumentEventTypes.DOCUMENT_UPDATED)) {
-            List<String> uuids = new ArrayList<String>();
+            List<String> uuids = new ArrayList<>();
             for (Event event : events) {
                 if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
                         || DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {

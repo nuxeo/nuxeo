@@ -44,7 +44,7 @@ public class UserIdentificationInfo implements Serializable {
 
     protected String loginPluginName;
 
-    protected final Map<String, String> loginParameters = new HashMap<String, String>();
+    protected final Map<String, String> loginParameters = new HashMap<>();
 
     public UserIdentificationInfo(String userName, String password) {
         this.userName = userName;

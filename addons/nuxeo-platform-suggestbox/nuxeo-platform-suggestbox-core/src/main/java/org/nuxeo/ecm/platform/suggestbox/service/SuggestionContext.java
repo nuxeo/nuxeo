@@ -41,7 +41,7 @@ public class SuggestionContext extends HashMap<String, Object> {
 
     public final Principal principal;
 
-    public final Map<String, String> messages = new HashMap<String, String>();
+    public final Map<String, String> messages = new HashMap<>();
 
     public transient CoreSession session;
 

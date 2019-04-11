@@ -302,7 +302,7 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
      */
     public static List<SummaryEntry> getPathList(List<SummaryEntry> pathList, SummaryEntry parentEntry) {
         if (pathList == null) {
-            pathList = new ArrayList<SummaryEntry>();
+            pathList = new ArrayList<>();
         }
         if (parentEntry != null) {
             pathList.add(parentEntry);

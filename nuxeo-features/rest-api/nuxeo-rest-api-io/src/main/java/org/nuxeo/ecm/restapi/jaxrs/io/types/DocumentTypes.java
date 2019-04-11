@@ -36,7 +36,7 @@ public class DocumentTypes {
 
     protected Set<Schema> getUsedSchemas() {
         if (usedSchemas == null) {
-            usedSchemas = new HashSet<Schema>();
+            usedSchemas = new HashSet<>();
             for (DocumentType type : docTypes) {
                 for (Schema schema : type.getSchemas()) {
                     usedSchemas.add(schema);

@@ -69,10 +69,10 @@ public class WebAnnotationConfigurationServiceImpl extends DefaultComponent impl
 
     @Override
     public void activate(ComponentContext context) {
-        annotationDefinitionsDescriptors = new HashMap<String, WebAnnotationDefinitionDescriptor>();
-        filterDescriptors = new HashMap<String, FilterDescriptor>();
-        displayedFields = new HashSet<String>();
-        fieldLabels = new HashMap<String, String>();
+        annotationDefinitionsDescriptors = new HashMap<>();
+        filterDescriptors = new HashMap<>();
+        displayedFields = new HashSet<>();
+        fieldLabels = new HashMap<>();
     }
 
     @Override
@@ -143,11 +143,11 @@ public class WebAnnotationConfigurationServiceImpl extends DefaultComponent impl
     }
 
     public List<WebAnnotationDefinitionDescriptor> getAllWebAnnotationDefinitions() {
-        return new ArrayList<WebAnnotationDefinitionDescriptor>(annotationDefinitionsDescriptors.values());
+        return new ArrayList<>(annotationDefinitionsDescriptors.values());
     }
 
     public List<WebAnnotationDefinitionDescriptor> getEnabledWebAnnotationDefinitions() {
-        List<WebAnnotationDefinitionDescriptor> definitions = new ArrayList<WebAnnotationDefinitionDescriptor>();
+        List<WebAnnotationDefinitionDescriptor> definitions = new ArrayList<>();
         for (WebAnnotationDefinitionDescriptor def : annotationDefinitionsDescriptors.values()) {
             if (def.isEnabled()) {
                 definitions.add(def);

@@ -80,7 +80,7 @@ public class MainTabsActions implements Serializable {
     @In(create = true, required = false)
     protected transient ActionManager actionManager;
 
-    protected Map<String, DocumentModel> documentsByMainTabs = new HashMap<String, DocumentModel>();
+    protected Map<String, DocumentModel> documentsByMainTabs = new HashMap<>();
 
     @Observer({ NAVIGATE_TO_DOCUMENT })
     public void updateContextualDocument() {

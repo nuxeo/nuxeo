@@ -68,8 +68,8 @@ public class UIRadio extends UIOutput implements ClientBehaviorHolder {
             throw new IllegalArgumentException("Faces context is null");
         }
 
-        ArrayList<SelectItem> list = new ArrayList<SelectItem>();
-        final SelectItemsIterator<SelectItem> iterator = new SelectItemsIterator<SelectItem>(context, component);
+        ArrayList<SelectItem> list = new ArrayList<>();
+        final SelectItemsIterator<SelectItem> iterator = new SelectItemsIterator<>(context, component);
         while (iterator.hasNext()) {
             final SelectItem next = iterator.next();
             list.add(new SelectItem(next.getValue(), next.getLabel(), next.getDescription(), next.isDisabled(),

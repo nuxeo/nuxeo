@@ -30,7 +30,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class ShibbolethAuthenticationConfig {
 
     @XNodeMap(value = "uidHeaders/uidHeader", key = "@idpUrl", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> uidHeaders = new HashMap<String, String>();
+    protected Map<String, String> uidHeaders = new HashMap<>();
 
     @XNode("uidHeaders/default")
     protected String defaultUidHeader;
@@ -54,7 +54,7 @@ public class ShibbolethAuthenticationConfig {
     protected String headerEncoding = "UTF-8";
 
     @XNodeMap(value = "fieldMapping", key = "@header", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> fieldMapping = new HashMap<String, String>();
+    protected Map<String, String> fieldMapping = new HashMap<>();
 
     public Map<String, String> getUidHeaders() {
         return uidHeaders;

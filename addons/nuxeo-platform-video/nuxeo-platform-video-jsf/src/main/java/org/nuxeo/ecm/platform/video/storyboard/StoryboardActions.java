@@ -48,7 +48,7 @@ public class StoryboardActions {
             return Collections.emptyList();
         }
         int size = doc.getProperty(STORYBOARD_PROPERTY).getValue(List.class).size();
-        List<StoryboardItem> items = new ArrayList<StoryboardItem>(size);
+        List<StoryboardItem> items = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             items.add(new StoryboardItem(doc, STORYBOARD_PROPERTY, i));
         }

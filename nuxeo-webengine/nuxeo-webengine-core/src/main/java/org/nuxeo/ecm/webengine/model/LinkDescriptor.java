@@ -222,7 +222,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
     public void applyFragment(LinkDescriptor fragment) {
         if (fragment.categories != null && !fragment.categories.isEmpty()) {
             if (categories == null) {
-                categories = new ArrayList<String>(fragment.categories);
+                categories = new ArrayList<>(fragment.categories);
             } else {
                 categories.addAll(fragment.categories);
             }
@@ -237,7 +237,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
             if (facets == null) {
                 facets = fragment.facets;
             } else {
-                Set<String> set = new HashSet<String>();
+                Set<String> set = new HashSet<>();
                 set.addAll(Arrays.asList(facets));
                 set.addAll(Arrays.asList(fragment.facets));
                 facets = set.toArray(new String[set.size()]);

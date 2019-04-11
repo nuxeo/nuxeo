@@ -43,7 +43,7 @@ public abstract class AbstractDocumentReader implements DocumentReader {
 
     @Override
     public ExportedDocument[] read(int count) throws IOException {
-        List<ExportedDocument> docs = new ArrayList<ExportedDocument>(count);
+        List<ExportedDocument> docs = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             ExportedDocument doc = read();
             if (doc == null) {

@@ -144,7 +144,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
      * @return
      */
     protected List<ACE> getACEs() {
-        List<ACE> aces = new ArrayList<ACE>();
+        List<ACE> aces = new ArrayList<>();
         for (String group : getUserManager().getAdministratorsGroups()) {
             aces.add(new ACE(group, SecurityConstants.EVERYTHING, true));
         }

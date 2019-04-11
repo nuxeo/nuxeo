@@ -67,7 +67,7 @@ public class TranslationHelper {
 
     public static Map<String, String> getTranslatedLabels(Map<String, String> labels, String lang) {
         if (labels != null) {
-            Map<String, String> res = new HashMap<String, String>();
+            Map<String, String> res = new HashMap<>();
             for (Map.Entry<String, String> label : labels.entrySet()) {
                 res.put(label.getKey(), TranslationHelper.getTranslation(label.getValue(), lang));
             }

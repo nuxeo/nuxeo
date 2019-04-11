@@ -88,7 +88,7 @@ public class LiveEditClientConfig implements Serializable {
 
     protected void detectLiveEditClientConfig() {
         clientHasLiveEditInstalled = false;
-        advertizedLiveEditableMimeTypes = new ArrayList<String>();
+        advertizedLiveEditableMimeTypes = new ArrayList<>();
 
         if (getLiveEditConfigurationPolicy().equals(LE_CONFIG_SERVERSIDE)) {
             // in case if Server side config, consider liveEdit is installed

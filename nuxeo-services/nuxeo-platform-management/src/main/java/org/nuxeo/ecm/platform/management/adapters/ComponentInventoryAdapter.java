@@ -47,7 +47,7 @@ public class ComponentInventoryAdapter implements ComponentInventoryMBean {
     }
 
     public Set<String> getExtensionPointsName() {
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         for (ExtensionPoint extensionPoint : info.getExtensionPoints()) {
             names.add(extensionPoint.getName());
         }
@@ -63,7 +63,7 @@ public class ComponentInventoryAdapter implements ComponentInventoryMBean {
     }
 
     public Set<String> getProvidedServices() {
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         names.addAll(Arrays.asList(info.getProvidedServiceNames()));
         return names;
     }

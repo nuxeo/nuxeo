@@ -47,7 +47,7 @@ public class UserTreeNode {
 
     public List<UserTreeNode> getChildrens() {
         if (childrens == null) {
-            childrens = new ArrayList<UserTreeNode>();
+            childrens = new ArrayList<>();
         }
         return childrens;
     }
@@ -85,7 +85,7 @@ public class UserTreeNode {
      * @return empty list if no docs passed
      */
     public static List<UserTreeNode> constructNodes(Collection<DocumentModel> docs) {
-        List<UserTreeNode> ret = new ArrayList<UserTreeNode>();
+        List<UserTreeNode> ret = new ArrayList<>();
 
         if (docs != null) {
             for (DocumentModel doc : docs) {

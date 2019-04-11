@@ -57,7 +57,7 @@ public class LogEntryListJsonWriterTest extends AbstractJsonWriterTest.External<
     @Test
     public void test() throws Exception {
         DocumentModel root = session.getDocument(new PathRef("/"));
-        HashMap<String, Serializable> properties = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> properties = new HashMap<>();
         String name = "DOCUMENT_HISTORY_PROVIDER";
         @SuppressWarnings("unchecked")
         PageProvider<LogEntry> pp = (PageProvider<LogEntry>) pps.getPageProvider(name, null, 3l, 0l, properties, root);

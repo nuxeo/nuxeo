@@ -40,18 +40,18 @@ public class AnnotationQuery {
     private final AnnotationManager manager = new AnnotationManager();
 
     public List<Annotation> getAnnotationsForURIs(URI uri, Graph graph) {
-        List<Annotation> annotations = new ArrayList<Annotation>();
+        List<Annotation> annotations = new ArrayList<>();
         String query = "SELECT ?s ?p ?o WHERE { ?s ?p ?o . " //
                 + "?s <" + AnnotationsConstants.A_ANNOTATES + "> <" + uri.toString() + "> . }";
         QueryResult results = graph.query(query, "sparql", null);
-        Map<String, List<Statement>> mapann = new HashMap<String, List<Statement>>();
+        Map<String, List<Statement>> mapann = new HashMap<>();
         for (Map<String, Node> map : results.getResults()) {
             Node subject = map.get("s");
             Node predicate = map.get("p");
             Node object = map.get("o");
             List<Statement> statements = mapann.get(subject.toString());
             if (statements == null) {
-                statements = new ArrayList<Statement>();
+                statements = new ArrayList<>();
                 mapann.put(subject.toString(), statements);
             }
             statements.add(new StatementImpl(subject, predicate, object));

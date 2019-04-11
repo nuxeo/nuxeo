@@ -105,7 +105,7 @@ public class FilterDocuments {
             if (v != null) {
                 v = v.trim();
                 if (v.length() > 0) {
-                    types = new HashSet<String>();
+                    types = new HashSet<>();
                     for (String t : StringUtils.split(v, ',', true)) {
                         types.add(t);
                     }

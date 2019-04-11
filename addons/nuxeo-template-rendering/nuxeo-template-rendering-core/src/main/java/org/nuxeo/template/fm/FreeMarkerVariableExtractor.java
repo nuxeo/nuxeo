@@ -49,7 +49,7 @@ public class FreeMarkerVariableExtractor {
 
     protected final static Pattern[] assignMatchers = new Pattern[] { Pattern.compile("\\[\\#assign\\s(.+)=.*\\]") };
 
-    protected static final List<String> reservedContextKeywords = new ArrayList<String>();
+    protected static final List<String> reservedContextKeywords = new ArrayList<>();
 
     protected static final String[] freeMarkerVariableSuffix = { "_index", "_has_next" };
 
@@ -99,9 +99,9 @@ public class FreeMarkerVariableExtractor {
 
     public static List<String> extractVariables(String content) {
 
-        List<String> variables = new ArrayList<String>();
+        List<String> variables = new ArrayList<>();
 
-        List<String> blackListedVariables = new ArrayList<String>();
+        List<String> blackListedVariables = new ArrayList<>();
 
         if (content.length() > 10000) {
             // split content in multilines

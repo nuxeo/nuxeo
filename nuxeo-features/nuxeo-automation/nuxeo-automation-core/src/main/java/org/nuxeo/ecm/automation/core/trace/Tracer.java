@@ -39,14 +39,14 @@ public class Tracer implements OperationCallback {
 
     protected final TracerFactory factory;
 
-    protected Stack<Context> stack = new Stack<Context>();
+    protected Stack<Context> stack = new Stack<>();
 
     class Context {
         final Call parent;
 
         final OperationType typeof;
 
-        final LinkedList<Call> calls = new LinkedList<Call>();
+        final LinkedList<Call> calls = new LinkedList<>();
 
         OperationException error;
 

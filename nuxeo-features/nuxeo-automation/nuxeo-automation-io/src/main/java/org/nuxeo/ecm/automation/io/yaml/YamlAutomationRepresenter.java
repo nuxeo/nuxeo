@@ -59,7 +59,7 @@ public class YamlAutomationRepresenter extends Representer {
         public Node representData(Object data) {
             OperationDocumentation c = (OperationDocumentation) data;
             Tag tag = getTag(OperationDocumentation.class, null);
-            Map<Object, Object> mapping = new LinkedHashMap<Object, Object>();
+            Map<Object, Object> mapping = new LinkedHashMap<>();
             if (c.getDescription() != null) {
                 mapping.put("description", c.getDescription());
             }
@@ -87,8 +87,8 @@ public class YamlAutomationRepresenter extends Representer {
             Tag tag = getTag(Operation.class, null);
             List<OperationChainContribution.Param> params = op.getParams();
             if (params != null && !params.isEmpty()) {
-                Map<Object, Object> mapping = new HashMap<Object, Object>();
-                Map<Object, Object> subs = new LinkedHashMap<Object, Object>();
+                Map<Object, Object> mapping = new HashMap<>();
+                Map<Object, Object> subs = new LinkedHashMap<>();
                 for (OperationChainContribution.Param param : params) {
                     // handle java properties use case
                     if (T_PROPERTIES.equals(param.getType())) {
@@ -120,8 +120,8 @@ public class YamlAutomationRepresenter extends Representer {
         public Node representData(Object data) {
             Param p = (Param) data;
             Tag tag = getTag(Param.class, null);
-            Map<Object, Object> mapping = new HashMap<Object, Object>();
-            Map<Object, Object> subs = new LinkedHashMap<Object, Object>();
+            Map<Object, Object> mapping = new HashMap<>();
+            Map<Object, Object> subs = new LinkedHashMap<>();
             subs.put("type", p.getType());
             if (p.getDescription() != null) {
                 subs.put("description", p.getDescription());

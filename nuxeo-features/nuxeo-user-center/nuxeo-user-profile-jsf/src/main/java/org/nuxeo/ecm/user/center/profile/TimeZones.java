@@ -77,7 +77,7 @@ public class TimeZones implements Serializable {
     }
 
     private void initTimeZones() {
-        timeZoneSelectItems = new ArrayList<SelectItem>();
+        timeZoneSelectItems = new ArrayList<>();
         final String[] timeZoneIds = TimeZone.getAvailableIDs();
         for (final String id : timeZoneIds) {
             timeZoneSelectItems.add(new SelectItem(id, displayTimeZone(id)));

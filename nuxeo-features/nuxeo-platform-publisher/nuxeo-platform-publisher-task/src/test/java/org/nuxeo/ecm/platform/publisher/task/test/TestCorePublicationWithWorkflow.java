@@ -89,7 +89,7 @@ public abstract class TestCorePublicationWithWorkflow {
 
     private DocumentModel doc2Publish;
 
-    protected HashMap<String, String> factoryParams = new HashMap<String, String>();
+    protected HashMap<String, String> factoryParams = new HashMap<>();
 
     protected String defaultTreeName;
 

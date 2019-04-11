@@ -69,7 +69,7 @@ public class ActionContributionHandler extends ContributionFragmentRegistry<Acti
     public void contributionUpdated(String actionId, Action action, Action origAction) {
         // given action is already merged, just retrieve its inner filters to
         // register them to the filter registry
-        List<String> newFilterIds = new ArrayList<String>();
+        List<String> newFilterIds = new ArrayList<>();
         List<String> existingFilterIds = action.getFilterIds();
         if (existingFilterIds != null) {
             newFilterIds.addAll(existingFilterIds);
@@ -116,8 +116,8 @@ public class ActionContributionHandler extends ContributionFragmentRegistry<Acti
         }
 
         // Merge categories without duplicates
-        Set<String> mergedCategories = new HashSet<String>(Arrays.asList(dest.getCategories()));
-        mergedCategories.addAll(new HashSet<String>(Arrays.asList(source.getCategories())));
+        Set<String> mergedCategories = new HashSet<>(Arrays.asList(dest.getCategories()));
+        mergedCategories.addAll(new HashSet<>(Arrays.asList(source.getCategories())));
         dest.setCategories(mergedCategories.toArray(new String[mergedCategories.size()]));
 
         // label
@@ -157,7 +157,7 @@ public class ActionContributionHandler extends ContributionFragmentRegistry<Acti
         }
 
         // filter ids
-        List<String> newFilterIds = new ArrayList<String>();
+        List<String> newFilterIds = new ArrayList<>();
         newFilterIds.addAll(dest.getFilterIds());
         newFilterIds.addAll(source.getFilterIds());
         dest.setFilterIds(newFilterIds);
@@ -165,7 +165,7 @@ public class ActionContributionHandler extends ContributionFragmentRegistry<Acti
         // filters
         ActionFilter[] existingFilters = dest.getFilters();
         ActionFilter[] newFilters = source.getFilters();
-        List<ActionFilter> filters = new ArrayList<ActionFilter>();
+        List<ActionFilter> filters = new ArrayList<>();
         if (existingFilters != null) {
             filters.addAll(Arrays.asList(existingFilters));
         }

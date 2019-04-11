@@ -71,7 +71,7 @@ public class TestTabActionsSelection {
 
     @Before
     public void setUp() throws Exception {
-        List<Action> testActions = new ArrayList<Action>();
+        List<Action> testActions = new ArrayList<>();
         for (TAB_ACTION tabAction : TAB_ACTION.values()) {
             testActions.add(tabAction.getAction());
         }

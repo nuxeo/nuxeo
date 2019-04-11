@@ -44,12 +44,12 @@ public class CompositeCommand extends AbstractCommand {
 
     protected CompositeCommand(String id) {
         super(id);
-        commands = new ArrayList<Command>();
+        commands = new ArrayList<>();
     }
 
     public CompositeCommand() {
         super(ID);
-        commands = new ArrayList<Command>();
+        commands = new ArrayList<>();
     }
 
     @Override

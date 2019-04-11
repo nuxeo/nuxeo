@@ -99,11 +99,11 @@ public final class DirectoryHelper {
 
     public List<DirectorySelectItem> getSelectItems(String directoryName, Map<String, Serializable> filter,
             Boolean localize) {
-        List<DirectorySelectItem> list = new LinkedList<DirectorySelectItem>();
+        List<DirectorySelectItem> list = new LinkedList<>();
 
         Set<String> emptySet = Collections.emptySet();
 
-        Map<String, String> orderBy = new LinkedHashMap<String, String>();
+        Map<String, String> orderBy = new LinkedHashMap<>();
 
         FacesContext context = FacesContext.getCurrentInstance();
 
@@ -152,7 +152,7 @@ public final class DirectoryHelper {
 
     public static List<DirectorySelectItem> getSelectItems(VocabularyEntryList directoryValues,
             Map<String, Serializable> filter, Boolean localize) {
-        List<DirectorySelectItem> list = new ArrayList<DirectorySelectItem>();
+        List<DirectorySelectItem> list = new ArrayList<>();
 
         // in obsolete filter we have either null (include obsoletes)
         // or 0 (don't include obsoletes)

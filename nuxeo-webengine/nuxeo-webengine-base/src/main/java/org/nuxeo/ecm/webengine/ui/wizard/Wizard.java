@@ -77,7 +77,7 @@ public abstract class Wizard extends DefaultObject {
             httpSession.setAttribute(key, session);
             initialFields = createInitialFields();
             if (initialFields == null) {
-                initialFields = new HashMap<String, String[]>();
+                initialFields = new HashMap<>();
             }
         }
         page = (WizardPage) session.getPage(); // the current page

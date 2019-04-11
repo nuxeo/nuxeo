@@ -60,7 +60,7 @@ public class StopwatchMXBeanImpl extends org.javasimon.jmx.StopwatchMXBeanImpl i
 
     @Override
     public Map<String, Serializable> sampleAsMap() {
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         StopwatchSample sample = sample();
         doFillMap(sample, map, sample.getClass());
         return map;

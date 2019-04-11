@@ -80,7 +80,7 @@ public class RegistrySerializer extends XmlWriter {
     protected Map<String, Entry> read(File file) throws PackageException, IOException {
         FileInputStream in = new FileInputStream(file);
         try {
-            HashMap<String, Entry> registry = new HashMap<String, Entry>();
+            HashMap<String, Entry> registry = new HashMap<>();
             factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(in);

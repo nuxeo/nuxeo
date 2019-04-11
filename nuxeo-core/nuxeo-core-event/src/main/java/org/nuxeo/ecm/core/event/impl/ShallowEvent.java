@@ -45,7 +45,7 @@ public class ShallowEvent extends EventImpl {
 
     public static ShallowEvent create(Event event) {
         EventContext ctx = event.getContext();
-        List<Object> newArgs = new ArrayList<Object>();
+        List<Object> newArgs = new ArrayList<>();
         for (Object arg : ctx.getArguments()) {
             Object newArg = arg;
             if (arg instanceof DocumentModel) {
@@ -71,7 +71,7 @@ public class ShallowEvent extends EventImpl {
         }
 
         newCtx.setRepositoryName(ctx.getRepositoryName());
-        Map<String, Serializable> newProps = new HashMap<String, Serializable>();
+        Map<String, Serializable> newProps = new HashMap<>();
         for (Entry<String, Serializable> prop : ctx.getProperties().entrySet()) {
             Serializable propValue = prop.getValue();
             if (propValue instanceof DocumentModel) {

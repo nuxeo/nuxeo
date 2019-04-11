@@ -60,7 +60,7 @@ public class ServiceClassLoader extends ClassLoader {
 
     public ServiceClassLoader(Bundle bundle) {
         this.bundle = bundle;
-        this.loaders = new ArrayList<ClassLoader>();
+        this.loaders = new ArrayList<>();
     }
 
     public void addResourceLoader(ClassLoader cl) {
@@ -81,11 +81,11 @@ public class ServiceClassLoader extends ClassLoader {
 
     @Override
     protected Enumeration<URL> findResources(String name) throws IOException {
-        ArrayList<Enumeration<URL>> enums = new ArrayList<Enumeration<URL>>();
+        ArrayList<Enumeration<URL>> enums = new ArrayList<>();
         for (ClassLoader cl : loaders) {
             enums.add(cl.getResources(name));
         }
-        return new CompoundEnumeration<URL>(enums.toArray(new Enumeration[enums.size()]));
+        return new CompoundEnumeration<>(enums.toArray(new Enumeration[enums.size()]));
     }
 
     @Override

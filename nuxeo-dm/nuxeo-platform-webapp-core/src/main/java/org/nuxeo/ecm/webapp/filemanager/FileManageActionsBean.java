@@ -146,7 +146,7 @@ public class FileManageActionsBean implements FileManageActions {
     /**
      * Used to keep track of the path of the uploaded file (NXP-16745)
      */
-    protected List<String> tmpFilePaths = new ArrayList<String>();
+    protected List<String> tmpFilePaths = new ArrayList<>();
 
     /**
      * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link FileManager} instead.
@@ -471,7 +471,7 @@ public class FileManageActionsBean implements FileManageActions {
             }
             DocumentRef srcRef = new IdRef(docId);
             DocumentModel srcDoc = documentManager.getDocument(srcRef);
-            List<DocumentModel> docsToAdd = new ArrayList<DocumentModel>();
+            List<DocumentModel> docsToAdd = new ArrayList<>();
             docsToAdd.add(srcDoc);
             clipboardActions.putSelectionInWorkList(docsToAdd, Boolean.TRUE);
             return debug;
@@ -498,7 +498,7 @@ public class FileManageActionsBean implements FileManageActions {
             }
             DocumentRef srcRef = new IdRef(docId);
             DocumentModel srcDoc = documentManager.getDocument(srcRef);
-            List<DocumentModel> pasteDocs = new ArrayList<DocumentModel>();
+            List<DocumentModel> pasteDocs = new ArrayList<>();
             pasteDocs.add(srcDoc);
             clipboardActions.pasteDocumentList(pasteDocs);
             return debug;
@@ -569,7 +569,7 @@ public class FileManageActionsBean implements FileManageActions {
                 for (NxUploadedFile uploadItem : nxuploadFiles) {
                     Blob blob = uploadItem.getBlob();
                     FileUtils.configureFileBlob(blob);
-                    HashMap<String, Object> fileMap = new HashMap<String, Object>(1);
+                    HashMap<String, Object> fileMap = new HashMap<>(1);
                     fileMap.put("file", blob);
                     if (!files.contains(fileMap)) {
                         files.add(fileMap);

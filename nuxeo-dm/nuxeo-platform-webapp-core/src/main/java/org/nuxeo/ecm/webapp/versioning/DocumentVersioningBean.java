@@ -129,7 +129,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
 
     @Override
     public Map<String, String> getVersioningOptionsMap(DocumentModel doc) {
-        Map<String, String> map = new LinkedHashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<>();
         VersionIncEditOptions options = getAvailableVersioningOptions(doc);
         if (options != null) {
             for (VersioningActions option : options.getOptions()) {

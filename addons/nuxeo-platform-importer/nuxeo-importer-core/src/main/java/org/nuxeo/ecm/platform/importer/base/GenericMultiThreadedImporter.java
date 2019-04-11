@@ -66,7 +66,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
     protected static ThreadPoolExecutor importTP;
 
-    protected static Map<String, Long> nbCreatedDocsByThreads = new ConcurrentHashMap<String, Long>();
+    protected static Map<String, Long> nbCreatedDocsByThreads = new ConcurrentHashMap<>();
 
     protected ImporterThreadingPolicy threadPolicy;
 
@@ -94,11 +94,11 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
     protected boolean enablePerfLogging = true;
 
-    protected List<ImporterFilter> filters = new ArrayList<ImporterFilter>();
+    protected List<ImporterFilter> filters = new ArrayList<>();
 
-    protected List<ImporterListener> listeners = new ArrayList<ImporterListener>();
+    protected List<ImporterListener> listeners = new ArrayList<>();
 
-    protected List<ImportingDocumentFilter> importingDocumentFilters = new ArrayList<ImportingDocumentFilter>();
+    protected List<ImportingDocumentFilter> importingDocumentFilters = new ArrayList<>();
 
     protected GenericThreadedImportTask rootImportTask;
 
@@ -288,7 +288,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
         targetContainer = getTargetContainer();
 
-        nbCreatedDocsByThreads = new ConcurrentHashMap<String, Long>();
+        nbCreatedDocsByThreads = new ConcurrentHashMap<>();
 
         importTP = new ThreadPoolExecutor(nbThreads, nbThreads, 500L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(queueSize), new NamedThreadFactory("Nuxeo-Importer-"));

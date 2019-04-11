@@ -126,7 +126,7 @@ public class FolderResource extends ExistingResource {
             return Response.status(207).entity(new MultiStatus(response)).build();
         }
 
-        List<net.java.dev.webdav.jaxrs.xml.elements.Response> responses = new ArrayList<net.java.dev.webdav.jaxrs.xml.elements.Response>();
+        List<net.java.dev.webdav.jaxrs.xml.elements.Response> responses = new ArrayList<>();
         responses.add(response);
 
         List<DocumentModel> children = backend.getChildren(doc.getRef());

@@ -161,14 +161,14 @@ public abstract class DirectoryAwareComponent extends UIInput {
         VocabularyEntryList directoryValues = getDirectoryValues();
         String directoryName = getDirectoryName();
 
-        options = new LinkedHashMap<String, SelectItem>();
+        options = new LinkedHashMap<>();
         if (StringUtils.isEmpty(directoryName) && directoryValues == null) {
             return options;
             // throw new RuntimeException("directoryName and directoryValues
             // cannot be both null");
         }
 
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+        Map<String, Serializable> filter = new HashMap<>();
         String parentFilter = getFilter();
         if (parentFilter != null) {
             filter.put("parent", parentFilter);
@@ -183,7 +183,7 @@ public abstract class DirectoryAwareComponent extends UIInput {
         } else if (directoryValues != null) {
             optionList = DirectoryHelper.getSelectItems(directoryValues, filter, getLocalize());
         } else {
-            optionList = new ArrayList<DirectorySelectItem>();
+            optionList = new ArrayList<>();
         }
         String ordering = getOrdering();
         Boolean caseSensitive = getCaseSensitive();

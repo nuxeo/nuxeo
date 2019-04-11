@@ -48,7 +48,7 @@ public class PojoMarshaller<T> implements JsonMarshaller<T> {
     }
 
     public static <T> PojoMarshaller<T> forClass(Class<T> type) {
-        return new PojoMarshaller<T>(type);
+        return new PojoMarshaller<>(type);
     }
 
     @Override

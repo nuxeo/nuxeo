@@ -96,7 +96,7 @@ public class AnnotatedDocumentEventListenerImpl implements AnnotatedDocumentEven
                 doc = session.getDocument(documentLocation.getDocRef());
             }
 
-            Map<String, Serializable> properties = new HashMap<String, Serializable>();
+            Map<String, Serializable> properties = new HashMap<>();
             properties.put(AnnotatedDocumentEventListener.ANNOTATION_ID, annotation.getId());
             properties.put(AnnotatedDocumentEventListener.ANNOTATION_SUBJECT, annotation.getSubject());
             properties.put(AnnotatedDocumentEventListener.ANNOTATION_BODY, annotation.getBodyAsText());

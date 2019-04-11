@@ -66,7 +66,7 @@ public class Composer {
     }
 
     public Composer(Mailer mailer) {
-        urls = new ConcurrentHashMap<String, URL>();
+        urls = new ConcurrentHashMap<>();
         if (mailer == null) {
             this.mailer = createMailer();
         } else {

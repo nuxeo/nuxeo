@@ -80,7 +80,7 @@ public class AliasVariableMapper extends VariableMapper {
     @Override
     public ValueExpression setVariable(String variable, ValueExpression expression) {
         if (vars == null) {
-            vars = new LinkedHashMap<String, ValueExpression>();
+            vars = new LinkedHashMap<>();
         }
         return vars.put(variable, expression);
     }

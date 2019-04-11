@@ -91,9 +91,9 @@ public class ScimComplianceTest {
         csp.setAuthentication("basicAuth");
         csp.setUsername("Administrator");
         csp.setPassword("Administrator");
-        results = new ArrayList<TestResult>();
-        userCache = new ResourceCache<User>();
-        groupCache = new ResourceCache<Group>();
+        results = new ArrayList<>();
+        userCache = new ResourceCache<>();
+        groupCache = new ResourceCache<>();
         configTest = new ConfigTest();
     }
 

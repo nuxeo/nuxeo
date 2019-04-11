@@ -34,7 +34,7 @@ public class PropertiesDescriptor implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> properties = new HashMap<String, String>();
+    Map<String, String> properties = new HashMap<>();
 
     public Map<String, String> getProperties() {
         return properties;

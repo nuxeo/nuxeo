@@ -107,14 +107,14 @@ public class PictureTilingCacheGCManager {
         PictureTilingComponent ptc = (PictureTilingComponent) Framework.getService(PictureTilingService.class);
         Map<String, PictureTilingCacheInfo> cache = ptc.getCache();
 
-        Map<Date, String> sortingMap = new HashMap<Date, String>();
+        Map<Date, String> sortingMap = new HashMap<>();
 
         for (String key : cache.keySet()) {
             PictureTilingCacheInfo cacheEntry = cache.get(key);
             sortingMap.put(cacheEntry.getLastAccessedTime(), key);
         }
 
-        List<Date> accesTimeList = new ArrayList<Date>();
+        List<Date> accesTimeList = new ArrayList<>();
 
         accesTimeList.addAll(sortingMap.keySet());
 

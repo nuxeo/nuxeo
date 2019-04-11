@@ -323,7 +323,7 @@ public class RandomTextSourceNode implements SourceNode {
             return cachedChildren;
         }
 
-        List<SourceNode> children = new ArrayList<SourceNode>();
+        List<SourceNode> children = new ArrayList<>();
         if (nbNodes.get() > maxNode) {
             return children;
         }

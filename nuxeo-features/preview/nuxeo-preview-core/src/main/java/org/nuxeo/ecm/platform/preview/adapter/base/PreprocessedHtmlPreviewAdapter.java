@@ -37,7 +37,7 @@ public class PreprocessedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter {
 
     private static final Log log = LogFactory.getLog(PreprocessedHtmlPreviewAdapter.class);
 
-    protected List<String> storedPreviewFieldsPaths = new ArrayList<String>();
+    protected List<String> storedPreviewFieldsPaths = new ArrayList<>();
 
     public PreprocessedHtmlPreviewAdapter(List<String> fieldsPaths) {
         storedPreviewFieldsPaths = fieldsPaths;
@@ -46,7 +46,7 @@ public class PreprocessedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter {
     @Override
     public List<Blob> getPreviewBlobs() throws PreviewException {
 
-        List<Blob> resultBlobs = new ArrayList<Blob>();
+        List<Blob> resultBlobs = new ArrayList<>();
 
         for (String xpath : storedPreviewFieldsPaths) {
             try {

@@ -87,7 +87,7 @@ public class FileIterator implements Iterator<File>, Enumeration<File> {
     }
 
     public FileIterator(File file, FileFilter filter) {
-        this.files = new LinkedList<File>();
+        this.files = new LinkedList<>();
         this.filter = filter;
         feed(file);
     }

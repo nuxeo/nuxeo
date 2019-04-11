@@ -50,7 +50,7 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
     @Override
     public Object[] getChildren(Object ob) {
 
-        List<NuxeoArtifact> result = new ArrayList<NuxeoArtifact>();
+        List<NuxeoArtifact> result = new ArrayList<>();
         NuxeoArtifact obj = (NuxeoArtifact) ob;
 
         if (obj.getArtifactType().equals(DistributionSnapshot.TYPE_NAME)) {

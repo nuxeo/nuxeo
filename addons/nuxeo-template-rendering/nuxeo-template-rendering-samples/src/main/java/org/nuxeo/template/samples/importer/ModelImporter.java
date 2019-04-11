@@ -206,7 +206,7 @@ public class ModelImporter {
         entry.setEventId(TEMPLATE_SAMPLE_INIT_EVENT);
         entry.setEventDate(Calendar.getInstance().getTime());
 
-        List<LogEntry> entries = new ArrayList<LogEntry>();
+        List<LogEntry> entries = new ArrayList<>();
         entries.add(entry);
         writer.addLogEntries(entries);
 
@@ -252,7 +252,7 @@ public class ModelImporter {
     public int importModelAndExamples(File root) throws IOException {
 
         int nbImportedDocs = 0;
-        final Map<String, File> roots = new HashMap<String, File>();
+        final Map<String, File> roots = new HashMap<>();
         root.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {

@@ -37,7 +37,7 @@ public class BufferredLogger extends BasicLogger {
 
     protected Integer bufferSize = null;
 
-    protected LinkedList<String> logStack = new LinkedList<String>();
+    protected LinkedList<String> logStack = new LinkedList<>();
 
     public BufferredLogger(Log javaLogger) {
         super(javaLogger);

@@ -99,7 +99,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
             return null;
         }
         type = (DocumentType) type.getSuperType();
-        List<String> superTypes = new ArrayList<String>();
+        List<String> superTypes = new ArrayList<>();
         while (type != null) {
             superTypes.add(type.getName());
             type = (DocumentType) type.getSuperType();
@@ -119,7 +119,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
 
     @Override
     public Collection<Type> getTypes() {
-        Collection<Type> types = new ArrayList<Type>();
+        Collection<Type> types = new ArrayList<>();
         types.addAll(typeRegistry.getTypes());
         return types;
     }
@@ -131,7 +131,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
 
     @Override
     public Collection<Type> getAllowedSubTypes(String typeName, DocumentModel currentDoc) {
-        Collection<Type> allowed = new ArrayList<Type>();
+        Collection<Type> allowed = new ArrayList<>();
         Type type = getType(typeName);
         if (type != null) {
             Map<String, SubType> allowedSubTypes = type.getAllowedSubTypes();
@@ -161,9 +161,9 @@ public class TypeService extends DefaultComponent implements TypeManager {
     protected Collection<Type> findAllAllowedSubTypesFrom(String typeName, DocumentModel currentDoc,
             List<String> alreadyProcessedTypes) {
         if (alreadyProcessedTypes == null) {
-            alreadyProcessedTypes = new ArrayList<String>();
+            alreadyProcessedTypes = new ArrayList<>();
         }
-        Set<Type> allAllowedSubTypes = new HashSet<Type>();
+        Set<Type> allAllowedSubTypes = new HashSet<>();
 
         Collection<Type> allowedSubTypes = getAllowedSubTypes(typeName, currentDoc);
         allAllowedSubTypes.addAll(allowedSubTypes);
@@ -187,7 +187,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
     public Map<String, List<Type>> getTypeMapForDocumentType(String typeName, DocumentModel currentDoc) {
         Type type = getType(typeName);
         if (type != null) {
-            Map<String, List<Type>> docTypesMap = new HashMap<String, List<Type>>();
+            Map<String, List<Type>> docTypesMap = new HashMap<>();
             Map<String, SubType> allowedSubTypes = type.getAllowedSubTypes();
             allowedSubTypes = filterSubTypesFromConfiguration(allowedSubTypes, currentDoc);
             for (Map.Entry<String, SubType> entry : allowedSubTypes.entrySet()) {
@@ -207,7 +207,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
             }
             return docTypesMap;
         }
-        return new HashMap<String, List<Type>>();
+        return new HashMap<>();
     }
 
     @Override

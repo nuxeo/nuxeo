@@ -121,7 +121,7 @@ public class VocabularyTreeNode {
         if (children != null) {
             return children;
         }
-        children = new ArrayList<VocabularyTreeNode>();
+        children = new ArrayList<>();
         String schemaName = getDirectorySchema();
         DocumentModelList results = getChildrenEntries();
         Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
@@ -214,7 +214,7 @@ public class VocabularyTreeNode {
             return childrenEntries;
         }
         try (Session session = getDirectorySession()) {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
 
             String directorySchema = getDirectorySchema();
             SchemaManager schemaManager = Framework.getService(SchemaManager.class);

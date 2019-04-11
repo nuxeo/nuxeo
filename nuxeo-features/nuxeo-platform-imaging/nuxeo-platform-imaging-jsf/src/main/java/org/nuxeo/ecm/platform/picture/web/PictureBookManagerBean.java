@@ -114,20 +114,20 @@ public class PictureBookManagerBean extends InputController implements PictureBo
 
     protected void initViews() {
         // Sets the default views original, thumbnail and medium.
-        views = new ArrayList<Map<String, Object>>();
-        Map<String, Object> map = new HashMap<String, Object>();
+        views = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("title", "Medium");
         map.put("maxsize", AbstractPictureAdapter.MEDIUM_SIZE);
         map.put("tag", "medium");
         map.put("description", "MediumSize Picture");
         views.add(map);
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         map.put("title", "Thumbnail");
         map.put("maxsize", AbstractPictureAdapter.THUMB_SIZE);
         map.put("tag", "thumbnail");
         map.put("description", "ThumbnailSize Picture");
         views.add(map);
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         map.put("title", "OriginalJpeg");
         map.put("maxsize", null);
         map.put("tag", "originalJpeg");
@@ -174,7 +174,7 @@ public class PictureBookManagerBean extends InputController implements PictureBo
 
     @Override
     public void addView() {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("title", viewtitle);
         map.put("maxsize", maxsize);
         map.put("tag", tag);
@@ -329,7 +329,7 @@ public class PictureBookManagerBean extends InputController implements PictureBo
     protected void initSelectItems() {
         DocumentModel doc = getCurrentDocument();
         List<Map<String, Object>> views = (List) doc.getProperty("picturebook", "picturetemplates");
-        selectItems = new ArrayList<SelectItem>(views.size());
+        selectItems = new ArrayList<>(views.size());
         String label;
         SelectItem selectItem;
         for (Map<String, Object> map : views) {

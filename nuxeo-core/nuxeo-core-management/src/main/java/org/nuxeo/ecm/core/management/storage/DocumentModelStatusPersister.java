@@ -141,9 +141,9 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
 
         protected final String serviceId;
 
-        protected final List<String> allInstanceIds = new ArrayList<String>();
+        protected final List<String> allInstanceIds = new ArrayList<>();
 
-        protected final List<AdministrativeStatus> statuses = new ArrayList<AdministrativeStatus>();
+        protected final List<AdministrativeStatus> statuses = new ArrayList<>();
 
         public StatusFetcher(String instanceId, String serviceId) {
             this.instanceId = instanceId;

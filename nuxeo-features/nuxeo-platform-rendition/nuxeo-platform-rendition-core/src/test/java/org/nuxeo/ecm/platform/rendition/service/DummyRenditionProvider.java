@@ -38,7 +38,7 @@ public class DummyRenditionProvider implements RenditionProvider {
     @Override
     public List<Blob> render(DocumentModel doc, RenditionDefinition definition) {
         Blob blob = Blobs.createBlob(doc.getTitle(), CONTENT_TYPE);
-        List<Blob> blobs = new ArrayList<Blob>();
+        List<Blob> blobs = new ArrayList<>();
         blobs.add(blob);
         return blobs;
     }

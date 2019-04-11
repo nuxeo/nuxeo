@@ -80,12 +80,12 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
             List<String> vGroups = getService().computeGroupsForUser(nuxPrincipal);
 
             if (vGroups == null) {
-                vGroups = new ArrayList<String>();
+                vGroups = new ArrayList<>();
             }
 
             List<String> origVGroups = nuxPrincipal.getVirtualGroups();
             if (origVGroups == null) {
-                origVGroups = new ArrayList<String>();
+                origVGroups = new ArrayList<>();
             }
 
             // MERGE!

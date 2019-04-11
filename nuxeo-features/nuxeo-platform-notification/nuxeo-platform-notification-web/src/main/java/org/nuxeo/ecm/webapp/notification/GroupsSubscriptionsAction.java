@@ -85,7 +85,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
     public List<SelectItem> getNotificationList() {
         String parentType = documentManager.getSuperParentType(navigationContext.getCurrentDocument());
         List<Notification> notifs = notificationManager.getNotificationsForSubscriptions(parentType);
-        List<SelectItem> notifsResult = new ArrayList<SelectItem>();
+        List<SelectItem> notifsResult = new ArrayList<>();
         for (Notification notification : notifs) {
             String notifName = notification.getName();
             String notifLabel = notification.getLabel();
@@ -126,7 +126,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
     }
 
     private static List<String> getDisjunctElements(List<String> array1, List<String> array2) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (String elem1 : array1) {
 
             if (!array2.contains(elem1)) {
@@ -168,7 +168,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
      * Returns a map that contains all users and groups subscribed to notifications(keys).
      */
     public Map<String, List<String>> getUsersByNotificationsForCurrentDocument() {
-        Map<String, List<String>> result = new HashMap<String, List<String>>();
+        Map<String, List<String>> result = new HashMap<>();
 
         String superParentType = documentManager.getSuperParentType(navigationContext.getCurrentDocument());
         List<Notification> notifications = notificationManager.getNotificationsForSubscriptions(superParentType);
@@ -186,8 +186,8 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
     }
 
     public SelectItem[] getNotificationActionItems() {
-        List<String> permissionActions = new ArrayList<String>();
-        List<SelectItem> jsfModelList = new ArrayList<SelectItem>();
+        List<String> permissionActions = new ArrayList<>();
+        List<SelectItem> jsfModelList = new ArrayList<>();
 
         permissionActions.add("Subscribe");
         permissionActions.add("Unsubscribe");
@@ -263,7 +263,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
 
     public List<String> getSelectedEntries() {
         if (selectedEntries == null) {
-            selectedEntries = new ArrayList<String>();
+            selectedEntries = new ArrayList<>();
         }
         return selectedEntries;
     }

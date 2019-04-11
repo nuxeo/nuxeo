@@ -45,7 +45,7 @@ public class Select2AggregateElement extends Select2WidgetElement implements Agg
     }
 
     public Map<String, Integer> getAggregates() {
-        Map<String, Integer> result = new HashMap<String, Integer>();
+        Map<String, Integer> result = new HashMap<>();
         clickSelect2Field();
         for (WebElement e : getSuggestedEntries()) {
             String label;

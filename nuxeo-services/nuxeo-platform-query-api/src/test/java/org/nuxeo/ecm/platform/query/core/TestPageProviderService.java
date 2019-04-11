@@ -163,7 +163,7 @@ public class TestPageProviderService {
 
         PageProviderDefinition ppd = pps.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
         ppd.setPattern("SELECT * FROM Document");
-        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) coreSession);
         PageProvider<?> pp = pps.getPageProvider(CURRENT_DOCUMENT_CHILDREN, ppd, null, null, Long.valueOf(1),
                 Long.valueOf(0), props);
@@ -180,7 +180,7 @@ public class TestPageProviderService {
     public void testMergedProperties() throws Exception {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put("myprop", "foo");
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) pps.getPageProvider(CURRENT_DOCUMENT_CHILDREN,
                 null, null, null, props);

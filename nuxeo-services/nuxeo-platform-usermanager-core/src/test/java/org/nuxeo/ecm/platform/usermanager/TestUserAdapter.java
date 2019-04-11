@@ -40,7 +40,7 @@ public class TestUserAdapter extends UserManagerTestCase {
         DocumentModel userModel = userManager.getUserModel("Administrator");
         UserAdapter userAdapter = userModel.getAdapter(UserAdapter.class);
 
-        List<String> groups = new ArrayList<String>();
+        List<String> groups = new ArrayList<>();
         groups.add("administrators");
 
         assertEquals("Administrator", userAdapter.getName());

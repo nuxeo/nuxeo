@@ -231,7 +231,7 @@ public class PageResourceHandler extends MetaTagHandler {
     }
 
     protected List<Resource> retrieveResources(WebResourceManager wrm, PageDescriptor page, ResourceType type) {
-        List<Resource> res = new ArrayList<Resource>();
+        List<Resource> res = new ArrayList<>();
         List<String> bundles = page.getResourceBundles();
         for (String bundle : bundles) {
             res.addAll(retrieveResources(wrm, bundle, type));
@@ -279,7 +279,7 @@ public class PageResourceHandler extends MetaTagHandler {
             resourceLib = null;
             resourceName = uri;
         }
-        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
+        List<TagAttribute> attrs = new ArrayList<>();
         attrs.add(getTagAttribute("name", resourceName));
         if (!StringUtils.isBlank(resourceLib)) {
             attrs.add(getTagAttribute("library", resourceLib));
@@ -316,7 +316,7 @@ public class PageResourceHandler extends MetaTagHandler {
     protected void includeResourceBundle(FaceletContext ctx, UIComponent parent, String name, ResourceType type,
             String flavor, String target, String includeTimestamp, FaceletHandler nextHandler) throws IOException {
         String componentType = UIOutput.COMPONENT_TYPE;
-        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
+        List<TagAttribute> attrs = new ArrayList<>();
         attrs.add(getTagAttribute("name", name));
         attrs.add(getTagAttribute("type", type.name()));
         if (!StringUtils.isBlank(target)) {
@@ -337,7 +337,7 @@ public class PageResourceHandler extends MetaTagHandler {
     protected void includePageResource(FaceletContext ctx, UIComponent parent, String name, ResourceType type,
             String flavor, String target, String includeTimestamp, FaceletHandler nextHandler) throws IOException {
         String componentType = UIOutput.COMPONENT_TYPE;
-        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
+        List<TagAttribute> attrs = new ArrayList<>();
         attrs.add(getTagAttribute("name", name));
         attrs.add(getTagAttribute("type", type.name()));
         if (!StringUtils.isBlank(target)) {

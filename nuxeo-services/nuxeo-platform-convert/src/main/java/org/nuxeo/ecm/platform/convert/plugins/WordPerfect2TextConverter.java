@@ -51,7 +51,7 @@ public class WordPerfect2TextConverter extends CommandLineBasedConverter {
     @Override
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
-        Map<String, Blob> cmdBlobParams = new HashMap<String, Blob>();
+        Map<String, Blob> cmdBlobParams = new HashMap<>();
         cmdBlobParams.put("inFilePath", blobHolder.getBlob());
         return cmdBlobParams;
     }
@@ -59,7 +59,7 @@ public class WordPerfect2TextConverter extends CommandLineBasedConverter {
     @Override
     protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
-        return new HashMap<String, String>();
+        return new HashMap<>();
     }
 
 }

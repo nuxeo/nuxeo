@@ -126,12 +126,12 @@ public class UserSuggestionActionsBean implements Serializable {
 
     public List<DocumentModel> getGroupsSuggestions(Object input) {
         try {
-            Map<String, DocumentModel> uniqueGroups = new HashMap<String, DocumentModel>();
+            Map<String, DocumentModel> uniqueGroups = new HashMap<>();
 
             String pattern = (String) input;
             for (String field : userManager.getGroupSearchFields()) {
                 // XXX: this doesn't fetch group members (references)
-                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                Map<String, Serializable> filter = new HashMap<>();
 
                 if (StringUtils.isNotEmpty(pattern)) {
                     filter.put(field, pattern);
@@ -156,7 +156,7 @@ public class UserSuggestionActionsBean implements Serializable {
     }
 
     protected Map<String, String> getGroupsOrderBy() {
-        Map<String, String> order = new HashMap<String, String>();
+        Map<String, String> order = new HashMap<>();
         order.put(userManager.getGroupLabelField(), DocumentModelComparator.ORDER_ASC);
         return order;
     }
@@ -210,10 +210,10 @@ public class UserSuggestionActionsBean implements Serializable {
             }
         }
 
-        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(totalSize);
+        List<Map<String, Object>> result = new ArrayList<>(totalSize);
 
         for (DocumentModel user : users) {
-            Map<String, Object> entry = new HashMap<String, Object>();
+            Map<String, Object> entry = new HashMap<>();
             entry.put(TYPE_KEY_NAME, USER_TYPE);
             entry.put(ENTRY_KEY_NAME, user);
             String userId = user.getId();
@@ -223,7 +223,7 @@ public class UserSuggestionActionsBean implements Serializable {
         }
 
         for (DocumentModel group : groups) {
-            Map<String, Object> entry = new HashMap<String, Object>();
+            Map<String, Object> entry = new HashMap<>();
             entry.put(TYPE_KEY_NAME, GROUP_TYPE);
             entry.put(ENTRY_KEY_NAME, group);
             String groupId = group.getId();
@@ -242,7 +242,7 @@ public class UserSuggestionActionsBean implements Serializable {
 
     // XXX: needs optimisation
     public Map<String, Object> getPrefixedUserInfo(String id) {
-        Map<String, Object> res = new HashMap<String, Object>();
+        Map<String, Object> res = new HashMap<>();
         res.put(PREFIXED_ID_KEY_NAME, id);
         if (!StringUtils.isBlank(id)) {
             if (id.startsWith(NuxeoPrincipal.PREFIX)) {
@@ -264,7 +264,7 @@ public class UserSuggestionActionsBean implements Serializable {
 
     // XXX: needs optimisation
     public Map<String, Object> getUserInfo(String id) {
-        Map<String, Object> res = new HashMap<String, Object>();
+        Map<String, Object> res = new HashMap<>();
         res.put(ID_KEY_NAME, id);
         if (!StringUtils.isBlank(id)) {
             if (userManager.getGroup(id) != null) {

@@ -178,7 +178,7 @@ public class RFC822ToTextConverter implements Converter {
     }
 
     protected static List<Part> getAttachmentParts(Part p) throws MessagingException, IOException {
-        List<Part> res = new ArrayList<Part>();
+        List<Part> res = new ArrayList<>();
         if (p.isMimeType(MESSAGE_RFC822_MIMETYPE)) {
             res.addAll(getAttachmentParts((Part) p.getContent()));
         } else if (p.isMimeType("multipart/alternative")) {

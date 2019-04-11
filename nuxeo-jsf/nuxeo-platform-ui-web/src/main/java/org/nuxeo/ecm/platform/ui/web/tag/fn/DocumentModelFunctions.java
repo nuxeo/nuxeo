@@ -429,7 +429,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             return null;
         }
         DocumentLocation docLoc = new DocumentLocationImpl(doc);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, blobPropertyName);
         params.put(DocumentFileCodec.FILENAME_KEY, filename);
         DocumentView docView = new DocumentViewImpl(docLoc, null, params);
@@ -514,7 +514,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String complexFileUrl(String patternName, DocumentModel doc, String listElement, int index,
             String blobPropertyName, String filename) {
         DocumentLocation docLoc = new DocumentLocationImpl(doc);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
 
         String fileProperty = getPropertyPath(listElement, index, blobPropertyName);
 
@@ -575,7 +575,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (viewId == null || viewId.length() == 0) {
             viewId = getDefaultView(doc);
         }
-        parameters = parameters == null ? new HashMap<String, String>() : parameters;
+        parameters = parameters == null ? new HashMap<>() : parameters;
 
         if (doc.isVersion()) {
             parameters.put("version", "true");
@@ -649,7 +649,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String repositoryUrl(String patternName, String repositoryName, String viewId,
             Map<String, String> parameters, boolean newConversation, HttpServletRequest req) {
         DocumentLocation docLoc = new DocumentLocationImpl(repositoryName, null);
-        parameters = parameters == null ? new HashMap<String, String>() : parameters;
+        parameters = parameters == null ? new HashMap<>() : parameters;
         return documentUrl(patternName, docLoc, viewId, parameters, newConversation, req);
     }
 
@@ -661,7 +661,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String repositoryUrl(String patternName, String repositoryName, String viewId,
             Map<String, String> parameters, boolean newConversation, String baseURL) {
         DocumentLocation docLoc = new DocumentLocationImpl(repositoryName, null);
-        parameters = parameters == null ? new HashMap<String, String>() : parameters;
+        parameters = parameters == null ? new HashMap<>() : parameters;
         return documentUrl(patternName, docLoc, viewId, parameters, newConversation, baseURL);
     }
 

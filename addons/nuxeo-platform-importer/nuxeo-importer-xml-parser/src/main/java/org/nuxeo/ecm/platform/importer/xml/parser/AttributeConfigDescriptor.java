@@ -63,7 +63,7 @@ public class AttributeConfigDescriptor {
         this.tagName = tagName;
         this.targetDocProperty = targetDocProperty;
         if (mapping == null) {
-            this.mapping = new HashMap<String, String>();
+            this.mapping = new HashMap<>();
         } else {
             this.mapping = mapping;
         }

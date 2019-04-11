@@ -56,7 +56,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         return new PathRef(sb.toString());
     }
 
-    protected final Map<String, DocumentStoreHandlerDescriptor> handlers = new HashMap<String, DocumentStoreHandlerDescriptor>();
+    protected final Map<String, DocumentStoreHandlerDescriptor> handlers = new HashMap<>();
 
     public void registerHandler(DocumentStoreHandlerDescriptor desc) {
         if (desc.handler == null) {

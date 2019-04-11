@@ -437,7 +437,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
     // rendering methods
 
     protected List<String> getAvailableChoices(Blob blob, boolean temp) {
-        List<String> choices = new ArrayList<String>(3);
+        List<String> choices = new ArrayList<>(3);
         boolean isRequired = isRequired();
         if (blob != null) {
             choices.add(temp ? InputFileChoice.KEEP_TEMP : InputFileChoice.KEEP);
@@ -538,7 +538,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
             writer.startElement("tr", this);
             writer.startElement("td", this);
             writer.writeAttribute("class", "radioColumn", null);
-            Map<String, String> props = new HashMap<String, String>();
+            Map<String, String> props = new HashMap<>();
             props.put("type", "radio");
             props.put("name", radioClientId);
             props.put("id", id);

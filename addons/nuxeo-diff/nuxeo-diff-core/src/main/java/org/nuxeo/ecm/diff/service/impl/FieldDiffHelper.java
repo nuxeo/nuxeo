@@ -130,7 +130,7 @@ public final class FieldDiffHelper {
 
             String field = null;
             String currentNodeName = currentNode.getNodeName();
-            List<PropertyHierarchyNode> propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
+            List<PropertyHierarchyNode> propertyHierarchy = new ArrayList<>();
 
             // Detect a schema element,
             // for instance: <schema name="dublincore" xmlns:dc="...">.

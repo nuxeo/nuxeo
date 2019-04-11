@@ -313,7 +313,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
 
     @Override
     public void restoreCurrentDocument() {
-        List<DocumentModel> doc = new ArrayList<DocumentModel>();
+        List<DocumentModel> doc = new ArrayList<>();
         doc.add(navigationContext.getCurrentDocument());
         undeleteSelection(doc);
     }

@@ -44,7 +44,7 @@ public class TestURIUtils {
 
     @Before
     public void setUp() throws Exception {
-        parameters = new HashMap<String, String>();
+        parameters = new HashMap<>();
         parameters.put("currentTab", "TAB_CONTENT");
         parameters.put("documentId", "4012a2d7-384e-4735-ab98-b06b598072fa");
         parameters.put("repositoryName", "demo");
@@ -58,10 +58,10 @@ public class TestURIUtils {
 
     @Test
     public void testAddParametersToURIQuery() {
-        Map<String, String> newParams = new HashMap<String, String>();
+        Map<String, String> newParams = new HashMap<>();
         newParams.put("conversationId", "0NXMAIN21");
 
-        Map<String, String> expectedParams = new HashMap<String, String>(parameters);
+        Map<String, String> expectedParams = new HashMap<>(parameters);
         expectedParams.put("conversationId", "0NXMAIN21");
 
         // Test full URI first
@@ -98,13 +98,13 @@ public class TestURIUtils {
         String query = "contentViewName=document_content&currentPage=0&pageSize=0&contentViewState=H4sIAAAAAAAAAGVQTU%2FDMAz9Lz637KtorLdpcEBCqNLQLghNJvG2oDYpicM2qv53nG4ndovf8%2FtwOlDOMlneGDq%2BYkNQgnYqNgJtrxRk0OKe1uZX2Ok4AxW9F7wSEEqZvyP5c4Ve5Ew%2BQPkOuBhPkWbTXKtikheaJvniQWOui2K%2B%2BJyhKub38JFBIPTq8HhNhLIDPrepxFL%2FoFWk18NCquBdS54NiX%2FX9yJ1np%2FtzqW8bphWro6NTReokg3XBJetZVBktbF7KNlH6iXXU4g1v%2BDZxSHV%2Fju9NoFFsMUvPInLxe2WT5RHG2pkervspIQMjPxdhXwQzSi9w%2BjGOsF37eARDu64Wm%2BeTq20vZbs%2FwDQcHGtmwEAAA%3D%3D";
         String uri = bareUri + "?" + query;
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         String res_1 = URIUtils.addParametersToURIQuery(uri, params);
 
         String uriPath = URIUtils.getURIPath(uri);
         Map<String, String> params_2 = URIUtils.getRequestParameters(uri);
         if (params_2 == null) {
-            params_2 = new HashMap<String, String>();
+            params_2 = new HashMap<>();
         }
         String res_2 = URIUtils.addParametersToURIQuery(uriPath, params_2);
 

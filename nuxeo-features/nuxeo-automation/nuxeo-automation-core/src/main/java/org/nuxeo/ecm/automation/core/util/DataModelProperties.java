@@ -84,7 +84,7 @@ public class DataModelProperties extends Properties {
 
     @Override
     public String toString() {
-        Map<String,Serializable> merged = new HashMap<String, Serializable>();
+        Map<String,Serializable> merged = new HashMap<>();
         merged.putAll(properties);
         merged.putAll(this);
         return merged.toString();

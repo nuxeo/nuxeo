@@ -33,7 +33,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class ResourceBundleRegistry extends ContributionFragmentRegistry<ResourceBundle> {
 
-    protected Map<String, ResourceBundle> bundles = new HashMap<String, ResourceBundle>();
+    protected Map<String, ResourceBundle> bundles = new HashMap<>();
 
     @Override
     public String getContributionId(ResourceBundle contrib) {
@@ -72,7 +72,7 @@ public class ResourceBundleRegistry extends ContributionFragmentRegistry<Resourc
     }
 
     public List<ResourceBundle> getResourceBundles() {
-        return new ArrayList<ResourceBundle>(bundles.values());
+        return new ArrayList<>(bundles.values());
     }
 
 }

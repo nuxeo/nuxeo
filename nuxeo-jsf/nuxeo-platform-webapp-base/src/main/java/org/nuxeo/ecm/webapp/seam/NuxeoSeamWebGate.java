@@ -70,7 +70,7 @@ public class NuxeoSeamWebGate implements ServletContextListener {
     protected final Set<WebConnector> waitingConnectors = fetchConnectors();
 
     protected Set<WebConnector> fetchConnectors() {
-        Set<WebConnector> connectors = new HashSet<WebConnector>();
+        Set<WebConnector> connectors = new HashSet<>();
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         ObjectName names;
         try {

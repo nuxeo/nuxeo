@@ -236,7 +236,7 @@ public abstract class AbstractResourceRenderer extends ScriptStyleBaseRenderer {
     protected Param[] getParamList(UIComponent command) {
         String flavor = (String) command.getAttributes().get("flavor");
         if (StringUtils.isNotBlank(flavor) || command.getChildCount() > 0) {
-            ArrayList<Param> parameterList = new ArrayList<Param>();
+            ArrayList<Param> parameterList = new ArrayList<>();
             if (StringUtils.isNotBlank(flavor)) {
                 Param param = new Param("flavor", flavor);
                 parameterList.add(param);

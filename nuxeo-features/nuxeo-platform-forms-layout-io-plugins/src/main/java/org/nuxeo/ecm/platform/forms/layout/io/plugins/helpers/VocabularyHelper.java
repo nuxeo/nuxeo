@@ -68,7 +68,7 @@ public class VocabularyHelper {
     public static List<WidgetSelectOption> getChainSelectVocabularySelectOptions(String parentDirName,
             String childDirName, String lang) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        List<WidgetSelectOption> result = new ArrayList<WidgetSelectOption>();
+        List<WidgetSelectOption> result = new ArrayList<>();
         try (Session session = ds.open(parentDirName); Session subSession = ds.open(childDirName)) {
             String schema = ds.getDirectory(parentDirName).getSchema();
             String subSchema = ds.getDirectory(childDirName).getSchema();
@@ -83,7 +83,7 @@ public class VocabularyHelper {
                 WidgetSelectOption selectOption = new WidgetSelectOptionImpl(itemLabel, itemValue);
                 result.add(selectOption);
 
-                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                Map<String, Serializable> filter = new HashMap<>();
                 filter.put(PARENT_PROPERTY_NAME, itemValue);
                 DocumentModelList subEntries = subSession.query(filter, null);
                 for (DocumentModel subEntry : subEntries) {
@@ -103,7 +103,7 @@ public class VocabularyHelper {
 
     public static List<WidgetSelectOption> convertToSelectOptions(DocumentModelList entries, String schema,
             String directoryName, String lang) {
-        List<WidgetSelectOption> res = new ArrayList<WidgetSelectOption>();
+        List<WidgetSelectOption> res = new ArrayList<>();
         for (DocumentModel entry : entries) {
             String itemValue = entry.getId();
             String itemLabel = itemValue;

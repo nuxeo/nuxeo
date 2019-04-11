@@ -32,7 +32,7 @@ public class SearchDocumentsSuggestion extends Suggestion {
 
     private static final long serialVersionUID = 1L;
 
-    protected final Map<String, Serializable> searchCriteria = new HashMap<String, Serializable>();
+    protected final Map<String, Serializable> searchCriteria = new HashMap<>();
 
     public SearchDocumentsSuggestion(String id, String label, String iconURL) {
         super(id, CommonSuggestionTypes.SEARCH_DOCUMENTS, label, iconURL);

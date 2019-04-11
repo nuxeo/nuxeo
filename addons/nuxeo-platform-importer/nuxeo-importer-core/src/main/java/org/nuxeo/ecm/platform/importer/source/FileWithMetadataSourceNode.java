@@ -63,7 +63,7 @@ public class FileWithMetadataSourceNode extends FileSourceNode {
     @Override
     public List<SourceNode> getChildren() {
 
-        List<SourceNode> children = new ArrayList<SourceNode>();
+        List<SourceNode> children = new ArrayList<>();
 
         for (File child : file.listFiles()) {
             if (METADATA_FILENAME.equals(child.getName())) {

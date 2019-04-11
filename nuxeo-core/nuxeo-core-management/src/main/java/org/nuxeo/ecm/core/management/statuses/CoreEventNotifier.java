@@ -36,7 +36,7 @@ public class CoreEventNotifier implements Notifier {
     @Override
     public void notifyEvent(String eventName, String instanceIdentifier, String serviceIdentifier) {
 
-        Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+        Map<String, Serializable> eventProperties = new HashMap<>();
 
         eventProperties.put("category", AdministrativeStatusManager.ADMINISTRATIVE_EVENT_CATEGORY);
         eventProperties.put(AdministrativeStatusManager.ADMINISTRATIVE_EVENT_INSTANCE, instanceIdentifier);

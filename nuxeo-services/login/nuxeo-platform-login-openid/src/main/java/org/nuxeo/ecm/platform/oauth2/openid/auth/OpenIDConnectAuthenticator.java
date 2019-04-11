@@ -150,7 +150,7 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
 
     @Override
     public List<String> getUnAuthenticatedURLPrefix() {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     @Override

@@ -44,24 +44,24 @@ public class ProbeManagerImpl implements ProbeManager {
 
     protected static final Log log = LogFactory.getLog(ProbeManagerImpl.class);
 
-    protected final Map<Class<? extends Probe>, ProbeInfo> infosByTypes = new HashMap<Class<? extends Probe>, ProbeInfo>();
+    protected final Map<Class<? extends Probe>, ProbeInfo> infosByTypes = new HashMap<>();
 
-    protected final Map<String, ProbeInfo> infosByShortcuts = new HashMap<String, ProbeInfo>();
+    protected final Map<String, ProbeInfo> infosByShortcuts = new HashMap<>();
 
-    protected final Map<String, Probe> probesByShortcuts = new HashMap<String, Probe>();
+    protected final Map<String, Probe> probesByShortcuts = new HashMap<>();
 
-    protected final Map<String, ProbeInfo> probesForHealthCheck = new HashMap<String, ProbeInfo>();
+    protected final Map<String, ProbeInfo> probesForHealthCheck = new HashMap<>();
 
-    protected final Set<ProbeInfo> failed = new HashSet<ProbeInfo>();
+    protected final Set<ProbeInfo> failed = new HashSet<>();
 
-    protected final Set<ProbeInfo> succeed = new HashSet<ProbeInfo>();
+    protected final Set<ProbeInfo> succeed = new HashSet<>();
 
     public static final String DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY = "nuxeo.healthcheck.refresh.interval.seconds";
 
     public static final String DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS = "20";
 
     protected Set<String> doExtractProbesName(Collection<ProbeInfo> runners) {
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         for (ProbeInfo runner : runners) {
             names.add(runner.getShortcutName());
         }

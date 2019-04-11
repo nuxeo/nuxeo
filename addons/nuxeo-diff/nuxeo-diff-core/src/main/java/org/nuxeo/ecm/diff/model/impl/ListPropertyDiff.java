@@ -43,7 +43,7 @@ public class ListPropertyDiff extends PropertyDiff {
     public ListPropertyDiff(String propertyType) {
 
         this.propertyType = propertyType;
-        this.diffMap = new HashMap<Integer, PropertyDiff>();
+        this.diffMap = new HashMap<>();
     }
 
     /**
@@ -95,7 +95,7 @@ public class ListPropertyDiff extends PropertyDiff {
      * @return the diff indexes
      */
     public List<Integer> getDiffIndexes() {
-        return new ArrayList<Integer>(diffMap.keySet());
+        return new ArrayList<>(diffMap.keySet());
     }
 
     @Override

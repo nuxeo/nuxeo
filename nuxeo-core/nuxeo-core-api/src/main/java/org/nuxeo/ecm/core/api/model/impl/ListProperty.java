@@ -53,13 +53,13 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     public ListProperty(Property parent, Field field) {
         super(parent);
         this.field = field;
-        children = new ArrayList<Property>();
+        children = new ArrayList<>();
     }
 
     public ListProperty(Property parent, Field field, int flags) {
         super(parent, flags);
         this.field = field;
-        children = new ArrayList<Property>();
+        children = new ArrayList<>();
     }
 
     @Override
@@ -154,7 +154,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
             return new ArrayList<String>();
         }
         // noinspection CollectionDeclaredAsConcreteClass
-        ArrayList<Object> list = new ArrayList<Object>(children.size());
+        ArrayList<Object> list = new ArrayList<>(children.size());
         for (Property property : children) {
             list.add(property.getValue());
         }
@@ -191,7 +191,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
             return new ArrayList<String>();
         }
         // noinspection CollectionDeclaredAsConcreteClass
-        ArrayList<Object> list = new ArrayList<Object>(children.size());
+        ArrayList<Object> list = new ArrayList<>(children.size());
         for (Property property : children) {
             list.add(property.getValueForWrite());
         }
@@ -228,7 +228,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
             throw new ReadOnlyPropertyException(getXPath());
         }
         if (value == null) {
-            List<Property> temp = new ArrayList<Property>(children);
+            List<Property> temp = new ArrayList<>(children);
             for (Property p : temp) { // remove all children
                 p.remove();
             }
@@ -346,7 +346,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     // Must return ArrayList
     public static ArrayList<?> arrayToList(Object obj) {
         Object[] ar = PrimitiveArrays.toObjectArray(obj);
-        ArrayList<Object> list = new ArrayList<Object>(ar.length);
+        ArrayList<Object> list = new ArrayList<>(ar.length);
         list.addAll(Arrays.asList(ar));
         return list;
     }

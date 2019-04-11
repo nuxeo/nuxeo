@@ -111,7 +111,7 @@ public final class VideoInfo implements Serializable {
             frameRate = 0d;
         }
 
-        List<Stream> streams = new ArrayList<Stream>();
+        List<Stream> streams = new ArrayList<>();
         @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> streamItems = (List<Map<String, Serializable>>) map.get(STREAMS);
         if (streamItems != null) {
@@ -133,7 +133,7 @@ public final class VideoInfo implements Serializable {
         double frameRate = 0;
         double bitRate = 0;
         String format = "";
-        List<Stream> streams = new ArrayList<Stream>();
+        List<Stream> streams = new ArrayList<>();
 
         for (String line : output) {
             Matcher matcher = FORMAT_PATTERN.matcher(line);
@@ -183,7 +183,7 @@ public final class VideoInfo implements Serializable {
                         }
                     }
                 }
-                Map<String, Serializable> map = new HashMap<String, Serializable>();
+                Map<String, Serializable> map = new HashMap<>();
                 map.put(TYPE_ATTRIBUTE, streamType);
                 map.put(CODEC_ATTRIBUTE, tokens[0]);
                 map.put(STREAM_INFO_ATTRIBUTE, matcher.group(0).trim());
@@ -200,7 +200,7 @@ public final class VideoInfo implements Serializable {
         this.height = height;
         this.frameRate = frameRate;
         this.format = format;
-        this.streams = new ArrayList<Stream>();
+        this.streams = new ArrayList<>();
         if (streams != null) {
             this.streams.addAll(streams);
         }
@@ -254,14 +254,14 @@ public final class VideoInfo implements Serializable {
      * Used when saving this {@code Stream} to a {@code DocumentModel} property.
      */
     public Map<String, Serializable> toMap() {
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         map.put(DURATION, duration);
         map.put(FRAME_RATE, frameRate);
         map.put(WIDTH, width);
         map.put(HEIGHT, height);
         map.put(FORMAT, format);
 
-        List<Map<String, Serializable>> streamItems = new ArrayList<Map<String, Serializable>>(streams.size());
+        List<Map<String, Serializable>> streamItems = new ArrayList<>(streams.size());
         for (Stream stream : streams) {
             streamItems.add(stream.toMap());
         }

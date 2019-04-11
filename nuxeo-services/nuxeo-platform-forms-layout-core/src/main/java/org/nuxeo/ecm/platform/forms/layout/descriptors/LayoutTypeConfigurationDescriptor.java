@@ -161,7 +161,7 @@ public class LayoutTypeConfigurationDescriptor {
 
     protected List<LayoutDefinition> getLayouts(Map<String, LayoutDescriptors> descs, String mode, String additionalMode) {
         if (descs != null) {
-            List<LayoutDefinition> res = new ArrayList<LayoutDefinition>();
+            List<LayoutDefinition> res = new ArrayList<>();
             if (additionalMode != null) {
                 LayoutDescriptors defaultLayouts = descs.get(additionalMode);
                 if (defaultLayouts != null) {
@@ -185,7 +185,7 @@ public class LayoutTypeConfigurationDescriptor {
 
     protected Map<String, List<LayoutDefinition>> getLayouts(Map<String, LayoutDescriptors> descs) {
         if (descs != null) {
-            Map<String, List<LayoutDefinition>> res = new HashMap<String, List<LayoutDefinition>>();
+            Map<String, List<LayoutDefinition>> res = new HashMap<>();
             for (Map.Entry<String, LayoutDescriptors> entry : descs.entrySet()) {
                 res.put(entry.getKey(), entry.getValue().getLayouts());
             }
@@ -204,7 +204,7 @@ public class LayoutTypeConfigurationDescriptor {
 
     public Map<String, Map<String, Serializable>> getDefaultPropertyValues() {
         if (defaultPropertyValues != null) {
-            Map<String, Map<String, Serializable>> res = new HashMap<String, Map<String, Serializable>>();
+            Map<String, Map<String, Serializable>> res = new HashMap<>();
             for (Map.Entry<String, PropertiesDescriptor> entry : defaultPropertyValues.entrySet()) {
                 res.put(entry.getKey(), entry.getValue().getProperties());
             }

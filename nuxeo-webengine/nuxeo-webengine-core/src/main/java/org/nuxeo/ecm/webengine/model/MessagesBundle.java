@@ -36,7 +36,7 @@ public class MessagesBundle extends ResourceBundle {
 
     public MessagesBundle(ResourceBundle parent, Map<String, String> messages) {
         this.parent = parent;
-        this.messages = messages == null ? new HashMap<String, String>() : messages;
+        this.messages = messages == null ? new HashMap<>() : messages;
     }
 
     @Override

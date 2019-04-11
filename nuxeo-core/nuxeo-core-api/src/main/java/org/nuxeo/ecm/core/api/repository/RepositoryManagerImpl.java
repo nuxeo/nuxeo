@@ -43,7 +43,7 @@ public class RepositoryManagerImpl extends DefaultComponent implements Repositor
     private Map<String, Repository> repositories = Collections.synchronizedMap(new LinkedHashMap<String, Repository>());
 
     // compat from old extension point
-    private Map<String, Repository> compatRepositories = new ConcurrentHashMap<String, Repository>();
+    private Map<String, Repository> compatRepositories = new ConcurrentHashMap<>();
 
     // compat
     private static final String XP_REPOSITORIES = "repositories";
@@ -101,12 +101,12 @@ public class RepositoryManagerImpl extends DefaultComponent implements Repositor
 
     @Override
     public Collection<Repository> getRepositories() {
-        return new ArrayList<Repository>(repositories.values());
+        return new ArrayList<>(repositories.values());
     }
 
     @Override
     public List<String> getRepositoryNames() {
-        return new ArrayList<String>(repositories.keySet());
+        return new ArrayList<>(repositories.keySet());
     }
 
     @Override

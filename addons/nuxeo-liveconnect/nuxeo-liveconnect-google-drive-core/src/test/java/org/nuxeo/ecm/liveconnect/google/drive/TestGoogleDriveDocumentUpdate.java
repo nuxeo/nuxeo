@@ -62,7 +62,7 @@ public class TestGoogleDriveDocumentUpdate extends GoogleDriveTestCase {
         // Create test document
         DocumentModel testWorkspace = session.createDocumentModel("/", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
-        List<DocumentModel> testFiles = new ArrayList<DocumentModel>();
+        List<DocumentModel> testFiles = new ArrayList<>();
         for (int i = 0; i < GoogleDriveBlobProvider.MAX_RESULT + 10; i++) {
             DocumentModel testFile = session.createDocumentModel("/testWorkspace", TEST_FILE_NAME + i, "File");
             BlobInfo blobInfo = new BlobInfo();

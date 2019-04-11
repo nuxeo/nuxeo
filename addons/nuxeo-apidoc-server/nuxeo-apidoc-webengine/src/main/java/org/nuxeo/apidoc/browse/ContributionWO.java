@@ -68,7 +68,7 @@ public class ContributionWO extends NuxeoArtifactWebObject {
 
         FormData formData = ctx.getForm();
         Map<String, String[]> fields = formData.getFormFields();
-        List<String> selectedContribs = new ArrayList<String>(fields.keySet());
+        List<String> selectedContribs = new ArrayList<>(fields.keySet());
         return getView("override").arg("contribution", ei).arg("selectedContribs", selectedContribs).arg("ep", ep);
     }
 

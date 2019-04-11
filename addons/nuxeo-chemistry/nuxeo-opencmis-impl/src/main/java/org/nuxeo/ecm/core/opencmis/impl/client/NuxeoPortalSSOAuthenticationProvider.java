@@ -68,7 +68,7 @@ public class NuxeoPortalSSOAuthenticationProvider extends AbstractAuthentication
 
         // set request headers
 
-        Map<String, List<String>> headers = new HashMap<String, List<String>>();
+        Map<String, List<String>> headers = new HashMap<>();
 
         headers.put("NX_USER", Collections.singletonList(username));
         headers.put("NX_TOKEN", Collections.singletonList(base64HashedToken));

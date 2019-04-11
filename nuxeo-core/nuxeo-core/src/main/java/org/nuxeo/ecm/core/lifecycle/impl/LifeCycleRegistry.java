@@ -39,7 +39,7 @@ public class LifeCycleRegistry extends ContributionFragmentRegistry<LifeCycleDes
 
     private static final Log log = LogFactory.getLog(LifeCycleRegistry.class);
 
-    protected Map<String, LifeCycle> lifeCycles = new HashMap<String, LifeCycle>();
+    protected Map<String, LifeCycle> lifeCycles = new HashMap<>();
 
     @Override
     public String getContributionId(LifeCycleDescriptor contrib) {
@@ -98,7 +98,7 @@ public class LifeCycleRegistry extends ContributionFragmentRegistry<LifeCycleDes
                     defaultInitialStateName, name));
         }
         boolean defaultInitialStateFound = false;
-        Collection<String> initialStateNames = new HashSet<String>();
+        Collection<String> initialStateNames = new HashSet<>();
         Collection<LifeCycleState> states = desc.getStates();
         for (LifeCycleState state : states) {
             String stateName = state.getName();

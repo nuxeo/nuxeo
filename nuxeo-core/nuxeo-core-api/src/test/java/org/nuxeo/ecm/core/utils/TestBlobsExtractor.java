@@ -221,21 +221,21 @@ public class TestBlobsExtractor {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
 
         List<Map<String, Object>> vignettes = new ArrayList<>();
-        Map<String, Object> vignette = new HashMap<String, Object>();
+        Map<String, Object> vignette = new HashMap<>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
         Blob blob1 = createBlob("file1.txt");
         vignette.put("content", blob1);
         vignettes.add(vignette);
 
-        vignette = new HashMap<String, Object>();
+        vignette = new HashMap<>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
         Blob blob2 = createBlob("file2.txt");
         vignette.put("content", blob2);
         vignettes.add(vignette);
 
-        Map<String, Object> attachedFile = new HashMap<String, Object>();
+        Map<String, Object> attachedFile = new HashMap<>();
         attachedFile.put("name", "some name");
         attachedFile.put("vignettes", vignettes);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -263,7 +263,7 @@ public class TestBlobsExtractor {
 
         // only a blob property with schema prefix
         // <field>cmpf:attachedFile/vignettes/*/content</field>
-        Set<String> pathProps = new HashSet<String>();
+        Set<String> pathProps = new HashSet<>();
         pathProps.add("cmpf:attachedFile/vignettes/*/content");
         extractor.setExtractorProperties(pathProps, null, false);
         blobs = extractor.getBlobs(doc);
@@ -273,7 +273,7 @@ public class TestBlobsExtractor {
 
         // only the blob of file (no schema prefix)
         // <field>content</field>
-        pathProps = new HashSet<String>();
+        pathProps = new HashSet<>();
         pathProps.add("content");
         extractor.setExtractorProperties(pathProps, null, false);
         blobs = extractor.getBlobs(doc);
@@ -282,7 +282,7 @@ public class TestBlobsExtractor {
 
         // only the blob of file (with prefix when schema defined without prefix)
         // <field>file:content</field>
-        pathProps = new HashSet<String>();
+        pathProps = new HashSet<>();
         pathProps.add("file:content");
         extractor.setExtractorProperties(pathProps, null, false);
         blobs = extractor.getBlobs(doc);
@@ -292,7 +292,7 @@ public class TestBlobsExtractor {
         // only the blob of file (no schema prefix)
         // the /data part is ignored because we do prefix match of existing properties (???)
         // <field>content/data</field>
-        pathProps = new HashSet<String>();
+        pathProps = new HashSet<>();
         pathProps.add("content/data");
         extractor.setExtractorProperties(pathProps, null, false);
         blobs = extractor.getBlobs(doc);
@@ -302,7 +302,7 @@ public class TestBlobsExtractor {
         // exclude specific blob
         // <fieldType>blob</fieldType>
         // <excludeField>content</excludeField>
-        pathProps = new HashSet<String>();
+        pathProps = new HashSet<>();
         pathProps.add("content");
         extractor.setExtractorProperties(null, pathProps, true);
         blobs = extractor.getBlobs(doc);
@@ -312,7 +312,7 @@ public class TestBlobsExtractor {
         // exclude specific blob using schema prefix when schema is defined without prefix
         // <fieldType>blob</fieldType>
         // <excludeField>file:content</excludeField>
-        pathProps = new HashSet<String>();
+        pathProps = new HashSet<>();
         pathProps.add("file:content");
         extractor.setExtractorProperties(null, pathProps, true);
         blobs = extractor.getBlobs(doc);

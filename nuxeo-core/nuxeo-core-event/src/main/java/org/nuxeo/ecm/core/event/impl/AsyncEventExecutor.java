@@ -169,8 +169,8 @@ public class AsyncEventExecutor {
             } else {
                 this.bundle = new ReconnectedEventBundleImpl(bundle, listenerName);
             }
-            List<String> l = new LinkedList<String>();
-            List<String> docIds = new LinkedList<String>();
+            List<String> l = new LinkedList<>();
+            List<String> docIds = new LinkedList<>();
             String repositoryName = null;
             for (Event event : bundle) {
                 String s = event.getName();

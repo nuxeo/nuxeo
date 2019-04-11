@@ -69,7 +69,7 @@ public class BlobProviderDescriptor {
     public Class<?> klass;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> properties = new HashMap<String, String>();
+    public Map<String, String> properties = new HashMap<>();
 
     public BlobProviderDescriptor() {
     }
@@ -78,7 +78,7 @@ public class BlobProviderDescriptor {
     public BlobProviderDescriptor(BlobProviderDescriptor other) {
         name = other.name;
         klass = other.klass;
-        properties = new HashMap<String, String>(other.properties);
+        properties = new HashMap<>(other.properties);
     }
 
     public void merge(BlobProviderDescriptor other) {

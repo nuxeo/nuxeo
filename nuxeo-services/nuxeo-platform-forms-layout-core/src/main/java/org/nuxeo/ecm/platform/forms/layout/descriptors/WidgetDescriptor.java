@@ -73,13 +73,13 @@ public class WidgetDescriptor {
     FieldDescriptor[] fields = new FieldDescriptor[0];
 
     @XNodeMap(value = "widgetModes/mode", key = "@value", type = HashMap.class, componentType = String.class)
-    Map<String, String> modes = new HashMap<String, String>();
+    Map<String, String> modes = new HashMap<>();
 
     @XNodeMap(value = "labels/label", key = "@mode", type = HashMap.class, componentType = String.class)
-    Map<String, String> labels = new HashMap<String, String>();
+    Map<String, String> labels = new HashMap<>();
 
     @XNodeMap(value = "helpLabels/label", key = "@mode", type = HashMap.class, componentType = String.class)
-    Map<String, String> helpLabels = new HashMap<String, String>();
+    Map<String, String> helpLabels = new HashMap<>();
 
     /**
      * Defaults to true, contrary to {@link WidgetDefinition} interface, but kept as is for compatibility.
@@ -96,13 +96,13 @@ public class WidgetDescriptor {
     boolean handlingLabels = false;
 
     @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
-    Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();
+    Map<String, PropertiesDescriptor> properties = new HashMap<>();
 
     @XNodeMap(value = "controls", key = "@mode", type = HashMap.class, componentType = ControlsDescriptor.class)
-    Map<String, ControlsDescriptor> controls = new HashMap<String, ControlsDescriptor>();
+    Map<String, ControlsDescriptor> controls = new HashMap<>();
 
     @XNodeMap(value = "properties", key = "@widgetMode", type = HashMap.class, componentType = PropertiesDescriptor.class)
-    Map<String, PropertiesDescriptor> widgetModeProperties = new HashMap<String, PropertiesDescriptor>();
+    Map<String, PropertiesDescriptor> widgetModeProperties = new HashMap<>();
 
     @XNodeList(value = "subWidgets/widget", type = WidgetDescriptor[].class, componentType = WidgetDescriptor.class)
     WidgetDescriptor[] subWidgets = new WidgetDescriptor[0];
@@ -117,7 +117,7 @@ public class WidgetDescriptor {
     WidgetSelectOption[] selectOptions = new WidgetSelectOption[0];
 
     @XNodeMap(value = "renderingInfos", key = "@mode", type = HashMap.class, componentType = RenderingInfosDescriptor.class)
-    Map<String, RenderingInfosDescriptor> renderingInfos = new HashMap<String, RenderingInfosDescriptor>();
+    Map<String, RenderingInfosDescriptor> renderingInfos = new HashMap<>();
 
     @XNodeList(value = "categories/category", type = String[].class, componentType = String.class)
     String[] categories = new String[0];
@@ -213,7 +213,7 @@ public class WidgetDescriptor {
             return widgetModeProps;
         } else {
             // take mode values, and override with widget mode values
-            Map<String, Serializable> res = new HashMap<String, Serializable>(modeProps);
+            Map<String, Serializable> res = new HashMap<>(modeProps);
             res.putAll(widgetModeProps);
             return res;
         }
@@ -235,9 +235,9 @@ public class WidgetDescriptor {
         if (controls == null) {
             return null;
         }
-        Map<String, Map<String, Serializable>> res = new HashMap<String, Map<String, Serializable>>();
+        Map<String, Map<String, Serializable>> res = new HashMap<>();
         for (Map.Entry<String, ControlsDescriptor> item : controls.entrySet()) {
-            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            Map<String, Serializable> props = new HashMap<>();
             props.putAll(item.getValue().getControls());
             res.put(item.getKey(), props);
         }
@@ -281,7 +281,7 @@ public class WidgetDescriptor {
             return defaultProps.getProperties();
         } else {
             // take any mode values, and override with given mode values
-            Map<String, Serializable> res = new HashMap<String, Serializable>(defaultProps.getProperties());
+            Map<String, Serializable> res = new HashMap<>(defaultProps.getProperties());
             res.putAll(props.getProperties());
             return res;
         }
@@ -291,9 +291,9 @@ public class WidgetDescriptor {
         if (map == null) {
             return null;
         }
-        Map<String, Map<String, Serializable>> res = new HashMap<String, Map<String, Serializable>>();
+        Map<String, Map<String, Serializable>> res = new HashMap<>();
         for (Map.Entry<String, PropertiesDescriptor> item : map.entrySet()) {
-            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            Map<String, Serializable> props = new HashMap<>();
             props.putAll(item.getValue().getProperties());
             res.put(item.getKey(), props);
         }
@@ -310,7 +310,7 @@ public class WidgetDescriptor {
         xmap.register(WidgetSelectOptionDescriptor.class);
         xmap.register(WidgetSelectOptionsDescriptor.class);
         Node p = selectOptionsDOM.getFirstChild();
-        List<WidgetSelectOption> options = new ArrayList<WidgetSelectOption>();
+        List<WidgetSelectOption> options = new ArrayList<>();
         while (p != null) {
             if (p.getNodeType() == Node.ELEMENT_NODE) {
                 Object desc = xmap.load((Element) p);
@@ -346,17 +346,17 @@ public class WidgetDescriptor {
     public WidgetDefinition getWidgetDefinition() {
         Map<String, String> clabels = null;
         if (labels != null) {
-            clabels = new HashMap<String, String>();
+            clabels = new HashMap<>();
             clabels.putAll(labels);
         }
         Map<String, String> chelpLabels = null;
         if (helpLabels != null) {
-            chelpLabels = new HashMap<String, String>();
+            chelpLabels = new HashMap<>();
             chelpLabels.putAll(helpLabels);
         }
         Map<String, String> cmodes = null;
         if (modes != null) {
-            cmodes = new HashMap<String, String>();
+            cmodes = new HashMap<>();
             cmodes.putAll(modes);
         }
         FieldDefinition[] cfieldDefinitions = getFieldDefinitions();
@@ -371,12 +371,12 @@ public class WidgetDescriptor {
         }
         Map<String, List<RenderingInfo>> crenderingInfos = null;
         if (renderingInfos != null) {
-            crenderingInfos = new HashMap<String, List<RenderingInfo>>();
+            crenderingInfos = new HashMap<>();
             for (Map.Entry<String, RenderingInfosDescriptor> item : renderingInfos.entrySet()) {
                 RenderingInfosDescriptor infos = item.getValue();
                 List<RenderingInfo> clonedInfos = null;
                 if (infos != null) {
-                    clonedInfos = new ArrayList<RenderingInfo>();
+                    clonedInfos = new ArrayList<>();
                     for (RenderingInfoDescriptor info : infos.getRenderingInfos()) {
                         clonedInfos.add(info.getRenderingInfo());
                     }
@@ -392,7 +392,7 @@ public class WidgetDescriptor {
         clone.setControls(getControls());
         clone.setTypeCategory(typeCategory);
         if (aliases != null) {
-            clone.setAliases(new ArrayList<String>(aliases));
+            clone.setAliases(new ArrayList<>(aliases));
         }
         return clone;
     }

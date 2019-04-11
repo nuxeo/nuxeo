@@ -132,7 +132,7 @@ public class RestDocumentLink extends HtmlOutputLink {
 
         String viewId = getView();
 
-        Map<String, String> params = new LinkedHashMap<String, String>();
+        Map<String, String> params = new LinkedHashMap<>();
         String tabValue = getTab();
         String subTabValue = getSubTab();
         String tabValues = getTabs();
@@ -198,7 +198,7 @@ public class RestDocumentLink extends HtmlOutputLink {
 
     protected Param[] getParamList() {
         if (getChildCount() > 0) {
-            ArrayList<Param> parameterList = new ArrayList<Param>();
+            ArrayList<Param> parameterList = new ArrayList<>();
             for (UIComponent kid : getChildren()) {
                 if (kid instanceof UIParameter) {
                     UIParameter uiParam = (UIParameter) kid;

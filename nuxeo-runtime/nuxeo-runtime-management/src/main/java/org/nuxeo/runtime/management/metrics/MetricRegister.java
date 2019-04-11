@@ -37,7 +37,7 @@ public class MetricRegister {
 
     protected final MBeanServer server = Framework.getService(ServerLocator.class).lookupServer();
 
-    protected final HashMap<String, String> cnames = new HashMap<String, String>();
+    protected final HashMap<String, String> cnames = new HashMap<>();
 
     protected String canonicalName(String name, String type) {
         return ObjectNameFactory.formatMetricQualifiedName(name, type);
@@ -66,7 +66,7 @@ public class MetricRegister {
     }
 
     public void unregisterAll() {
-        HashSet<String> names = new HashSet<String>();
+        HashSet<String> names = new HashSet<>();
         names.addAll(cnames.keySet());
         for (String name : names) {
             unregisterMXBean(name);

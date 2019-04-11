@@ -45,7 +45,7 @@ public class GroupSuggestion extends Suggestion {
 
     @Override
     public String getObjectUrl() {
-        List<String> items = new ArrayList<String>();
+        List<String> items = new ArrayList<>();
         items.add(PREFIX);
         items.add(groupId);
         return StringUtils.join(items, "/");

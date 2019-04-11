@@ -232,11 +232,11 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
                                 + "AND ecm:isVersion = 0 AND ecm:isTrashed = 0",
                         userWorkspacesId), "NXQL")) {
                     int size = 0;
-                    List<String> allIds = new ArrayList<String>();
+                    List<String> allIds = new ArrayList<>();
                     for (Map<String, Serializable> map : results) {
                         allIds.add((String) map.get("ecm:uuid"));
                     }
-                    List<String> ids = new ArrayList<String>();
+                    List<String> ids = new ArrayList<>();
                     WorkManager workManager = Framework.getService(WorkManager.class);
                     for (String id : allIds) {
                         ids.add(id);
@@ -245,7 +245,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
                             QuotaMaxSizeSetterWork work = new QuotaMaxSizeSetterWork(maxSize, ids,
                                     session.getRepositoryName());
                             workManager.schedule(work, true);
-                            ids = new ArrayList<String>(); // don't reuse list
+                            ids = new ArrayList<>(); // don't reuse list
                         }
                     }
                     if (ids.size() > 0) {
@@ -384,7 +384,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
 
         @Override
         public void run() {
-            parents = new ArrayList<DocumentModel>();
+            parents = new ArrayList<>();
             DocumentRef[] parentRefs = session.getParentDocumentRefs(doc.getRef());
             for (DocumentRef documentRef : parentRefs) {
                 parents.add(session.getDocument(documentRef));

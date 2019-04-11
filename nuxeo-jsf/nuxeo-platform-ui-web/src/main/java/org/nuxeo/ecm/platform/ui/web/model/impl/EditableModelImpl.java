@@ -97,7 +97,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         }
         originalData = value;
         listDiff = new ListDiff();
-        keyMap = new HashMap<Integer, Integer>();
+        keyMap = new HashMap<>();
         initializeData(value);
         this.template = template;
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
@@ -107,14 +107,14 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
     protected void initializeData(Object originalData) {
         List data = null;
         if (originalData == null) {
-            data = new ArrayList<Object>();
+            data = new ArrayList<>();
         } else if (originalData instanceof Object[]) {
-            data = new ArrayList<Object>();
+            data = new ArrayList<>();
             for (Object item : (Object[]) originalData) {
                 data.add(DeepCopy.deepCopy(item));
             }
         } else if (originalData instanceof List) {
-            data = new ArrayList<Object>();
+            data = new ArrayList<>();
             data.addAll((List) DeepCopy.deepCopy(originalData));
         }
         setWrappedData(data);
@@ -397,7 +397,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         data.add(index, value);
         listDiff.insert(index, value);
         // update key map to reflect new structure
-        Map<Integer, Integer> newKeyMap = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> newKeyMap = new HashMap<>();
         for (Integer i : keyMap.keySet()) {
             Integer key = keyMap.get(i);
             if (i >= index) {
@@ -418,7 +418,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         data.add(toIndex, old);
         listDiff.move(fromIndex, toIndex);
         // update key map to reflect new structure
-        Map<Integer, Integer> newKeyMap = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> newKeyMap = new HashMap<>();
         if (fromIndex < toIndex) {
             for (Integer i : keyMap.keySet()) {
                 Integer key = keyMap.get(i);
@@ -452,7 +452,7 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
         Object old = data.remove(index);
         listDiff.remove(index);
         // update key map to reflect new structure
-        Map<Integer, Integer> newKeyMap = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> newKeyMap = new HashMap<>();
         for (Integer i : keyMap.keySet()) {
             Integer key = keyMap.get(i);
             if (i > index) {

@@ -36,7 +36,7 @@ import org.nuxeo.ecm.platform.preview.api.PreviewException;
 public class PlainImagePreviewer extends AbstractPreviewer implements MimeTypePreviewer {
 
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
-        List<Blob> blobResults = new ArrayList<Blob>();
+        List<Blob> blobResults = new ArrayList<>();
         StringBuilder htmlPage = new StringBuilder();
         htmlPage.append("<html><head><title>");
         htmlPage.append(getPreviewTitle(dm));

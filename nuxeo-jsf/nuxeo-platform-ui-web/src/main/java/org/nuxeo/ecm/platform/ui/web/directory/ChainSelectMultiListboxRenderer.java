@@ -124,7 +124,7 @@ public class ChainSelectMultiListboxRenderer extends Renderer {
         // multiple="true" size="4"><option value="">Select a value</option>
         // writer.writeAttribute("onchange","onchange");
 
-        List<String> valueList = new ArrayList<String>();
+        List<String> valueList = new ArrayList<>();
 
         int index = comp.getIndex();
         Selection[] selections = chain.getSelections();

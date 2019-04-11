@@ -82,14 +82,14 @@ public class DocumentContentViewActions implements Serializable {
     /**
      * Map caching content views defined on a given document type
      */
-    protected Map<String, Map<String, List<ContentViewHeader>>> typeToContentView = new HashMap<String, Map<String, List<ContentViewHeader>>>();
+    protected Map<String, Map<String, List<ContentViewHeader>>> typeToContentView = new HashMap<>();
 
     protected Map<String, List<ContentViewHeader>> currentAvailableContentViews;
 
     /**
      * Map caching content views shown in export defined on a given document type
      */
-    protected Map<String, Map<String, List<ContentViewHeader>>> typeToExportContentView = new HashMap<String, Map<String, List<ContentViewHeader>>>();
+    protected Map<String, Map<String, List<ContentViewHeader>>> typeToExportContentView = new HashMap<>();
 
     protected Map<String, List<ContentViewHeader>> currentExportContentViews;
 
@@ -97,7 +97,7 @@ public class DocumentContentViewActions implements Serializable {
 
     protected Map<String, List<ContentViewHeader>> getContentViewHeaders(TypeInfo typeInfo, boolean export)
             {
-        Map<String, List<ContentViewHeader>> res = new LinkedHashMap<String, List<ContentViewHeader>>();
+        Map<String, List<ContentViewHeader>> res = new LinkedHashMap<>();
         Map<String, String[]> cvNamesByCat;
         if (export) {
             cvNamesByCat = typeInfo.getContentViewsForExport();
@@ -106,7 +106,7 @@ public class DocumentContentViewActions implements Serializable {
         }
         if (cvNamesByCat != null) {
             for (Map.Entry<String, String[]> cvNameByCat : cvNamesByCat.entrySet()) {
-                List<ContentViewHeader> headers = new ArrayList<ContentViewHeader>();
+                List<ContentViewHeader> headers = new ArrayList<>();
                 String[] cvNames = cvNameByCat.getValue();
                 if (cvNames != null) {
                     for (String cvName : cvNames) {
@@ -217,7 +217,7 @@ public class DocumentContentViewActions implements Serializable {
         if (cvNames == null) {
             return null;
         }
-        List<ContentViewHeader> headers = new ArrayList<ContentViewHeader>();
+        List<ContentViewHeader> headers = new ArrayList<>();
         for (String cvName : cvNames) {
             ContentViewHeader header = contentViewService.getContentViewHeader(cvName);
             if (header != null) {
@@ -268,7 +268,7 @@ public class DocumentContentViewActions implements Serializable {
     @Observer(value = { EventNames.FLUSH_EVENT })
     @BypassInterceptors
     public void onHotReloadFlush() {
-        typeToContentView = new HashMap<String, Map<String, List<ContentViewHeader>>>();
+        typeToContentView = new HashMap<>();
     }
 
     /**

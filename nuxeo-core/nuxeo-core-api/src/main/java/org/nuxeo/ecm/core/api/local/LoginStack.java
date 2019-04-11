@@ -35,7 +35,7 @@ public class LoginStack {
         return new Sync();
     }
 
-    protected final LinkedList<Entry> stack = new LinkedList<Entry>();
+    protected final LinkedList<Entry> stack = new LinkedList<>();
 
     public void clear() {
         stack.clear();

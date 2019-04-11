@@ -420,7 +420,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
     }
 
     public Collection<String> getHeaderValues(Message message, String headerName) throws MessagingException {
-        Collection<String> valuesList = new ArrayList<String>();
+        Collection<String> valuesList = new ArrayList<>();
         String[] values = message.getHeader(headerName);
         if (values != null) {
             for (String value : values) {

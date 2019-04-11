@@ -51,7 +51,7 @@ public class TestConstraintsTranslation {
 
             @Override
             public Description getDescription() {
-                HashMap<String, Serializable> parameters = new HashMap<String, Serializable>();
+                HashMap<String, Serializable> parameters = new HashMap<>();
                 parameters.put("param1", "value1");
                 parameters.put("param2", "value2");
                 return new Description("AlwaysWrongConstraint", parameters);
@@ -212,7 +212,7 @@ public class TestConstraintsTranslation {
     @Test
     public void testExternalReferenceConstraintMessage() {
         TestingColorResolver resolver = new TestingColorResolver();
-        HashMap<String, String> parameters = new HashMap<String, String>();
+        HashMap<String, String> parameters = new HashMap<>();
         parameters.put(TestingColorResolver.COLOR_MODE,
                 TestingColorResolver.MODE.PRIMARY.name());
         resolver.configure(parameters);

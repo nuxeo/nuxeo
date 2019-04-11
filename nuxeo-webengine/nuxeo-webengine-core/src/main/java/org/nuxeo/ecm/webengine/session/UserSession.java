@@ -47,7 +47,7 @@ public final class UserSession extends HashMap<String, Object> {
 
     protected static final Log log = LogFactory.getLog(UserSession.class);
 
-    protected Map<Class<?>, ComponentMap<?>> comps = new HashMap<Class<?>, ComponentMap<?>>();
+    protected Map<Class<?>, ComponentMap<?>> comps = new HashMap<>();
 
     protected HttpServletRequest request;
 
@@ -117,7 +117,7 @@ public final class UserSession extends HashMap<String, Object> {
         ComponentMap<T> map = (ComponentMap<T>) comps.get(type);
         T comp;
         if (map == null) {
-            map = new ComponentMap<T>();
+            map = new ComponentMap<>();
             comps.put(type, map);
         } else {
             if (name == null) {

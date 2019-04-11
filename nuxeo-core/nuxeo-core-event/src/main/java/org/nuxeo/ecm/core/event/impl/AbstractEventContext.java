@@ -62,7 +62,7 @@ public abstract class AbstractEventContext implements EventContext {
     @Override
     public Map<String, Serializable> getProperties() {
         if (properties == null) {
-            properties = new HashMap<String, Serializable>();
+            properties = new HashMap<>();
         }
         return properties;
     }
@@ -75,7 +75,7 @@ public abstract class AbstractEventContext implements EventContext {
     @Override
     public Serializable getProperty(String key) {
         if (properties == null) {
-            properties = new HashMap<String, Serializable>();
+            properties = new HashMap<>();
         }
         return properties.get(key);
     }
@@ -83,7 +83,7 @@ public abstract class AbstractEventContext implements EventContext {
     @Override
     public boolean hasProperty(String key) {
         if (properties == null) {
-            properties = new HashMap<String, Serializable>();
+            properties = new HashMap<>();
         }
         return properties.containsKey(key);
     }
@@ -91,7 +91,7 @@ public abstract class AbstractEventContext implements EventContext {
     @Override
     public void setProperty(String key, Serializable value) {
         if (properties == null) {
-            properties = new HashMap<String, Serializable>();
+            properties = new HashMap<>();
         }
         properties.put(key, value);
     }

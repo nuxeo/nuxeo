@@ -33,7 +33,7 @@ import org.nuxeo.ecm.platform.annotations.descriptors.PermissionMapperDescriptor
  */
 public class AnnotationConfigurationServiceImpl implements AnnotationConfigurationService {
 
-    private final List<EventListener> listeners = new ArrayList<EventListener>();
+    private final List<EventListener> listeners = new ArrayList<>();
 
     private UriResolver resolver;
 

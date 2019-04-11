@@ -38,7 +38,7 @@ public class AnnotationPopupMenu extends PopupPanel {
 
     public AnnotationPopupMenu(List<AbstractAnnotationCommand> commands) {
         super(true);
-        this.commands = new ArrayList<AbstractAnnotationCommand>(commands);
+        this.commands = new ArrayList<>(commands);
         setStyleName("annotationPopupMenu");
         // Fix for IE: don't display the context menu on right click
         getElement().setAttribute("oncontextmenu", "return false;");

@@ -108,7 +108,7 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
      */
     protected TagAttributes getViewTagAttributes(FaceletContext ctx, FaceletHandlerHelper helper, String id,
             Widget widget, boolean addId) {
-        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
+        List<TagAttribute> attrs = new ArrayList<>();
         FieldDefinition[] fields = widget.getFieldDefinitions();
         if (fields != null && fields.length > 0) {
             FieldDefinition field = fields[0];
@@ -130,7 +130,7 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
         }
 
         // fill with widget properties
-        Map<String, Serializable> widgetPropsClone = new HashMap<String, Serializable>();
+        Map<String, Serializable> widgetPropsClone = new HashMap<>();
         Map<String, Serializable> widgetProps = widget.getProperties();
         if (widgetProps != null) {
             widgetPropsClone.putAll(widgetProps);

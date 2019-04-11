@@ -40,12 +40,12 @@ public class LifeCycleTypeRegistry extends ContributionFragmentRegistry<LifeCycl
     private static final Log log = LogFactory.getLog(LifeCycleTypeRegistry.class);
 
     /** Type name -> life cycle name. */
-    protected Map<String, String> typesMapping = new HashMap<String, String>();
+    protected Map<String, String> typesMapping = new HashMap<>();
 
     /**
      * a mapping from doc type -> list of transitions that should not recurse.
      */
-    protected Map<String, List<String>> docTypeToNonRecursiveTransition = new HashMap<String, List<String>>();
+    protected Map<String, List<String>> docTypeToNonRecursiveTransition = new HashMap<>();
 
     @Override
     public String getContributionId(LifeCycleTypesDescriptor contrib) {
@@ -57,7 +57,7 @@ public class LifeCycleTypeRegistry extends ContributionFragmentRegistry<LifeCycl
         log.info("Registering lifecycle types mapping: " + contrib.getDocumentType() + "-" + contrib.getLifeCycleName());
         typesMapping.put(contrib.getDocumentType(), contrib.getLifeCycleName());
         String transitionArray = contrib.getNoRecursionForTransitions();
-        List<String> transitions = new ArrayList<String>();
+        List<String> transitions = new ArrayList<>();
         if (transitionArray != null && !transitionArray.isEmpty()) {
             transitions = Arrays.asList(contrib.getNoRecursionForTransitions().split(","));
         }
@@ -92,7 +92,7 @@ public class LifeCycleTypeRegistry extends ContributionFragmentRegistry<LifeCycl
     }
 
     public Collection<String> getTypesFor(String lifeCycleName) {
-        Collection<String> types = new ArrayList<String>();
+        Collection<String> types = new ArrayList<>();
         for (String typeName : typesMapping.keySet()) {
             if (typesMapping.get(typeName).equals(lifeCycleName)) {
                 types.add(typeName);

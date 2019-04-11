@@ -57,7 +57,7 @@ public class TestUserTreeNodeParsing {
         DocumentModel doc1 = newDoc("hello:::world:::john", "type");
         DocumentModel doc2 = newDoc("hello:::world:::john2", "type");
 
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        List<DocumentModel> docs = new ArrayList<>();
         docs.add(doc1);
         docs.add(doc2);
 
@@ -76,7 +76,7 @@ public class TestUserTreeNodeParsing {
         DocumentModel doc2 = newDoc("Administrator:::Admini", "type");
         DocumentModel doc3 = newDoc("Administrator:::Admini:::hello", "type");
 
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        List<DocumentModel> docs = new ArrayList<>();
         docs.add(doc1);
         docs.add(doc2);
         docs.add(doc3);
@@ -96,7 +96,7 @@ public class TestUserTreeNodeParsing {
         DocumentModel doc1 = newDoc("test", "type");
         DocumentModel doc2 = newDoc("test:::test", "type");
 
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        List<DocumentModel> docs = new ArrayList<>();
         docs.add(doc1);
         docs.add(doc2);
 
@@ -112,7 +112,7 @@ public class TestUserTreeNodeParsing {
     @Test
     public void testParsingHandling() {
         DocumentModel doc1 = newDoc("empty", "type");
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        List<DocumentModel> docs = new ArrayList<>();
         docs.add(doc1);
 
         List<UserTreeNode> nodes = UserTreeNodeHelper.getHierarcicalNodes(docs);
@@ -120,7 +120,7 @@ public class TestUserTreeNodeParsing {
         assertEquals("empty", nodes.get(0).getId());
 
         doc1 = newDoc(":::hello:::", "type");
-        docs = new ArrayList<DocumentModel>();
+        docs = new ArrayList<>();
         docs.add(doc1);
 
         nodes = UserTreeNodeHelper.getHierarcicalNodes(docs);

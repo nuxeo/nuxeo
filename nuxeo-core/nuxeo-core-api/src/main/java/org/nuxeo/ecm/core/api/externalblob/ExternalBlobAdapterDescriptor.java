@@ -41,7 +41,7 @@ public class ExternalBlobAdapterDescriptor {
     protected Class<? extends ExternalBlobAdapter> adapter;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> properties = new HashMap<String, String>();
+    Map<String, String> properties = new HashMap<>();
 
     public Class<? extends ExternalBlobAdapter> getAdapterClass() {
         return adapter;

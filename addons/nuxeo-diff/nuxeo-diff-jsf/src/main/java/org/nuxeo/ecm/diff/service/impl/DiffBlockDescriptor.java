@@ -45,13 +45,13 @@ public class DiffBlockDescriptor {
     public String name;
 
     @XNodeMap(value = "templates/template", key = "@mode", type = HashMap.class, componentType = String.class)
-    Map<String, String> templates = new HashMap<String, String>();
+    Map<String, String> templates = new HashMap<>();
 
     @XNodeList(value = "fields/field", type = ArrayList.class, componentType = DiffFieldDescriptor.class)
     public List<DiffFieldDescriptor> fields;
 
     @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
-    Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();
+    Map<String, PropertiesDescriptor> properties = new HashMap<>();
 
     public String getName() {
         return name;

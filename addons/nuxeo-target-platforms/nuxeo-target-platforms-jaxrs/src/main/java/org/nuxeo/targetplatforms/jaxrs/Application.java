@@ -28,14 +28,14 @@ public class Application extends javax.ws.rs.core.Application {
 
     @Override
     public Set<Class<?>> getClasses() {
-        Set<Class<?>> result = new HashSet<Class<?>>();
+        Set<Class<?>> result = new HashSet<>();
         result.add(RootResource.class);
         return result;
     }
 
     @Override
     public Set<Object> getSingletons() {
-        Set<Object> result = new HashSet<Object>();
+        Set<Object> result = new HashSet<>();
         result.add(new JsonWriter());
         return result;
     }

@@ -43,7 +43,7 @@ public class MessageActionPipeDescriptor {
     @XNode("@override")
     private Boolean override;
 
-    private final Map<String, MessageActionDescriptor> actionDescriptorsRegistry = new HashMap<String, MessageActionDescriptor>();
+    private final Map<String, MessageActionDescriptor> actionDescriptorsRegistry = new HashMap<>();
 
     private MessageActionPipe pipe = new MessageActionPipe();
 

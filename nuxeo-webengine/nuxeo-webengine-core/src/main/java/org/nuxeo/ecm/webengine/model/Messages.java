@@ -45,7 +45,7 @@ public class Messages {
     public Messages(Messages parent, MessagesProvider provider) {
         this.parent = parent;
         this.provider = provider;
-        messages = new ConcurrentHashMap<String, MessagesBundle>();
+        messages = new ConcurrentHashMap<>();
         String serverDefaultLang = Locale.getDefault().getLanguage();
         defaultMessages = getMessagesBundle(serverDefaultLang);
         if (defaultMessages == null) {

@@ -105,7 +105,7 @@ public class TestCoreDirectory {
     public void testCreateEntry() throws Exception {
         Map<String, Object> e;
 
-        e = new HashMap<String, Object>();
+        e = new HashMap<>();
         e.put(USERNAME_FIELD, "2");
         e.put(PASSWORD_FIELD, "foo3");
         e.put(COMPANY_FIELD, "bar3");
@@ -122,7 +122,7 @@ public class TestCoreDirectory {
         // TODO test with different user's right
 
         Map<String, Object> e;
-        e = new HashMap<String, Object>();
+        e = new HashMap<>();
         e.put(USERNAME_FIELD, CoreDirectoryInit.DOC_ID_USER1);
         e.put(PASSWORD_FIELD, "foo3");
         e.put(COMPANY_FIELD, "bar3");

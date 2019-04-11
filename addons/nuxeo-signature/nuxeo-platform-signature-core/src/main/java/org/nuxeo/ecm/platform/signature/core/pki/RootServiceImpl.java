@@ -61,7 +61,7 @@ public class RootServiceImpl extends DefaultComponent implements RootService {
 
     @Override
     public void activate(ComponentContext context) {
-        config = new ArrayList<RootDescriptor>();
+        config = new ArrayList<>();
     }
 
     @Override

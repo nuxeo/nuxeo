@@ -50,7 +50,7 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
 
     @Override
     public List<String> queryForSuspendedNodesWithEscalation(CoreSession session) {
-        final List<String> nodesDocIds = new ArrayList<String>();
+        final List<String> nodesDocIds = new ArrayList<>();
         new UnrestrictedSessionRunner(session) {
             @Override
             public void run() {

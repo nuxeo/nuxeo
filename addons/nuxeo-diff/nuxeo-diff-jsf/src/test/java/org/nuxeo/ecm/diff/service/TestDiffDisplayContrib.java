@@ -104,7 +104,7 @@ public class TestDiffDisplayContrib {
         diffDisplay = diffDisplayService.getDiffDisplay("Folder");
         assertNotNull(diffDisplay);
 
-        List<String> expectedDiffDisplay = new ArrayList<String>();
+        List<String> expectedDiffDisplay = new ArrayList<>();
         expectedDiffDisplay.add("dublincore");
         assertEquals(expectedDiffDisplay, diffDisplay);
 
@@ -112,7 +112,7 @@ public class TestDiffDisplayContrib {
         diffDisplay = diffDisplayService.getDiffDisplay("File");
         assertNotNull(diffDisplay);
 
-        expectedDiffDisplay = new ArrayList<String>();
+        expectedDiffDisplay = new ArrayList<>();
         expectedDiffDisplay.add("dublincore");
         expectedDiffDisplay.add("files");
         assertEquals(expectedDiffDisplay, diffDisplay);
@@ -127,7 +127,7 @@ public class TestDiffDisplayContrib {
         diffDisplay = diffDisplayService.getDiffDisplay("Note");
         assertNotNull(diffDisplay);
 
-        expectedDiffDisplay = new ArrayList<String>();
+        expectedDiffDisplay = new ArrayList<>();
         expectedDiffDisplay.add("dublincore");
         expectedDiffDisplay.add("note");
         expectedDiffDisplay.add("files");
@@ -156,7 +156,7 @@ public class TestDiffDisplayContrib {
         diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("dublincore");
         assertNotNull(diffBlockDefinition);
 
-        List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
+        List<DiffFieldDefinition> fields = new ArrayList<>();
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "description"));
         fields.add(new DiffFieldDefinitionImpl(null, "dam_common", "author"));
         fields.add(new DiffFieldDefinitionImpl(null, "dam_common", "authoringDate"));
@@ -174,11 +174,11 @@ public class TestDiffDisplayContrib {
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "contributors"));
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "lastContributor"));
 
-        Map<String, String> templates = new HashMap<String, String>();
+        Map<String, String> templates = new HashMap<>();
         templates.put(BuiltinModes.ANY, "/layouts/layout_diff_template.xhtml");
 
-        Map<String, Map<String, Serializable>> properties = new HashMap<String, Map<String, Serializable>>();
-        Map<String, Serializable> labelProperty = new HashMap<String, Serializable>();
+        Map<String, Map<String, Serializable>> properties = new HashMap<>();
+        Map<String, Serializable> labelProperty = new HashMap<>();
         labelProperty.put("label", "label.diffBlock.dublincore");
         properties.put(BuiltinModes.ANY, labelProperty);
 
@@ -196,9 +196,9 @@ public class TestDiffDisplayContrib {
         diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("files");
         assertNotNull(diffBlockDefinition);
 
-        fields = new ArrayList<DiffFieldDefinition>();
+        fields = new ArrayList<>();
         fields.add(new DiffFieldDefinitionImpl(null, "file", "content", true));
-        List<DiffFieldItemDefinition> items = new ArrayList<DiffFieldItemDefinition>();
+        List<DiffFieldItemDefinition> items = new ArrayList<>();
         items.add(new DiffFieldItemDefinitionImpl("file", true));
         fields.add(new DiffFieldDefinitionImpl(null, "files", "files", items));
 
@@ -210,7 +210,7 @@ public class TestDiffDisplayContrib {
         diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("note");
         assertNotNull(diffBlockDefinition);
 
-        fields = new ArrayList<DiffFieldDefinition>();
+        fields = new ArrayList<>();
         fields.add(new DiffFieldDefinitionImpl(null, "note", "note", true));
 
         labelProperty.put("label", "label.diffBlock.note");

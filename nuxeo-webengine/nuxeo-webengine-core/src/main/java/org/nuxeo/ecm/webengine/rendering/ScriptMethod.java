@@ -55,7 +55,7 @@ public class ScriptMethod implements TemplateMethodModelEx {
         }
         String src = val.getAsString();
 
-        Map<String, Object> args = new HashMap<String, Object>();
+        Map<String, Object> args = new HashMap<>();
         if (arguments.size() > 1) {
             Object o = arguments.get(1);
             if (o instanceof SimpleScalar) {

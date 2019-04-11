@@ -75,7 +75,7 @@ public class CompleteTaskOperation {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel completeTask(DocumentModel task) {
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
         if (comment != null) {
             data.put("comment", comment);
         }

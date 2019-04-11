@@ -62,7 +62,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
     // cache duration in seconds
     protected static int MAX_CACHE_LIFE = 60 * 10;
 
-    protected static Map<String, PictureTilesCachedEntry> cachedAdapters = new ConcurrentHashMap<String, PictureTilesCachedEntry>();
+    protected static Map<String, PictureTilesCachedEntry> cachedAdapters = new ConcurrentHashMap<>();
 
     @Override
     public void doHandleStatelessRequest(Request req, Response res) {

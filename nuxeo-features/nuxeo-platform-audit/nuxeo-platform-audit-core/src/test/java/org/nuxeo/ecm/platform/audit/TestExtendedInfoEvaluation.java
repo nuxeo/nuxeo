@@ -68,7 +68,7 @@ public class TestExtendedInfoEvaluation {
         ExpressionContext context = new ExpressionContext();
         DocumentModel source = doCreateDocument();
         EventContext eventContext = new DocumentEventContext(session, session.getPrincipal(), source);
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put("test", "test");
         eventContext.setProperties(properties);
         evaluatorUnderTest.bindValue(context, "context", eventContext);

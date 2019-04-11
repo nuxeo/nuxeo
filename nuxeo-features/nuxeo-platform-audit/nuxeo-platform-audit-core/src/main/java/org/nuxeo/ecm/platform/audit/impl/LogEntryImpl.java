@@ -106,7 +106,7 @@ public class LogEntryImpl implements LogEntry {
 
     protected transient UIAuditComment uiComment;
 
-    private Map<String, ExtendedInfoImpl> extendedInfos = new HashMap<String, ExtendedInfoImpl>();
+    private Map<String, ExtendedInfoImpl> extendedInfos = new HashMap<>();
 
     /**
      * @return the log identifier

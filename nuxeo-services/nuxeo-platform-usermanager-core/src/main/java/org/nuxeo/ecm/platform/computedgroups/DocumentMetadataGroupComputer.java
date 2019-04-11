@@ -59,14 +59,14 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
 
     @Override
     public List<String> getAllGroupIds() {
-        List<String> groupIds = new ArrayList<String>();
+        List<String> groupIds = new ArrayList<>();
         return groupIds;
     }
 
     @Override
     public List<String> getGroupMembers(String groupId) {
 
-        List<String> participants = new ArrayList<String>();
+        List<String> participants = new ArrayList<>();
         return participants;
     }
 
@@ -76,7 +76,7 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
         GetDocumentsFromUsername runner = new GetDocumentsFromUsername(getRepository(), whereClause, username, xpath);
         runner.runUnrestricted();
 
-        List<String> groupIds = new ArrayList<String>();
+        List<String> groupIds = new ArrayList<>();
         String groupId = null;
 
         for (String value : runner.result) {
@@ -89,12 +89,12 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
 
     @Override
     public List<String> getParentsGroupNames(String groupID) {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     @Override
     public List<String> getSubGroupsNames(String groupID) {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -111,7 +111,7 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
 
         protected String whereClausePattern;
 
-        public List<String> result = new ArrayList<String>();
+        public List<String> result = new ArrayList<>();
 
         protected GetDocumentsFromUsername(String repositoryName, String whereClause, String username, String xpath) {
             super(repositoryName);

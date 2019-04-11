@@ -43,7 +43,7 @@ public class WebEngineApplication extends Application {
 
     @Override
     public Set<Object> getSingletons() {
-        Set<Object> result = new HashSet<Object>();
+        Set<Object> result = new HashSet<>();
         result.add(new WebEngineExceptionMapper());
         result.add(new TemplateWriter());
         result.add(new ScriptFileWriter());

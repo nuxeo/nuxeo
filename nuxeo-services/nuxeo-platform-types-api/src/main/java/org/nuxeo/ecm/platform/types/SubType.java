@@ -46,7 +46,7 @@ public class SubType implements Serializable {
 
     public List<String> getHidden() {
         if (hidden == null) {
-            hidden = new ArrayList<String>();
+            hidden = new ArrayList<>();
         }
         return hidden;
     }
@@ -54,7 +54,7 @@ public class SubType implements Serializable {
     @XNode("@hidden")
     public void setHidden(String value) {
         String[] hiddenCases = value.split("(\\s+)(?=[^,])|(\\s*,\\s*)");
-        hidden = new ArrayList<String>(Arrays.asList(hiddenCases));
+        hidden = new ArrayList<>(Arrays.asList(hiddenCases));
     }
 
     public String getName() {
@@ -76,7 +76,7 @@ public class SubType implements Serializable {
         clone.setName(getName());
         List<String> hidden = getHidden();
         if (hidden != null) {
-            List<String> chidden = new ArrayList<String>();
+            List<String> chidden = new ArrayList<>();
             chidden.addAll(hidden);
             clone.hidden = chidden;
         }

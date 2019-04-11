@@ -230,7 +230,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
             renderingType = "html";
         }
 
-        List<String> applicableVersions = new ArrayList<String>();
+        List<String> applicableVersions = new ArrayList<>();
         applicableVersions.add(getSnapshotManager().getSnapshot(getDistributionId(), getContext().getCoreSession()).getVersion()); // XXX
                                                                                                                                    // !!!
         DocumentationService ds = Framework.getService(DocumentationService.class);

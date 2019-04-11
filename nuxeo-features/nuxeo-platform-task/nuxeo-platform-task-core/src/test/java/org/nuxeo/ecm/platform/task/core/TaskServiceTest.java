@@ -113,7 +113,7 @@ public class TaskServiceTest {
         assertNotNull(document);
 
         // create task as admin
-        List<String> actors = new ArrayList<String>();
+        List<String> actors = new ArrayList<>();
         actors.add(user1.getName());
         actors.add(SecurityConstants.MEMBERS);
         Calendar calendar = Calendar.getInstance();
@@ -228,7 +228,7 @@ public class TaskServiceTest {
         assertNotNull(document);
 
         // create task as admin
-        List<String> actors = new ArrayList<String>();
+        List<String> actors = new ArrayList<>();
         actors.add(user1.getName());
         actors.add(SecurityConstants.MEMBERS);
         Calendar calendar = Calendar.getInstance();
@@ -400,7 +400,7 @@ public class TaskServiceTest {
         // assigned
         // ----------------------------------------------------------------------
         // set task actors
-        List<String> actors = new ArrayList<String>();
+        List<String> actors = new ArrayList<>();
         actors.add(user1.getName());
 
         // create task
@@ -552,7 +552,7 @@ public class TaskServiceTest {
 
         // set task actors mixing user and groups, prefixed and unprefixed
         // names
-        List<String> actors = new ArrayList<String>();
+        List<String> actors = new ArrayList<>();
         actors.add(user1.getName());
         actors.add(NuxeoPrincipal.PREFIX + user2.getName());
         actors.add(SecurityConstants.ADMINISTRATORS);

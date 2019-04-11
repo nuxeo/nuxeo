@@ -48,7 +48,7 @@ public class WidgetTypeDefinitionRegistry extends SimpleContributionRegistry<Wid
     }
 
     public List<WidgetTypeDefinition> getDefinitions() {
-        List<WidgetTypeDefinition> res = new ArrayList<WidgetTypeDefinition>();
+        List<WidgetTypeDefinition> res = new ArrayList<>();
         for (WidgetTypeDefinition item : currentContribs.values()) {
             if (item != null) {
                 res.add(item);

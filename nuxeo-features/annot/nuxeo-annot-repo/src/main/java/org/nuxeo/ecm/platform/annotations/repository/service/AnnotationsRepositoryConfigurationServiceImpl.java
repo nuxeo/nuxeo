@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class AnnotationsRepositoryConfigurationServiceImpl implements AnnotationsRepositoryConfigurationService {
 
-    private final Map<String, AnnotatedDocumentEventListener> listeners = new HashMap<String, AnnotatedDocumentEventListener>();
+    private final Map<String, AnnotatedDocumentEventListener> listeners = new HashMap<>();
 
     private GraphManagerEventListener graphManagerEventListener;
 
@@ -43,14 +43,14 @@ public class AnnotationsRepositoryConfigurationServiceImpl implements Annotation
         this.graphManagerEventListener = graphManagerEventListener;
     }
 
-    private final List<String> eventIds = new ArrayList<String>();
+    private final List<String> eventIds = new ArrayList<>();
 
     public void addEventListener(String listenerName, AnnotatedDocumentEventListener listener) {
         listeners.put(listenerName, listener);
     }
 
     public List<AnnotatedDocumentEventListener> getEventListeners() {
-        return new ArrayList<AnnotatedDocumentEventListener>(listeners.values());
+        return new ArrayList<>(listeners.values());
     }
 
     public List<String> getEventIds() {

@@ -49,13 +49,13 @@ public class NuxeoConfigurableProvider extends ConfigurableProviderSupport {
 
     @Override
     public Map<String, UriLocator> provideLocators() {
-        Map<String, UriLocator> map = new HashMap<String, UriLocator>();
+        Map<String, UriLocator> map = new HashMap<>();
         map.put(NuxeoUriLocator.ALIAS, new NuxeoUriLocator());
         return map;
     }
 
     public Map<String, ResourcePreProcessor> providePreProcessors() {
-        Map<String, ResourcePreProcessor> map = new HashMap<String, ResourcePreProcessor>();
+        Map<String, ResourcePreProcessor> map = new HashMap<>();
         // extend with runtime service processors registration
         List<? extends Processor> processors = resolveProcessors(PRE_TYPE);
         for (Processor p : processors) {
@@ -78,7 +78,7 @@ public class NuxeoConfigurableProvider extends ConfigurableProviderSupport {
 
     @Override
     public Map<String, ResourcePostProcessor> providePostProcessors() {
-        Map<String, ResourcePostProcessor> map = new HashMap<String, ResourcePostProcessor>();
+        Map<String, ResourcePostProcessor> map = new HashMap<>();
         // extend with runtime service processors registration
         List<Processor> processors = resolveProcessors(POST_TYPE);
         for (Processor p : processors) {

@@ -43,7 +43,7 @@ public class TilingConfigurationDescriptor implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> parameters = new HashMap<String, String>();
+    Map<String, String> parameters = new HashMap<>();
 
     public Map<String, String> getParameters() {
         return parameters;

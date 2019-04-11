@@ -79,7 +79,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     public final Properties hibernateProperties = new Properties();
 
     @XNodeList(value = "classes/class", type = ArrayList.class, componentType = Class.class)
-    public final List<Class<?>> annotedClasses = new ArrayList<Class<?>>();
+    public final List<Class<?>> annotedClasses = new ArrayList<>();
 
     public void addAnnotedClass(Class<?> annotedClass) {
         annotedClasses.add(annotedClass);
@@ -117,7 +117,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
 
     @Override
     public EntityManagerFactory getFactory(String txType) {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         if (txType == null) {
             txType = getTxType();
         }

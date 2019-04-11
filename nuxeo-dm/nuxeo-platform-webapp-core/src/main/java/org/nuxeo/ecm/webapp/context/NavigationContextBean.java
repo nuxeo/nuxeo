@@ -746,7 +746,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     protected void resetCurrentPath() {
         final String logPrefix = "<resetCurrentPath> ";
 
-        parents = new ArrayList<PathElement>();
+        parents = new ArrayList<>();
 
         if (documentManager == null) {
             log.error(logPrefix + "documentManager not initialized");

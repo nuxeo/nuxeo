@@ -52,9 +52,9 @@ public abstract class AbstractContributionRegistry<K, T> implements Contribution
     }
 
     protected AbstractContributionRegistry(AbstractContributionRegistry<K, T> parent) {
-        registry = new HashMap<Object, Contribution<K, T>>();
+        registry = new HashMap<>();
         this.parent = parent;
-        listeners = new ArrayList<AbstractContributionRegistry<K, T>>();
+        listeners = new ArrayList<>();
         // subclasses may call importParentContributions(); after initializing the registry
         // this will import all resolved contributions from the parent
     }
@@ -65,7 +65,7 @@ public abstract class AbstractContributionRegistry<K, T> implements Contribution
 
     protected synchronized void importParentContributions() {
         AbstractContributionRegistry<K, T> pParent = parent;
-        List<AbstractContributionRegistry<K, T>> parents = new ArrayList<AbstractContributionRegistry<K, T>>();
+        List<AbstractContributionRegistry<K, T>> parents = new ArrayList<>();
         while (pParent != null) {
             parents.add(pParent);
             pParent = pParent.parent;
@@ -128,7 +128,7 @@ public abstract class AbstractContributionRegistry<K, T> implements Contribution
     public synchronized Contribution<K, T> addFragment(K key, T fragment, K... superKeys) {
         Contribution<K, T> contrib = registry.get(key);
         if (contrib == null) {
-            contrib = new ContributionImpl<K, T>(this, key);
+            contrib = new ContributionImpl<>(this, key);
             registry.put(key, contrib);
         }
         contrib.addFragment(fragment, superKeys);
@@ -138,7 +138,7 @@ public abstract class AbstractContributionRegistry<K, T> implements Contribution
     public synchronized Contribution<K, T> getOrCreateDependency(K key) {
         Contribution<K, T> contrib = getContribution(key);
         if (contrib == null) {
-            contrib = new ContributionImpl<K, T>(this, key);
+            contrib = new ContributionImpl<>(this, key);
             registry.put(key, contrib);
             // do not register so that this contribution will be a phantom
         }

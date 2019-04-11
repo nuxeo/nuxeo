@@ -252,7 +252,7 @@ public class TargetInfoImpl implements TargetInfo {
         if (types == null) {
             this.types = null;
         } else {
-            this.types = new ArrayList<String>(types);
+            this.types = new ArrayList<>(types);
         }
     }
 

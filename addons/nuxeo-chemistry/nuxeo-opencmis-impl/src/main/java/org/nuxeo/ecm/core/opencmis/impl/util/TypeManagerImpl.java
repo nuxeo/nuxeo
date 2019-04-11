@@ -53,9 +53,9 @@ public class TypeManagerImpl implements TypeManager {
 
     public static final int DEFAULT_MAX_TYPE_CHILDREN = 100;
 
-    protected Map<String, TypeDefinitionContainer> typesMap = new HashMap<String, TypeDefinitionContainer>();
+    protected Map<String, TypeDefinitionContainer> typesMap = new HashMap<>();
 
-    protected Map<String, String> propQueryNameToId = new HashMap<String, String>();
+    protected Map<String, String> propQueryNameToId = new HashMap<>();
 
     @Override
     public TypeDefinitionContainer getTypeById(String typeId) {
@@ -105,7 +105,7 @@ public class TypeManagerImpl implements TypeManager {
         if (typec == null) {
             // return root types
             // TODO maintain pre-computed root types
-            types = new ArrayList<TypeDefinitionContainer>(4);
+            types = new ArrayList<>(4);
             for (TypeDefinitionContainer tc : typesMap.values()) {
                 if (tc.getTypeDefinition().getParentTypeId() == null) {
                     types.add(tc);
@@ -114,7 +114,7 @@ public class TypeManagerImpl implements TypeManager {
         } else {
             types = typec.getChildren();
         }
-        List<TypeDefinition> list = new ArrayList<TypeDefinition>(types.size());
+        List<TypeDefinition> list = new ArrayList<>(types.size());
         for (TypeDefinitionContainer tdc : types) {
             TypeDefinition type = tdc.getTypeDefinition();
             if (!Boolean.TRUE.equals(includePropertyDefinitions)) {
@@ -133,7 +133,7 @@ public class TypeManagerImpl implements TypeManager {
         boolean includeProps = Boolean.TRUE.equals(includePropertyDefinitions);
         if (typeId == null) {
             // return all types, unlimited depth
-            types = new ArrayList<TypeDefinitionContainer>(4);
+            types = new ArrayList<>(4);
             for (TypeDefinitionContainer tc : typesMap.values()) {
                 if (tc.getTypeDefinition().getParentTypeId() == null) {
                     types.add(tc);
@@ -168,7 +168,7 @@ public class TypeManagerImpl implements TypeManager {
 
     @Override
     public Collection<TypeDefinitionContainer> getTypeDefinitionList() {
-        List<TypeDefinitionContainer> typeRoots = new ArrayList<TypeDefinitionContainer>();
+        List<TypeDefinitionContainer> typeRoots = new ArrayList<>();
         // iterate types map and return a list collecting the root types:
         for (TypeDefinitionContainer typeCont : typesMap.values()) {
             if (typeCont.getTypeDefinition().getParentTypeId() == null) {
@@ -180,7 +180,7 @@ public class TypeManagerImpl implements TypeManager {
 
     @Override
     public List<TypeDefinitionContainer> getRootTypes() {
-        List<TypeDefinitionContainer> rootTypes = new ArrayList<TypeDefinitionContainer>();
+        List<TypeDefinitionContainer> rootTypes = new ArrayList<>();
         for (TypeDefinitionContainer type : typesMap.values()) {
             String id = type.getTypeDefinition().getId();
             if (BaseTypeId.CMIS_DOCUMENT.value().equals(id) || BaseTypeId.CMIS_FOLDER.value().equals(id)
@@ -280,7 +280,7 @@ public class TypeManagerImpl implements TypeManager {
      */
     protected static List<TypeDefinitionContainer> cloneTypes(List<TypeDefinitionContainer> types, int depth,
             boolean includePropertyDefinitions) {
-        List<TypeDefinitionContainer> res = new ArrayList<TypeDefinitionContainer>(types.size());
+        List<TypeDefinitionContainer> res = new ArrayList<>(types.size());
         TypeDefinitionFactory tdFactory = TypeDefinitionFactory.newInstance();
         for (TypeDefinitionContainer tc : types) {
             MutableTypeDefinition td = tdFactory.copy(tc.getTypeDefinition(), includePropertyDefinitions);

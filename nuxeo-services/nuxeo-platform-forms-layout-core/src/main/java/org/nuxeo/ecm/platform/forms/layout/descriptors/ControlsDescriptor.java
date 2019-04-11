@@ -34,10 +34,10 @@ public class ControlsDescriptor implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XNodeMap(value = "control", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> controls = new HashMap<String, String>();
+    Map<String, String> controls = new HashMap<>();
 
     public Map<String, Serializable> getControls() {
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         map.putAll(controls);
         return map;
     }

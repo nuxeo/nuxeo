@@ -70,7 +70,7 @@ public class ProcessorDescriptor implements Processor {
 
     @Override
     public List<String> getTypes() {
-        List<String> types = new ArrayList<String>();
+        List<String> types = new ArrayList<>();
         if (type != null) {
             types.add(type);
         }
@@ -107,7 +107,7 @@ public class ProcessorDescriptor implements Processor {
         clone.type = type;
         clone.appendTypes = appendTypes;
         if (types != null) {
-            clone.types = new ArrayList<String>(types);
+            clone.types = new ArrayList<>(types);
         }
         return clone;
     }

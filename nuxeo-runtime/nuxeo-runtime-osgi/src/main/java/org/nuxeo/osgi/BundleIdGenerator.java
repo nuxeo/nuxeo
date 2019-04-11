@@ -42,7 +42,7 @@ public class BundleIdGenerator {
 
     private static final Log log = LogFactory.getLog(BundleIdGenerator.class);
 
-    private final Map<String, Long> ids = new HashMap<String, Long>();
+    private final Map<String, Long> ids = new HashMap<>();
 
     private long count = 0;
 

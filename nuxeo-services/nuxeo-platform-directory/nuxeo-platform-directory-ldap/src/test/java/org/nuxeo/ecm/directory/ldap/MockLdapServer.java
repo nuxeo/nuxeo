@@ -205,7 +205,7 @@ public class MockLdapServer implements ContextProvider {
         attributes.put(objectClass);
         testPartition.setContextEntry(attributes);
 
-        Set<Object> indexedAttrs = new HashSet<Object>();
+        Set<Object> indexedAttrs = new HashSet<>();
         indexedAttrs.add("objectClass");
         indexedAttrs.add("uid");
         indexedAttrs.add("cn");
@@ -218,7 +218,7 @@ public class MockLdapServer implements ContextProvider {
 
         testPartition.setIndexedAttributes(indexedAttrs);
 
-        Set<MutablePartitionConfiguration> partitions = new HashSet<MutablePartitionConfiguration>();
+        Set<MutablePartitionConfiguration> partitions = new HashSet<>();
         partitions.add(testPartition);
 
         cfg.setPartitionConfigurations(partitions);

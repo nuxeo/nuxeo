@@ -46,7 +46,7 @@ public class TestContributions {
 
         MyObject mf2 = new MyObject("key1", "#2");
         mf2.str = "b";
-        mf2.list = new ArrayList<String>();
+        mf2.list = new ArrayList<>();
         mf2.list.add("k1");
         reg.addFragment(mf2.id, mf2);
 
@@ -61,13 +61,13 @@ public class TestContributions {
 
         MyObject base = new MyObject("base", "#1");
         base.str = "base str";
-        base.list = new ArrayList<String>();
+        base.list = new ArrayList<>();
         base.list.add("base1");
         reg.addFragment(base.id, base);
 
         MyObject mf2 = new MyObject("key1", "#2");
         mf2.str = "b";
-        mf2.list = new ArrayList<String>();
+        mf2.list = new ArrayList<>();
         mf2.list.add("k1");
         reg.addFragment(mf2.id, mf2);
 
@@ -82,13 +82,13 @@ public class TestContributions {
 
         MyObject base = new MyObject("base", "#1");
         base.str = "base str";
-        base.list = new ArrayList<String>();
+        base.list = new ArrayList<>();
         base.list.add("base1");
         reg.addFragment(base.id, base);
 
         MyObject mf2 = new MyObject("key1", "#2");
         mf2.str = "b";
-        mf2.list = new ArrayList<String>();
+        mf2.list = new ArrayList<>();
         mf2.list.add("k1");
         reg.addFragment(mf2.id, mf2);
 

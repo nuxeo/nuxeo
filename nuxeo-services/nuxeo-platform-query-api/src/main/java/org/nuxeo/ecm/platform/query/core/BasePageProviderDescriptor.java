@@ -49,7 +49,7 @@ public abstract class BasePageProviderDescriptor {
     protected boolean enabled = true;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> properties = new HashMap<String, String>();
+    protected Map<String, String> properties = new HashMap<>();
 
     @XNodeList(value = "parameter", type = String[].class, componentType = String.class)
     protected String[] queryParameters;
@@ -164,7 +164,7 @@ public abstract class BasePageProviderDescriptor {
     }
 
     public List<SortInfo> getSortInfos() {
-        List<SortInfo> res = new ArrayList<SortInfo>();
+        List<SortInfo> res = new ArrayList<>();
         if (sortInfos != null) {
             for (SortInfoDescriptor sortInfo : sortInfos) {
                 res.add(sortInfo.getSortInfo());
@@ -178,7 +178,7 @@ public abstract class BasePageProviderDescriptor {
     }
 
     public List<Long> getPageSizeOptions() {
-        List<Long> res = new ArrayList<Long>();
+        List<Long> res = new ArrayList<>();
         if (pageSizeOptions == null || pageSizeOptions.isEmpty()) {
             res.addAll(Arrays.asList(5L, 10L, 20L, 30L, 40L, 50L));
         } else {
@@ -264,7 +264,7 @@ public abstract class BasePageProviderDescriptor {
         clone.enabled = isEnabled();
         Map<String, String> props = getProperties();
         if (props != null) {
-            clone.properties = new HashMap<String, String>();
+            clone.properties = new HashMap<>();
             clone.properties.putAll(props);
         }
         String[] params = getQueryParameters();
@@ -277,7 +277,7 @@ public abstract class BasePageProviderDescriptor {
         clone.pageSizeOptions = getPageSizeOptions();
         clone.sortable = isSortable();
         if (sortInfos != null) {
-            clone.sortInfos = new ArrayList<SortInfoDescriptor>();
+            clone.sortInfos = new ArrayList<>();
             for (SortInfoDescriptor item : sortInfos) {
                 clone.sortInfos.add(item.clone());
             }
@@ -290,13 +290,13 @@ public abstract class BasePageProviderDescriptor {
             clone.whereClause = whereClause.clone();
         }
         if (quickFilters != null) {
-            clone.quickFilters = new ArrayList<QuickFilterDescriptor>();
+            clone.quickFilters = new ArrayList<>();
             for (QuickFilterDescriptor quickFilter : quickFilters) {
                 clone.quickFilters.add(quickFilter.clone());
             }
         }
         if (aggregates != null) {
-            clone.aggregates = new ArrayList<AggregateDescriptor>();
+            clone.aggregates = new ArrayList<>();
             for (AggregateDescriptor agg : aggregates) {
                 clone.aggregates.add(agg.clone());
             }

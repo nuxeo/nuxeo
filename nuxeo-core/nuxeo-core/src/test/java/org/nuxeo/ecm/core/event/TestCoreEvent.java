@@ -109,7 +109,7 @@ public class TestCoreEvent {
     public void testCoreEventWithInfoMap() {
         String eventId = "someEvent";
 
-        Map<String, Serializable> info = new HashMap<String, Serializable>();
+        Map<String, Serializable> info = new HashMap<>();
         info.put("destination", "xxx");
 
         CoreEvent coreEvent = new CoreEventImpl(eventId, null, info, null, null, null);
@@ -134,7 +134,7 @@ public class TestCoreEvent {
         String eventId = "someEvent";
         Document source = (Document) jmcontext.mock(Document.class);
 
-        Map<String, Serializable> info = new HashMap<String, Serializable>();
+        Map<String, Serializable> info = new HashMap<>();
         info.put("destination", "xxx");
 
         CoreEvent coreEvent = new CoreEventImpl(eventId, source, info, null, null, null);

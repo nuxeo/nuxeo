@@ -83,7 +83,7 @@ public class FormTagHandler extends MetaTagHandler {
 
         if (doAdd) {
             // wrap in a Form component handler
-            List<TagAttribute> attrs = new ArrayList<TagAttribute>();
+            List<TagAttribute> attrs = new ArrayList<>();
             attrs.addAll(copyAttributes(id, disableDoubleClickShield, onsubmit, styleClass));
 
             // resolve ajax and multipart behaviors early too
@@ -114,7 +114,7 @@ public class FormTagHandler extends MetaTagHandler {
     }
 
     protected List<TagAttribute> copyAttributes(TagAttribute... attributes) {
-        List<TagAttribute> res = new ArrayList<TagAttribute>();
+        List<TagAttribute> res = new ArrayList<>();
         if (attributes != null) {
             for (TagAttribute attr : attributes) {
                 if (attr != null) {

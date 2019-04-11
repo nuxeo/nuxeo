@@ -128,7 +128,7 @@ public class DCVocabulariesJsonEnricher extends AbstractJsonEnricher<DocumentMod
     private List<String> getLabelFields(String directoryName) {
         String schemaName = directoryService.getDirectorySchema(directoryName);
         Schema schema = schemaManager.getSchema(schemaName);
-        List<String> labelFields = new ArrayList<String>();
+        List<String> labelFields = new ArrayList<>();
         String fieldName;
         for (Field field : schema.getFields()) {
             fieldName = field.getName().toString();

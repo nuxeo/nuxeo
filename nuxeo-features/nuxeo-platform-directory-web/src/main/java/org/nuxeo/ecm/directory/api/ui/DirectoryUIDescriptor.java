@@ -86,7 +86,7 @@ public class DirectoryUIDescriptor implements DirectoryUI {
     }
 
     public List<DirectoryDeleteConstraint> getDeleteConstraints() {
-        List<DirectoryDeleteConstraint> res = new ArrayList<DirectoryDeleteConstraint>();
+        List<DirectoryDeleteConstraint> res = new ArrayList<>();
         if (deleteConstraints != null) {
             for (DirectoryDeleteConstraintDescriptor deleteConstraintDescriptor : deleteConstraints) {
                 res.add(deleteConstraintDescriptor.getDeleteConstraint());

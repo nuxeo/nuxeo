@@ -135,8 +135,8 @@ public abstract class DatabaseHelper {
     public static void doOnAllTables(Connection connection, String catalog, String schemaPattern, String statement)
             throws SQLException {
         DatabaseMetaData metadata = connection.getMetaData();
-        List<String> tableNames = new LinkedList<String>();
-        Set<String> truncateFirst = new HashSet<String>();
+        List<String> tableNames = new LinkedList<>();
+        Set<String> truncateFirst = new HashSet<>();
         ResultSet rs = metadata.getTables(catalog, schemaPattern, "%", new String[] { "TABLE" });
         while (rs.next()) {
             String tableName = rs.getString("TABLE_NAME");

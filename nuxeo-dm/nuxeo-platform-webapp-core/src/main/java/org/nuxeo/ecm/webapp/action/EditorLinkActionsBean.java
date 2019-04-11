@@ -72,7 +72,7 @@ public class EditorLinkActionsBean extends InputController implements EditorLink
         log.debug("Entering searchDocuments with keywords: " + searchKeywords);
 
         resultDocuments = null;
-        final List<String> constraints = new ArrayList<String>();
+        final List<String> constraints = new ArrayList<>();
         if (searchKeywords != null) {
             searchKeywords = searchKeywords.trim();
             if (searchKeywords.length() > 0) {

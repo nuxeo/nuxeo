@@ -90,7 +90,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
     @Test
     public void testCreateDocumentRouteInstanceFromDocumentRouteModel() {
         DocumentModel model = createDocumentRouteModel(session, DocumentRoutingTestCase.ROUTE1, ROOT_PATH);
-        List<String> docsId = new ArrayList<String>();
+        List<String> docsId = new ArrayList<>();
         docsId.add("1");
         model.setPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME, (Serializable) docsId);
         DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(model, session);

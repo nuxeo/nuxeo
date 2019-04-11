@@ -32,7 +32,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class LoginPluginDescriptor {
 
     @XNodeMap(value = "parameters", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> parameters = new HashMap<String, String>();
+    protected Map<String, String> parameters = new HashMap<>();
 
     @XNode("@class")
     protected Class<LoginPlugin> className;

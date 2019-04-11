@@ -193,14 +193,14 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
 
         // Set the property as a JSON string through the CMIS service
         BindingsObjectFactory bof = binding.getObjectFactory();
-        ArrayList<String> stringArr = new ArrayList<String>();
+        ArrayList<String> stringArr = new ArrayList<>();
         for (int i = 0; i < nodeList.size(); i++) {
             stringArr.add(nodeList.get(i).toString());
         }
         PropertyString prop = bof.createPropertyStringData("complexTest:listItem", stringArr);
         Properties props = bof.createPropertiesData(Collections.<PropertyData<?>> singletonList(prop));
-        Holder<String> objectIdHolder = new Holder<String>(doc.getId());
-        Holder<String> changeTokenHolder = new Holder<String>(doc.getChangeToken());
+        Holder<String> objectIdHolder = new Holder<>(doc.getId());
+        Holder<String> changeTokenHolder = new Holder<>(doc.getChangeToken());
         objService.updateProperties(repositoryId, objectIdHolder, changeTokenHolder, props, null);
 
         // Verify the properties produced in Nuxeo match the input JSON
@@ -309,8 +309,8 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
 
         // Set the property as a JSON string through the CMIS service
         Properties props = createProperties("complexTest:complexItem", jsonStr);
-        Holder<String> objectIdHolder = new Holder<String>(doc.getId());
-        Holder<String> changeTokenHolder = new Holder<String>(doc.getChangeToken());
+        Holder<String> objectIdHolder = new Holder<>(doc.getId());
+        Holder<String> changeTokenHolder = new Holder<>(doc.getChangeToken());
         objService.updateProperties(repositoryId, objectIdHolder, changeTokenHolder, props, null);
 
         // Verify the properties produced in Nuxeo match the input JSON
@@ -329,7 +329,7 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
         // Don't enable complex properties for this test
 
         // Set a complex property on a document
-        HashMap<String, Object> propMap = new HashMap<String, Object>();
+        HashMap<String, Object> propMap = new HashMap<>();
         propMap.put("stringProp", "testString");
 
         // Set the property value on a document
@@ -353,12 +353,12 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(1234500000000L);
         for (int i = 1; i <= listSize; i++) {
-            HashMap<String, Object> map = new HashMap<String, Object>();
+            HashMap<String, Object> map = new HashMap<>();
             list.add(map);
             map.put("stringProp", "testString" + i);
             map.put("dateProp", cal);
             map.put("enumProp", "ValueA");
-            List<String> arrayProp = new ArrayList<String>();
+            List<String> arrayProp = new ArrayList<>();
             map.put("arrayProp", arrayProp);
             for (int j = 1; j <= i; j++) {
                 arrayProp.add(Integer.toString(j));
@@ -373,7 +373,7 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
 
     private ArrayList<ObjectNode> createComplexNodeList(int listSize, DateTimeFormat dateTimeFormat) {
         ObjectMapper mapper = new ObjectMapper();
-        ArrayList<ObjectNode> jsonObjects = new ArrayList<ObjectNode>();
+        ArrayList<ObjectNode> jsonObjects = new ArrayList<>();
         for (int i = 1; i <= listSize; i++) {
             ObjectNode jsonObj = mapper.createObjectNode();
             jsonObj.put("stringProp", "testString" + i);
@@ -435,7 +435,7 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
     }
 
     private <T> List<T> copyIterator(Iterator<T> iter) {
-        List<T> copy = new ArrayList<T>();
+        List<T> copy = new ArrayList<>();
         while (iter.hasNext())
             copy.add(iter.next());
         return copy;

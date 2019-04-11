@@ -103,9 +103,9 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
         throw new Exception("Missing public static Parameters method on class " + testClass.getName());
     }
 
-    private final List<FeaturesRunner> runners = new ArrayList<FeaturesRunner>();
+    private final List<FeaturesRunner> runners = new ArrayList<>();
 
-    private final Map<FeaturesRunner, Object[]> runnersParams = new HashMap<FeaturesRunner, Object[]>();
+    private final Map<FeaturesRunner, Object[]> runnersParams = new HashMap<>();
 
     private List<Object[]> parametersList;
 

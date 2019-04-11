@@ -57,7 +57,7 @@ public class NuxeoWroManagerFactory extends ConfigurableWroManagerFactory {
     }
 
     protected List<String> resolveProcessorNames(String type) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         List<Processor> procs = NuxeoConfigurableProvider.resolveProcessors(type);
         for (Processor proc : procs) {
             res.add(proc.getName());

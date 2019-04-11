@@ -42,7 +42,7 @@ public class TestDocumentIdCodec {
     public void testGetUrlFromDocumentView() {
         DocumentIdCodec codec = new DocumentIdCodec();
         DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("tabId", "TAB_CONTENT");
         DocumentView docView = new DocumentViewImpl(docLoc, "view_documents", params);
 

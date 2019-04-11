@@ -250,7 +250,7 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
     public List<String> getSelectedCollections() {
         Select2WidgetElement collectionsWidget = new Select2WidgetElement(driver,
                 driver.findElement(By.xpath(S2_COLLECTION_XPATH)), true);
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (WebElement el : collectionsWidget.getSelectedValues()) {
             result.add(el.getText());
         }

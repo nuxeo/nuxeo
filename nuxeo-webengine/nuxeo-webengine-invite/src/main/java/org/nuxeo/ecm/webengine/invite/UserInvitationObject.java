@@ -87,7 +87,7 @@ public class UserInvitationObject extends ModuleRoot {
             return redisplayFormWithErrorMessage("EnterPassword",
                     ctx.getMessage("label.registerForm.validation.passwordvalidation"), formData);
         }
-        Map<String, Serializable> registrationData = new HashMap<String, Serializable>();
+        Map<String, Serializable> registrationData = new HashMap<>();
         try {
             Map<String, Serializable> additionalInfo = buildAdditionalInfos();
 
@@ -135,7 +135,7 @@ public class UserInvitationObject extends ModuleRoot {
                     ctx.getMessage("label.error.requestNotExisting", requestId));
         }
 
-        Map<String, String> data = new HashMap<String, String>();
+        Map<String, String> data = new HashMap<>();
         data.put("RequestId", requestId);
         data.put("ConfigurationName", configurationName);
         String webappName = VirtualHostHelper.getWebAppName(getContext().getRequest());
@@ -146,11 +146,11 @@ public class UserInvitationObject extends ModuleRoot {
     }
 
     protected Map<String, Serializable> buildAdditionalInfos() {
-        return new HashMap<String, Serializable>();
+        return new HashMap<>();
     }
 
     protected Template redisplayFormWithMessage(String messageType, String formName, String message, FormData data) {
-        Map<String, String> savedData = new HashMap<String, String>();
+        Map<String, String> savedData = new HashMap<>();
         for (String key : data.getKeys()) {
             savedData.put(key, data.getString(key));
         }

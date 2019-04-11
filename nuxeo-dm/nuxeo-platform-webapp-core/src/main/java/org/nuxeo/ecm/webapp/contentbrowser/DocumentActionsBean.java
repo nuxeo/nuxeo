@@ -277,7 +277,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
         // we cannot use typesTool as intermediary since the DataModel callback
         // will alter whatever type we set
         typesTool.setSelectedType(docType);
-        Map<String, Object> context = new HashMap<String, Object>();
+        Map<String, Object> context = new HashMap<>();
         context.put(CoreEventConstants.PARENT_PATH, navigationContext.getCurrentDocument().getPathAsString());
         DocumentModel changeableDocument = documentManager.createDocumentModel(typeName, context);
         navigationContext.setChangeableDocument(changeableDocument);

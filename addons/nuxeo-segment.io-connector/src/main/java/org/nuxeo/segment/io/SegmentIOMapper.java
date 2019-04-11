@@ -56,7 +56,7 @@ public class SegmentIOMapper {
     String groovyMapping;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> parameters = new HashMap<String, String>();
+    Map<String, String> parameters = new HashMap<>();
 
     @Override
     public boolean equals(Object obj) {
@@ -80,7 +80,7 @@ public class SegmentIOMapper {
 
     public Map<String, Serializable> getMappedData(Map<String, Object> context) {
 
-        Map<String, Serializable> mapping = new HashMap<String, Serializable>();
+        Map<String, Serializable> mapping = new HashMap<>();
         context.put("mapping", mapping);
 
         StringBuilder sb = new StringBuilder();

@@ -34,7 +34,7 @@ public abstract class DocumentFieldAccessor {
 
     protected final String name;
 
-    public static final Map<String, DocumentFieldAccessor> accessors = new HashMap<String, DocumentFieldAccessor>();
+    public static final Map<String, DocumentFieldAccessor> accessors = new HashMap<>();
 
     protected DocumentFieldAccessor(String name) {
         this.name = name;
