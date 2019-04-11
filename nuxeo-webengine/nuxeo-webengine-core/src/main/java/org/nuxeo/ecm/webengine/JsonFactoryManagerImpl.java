@@ -51,6 +51,8 @@ public class JsonFactoryManagerImpl implements JsonFactoryManager {
 
     private static class ThrowableSerializer extends BeanSerializer {
 
+        private static final long serialVersionUID = 1L;
+
         public ThrowableSerializer(BeanSerializer src) {
             super(src);
         }
@@ -91,6 +93,8 @@ public class JsonFactoryManagerImpl implements JsonFactoryManager {
         JsonFactory factory = new JsonFactory();
         final ObjectMapper oc = new ObjectMapper(factory);
         final SimpleModule module = new SimpleModule("webengine", Version.unknownVersion()) {
+
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void setupModule(SetupContext context) {

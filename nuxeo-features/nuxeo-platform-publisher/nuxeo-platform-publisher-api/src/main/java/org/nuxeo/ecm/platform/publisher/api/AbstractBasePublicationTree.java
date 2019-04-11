@@ -27,6 +27,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public abstract class AbstractBasePublicationTree implements PublicationTree {
 
+    private static final long serialVersionUID = 1L;
+
     public static final String ROOT_PATH_KEY = "RootPath";
 
     public static final String ICON_EXPANDED_KEY = "iconExpanded";

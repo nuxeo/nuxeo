@@ -28,6 +28,8 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  */
 public class CommentSecurityException extends NuxeoException {
 
+    private static final long serialVersionUID = 1L;
+
     public CommentSecurityException() {
         super(SC_FORBIDDEN);
     }

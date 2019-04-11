@@ -115,6 +115,8 @@ public class TestSearchRequestFilter {
 
     public static NuxeoPrincipal getAdminPrincipal() {
         return new NuxeoPrincipal() {
+            private static final long serialVersionUID = 1L;
+
             @Override
             public String getFirstName() {
                 return "John";
@@ -264,6 +266,8 @@ public class TestSearchRequestFilter {
 
     public static NuxeoPrincipal getNonAdminPrincipal() {
         return new NuxeoPrincipal() {
+            private static final long serialVersionUID = 1L;
+
             @Override
             public String getFirstName() {
                 return "John";

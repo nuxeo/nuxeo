@@ -26,6 +26,8 @@ import java.util.List;
  * @since 8.2
  */
 public class GroupMemberGroupsPageProvider extends AbstractGroupMemberPageProvider<NuxeoGroup> {
+    private static final long serialVersionUID = 1L;
+
     @Override
     protected List<String> getMembers(NuxeoGroup group) {
         return group.getMemberGroups();

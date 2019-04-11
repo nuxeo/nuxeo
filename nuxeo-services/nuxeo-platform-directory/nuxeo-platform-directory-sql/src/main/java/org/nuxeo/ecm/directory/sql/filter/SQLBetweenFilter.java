@@ -33,6 +33,8 @@ import java.util.Calendar;
 @Deprecated
 public class SQLBetweenFilter extends SQLComplexFilter {
 
+    private static final long serialVersionUID = 1L;
+
     private Calendar from;
 
     private Calendar to;

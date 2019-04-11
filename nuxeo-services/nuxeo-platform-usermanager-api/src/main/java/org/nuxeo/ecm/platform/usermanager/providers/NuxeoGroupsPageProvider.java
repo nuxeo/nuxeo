@@ -36,6 +36,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoGroupsPageProvider extends AbstractGroupsPageProvider<NuxeoGroup> {
 
+    private static final long serialVersionUID = 1L;
     private static final Log log = LogFactory.getLog(NuxeoGroupsPageProvider.class);
 
     @Override

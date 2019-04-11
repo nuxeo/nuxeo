@@ -29,6 +29,8 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  */
 public class MimetypeNotFoundException extends NuxeoException {
 
+    private static final long serialVersionUID = 1L;
+
     public MimetypeNotFoundException() {
     }
 

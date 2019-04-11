@@ -47,6 +47,8 @@ public class ProxyTicketReceptor extends HttpServlet {
     // *********************************************************************
     // Constants
 
+    private static final long serialVersionUID = 1L;
+
     private static final String PGT_IOU_PARAM = "pgtIou";
 
     private static final String PGT_ID_PARAM = "pgtId";

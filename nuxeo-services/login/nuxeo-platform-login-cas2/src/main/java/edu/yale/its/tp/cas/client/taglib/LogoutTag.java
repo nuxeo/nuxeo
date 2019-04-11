@@ -53,6 +53,8 @@ public class LogoutTag extends TagSupport {
     // *********************************************************************
     // Internal state
 
+    private static final long serialVersionUID = 1L;
+
     private String var; // tag attribute
 
     private String logoutUrl; // tag attribute

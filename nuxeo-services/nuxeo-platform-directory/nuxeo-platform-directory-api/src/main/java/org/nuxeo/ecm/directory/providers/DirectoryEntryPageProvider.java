@@ -35,6 +35,8 @@ import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
  */
 public class DirectoryEntryPageProvider extends AbstractPageProvider<DirectoryEntry> {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     public List<DirectoryEntry> getCurrentPage() {
         Object[] parameters = getParameters();

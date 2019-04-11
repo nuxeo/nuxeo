@@ -96,6 +96,7 @@ public class JsonMarshalling {
 
     public static class ThrowableDeserializer extends com.fasterxml.jackson.databind.deser.std.ThrowableDeserializer {
 
+        private static final long serialVersionUID = 1L;
         protected Stack<Map<String, JsonNode>> unknownStack = new Stack<>();
 
         public ThrowableDeserializer(BeanDeserializer src) {
@@ -148,6 +149,8 @@ public class JsonMarshalling {
             }
         });
         final SimpleModule module = new SimpleModule("automation", Version.unknownVersion()) {
+
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void setupModule(SetupContext context) {

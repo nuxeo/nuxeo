@@ -27,6 +27,8 @@ import java.time.Duration;
  */
 public class RebalanceException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
     public RebalanceException(String message) {
         // we don't need the stack trace
         super(message, null, false, false);

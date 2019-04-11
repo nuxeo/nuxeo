@@ -22,6 +22,8 @@ package org.nuxeo.lib.stream;
  * @since 10.2
  */
 public class StreamRuntimeException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+
     public StreamRuntimeException(Throwable cause) {
         super(cause);
     }

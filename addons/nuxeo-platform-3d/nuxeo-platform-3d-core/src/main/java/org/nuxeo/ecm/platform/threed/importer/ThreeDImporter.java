@@ -37,6 +37,7 @@ import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.runtime.api.Framework;
 
 public class ThreeDImporter extends AbstractFileImporter {
+    private static final long serialVersionUID = 1L;
     public static final String MIMETYPE_ZIP = "application/zip";
 
     @Override

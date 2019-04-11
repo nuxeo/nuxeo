@@ -25,4 +25,6 @@ package org.nuxeo.launcher.connect;
  * @since 10.2
  */
 public class LauncherRestartException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
 }

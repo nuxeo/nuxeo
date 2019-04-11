@@ -36,6 +36,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoPrincipalsPageProvider extends AbstractUsersPageProvider<NuxeoPrincipal> {
 
+    private static final long serialVersionUID = 1L;
+
     private static final Log log = LogFactory.getLog(NuxeoPrincipalsPageProvider.class);
 
     protected List<NuxeoPrincipal> pagePrincipals;

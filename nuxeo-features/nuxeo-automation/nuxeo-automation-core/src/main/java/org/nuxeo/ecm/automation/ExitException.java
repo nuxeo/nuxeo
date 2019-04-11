@@ -29,6 +29,7 @@ package org.nuxeo.ecm.automation;
 @SuppressWarnings("serial")
 public class ExitException extends OperationException {
 
+    private static final long serialVersionUID = 1L;
     protected Object output;
 
     public ExitException() {
