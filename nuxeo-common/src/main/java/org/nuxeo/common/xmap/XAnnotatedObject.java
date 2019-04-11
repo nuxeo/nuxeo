@@ -120,6 +120,7 @@ class Sorter implements Comparator<XAnnotatedMember>, Serializable {
         }
     }
 
+    @Override
     public int compare(XAnnotatedMember o1, XAnnotatedMember o2) {
         String p1 = o1.path == null ? "" : o1.path.path;
         String p2 = o2.path == null ? "" : o2.path.path;

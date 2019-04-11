@@ -58,6 +58,7 @@ public class AnnotationBlobPostProcessor implements BlobPostProcessor {
     protected Pattern charsetPattern = Pattern.compile("(.*) charset=(.*?)\"(.*)", Pattern.CASE_INSENSITIVE
             | Pattern.DOTALL);
 
+    @Override
     public Blob process(Blob blob) {
         String mimetype = blob.getMimeType();
         if (mimetype == null || !mimetype.startsWith("text/")) {

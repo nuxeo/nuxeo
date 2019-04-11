@@ -51,14 +51,17 @@ public class ImageRangeXPointer implements XPointer {
         this.bottomRight = new Point(args[3] + "," + args[4]);
     }
 
+    @Override
     public String getMethod() {
         return "image-range";
     }
 
+    @Override
     public String getUrl() {
         return url;
     }
 
+    @Override
     public String getXPath() {
         return path;
     }
@@ -89,6 +92,7 @@ public class ImageRangeXPointer implements XPointer {
         return bottomRight;
     }
 
+    @Override
     public String getXpointerString() {
         return xpointerString;
     }

@@ -77,6 +77,7 @@ public class DocumentImageResource implements ImageResource {
         }
     }
 
+    @Override
     public Blob getBlob() {
         if (blob == null) {
             compute();
@@ -87,6 +88,7 @@ public class DocumentImageResource implements ImageResource {
         return blob;
     }
 
+    @Override
     public String getHash() {
         if (hash == null) {
             compute();
@@ -94,6 +96,7 @@ public class DocumentImageResource implements ImageResource {
         return hash;
     }
 
+    @Override
     public Calendar getModificationDate() {
         if (modified == null) {
             compute();

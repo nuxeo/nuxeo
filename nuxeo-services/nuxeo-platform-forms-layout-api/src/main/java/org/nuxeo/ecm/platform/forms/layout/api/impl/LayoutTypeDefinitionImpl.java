@@ -56,6 +56,7 @@ public class LayoutTypeDefinitionImpl implements LayoutTypeDefinition {
         return name;
     }
 
+    @Override
     public Map<String, String> getTemplates() {
         return templates;
     }

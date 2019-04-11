@@ -34,6 +34,7 @@ import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 public class DefaultUriResolver implements UriResolver {
     private static final String NUXEO_ANNOTATIONS = "nuxeo/Annotations/";
 
+    @Override
     public String getBaseUrl(URI uri) {
         if (uri == null) {
             return null;
@@ -50,10 +51,12 @@ public class DefaultUriResolver implements UriResolver {
         }
     }
 
+    @Override
     public URI getSearchURI(URI uri) {
         return uri;
     }
 
+    @Override
     public URI translateFromGraphURI(URI uri, String baseUrl) {
         if (uri.toString().startsWith("urn:annotation:")) {
             String annId = uri.toString().substring(uri.toString().lastIndexOf(":") + 1);
@@ -66,6 +69,7 @@ public class DefaultUriResolver implements UriResolver {
         return uri;
     }
 
+    @Override
     public URI translateToGraphURI(URI uri) {
         String path = uri.getPath();
         if (uri.toString().contains(NUXEO_ANNOTATIONS)) {

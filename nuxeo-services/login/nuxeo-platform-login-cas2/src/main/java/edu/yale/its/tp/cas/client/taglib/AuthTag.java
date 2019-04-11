@@ -77,6 +77,7 @@ public class AuthTag extends TagSupport {
     // *********************************************************************
     // Tag logic
 
+    @Override
     public int doStartTag() throws JspException {
         // retrieve and save the request and response objects
         request = (HttpServletRequest) pageContext.getRequest();
@@ -95,6 +96,7 @@ public class AuthTag extends TagSupport {
         return EVAL_BODY_INCLUDE;
     }
 
+    @Override
     public int doEndTag() throws JspTagException {
         try {
             // if our attribute's already present, don't do anything
@@ -180,6 +182,7 @@ public class AuthTag extends TagSupport {
     }
 
     // Releases any resources we may have (or inherit)
+    @Override
     public void release() {
         super.release();
         init();

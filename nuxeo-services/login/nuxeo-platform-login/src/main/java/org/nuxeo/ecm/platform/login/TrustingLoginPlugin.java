@@ -40,10 +40,12 @@ public class TrustingLoginPlugin extends BaseLoginModule {
      */
     public static final String NAME = "Trusting_LM";
 
+    @Override
     public Boolean initLoginModule() {
         return Boolean.TRUE;
     }
 
+    @Override
     public String validatedUserIdentity(UserIdentificationInfo userIdent) {
         return userIdent.getUserName();
     }

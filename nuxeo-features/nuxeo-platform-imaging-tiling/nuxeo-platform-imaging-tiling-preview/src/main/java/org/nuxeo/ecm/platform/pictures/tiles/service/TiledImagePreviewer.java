@@ -59,6 +59,7 @@ public class TiledImagePreviewer extends AbstractPreviewer implements MimeTypePr
     @Deprecated
     protected static final String ORIGINAL_VIEW_NAME = "Original";
 
+    @Override
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         if (useTiling(blob)) {
             List<Blob> blobResults = new ArrayList<>();

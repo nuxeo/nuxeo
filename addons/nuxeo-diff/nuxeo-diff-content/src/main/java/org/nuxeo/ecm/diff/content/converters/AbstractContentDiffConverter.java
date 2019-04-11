@@ -35,6 +35,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractContentDiffConverter implements Converter {
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
         // Nothing to do here
     }

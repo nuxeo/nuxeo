@@ -116,6 +116,7 @@ public class ActionTagHandler extends MetaTagHandler {
      * Variables exposed: {@link RenderVariables.globalVariables#value}, same variable suffixed with "_n" where n is the
      * widget level, and {@link RenderVariables.globalVariables#document}.
      */
+    @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
         long start = FaceletDebugTracer.start();
         Action actionInstance = null;

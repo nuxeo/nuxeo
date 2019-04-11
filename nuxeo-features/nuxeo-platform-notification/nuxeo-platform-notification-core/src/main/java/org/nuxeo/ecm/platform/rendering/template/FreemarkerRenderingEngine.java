@@ -56,6 +56,7 @@ public abstract class FreemarkerRenderingEngine implements RenderingEngine {
 
     protected abstract FreemarkerRenderingJob createJob(RenderingContext ctx);
 
+    @Override
     public RenderingResult process(RenderingContext ctx) throws RenderingException {
         try {
             if (cfg == null) {

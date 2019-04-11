@@ -46,6 +46,7 @@ public class PPTX2TextConverter extends XmlZip2TextConverter {
 
     private static final String PRESENTATION_SLIDE_ZIP_ENTRY_NAME_PREFIX = "ppt/slides/slide";
 
+    @Override
     protected void readXmlZipContent(ZipInputStream zis, XMLReader reader, StringBuilder sb) throws IOException,
             SAXException {
 

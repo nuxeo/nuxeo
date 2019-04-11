@@ -58,6 +58,7 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
         return expr;
     }
 
+    @Override
     public Iterator<Token> iterator() {
         return Arrays.asList(expr).iterator();
     }
@@ -124,10 +125,12 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
     public static class OpStack extends LinkedList<Token> {
         private static final long serialVersionUID = 1L;
 
+        @Override
         public final void push(Token token) {
             add(token);
         }
 
+        @Override
         public final Token pop() {
             return removeLast();
         }

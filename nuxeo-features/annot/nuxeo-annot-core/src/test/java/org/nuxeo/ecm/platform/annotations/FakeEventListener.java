@@ -30,27 +30,35 @@ import org.nuxeo.ecm.platform.annotations.service.EventListener;
  */
 public class FakeEventListener implements EventListener {
 
+    @Override
     public void afterAnnotationCreated(NuxeoPrincipal principal, Annotation annotation) {
     }
 
+    @Override
     public void afterAnnotationDeleted(NuxeoPrincipal principal, Annotation annotation) {
     }
 
+    @Override
     public void afterAnnotationRead(NuxeoPrincipal principal, Annotation annotation) {
     }
 
+    @Override
     public void afterAnnotationUpdated(NuxeoPrincipal principal, Annotation annotation) {
     }
 
+    @Override
     public void beforeAnnotationCreated(NuxeoPrincipal principal, Annotation annotation) {
     }
 
+    @Override
     public void beforeAnnotationDeleted(NuxeoPrincipal principal, Annotation annotation) {
     }
 
+    @Override
     public void beforeAnnotationRead(NuxeoPrincipal principal, String annotationId) {
     }
 
+    @Override
     public void beforeAnnotationUpdated(NuxeoPrincipal principal, Annotation annotation) {
     }
 

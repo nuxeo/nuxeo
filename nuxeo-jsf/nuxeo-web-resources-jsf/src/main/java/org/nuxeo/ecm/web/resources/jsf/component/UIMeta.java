@@ -80,6 +80,7 @@ public class UIMeta extends UIComponentBase {
         getStateHelper().put(PropertyKeys.name, name);
     }
 
+    @Override
     public String getRendererType() {
         return null;
     }

@@ -49,22 +49,27 @@ public class SchemaDiffImpl implements SchemaDiff {
         schemaDiff = new HashMap<>();
     }
 
+    @Override
     public Map<String, PropertyDiff> getSchemaDiff() {
         return schemaDiff;
     }
 
+    @Override
     public int getFieldCount() {
         return schemaDiff.size();
     }
 
+    @Override
     public List<String> getFieldNames() {
         return new ArrayList<>(schemaDiff.keySet());
     }
 
+    @Override
     public PropertyDiff getFieldDiff(String field) {
         return schemaDiff.get(field);
     }
 
+    @Override
     public PropertyDiff putFieldDiff(String field, PropertyDiff fieldDiff) {
         return schemaDiff.put(field, fieldDiff);
     }

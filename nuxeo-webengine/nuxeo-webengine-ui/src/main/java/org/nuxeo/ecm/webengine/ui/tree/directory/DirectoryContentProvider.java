@@ -57,6 +57,7 @@ public class DirectoryContentProvider implements ContentProvider {
         query.put("parent", id);
     }
 
+    @Override
     public Object[] getElements(Object input) {
         if (input instanceof Directory) {
             return getChildren(null);
@@ -65,6 +66,7 @@ public class DirectoryContentProvider implements ContentProvider {
         }
     }
 
+    @Override
     public Object[] getChildren(Object obj) {
         if (obj == null || obj instanceof DocumentModel) {
             DocumentModel parent = (DocumentModel) obj;
@@ -76,6 +78,7 @@ public class DirectoryContentProvider implements ContentProvider {
         return null;
     }
 
+    @Override
     public boolean isContainer(Object obj) {
         if (obj instanceof DocumentModel) {
             return ((DocumentModel) obj).isFolder();
@@ -83,6 +86,7 @@ public class DirectoryContentProvider implements ContentProvider {
         return false;
     }
 
+    @Override
     public String getName(Object obj) {
         if (obj instanceof DocumentModel) {
             return ((DocumentModel) obj).getId();
@@ -90,6 +94,7 @@ public class DirectoryContentProvider implements ContentProvider {
         return null;
     }
 
+    @Override
     public String getLabel(Object obj) {
         if (obj instanceof DocumentModel) {
             return ((DocumentModel) obj).getName();
@@ -97,6 +102,7 @@ public class DirectoryContentProvider implements ContentProvider {
         return null;
     }
 
+    @Override
     public String[] getFacets(Object object) {
         return null;
     }

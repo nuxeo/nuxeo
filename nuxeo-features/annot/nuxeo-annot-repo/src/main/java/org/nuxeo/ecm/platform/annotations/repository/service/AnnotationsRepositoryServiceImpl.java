@@ -48,6 +48,7 @@ public class AnnotationsRepositoryServiceImpl implements AnnotationsRepositorySe
         this.annotability = annotability;
     }
 
+    @Override
     public boolean isAnnotable(DocumentModel document) {
         return annotability.isAnnotable(document);
     }
@@ -61,6 +62,7 @@ public class AnnotationsRepositoryServiceImpl implements AnnotationsRepositorySe
         this.annotability = annotability;
     }
 
+    @Override
     public boolean check(NuxeoPrincipal user, String permission, DocumentModel model) {
         return securityManager.check(user, permission, model);
     }

@@ -34,6 +34,7 @@ public class StatementInfoComparator implements Comparator<StatementInfo>, Seria
 
     private static final long serialVersionUID = -5117909579284277595L;
 
+    @Override
     public int compare(StatementInfo stmt1, StatementInfo stmt2) {
         // XXX AT: always compare by modification date for now, will have to be
         // more pluggable when need to sort tables.

@@ -60,6 +60,7 @@ public class LinkInfo {
         return link;
     }
 
+    @Override
     public String toString() {
         return "Page " + page + ", subType: " + subType + "Text: " + text + ", link: " + link;
     }

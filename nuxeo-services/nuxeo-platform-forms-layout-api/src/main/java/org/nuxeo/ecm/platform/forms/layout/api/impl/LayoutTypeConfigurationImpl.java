@@ -67,6 +67,7 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         super();
     }
 
+    @Override
     public String getSinceVersion() {
         return sinceVersion;
     }
@@ -75,6 +76,7 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         this.sinceVersion = sinceVersion;
     }
 
+    @Override
     public String getDeprecatedVersion() {
         return deprecatedVersion;
     }
@@ -83,6 +85,7 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         this.deprecatedVersion = deprecatedVersion;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
@@ -91,6 +94,7 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         this.title = title;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
@@ -99,6 +103,7 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         this.description = description;
     }
 
+    @Override
     public String getDemoId() {
         return demoId;
     }
@@ -107,6 +112,7 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         this.demoId = demoId;
     }
 
+    @Override
     public boolean isDemoPreviewEnabled() {
         return demoPreviewEnabled;
     }
@@ -115,6 +121,7 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         this.demoPreviewEnabled = demoPreviewEnabled;
     }
 
+    @Override
     public List<String> getSupportedModes() {
         return supportedModes;
     }
@@ -123,6 +130,7 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         this.supportedModes = supportedModes;
     }
 
+    @Override
     public boolean isHandlingLabels() {
         return handlingLabels;
     }
@@ -131,6 +139,7 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         this.handlingLabels = handlingLabels;
     }
 
+    @Override
     public List<String> getSupportedControls() {
         return supportedControls;
     }
@@ -139,6 +148,7 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         this.supportedControls = supportedControls;
     }
 
+    @Override
     public boolean isContainingForm() {
         return containingForm;
     }
@@ -147,6 +157,7 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         this.containingForm = containingForm;
     }
 
+    @Override
     public List<String> getCategories() {
         return categories;
     }
@@ -155,10 +166,12 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         this.categories = categories;
     }
 
+    @Override
     public Map<String, List<LayoutDefinition>> getPropertyLayouts() {
         return propertyLayouts;
     }
 
+    @Override
     public List<LayoutDefinition> getPropertyLayouts(String mode, String additionalMode) {
         return getLayouts(propertyLayouts, mode, additionalMode);
     }
@@ -167,10 +180,12 @@ public class LayoutTypeConfigurationImpl implements LayoutTypeConfiguration {
         this.propertyLayouts = propertyLayouts;
     }
 
+    @Override
     public Map<String, Map<String, Serializable>> getDefaultPropertyValues() {
         return defaultPropertyValues;
     }
 
+    @Override
     public Map<String, Serializable> getDefaultPropertyValues(String mode) {
         if (defaultPropertyValues != null) {
             Map<String, Serializable> res = new HashMap<>();

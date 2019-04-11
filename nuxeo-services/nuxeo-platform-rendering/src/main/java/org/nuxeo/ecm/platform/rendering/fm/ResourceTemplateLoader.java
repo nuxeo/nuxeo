@@ -59,6 +59,7 @@ public class ResourceTemplateLoader implements TemplateLoader {
         return locator;
     }
 
+    @Override
     public void closeTemplateSource(Object templateSource) throws IOException {
         if (templateSource instanceof File) {
             fileLoader.closeTemplateSource(templateSource);
@@ -67,6 +68,7 @@ public class ResourceTemplateLoader implements TemplateLoader {
         }
     }
 
+    @Override
     public Object findTemplateSource(String name) throws IOException {
         if (name.startsWith("fs://")) { // hack for absolute paths - see
                                         // FreemarkerEngine#render()
@@ -81,6 +83,7 @@ public class ResourceTemplateLoader implements TemplateLoader {
         return urlLoader.findTemplateSource(name);
     }
 
+    @Override
     public long getLastModified(Object templateSource) {
         if (templateSource instanceof File) {
             return fileLoader.getLastModified(templateSource);
@@ -89,6 +92,7 @@ public class ResourceTemplateLoader implements TemplateLoader {
         }
     }
 
+    @Override
     public Reader getReader(Object templateSource, String encoding) throws IOException {
         if (templateSource instanceof File) {
             return fileLoader.getReader(templateSource, encoding);
@@ -112,10 +116,12 @@ public class ResourceTemplateLoader implements TemplateLoader {
     }
 
     class MyFileTemplateLoader implements TemplateLoader {
+        @Override
         public void closeTemplateSource(Object templateSource) throws IOException {
             // do nothing
         }
 
+        @Override
         public Object findTemplateSource(String name) throws IOException {
             if (locator != null) {
                 File file = locator.getResourceFile(name);
@@ -134,6 +140,7 @@ public class ResourceTemplateLoader implements TemplateLoader {
             return null;
         }
 
+        @Override
         public long getLastModified(Object templateSource) {
             try {
                 return ((File) templateSource).lastModified();
@@ -142,6 +149,7 @@ public class ResourceTemplateLoader implements TemplateLoader {
             }
         }
 
+        @Override
         public Reader getReader(Object templateSource, String encoding) throws IOException {
             try {
                 return new InputStreamReader(new FileInputStream((File) templateSource), encoding);

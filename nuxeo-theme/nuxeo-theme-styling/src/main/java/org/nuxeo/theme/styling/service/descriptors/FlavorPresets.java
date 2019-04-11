@@ -63,6 +63,7 @@ public class FlavorPresets {
         this.content = content;
     }
 
+    @Override
     public FlavorPresets clone() {
         FlavorPresets clone = new FlavorPresets();
         clone.setSrc(src);

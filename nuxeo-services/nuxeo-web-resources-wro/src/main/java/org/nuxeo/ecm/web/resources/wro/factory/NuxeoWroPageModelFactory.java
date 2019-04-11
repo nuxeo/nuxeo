@@ -71,6 +71,7 @@ public class NuxeoWroPageModelFactory extends NuxeoWroModelFactory implements Wr
         return model;
     }
 
+    @Override
     public void destroy() {
     }
 

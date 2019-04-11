@@ -55,18 +55,22 @@ public class TaskDefinitionImpl implements TaskDefinition {
         this.restart = restart;
     }
 
+    @Override
     public void setRequireRestart(boolean isRestartRequired) {
         restart = isRestartRequired;
     }
 
+    @Override
     public boolean getRequireRestart() {
         return restart;
     }
 
+    @Override
     public void setType(String type) {
         this.type = type;
     }
 
+    @Override
     public String getType() {
         return type;
     }

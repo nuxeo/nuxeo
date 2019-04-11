@@ -83,10 +83,12 @@ public class AnnoteaDecoratorVisitor implements DecoratorVisitor {
         this.lastCharIsSpace = lastCharIsSpace;
     }
 
+    @Override
     public boolean doBreak() {
         return textToAnnotate == 0;
     }
 
+    @Override
     public void process(Node node) {
         if (node.equals(startNode)) {
             started = true;

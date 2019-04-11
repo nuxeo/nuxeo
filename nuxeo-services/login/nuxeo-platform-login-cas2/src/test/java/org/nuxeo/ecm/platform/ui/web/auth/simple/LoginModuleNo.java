@@ -33,23 +33,28 @@ public class LoginModuleNo extends NuxeoAbstractServerLoginModule {
 
     protected NuxeoPrincipal identity;
 
+    @Override
     public boolean abort() throws LoginException {
         return true;
     }
 
+    @Override
     public boolean commit() throws LoginException {
 
         return false;
     }
 
+    @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
             Map<String, ?> options) {
     }
 
+    @Override
     public boolean login() throws LoginException {
         return false;
     }
 
+    @Override
     public boolean logout() throws LoginException {
         return true;
     }

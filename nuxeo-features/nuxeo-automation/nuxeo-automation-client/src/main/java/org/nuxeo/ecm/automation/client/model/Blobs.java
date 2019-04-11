@@ -39,14 +39,17 @@ public class Blobs extends ArrayList<Blob> implements OperationInput {
         super(blobs);
     }
 
+    @Override
     public String getInputType() {
         return "bloblist";
     }
 
+    @Override
     public String getInputRef() {
         return null;
     }
 
+    @Override
     public boolean isBinary() {
         return true;
     }

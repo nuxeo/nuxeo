@@ -45,18 +45,22 @@ public class MailBoxActionsImpl implements MailBoxActions {
         expunge = expungeOnExit;
     }
 
+    @Override
     public void addAction(MessageAction action) {
         pipe.add(action);
     }
 
+    @Override
     public void addActions(List<MessageAction> actions) {
         pipe.addAll(actions);
     }
 
+    @Override
     public void execute() throws MessagingException {
         execute(null);
     }
 
+    @Override
     public void execute(ExecutionContext initialContext) throws MessagingException {
         visitor.visit(folder, initialContext);
         folder.close(expunge);

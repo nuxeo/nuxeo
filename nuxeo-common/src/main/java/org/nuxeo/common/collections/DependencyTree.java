@@ -52,6 +52,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         resolved = new ArrayList<>();
     }
 
+    @Override
     public Iterator<Entry<K, T>> iterator() {
         return registry.values().iterator();
     }

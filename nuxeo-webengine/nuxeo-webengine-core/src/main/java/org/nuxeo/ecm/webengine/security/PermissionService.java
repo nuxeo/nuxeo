@@ -73,10 +73,12 @@ public class PermissionService implements PostfixExpression.Visitor {
 
     public Guard parse(String expr, final Map<String, Guard> localGuards) throws ParseException {
         PostfixExpression.Visitor visitor = new PostfixExpression.Visitor() {
+            @Override
             public Object createOperation(Token token, Object lparam, Object rparam) {
                 return PermissionService.this.createOperation(token, lparam, rparam);
             }
 
+            @Override
             public Object createParameter(Token token) {
                 Guard guard = localGuards.get(token.name);
                 if (guard == null) { // assume a built-in permission name
@@ -88,6 +90,7 @@ public class PermissionService implements PostfixExpression.Visitor {
         return (Guard) new PostfixExpression(expr).visit(visitor);
     }
 
+    @Override
     public Object createOperation(Token token, Object lparam, Object rparam) {
         switch (token.type) {
         case PostfixExpression.AND:
@@ -100,6 +103,7 @@ public class PermissionService implements PostfixExpression.Visitor {
         throw new IllegalStateException("Supported ops are: AND, OR and NOT");
     }
 
+    @Override
     public Object createParameter(Token token) {
         String name = token.name;
         int p = name.indexOf('=');

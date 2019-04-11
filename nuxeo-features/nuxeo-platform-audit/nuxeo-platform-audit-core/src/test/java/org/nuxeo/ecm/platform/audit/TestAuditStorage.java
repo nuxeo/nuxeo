@@ -38,6 +38,7 @@ public class TestAuditStorage extends AbstractAuditStorageTest {
     @Inject
     protected TransactionalFeature txFeature;
 
+    @Override
     @Test
     public void testStartsWith() throws Exception {
         super.testStartsWith();

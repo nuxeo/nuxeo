@@ -47,6 +47,7 @@ public class GenericHtmlComponentHandler extends HtmlComponentHandler {
     /**
      * Overrides the "value" value expression to handle default value mapping.
      */
+    @Override
     public void onComponentCreated(FaceletContext ctx, UIComponent c, UIComponent parent) {
         if (c instanceof ValueHolder) {
             ValueExpression dve = c.getValueExpression("defaultValue");

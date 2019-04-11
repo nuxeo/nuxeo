@@ -43,6 +43,7 @@ public class FacetGuard implements Guard {
         this.facet = facet;
     }
 
+    @Override
     public boolean check(Adaptable context) {
         return context.getAdapter(DocumentModel.class).hasFacet(facet);
     }

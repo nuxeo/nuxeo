@@ -32,10 +32,12 @@ public class RenderingHelper {
     protected static RenderingEngine engine;
 
     protected class CLResourceLocator implements ResourceLocator {
+        @Override
         public File getResourceFile(String key) {
             return null;
         }
 
+        @Override
         public URL getResourceURL(String key) {
             return this.getClass().getClassLoader().getResource(key);
         }

@@ -24,20 +24,24 @@ package org.nuxeo.ecm.webengine.jaxrs.servlet.mapping;
 public abstract class SegmentMatcher {
 
     public static final SegmentMatcher ANY = new SegmentMatcher() {
+        @Override
         public boolean matches(String segment) {
             return true;
         }
 
+        @Override
         public String toString() {
             return "**";
         }
     };
 
     public static final SegmentMatcher ANY_SEGMENT = new SegmentMatcher() {
+        @Override
         public boolean matches(String segment) {
             return true;
         }
 
+        @Override
         public String toString() {
             return "*";
         }

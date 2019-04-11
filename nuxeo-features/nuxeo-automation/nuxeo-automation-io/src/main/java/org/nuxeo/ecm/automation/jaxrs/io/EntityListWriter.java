@@ -41,6 +41,7 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
     /**
      * Returns the entity-type value of the list (ie: users, groups....)
      */
+    @Override
     protected abstract String getEntityType();
 
     /**

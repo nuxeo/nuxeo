@@ -88,6 +88,7 @@ public class ThemeActionsBean implements ThemeActions {
         return currentFavicons;
     }
 
+    @Override
     public String getCurrentFlavor() {
         if (currentFlavor == null) {
             // put current page name to request for flavor negotiation
@@ -109,6 +110,7 @@ public class ThemeActionsBean implements ThemeActions {
         return getCurrentFlavor();
     }
 
+    @Override
     public String getCurrentPage() {
         if (currentPage == null) {
             currentPage = themeStylingService.negotiate("jsfPage", FacesContext.getCurrentInstance());
@@ -120,6 +122,7 @@ public class ThemeActionsBean implements ThemeActions {
         return currentPage;
     }
 
+    @Override
     public void setCurrentPage(String pageName) {
         currentPage = pageName;
     }

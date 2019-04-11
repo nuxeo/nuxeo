@@ -60,10 +60,12 @@ public class DiffBlockDefinitionImpl implements DiffBlockDefinition {
         this.properties = properties;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getTemplate(String mode) {
         if (templates != null) {
             String template = templates.get(mode);
@@ -75,18 +77,22 @@ public class DiffBlockDefinitionImpl implements DiffBlockDefinition {
         return null;
     }
 
+    @Override
     public Map<String, String> getTemplates() {
         return templates;
     }
 
+    @Override
     public List<DiffFieldDefinition> getFields() {
         return fields;
     }
 
+    @Override
     public Map<String, Serializable> getProperties(String layoutMode) {
         return WidgetDefinitionImpl.getProperties(properties, layoutMode);
     }
 
+    @Override
     public Map<String, Map<String, Serializable>> getProperties() {
         return properties;
     }

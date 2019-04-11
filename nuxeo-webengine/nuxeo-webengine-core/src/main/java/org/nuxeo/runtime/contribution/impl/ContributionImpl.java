@@ -67,6 +67,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
         registry = reg;
     }
 
+    @Override
     public ContributionRegistry<K, T> getRegistry() {
         return registry;
     }
@@ -74,22 +75,27 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
     /**
      * @return the primaryKey.
      */
+    @Override
     public K getId() {
         return primaryKey;
     }
 
+    @Override
     public Iterator<T> iterator() {
         return fragments.iterator();
     }
 
+    @Override
     public Set<Contribution<K, T>> getDependencies() {
         return dependencies;
     }
 
+    @Override
     public Set<Contribution<K, T>> getDependents() {
         return dependents;
     }
 
+    @Override
     public Set<Contribution<K, T>> getUnresolvedDependencies() {
         Set<Contribution<K, T>> set = new HashSet<>();
         for (Contribution<K, T> dep : dependencies) {
@@ -112,18 +118,22 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
         return true;
     }
 
+    @Override
     public int size() {
         return fragments.size();
     }
 
+    @Override
     public boolean isEmpty() {
         return fragments.isEmpty();
     }
 
+    @Override
     public T getFragment(int index) {
         return fragments.get(index);
     }
 
+    @Override
     public boolean removeFragment(Object fragment) {
         if (mainFragments.remove(fragment)) {
             if (mainFragments.isEmpty()) {
@@ -146,6 +156,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
         return false;
     }
 
+    @Override
     public synchronized void addFragment(T fragment, K... superKeys) {
         // check if it is the main fragment
         if (registry.isMainFragment(fragment)) {
@@ -165,6 +176,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
         update();
     }
 
+    @Override
     public T getValue() {
         if (!isResolved) {
             throw new IllegalStateException("Cannot compute merged values for not resolved contributions");
@@ -187,14 +199,17 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
         return result;
     }
 
+    @Override
     public boolean isPhantom() {
         return mainFragments.isEmpty();
     }
 
+    @Override
     public boolean isResolved() {
         return isResolved;
     }
 
+    @Override
     public boolean isRegistered() {
         return !fragments.isEmpty();
     }
@@ -218,6 +233,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
         }
     }
 
+    @Override
     public void unregister() {
         if (isResolved) {
             unresolve();
@@ -226,6 +242,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
         value = null;
     }
 
+    @Override
     public void unresolve() {
         if (!isResolved) {
             return;
@@ -238,6 +255,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
         value = null;
     }
 
+    @Override
     public void resolve() {
         if (isResolved || isPhantom()) {
             throw new IllegalStateException("Cannot resolve. Invalid state. phantom: " + isPhantom() + "; resolved: "

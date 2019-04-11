@@ -74,6 +74,7 @@ public class PrincipalImpl implements Principal {
     /**
      * return the name of the principal.
      */
+    @Override
     public String getName() {
         return user;
     }

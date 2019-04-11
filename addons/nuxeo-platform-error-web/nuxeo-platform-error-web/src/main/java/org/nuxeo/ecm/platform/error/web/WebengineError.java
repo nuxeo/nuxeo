@@ -67,6 +67,7 @@ public class WebengineError extends ModuleRoot {
         throw new DocumentSecurityException("Security error in webengine");
     }
 
+    @Override
     public Object handleError(Throwable t) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);

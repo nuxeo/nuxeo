@@ -42,14 +42,17 @@ public class BlankImpl extends AbstractNode implements Blank {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
+    @Override
     public NodeType getNodeType() {
         return NodeType.BLANK;
     }

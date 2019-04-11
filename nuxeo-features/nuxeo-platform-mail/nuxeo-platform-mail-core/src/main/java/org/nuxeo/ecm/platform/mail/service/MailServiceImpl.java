@@ -139,10 +139,12 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         System.setProperty("mail.mime.decodefilename", "false");
     }
 
+    @Override
     public Store getConnectedStore(String name) throws MessagingException {
         return getConnectedStore(name, null);
     }
 
+    @Override
     public Store getConnectedStore(String name, Map<String, Object> context) throws MessagingException {
         Properties props = getProperties(name, context);
         Session session = newSession(props);
@@ -155,10 +157,12 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         return getFetcher(name).getProperties(map);
     }
 
+    @Override
     public Transport getConnectedTransport(String name) throws MessagingException {
         return getConnectedTransport(name, null);
     }
 
+    @Override
     public Transport getConnectedTransport(String name, Map<String, Object> context) throws MessagingException {
         Properties props = getProperties(name, context);
         Session session = newSession(props);
@@ -167,19 +171,23 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         return transport;
     }
 
+    @Override
     public Session getSession(String name) {
         return getSession(name, null);
     }
 
+    @Override
     public Session getSession(String name, Map<String, Object> context) {
         Properties props = getProperties(name, context);
         return newSession(props);
     }
 
+    @Override
     public MailBoxActions getMailBoxActions(String factoryName, String folderName) throws MessagingException {
         return getMailBoxActions(factoryName, folderName, null);
     }
 
+    @Override
     public MailBoxActions getMailBoxActions(String factoryName, String folderName, Map<String, Object> context)
             throws MessagingException {
         Store store = getConnectedStore(factoryName, context);
@@ -187,10 +195,12 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         return new MailBoxActionsImpl(folder, true);
     }
 
+    @Override
     public void sendMail(String text, String subject, String factory, Address[] recipients) {
         sendMail(text, subject, factory, recipients, null);
     }
 
+    @Override
     public void sendMail(String text, String subject, String factory, Address[] recipients, Map<String, Object> context) {
         Session session = getSession(factory, context);
         Message message = new MimeMessage(session);
@@ -205,6 +215,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         }
     }
 
+    @Override
     public PropertiesFetcher getFetcher(String name) {
         PropertiesFetcher fetcher = configuredFetchers.get(name);
         if (fetcher == null) {
@@ -222,6 +233,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         return fetcher;
     }
 
+    @Override
     public MessageActionPipe getPipe(String name) {
         return actionPipesRegistry.get(name);
     }

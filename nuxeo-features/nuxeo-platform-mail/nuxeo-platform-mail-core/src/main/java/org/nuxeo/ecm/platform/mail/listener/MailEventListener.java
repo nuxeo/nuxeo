@@ -57,6 +57,7 @@ public class MailEventListener implements EventListener {
 
     protected Lock lock = new ReentrantLock();
 
+    @Override
     public void handleEvent(Event event) {
         String eventId = event.getName();
 

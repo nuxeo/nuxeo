@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class DefaultWebPermission implements WebPermission {
 
+    @Override
     public boolean canAnnotate(DocumentModel docModel) {
         return true;
     }

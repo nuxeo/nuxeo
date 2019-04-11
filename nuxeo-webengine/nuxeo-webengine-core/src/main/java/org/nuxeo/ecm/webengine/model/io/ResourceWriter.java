@@ -39,16 +39,19 @@ import org.nuxeo.ecm.webengine.model.Resource;
 @Produces({ "text/html", "*/*" })
 public class ResourceWriter implements MessageBodyWriter<Resource> {
 
+    @Override
     public void writeTo(Resource t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         t.getView("index").render(entityStream);
     }
 
+    @Override
     public long getSize(Resource arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         // TODO Auto-generated method stub
         return -1;
     }
 
+    @Override
     public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return Resource.class.isAssignableFrom(arg0);
     }

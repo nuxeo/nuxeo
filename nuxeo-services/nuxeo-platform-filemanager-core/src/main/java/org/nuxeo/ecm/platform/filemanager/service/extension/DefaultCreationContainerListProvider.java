@@ -64,6 +64,7 @@ public class DefaultCreationContainerListProvider extends AbstractCreationContai
         return ppService;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public DocumentModelList getCreationContainerList(CoreSession documentManager, String docType) {
         Map<String, Serializable> props = new HashMap<>();

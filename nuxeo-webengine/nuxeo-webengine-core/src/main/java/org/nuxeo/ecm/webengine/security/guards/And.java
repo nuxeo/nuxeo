@@ -44,6 +44,7 @@ public class And implements Guard {
         this.perms = perms;
     }
 
+    @Override
     public boolean check(Adaptable context) {
         for (Guard perm : perms) {
             if (!perm.check(context)) {

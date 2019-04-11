@@ -27,14 +27,17 @@ public class HttpSessionMetricAdapter implements HttpSessionMetricMBean {
 
     protected long destroyedSessionCount = 0L;
 
+    @Override
     public long getActiveSessionCount() {
         return createdSessionCount - destroyedSessionCount;
     }
 
+    @Override
     public long getDestroyedSessionCount() {
         return destroyedSessionCount;
     }
 
+    @Override
     public long getCreatedSessionCount() {
         return createdSessionCount;
     }

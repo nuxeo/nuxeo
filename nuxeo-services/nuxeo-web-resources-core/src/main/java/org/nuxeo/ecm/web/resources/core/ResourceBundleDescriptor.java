@@ -44,10 +44,12 @@ public class ResourceBundleDescriptor implements ResourceBundle {
     @XNodeList(value = "resources/resource", type = ArrayList.class, componentType = String.class)
     List<String> resources;
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public List<String> getResources() {
         return resources;
     }
@@ -77,6 +79,7 @@ public class ResourceBundleDescriptor implements ResourceBundle {
         this.resources = resources;
     }
 
+    @Override
     public ResourceBundleDescriptor clone() {
         ResourceBundleDescriptor c = new ResourceBundleDescriptor();
         c.name = name;

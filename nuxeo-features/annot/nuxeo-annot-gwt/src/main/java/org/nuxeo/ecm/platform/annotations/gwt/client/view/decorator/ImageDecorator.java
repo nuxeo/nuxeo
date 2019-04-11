@@ -59,6 +59,7 @@ public class ImageDecorator {
         divElement.getStyle().setProperty("display", "block");
         DOM.sinkEvents((Element) divElement.cast(), Event.ONMOUSEMOVE | Event.ONMOUSEUP);
         DOM.setEventListener((Element) divElement.cast(), new EventListener() {
+            @Override
             public void onBrowserEvent(Event event) {
                 img.manageEvent(event);
             }

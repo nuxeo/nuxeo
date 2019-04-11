@@ -75,6 +75,7 @@ public class SystemPrincipal implements NuxeoPrincipal {
         return hash;
     }
 
+    @Override
     public String getCompany() {
         return "Nuxeo";
     }
@@ -89,30 +90,37 @@ public class SystemPrincipal implements NuxeoPrincipal {
 
     }
 
+    @Override
     public String getFirstName() {
         return "System";
     }
 
+    @Override
     public String getLastName() {
         return "System";
     }
 
+    @Override
     public String getName() {
         return LoginComponent.SYSTEM_USERNAME;
     }
 
+    @Override
     public List<String> getGroups() {
         return SYS_GROUPS;
     }
 
+    @Override
     public List<String> getAllGroups() {
         return SYS_GROUPS;
     }
 
+    @Override
     public List<String> getRoles() {
         return SYS_ROLES;
     }
 
+    @Override
     public String getPassword() {
         if (SYS_PASSWORD == null) {
             return null;
@@ -120,14 +128,17 @@ public class SystemPrincipal implements NuxeoPrincipal {
         return new String(SYS_PASSWORD);
     }
 
+    @Override
     public String getPrincipalId() {
         return "";
     }
 
+    @Override
     public String getOriginatingUser() {
         return origUserName;
     }
 
+    @Override
     public void setOriginatingUser(String originatingUser) {
         origUserName = originatingUser;
         computeHash();
@@ -138,37 +149,48 @@ public class SystemPrincipal implements NuxeoPrincipal {
         return getOriginatingUser() == null ? getName() : getOriginatingUser();
     }
 
+    @Override
     public DocumentModel getModel() {
         return null;
     }
 
+    @Override
     public void setCompany(String company) {
     }
 
+    @Override
     public void setFirstName(String firstName) {
     }
 
+    @Override
     public void setLastName(String lastName) {
     }
 
+    @Override
     public void setName(String userName) {
     }
 
+    @Override
     public void setGroups(List<String> groups) {
     }
 
+    @Override
     public void setRoles(List<String> roles) {
     }
 
+    @Override
     public void setPassword(String password) {
     }
 
+    @Override
     public void setPrincipalId(String principalId) {
     }
 
+    @Override
     public void setModel(DocumentModel model) {
     }
 
+    @Override
     public boolean isMemberOf(String group) {
         return SYS_GROUPS.contains(group);
     }
@@ -178,6 +200,7 @@ public class SystemPrincipal implements NuxeoPrincipal {
         return getName();
     }
 
+    @Override
     public boolean isAdministrator() {
         return true;
     }
@@ -187,6 +210,7 @@ public class SystemPrincipal implements NuxeoPrincipal {
         return null;
     }
 
+    @Override
     public boolean isAnonymous() {
         return false;
     }

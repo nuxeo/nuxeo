@@ -28,6 +28,7 @@ import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
  */
 public class BlobHolderPreviewAdapterFactory implements PreviewAdapterFactory {
 
+    @Override
     public HtmlPreviewAdapter getAdapter(DocumentModel doc) {
         ConverterBasedHtmlPreviewAdapter adapter = new ConverterBasedHtmlPreviewAdapter();
         adapter.setAdaptedDocument(doc);

@@ -44,6 +44,7 @@ public class QueryRepositoryProbe implements org.nuxeo.ecm.core.management.api.P
 
     }
 
+    @Override
     public ProbeStatus run() {
         RepositoryManager mgr = Framework.getService(RepositoryManager.class);
         Runner runner = new Runner(mgr.getDefaultRepositoryName());

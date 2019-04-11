@@ -31,10 +31,12 @@ import com.google.gwt.dom.client.Text;
 public class TextGrabberVisitor implements NodeProcessor {
     private StringBuilder builder = new StringBuilder();
 
+    @Override
     public boolean doBreak() {
         return false;
     }
 
+    @Override
     public void process(Node node) {
         if (node.getNodeType() == Node.TEXT_NODE) {
             Text text = (Text) node;

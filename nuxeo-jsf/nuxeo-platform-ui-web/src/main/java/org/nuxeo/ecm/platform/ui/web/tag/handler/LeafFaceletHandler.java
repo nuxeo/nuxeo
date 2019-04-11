@@ -38,6 +38,7 @@ public class LeafFaceletHandler implements FaceletHandler {
     public LeafFaceletHandler() {
     }
 
+    @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
     }
 

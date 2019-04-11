@@ -41,6 +41,7 @@ public class RangeValidator implements FieldValidator {
         return negate ? !result : result;
     }
 
+    @Override
     public void validate(String value, Object decoded) throws ValidationException {
         if (!validateNumber((Number) decoded)) {
             throw new ValidationException();

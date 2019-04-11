@@ -62,6 +62,7 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager impleme
 
     private DocumentRef lastDocumentRef;
 
+    @Override
     @Create
     public void initListManager() {
         if (!initialized) {
@@ -213,48 +214,59 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager impleme
     }
 
     // Shortcut API
+    @Override
     public List<DocumentModel> getWorkingList() {
         return getWorkingList(DEFAULT_WORKING_LIST);
     }
 
+    @Override
     public DocumentsListDescriptor getWorkingListDescriptor() {
         return getWorkingListDescriptor(DEFAULT_WORKING_LIST);
     }
 
+    @Override
     public List<String> getWorkingListTypes() {
         return getWorkingListTypes(DEFAULT_WORKING_LIST);
     }
 
+    @Override
     public void setWorkingList(List<DocumentModel> docList) {
         setWorkingList(DEFAULT_WORKING_LIST, docList);
     }
 
+    @Override
     public List<DocumentModel> addToWorkingList(DocumentModel doc) {
         return addToWorkingList(DEFAULT_WORKING_LIST, doc);
     }
 
+    @Override
     public List<DocumentModel> addToWorkingList(List<DocumentModel> docList) {
         return addToWorkingList(DEFAULT_WORKING_LIST, docList, false);
     }
 
+    @Override
     public List<DocumentModel> removeFromWorkingList(DocumentModel doc) {
         return removeFromWorkingList(DEFAULT_WORKING_LIST, doc);
     }
 
+    @Override
     public List<DocumentModel> resetWorkingList() {
         return resetWorkingList(DEFAULT_WORKING_LIST);
     }
 
+    @Override
     public List<DocumentModel> resetWorkingList(List<DocumentModel> newDocList) {
         resetWorkingList();
         return addToWorkingList(newDocList);
     }
 
+    @Override
     public boolean isWorkingListEmpty() {
         return isWorkingListEmpty(DEFAULT_WORKING_LIST);
     }
 
     // Event listener
+    @Override
     @Observer(value = { EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED }, create = false)
     public void refreshLists(DocumentModel currentDocument) {
 

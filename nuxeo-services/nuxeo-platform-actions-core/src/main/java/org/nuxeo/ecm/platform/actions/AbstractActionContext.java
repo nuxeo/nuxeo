@@ -42,28 +42,35 @@ public abstract class AbstractActionContext implements ActionContext {
 
     protected Map<String, Object> localVariables = new HashMap<>();
 
+    @Override
     public abstract boolean checkCondition(String expression) throws ELException;
 
+    @Override
     public final void setCurrentDocument(DocumentModel doc) {
         currentDocument = doc;
     }
 
+    @Override
     public final DocumentModel getCurrentDocument() {
         return currentDocument;
     }
 
+    @Override
     public final CoreSession getDocumentManager() {
         return docMgr;
     }
 
+    @Override
     public final void setDocumentManager(CoreSession docMgr) {
         this.docMgr = docMgr;
     }
 
+    @Override
     public final NuxeoPrincipal getCurrentPrincipal() {
         return currentPrincipal;
     }
 
+    @Override
     public final void setCurrentPrincipal(NuxeoPrincipal currentPrincipal) {
         this.currentPrincipal = currentPrincipal;
     }
@@ -83,6 +90,7 @@ public abstract class AbstractActionContext implements ActionContext {
         localVariables.putAll(vars);
     }
 
+    @Override
     public int size() {
         return localVariables.size();
     }

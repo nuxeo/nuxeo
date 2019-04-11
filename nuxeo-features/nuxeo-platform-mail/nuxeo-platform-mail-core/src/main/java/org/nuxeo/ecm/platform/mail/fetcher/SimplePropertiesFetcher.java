@@ -33,10 +33,12 @@ public class SimplePropertiesFetcher implements PropertiesFetcher {
 
     private final Properties properties = new Properties();
 
+    @Override
     public void configureFetcher(Map<String, String> configuration) {
         properties.putAll(configuration);
     }
 
+    @Override
     public Properties getProperties(Map<String, Object> values) {
         return properties;
     }

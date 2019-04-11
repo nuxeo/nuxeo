@@ -59,6 +59,7 @@ public abstract class AbstractContributionRegistry<K, T> implements Contribution
         // this will import all resolved contributions from the parent
     }
 
+    @Override
     public ContributionRegistry<K, T> getParent() {
         return parent;
     }
@@ -109,6 +110,7 @@ public abstract class AbstractContributionRegistry<K, T> implements Contribution
         return null;
     }
 
+    @Override
     public synchronized void removeContribution(K key) {
         Contribution<K, T> contrib = registry.get(key);
         if (contrib != null) {
@@ -118,6 +120,7 @@ public abstract class AbstractContributionRegistry<K, T> implements Contribution
         // registry
     }
 
+    @Override
     public void removeFragment(K key, T fragment) {
         Contribution<K, T> contrib = registry.get(key);
         if (contrib != null) {
@@ -125,6 +128,7 @@ public abstract class AbstractContributionRegistry<K, T> implements Contribution
         }
     }
 
+    @Override
     public synchronized Contribution<K, T> addFragment(K key, T fragment, K... superKeys) {
         Contribution<K, T> contrib = registry.get(key);
         if (contrib == null) {
@@ -177,6 +181,7 @@ public abstract class AbstractContributionRegistry<K, T> implements Contribution
         updateContribution(contrib.getId(), value, oldValue);
     }
 
+    @Override
     public void dispose() {
         registry.clear();
     }

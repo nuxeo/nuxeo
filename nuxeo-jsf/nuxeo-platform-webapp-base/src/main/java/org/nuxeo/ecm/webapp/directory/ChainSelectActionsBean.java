@@ -63,6 +63,7 @@ public class ChainSelectActionsBean implements ChainSelectActions, Serializable 
         return (ChainSelect) component;
     }
 
+    @Override
     public void add(ActionEvent event) {
         ChainSelect chainSelect = getChainSelect(event);
         FacesContext context = FacesContext.getCurrentInstance();
@@ -113,6 +114,7 @@ public class ChainSelectActionsBean implements ChainSelectActions, Serializable 
         log.debug("add: submittedValue=" + ChainSelect.format(submittedValue));
     }
 
+    @Override
     public void delete(ActionEvent event) {
         FacesContext context = FacesContext.getCurrentInstance();
         ChainSelect chainSelect = getChainSelect(event);

@@ -41,14 +41,17 @@ public class FieldDefinitionImpl implements FieldDefinition {
         this.field = field;
     }
 
+    @Override
     public String getSchemaName() {
         return schema;
     }
 
+    @Override
     public String getFieldName() {
         return field;
     }
 
+    @Override
     public String getPropertyName() {
         if (schema == null || schema.length() == 0) {
             return field;

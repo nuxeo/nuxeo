@@ -137,6 +137,7 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
         }
     }
 
+    @Override
     public X509Certificate getCertificate(String alias) {
         if (alias == null || alias.length() == 0) {
             return null;

@@ -55,14 +55,17 @@ public class StringRangeXPointer implements XPointer {
         return length;
     }
 
+    @Override
     public String getMethod() {
         return "string-range";
     }
 
+    @Override
     public String getUrl() {
         return url;
     }
 
+    @Override
     public String getXPath() {
         return path;
     }
@@ -79,6 +82,7 @@ public class StringRangeXPointer implements XPointer {
         return Document.get();
     }
 
+    @Override
     public String getXpointerString() {
         return xpointerString;
     }

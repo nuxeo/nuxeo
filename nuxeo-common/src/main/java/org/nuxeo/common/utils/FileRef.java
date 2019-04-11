@@ -73,14 +73,17 @@ public abstract class FileRef {
             this.file = file;
         }
 
+        @Override
         public File getFile() {
             return file;
         }
 
+        @Override
         public boolean hasPattern() {
             return false;
         }
 
+        @Override
         public void fillPatternVariables(Map<String, Object> vars) {
             // do nothing
         }
@@ -113,6 +116,7 @@ public abstract class FileRef {
             }
         }
 
+        @Override
         public File getFile() {
             return file;
         }
@@ -125,10 +129,12 @@ public abstract class FileRef {
             return key;
         }
 
+        @Override
         public boolean hasPattern() {
             return key != null;
         }
 
+        @Override
         public void fillPatternVariables(Map<String, Object> vars) {
             if (key != null) {
                 vars.put(key, value);

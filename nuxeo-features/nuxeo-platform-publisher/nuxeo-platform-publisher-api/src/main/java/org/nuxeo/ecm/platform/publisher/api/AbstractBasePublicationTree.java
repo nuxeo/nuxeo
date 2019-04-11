@@ -55,6 +55,7 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
 
     protected abstract PublishedDocumentFactory getDefaultFactory();
 
+    @Override
     public void initTree(CoreSession coreSession, Map<String, String> parameters,
             PublishedDocumentFactory factory, String configName, String title) {
         this.coreSession = coreSession;
@@ -82,43 +83,53 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         this.configName = configName;
     }
 
+    @Override
     public String getConfigName() {
         return configName;
     }
 
+    @Override
     public String getNodeType() {
         return rootNode.getNodeType();
     }
 
+    @Override
     public String getType() {
         return this.getClass().getSimpleName();
     }
 
+    @Override
     public String getTreeType() {
         return getType();
     }
 
+    @Override
     public String getTreeTitle() {
         return treeTitle;
     }
 
+    @Override
     public List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) {
         return node.getChildrenDocuments();
     }
 
+    @Override
     public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) {
         return factory.publishDocument(doc, targetNode);
     }
 
+    @Override
     public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             {
         return factory.publishDocument(doc, targetNode, params);
     }
 
+    @Override
     public String getTitle() {
         return rootNode.getTitle();
     }
 
+    @Override
     public String getName() {
         return rootNode.getName();
     }
@@ -128,34 +139,42 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return this;
     }
 
+    @Override
     public PublicationNode getParent() {
         return null;
     }
 
+    @Override
     public List<PublicationNode> getChildrenNodes() {
         return rootNode.getChildrenNodes();
     }
 
+    @Override
     public List<PublishedDocument> getChildrenDocuments() {
         return rootNode.getChildrenDocuments();
     }
 
+    @Override
     public String getPath() {
         return rootNode.getPath();
     }
 
+    @Override
     public void setCurrentDocument(DocumentModel currentDocument) {
         // Not used by default
     }
 
+    @Override
     public String getIconExpanded() {
         return iconExpanded;
     }
 
+    @Override
     public String getIconCollapsed() {
         return iconCollapsed;
     }
 
+    @Override
     public void validatorPublishDocument(PublishedDocument publishedDocument, String comment) {
         if (!accept(publishedDocument)) {
             return;
@@ -163,6 +182,7 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         factory.validatorPublishDocument(publishedDocument, comment);
     }
 
+    @Override
     public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) {
         if (!accept(publishedDocument)) {
             return;
@@ -170,6 +190,7 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         factory.validatorRejectPublication(publishedDocument, comment);
     }
 
+    @Override
     public boolean canPublishTo(PublicationNode publicationNode) {
         if (publicationNode == null || publicationNode.getParent() == null) {
             // we can't publish in the root node
@@ -178,6 +199,7 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return true;
     }
 
+    @Override
     public boolean canUnpublish(PublishedDocument publishedDocument) {
         if (!accept(publishedDocument)) {
             return false;
@@ -185,6 +207,7 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return true;
     }
 
+    @Override
     public boolean hasValidationTask(PublishedDocument publishedDocument) {
         if (!accept(publishedDocument)) {
             return false;
@@ -192,6 +215,7 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return factory.hasValidationTask(publishedDocument);
     }
 
+    @Override
     public boolean canManagePublishing(PublishedDocument publishedDocument) {
         if (!accept(publishedDocument)) {
             return false;
@@ -199,14 +223,17 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return factory.canManagePublishing(publishedDocument);
     }
 
+    @Override
     public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) {
         return factory.wrapDocumentModel(documentModel);
     }
 
+    @Override
     public boolean isPublicationNode(DocumentModel documentModel) {
         return false;
     }
 
+    @Override
     public PublicationNode wrapToPublicationNode(DocumentModel documentModel) {
         throw new UnsupportedOperationException("");
     }

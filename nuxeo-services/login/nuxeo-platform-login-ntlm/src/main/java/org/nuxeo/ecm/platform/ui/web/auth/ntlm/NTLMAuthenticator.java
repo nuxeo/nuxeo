@@ -73,10 +73,12 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
 
     private static final Log log = LogFactory.getLog(NTLMAuthenticator.class);
 
+    @Override
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;
     }
 
+    @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
 
         log.debug("Handle NTLM login prompt");
@@ -104,6 +106,7 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
         }
     }
 
+    @Override
     public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
 
@@ -140,6 +143,7 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
         }
     }
 
+    @Override
     public void initPlugin(Map<String, String> parameters) {
 
         Config.setProperty(JCIFS_SMB_CLIENT_SO_TIMEOUT, "300000");
@@ -161,6 +165,7 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
         }
     }
 
+    @Override
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
         String useragent = httpRequest.getHeader("User-Agent").toLowerCase();
 

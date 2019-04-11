@@ -138,6 +138,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -145,6 +146,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
     /**
      * @since 6.0
      */
+    @Override
     public String getType() {
         return type;
     }
@@ -159,6 +161,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
     /**
      * @since 6.0
      */
+    @Override
     public String getTypeCategory() {
         return typeCategory;
     }
@@ -180,6 +183,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         return properties;
     }
 
+    @Override
     public void setProperties(Map<String, Map<String, Serializable>> properties) {
         this.properties = properties;
     }
@@ -189,6 +193,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         return rows;
     }
 
+    @Override
     public void setRows(LayoutRowDefinition[] rows) {
         this.rows = rows;
     }
@@ -217,6 +222,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         return templates;
     }
 
+    @Override
     public void setTemplates(Map<String, String> templates) {
         this.templates = templates;
     }
@@ -239,6 +245,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         return renderingInfos;
     }
 
+    @Override
     public void setRenderingInfos(Map<String, List<RenderingInfo>> renderingInfos) {
         this.renderingInfos = renderingInfos;
     }
@@ -248,6 +255,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         return WidgetDefinitionImpl.getRenderingInfos(renderingInfos, mode);
     }
 
+    @Override
     public boolean isEmpty() {
         LayoutRowDefinition[] rows = getRows();
         if (rows == null) {
@@ -275,6 +283,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         this.aliases = aliases;
     }
 
+    @Override
     public boolean isDynamic() {
         return dynamic;
     }

@@ -119,6 +119,7 @@ public class JsonFactoryManagerImpl implements JsonFactoryManager {
         return stackDisplay = !stackDisplay;
     }
 
+    @Override
     public boolean isStackDisplay() {
         return stackDisplay;
     }

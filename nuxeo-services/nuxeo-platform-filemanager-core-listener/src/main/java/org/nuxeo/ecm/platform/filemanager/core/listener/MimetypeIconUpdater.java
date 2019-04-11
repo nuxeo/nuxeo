@@ -72,6 +72,7 @@ public class MimetypeIconUpdater implements EventListener {
         return mimetypeService;
     }
 
+    @Override
     public void handleEvent(Event event) {
 
         EventContext ctx = event.getContext();

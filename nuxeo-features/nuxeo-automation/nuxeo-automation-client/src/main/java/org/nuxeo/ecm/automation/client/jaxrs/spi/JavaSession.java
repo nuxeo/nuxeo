@@ -70,10 +70,12 @@ public abstract class JavaSession implements Session {
         return client.getAdapter(this, type);
     }
 
+    @Override
     public OperationRequest newRequest(String id) {
         return newRequest(id, new HashMap<String, Object>());
     }
 
+    @Override
     public OperationRequest newRequest(String id, Map<String, Object> ctx) {
         OperationDocumentation op = getOperation(id);
         if (op == null) {
@@ -86,10 +88,12 @@ public abstract class JavaSession implements Session {
         return registry;
     }
 
+    @Override
     public OperationDocumentation getOperation(String id) {
         return registry.getOperation(id);
     }
 
+    @Override
     public Map<String, OperationDocumentation> getOperations() {
         return registry.getOperations();
     }

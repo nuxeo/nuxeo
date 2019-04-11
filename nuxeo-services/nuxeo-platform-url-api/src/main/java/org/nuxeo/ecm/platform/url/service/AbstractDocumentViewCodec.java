@@ -35,19 +35,23 @@ public abstract class AbstractDocumentViewCodec implements DocumentViewCodec {
 
     protected String prefix;
 
+    @Override
     public String getPrefix() {
         return prefix;
     }
 
+    @Override
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
 
+    @Override
     public boolean handleDocumentView(DocumentView docView) {
         String url = getUrlFromDocumentView(docView);
         return url != null;
     }
 
+    @Override
     public boolean handleUrl(String url) {
         DocumentView docView = getDocumentViewFromUrl(url);
         return docView != null;

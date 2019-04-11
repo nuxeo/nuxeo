@@ -79,6 +79,7 @@ public class SubWidgetTagHandler extends TagHandler {
      * Widget variables exposed: {@link RenderVariables.widgetVariables#widget} , same variable suffixed with "_n" where
      * n is the widget level, and {@link RenderVariables.widgetVariables#widgetIndex}.
      */
+    @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
         // resolve subwidgets from widget in context
         Widget widget = null;

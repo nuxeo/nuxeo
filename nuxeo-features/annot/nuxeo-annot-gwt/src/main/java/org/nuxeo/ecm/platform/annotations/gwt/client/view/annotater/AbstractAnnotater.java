@@ -42,6 +42,7 @@ public abstract class AbstractAnnotater implements Annotater {
         this.eventPreventDefault = eventPreventDefault;
     }
 
+    @Override
     public void manageEvent(Event event) {
         if (!controller.canCreateNewCreationPopup() || !controller.canAnnotate()) {
             return;

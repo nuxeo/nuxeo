@@ -32,14 +32,17 @@ public abstract class AbstractComponent implements Component {
 
     private boolean isLive;
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public boolean isLive() {
         return isLive;
     }
 
+    @Override
     public void initialize(UserSession session, String name) throws SessionException {
         if (isLive) {
             throw new InvalidStateException(this, "initialize");
@@ -49,6 +52,7 @@ public abstract class AbstractComponent implements Component {
         isLive = true;
     }
 
+    @Override
     public void destroy(UserSession session) throws SessionException {
         if (!isLive) {
             throw new InvalidStateException(this, "destroy");

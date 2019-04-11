@@ -85,30 +85,37 @@ public class QueryFilter implements org.nuxeo.ecm.core.api.query.QueryFilter<SQL
                 0, 0);
     }
 
+    @Override
     public NuxeoPrincipal getPrincipal() {
         return principal;
     }
 
+    @Override
     public String[] getPrincipals() {
         return principals;
     }
 
+    @Override
     public String[] getPermissions() {
         return permissions;
     }
 
+    @Override
     public FacetFilter getFacetFilter() {
         return facetFilter;
     }
 
+    @Override
     public Collection<SQLQuery.Transformer> getQueryTransformers() {
         return queryTransformers;
     }
 
+    @Override
     public long getLimit() {
         return limit;
     }
 
+    @Override
     public long getOffset() {
         return offset;
     }

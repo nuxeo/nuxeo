@@ -47,12 +47,15 @@ public abstract class DefaultRenderingResult implements RenderingResult {
     /**
      * @return name of the engine that created it
      */
+    @Override
     public String getFormatName() {
         return formatName;
     }
 
+    @Override
     public abstract Object getOutcome();
 
+    @Override
     public InputStream getStream() {
         Object outcome = getOutcome();
         if (outcome instanceof InputStream) {
@@ -65,6 +68,7 @@ public abstract class DefaultRenderingResult implements RenderingResult {
         return getAdapter(InputStream.class);
     }
 
+    @Override
     public <E> E getAdapter(Class<E> adapter) {
         Object outcome = getOutcome();
         if (adapter.isAssignableFrom(outcome.getClass())) {

@@ -45,6 +45,7 @@ public class PatternFilter implements WikiFilter {
         this.replacement = replacement;
     }
 
+    @Override
     public String apply(String content) {
         Matcher matcher = pattern.matcher(content);
         if (!matcher.find()) {

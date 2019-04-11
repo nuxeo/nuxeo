@@ -89,6 +89,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
         return clause;
     }
 
+    @Override
     public List<PublishedDocument> getChildrenDocuments() {
         DocumentModelList children = getSortedChildren(true);
         List<PublishedDocument> childrenDocs = new ArrayList<>();
@@ -98,6 +99,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
         return childrenDocs;
     }
 
+    @Override
     public List<PublicationNode> getChildrenNodes() {
         if (childrenNodes == null) {
             DocumentModelList children = getSortedChildren(false);
@@ -131,14 +133,17 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
         return children;
     }
 
+    @Override
     public String getTitle() {
         return folder.getTitle();
     }
 
+    @Override
     public String getName() {
         return folder.getName();
     }
 
+    @Override
     public PublicationNode getParent() {
         if (parent == null) {
             DocumentRef docRef = folder.getParentRef();
@@ -153,6 +158,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
         return parent;
     }
 
+    @Override
     public String getPath() {
         return folder.getPathAsString();
     }

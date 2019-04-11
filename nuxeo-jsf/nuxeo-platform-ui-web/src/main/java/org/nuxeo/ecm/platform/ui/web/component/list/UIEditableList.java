@@ -1126,6 +1126,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
     /**
      * Overridden to handle diff boolean value, see NXP-16515.
      */
+    @Override
     public void updateModel(FacesContext context) {
 
         if (context == null) {

@@ -27,6 +27,7 @@ import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
 @Operation(id = RefreshUI.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Refresh", description = "Refresh the UI cache. This is a void operation - the input object is returned back as the oputput", addToStudio = false)
 public class RefreshUISync extends RefreshUI {
 
+    @Override
     @OperationMethod
     public void run() {
         ElasticSearchInlineListener.useSyncIndexing.set(true);

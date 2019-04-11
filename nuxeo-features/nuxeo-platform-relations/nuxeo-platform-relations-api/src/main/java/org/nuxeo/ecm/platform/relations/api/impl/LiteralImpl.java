@@ -45,6 +45,7 @@ public class LiteralImpl extends AbstractNode implements Literal {
         this.value = value;
     }
 
+    @Override
     public NodeType getNodeType() {
         return NodeType.LITERAL;
     }
@@ -54,10 +55,12 @@ public class LiteralImpl extends AbstractNode implements Literal {
         return true;
     }
 
+    @Override
     public String getLanguage() {
         return language;
     }
 
+    @Override
     public void setLanguage(String language) {
         if (type != null) {
             throw new InvalidLiteralException("Cannot set language, type already set");
@@ -65,10 +68,12 @@ public class LiteralImpl extends AbstractNode implements Literal {
         this.language = language;
     }
 
+    @Override
     public String getType() {
         return type;
     }
 
+    @Override
     public void setType(String type) {
         if (language != null) {
             throw new InvalidLiteralException("Cannot set type, language already set");
@@ -76,10 +81,12 @@ public class LiteralImpl extends AbstractNode implements Literal {
         this.type = type;
     }
 
+    @Override
     public String getValue() {
         return value;
     }
 
+    @Override
     public void setValue(String value) {
         this.value = value;
     }

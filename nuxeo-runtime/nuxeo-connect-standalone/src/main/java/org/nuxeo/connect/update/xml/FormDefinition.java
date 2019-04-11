@@ -42,18 +42,22 @@ public class FormDefinition implements Form {
     @XNodeList(value = "fields/field", type = FieldDefinition[].class, componentType = FieldDefinition.class)
     public FieldDefinition[] fields;
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public String getImage() {
         return image;
     }
 
+    @Override
     public Field[] getFields() {
         return fields;
     }

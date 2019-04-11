@@ -45,6 +45,7 @@ public class SecurityContext implements Adaptable {
         this.doc = doc;
     }
 
+    @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter == DocumentModel.class) {
             return adapter.cast(doc);

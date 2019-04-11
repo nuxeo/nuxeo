@@ -29,10 +29,12 @@ public abstract class AbstractPublicationNode implements PublicationNode {
         this.tree = tree;
     }
 
+    @Override
     public String getNodeType() {
         return getType();
     }
 
+    @Override
     public String getType() {
         return this.getClass().getSimpleName();
     }

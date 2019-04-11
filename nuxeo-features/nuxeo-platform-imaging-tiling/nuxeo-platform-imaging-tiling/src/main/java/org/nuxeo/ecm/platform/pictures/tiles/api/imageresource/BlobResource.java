@@ -57,14 +57,17 @@ public class BlobResource implements ImageResource {
         modified = Calendar.getInstance();
     }
 
+    @Override
     public Blob getBlob() {
         return blob;
     }
 
+    @Override
     public String getHash() {
         return hash;
     }
 
+    @Override
     public Calendar getModificationDate() {
         return modified;
     }

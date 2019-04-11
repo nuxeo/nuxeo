@@ -64,6 +64,7 @@ public class MessagesMethod implements TemplateMethodModelEx {
         return bundle;
     }
 
+    @Override
     public Object exec(List arguments) throws TemplateModelException {
         int size = arguments.size();
         if (size < 1) {

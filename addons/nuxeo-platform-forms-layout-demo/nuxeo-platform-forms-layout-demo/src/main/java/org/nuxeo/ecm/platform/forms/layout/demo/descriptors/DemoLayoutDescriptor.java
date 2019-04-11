@@ -61,14 +61,17 @@ public class DemoLayoutDescriptor implements DemoLayout {
     @XNode("@useAjaxForm")
     protected boolean useAjaxForm = true;
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getSourcePath() {
         return LayoutDemoManager.APPLICATION_PATH + sourcePath;
     }
 
+    @Override
     public boolean isListing() {
         return listing;
     }

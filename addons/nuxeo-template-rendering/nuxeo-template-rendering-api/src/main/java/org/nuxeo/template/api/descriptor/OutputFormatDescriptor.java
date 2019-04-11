@@ -68,6 +68,7 @@ public class OutputFormatDescriptor implements Serializable {
         return mimeType;
     }
 
+    @Override
     public OutputFormatDescriptor clone() {
         OutputFormatDescriptor clone = new OutputFormatDescriptor();
         clone.enabled = enabled;

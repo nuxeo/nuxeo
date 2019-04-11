@@ -47,6 +47,7 @@ public class AnnotatedEventListener implements EventListener {
         this.controller = controller;
     }
 
+    @Override
     public void onBrowserEvent(Event event) {
         if (!controller.canAnnotate()) {
             return;

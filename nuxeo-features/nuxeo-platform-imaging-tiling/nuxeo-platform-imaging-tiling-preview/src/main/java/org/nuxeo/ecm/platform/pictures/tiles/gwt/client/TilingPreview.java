@@ -30,6 +30,7 @@ import com.google.gwt.core.client.EntryPoint;
  */
 public class TilingPreview implements EntryPoint {
 
+    @Override
     public void onModuleLoad() {
         new TilingMainPanel();
     }

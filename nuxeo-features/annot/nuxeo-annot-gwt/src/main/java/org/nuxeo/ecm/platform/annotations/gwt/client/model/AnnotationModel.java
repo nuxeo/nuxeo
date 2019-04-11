@@ -37,6 +37,7 @@ import com.google.gwt.core.client.GWT;
 public class AnnotationModel implements AnnotationChangeNotifier {
 
     private static final Comparator<Annotation> ANNOTATION_DATE_COMPARATOR = new Comparator<Annotation>() {
+        @Override
         public int compare(Annotation o1, Annotation o2) {
             return o1.getDate().compareTo(o2.getDate());
         }
@@ -52,6 +53,7 @@ public class AnnotationModel implements AnnotationChangeNotifier {
 
     private List<AnnotationChangeListener> listeners = new ArrayList<>();
 
+    @Override
     public void addChangeListener(AnnotationChangeListener listener) {
         listeners.add(listener);
     }

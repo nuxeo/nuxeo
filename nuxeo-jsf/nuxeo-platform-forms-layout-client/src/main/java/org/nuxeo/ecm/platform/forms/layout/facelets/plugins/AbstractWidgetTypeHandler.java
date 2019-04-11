@@ -95,9 +95,11 @@ public abstract class AbstractWidgetTypeHandler extends WidgetTypeHandler {
         }
     }
 
+    @Override
     public abstract void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException,
             IOException;
 
+    @Override
     public FaceletHandler getDevFaceletHandler(TagConfig tagConfig, Widget widget) throws WidgetException {
         if (Boolean.parseBoolean(getProperty(DISABLE_DEV_PROPERTY_NAME))
                 || Boolean.parseBoolean((String) widget.getProperty(DISABLE_DEV_PROPERTY_NAME))) {
@@ -123,6 +125,7 @@ public abstract class AbstractWidgetTypeHandler extends WidgetTypeHandler {
         return new WidgetTypeDevTagHandler(devWidgetConfig);
     }
 
+    @Override
     public String getProperty(String name) {
         if (properties != null) {
             return properties.get(name);
@@ -141,10 +144,12 @@ public abstract class AbstractWidgetTypeHandler extends WidgetTypeHandler {
         return value;
     }
 
+    @Override
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
 
+    @Override
     public void setWidget(Widget widget) {
         this.widget = widget;
     }

@@ -43,6 +43,7 @@ public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder implem
         super(userSession);
     }
 
+    @Override
     protected void computeUserSectionRoots(DocumentModel currentDoc) {
         this.currentDocument = currentDoc;
         this.runUnrestricted();
@@ -56,6 +57,7 @@ public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder implem
         }
     }
 
+    @Override
     protected String buildQuery(String path) {
         // SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain'
         // and (ecm:primaryType = 'Section' or ecm:primaryType = 'SectionRoot'
@@ -76,6 +78,7 @@ public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder implem
         return query;
     }
 
+    @Override
     protected void computeUnrestrictedRoots(CoreSession session) {
 
         if (currentDocument != null) {

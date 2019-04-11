@@ -43,6 +43,7 @@ import org.xml.sax.XMLReader;
  */
 public abstract class XmlZip2TextConverter implements Converter {
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         SAXParserFactory parserFactory = SAXParserFactory.newInstance();
@@ -70,6 +71,7 @@ public abstract class XmlZip2TextConverter implements Converter {
         }
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
     }
 

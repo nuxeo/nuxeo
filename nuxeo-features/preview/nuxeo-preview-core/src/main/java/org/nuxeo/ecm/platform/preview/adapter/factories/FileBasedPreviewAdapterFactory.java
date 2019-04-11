@@ -32,6 +32,7 @@ public class FileBasedPreviewAdapterFactory implements PreviewAdapterFactory {
 
     private static final String FIRST_FILE_IN_FILES_PROPERTY = "files:files/0/file";
 
+    @Override
     public HtmlPreviewAdapter getAdapter(DocumentModel doc) {
         ConverterBasedHtmlPreviewAdapter adapter = new ConverterBasedHtmlPreviewAdapter();
         adapter.setAdaptedDocument(doc);

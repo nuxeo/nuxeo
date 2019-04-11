@@ -43,10 +43,12 @@ public abstract class AbstractActionFilter implements ActionFilter {
         this(null, null);
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
@@ -56,6 +58,7 @@ public abstract class AbstractActionFilter implements ActionFilter {
         return id;
     }
 
+    @Override
     public AbstractActionFilter clone() {
         throw new UnsupportedOperationException();
     }

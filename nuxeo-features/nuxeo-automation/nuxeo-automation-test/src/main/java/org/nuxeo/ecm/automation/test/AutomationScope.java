@@ -35,6 +35,7 @@ public class AutomationScope implements Scope {
     public final static AutomationScope INSTANCE = new AutomationScope();
 
     protected final ThreadLocal<Map<Key<?>, Object>> values = new ThreadLocal<Map<Key<?>, Object>>() {
+        @Override
         protected Map<Key<?>, Object> initialValue() {
             return new HashMap<>();
         };

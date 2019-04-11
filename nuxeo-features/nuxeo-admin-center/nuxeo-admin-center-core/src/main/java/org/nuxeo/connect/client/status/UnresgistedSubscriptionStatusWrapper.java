@@ -28,6 +28,7 @@ public class UnresgistedSubscriptionStatusWrapper extends SubscriptionStatusWrap
         super("Instance is not registered");
     }
 
+    @Override
     public boolean isConnectServerUnreachable() {
         return false;
     }

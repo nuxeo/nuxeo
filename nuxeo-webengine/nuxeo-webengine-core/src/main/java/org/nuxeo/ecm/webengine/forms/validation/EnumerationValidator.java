@@ -45,6 +45,7 @@ public class EnumerationValidator implements FieldValidator {
         }
     }
 
+    @Override
     public void validate(String value, Object decoded) throws ValidationException {
         if (!values.contains(value)) {
             throw new ValidationException();

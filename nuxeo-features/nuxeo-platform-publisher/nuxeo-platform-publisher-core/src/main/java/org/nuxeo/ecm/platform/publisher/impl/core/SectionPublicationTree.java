@@ -86,6 +86,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
         return Framework.getService(CoreSessionService.class).getCoreSession(coreSessionId);
     }
 
+    @Override
     public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) {
         List<PublishedDocument> publishedDocs = new ArrayList<>();
         DocumentModelList proxies = getCoreSession().getProxies(docLoc.getDocRef(), null);
@@ -113,6 +114,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
         return publishedDocument;
     }
 
+    @Override
     public void unpublish(DocumentModel doc, PublicationNode targetNode) {
         List<PublishedDocument> publishedDocs = getPublishedDocumentInNode(targetNode);
         for (PublishedDocument pubDoc : publishedDocs) {
@@ -122,6 +124,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
         }
     }
 
+    @Override
     public void unpublish(PublishedDocument publishedDocument) {
         if (!accept(publishedDocument)) {
             return;
@@ -132,6 +135,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
         getCoreSession().save();
     }
 
+    @Override
     public PublicationNode getNodeByPath(String path) {
         DocumentRef docRef = new PathRef(path);
         if (coreSession.hasPermission(docRef, SecurityConstants.READ)) {
@@ -142,6 +146,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
 
     }
 
+    @Override
     public void release() {
         // TODO Auto-generated method stub
     }

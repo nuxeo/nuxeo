@@ -79,6 +79,7 @@ public class DocumentViewImpl implements DocumentView, Serializable {
         subURI = null;
     }
 
+    @Override
     public DocumentLocation getDocumentLocation() {
         return documentLocation;
     }
@@ -90,6 +91,7 @@ public class DocumentViewImpl implements DocumentView, Serializable {
         return null;
     }
 
+    @Override
     public String getViewId() {
         if (viewId == null && parameters != null) {
             return parameters.get("viewId");
@@ -97,10 +99,12 @@ public class DocumentViewImpl implements DocumentView, Serializable {
         return viewId;
     }
 
+    @Override
     public String getSubURI() {
         return subURI;
     }
 
+    @Override
     public Map<String, String> getParameters() {
         if (parameters == null) {
             parameters = new HashMap<>();
@@ -112,6 +116,7 @@ public class DocumentViewImpl implements DocumentView, Serializable {
         return Collections.unmodifiableMap(parameters);
     }
 
+    @Override
     public String getParameter(String name) {
         if (parameters == null) {
             return null;
@@ -119,6 +124,7 @@ public class DocumentViewImpl implements DocumentView, Serializable {
         return parameters.get(name);
     }
 
+    @Override
     public void addParameter(String name, String value) {
         if (parameters == null) {
             parameters = new HashMap<>();
@@ -126,6 +132,7 @@ public class DocumentViewImpl implements DocumentView, Serializable {
         parameters.put(name, value);
     }
 
+    @Override
     public void removeParameter(String name) {
         if (parameters == null) {
             return;
@@ -133,22 +140,27 @@ public class DocumentViewImpl implements DocumentView, Serializable {
         parameters.remove(name);
     }
 
+    @Override
     public void setDocumentLocation(DocumentLocation documentLocation) {
         this.documentLocation = documentLocation;
     }
 
+    @Override
     public void setSubURI(String subURI) {
         this.subURI = subURI;
     }
 
+    @Override
     public void setViewId(String viewId) {
         this.viewId = viewId;
     }
 
+    @Override
     public String getPatternName() {
         return patternName;
     }
 
+    @Override
     public void setPatternName(String patternName) {
         this.patternName = patternName;
     }

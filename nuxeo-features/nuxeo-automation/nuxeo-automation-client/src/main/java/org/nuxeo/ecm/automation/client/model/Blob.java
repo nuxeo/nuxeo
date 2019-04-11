@@ -76,14 +76,17 @@ public abstract class Blob implements OperationInput {
         return -1;
     }
 
+    @Override
     public String getInputType() {
         return "blob";
     }
 
+    @Override
     public String getInputRef() {
         return null;
     }
 
+    @Override
     public boolean isBinary() {
         return true;
     }

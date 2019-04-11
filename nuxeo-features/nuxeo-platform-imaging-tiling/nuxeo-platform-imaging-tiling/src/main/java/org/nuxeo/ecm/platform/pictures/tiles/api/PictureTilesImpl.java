@@ -87,18 +87,22 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
         tilesDirPath = info.get(TILE_OUTPUT_DIR_KEY);
     }
 
+    @Override
     public String getCacheKey() {
         return cacheKey;
     }
 
+    @Override
     public void setCacheKey(String cacheKey) {
         this.cacheKey = cacheKey;
     }
 
+    @Override
     public Map<String, String> getInfo() {
         return infoMap;
     }
 
+    @Override
     public boolean isTileComputed(int x, int y) {
         long lastModificationTime = Long.parseLong(infoMap.get(PictureTilesImpl.LAST_MODIFICATION_DATE_KEY));
         String tileFileName = StringMaker.getTileFileName(x, y, infoMap.get(TILES_PREFIX_KEY),
@@ -107,6 +111,7 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
         return imageFile.exists();
     }
 
+    @Override
     public Blob getTile(int x, int y) throws IOException {
         String imageFilePath = getTileFilePath(x, y);
         File imageFile = new File(imageFilePath);
@@ -131,6 +136,7 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
         return imageFilePath;
     }
 
+    @Override
     public int getMaxTiles() {
         String MT = infoMap.get(MAX_TILES_KEY);
         if (MT == null) {
@@ -139,6 +145,7 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
         return Integer.parseInt(MT);
     }
 
+    @Override
     public int getTilesWidth() {
         String TW = infoMap.get(TILES_WIDTH_KEY);
         if (TW == null) {
@@ -147,6 +154,7 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
         return Integer.parseInt(TW);
     }
 
+    @Override
     public int getTilesHeight() {
         String TH = infoMap.get(TILES_HEIGHT_KEY);
         if (TH == null) {
@@ -155,10 +163,12 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
         return Integer.parseInt(TH);
     }
 
+    @Override
     public String getTilesPath() {
         return tilesDirPath;
     }
 
+    @Override
     public int getXTiles() {
         String XT = infoMap.get(X_TILES_KEY);
         if (XT == null) {
@@ -167,6 +177,7 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
         return Integer.parseInt(XT);
     }
 
+    @Override
     public int getYTiles() {
         String YT = infoMap.get(Y_TILES_KEY);
         if (YT == null) {
@@ -175,6 +186,7 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
         return Integer.parseInt(YT);
     }
 
+    @Override
     public float getZoomfactor() {
 
         float oWith = originalImageInfo.getWidth();
@@ -184,6 +196,7 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
         return tWith / oWith < tHeight / oHeight ? tWith / oWith : tHeight / oHeight;
     }
 
+    @Override
     public void release() {
         long lastModificationTime = Long.parseLong(infoMap.get(PictureTilesImpl.LAST_MODIFICATION_DATE_KEY));
         for (int x = 0; x < getXTiles(); x++) {
@@ -197,22 +210,27 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
         }
     }
 
+    @Override
     public ImageInfo getSourceImageInfo() {
         return sourceImageInfo;
     }
 
+    @Override
     public void setSourceImageInfo(ImageInfo imageInfo) {
         this.sourceImageInfo = imageInfo;
     }
 
+    @Override
     public String getTileFormatCacheKey() {
         return StringMaker.getTileFormatString(getTilesWidth(), getTilesHeight(), getMaxTiles());
     }
 
+    @Override
     public ImageInfo getOriginalImageInfo() {
         return originalImageInfo;
     }
 
+    @Override
     public void setOriginalImageInfo(ImageInfo imageInfo) {
         originalImageInfo = imageInfo;
     }

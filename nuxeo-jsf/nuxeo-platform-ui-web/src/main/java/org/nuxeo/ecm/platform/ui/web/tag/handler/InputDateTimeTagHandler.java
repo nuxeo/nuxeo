@@ -101,6 +101,7 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
 
     class TimeZoneMetaRule extends MetaRule {
 
+        @Override
         public Metadata applyRule(String name, TagAttribute attribute, MetadataTarget meta) {
             if (!"timeZone".equals(name)) {
                 return null;

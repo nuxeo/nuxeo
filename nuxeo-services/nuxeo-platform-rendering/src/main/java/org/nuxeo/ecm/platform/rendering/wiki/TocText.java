@@ -40,6 +40,7 @@ public class TocText implements WikiText {
         }
     }
 
+    @Override
     public void writeTo(WikiSerializerHandler handler, Writer writer) throws IOException {
         printToc(handler, writer);
     }

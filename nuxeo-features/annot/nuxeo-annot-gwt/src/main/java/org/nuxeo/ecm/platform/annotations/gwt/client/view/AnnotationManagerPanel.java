@@ -81,6 +81,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
         setStyleName(CLASS_NAME);
     }
 
+    @Override
     public void onChange(AnnotationModel model, ChangeEvent ce) {
         this.model = model;
         if (ce == ChangeEvent.annotationList) {
@@ -100,6 +101,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
         List<AnnotationFilter> filters = webConfiguration.getFilters();
         for (final AnnotationFilter filter : filters) {
             PushButton button = new PushButton(new Image(filter.getIcon()), new ClickListener() {
+                @Override
                 public void onClick(Widget sender) {
                     model.setFilter(filter);
                 }
@@ -117,6 +119,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
         for (AnnotationDefinition annotationDef : inMenuAnnos) {
             final String annName = annotationDef.getName();
             PushButton button = new PushButton(new Image(annotationDef.getListIcon()), new ClickListener() {
+                @Override
                 public void onClick(Widget sender) {
                     new AnnotationListPopup(annName, model.filterAnnotations(new AnnotationFilter("", "", annName,
                             null, null)), webConfiguration).show();
@@ -129,6 +132,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
             final String annName = annotationDef.getName();
             final String annType = annotationDef.getType();
             PushButton button = new PushButton(new Image(annotationDef.getCreateIcon()), new ClickListener() {
+                @Override
                 public void onClick(Widget sender) {
                     controller.createNewAnnotation("#xpointer(null-range)");
                     NewAnnotationPopup popup = new NewAnnotationPopup(null, controller, false, annType, annName);
@@ -177,6 +181,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
                 }
                 if (parameter.equals(RDFConstant.R_TYPE)) {
                     filterListBox.addChangeListener(new ChangeListener() {
+                        @Override
                         public void onChange(Widget arg0) {
                             int selectedIndex = filterListBox.getSelectedIndex();
                             if (selectedIndex == 0) {
@@ -190,6 +195,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
                     });
                 } else if (parameter.equals(RDFConstant.D_CREATOR)) {
                     filterListBox.addChangeListener(new ChangeListener() {
+                        @Override
                         public void onChange(Widget arg0) {
                             int selectedIndex = filterListBox.getSelectedIndex();
                             if (selectedIndex == 0) {
@@ -203,6 +209,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
                     });
                 } else {
                     filterListBox.addChangeListener(new ChangeListener() {
+                        @Override
                         public void onChange(Widget arg0) {
                             int selectedIndex = filterListBox.getSelectedIndex();
                             if (selectedIndex == 0) {
@@ -241,6 +248,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
 
             Image icon = new Image(def.getIcon());
             icon.addClickListener(new ClickListener() {
+                @Override
                 public void onClick(Widget sender) {
                     updateSelectedAnnotation(row);
                     selectAnnotation(hp, row);
@@ -250,6 +258,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
 
             Label date = new Label(annotation.getFormattedDate());
             date.addClickListener(new ClickListener() {
+                @Override
                 public void onClick(Widget sender) {
                     updateSelectedAnnotation(row);
                     selectAnnotation(hp, row);
@@ -263,6 +272,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
                 String value = annotation.getFields().get(displayedField);
                 Label l = new Label(value != null ? value : " ");
                 l.addClickListener(new ClickListener() {
+                    @Override
                     public void onClick(Widget sender) {
                         updateSelectedAnnotation(row);
                         selectAnnotation(hp, row);
@@ -353,6 +363,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
 
         Image deleteImage = new Image("icons/delete.png");
         deleteImage.addClickListener(new ClickListener() {
+            @Override
             public void onClick(Widget sender) {
                 TranslationConstants translationConstants = GWT.create(TranslationConstants.class);
                 if (Window.confirm(translationConstants.menuConfirmDelete())) {

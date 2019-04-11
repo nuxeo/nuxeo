@@ -102,6 +102,7 @@ public class UIJavascriptList extends UIEditableList {
      * <p>
      * This element will be used on client side by js code to handle addition of a new element.
      */
+    @Override
     protected void encodeTemplate(FacesContext context) throws IOException {
         int oldIndex = getRowIndex();
         Object requestMapValue = saveRequestMapModelValue();
@@ -193,6 +194,7 @@ public class UIJavascriptList extends UIEditableList {
         }
     }
 
+    @Override
     protected void processFacetsAndChildren(final FacesContext context, final PhaseId phaseId) {
         List<UIComponent> stamps = getChildren();
         EditableModel model = getEditableModel();

@@ -53,6 +53,7 @@ public class DocumentContentProvider implements ContentProvider {
         return session;
     }
 
+    @Override
     public Object[] getElements(Object input) {
         if (input instanceof Repository) {
             return new DocumentModel[] { session.getRootDocument() };
@@ -61,6 +62,7 @@ public class DocumentContentProvider implements ContentProvider {
         }
     }
 
+    @Override
     public Object[] getChildren(Object obj) {
         if (obj instanceof DocumentModel) {
             DocumentModelList list = session.getChildren(((DocumentModel) obj).getRef());
@@ -69,6 +71,7 @@ public class DocumentContentProvider implements ContentProvider {
         return null;
     }
 
+    @Override
     public boolean isContainer(Object obj) {
         if (obj instanceof DocumentModel) {
             return ((DocumentModel) obj).isFolder();
@@ -76,6 +79,7 @@ public class DocumentContentProvider implements ContentProvider {
         return false;
     }
 
+    @Override
     public String getLabel(Object obj) {
         if (obj instanceof DocumentModel) {
             return ((DocumentModel) obj).getTitle();
@@ -83,10 +87,12 @@ public class DocumentContentProvider implements ContentProvider {
         return null;
     }
 
+    @Override
     public String[] getFacets(Object object) {
         return null;
     }
 
+    @Override
     public String getName(Object obj) {
         if (obj instanceof DocumentModel) {
             return ((DocumentModel) obj).getName();

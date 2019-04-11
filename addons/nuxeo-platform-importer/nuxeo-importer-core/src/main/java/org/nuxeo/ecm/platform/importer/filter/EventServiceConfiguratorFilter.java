@@ -65,6 +65,7 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
         }
     }
 
+    @Override
     public void handleBeforeImport() {
         EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         if (eventAdmin == null) {
@@ -85,6 +86,7 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
         }
     }
 
+    @Override
     public void handleAfterImport(Exception e) {
         EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
         if (eventAdmin != null) {
@@ -106,6 +108,7 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
         this.blockNotifications = blockNotifications;
     }
 
+    @Override
     public String toString() {
         return String.format(
                 "blockSyncPostCommitProcessing set %b, blockAsyncProcessing set %b, blockMimeTypeDetection set %b, blockNotifications set %b, blockIndexing set %b, bulkMode set %b",

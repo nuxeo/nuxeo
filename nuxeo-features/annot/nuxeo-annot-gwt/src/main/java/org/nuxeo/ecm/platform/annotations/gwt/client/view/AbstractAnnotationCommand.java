@@ -50,6 +50,7 @@ public abstract class AbstractAnnotationCommand implements Command {
         return title;
     }
 
+    @Override
     public void execute() {
         onExecute();
         if (popupMenu != null) {

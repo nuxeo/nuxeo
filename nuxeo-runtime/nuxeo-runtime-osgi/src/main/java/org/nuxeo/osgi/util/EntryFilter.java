@@ -26,6 +26,7 @@ import java.util.ArrayList;
 public abstract class EntryFilter {
 
     public static final EntryFilter ANY = new EntryFilter() {
+        @Override
         public boolean match(String name) {
             return true;
         }

@@ -42,6 +42,7 @@ public class PalettePreview {
         this.colors = colors;
     }
 
+    @Override
     public PalettePreview clone() {
         PalettePreview clone = new PalettePreview();
         if (colors != null) {

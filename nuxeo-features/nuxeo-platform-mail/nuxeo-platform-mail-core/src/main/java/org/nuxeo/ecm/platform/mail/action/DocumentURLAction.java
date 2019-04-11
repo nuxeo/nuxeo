@@ -49,6 +49,7 @@ public class DocumentURLAction implements MessageAction {
         this.baseUrl = baseUrl;
     }
 
+    @Override
     public boolean execute(ExecutionContext context) {
         DocumentModel documentModel = (DocumentModel) context.get("document");
         if (log.isDebugEnabled()) {
@@ -61,6 +62,7 @@ public class DocumentURLAction implements MessageAction {
         return true;
     }
 
+    @Override
     public void reset(ExecutionContext context) {
         // do nothing
     }

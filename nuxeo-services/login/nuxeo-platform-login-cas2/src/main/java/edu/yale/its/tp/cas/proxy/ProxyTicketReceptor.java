@@ -61,6 +61,7 @@ public class ProxyTicketReceptor extends HttpServlet {
     // *********************************************************************
     // Initialization
 
+    @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         synchronized (ProxyTicketReceptor.class) {
@@ -80,10 +81,12 @@ public class ProxyTicketReceptor extends HttpServlet {
     // *********************************************************************
     // Request handling
 
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
 
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String pgtId = request.getParameter(PGT_ID_PARAM);
         String pgtIou = request.getParameter(PGT_IOU_PARAM);

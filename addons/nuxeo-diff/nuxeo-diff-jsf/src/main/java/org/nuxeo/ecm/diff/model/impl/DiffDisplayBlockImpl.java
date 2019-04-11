@@ -54,46 +54,57 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
         this.layoutDefinition = layoutDefinition;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
 
+    @Override
     public void setLabel(String label) {
         this.label = label;
     }
 
+    @Override
     public Map<String, Map<String, PropertyDiffDisplay>> getLeftValue() {
         return leftValue;
     }
 
+    @Override
     public void setLeftValue(Map<String, Map<String, PropertyDiffDisplay>> leftValue) {
         this.leftValue = leftValue;
     }
 
+    @Override
     public Map<String, Map<String, PropertyDiffDisplay>> getRightValue() {
         return rightValue;
     }
 
+    @Override
     public void setRightValue(Map<String, Map<String, PropertyDiffDisplay>> rightValue) {
         this.rightValue = rightValue;
     }
 
+    @Override
     public Map<String, Map<String, PropertyDiffDisplay>> getContentDiffValue() {
         return contentDiffValue;
     }
 
+    @Override
     public void setContentDiffValue(Map<String, Map<String, PropertyDiffDisplay>> contentDiffValue) {
         this.contentDiffValue = contentDiffValue;
     }
 
+    @Override
     public LayoutDefinition getLayoutDefinition() {
         return layoutDefinition;
     }
 
+    @Override
     public void setLayoutDefinition(LayoutDefinition layoutDefinition) {
         this.layoutDefinition = layoutDefinition;
     }
 
+    @Override
     public boolean isEmpty() {
         return MapUtils.isEmpty(this.contentDiffValue)
                 && (MapUtils.isEmpty(this.leftValue) || MapUtils.isEmpty(this.rightValue));

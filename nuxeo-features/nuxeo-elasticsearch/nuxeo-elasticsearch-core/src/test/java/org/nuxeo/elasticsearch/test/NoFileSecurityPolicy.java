@@ -51,6 +51,7 @@ public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements Secu
         return true;
     }
 
+    @Override
     public SQLQuery.Transformer getQueryTransformer(String repositoryName) {
         return NO_FILE_TRANSFORMER;
     }
@@ -72,6 +73,7 @@ public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements Secu
         public NoFileTransformer() {
         }
 
+        @Override
         public SQLQuery transform(NuxeoPrincipal principal, SQLQuery query) {
             if (principal.isAdministrator()) {
                 return query;

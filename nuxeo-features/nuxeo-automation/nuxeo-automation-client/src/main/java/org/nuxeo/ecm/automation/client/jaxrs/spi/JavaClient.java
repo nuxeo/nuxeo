@@ -53,6 +53,7 @@ public abstract class JavaClient implements AutomationClient {
     public JavaClient(String url, ExecutorService executor) {
         this.url = url.endsWith("/") ? url : url + "/";
         this.async = executor == null ? Executors.newCachedThreadPool(new ThreadFactory() {
+            @Override
             public Thread newThread(Runnable r) {
                 return new Thread("AutomationAsyncExecutor");
             }

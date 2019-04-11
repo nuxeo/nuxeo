@@ -74,6 +74,7 @@ public class TransformMessageAction implements MessageAction {
         schemas.put("files", filesSchema);
     }
 
+    @Override
     public boolean execute(ExecutionContext context) throws MessagingException {
         Message message = context.getMessage();
         if (log.isDebugEnabled()) {
@@ -247,6 +248,7 @@ public class TransformMessageAction implements MessageAction {
         text.append(message);
     }
 
+    @Override
     public void reset(ExecutionContext context) {
         mailSchema.clear();
         dcSchema.clear();

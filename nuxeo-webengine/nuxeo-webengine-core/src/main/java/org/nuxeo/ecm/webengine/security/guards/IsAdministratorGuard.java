@@ -46,6 +46,7 @@ public class IsAdministratorGuard implements Guard {
         this.isAdministrator = isAdministrator == Access.GRANT;
     }
 
+    @Override
     public boolean check(Adaptable context) {
         Principal p = context.getAdapter(Principal.class);
         if (p instanceof NuxeoPrincipal) {
@@ -58,6 +59,7 @@ public class IsAdministratorGuard implements Guard {
         return isAdministrator;
     }
 
+    @Override
     public String toString() {
         return "IS_ADMINISTRATOR[" + isAdministrator + "]";
     }

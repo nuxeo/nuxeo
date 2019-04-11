@@ -54,6 +54,7 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
         return new NotifsRenderingJob("ftl");
     }
 
+    @Override
     public String getFormatName() {
         // TODO Auto-generated method stub
         return null;
@@ -74,14 +75,17 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
             return strWriter.toString();
         }
 
+        @Override
         public RenderingResult getResult() {
             return this;
         }
 
+        @Override
         public String getTemplate() {
             return template;
         }
 
+        @Override
         public Writer getWriter() {
             return strWriter;
         }

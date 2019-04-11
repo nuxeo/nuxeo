@@ -98,6 +98,7 @@ public class UIComment implements Comparable, Serializable {
         return comment.getId().hashCode();
     }
 
+    @Override
     public int compareTo(Object o) {
         if (!(o instanceof UIComment)) {
             return -1;

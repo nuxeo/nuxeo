@@ -42,6 +42,7 @@ public class TypeFilter implements AnnotationDefinitionFilter {
         this.accept = accept;
     }
 
+    @Override
     public boolean accept(AnnotationDefinition annotationDefinition) {
         if (accept) {
             return type.equals(annotationDefinition.getType());

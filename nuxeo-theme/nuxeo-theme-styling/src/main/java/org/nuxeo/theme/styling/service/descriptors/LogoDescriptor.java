@@ -86,6 +86,7 @@ public class LogoDescriptor implements Serializable {
         this.title = title;
     }
 
+    @Override
     public LogoDescriptor clone() {
         LogoDescriptor cLogo = new LogoDescriptor();
         cLogo.setHeight(getHeight());

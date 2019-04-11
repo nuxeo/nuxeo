@@ -40,6 +40,7 @@ public class NuxeoExceptionFilter implements Filter {
 
     private static final Log log = LogFactory.getLog(NuxeoExceptionFilter.class);
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         try {
             getHandler();
@@ -61,6 +62,7 @@ public class NuxeoExceptionFilter implements Filter {
         getHandler().handleException(request, response, e);
     }
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         try {
@@ -76,6 +78,7 @@ public class NuxeoExceptionFilter implements Filter {
         }
     }
 
+    @Override
     public void destroy() {
     }
 

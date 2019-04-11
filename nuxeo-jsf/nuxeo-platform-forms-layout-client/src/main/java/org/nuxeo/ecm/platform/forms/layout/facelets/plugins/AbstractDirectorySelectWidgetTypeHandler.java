@@ -59,6 +59,7 @@ public abstract class AbstractDirectorySelectWidgetTypeHandler extends AbstractS
         return res;
     }
 
+    @Override
     protected String getOptionComponentType(WidgetSelectOption selectOption) {
         if (selectOption instanceof WidgetSelectOptions) {
             return UIDirectorySelectItems.COMPONENT_TYPE;
@@ -68,10 +69,12 @@ public abstract class AbstractDirectorySelectWidgetTypeHandler extends AbstractS
     }
 
     // do not rely on selectOptions to be filled
+    @Override
     protected boolean shouldAddWidgetPropsHandler(Widget widget) {
         return true;
     }
 
+    @Override
     protected Map<String, Serializable> getOptionProperties(FaceletContext ctx, Widget widget,
             WidgetSelectOption selectOption) {
         Map<String, Serializable> props = super.getOptionProperties(ctx, widget, selectOption);

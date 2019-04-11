@@ -70,6 +70,7 @@ public class AnnotatedDocument implements AnnotationChangeListener {
         decorator = new ImageDecorator(controller);
     }
 
+    @Override
     public void onChange(AnnotationModel model, ChangeEvent ce) {
         annotations = model.getAnnotations();
         Log.debug("On change: annotations.empty? " + annotations.isEmpty());

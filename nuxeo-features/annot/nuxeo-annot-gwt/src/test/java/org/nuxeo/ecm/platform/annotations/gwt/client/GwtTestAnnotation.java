@@ -31,6 +31,7 @@ public class GwtTestAnnotation extends GWTTestCase {
     /**
      * Must refer to a valid module that sources this class.
      */
+    @Override
     public String getModuleName() {
         return "org.nuxeo.ecm.platform.annotations.gwt.AnnotationPanel";
     }

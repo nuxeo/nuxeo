@@ -68,30 +68,37 @@ public class StatementInfoImpl implements StatementInfo {
         this.objectRepresentation = objectRepresentation;
     }
 
+    @Override
     public boolean isIncoming() {
         return incoming;
     }
 
+    @Override
     public boolean isOutgoing() {
         return outgoing;
     }
 
+    @Override
     public void setIncoming(boolean incoming) {
         this.incoming = incoming;
     }
 
+    @Override
     public void setOutgoing(boolean outgoing) {
         this.outgoing = outgoing;
     }
 
+    @Override
     public Statement getStatement() {
         return statement;
     }
 
+    @Override
     public Subject getSubject() {
         return statement.getSubject();
     }
 
+    @Override
     public NodeInfo getSubjectInfo() {
         if (subjectRepresentation == null) {
             return new NodeInfoImpl(getSubject());
@@ -99,10 +106,12 @@ public class StatementInfoImpl implements StatementInfo {
         return subjectRepresentation;
     }
 
+    @Override
     public Resource getPredicate() {
         return statement.getPredicate();
     }
 
+    @Override
     public NodeInfo getPredicateInfo() {
         if (predicateRepresentation == null) {
             return new NodeInfoImpl(getPredicate());
@@ -110,10 +119,12 @@ public class StatementInfoImpl implements StatementInfo {
         return predicateRepresentation;
     }
 
+    @Override
     public Node getObject() {
         return statement.getObject();
     }
 
+    @Override
     public NodeInfo getObjectInfo() {
         if (objectRepresentation == null) {
             return new NodeInfoImpl(getObject());
@@ -123,6 +134,7 @@ public class StatementInfoImpl implements StatementInfo {
 
     // metadata
 
+    @Override
     public String getComment() {
         String comment = null;
         Node node = statement.getProperty(RelationConstants.COMMENT);
@@ -132,6 +144,7 @@ public class StatementInfoImpl implements StatementInfo {
         return comment;
     }
 
+    @Override
     public Date getCreationDate() {
         Date date = null;
         Node dateNode = statement.getProperty(RelationConstants.CREATION_DATE);
@@ -141,6 +154,7 @@ public class StatementInfoImpl implements StatementInfo {
         return date;
     }
 
+    @Override
     public Date getModificationDate() {
         Date date = null;
         Node dateNode = statement.getProperty(RelationConstants.MODIFICATION_DATE);
@@ -150,6 +164,7 @@ public class StatementInfoImpl implements StatementInfo {
         return date;
     }
 
+    @Override
     public String getAuthor() {
         String source = null;
         Node node = statement.getProperty(RelationConstants.AUTHOR);

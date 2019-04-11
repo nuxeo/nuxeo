@@ -121,6 +121,7 @@ public class ActionPropertiesDescriptor implements Serializable {
         }
     }
 
+    @Override
     public ActionPropertiesDescriptor clone() {
         ActionPropertiesDescriptor clone = new ActionPropertiesDescriptor();
         if (properties != null) {

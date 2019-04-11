@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  */
 public class DefaultPermissionManager implements PermissionManager {
 
+    @Override
     public boolean check(NuxeoPrincipal user, String permission, URI uri) {
         return true;
     }

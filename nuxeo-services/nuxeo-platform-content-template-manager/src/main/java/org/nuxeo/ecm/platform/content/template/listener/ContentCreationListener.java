@@ -36,6 +36,7 @@ public class ContentCreationListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(ContentCreationListener.class);
 
+    @Override
     public void handleEvent(Event event) {
 
         DocumentEventContext docCtx = null;

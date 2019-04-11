@@ -40,10 +40,12 @@ public class PathFilterSet extends ArrayList<PathFilter> implements PathFilter {
         this.isExclusive = isExclusive;
     }
 
+    @Override
     public boolean isExclusive() {
         return !isExclusive;
     }
 
+    @Override
     public boolean accept(Path path) {
         int inclusive = 0;
         boolean defaultValue = false;

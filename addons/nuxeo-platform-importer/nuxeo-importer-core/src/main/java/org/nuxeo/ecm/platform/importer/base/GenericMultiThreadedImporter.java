@@ -434,6 +434,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         this.enablePerfLogging = enablePerfLogging;
     }
 
+    @Override
     public void stopImportProcrocess() {
         if (importTP != null && !importTP.isTerminated() && !importTP.isTerminating()) {
             importTP.shutdownNow();

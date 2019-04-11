@@ -45,10 +45,12 @@ public class MagickTiler implements PictureTiler {
     /** @since 5.9.5. */
     public static final String CMYK_MAP_COMPONENTS = "cmyk";
 
+    @Override
     public boolean needsSync() {
         return false;
     }
 
+    @Override
     public String getName() {
         return "MagicTiler";
     }
@@ -116,6 +118,7 @@ public class MagickTiler implements PictureTiler {
         return result;
     }
 
+    @Override
     public PictureTiles getTilesFromFile(ImageInfo input, String outputDirPath, int tileWidth, int tileHeight,
             int maxTiles, int xCenter, int yCenter, long lastModificationTime, boolean fullGeneration)
             {

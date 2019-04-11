@@ -31,10 +31,12 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
  */
 public class MyResourceLocator implements ResourceLocator {
 
+    @Override
     public URL getResourceURL(String key) {
         return TestFreemarkerRendering.class.getClassLoader().getResource(key);
     }
 
+    @Override
     public File getResourceFile(String key) {
         return null;
     }

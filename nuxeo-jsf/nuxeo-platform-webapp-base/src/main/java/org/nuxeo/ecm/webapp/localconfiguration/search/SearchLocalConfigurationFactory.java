@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
  */
 public class SearchLocalConfigurationFactory implements DocumentAdapterFactory {
 
+    @Override
     public Object getAdapter(DocumentModel doc, Class<?> itf) {
         if (doc.hasFacet(SEARCH_LOCAL_CONFIGURATION_FACET)) {
             return new SearchLocalConfigurationAdapter(doc);

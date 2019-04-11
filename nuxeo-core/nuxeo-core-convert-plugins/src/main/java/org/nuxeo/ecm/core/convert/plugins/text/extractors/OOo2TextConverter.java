@@ -35,6 +35,7 @@ public class OOo2TextConverter extends XmlZip2TextConverter {
 
     private static final String CONTENT_ZIP_ENTRY_NAME = "content.xml";
 
+    @Override
     protected void readXmlZipContent(ZipInputStream zis, XMLReader reader, StringBuilder sb) throws IOException,
             SAXException {
 

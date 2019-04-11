@@ -28,6 +28,7 @@ import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
  */
 public class MyFormValidator implements FormValidator {
 
+    @Override
     public void validate(FormDataProvider data, Form form) throws ValidationException {
         MyForm myForm = (MyForm) form;
         String pwd = myForm.getPassword();

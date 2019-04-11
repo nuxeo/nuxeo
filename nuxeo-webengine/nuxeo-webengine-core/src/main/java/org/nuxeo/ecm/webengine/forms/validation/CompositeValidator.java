@@ -27,6 +27,7 @@ public class CompositeValidator extends ArrayList<FieldValidator> implements Fie
 
     private static final long serialVersionUID = -1851648770815748104L;
 
+    @Override
     public void validate(String value, Object decoded) throws ValidationException {
         for (int i = 0, len = size(); i < len; i++) {
             get(i).validate(value, decoded);

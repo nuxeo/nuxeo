@@ -44,6 +44,7 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
         return session.getChildren(eventDoc.getRef()).isEmpty();
     }
 
+    @Override
     public void createContentStructure(DocumentModel eventDoc) {
         initSession(eventDoc);
 
@@ -94,6 +95,7 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
         }
     }
 
+    @Override
     public boolean initFactory(Map<String, String> options, List<ACEDescriptor> rootAcl,
             List<TemplateItemDescriptor> template) {
         this.template = template;

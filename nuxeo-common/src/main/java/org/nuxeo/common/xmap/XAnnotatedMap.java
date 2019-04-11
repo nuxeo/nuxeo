@@ -111,12 +111,14 @@ public class XAnnotatedMap extends XAnnotatedList {
 
 class ElementMapVisitor implements DOMHelper.NodeMapVisitor {
 
+    @Override
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result) {
         result.put(key, xam.xao.newInstance(ctx, (Element) node));
     }
 }
 
 class ElementValueMapVisitor implements DOMHelper.NodeMapVisitor {
+    @Override
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result) {
         String val = node.getTextContent();
         if (xam.trim) {
@@ -132,6 +134,7 @@ class ElementValueMapVisitor implements DOMHelper.NodeMapVisitor {
 }
 
 class AttributeValueMapVisitor implements DOMHelper.NodeMapVisitor {
+    @Override
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node, String key, Map<String, Object> result) {
         String val = node.getNodeValue();
         if (xam.valueFactory != null) {

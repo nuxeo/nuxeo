@@ -52,26 +52,32 @@ public class RequestFilterConfigImpl implements RequestFilterConfig {
         this.cacheTime = cacheTime;
     }
 
+    @Override
     public boolean needSynchronization() {
         return useSync;
     }
 
+    @Override
     public boolean needTransaction() {
         return useTx;
     }
 
+    @Override
     public boolean needTransactionBuffered() {
         return useTxBuffered;
     }
 
+    @Override
     public boolean isCached() {
         return cached;
     }
 
+    @Override
     public boolean isPrivate() {
         return isPrivate;
     }
 
+    @Override
     public String getCacheTime() {
         return cacheTime;
     }

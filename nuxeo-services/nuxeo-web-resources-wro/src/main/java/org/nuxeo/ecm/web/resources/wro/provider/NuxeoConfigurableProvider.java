@@ -54,6 +54,7 @@ public class NuxeoConfigurableProvider extends ConfigurableProviderSupport {
         return map;
     }
 
+    @Override
     public Map<String, ResourcePreProcessor> providePreProcessors() {
         Map<String, ResourcePreProcessor> map = new HashMap<>();
         // extend with runtime service processors registration

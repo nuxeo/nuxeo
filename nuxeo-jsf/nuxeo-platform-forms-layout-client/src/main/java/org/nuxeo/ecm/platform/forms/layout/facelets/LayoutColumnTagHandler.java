@@ -35,10 +35,12 @@ public class LayoutColumnTagHandler extends LayoutRowTagHandler {
         super(config);
     }
 
+    @Override
     protected String getInstanceName() {
         return RenderVariables.columnVariables.layoutColumn.name();
     }
 
+    @Override
     protected String getIndexName() {
         return RenderVariables.columnVariables.layoutColumnIndex.name();
     }

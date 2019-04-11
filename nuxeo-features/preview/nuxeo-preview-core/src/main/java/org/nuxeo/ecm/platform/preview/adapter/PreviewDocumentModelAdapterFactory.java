@@ -39,6 +39,7 @@ public class PreviewDocumentModelAdapterFactory implements DocumentAdapterFactor
         return paManager;
     }
 
+    @Override
     public Object getAdapter(DocumentModel doc, Class itf) {
         return getPreviewAdapterManager().getAdapter(doc);
     }

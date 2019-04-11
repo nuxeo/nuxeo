@@ -34,6 +34,7 @@ public class DummyGroupComputer extends AbstractGroupComputer {
         grpNames.add("Grp2");
     }
 
+    @Override
     public List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
 
         List<String> grps = new ArrayList<>();
@@ -47,6 +48,7 @@ public class DummyGroupComputer extends AbstractGroupComputer {
         return grps;
     }
 
+    @Override
     public List<String> getGroupMembers(String groupName) {
         List<String> names = new ArrayList<>();
 
@@ -60,14 +62,17 @@ public class DummyGroupComputer extends AbstractGroupComputer {
         return names;
     }
 
+    @Override
     public List<String> getParentsGroupNames(String groupName) {
         return null;
     }
 
+    @Override
     public List<String> getSubGroupsNames(String groupName) {
         return null;
     }
 
+    @Override
     public List<String> getAllGroupIds() {
         return grpNames;
     }

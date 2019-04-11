@@ -60,6 +60,7 @@ public class LoadJarPlaceholder extends AbstractCommand {
         return new UnloadJarPlaceholder(file);
     }
 
+    @Override
     public void readFrom(Element element) throws PackageException {
         String v = element.getAttribute("file");
         if (v.length() > 0) {
@@ -68,6 +69,7 @@ public class LoadJarPlaceholder extends AbstractCommand {
         }
     }
 
+    @Override
     public void writeTo(XmlWriter writer) {
         writer.start(ID);
         if (file != null) {

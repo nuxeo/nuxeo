@@ -76,6 +76,7 @@ public class LayoutRowTagHandler extends TagHandler {
      * {@link RenderVariables.columnVariables#layoutColumn} and
      * {@link RenderVariables.columnVariables#layoutColumnIndex}, that act are aliases.
      */
+    @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
 

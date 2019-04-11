@@ -80,35 +80,43 @@ public class TreeItemImpl implements TreeItem {
         this(parent, parent.getContentProvider(), data);
     }
 
+    @Override
     public boolean hasChildren() {
         return children.length > 0;
     }
 
+    @Override
     public TreeItem[] getChildren() {
         validateChildren();
         return children;
     }
 
+    @Override
     public Object getObject() {
         return obj;
     }
 
+    @Override
     public Path getPath() {
         return path;
     }
 
+    @Override
     public TreeItem getParent() {
         return parent;
     }
 
+    @Override
     public ContentProvider getContentProvider() {
         return provider;
     }
 
+    @Override
     public String getName() {
         return path.lastSegment();
     }
 
+    @Override
     public String getLabel() {
         validateData();
         return label;
@@ -119,10 +127,12 @@ public class TreeItemImpl implements TreeItem {
         return facets;
     }
 
+    @Override
     public boolean isContainer() {
         return (state & F_CONTAINER) != 0;
     }
 
+    @Override
     public TreeItem find(Path path) {
         TreeItem item = this;
         for (int i = 0, len = path.segmentCount() - 1; i < len; i++) {
@@ -140,6 +150,7 @@ public class TreeItemImpl implements TreeItem {
         return item.getChild(path.lastSegment());
     }
 
+    @Override
     public TreeItem findAndReveal(Path path) {
         // we expand only parents and not the last segment
         TreeItem item = this;
@@ -154,6 +165,7 @@ public class TreeItemImpl implements TreeItem {
         return item;
     }
 
+    @Override
     public TreeItem getChild(String name) {
         validateChildren();
         return _getChild(name);
@@ -168,6 +180,7 @@ public class TreeItemImpl implements TreeItem {
         return null;
     }
 
+    @Override
     public TreeItem[] expand() {
         if (isExpanded()) {
             return children;
@@ -214,10 +227,12 @@ public class TreeItemImpl implements TreeItem {
         }
     }
 
+    @Override
     public void collapse() {
         state &= ~F_EXPANDED;
     }
 
+    @Override
     public boolean isExpanded() {
         return (state & F_EXPANDED) != 0;
     }
@@ -225,6 +240,7 @@ public class TreeItemImpl implements TreeItem {
     /*
      * TODO not completely implemented
      */
+    @Override
     public void refresh(int type) {
         if ((type & DATA) != 0) {
             loadData();
@@ -235,10 +251,12 @@ public class TreeItemImpl implements TreeItem {
         state &= ~type;
     }
 
+    @Override
     public void validate() {
         refresh(state);
     }
 
+    @Override
     public void invalidate(int type) {
         state |= type;
     }
@@ -246,10 +264,12 @@ public class TreeItemImpl implements TreeItem {
     /*
      * TODO not implemented
      */
+    @Override
     public int getValidationState() {
         return state;
     }
 
+    @Override
     public Object accept(TreeItemVisitor visitor) {
         return visitor.visit(this);
     }

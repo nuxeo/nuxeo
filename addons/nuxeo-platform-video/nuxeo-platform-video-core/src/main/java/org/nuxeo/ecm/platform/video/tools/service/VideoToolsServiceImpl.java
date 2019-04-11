@@ -147,6 +147,7 @@ public class VideoToolsServiceImpl extends DefaultComponent implements VideoTool
         return result;
     }
 
+    @Override
     public boolean isToolAvailable(String toolName) {
         String commandLine;
         try {

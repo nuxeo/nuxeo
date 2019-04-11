@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class NTLMPostFilter implements Filter {
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
 
@@ -60,10 +61,12 @@ public class NTLMPostFilter implements Filter {
         NTLMAuthenticator.negotiate(httpRequest, httpResponse, true);
     }
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         // NOP
     }
 
+    @Override
     public void destroy() {
         // NOP
     }

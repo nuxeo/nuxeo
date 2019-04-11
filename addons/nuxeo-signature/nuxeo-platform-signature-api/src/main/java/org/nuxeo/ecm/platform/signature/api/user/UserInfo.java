@@ -97,6 +97,7 @@ public class UserInfo {
         return x500Principal;
     }
 
+    @Override
     public String toString() {
         return this.getUserFields().get(CNField.UserID) + " " + this.getUserFields().get(CNField.CN);
     }

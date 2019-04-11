@@ -36,6 +36,7 @@ public class ThreadDeadlocksRunner {
 
     public void run() {
         Thread t = new Thread() {
+            @Override
             public void run() {
                 try {
                     synchronized (ThreadDeadlocksRunner.this) {

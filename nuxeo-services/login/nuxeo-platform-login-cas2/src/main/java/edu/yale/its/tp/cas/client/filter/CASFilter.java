@@ -93,6 +93,7 @@ public class CASFilter implements Filter {
     // *********************************************************************
     // Initialization
 
+    @Override
     public void init(FilterConfig config) throws ServletException {
         casLogin = config.getInitParameter("edu.yale.its.tp.cas.client.filter.loginUrl");
         casValidate = config.getInitParameter("edu.yale.its.tp.cas.client.filter.validateUrl");
@@ -106,6 +107,7 @@ public class CASFilter implements Filter {
     // *********************************************************************
     // Filter processing
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws ServletException,
             IOException {
 
@@ -159,6 +161,7 @@ public class CASFilter implements Filter {
     // *********************************************************************
     // Destruction
 
+    @Override
     public void destroy() {
     }
 

@@ -28,6 +28,7 @@ import java.util.UUID;
  */
 public class DefaultIDGenerator implements AnnotationIDGenerator {
 
+    @Override
     public String getNext() {
         return UUID.randomUUID().toString();
     }

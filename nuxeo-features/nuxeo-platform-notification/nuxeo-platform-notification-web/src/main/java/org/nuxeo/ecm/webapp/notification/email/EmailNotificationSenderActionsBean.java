@@ -86,6 +86,7 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
 
     private List<String> recipients;
 
+    @Override
     public String send() {
         if (mailSubject == null || mailSubject.trim().length() == 0) {
             facesMessages.add(StatusMessage.Severity.ERROR,
@@ -153,6 +154,7 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
     /**
      * @return the mailContent.
      */
+    @Override
     public String getMailContent() {
         return mailContent;
     }
@@ -160,6 +162,7 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
     /**
      * @param mailContent the mailContent to set.
      */
+    @Override
     public void setMailContent(String mailContent) {
         this.mailContent = mailContent;
     }
@@ -167,6 +170,7 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
     /**
      * @return the mailSubject.
      */
+    @Override
     public String getMailSubject() {
         return mailSubject;
     }
@@ -174,6 +178,7 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
     /**
      * @param mailSubject the mailSubject to set.
      */
+    @Override
     public void setMailSubject(String mailSubject) {
         this.mailSubject = mailSubject;
     }

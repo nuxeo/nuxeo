@@ -32,6 +32,7 @@ import org.nuxeo.elasticsearch.http.readonly.AbstractSearchRequestFilterImpl;
  */
 public class DefaultSearchRequestFilter extends AbstractSearchRequestFilterImpl {
 
+    @Override
     public String getPayload() throws JSONException {
         if (principal.isAdministrator()) {
             return payload;

@@ -73,14 +73,17 @@ public class Documents implements Serializable, OperationInput, Iterable<Documen
         return docs.get(i);
     }
 
+    @Override
     public String getInputType() {
         return "documents";
     }
 
+    @Override
     public boolean isBinary() {
         return false;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("docs:");
         int size = size();
@@ -94,6 +97,7 @@ public class Documents implements Serializable, OperationInput, Iterable<Documen
         return sb.toString();
     }
 
+    @Override
     public String getInputRef() {
         return toString();
     }

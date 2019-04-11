@@ -92,18 +92,22 @@ public class MultipartRequestEntity extends AbstractHttpEntity {
         }
     }
 
+    @Override
     public boolean isRepeatable() {
         return false;
     }
 
+    @Override
     public boolean isStreaming() {
         return false;
     }
 
+    @Override
     public InputStream getContent() throws IOException, IllegalStateException {
         throw new UnsupportedOperationException("Not a streaming entity");
     }
 
+    @Override
     public void writeTo(OutputStream arg0) throws IOException {
         try {
             mp.writeTo(arg0);
@@ -114,6 +118,7 @@ public class MultipartRequestEntity extends AbstractHttpEntity {
         }
     }
 
+    @Override
     public long getContentLength() {
         return -1;
     }

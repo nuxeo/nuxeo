@@ -67,6 +67,7 @@ public class RollbackAndUndeploy extends Rollback {
         return res;
     }
 
+    @Override
     protected Command getUndeployCommand(File targetFile) {
         return new Undeploy(targetFile);
     }

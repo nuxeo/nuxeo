@@ -51,9 +51,11 @@ public class FlushPlaceholder extends PostInstallCommand {
         return new FlushPlaceholder();
     }
 
+    @Override
     public void readFrom(Element element) throws PackageException {
     }
 
+    @Override
     public void writeTo(XmlWriter writer) {
         writer.start(ID);
         writer.end();

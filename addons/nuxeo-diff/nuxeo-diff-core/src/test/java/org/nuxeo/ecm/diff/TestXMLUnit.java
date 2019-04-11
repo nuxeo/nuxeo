@@ -185,6 +185,7 @@ public class TestXMLUnit extends XMLTestCase {
 
         private int lastVal = 1;
 
+        @Override
         public void testText(Text text) throws NodeTestException {
             int val = Integer.parseInt(text.getData());
             if (nextVal != val) {
@@ -194,6 +195,7 @@ public class TestXMLUnit extends XMLTestCase {
             lastVal = val;
         }
 
+        @Override
         public void testElement(Element element) throws NodeTestException {
             String name = element.getLocalName();
             if ("fibonacci".equals(name) || "val".equals(name)) {
@@ -202,6 +204,7 @@ public class TestXMLUnit extends XMLTestCase {
             throw new NodeTestException("Unexpected element", element);
         }
 
+        @Override
         public void noMoreNodes(NodeTest nodeTest) throws NodeTestException {
         }
 

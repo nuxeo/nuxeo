@@ -89,6 +89,7 @@ public interface ACL extends List<ACE>, Serializable, Cloneable {
      * @return true if the ACL was changed.
      * @since 7.4
      */
+    @Override
     boolean add(ACE ace);
 
     /**

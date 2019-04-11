@@ -46,6 +46,7 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
         return PROFILE_URI;
     }
 
+    @Override
     public LogoutRequest buildLogoutRequest(SAMLMessageContext context, SAMLCredential credential) throws SAMLException {
 
         LogoutRequest request = build(LogoutRequest.DEFAULT_ELEMENT_NAME);
@@ -74,6 +75,7 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
 
     }
 
+    @Override
     public boolean processLogoutRequest(SAMLMessageContext context, SAMLCredential credential) throws SAMLException {
 
         SAMLObject message = context.getInboundSAMLMessage();
@@ -134,6 +136,7 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
         return false;
     }
 
+    @Override
     public void processLogoutResponse(SAMLMessageContext context) throws SAMLException {
 
         SAMLObject message = context.getInboundSAMLMessage();

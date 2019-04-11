@@ -116,34 +116,42 @@ public class NuxeoOAuthToken implements OAuthToken {
         }
     }
 
+    @Override
     public String getAppId() {
         return appId;
     }
 
+    @Override
     public String getCallbackUrl() {
         return callbackUrl;
     }
 
+    @Override
     public String getNuxeoLogin() {
         return nuxeoLogin;
     }
 
+    @Override
     public String getToken() {
         return token;
     }
 
+    @Override
     public String getTokenSecret() {
         return tokenSecret;
     }
 
+    @Override
     public String getConsumerKey() {
         return consumerKey;
     }
 
+    @Override
     public Type getType() {
         return type;
     }
 
+    @Override
     public Calendar getCreationDate() {
         return creationDate;
     }
@@ -159,15 +167,18 @@ public class NuxeoOAuthToken implements OAuthToken {
 
     }
 
+    @Override
     public String getVerifier() {
         return verifier;
     }
 
+    @Override
     public boolean isExpired() {
         // XXX
         return false;
     }
 
+    @Override
     public void setNuxeoLogin(String login) {
         nuxeoLogin = login;
     }

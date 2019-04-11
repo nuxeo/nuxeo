@@ -32,6 +32,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPropagat
  */
 public class LoginStackPropagator implements NuxeoAuthenticationPropagator {
 
+    @Override
     public CleanupCallback propagateUserIdentificationInformation(CachableUserIdentificationInfo cachableUserIdent) {
         ClientLoginModule.getThreadLocalLogin().push(cachableUserIdent.getPrincipal(),
                 cachableUserIdent.getUserInfo().getPassword().toCharArray(),

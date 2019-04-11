@@ -48,6 +48,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public Map<String, SubType> getAllowedSubTypes() {
         if (type != null) {
             return type.getAllowedSubTypes();
@@ -56,6 +57,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String getCreateView() {
         if (type != null) {
             return type.getCreateView();
@@ -64,6 +66,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String getDefaultView() {
         if (type != null) {
             return type.getDefaultView();
@@ -72,6 +75,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String getEditView() {
         if (type != null) {
             return type.getEditView();
@@ -80,6 +84,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String getIcon() {
         if (type != null) {
             return type.getIcon();
@@ -88,6 +93,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String getIconExpanded() {
         if (type != null) {
             return type.getIconExpanded();
@@ -96,6 +102,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String getBigIcon() {
         if (type != null) {
             return type.getBigIcon();
@@ -103,6 +110,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String getBigIconExpanded() {
         if (type != null) {
             return type.getBigIconExpanded();
@@ -110,6 +118,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String getId() {
         if (type != null) {
             return type.getId();
@@ -118,6 +127,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String getLabel() {
         if (type != null) {
             return type.getLabel();
@@ -126,6 +136,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String getDescription() {
         if (type != null) {
             return type.getDescription();
@@ -134,6 +145,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String[] getLayouts(String mode) {
         if (type != null) {
             return type.getLayouts(mode);
@@ -141,6 +153,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String[] getLayouts(String mode, String defaultMode) {
         if (type != null) {
             return type.getLayouts(mode, defaultMode);
@@ -148,6 +161,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String getView(String viewId) {
         if (type != null) {
             TypeView view = type.getView(viewId);
@@ -158,6 +172,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public TypeView[] getViews() {
         if (type != null) {
             return type.getViews();
@@ -166,6 +181,7 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    @Override
     public String[] getContentViews(String category) {
         if (type != null) {
             return type.getContentViews(category);

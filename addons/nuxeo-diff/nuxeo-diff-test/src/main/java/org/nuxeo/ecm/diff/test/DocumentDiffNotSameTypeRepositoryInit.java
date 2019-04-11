@@ -38,6 +38,7 @@ public class DocumentDiffNotSameTypeRepositoryInit extends DocumentDiffRepositor
      * @param session the session
      * @return the document model
      */
+    @Override
     protected DocumentModel createLeftDoc(CoreSession session) {
 
         DocumentModel doc = session.createDocumentModel("/", "leftDoc", "SampleType");
@@ -69,6 +70,7 @@ public class DocumentDiffNotSameTypeRepositoryInit extends DocumentDiffRepositor
      * @param session the session
      * @return the document model
      */
+    @Override
     protected DocumentModel createRightDoc(CoreSession session) {
 
         DocumentModel doc = session.createDocumentModel("/", "rightDoc", "OtherSampleType");

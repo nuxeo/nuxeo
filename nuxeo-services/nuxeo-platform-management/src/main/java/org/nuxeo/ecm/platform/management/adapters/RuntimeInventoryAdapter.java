@@ -50,6 +50,7 @@ public class RuntimeInventoryAdapter implements RuntimeInventoryMBean {
         return runtimeService.getComponentManager().getActivatingRegistrations();
     }
 
+    @Override
     public Set<String> getAvailableComponents() {
         Set<String> names = new HashSet<>();
         for (RegistrationInfo info : availableComponents()) {
@@ -58,14 +59,17 @@ public class RuntimeInventoryAdapter implements RuntimeInventoryMBean {
         return names;
     }
 
+    @Override
     public int getAvailableComponentsCount() {
         return runtimeService.getComponentManager().getRegistrations().size();
     }
 
+    @Override
     public int getPendingComponentsCount() {
         return pendingComponentsName().size();
     }
 
+    @Override
     public Set<String> getPendingComponentsName() {
         Set<String> names = new HashSet<>();
         for (ComponentName componentName : pendingComponentsName()) {
@@ -74,10 +78,12 @@ public class RuntimeInventoryAdapter implements RuntimeInventoryMBean {
         return names;
     }
 
+    @Override
     public String getDescription() {
         return runtimeService.getDescription();
     }
 
+    @Override
     public String getHome() {
         try {
             return runtimeService.getHome().getCanonicalPath();
@@ -86,20 +92,24 @@ public class RuntimeInventoryAdapter implements RuntimeInventoryMBean {
         }
     }
 
+    @Override
     public String getName() {
         return runtimeService.getName();
     }
 
+    @Override
     public String getVersion() {
         return runtimeService.getVersion().toString();
     }
 
     protected boolean isTreeBound = false;
 
+    @Override
     public boolean isTreeBound() {
         return isTreeBound;
     }
 
+    @Override
     public void bindTree() {
         if (isTreeBound) {
             throw new IllegalArgumentException("tree already bound");
@@ -108,6 +118,7 @@ public class RuntimeInventoryAdapter implements RuntimeInventoryMBean {
         factory.bindTree();
     }
 
+    @Override
     public void unbindTree() {
         if (!isTreeBound) {
             throw new IllegalArgumentException("tree not bound");

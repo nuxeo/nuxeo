@@ -106,6 +106,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
         this(document, filter, null, sorter, (String) null);
     }
 
+    @Override
     public List<DocumentTreeNode> getChildren() {
         if (children == null) {
             fetchChildren();
@@ -115,10 +116,12 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
         return childrenNodes;
     }
 
+    @Override
     public DocumentModel getDocument() {
         return document;
     }
 
+    @Override
     public String getId() {
         if (document != null) {
             return document.getId();
@@ -126,6 +129,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
         return null;
     }
 
+    @Override
     public boolean isSelected(DocumentModel currentDocument) {
         if (currentDocument != null) {
             if (!currentDocument.isFolder()) {
@@ -147,6 +151,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
         return false;
     }
 
+    @Override
     public String getPath() {
         if (document != null) {
             return document.getPathAsString();
@@ -157,10 +162,12 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
     /**
      * Resets children map
      */
+    @Override
     public void resetChildren() {
         children = null;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void fetchChildren() {
         children = new LinkedHashMap<>();

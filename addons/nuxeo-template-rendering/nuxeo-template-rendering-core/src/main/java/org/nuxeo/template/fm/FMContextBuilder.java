@@ -50,6 +50,7 @@ public class FMContextBuilder extends AbstractContextBuilder {
                 }
             }
 
+            @Override
             public Object wrap(List<LogEntry> auditEntries) {
                 try {
                     return fmWrapper.wrap(auditEntries);

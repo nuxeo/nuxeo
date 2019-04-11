@@ -61,6 +61,7 @@ public class UndeployConfigPlaceholder extends AbstractCommand {
         return new DeployPlaceholder(file);
     }
 
+    @Override
     public void readFrom(Element element) throws PackageException {
         String v = element.getAttribute("file");
         if (v.length() > 0) {
@@ -69,6 +70,7 @@ public class UndeployConfigPlaceholder extends AbstractCommand {
         }
     }
 
+    @Override
     public void writeTo(XmlWriter writer) {
         writer.start(ID);
         if (file != null) {

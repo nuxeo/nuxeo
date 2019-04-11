@@ -41,6 +41,7 @@ public class ResetCheckedoutGraphListener implements GraphManagerEventListener {
 
     protected final GraphManagerEventListener copyManager = new DocumentVersionnedGraphManager();
 
+    @Override
     public void manage(Event event) {
 
         copyManager.manage(event);

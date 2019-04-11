@@ -71,22 +71,27 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
         this.demoLayouts = demoLayouts;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
 
+    @Override
     public String getViewId() {
         return viewId;
     }
 
+    @Override
     public String getUrl() {
         return LayoutDemoManager.APPLICATION_PATH + viewId;
     }
 
+    @Override
     public String getCategory() {
         return category;
     }
@@ -96,6 +101,7 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
         return widgetTypeCategory;
     }
 
+    @Override
     public boolean isPreviewEnabled() {
         return previewEnabled;
     }
@@ -110,10 +116,12 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
         return previewHideEditMode;
     }
 
+    @Override
     public List<String> getFields() {
         return fields;
     }
 
+    @Override
     public List<DemoLayout> getDemoLayouts() {
         return demoLayouts;
     }

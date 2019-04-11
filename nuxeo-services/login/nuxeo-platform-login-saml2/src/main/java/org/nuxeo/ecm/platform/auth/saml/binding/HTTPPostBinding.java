@@ -41,6 +41,7 @@ public class HTTPPostBinding extends SAMLBinding {
         super(new HTTPPostDecoder(), null);// TODO(nfgs): add HTTPPostEncoder
     }
 
+    @Override
     public boolean supports(InTransport transport) {
         if (transport instanceof HTTPInTransport) {
             HTTPTransport t = (HTTPTransport) transport;
@@ -51,10 +52,12 @@ public class HTTPPostBinding extends SAMLBinding {
         }
     }
 
+    @Override
     public boolean supports(OutTransport transport) {
         return transport instanceof HTTPOutTransport;
     }
 
+    @Override
     public String getBindingURI() {
         return SAMLConstants.SAML2_POST_BINDING_URI;
     }

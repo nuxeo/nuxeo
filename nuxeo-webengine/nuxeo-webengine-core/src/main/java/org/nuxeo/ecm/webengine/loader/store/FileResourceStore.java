@@ -50,14 +50,17 @@ public class FileResourceStore implements ResourceStore {
         return new File(root, name);
     }
 
+    @Override
     public boolean exists(String name) {
         return getFile(name).exists();
     }
 
+    @Override
     public long lastModified(String name) {
         return getFile(name).lastModified();
     }
 
+    @Override
     public URL getURL(String name) {
         try {
             File file = getFile(name);
@@ -70,6 +73,7 @@ public class FileResourceStore implements ResourceStore {
         return null;
     }
 
+    @Override
     public byte[] getBytes(String name) {
         InputStream in = getStream(name);
         if (in != null) {
@@ -82,6 +86,7 @@ public class FileResourceStore implements ResourceStore {
         return null;
     }
 
+    @Override
     public InputStream getStream(String name) {
         try {
             return new FileInputStream(getFile(name));
@@ -90,18 +95,22 @@ public class FileResourceStore implements ResourceStore {
         return null;
     }
 
+    @Override
     public void remove(String name) {
         getFile(name).delete();
     }
 
+    @Override
     public void put(String name, byte[] data) throws IOException {
         FileUtils.writeByteArrayToFile(getFile(name), data);
     }
 
+    @Override
     public void put(String name, InputStream data) throws IOException {
         FileUtils.copyInputStreamToFile(data, getFile(name));
     }
 
+    @Override
     public String getLocation() {
         return root.toString();
     }

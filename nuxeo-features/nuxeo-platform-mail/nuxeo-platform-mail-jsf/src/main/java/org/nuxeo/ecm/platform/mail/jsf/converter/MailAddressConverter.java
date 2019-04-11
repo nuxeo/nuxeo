@@ -43,10 +43,12 @@ public class MailAddressConverter implements Converter {
 
     private static final Pattern pattern = compile(EMAIL_REGEXP, CASE_INSENSITIVE);
 
+    @Override
     public Object getAsObject(FacesContext ctx, UIComponent uiComp, String inStr) {
         return inStr;
     }
 
+    @Override
     public String getAsString(FacesContext ctx, UIComponent uiComp, Object inObj) {
         if (null == inObj) {
             return null;

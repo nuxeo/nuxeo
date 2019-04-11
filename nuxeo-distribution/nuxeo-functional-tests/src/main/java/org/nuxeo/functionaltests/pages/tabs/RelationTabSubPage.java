@@ -175,6 +175,7 @@ public class RelationTabSubPage extends DocumentBasePage {
     /**
      * @since 8.3
      */
+    @Override
     public boolean hasNewRelationLink() {
         try {
             return addANewRelationLink.isDisplayed();

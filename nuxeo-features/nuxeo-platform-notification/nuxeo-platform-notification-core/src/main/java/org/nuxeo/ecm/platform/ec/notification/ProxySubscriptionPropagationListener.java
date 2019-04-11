@@ -44,6 +44,7 @@ public class ProxySubscriptionPropagationListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(ProxySubscriptionPropagationListener.class);
 
+    @Override
     @SuppressWarnings("unchecked")
     public void handleEvent(Event event) {
 

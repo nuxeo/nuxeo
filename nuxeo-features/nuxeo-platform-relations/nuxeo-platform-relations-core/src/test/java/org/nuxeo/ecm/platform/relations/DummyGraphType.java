@@ -54,6 +54,7 @@ public class DummyGraphType implements Graph {
         setOptions(graphDescription.getOptions());
     }
 
+    @Override
     public Map<String, String> getNamespaces() {
         return namespaces;
     }
@@ -76,48 +77,60 @@ public class DummyGraphType implements Graph {
     public void add(Statement statement) {
     }
 
+    @Override
     public void add(List<Statement> statements) {
     }
 
+    @Override
     public void clear() {
     }
 
+    @Override
     public List<Node> getObjects(Node subject, Node predicate) {
         return null;
     }
 
+    @Override
     public List<Node> getPredicates(Node subject, Node object) {
         return null;
     }
 
+    @Override
     public Long size() {
         return null;
     }
 
+    @Override
     public List<Statement> getStatements() {
         return null;
     }
 
+    @Override
     public List<Statement> getStatements(Node subject, Node predicate, Node object) {
         return null;
     }
 
+    @Override
     public List<Statement> getStatements(Statement statement) {
         return null;
     }
 
+    @Override
     public List<Node> getSubjects(Node predicate, Node object) {
         return null;
     }
 
+    @Override
     public boolean hasResource(Resource resource) {
         return false;
     }
 
+    @Override
     public boolean hasStatement(Statement statement) {
         return false;
     }
 
+    @Override
     public QueryResult query(String queryString, String language, String baseURI) {
         return null;
     }
@@ -127,18 +140,22 @@ public class DummyGraphType implements Graph {
         return 0;
     }
 
+    @Override
     public boolean read(InputStream in, String lang, String base) {
         return false;
     }
 
+    @Override
     public boolean read(String path, String lang, String base) {
         return false;
     }
 
+    @Override
     public boolean write(OutputStream out, String lang, String base) {
         return false;
     }
 
+    @Override
     public boolean write(String path, String lang, String base) {
         return false;
     }
@@ -147,6 +164,7 @@ public class DummyGraphType implements Graph {
     public void remove(Statement statement) {
     }
 
+    @Override
     public void remove(List<Statement> statements) {
     }
 

@@ -29,6 +29,7 @@ import org.nuxeo.ecm.diff.content.adapter.base.ConverterBasedContentDiffAdapter;
  */
 public class BlobHolderContentDiffAdapterFactory implements ContentDiffAdapterFactory {
 
+    @Override
     public ContentDiffAdapter getAdapter(DocumentModel doc) {
         ConverterBasedContentDiffAdapter adapter = new ConverterBasedContentDiffAdapter();
         adapter.setAdaptedDocument(doc);

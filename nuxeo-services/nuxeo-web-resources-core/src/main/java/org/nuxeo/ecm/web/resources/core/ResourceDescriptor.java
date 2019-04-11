@@ -162,6 +162,7 @@ public class ResourceDescriptor implements Resource {
     /**
      * @since 7.10
      */
+    @Override
     public String getTarget() {
         return target;
     }

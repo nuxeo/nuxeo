@@ -192,6 +192,7 @@ public class DirectoryTreeDescriptor {
         }
     }
 
+    @Override
     public DirectoryTreeDescriptor clone() {
         DirectoryTreeDescriptor clone = new DirectoryTreeDescriptor();
         clone.name = name;

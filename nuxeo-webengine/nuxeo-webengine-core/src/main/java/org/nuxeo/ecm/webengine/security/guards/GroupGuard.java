@@ -45,6 +45,7 @@ public class GroupGuard implements Guard {
         this.group = group;
     }
 
+    @Override
     public boolean check(Adaptable context) {
         Principal p = context.getAdapter(Principal.class);
         if (p instanceof NuxeoPrincipal) {

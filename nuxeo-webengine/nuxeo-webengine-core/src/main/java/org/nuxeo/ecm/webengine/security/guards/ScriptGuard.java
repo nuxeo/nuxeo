@@ -72,6 +72,7 @@ public class ScriptGuard implements Guard {
         this.script = script;
     }
 
+    @Override
     public boolean check(Adaptable context) {
         try {
             if (engine == null) {

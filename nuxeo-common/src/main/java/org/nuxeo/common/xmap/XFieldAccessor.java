@@ -35,10 +35,12 @@ public class XFieldAccessor implements XAccessor {
         this.field.setAccessible(true);
     }
 
+    @Override
     public Class getType() {
         return field.getType();
     }
 
+    @Override
     public void setValue(Object instance, Object value) {
         try {
             field.set(instance, value);
@@ -47,6 +49,7 @@ public class XFieldAccessor implements XAccessor {
         }
     }
 
+    @Override
     public Object getValue(Object instance) {
         try {
             return field.get(instance);

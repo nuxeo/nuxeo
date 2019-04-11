@@ -27,6 +27,7 @@ public class SampleRootSectionFinder extends DefaultRootSectionsFinder {
         super(userSession);
     }
 
+    @Override
     protected String buildQuery(String path) {
         String query = "SELECT * FROM Document WHERE (";
         int i = 0;

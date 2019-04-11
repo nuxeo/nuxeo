@@ -92,6 +92,7 @@ public class VersioningPolicyDescriptor implements Serializable, Comparable<Vers
         filterIds.addAll(other.filterIds);
     }
 
+    @Override
     public int compareTo(VersioningPolicyDescriptor versioningPolicyDescriptor) {
         return Integer.compare(order, versioningPolicyDescriptor.order);
     }

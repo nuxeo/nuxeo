@@ -40,6 +40,7 @@ import com.google.gwt.user.client.ui.RootPanel;
  * @author Alexandre Russel
  */
 public abstract class AbstractDocumentGWTTest extends GWTTestCase {
+    @Override
     public void gwtSetUp() {
         com.google.gwt.user.client.Element bodyElem = RootPanel.getBodyElement();
 

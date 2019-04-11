@@ -119,10 +119,12 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
         }
     }
 
+    @Override
     protected BinaryGarbageCollector instantiateGarbageCollector() {
         return new AzureGarbageCollector(this);
     }
 
+    @Override
     protected FileStorage getFileStorage() {
         return new AzureFileStorage(container, prefix);
     }
@@ -154,6 +156,7 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
         }
     }
 
+    @Override
     protected String getContentDispositionHeader(Blob blob, HttpServletRequest servletRequest) {
         // Azure will do the %-encoding itself, pass it a String directly
         return "attachment; filename*=UTF-8''" + blob.getFilename();

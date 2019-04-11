@@ -39,6 +39,7 @@ public class LazyClassProxy implements ClassProxy {
         this.className = className;
     }
 
+    @Override
     public String getClassName() {
         return className;
     }
@@ -47,6 +48,7 @@ public class LazyClassProxy implements ClassProxy {
         return loader;
     }
 
+    @Override
     public Class<?> get() {
         if (clazz == null) {
             try {

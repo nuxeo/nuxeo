@@ -51,50 +51,62 @@ public class AnnotationConfigurationServiceImpl implements AnnotationConfigurati
 
     private PermissionMapperDescriptor permissionMapper;
 
+    @Override
     public UriResolver getUriResolver() {
         return resolver;
     }
 
+    @Override
     public void setUriResolver(UriResolver resolver) {
         this.resolver = resolver;
     }
 
+    @Override
     public URLPatternFilter getUrlPatternFilter() {
         return filter;
     }
 
+    @Override
     public void setFilter(URLPatternFilter filter) {
         this.filter = filter;
     }
 
+    @Override
     public MetadataMapper getMetadataMapper() {
         return mapper;
     }
 
+    @Override
     public void setMetadataMapper(MetadataMapper mapper) {
         this.mapper = mapper;
     }
 
+    @Override
     public PermissionManager getPermissionManager() {
         return permissionManager;
     }
 
+    @Override
     public void setPermissionManager(PermissionManager permissionManager) {
         this.permissionManager = permissionManager;
     }
 
+    @Override
     public AnnotabilityManager getAnnotabilityManager() {
         return annotabilityManager;
     }
 
+    @Override
     public void setAnnotabilityManager(AnnotabilityManager annotabilityManager) {
         this.annotabilityManager = annotabilityManager;
     }
 
+    @Override
     public AnnotationIDGenerator getIDGenerator() {
         return idGenerator;
     }
 
+    @Override
     public void setIDGenerator(AnnotationIDGenerator idGenerator) {
         this.idGenerator = idGenerator;
     }
@@ -111,30 +123,37 @@ public class AnnotationConfigurationServiceImpl implements AnnotationConfigurati
         return permissionMapper;
     }
 
+    @Override
     public void setPermissionMapper(PermissionMapperDescriptor permissionMapper) {
         this.permissionMapper = permissionMapper;
     }
 
+    @Override
     public List<EventListener> getListeners() {
         return listeners;
     }
 
+    @Override
     public void addListener(EventListener listener) {
         listeners.add(listener);
     }
 
+    @Override
     public String getCreateAnnotationPermission() {
         return permissionMapper.getCreateAnnotationValue();
     }
 
+    @Override
     public String getDeleteAnnotationPermission() {
         return permissionMapper.getDeleteAnnotationValue();
     }
 
+    @Override
     public String getReadAnnotationPermission() {
         return permissionMapper.getReadAnnotationValue();
     }
 
+    @Override
     public String getUpdateAnnotationPermission() {
         return permissionMapper.getUpdateAnnotationValue();
     }

@@ -80,6 +80,7 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
         Log.debug("Decorator -- start offset: " + startOffset + "; end offset: " + endOffset);
     }
 
+    @Override
     public void process(Node node) {
         currentNode = node;
         checkEndNodeBeforeStartNode();
@@ -268,6 +269,7 @@ public class NuxeoDecoratorVisitor implements DecoratorVisitor {
         }
     }
 
+    @Override
     public boolean doBreak() {
         return endNodeFound && endOffset <= 0;
     }

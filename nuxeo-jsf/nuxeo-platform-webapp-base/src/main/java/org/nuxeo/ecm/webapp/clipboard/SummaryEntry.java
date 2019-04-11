@@ -335,6 +335,7 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
         return sb.toString();
     }
 
+    @Override
     public int compareTo(SummaryEntry o) {
         if (o != null) {
             return getPath().compareTo(o.getPath());

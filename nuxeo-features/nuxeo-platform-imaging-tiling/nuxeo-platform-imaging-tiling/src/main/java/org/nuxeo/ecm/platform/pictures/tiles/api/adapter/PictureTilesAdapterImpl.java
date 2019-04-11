@@ -84,6 +84,7 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
         return pts;
     }
 
+    @Override
     public PictureTiles getTiles(int tileWidth, int tileHeight, int maxTiles) {
 
         String key = tileWidth + "-" + tileHeight + "-" + maxTiles;
@@ -96,6 +97,7 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
         return tiles.get(key);
     }
 
+    @Override
     public void cleanup() {
         if (tiles == null) {
             return;
@@ -110,6 +112,7 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
         return xPath;
     }
 
+    @Override
     public void setXPath(String path) {
         xPath = path;
     }
@@ -118,6 +121,7 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
         return doc;
     }
 
+    @Override
     public void setDoc(DocumentModel doc) {
         this.doc = doc;
     }
@@ -125,6 +129,7 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
     /**
      * @deprecated since 9.1 as filename is now hold by blob
      */
+    @Override
     @Deprecated
     public void setFileName(String fileName) {
         this.fileName = fileName;

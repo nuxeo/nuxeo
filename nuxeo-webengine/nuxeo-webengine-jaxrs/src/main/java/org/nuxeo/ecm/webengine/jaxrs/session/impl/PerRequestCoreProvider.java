@@ -48,6 +48,7 @@ public class PerRequestCoreProvider extends CoreSessionProvider<Ref> {
             // do nothing
         }
 
+        @Override
         public void destroy() {
             try {
                 session.close();

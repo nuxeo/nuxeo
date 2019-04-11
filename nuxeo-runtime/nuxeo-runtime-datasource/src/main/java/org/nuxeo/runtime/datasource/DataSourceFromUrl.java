@@ -95,6 +95,7 @@ public class DataSourceFromUrl implements DataSource {
     }
 
     // @Override in CommonDataSource for Java SE 7 / JDBC 4.1
+    @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException();
     }

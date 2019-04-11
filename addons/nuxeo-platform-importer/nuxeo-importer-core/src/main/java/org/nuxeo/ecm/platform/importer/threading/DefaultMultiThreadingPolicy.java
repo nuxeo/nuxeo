@@ -31,6 +31,7 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  */
 public class DefaultMultiThreadingPolicy implements ImporterThreadingPolicy {
 
+    @Override
     public boolean needToCreateThreadAfterNewFolderishNode(DocumentModel parent, SourceNode node, long uploadedSources,
             int batchSize, int scheduledTasks) {
 

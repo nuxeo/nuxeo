@@ -32,10 +32,12 @@ public class StaticClassProxy implements ClassProxy {
         this.clazz = clazz;
     }
 
+    @Override
     public String getClassName() {
         return clazz.getName();
     }
 
+    @Override
     public Class<?> get() {
         return clazz;
     }

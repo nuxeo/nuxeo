@@ -49,6 +49,7 @@ public class ContentDiffHtmlConverter extends AbstractContentDiffConverter {
 
     private static final String OFFICE_2_HTML_CONVERTER_NAME = "office2html";
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         // Fetch blob from blob holder
         Blob blob = blobHolder.getBlob();

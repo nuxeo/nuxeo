@@ -43,6 +43,7 @@ import freemarker.template.TemplateModelIterator;
  */
 public class ScriptMethod implements TemplateMethodModelEx {
 
+    @Override
     public Object exec(List arguments) throws TemplateModelException {
         int size = arguments.size();
         if (size < 1) {

@@ -34,6 +34,7 @@ public class AuditEventMetricMBeanAdapter implements AuditEventMetricMBean {
         this.eventName = name;
     }
 
+    @Override
     public Long getCount() {
         return service.getEventsCount(eventName);
     }

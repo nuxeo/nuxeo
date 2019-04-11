@@ -112,6 +112,7 @@ public class SearchUIServiceImpl implements SearchUIService {
                 currentDoc);
     }
 
+    @Override
     public DocumentModel saveSearch(CoreSession session, ContentViewState searchContentViewState, String title) {
         UserWorkspaceService userWorkspaceService = Framework.getService(UserWorkspaceService.class);
         DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
@@ -163,6 +164,7 @@ public class SearchUIServiceImpl implements SearchUIService {
         return searchDoc;
     }
 
+    @Override
     public List<DocumentModel> getCurrentUserSavedSearches(CoreSession session) {
         return getDocuments(SAVED_SEARCHES_PROVIDER_NAME, session, session.getPrincipal().getName());
     }
@@ -177,6 +179,7 @@ public class SearchUIServiceImpl implements SearchUIService {
 
     }
 
+    @Override
     public List<DocumentModel> getSharedSavedSearches(CoreSession session) {
         return getDocuments(SHARED_SEARCHES_PROVIDER_NAME, session, session.getPrincipal().getName());
     }

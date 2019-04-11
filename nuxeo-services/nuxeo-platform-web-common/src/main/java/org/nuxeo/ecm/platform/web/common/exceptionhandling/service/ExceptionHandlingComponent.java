@@ -87,11 +87,13 @@ public class ExceptionHandlingComponent extends DefaultComponent implements Exce
         }
     }
 
+    @Override
     public void forwardToErrorPage(HttpServletRequest request, HttpServletResponse response, Throwable t)
             throws IOException, ServletException {
         exceptionHandler.handleException(request, response, t);
     }
 
+    @Override
     public NuxeoExceptionHandler getExceptionHandler() {
         return exceptionHandler;
     }

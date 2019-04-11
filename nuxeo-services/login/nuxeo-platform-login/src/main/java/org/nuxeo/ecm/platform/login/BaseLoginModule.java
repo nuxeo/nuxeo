@@ -42,22 +42,27 @@ public abstract class BaseLoginModule implements LoginPlugin {
         this.loginPage = loginPage;
     }
 
+    @Override
     public Map<String, String> getParameters() {
         return parameters;
     }
 
+    @Override
     public void setParameters(Map<String, String> parameters) {
         this.parameters = parameters;
     }
 
+    @Override
     public String getName() {
         return pluginName;
     }
 
+    @Override
     public void setName(String pluginName) {
         this.pluginName = pluginName;
     }
 
+    @Override
     public String getParameter(String parameterName) {
         return parameters.get(parameterName);
     }

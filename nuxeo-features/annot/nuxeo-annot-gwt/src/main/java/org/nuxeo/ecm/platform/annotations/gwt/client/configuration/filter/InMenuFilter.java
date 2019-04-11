@@ -25,6 +25,7 @@ import org.nuxeo.ecm.platform.annotations.gwt.client.configuration.AnnotationDef
 
 public class InMenuFilter implements AnnotationDefinitionFilter {
 
+    @Override
     public boolean accept(AnnotationDefinition annotationDefinition) {
         return annotationDefinition.isInMenu();
     }

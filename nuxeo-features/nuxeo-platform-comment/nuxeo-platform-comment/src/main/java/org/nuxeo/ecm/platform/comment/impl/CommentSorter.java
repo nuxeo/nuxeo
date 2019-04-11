@@ -35,6 +35,7 @@ public class CommentSorter implements Sorter {
         this.asc = asc;
     }
 
+    @Override
     public int compare(DocumentModel doc1, DocumentModel doc2) {
 
         if (doc1 == null && doc2 == null) {

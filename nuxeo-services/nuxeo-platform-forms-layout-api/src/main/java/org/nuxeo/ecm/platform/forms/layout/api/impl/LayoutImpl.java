@@ -124,6 +124,7 @@ public class LayoutImpl implements Layout {
         }
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -138,38 +139,47 @@ public class LayoutImpl implements Layout {
         return intValue.toString();
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getMode() {
         return mode;
     }
 
+    @Override
     public String getTemplate() {
         return template;
     }
 
+    @Override
     public LayoutRow[] getRows() {
         return rows;
     }
 
+    @Override
     public int getColumns() {
         return columns;
     }
 
+    @Override
     public Widget getWidget(String name) {
         return widgetMap.get(name);
     }
 
+    @Override
     public Map<String, Widget> getWidgetMap() {
         return Collections.unmodifiableMap(widgetMap);
     }
 
+    @Override
     public Map<String, Serializable> getProperties() {
         if (properties == null) {
             return Collections.emptyMap();
@@ -177,6 +187,7 @@ public class LayoutImpl implements Layout {
         return Collections.unmodifiableMap(properties);
     }
 
+    @Override
     public Serializable getProperty(String name) {
         if (properties != null) {
             return properties.get(name);
@@ -184,6 +195,7 @@ public class LayoutImpl implements Layout {
         return null;
     }
 
+    @Override
     public void setProperty(String name, Serializable value) {
         if (properties == null) {
             properties = new HashMap<>();
@@ -219,6 +231,7 @@ public class LayoutImpl implements Layout {
     /**
      * @since 6.0
      */
+    @Override
     public String getType() {
         return type;
     }
@@ -233,6 +246,7 @@ public class LayoutImpl implements Layout {
     /**
      * @since 6.0
      */
+    @Override
     public String getTypeCategory() {
         return typeCategory;
     }
@@ -265,6 +279,7 @@ public class LayoutImpl implements Layout {
         return sb.toString();
     }
 
+    @Override
     public boolean isDynamic() {
         return dynamic;
     }
@@ -273,6 +288,7 @@ public class LayoutImpl implements Layout {
         this.dynamic = dynamic;
     }
 
+    @Override
     public String getDevTemplate() {
         return devTemplate;
     }
@@ -281,6 +297,7 @@ public class LayoutImpl implements Layout {
         this.devTemplate = devTemplate;
     }
 
+    @Override
     public LayoutDefinition getDefinition() {
         return definition;
     }

@@ -49,6 +49,7 @@ public class NuxeoRMIClassLoader extends RMIClassLoaderSpi {
     /**
      * Ignore the JVM, use the thread context classloader for proxy caching
      */
+    @Override
     public Class<?> loadProxyClass(String codebase, String[] interfaces, ClassLoader ignored)
             throws MalformedURLException, ClassNotFoundException {
         return delegate.loadProxyClass(codebase, interfaces, Thread.currentThread().getContextClassLoader());
@@ -57,6 +58,7 @@ public class NuxeoRMIClassLoader extends RMIClassLoaderSpi {
     /**
      * Just delegate
      */
+    @Override
     public Class<?> loadClass(String codebase, String name, ClassLoader ignored) throws MalformedURLException,
             ClassNotFoundException {
         return delegate.loadClass(codebase, name, Thread.currentThread().getContextClassLoader());
@@ -65,6 +67,7 @@ public class NuxeoRMIClassLoader extends RMIClassLoaderSpi {
     /**
      * Just delegate
      */
+    @Override
     public ClassLoader getClassLoader(String codebase) throws MalformedURLException {
         return delegate.getClassLoader(codebase);
     }
@@ -72,6 +75,7 @@ public class NuxeoRMIClassLoader extends RMIClassLoaderSpi {
     /**
      * Try to delegate an default to the java.rmi.server.codebase on any failure.
      */
+    @Override
     public String getClassAnnotation(Class<?> cl) {
         return System.getProperty("java.rmi.server.codebase");
     }

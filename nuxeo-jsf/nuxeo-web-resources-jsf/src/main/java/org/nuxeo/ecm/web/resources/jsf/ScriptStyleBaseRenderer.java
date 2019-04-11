@@ -84,6 +84,7 @@ public abstract class ScriptStyleBaseRenderer extends Renderer implements Compon
      * attribute is encountered, this component can be called upon to render itself. This method will add the component
      * (associated with this Renderer) to a facet in the view only if a "target" component attribute is set.
      */
+    @Override
     public void processEvent(ComponentSystemEvent event) throws AbortProcessingException {
         UIComponent component = event.getComponent();
         if (ComponentUtils.isRelocated(component)) {

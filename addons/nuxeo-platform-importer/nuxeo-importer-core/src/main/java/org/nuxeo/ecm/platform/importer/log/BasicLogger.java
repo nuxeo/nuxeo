@@ -38,34 +38,42 @@ public class BasicLogger implements ImporterLogger {
         this.javaLogger = javaLogger;
     }
 
+    @Override
     public void info(String message) {
         javaLogger.info(message);
     }
 
+    @Override
     public void warn(String message) {
         javaLogger.warn(message);
     }
 
+    @Override
     public void debug(String message) {
         javaLogger.debug(message);
     }
 
+    @Override
     public void debug(String message, Throwable t) {
         javaLogger.debug(message, t);
     }
 
+    @Override
     public void error(String message) {
         javaLogger.error(message);
     }
 
+    @Override
     public void error(String message, Throwable t) {
         javaLogger.error(message, t);
     }
 
+    @Override
     public String getLoggerBuffer(String sep) {
         return "";
     }
 
+    @Override
     public String getLoggerBuffer() {
         if (bufferActive) {
             return getLoggerBuffer("\n");
@@ -74,10 +82,12 @@ public class BasicLogger implements ImporterLogger {
         }
     }
 
+    @Override
     public boolean isBufferActive() {
         return bufferActive;
     }
 
+    @Override
     public void setBufferActive(boolean active) {
         bufferActive = active;
     }
