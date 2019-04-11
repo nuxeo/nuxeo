@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,10 +53,12 @@ public class DefaultImporterComponent extends DefaultComponent {
             }
             importerService.setSourceNodeClass(sourceNodeClass);
 
-            Class<? extends DefaultDocumentModelFactory> docFactoryClass = descriptor.getDocumentModelFactory().getDocumentModelFactoryClass();
+            Class<? extends DefaultDocumentModelFactory> docFactoryClass = descriptor.getDocumentModelFactory()
+                                                                                     .getDocumentModelFactoryClass();
             if (docFactoryClass == null) {
                 docFactoryClass = DefaultDocumentModelFactory.class;
-                log.info("No custom implementation provided for the documentModelFactory, using DefaultDocumentModelFactory");
+                log.info(
+                        "No custom implementation provided for the documentModelFactory, using DefaultDocumentModelFactory");
             }
             importerService.setDocModelFactoryClass(docFactoryClass);
 
@@ -85,7 +87,7 @@ public class DefaultImporterComponent extends DefaultComponent {
                 }
             }
 
-            if (descriptor.getRepository()!=null) {
+            if (descriptor.getRepository() != null) {
                 importerService.setRepository(descriptor.getRepository());
             }
 
