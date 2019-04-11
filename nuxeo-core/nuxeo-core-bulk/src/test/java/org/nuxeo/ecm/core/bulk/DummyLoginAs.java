@@ -46,4 +46,4 @@ public class DummyLoginAs implements LoginAs {
             }
         };
     }
-};
+}

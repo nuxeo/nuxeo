@@ -40,7 +40,7 @@ public final class BucketRange implements Bucket {
     public BucketRange(String key, Number from, Number to, long docCount) {
         if (key == null) {
             throw new IllegalArgumentException("key is null");
-        };
+        }
         this.key = key;
         if (from != null) {
             this.from = from.doubleValue();

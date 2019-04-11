@@ -55,7 +55,6 @@ public class SchemaRenamer implements DocumentTransformer {
                     List<Element> fields = schema.elements();
                     for (Element field : fields) {
                         field.setQName(new QName(field.getName(), ns));
-                        ;
                     }
                 }
             }

@@ -390,7 +390,7 @@ public class TestKeyValueBlobTransientStore {
                 } catch (NullPointerException e) {
                     exc.setValue(e);
                 }
-            };
+            }
         };
         Thread t1 = new Thread(remover);
         Thread t2 = new Thread(getter);

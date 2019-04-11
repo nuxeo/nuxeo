@@ -1635,7 +1635,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
             @Override
             public void rollback(Xid xid) throws XAException {
-                ;
             }
 
             @Override

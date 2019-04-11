@@ -255,7 +255,7 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
     public void testRemoteURI() throws Exception {
         Blob blob = Blobs.createBlob(CONTENT);
         Binary binary = binaryManager.getBinary(blob);
-        BlobInfo blobInfo = new BlobInfo();;
+        BlobInfo blobInfo = new BlobInfo();
         blobInfo.digest = binary.getDigest();
         blobInfo.length = Long.valueOf(blob.getLength());
         blobInfo.filename = "caf\u00e9 corner.txt";

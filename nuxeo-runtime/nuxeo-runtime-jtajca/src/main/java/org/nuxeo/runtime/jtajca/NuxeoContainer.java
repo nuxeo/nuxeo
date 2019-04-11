@@ -730,7 +730,6 @@ public class NuxeoContainer {
                         TransactionHelper.lookupSynchronizationRegistry()
                                          .registerInterposedSynchronization(synchronization);
                     } catch (NamingException e) {
-                        ;
                     }
                 }
             };

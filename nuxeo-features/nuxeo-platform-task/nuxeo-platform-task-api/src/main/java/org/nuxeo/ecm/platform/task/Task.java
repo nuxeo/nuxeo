@@ -128,7 +128,7 @@ public interface Task extends Serializable {
 
     enum TaskVariableName {
         needi18n, taskType
-    };
+    }
 
     /**
      * @since 5.8

@@ -41,7 +41,6 @@ public class VersionInfoExportExtension implements ExportExtension {
         if (docModel.isVersion()) {
             // IMPORT_VERSION_LABEL
             versionElement.addElement("isVersion").setText("true");
-            ;
             versionElement.addElement(IMPORT_VERSION_LABEL.substring(4)).setText(docModel.getVersionLabel());
 
             // IMPORT_VERSION_VERSIONABLE_ID

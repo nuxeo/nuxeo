@@ -184,7 +184,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
                 qa.setMaxQuota(maxQuota);
                 qa.save();
 
-            };
+            }
         }.runUnrestricted();
     }
 

@@ -77,7 +77,6 @@ public class ExtractXmlAttributesWorker extends AbstractWork {
 
             setStatus("Done");
         } catch (DocumentNotFoundException cause) {
-            ;
         } catch (IOException | ParserConfigurationException | SAXException e) {
             setStatus("Failed");
             throw new NuxeoException(e);

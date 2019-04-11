@@ -61,6 +61,6 @@ public class DocumentMetadataGroupComputerDescriptor extends GroupComputerDescri
     @Override
     public GroupComputer getComputer() {
         return new DocumentMetadataGroupComputer(whereClause, groupPattern, xpathSelector);
-    };
+    }
 
 }

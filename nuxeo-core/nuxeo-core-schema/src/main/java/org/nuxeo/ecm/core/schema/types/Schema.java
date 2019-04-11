@@ -54,6 +54,6 @@ public interface Schema extends ComplexType {
      */
     default boolean isVersionWritabe() {
         return false;
-    };
+    }
 
 }

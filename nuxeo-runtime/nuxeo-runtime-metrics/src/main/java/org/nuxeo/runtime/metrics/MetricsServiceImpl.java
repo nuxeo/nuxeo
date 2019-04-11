@@ -56,12 +56,12 @@ public class MetricsServiceImpl extends DefaultComponent implements MetricsServi
 
     @Override
     public void activate(ComponentContext context) {
-        SharedMetricRegistries.getOrCreate(MetricsService.class.getName());;
+        SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-        SharedMetricRegistries.remove(MetricsService.class.getName());;
+        SharedMetricRegistries.remove(MetricsService.class.getName());
         log.debug("Deactivate component.");
     }
 

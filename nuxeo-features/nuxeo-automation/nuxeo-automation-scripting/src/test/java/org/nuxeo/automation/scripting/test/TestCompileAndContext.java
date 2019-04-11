@@ -134,7 +134,6 @@ public class TestCompileAndContext {
         long start = System.currentTimeMillis();
         for (int i = 0; i < 500; i++) {
             try (AutomationScriptingService.Session ref = pool.get(session)) {
-                ;
             }
         }
         long end = System.currentTimeMillis();
