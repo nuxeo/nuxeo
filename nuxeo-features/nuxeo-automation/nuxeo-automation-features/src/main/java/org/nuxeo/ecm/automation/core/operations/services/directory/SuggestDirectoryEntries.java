@@ -268,12 +268,6 @@ public class SuggestDirectoryEntries {
             return isLeaf;
         }
 
-        public boolean isObsolete() {
-            int obsoleteFieldId = Integer.parseInt(
-                    obj.getOrDefault(SuggestConstants.OBSOLETE_FIELD_ID, "0").toString());
-            return isRoot ? false : obsoleteFieldId > 0;
-        }
-
         private void mergeJsonAdapter(JSONAdapter branch) {
             JSONAdapter found = children.get(branch.getId());
             if (found != null) {

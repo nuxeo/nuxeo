@@ -39,8 +39,6 @@ public class ServerSettings {
 
     private String documentId;
 
-    private String contextPath;
-
     protected ServerSettings() {
     }
 
@@ -57,7 +55,6 @@ public class ServerSettings {
         ServerSettings serverSettings = new ServerSettings();
         serverSettings.repositoryName = repositoryName;
         serverSettings.documentId = documentId;
-        serverSettings.contextPath = contextPath;
         return serverSettings;
     }
 

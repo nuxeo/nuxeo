@@ -42,9 +42,6 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 public class TestOneDriveBlobProvider extends OneDriveTestCase {
 
     @Inject
-    private RuntimeHarness harness;
-
-    @Inject
     private BlobManager blobManager;
 
     private OneDriveBlobProvider blobProvider;

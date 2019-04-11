@@ -54,10 +54,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestFulltextEnabled {
 
-    private static final String IDX_NAME = "nxutest";
-
-    private static final String TYPE_NAME = "doc";
-
     @Rule
     public ExpectedException exception = ExpectedException.none();
 

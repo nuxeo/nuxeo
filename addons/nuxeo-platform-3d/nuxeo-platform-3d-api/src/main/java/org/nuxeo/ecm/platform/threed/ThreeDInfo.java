@@ -29,8 +29,6 @@ import java.util.Map;
  */
 public class ThreeDInfo {
 
-    private static final long serialVersionUID = 1L;
-
     public static final String NON_MANIFOLD_VERTICES = "non_manifold_vertices";
 
     public static final String NON_MANIFOLD_EDGES = "non_manifold_edges";

@@ -62,8 +62,6 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String THREED_CHANGED_EVENT = "threeDEvent";
-
     private static final Log log = LogFactory.getLog(ThreeDBatchUpdateWork.class);
 
     public static final String CATEGORY_THREED_CONVERSION = "threeDConversion";

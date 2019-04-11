@@ -115,8 +115,6 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
     private List<PathElement> parents;
 
-    private SchemaManager schemaManager;
-
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 

@@ -68,8 +68,6 @@ public final class Framework {
 
     private static final Log log = LogFactory.getLog(Framework.class);
 
-    private static Boolean testModeSet;
-
     /**
      * Global dev property
      *

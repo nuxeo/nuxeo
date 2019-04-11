@@ -49,11 +49,6 @@ public class ExpressionContext extends ELContext {
 
         private final Map<String, Method> map = new HashMap<>();
 
-        @SuppressWarnings("unused")
-        public void setFunction(String prefix, String localName, Method method) {
-            map.put(prefix + ":" + localName, method);
-        }
-
         @Override
         public Method resolveFunction(String prefix, String localName) {
             return map.get(prefix + ":" + localName);

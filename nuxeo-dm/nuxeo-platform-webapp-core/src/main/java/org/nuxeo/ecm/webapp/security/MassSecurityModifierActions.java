@@ -61,8 +61,6 @@ public class MassSecurityModifierActions implements Serializable {
     @In(create = true)
     private PrincipalListManager principalListManager;
 
-    private final SecurityData securityData = null;
-
     public Boolean getBlockRightInheritance() {
         return blockRightInheritance;
     }

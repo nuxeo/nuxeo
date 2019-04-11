@@ -310,13 +310,4 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager impleme
         return desc == null || desc.getIsSession();
     }
 
-    private boolean isPersistent(String listName) {
-        DocumentsListDescriptor desc = documentsLists_descriptors.get(listName);
-        if (desc == null) {
-            return false;
-        } else {
-            return desc.getPersistent();
-        }
-    }
-
 }

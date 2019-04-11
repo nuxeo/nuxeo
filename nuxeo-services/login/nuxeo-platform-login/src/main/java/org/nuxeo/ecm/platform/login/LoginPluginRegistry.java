@@ -41,8 +41,6 @@ public class LoginPluginRegistry extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(LoginPluginRegistry.class);
 
-    private LoginPlugin currentLoginPlugin;
-
     private Map<String, LoginPlugin> loginPluginStack;
 
     private CallbackFactory callbackFactory;
@@ -50,7 +48,6 @@ public class LoginPluginRegistry extends DefaultComponent {
     private Map<String, LoginPluginDescriptor> pluginDescriptorStack;
 
     public LoginPluginRegistry() {
-        currentLoginPlugin = null;
     }
 
     @Override
@@ -120,7 +117,6 @@ public class LoginPluginRegistry extends DefaultComponent {
 
     @Override
     public void unregisterExtension(Extension extension) {
-        currentLoginPlugin = null;
     }
 
     @Override

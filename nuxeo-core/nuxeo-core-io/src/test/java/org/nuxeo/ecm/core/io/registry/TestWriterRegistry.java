@@ -167,6 +167,7 @@ public class TestWriterRegistry {
         assertEquals(DefaultNumberWriter.class, writer.getClass());
     }
 
+    // keep those, we want to test reflection on private fields
     @SuppressWarnings("unused")
     private Map<String, List<Integer>> listIntegerMapProperty = null;
 
