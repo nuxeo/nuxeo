@@ -90,7 +90,7 @@ public class TestJCloudsBinaryManager {
         }
 
         // store binary
-        byte[] bytes = CONTENT.getBytes("UTF-8");
+        CONTENT.getBytes("UTF-8");
         binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         Assert.assertNotNull(binary);
 
@@ -116,7 +116,7 @@ public class TestJCloudsBinaryManager {
         Assert.assertTrue(binary instanceof LazyBinary);
 
         // store binary
-        byte[] bytes = CONTENT.getBytes("UTF-8");
+        CONTENT.getBytes("UTF-8");
         binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         Assert.assertNotNull(binary);
         Assert.assertEquals(Collections.singleton(CONTENT_MD5), listObjects());

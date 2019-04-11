@@ -566,7 +566,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         }
 
         try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
-            Comment createdComment = commentManager.createComment(janeSession, comment);
+            commentManager.createComment(janeSession, comment);
             fail("jane should not be able to create comment");
         } catch (CommentSecurityException e) {
             assertEquals("The user jane can not create comments on document " + doc.getId(), e.getMessage());
@@ -612,14 +612,14 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         }
 
         try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
-            Comment createdComment = commentManager.getComment(janeSession, comment.getId());
+            commentManager.getComment(janeSession, comment.getId());
             fail("jane should not be able to get comment");
         } catch (CommentSecurityException e) {
             assertEquals("The user jane does not have access to the comments of document " + doc.getId(),
                     e.getMessage());
         }
         try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
-            Comment createdComment = commentManager.getComment(janeSession, subComment.getId());
+            commentManager.getComment(janeSession, subComment.getId());
             fail("jane should not be able to get comment");
         } catch (CommentSecurityException e) {
             assertEquals("The user jane does not have access to the comments of document " + doc.getId(),

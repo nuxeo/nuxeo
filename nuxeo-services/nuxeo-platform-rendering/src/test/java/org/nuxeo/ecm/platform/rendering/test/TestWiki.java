@@ -1,4 +1,4 @@
-/* 
+/*
  * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,6 @@ public class TestWiki {
 
     @Test
     public void test() throws Exception {
-        double s = System.currentTimeMillis();
         InputStream in = TestWiki.class.getResourceAsStream("/testdata/test.wiki");
         Reader reader = new InputStreamReader(in);
 
@@ -50,9 +49,6 @@ public class TestWiki {
 
         StringWriter writer = new StringWriter();
         engine.serialize(reader, writer);
-
-        // System.out.println(writer.getBuffer());
-        // System.out.println(">>>>>>> " + ((System.currentTimeMillis() - s) / 1000));
     }
 
     @Test

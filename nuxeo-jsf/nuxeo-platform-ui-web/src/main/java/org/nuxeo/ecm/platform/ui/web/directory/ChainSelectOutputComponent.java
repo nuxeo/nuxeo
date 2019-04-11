@@ -326,12 +326,9 @@ public class ChainSelectOutputComponent extends UIOutput {
     }
 
     public String getEntrySeparator() {
-        String ret = null;
         ValueBinding vb = getValueBinding("entrySeparator");
         if (vb != null) {
-            ret = (String) vb.getValue(getFacesContext());
-        } else {
-            ret = entrySeparator;
+            vb.getValue(getFacesContext());
         }
         return entrySeparator == null ? DEFAULT_ENTRY_SEPARATOR : entrySeparator;
     }

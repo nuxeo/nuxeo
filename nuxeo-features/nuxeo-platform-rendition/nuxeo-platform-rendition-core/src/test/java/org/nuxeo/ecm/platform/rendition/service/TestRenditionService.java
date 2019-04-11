@@ -565,9 +565,9 @@ public class TestRenditionService {
                 session.save();
             }
 
-            DocumentModel doc1 = createDocumentWithBlob(childFolder.getPathAsString(),
+            createDocumentWithBlob(childFolder.getPathAsString(),
                     createTextBlob("Dummy1 text", "dummy1.txt"), "dummy1-file", "File");
-            DocumentModel doc2 = createDocumentWithBlob(childFolder.getPathAsString(),
+            createDocumentWithBlob(childFolder.getPathAsString(),
                     createTextBlob("Dummy2 text", "dummy2.txt"), "dummy2-file", "File");
         }
 

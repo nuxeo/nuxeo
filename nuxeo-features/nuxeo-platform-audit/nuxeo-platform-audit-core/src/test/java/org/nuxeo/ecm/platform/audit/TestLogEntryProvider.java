@@ -168,8 +168,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     public void testByFilter() throws Exception {
         LogEntry one = doCreateEntryAndPersist("id");
         Thread.sleep(1000);
-        @SuppressWarnings("unused")
-        LogEntry two = doCreateEntryAndPersist("id");
+        doCreateEntryAndPersist("id");
 
         Map<String, FilterMapEntry> filters = new HashMap<>();
         FilterMapEntry filterOne = new FilterMapEntry();
@@ -223,8 +222,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         LogEntry one = doCreateEntryAndPersist("one");
         Thread.sleep(1000);
         Date limit = new Date();
-        @SuppressWarnings("unused")
-        LogEntry two = doCreateEntryAndPersist("two");
+        doCreateEntryAndPersist("two");
         LogEntry three = doCreateEntryAndPersist("three");
         one.setCategory("nuch");
         three.setCategory("nuch");
@@ -238,12 +236,9 @@ public class TestLogEntryProvider extends PersistenceTestCase {
 
     @Test
     public void testRemove() {
-        @SuppressWarnings("unused")
-        LogEntry one = doCreateEntryAndPersist("one");
-        @SuppressWarnings("unused")
-        LogEntry two = doCreateEntryAndPersist("two");
-        @SuppressWarnings("unused")
-        LogEntry three = doCreateEntryAndPersist("three");
+        doCreateEntryAndPersist("one");
+        doCreateEntryAndPersist("two");
+        doCreateEntryAndPersist("three");
         int count = providerUnderTest.removeEntries(eventId(), "/");
         assertEquals(3, count);
     }
@@ -259,8 +254,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     @Test
     public void testQuery() {
         LogEntry one = doCreateEntryAndPersist("one");
-        @SuppressWarnings("unused")
-        LogEntry two = doCreateEntryAndPersist("two");
+        doCreateEntryAndPersist("two");
         LogEntry three = doCreateEntryAndPersist("three");
         one.setCategory("nuch");
         three.setCategory("nuch");
@@ -281,10 +275,8 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     @Ignore
     public void testEventIds() {
         String eventId = eventId();
-        @SuppressWarnings("unused")
-        LogEntry one = doCreateEntryAndPersist("one");
-        @SuppressWarnings("unused")
-        LogEntry two = doCreateEntryAndPersist("two");
+        doCreateEntryAndPersist("one");
+        doCreateEntryAndPersist("two");
         List<String> eventIds = providerUnderTest.findEventIds();
         assertEquals(1, eventIds.size());
         assertEquals(eventId, eventIds.get(0));

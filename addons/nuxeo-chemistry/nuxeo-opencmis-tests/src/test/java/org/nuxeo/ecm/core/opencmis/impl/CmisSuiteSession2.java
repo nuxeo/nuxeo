@@ -178,7 +178,7 @@ public class CmisSuiteSession2 {
         file7 = Helper.createDocument(coreSession, file7);
         Helper.sleepForAuditGranularity();
         file7.putContextData("disableDublinCoreListener", Boolean.TRUE);
-        DocumentRef file7verref = file7.checkIn(VersioningOption.MINOR, null);
+        file7.checkIn(VersioningOption.MINOR, null);
 
         txFeature.nextTransaction();
         coreFeature.getStorageConfiguration().sleepForFulltext();

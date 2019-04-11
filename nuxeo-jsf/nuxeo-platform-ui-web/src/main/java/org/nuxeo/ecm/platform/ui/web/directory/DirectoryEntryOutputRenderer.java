@@ -57,8 +57,6 @@ public class DirectoryEntryOutputRenderer extends Renderer {
         String toWrite = getEntryLabel(context, component);
 
         ResponseWriter writer = context.getResponseWriter();
-        boolean isOutput = false;
-
         String style = (String) component.getAttributes().get("style");
         String styleClass = (String) component.getAttributes().get("styleClass");
         String dir = (String) component.getAttributes().get("dir");

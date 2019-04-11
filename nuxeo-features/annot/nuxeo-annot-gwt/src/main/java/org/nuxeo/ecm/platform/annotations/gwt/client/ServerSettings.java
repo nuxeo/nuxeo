@@ -50,7 +50,7 @@ public class ServerSettings {
         Dictionary dictionary = Dictionary.getDictionary(SERVER_SETTINGS);
         String repositoryName = dictionary.get(REPOSITORY_NAME);
         String documentId = dictionary.get(DOCUMENT_ID);
-        String contextPath = dictionary.get(CONTEXT_PATH);
+        dictionary.get(CONTEXT_PATH);
 
         ServerSettings serverSettings = new ServerSettings();
         serverSettings.repositoryName = repositoryName;

@@ -47,8 +47,6 @@ public class AdministrativeStatusChangeListener implements EventListener {
         String eventId = event.getName();
         String serviceId = (String) event.getContext().getProperty(
                 AdministrativeStatusManager.ADMINISTRATIVE_EVENT_SERVICE);
-        String instanceId = (String) event.getContext().getProperty(
-                AdministrativeStatusManager.ADMINISTRATIVE_EVENT_INSTANCE);
 
         if (serviceId.equals(AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY)) {
             if (eventId.equals(AdministrativeStatusManager.ACTIVATED_EVENT)) {

@@ -1082,7 +1082,7 @@ public class CmisSuiteSession {
         String uri = ri.getThinClientUri() + ri.getId() + "/";
         uri += isAtomPub ? "content?id=" : "root?objectId=";
         uri += doc.getId();
-        String lastModified = RFC_1123_DATE_TIME.format(lastModifiedCalendar.toZonedDateTime());
+        RFC_1123_DATE_TIME.format(lastModifiedCalendar.toZonedDateTime());
         String encoding = Base64.encodeBytes(new String(USERNAME + ":" + PASSWORD).getBytes());
         DefaultHttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(uri);

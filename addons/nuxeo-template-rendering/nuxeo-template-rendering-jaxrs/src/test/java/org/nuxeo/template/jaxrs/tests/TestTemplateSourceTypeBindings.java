@@ -95,7 +95,7 @@ public class TestTemplateSourceTypeBindings {
     @SuppressWarnings("unused")
     @Test
     public void testAvailableTemplates() throws Exception {
-        TemplateSourceDocument t1 = createTemplateDoc("t1");
+        createTemplateDoc("t1");
         session.save();
 
         List<DocumentModel> docs = tps.getAvailableTemplateDocs(session, null);
@@ -104,7 +104,7 @@ public class TestTemplateSourceTypeBindings {
         docs = tps.getAvailableTemplateDocs(session, "all");
         assertEquals(1, docs.size());
 
-        TemplateSourceDocument t2 = createWebTemplateDoc("t2");
+        createWebTemplateDoc("t2");
         session.save();
         docs = tps.getAvailableTemplateDocs(session, "all");
         assertEquals(2, docs.size());

@@ -41,10 +41,8 @@ public class SampleTwo {
             System.out.println(doc + " - " + doc.getTitle());
             Documents docs = rs.getChildren(doc);
             System.out.println(docs);
-            Document dd = null;
             for (Document d : docs) {
                 if (d.getPath().endsWith("/workspaces")) {
-                    dd = d;
                 }
                 System.out.println(d.getTitle() + " at " + d.getLastModified());
             }

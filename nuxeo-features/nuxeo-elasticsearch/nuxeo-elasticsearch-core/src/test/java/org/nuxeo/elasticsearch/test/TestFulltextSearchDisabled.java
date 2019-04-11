@@ -46,7 +46,7 @@ public class TestFulltextSearchDisabled extends TestFulltextEnabled {
 
         // fulltext search with core is not allowed
         exception.expect(QueryParseException.class);
-        DocumentModelList coreRet = session.query(nxql);
+        session.query(nxql);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class TestFulltextSearchDisabled extends TestFulltextEnabled {
 
         // fulltext search with core is not allowed
         exception.expect(QueryParseException.class);
-        DocumentModelList coreRet = session.query(nxql);
+        session.query(nxql);
     }
 
 }

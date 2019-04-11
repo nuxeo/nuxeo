@@ -226,13 +226,12 @@ public abstract class TestTools {
     public void testTrackerAndRestore() throws InterruptedException {
         // Set a consumer position
         String group = "aGroup2Track";
-        Record firstRecord;
         Record nextRecord;
         try (LogTailer<Record> tailer = getTailer(group)) {
             read(tailer);
             // to start is lazy an must be applied on assigned tailer (after a rebalance)
             tailer.toStart();
-            firstRecord = read(tailer);
+            read(tailer);
             read(tailer);
             tailer.commit(); // commit on record 2
             LogRecord<Record> nextLogRecord = tailer.read(Duration.ofSeconds(1));

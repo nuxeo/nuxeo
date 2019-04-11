@@ -98,8 +98,7 @@ public class GwtTestDecoratorVisitor extends AbstractDocumentGWTTest {
         assertEquals(2, list.getLength());
 
         DivElement div = DivElement.as(RootPanel.getBodyElement().getElementsByTagName("div").getItem(0));
-        @SuppressWarnings("unused")
-        String testString = div.getInnerHTML();
+        div.getInnerHTML();
         assertTrue(div.getInnerHTML().contains(parsedResult));
     }
 

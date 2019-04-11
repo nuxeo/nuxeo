@@ -135,7 +135,7 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements Im
         BlobHolder bh = node.getBlobHolder();
 
         String name = getValidNameFromFileName(node.getName());
-        String fileName = node.getName();
+        node.getName();
 
         DocumentRef docRef = new PathRef(parent.getPathAsString(), name);
 

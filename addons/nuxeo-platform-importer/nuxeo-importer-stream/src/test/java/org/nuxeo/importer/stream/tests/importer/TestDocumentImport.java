@@ -348,7 +348,7 @@ public abstract class TestDocumentImport {
             assertEquals(NB_PRODUCERS * NB_DOCUMENTS, docProducersStatus.stream().mapToLong(r -> r.nbProcessed).sum());
 
             // 4. import documents without creating blobs
-            DocumentModel root = session.getRootDocument();
+            session.getRootDocument();
             ConsumerFactory<DocumentMessage> docFactory = new RedisDocumentMessageConsumerFactory();
             ConsumerPool<DocumentMessage> docConsumers = new ConsumerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     docFactory, ConsumerPolicy.BOUNDED);

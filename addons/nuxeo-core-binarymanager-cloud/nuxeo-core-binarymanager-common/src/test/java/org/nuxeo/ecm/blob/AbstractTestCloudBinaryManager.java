@@ -102,7 +102,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         }
 
         // store binary
-        byte[] bytes = CONTENT.getBytes("UTF-8");
+        CONTENT.getBytes("UTF-8");
         binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
 

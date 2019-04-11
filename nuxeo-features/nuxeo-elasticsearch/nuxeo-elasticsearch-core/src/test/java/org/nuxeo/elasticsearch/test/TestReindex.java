@@ -180,7 +180,7 @@ public class TestReindex {
             DocumentModel doc = session.getDocument(new PathRef("/testDoc" + i));
             doc.setPropertyValue("dc:description", "Description TestMe" + i);
             doc = session.saveDocument(doc);
-            DocumentModel proxy = session.publishDocument(doc, folder);
+            session.publishDocument(doc, folder);
             if (i % 2 == 0) {
                 trashService.trashDocuments(singletonList(doc));
             }

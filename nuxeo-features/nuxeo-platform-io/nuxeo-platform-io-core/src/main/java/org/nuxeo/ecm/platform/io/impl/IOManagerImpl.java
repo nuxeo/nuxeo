@@ -369,7 +369,7 @@ public class IOManagerImpl implements IOManager {
             customDocReader = createDocReader(docReaderFactoryClassName, rFactoryParams);
 
             IODocumentManager docManager = new IODocumentManagerImpl();
-            DocumentTranslationMap map = docManager.importDocuments(customDocReader, customDocWriter);
+            docManager.importDocuments(customDocReader, customDocWriter);
         } finally {
             if (customDocReader != null) {
                 customDocReader.close();

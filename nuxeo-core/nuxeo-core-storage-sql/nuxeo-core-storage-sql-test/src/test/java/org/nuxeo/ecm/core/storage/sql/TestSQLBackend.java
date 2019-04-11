@@ -2754,8 +2754,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.close();
         session = repository.getConnection();
 
-        @SuppressWarnings("unused")
-        List<Node> nodes = session.getNodesByIds(Arrays.asList(node0.getId(), proxy1.getId(), proxy2.getId()));
+        session.getNodesByIds(Arrays.asList(node0.getId(), proxy1.getId(), proxy2.getId()));
 
         // check logs by hand to see that data fragments are bulk fetched
     }

@@ -1835,8 +1835,7 @@ public class TestSQLRepositoryAPI {
 
         childFile = createChildDocument(childFile);
 
-        Property p = childFile.getProperty("/dublincore:/description");
-        // System.out.println(p.getPath());
+        childFile.getProperty("/dublincore:/description");
 
         // TODO NXP-2514: this should be tested across sessions - when it can be done
         assertTrue(session.exists(childFile.getRef()));

@@ -117,7 +117,7 @@ public class AsyncOperationAdapterTest {
         FileBlob fb = new FileBlob(tmp);
         fb.setMimeType("text/xml");
 
-        FileBlob blob = (FileBlob) session.newRequest(AttachBlob.ID)
+        session.newRequest(AttachBlob.ID)
                                           .setHeader(Constants.HEADER_NX_VOIDOP, "true")
                                           .setInput(fb)
                                           .set("document", file.getPath())

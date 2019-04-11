@@ -57,7 +57,7 @@ public class UserInvitationObject extends ModuleRoot {
 
         FormData formData = getContext().getForm();
         String requestId = formData.getString("RequestId");
-        String configurationName = formData.getString("ConfigurationName");
+        formData.getString("ConfigurationName");
         String password = formData.getString("Password");
         String passwordConfirmation = formData.getString("PasswordConfirmation");
 

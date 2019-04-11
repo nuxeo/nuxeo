@@ -258,7 +258,7 @@ public class SearchObject extends QueryExecutor {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 try {
-                    Property prop = search.getDocument().getProperty(key);
+                    search.getDocument().getProperty(key);
                     DocumentHelper.setProperty(search.getDocument().getCoreSession(), search.getDocument(), key, value,
                             true);
                 } catch (PropertyNotFoundException e) {

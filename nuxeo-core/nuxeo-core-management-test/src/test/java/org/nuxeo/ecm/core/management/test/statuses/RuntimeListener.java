@@ -44,7 +44,6 @@ public class RuntimeListener implements EventListener {
     @Override
     public void handleEvent(Event event) {
         String eventId = event.getId();
-        String instanceId = (String) event.getSource();
         String serviceId = (String) event.getData();
 
         if (serviceId.equals(AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY)) {

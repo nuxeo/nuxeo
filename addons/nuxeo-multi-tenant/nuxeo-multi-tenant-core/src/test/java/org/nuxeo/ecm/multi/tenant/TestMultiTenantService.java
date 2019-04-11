@@ -334,7 +334,7 @@ public class TestMultiTenantService {
         session.saveDocument(domain);
         session.save();
 
-        NuxeoPrincipal fry = createUser("fry", true, domain.getName());
+        createUser("fry", true, domain.getName());
         LoginContext loginContext = Framework.loginAsUser("fry");
 
         NuxeoGroup nuxeoGroup = createGroup("supermembers");
@@ -364,7 +364,7 @@ public class TestMultiTenantService {
         loginContext.logout();
 
         // leela does not have Write permission
-        NuxeoPrincipal leela = createUser("leela", false, domain.getName());
+        createUser("leela", false, domain.getName());
         loginContext = Framework.loginAsUser("leela");
         try (CloseableCoreSession leelaSession = openSession()) {
             assertTrue(leelaSession.hasPermission(domain.getRef(), "Read"));

@@ -45,7 +45,6 @@ public class SchemaRenamer implements DocumentTransformer {
         Element root = xdoc.getDocument().getRootElement();
 
         List<Element> schemas = root.elements("schema");
-        Element src = null;
         if (schemas != null) {
             for (Element schema : schemas) {
                 String name = schema.attribute("name").getText();

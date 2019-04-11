@@ -173,7 +173,7 @@ public class TestAuditPageProviderWithElasticSearch {
         PageProvider<?> pp = pps.getPageProvider("ADMIN_HISTORY", null, 2L, 0L,
                 new HashMap<String, Serializable>());
         // get current page
-        List<?> p = pp.getCurrentPage();
+        pp.getCurrentPage();
         // limit the result window to the 6 first results
         ((ESAuditPageProvider) pp).setMaxResultWindow(6);
 

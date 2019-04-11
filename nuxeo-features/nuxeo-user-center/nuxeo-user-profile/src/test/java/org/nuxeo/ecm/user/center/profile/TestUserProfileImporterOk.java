@@ -80,7 +80,7 @@ public class TestUserProfileImporterOk extends AbstractUserProfileImporterTest {
 
         DocumentModel doc = userProfileService.getUserProfileDocument("user1", session);
 
-        String uid = doc.getId();
+        doc.getId();
 
         DataModel userProfileData = doc.getDataModel("userprofile");
         assertNotNull(userProfileData);

@@ -722,7 +722,6 @@ public class NuxeoCmisService extends AbstractCmisService
             versioningState = VersioningState.MAJOR;
         }
         String id;
-        DocumentRef ref = null;
         switch (versioningState) {
         case NONE: // cannot be made non-versionable in Nuxeo
         case CHECKEDOUT:
@@ -731,13 +730,13 @@ public class NuxeoCmisService extends AbstractCmisService
             id = object.getId();
             break;
         case MINOR:
-            ref = object.doc.checkIn(VersioningOption.MINOR, null);
+            object.doc.checkIn(VersioningOption.MINOR, null);
             save();
             // id = ref.toString();
             id = object.getId();
             break;
         case MAJOR:
-            ref = object.doc.checkIn(VersioningOption.MAJOR, null);
+            object.doc.checkIn(VersioningOption.MAJOR, null);
             save();
             // id = ref.toString();
             id = object.getId();

@@ -58,7 +58,7 @@ public class TestSnapshotEvent extends AbstractTestSnapshot {
         session.save();
 
         Snapshot adapter = folderB1.getAdapter(Snapshot.class);
-        Snapshot snapshot = adapter.createSnapshot(MAJOR);
+        adapter.createSnapshot(MAJOR);
 
         session.save();
         dumpDBContent();

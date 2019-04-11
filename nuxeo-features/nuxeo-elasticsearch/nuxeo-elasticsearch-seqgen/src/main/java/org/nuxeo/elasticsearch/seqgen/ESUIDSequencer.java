@@ -87,7 +87,7 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
     @Override
     public void initSequence(String key, long id) {
         String source = "{ \"ts\" : " + System.currentTimeMillis() + "}";
-        IndexResponse res = esClient.index(
+        esClient.index(
                 new IndexRequest(indexName, ElasticSearchConstants.SEQ_ID_TYPE, key).versionType(VersionType.EXTERNAL)
                         .version(id)
                         .source(source, XContentType.JSON));

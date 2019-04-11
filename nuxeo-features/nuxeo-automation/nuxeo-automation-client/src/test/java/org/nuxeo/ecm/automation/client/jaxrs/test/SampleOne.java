@@ -42,10 +42,8 @@ public class SampleOne {
             System.out.println(doc.getTitle());
             Documents docs = (Documents) session.newRequest(DocumentService.GetDocumentChildren).setInput(doc).execute();
             System.out.println(docs);
-            Document dd = null;
             for (Document d : docs) {
                 if (d.getPath().endsWith("/workspaces")) {
-                    dd = d;
                 }
                 System.out.println(d.getTitle() + " at " + d.getLastModified());
             }

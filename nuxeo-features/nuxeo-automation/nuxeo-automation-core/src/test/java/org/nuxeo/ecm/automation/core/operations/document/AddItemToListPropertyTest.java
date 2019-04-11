@@ -143,7 +143,7 @@ public class AddItemToListPropertyTest {
             ctx.setInput(doc);
             OperationChain chain = new OperationChain("testChain");
             chain.add(AddItemToListProperty.ID).set("xpath", "dc:title").set("complexJsonProperties", fieldsDataAsJson);
-            DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
+            service.run(ctx, chain);
         }
 
     }

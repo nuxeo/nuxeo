@@ -91,7 +91,7 @@ public class ExtensibleDocumentWriter extends DocumentModelWriter {
         Element version = xdoc.getDocument().getRootElement().element("version");
         if (version != null) {
 
-            Element e = version.element("isVersion");
+            version.element("isVersion");
             String isVersion = version.elementText("isVersion");
 
             if ("true".equals(isVersion)) {
