@@ -31,7 +31,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 /**
  * Base class for shared code bewteen the {@link TemplateBasedDocument} and the {@link TemplateSourceDocument}.
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  */
 public abstract class AbstractTemplateDocument implements Serializable {

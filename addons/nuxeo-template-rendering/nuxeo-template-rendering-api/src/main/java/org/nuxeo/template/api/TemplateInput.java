@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * Represents input parameters of a Template. Inputs parameters have an {@link InputType}, a name an a value. Value can
  * be a xpath pointing to a {@link DocumentModel} property.
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  */
 public class TemplateInput implements Serializable {

@@ -340,10 +340,10 @@ public class TestConnectBroker {
                 "Version: 1.0.0\n" + //
                 "Name: hfA\n" + //
                 "Type: hotfix\n" + //
-                "Target platforms: {server-8.3}\n" + // 
+                "Target platforms: {server-8.3}\n" + //
                 "Supports hot-reload: false\n" + //
                 "Title: Hot fix NXP\n" + //
-                "Description: Hot Fix for NXP\n" + // 
+                "Description: Hot Fix for NXP\n" + //
                 "License: LGPL\n" + //
                 "License URL: http://www.gnu.org/licenses/lgpl.html\n" + //
                 "****************************************\n" + //

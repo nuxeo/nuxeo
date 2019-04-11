@@ -22,7 +22,7 @@ import java.io.Serializable;
 
 /**
  * Property hierarchy node.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public class PropertyHierarchyNode implements Serializable {
@@ -35,7 +35,7 @@ public class PropertyHierarchyNode implements Serializable {
 
     /**
      * Instantiates a new property hierarchy node.
-     * 
+     *
      * @param nodeType the node type
      * @param nodeValue the node value
      */

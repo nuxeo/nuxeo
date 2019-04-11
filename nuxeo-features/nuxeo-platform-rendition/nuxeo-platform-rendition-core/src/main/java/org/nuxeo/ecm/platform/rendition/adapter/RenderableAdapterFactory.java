@@ -24,7 +24,7 @@ import org.nuxeo.ecm.platform.rendition.Renderable;
 
 /**
  * Simple adapter factory
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class RenderableAdapterFactory implements DocumentAdapterFactory {

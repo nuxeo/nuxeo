@@ -37,14 +37,14 @@ import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
  * <p>
  * The bulk of this functionality is provided via the initializeUser(..) method used to generate a fully initialized
  * certificate enclosed in a secured keystore.
- * 
+ *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 public interface CertService {
 
     /**
      * Retrieves the root certificate.
-     * 
+     *
      * @return
      * @throws CertException
      */
@@ -53,7 +53,7 @@ public interface CertService {
     /**
      * Sets up a root service to be used for CA-related services like certificate request signing and certificate
      * revocation.
-     * 
+     *
      * @param keystore
      * @throws CertException
      */
@@ -61,7 +61,7 @@ public interface CertService {
 
     /**
      * Retrieves a KeyStore object from a supplied InputStream. Requires a keystore password.
-     * 
+     *
      * @param userId
      * @return
      */
@@ -69,7 +69,7 @@ public interface CertService {
 
     /**
      * Retrieves existing private and public key from a KeyStore.
-     * 
+     *
      * @param userId
      * @return
      */
@@ -78,7 +78,7 @@ public interface CertService {
 
     /**
      * Retrieves an existing certificate from a keystore using keystore's certificate alias.
-     * 
+     *
      * @param userId
      * @return
      */
@@ -88,7 +88,7 @@ public interface CertService {
      * Generates a private key and a public certificate for a user whose X.509 field information was enclosed in a
      * UserInfo parameter. Stores those artifacts in a password protected keystore. This is the principal method for
      * activating a new certificate and signing it with a root certificate.
-     * 
+     *
      * @param userId
      * @return KeyStore based on the provided userInfo
      */
@@ -97,7 +97,7 @@ public interface CertService {
 
     /**
      * Wraps a certificate object into an OutputStream object secured by a keystore password
-     * 
+     *
      * @param keystore
      * @param os
      * @param keystorePassword
@@ -107,7 +107,7 @@ public interface CertService {
 
     /**
      * Extracts the email address from a certificate
-     * 
+     *
      * @param certificate
      * @return
      * @throws CertException

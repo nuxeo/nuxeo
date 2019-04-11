@@ -30,7 +30,7 @@ public interface VideoToolsService {
 
     /**
      * Extracts the closed captions from a video blob.
-     * 
+     *
      * @param video the input blob
      * @param outputFormat the outformat of the captions (srt, txt, ttxt is the default)
      * @param startAt the start time in format "xx:xx"
@@ -41,7 +41,7 @@ public interface VideoToolsService {
 
     /**
      * Concat the input video blobs into a single video blob.
-     * 
+     *
      * @param videos
      * @return video blob with the videos concatenated
      */
@@ -51,7 +51,7 @@ public interface VideoToolsService {
      * Slices a video blob from a start time and the input duration.
      * If start it empty, the blob will be sliced in n-parts with similar duration.
      * If duration is empty, the video blob will be sliced from startAt until the end.
-     * 
+     *
      * @param video the input blob
      * @param startAt the start time in "xx:xx" format
      * @param duration the duration of the sliced blob in seconds
@@ -62,7 +62,7 @@ public interface VideoToolsService {
 
     /**
      * Add a watermark to a video blob.
-     * 
+     *
      * @param video the input blob
      * @param picture the picture blob to be used as the watermark
      * @param x the x offset starting from the left

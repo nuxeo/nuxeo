@@ -29,7 +29,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam Bean used for nxrendition url binding
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */

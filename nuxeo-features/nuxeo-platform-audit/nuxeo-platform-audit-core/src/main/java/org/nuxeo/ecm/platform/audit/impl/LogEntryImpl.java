@@ -376,7 +376,7 @@ public class LogEntryImpl implements LogEntry {
 
     /**
      * Specific date serializer to have compliant dates with both current and 8.10 Elasticsearch mapping
-     * 
+     *
      * @since 9.3
      */
     static class DateSerializer extends JsonSerializer<Date> {

@@ -64,7 +64,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Comment service implementation. The comments are linked together thanks to a parent document id property.
- * 
+ *
  * @since 10.3
  */
 public class PropertyCommentManager extends AbstractCommentManager {

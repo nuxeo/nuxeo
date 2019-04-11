@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Returns the status of the application
- * 
+ *
  * @since 9.3
  */
 public class HealthCheckResult {

@@ -159,7 +159,7 @@ public class FreeMarkerVariableExtractor {
         // remove reserved variables that don't need specific bindings
         for (String bVar : getreservedContextKeywords()) {
             variables.remove(bVar);
-        }        
+        }
 
         // remove any non valid variable names
         ListIterator<String> varIter = variables.listIterator();

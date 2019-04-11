@@ -42,7 +42,7 @@ import com.sun.jersey.core.util.Base64;
 
 /**
  * Deserializer class for extended info from a JSON object
- * 
+ *
  * @since 9.3
  */
 public class ExtendedInfoDeserializer extends JsonDeserializer<ExtendedInfo> {

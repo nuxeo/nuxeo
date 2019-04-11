@@ -40,7 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Utility class to convert document model from/to comments, annotations or external entities.
- * 
+ *
  * @since 10.3
  */
 public class Comments {

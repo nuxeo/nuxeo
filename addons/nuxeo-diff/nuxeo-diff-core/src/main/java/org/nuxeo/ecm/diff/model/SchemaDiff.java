@@ -24,35 +24,35 @@ import java.util.Map;
 
 /**
  * Representation of a schema diff, field by field.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public interface SchemaDiff extends Serializable {
 
     /**
      * Gets the schema diff.
-     * 
+     *
      * @return the schema diff
      */
     Map<String, PropertyDiff> getSchemaDiff();
 
     /**
      * Gets the field count.
-     * 
+     *
      * @return the field count
      */
     int getFieldCount();
 
     /**
      * Gets the field names as a list.
-     * 
+     *
      * @return the field names
      */
     List<String> getFieldNames();
 
     /**
      * Gets the field diff.
-     * 
+     *
      * @param field the field
      * @return the field diff
      */
@@ -60,7 +60,7 @@ public interface SchemaDiff extends Serializable {
 
     /**
      * Put field diff.
-     * 
+     *
      * @param field the field
      * @param fieldDiff the field diff
      * @return the property diff

@@ -103,7 +103,7 @@ public interface ConfigurationService {
      * prop=any   | isBooleanTrue("prop") = false
      * prop=      | isBooleanTrue("prop") = false
      * </pre>
-     * 
+     *
      * @since 11.1
      */
     boolean isBooleanTrue(String key);
@@ -170,7 +170,7 @@ public interface ConfigurationService {
 
     /**
      * Returns true if given property is true when compared to a boolean value.
-     * 
+     *
      * @deprecated since 11.1, use {@link #isBooleanTrue(String)} instead
      */
     @Deprecated
@@ -180,7 +180,7 @@ public interface ConfigurationService {
      * Returns true if given property is false when compared to a boolean value.
      * <p>
      * Returns also true if property is not blank and is not equals to true.
-     * 
+     *
      * @deprecated since 11.1, use {@link #isBooleanFalse(String)} instead
      */
     @Deprecated

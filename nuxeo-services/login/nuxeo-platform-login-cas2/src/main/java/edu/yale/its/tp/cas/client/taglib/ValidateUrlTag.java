@@ -39,7 +39,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
  * <p>
  * Tag for indicating CAS's "validate URL" for the cas:auth tag.
  * </p>
- * 
+ *
  * @author Shawn Bayern
  */
 public class ValidateUrlTag extends BodyTagSupport {

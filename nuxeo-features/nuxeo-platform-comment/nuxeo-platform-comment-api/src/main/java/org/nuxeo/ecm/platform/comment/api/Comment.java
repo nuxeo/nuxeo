@@ -24,7 +24,7 @@ import java.util.Collection;
 
 /**
  * Comment interface.
- * 
+ *
  * @since 10.3
  */
 public interface Comment {
@@ -59,70 +59,70 @@ public interface Comment {
 
     /**
      * Gets the list of ancestor ids.
-     * 
+     *
      * @return the list of ancestor ids
      */
     Collection<String> getAncestorIds();
 
     /**
      * Adds an ancestor id.
-     * 
+     *
      * @param ancestorId the ancestor id
      */
     void addAncestorId(String ancestorId);
 
     /**
      * Gets comment author.
-     * 
+     *
      * @return the author
      */
     String getAuthor();
 
     /**
      * Sets comment author.
-     * 
+     *
      * @param author the author
      */
     void setAuthor(String author);
 
     /**
      * Gets comment text.
-     * 
+     *
      * @return the text
      */
     String getText();
 
     /**
      * Sets comment text.
-     * 
+     *
      * @param text the text
      */
     void setText(String text);
 
     /**
      * Gets comment creation date.
-     * 
+     *
      * @return the creation date
      */
     Instant getCreationDate();
 
     /**
      * Sets comment creation date.
-     * 
+     *
      * @param creationDate the creation date
      */
     void setCreationDate(Instant creationDate);
 
     /**
      * Sets comment modification date.
-     * 
+     *
      * @return the modification date
      */
     Instant getModificationDate();
 
     /**
      * Sets comment modification date.
-     * 
+     *
      * @param modificationDate the modification date
      */
     void setModificationDate(Instant modificationDate);

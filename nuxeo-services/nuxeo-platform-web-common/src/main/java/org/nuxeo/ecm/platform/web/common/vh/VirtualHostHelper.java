@@ -184,7 +184,7 @@ public class VirtualHostHelper {
 
     /**
      * Computes the url to be redirected when logging out
-     * 
+     *
      * @return redirect URL as protocol://serverName:port/webappName/...
      * @since 9.1
      */

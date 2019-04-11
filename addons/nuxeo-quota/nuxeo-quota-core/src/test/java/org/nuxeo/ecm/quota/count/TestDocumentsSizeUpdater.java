@@ -815,7 +815,7 @@ public class TestDocumentsSizeUpdater {
 
     /**
      * NXP-17350
-     * 
+     *
      * @since TODO
      */
     @Test

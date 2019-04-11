@@ -24,7 +24,7 @@ import java.util.EnumSet;
 
 /**
  * Enum for types on Content associated to a {@link TemplateInput}
- * 
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 public enum ContentInputType {

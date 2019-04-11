@@ -27,7 +27,7 @@ import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * Tests the {@link BatchManager} against a Redis implementation of the {@link TransientStore}.
- * 
+ *
  * @since 7.10
  */
 @RunWith(ContributableFeaturesRunner.class)

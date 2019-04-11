@@ -23,7 +23,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * Diff block reference descriptor.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */

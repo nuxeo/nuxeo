@@ -39,7 +39,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
  * <p>
  * Tag for indicating CAS's "login URL" for the cas:auth tag.
  * </p>
- * 
+ *
  * @author Shawn Bayern
  */
 public class LoginUrlTag extends BodyTagSupport {

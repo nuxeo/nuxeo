@@ -26,7 +26,7 @@ import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
 
 /**
  * Return appropriate BlobHolder for MailMessage documents.
- * 
+ *
  * @author ldoguin
  * @since 5.7.3
  */

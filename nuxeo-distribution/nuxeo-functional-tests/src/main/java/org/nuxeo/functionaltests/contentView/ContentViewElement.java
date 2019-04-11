@@ -429,7 +429,7 @@ public class ContentViewElement extends WebFragmentImpl {
 
     /**
      * CAUTION You can call this method only after a {@link #selectAll()}.
-     * 
+     *
      * @since 9.1
      */
     public ContentViewElement unselectAll() {

@@ -26,7 +26,7 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 
 /**
  * Minimal interface extracted to be able to share some code inside the {@link AbstractAuditBackend}
- * 
+ *
  * @author tiry
  */
 public interface BaseLogEntryProvider {

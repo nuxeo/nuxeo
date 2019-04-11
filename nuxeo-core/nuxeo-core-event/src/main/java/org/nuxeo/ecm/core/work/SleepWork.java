@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
  * Simple work that just sleeps, mostly used for tests.
  */
 public class SleepWork extends AbstractWork {
-    
+
     private static final Logger log = LogManager.getLogger(SleepWork.class);
 
     public static final String CATEGORY = "SleepWork";

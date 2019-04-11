@@ -228,7 +228,7 @@ public class TestDocumentValidationService {
         complexMand.setValue(complex);
         checkNotNullOnField(COMPLEX_MANDATORY, validator.validate(complexMand));
     }
-    
+
     @Test
     public void testFieldComplexWithViolation1() {
         Field field = metamodel.getField(COMPLEX_FIELD);

@@ -196,7 +196,7 @@ public final class Functions {
     public static String formatDateUsingBasicFormatter(Date date) {
         return formatDate(date, basicDateFormatter());
     }
-    
+
     /**
      * Formats a date using the pattern "EEEE, MMMM d, yyyy h:mm:ss a z". This pattern is the US one and is
      * being used for consistency since it changes through the various locales

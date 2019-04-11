@@ -24,7 +24,7 @@ import java.util.Map;
 
 /**
  * Suggest to search for documents meeting some specific search criteria.
- * 
+ *
  * @deprecated since 6.0. The redirection to the search tab is not handled by a Suggestion anymore.
  */
 @Deprecated

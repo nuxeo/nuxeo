@@ -43,7 +43,7 @@ public final class DurationUtils {
      * For {@code _d_h_m_s_ms}, there are five sections, each consisting of a number and a suffix. The suffixes are "d",
      * "h", "m", "s" and "ms" for days, hours, minutes, seconds and milliseconds. The suffixes must occur in order and
      * at least one of them must be present.
-     * 
+     *
      * @throws DateTimeParseException if the text cannot be parsed to a duration
      * @see Duration#parse(CharSequence)
      */

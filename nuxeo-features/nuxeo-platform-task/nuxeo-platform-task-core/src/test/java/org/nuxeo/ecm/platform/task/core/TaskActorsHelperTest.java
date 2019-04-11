@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.task.core.helpers.TaskActorsHelper;
 
 /**
  * Test TaskActorsHelper.
- * 
+ *
  * @author ataillefer
  */
 public class TaskActorsHelperTest {

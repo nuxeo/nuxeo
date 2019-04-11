@@ -339,7 +339,7 @@ public class SearchObject extends QueryExecutor {
 
     /**
      * Retrieves the query string from the page provider and/or the query parameters.
-     * 
+     *
      * @param providerName the page provider name
      * @param parameters the parameters
      * @return the query string

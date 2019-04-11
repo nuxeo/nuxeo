@@ -63,7 +63,7 @@ public class RedisFeature implements RunnerFeature {
     protected String host = "";
 
     protected int port = 0;
-    
+
     protected Mode getMode() {
         Mode mode = this.mode;
         if (mode == Mode.undefined) {

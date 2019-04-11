@@ -26,7 +26,7 @@ import java.util.TimeZone;
 
 /**
  * Parse / format ISO 8601 dates.
- * 
+ *
  * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
  */
 public class DateParser {
@@ -89,7 +89,7 @@ public class DateParser {
 
     /**
      * 2011-10-23T12:00:00.00Z
-     * 
+     *
      * @param date
      * @return
      */
@@ -182,7 +182,7 @@ public class DateParser {
 
     /**
      * Return -1 if no more content to read or the offset of the expected TZ
-     * 
+     *
      * @param cal
      * @param str
      * @param off

@@ -39,7 +39,7 @@ public class LocalConnectFakeConnector extends AbstractFakeConnector {
     protected String hotfixJSON;
 
     protected String studioJSON;
-    
+
     protected String addonWithPrivateJSON;
 
     public LocalConnectFakeConnector(String addonJSON, String hotfixJSON, String studioJSON, String addonWithPrivateJSON) {

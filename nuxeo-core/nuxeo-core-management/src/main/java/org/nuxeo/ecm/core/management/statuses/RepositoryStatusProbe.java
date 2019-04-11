@@ -30,7 +30,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Probe that checks that the repository is available by fetching the root doc
- * 
+ *
  * @since 9.3
  */
 public class RepositoryStatusProbe implements Probe {

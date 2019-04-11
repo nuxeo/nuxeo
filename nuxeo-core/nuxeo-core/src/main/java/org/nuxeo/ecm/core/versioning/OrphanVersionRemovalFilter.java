@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 
 /**
  * Interface to be implemented by contributions to the orphanVersionRemovalFilter extension point.
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public interface OrphanVersionRemovalFilter {
@@ -35,7 +35,7 @@ public interface OrphanVersionRemovalFilter {
      * versionUUIDs that can be deleted.
      * <p>
      * A "dummy" implementation will return the same list as the one received as parameter.
-     * 
+     *
      * @param session the CoreSession
      * @param deletedLiveDoc the Shallow DocumentModel that was deleted
      * @param versionUUIDs the UUIDs of the versions associated to the deleted document

@@ -20,7 +20,7 @@ package org.nuxeo.ecm.platform.rendition.url;
 
 /**
  * Codec for /nxrendition/* urls
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */

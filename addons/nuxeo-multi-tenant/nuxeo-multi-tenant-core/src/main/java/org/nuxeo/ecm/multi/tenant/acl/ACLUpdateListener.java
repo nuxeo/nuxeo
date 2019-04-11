@@ -1,4 +1,4 @@
-/*  
+/*
  * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Intercepts ACL changes and restrict Grant to Tenant bound groups for a configured list of global groups
- * 
+ *
  * @author tiry
  */
 public class ACLUpdateListener implements EventListener {

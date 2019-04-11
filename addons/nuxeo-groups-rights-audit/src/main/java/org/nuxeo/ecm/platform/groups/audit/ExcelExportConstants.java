@@ -16,7 +16,7 @@
  * Contributors:
  * Vladimir Pasquier <vpasquier@nuxeo.com>
  * Laurent Doguin <ldoguin@nuxeo.com>
- * 
+ *
  */
 package org.nuxeo.ecm.platform.groups.audit;
 
