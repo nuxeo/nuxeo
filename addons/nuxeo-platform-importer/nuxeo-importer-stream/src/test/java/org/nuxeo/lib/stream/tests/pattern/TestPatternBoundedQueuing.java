@@ -83,7 +83,7 @@ public abstract class TestPatternBoundedQueuing {
                 new RandomIdMessageProducerFactory(NB_DOCUMENTS), NB_PRODUCERS);
         List<ProducerStatus> pret = producers.start().get();
 
-        assertEquals(NB_PRODUCERS, (long) pret.size());
+        assertEquals(NB_PRODUCERS, pret.size());
         assertEquals(NB_PRODUCERS * NB_DOCUMENTS, pret.stream().mapToLong(r -> r.nbProcessed).sum());
 
         // 2 run the consumers
@@ -117,10 +117,10 @@ public abstract class TestPatternBoundedQueuing {
         List<ConsumerStatus> cret = cfuture.get(); // wait for the completion
         List<ProducerStatus> pret = pfuture.get();
 
-        assertEquals(NB_PRODUCERS, (long) pret.size());
+        assertEquals(NB_PRODUCERS, pret.size());
         assertEquals(NB_PRODUCERS * NB_DOCUMENTS, pret.stream().mapToLong(r -> r.nbProcessed).sum());
 
-        assertEquals(LOG_SIZE, (long) cret.size());
+        assertEquals(LOG_SIZE, cret.size());
         assertEquals(NB_PRODUCERS * NB_DOCUMENTS, cret.stream().mapToLong(r -> r.committed).sum());
     }
 
@@ -138,7 +138,7 @@ public abstract class TestPatternBoundedQueuing {
                 NB_PRODUCERS);
         List<ProducerStatus> pret = producers.start().get();
 
-        assertEquals(NB_PRODUCERS, (long) pret.size());
+        assertEquals(NB_PRODUCERS, pret.size());
         assertEquals(NB_PRODUCERS * NB_DOCUMENTS, pret.stream().mapToLong(r -> r.nbProcessed).sum());
 
         // 2. Use the log and run the consumers
@@ -153,7 +153,7 @@ public abstract class TestPatternBoundedQueuing {
 
         List<ConsumerStatus> cret = consumers.start().get();
 
-        assertEquals(consumerPolicy.getMaxThreads(), (long) cret.size());
+        assertEquals(consumerPolicy.getMaxThreads(), cret.size());
         assertEquals(NB_PRODUCERS * NB_DOCUMENTS, cret.stream().mapToLong(r -> r.committed).sum());
         assertTrue(NB_PRODUCERS * NB_DOCUMENTS < cret.stream().mapToLong(r -> r.accepted).sum());
     }
@@ -171,7 +171,7 @@ public abstract class TestPatternBoundedQueuing {
                 new RandomIdMessageProducerFactory(NB_DOCUMENTS, RandomIdMessageProducerFactory.ProducerType.ORDERED),
                 NB_PRODUCERS);
         List<ProducerStatus> pret = producers.start().get();
-        assertEquals(NB_PRODUCERS, (long) pret.size());
+        assertEquals(NB_PRODUCERS, pret.size());
         assertEquals(NB_PRODUCERS * NB_DOCUMENTS, pret.stream().mapToLong(r -> r.nbProcessed).sum());
 
         // 2. Use the log and run a broken consumers
@@ -185,7 +185,7 @@ public abstract class TestPatternBoundedQueuing {
                 consumerPolicy);
         List<ConsumerStatus> cret = consumers.start().get();
 
-        assertEquals(consumerPolicy.getMaxThreads(), (long) cret.size());
+        assertEquals(consumerPolicy.getMaxThreads(), cret.size());
         assertEquals(0, cret.stream().mapToLong(r -> r.committed).sum());
         assertEquals(0, cret.stream().mapToLong(r -> r.accepted).sum());
         assertEquals(0, cret.stream().filter(r -> !r.fail).count());

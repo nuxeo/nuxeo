@@ -1155,7 +1155,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                         // TODO constructing the DocumentModel (in
                         // NuxeoObjectData) is expensive, try to get value
                         // directly
-                        data = (NuxeoObjectData) service.getObject(service.getNuxeoRepository().getId(), id, null, null,
+                        data = service.getObject(service.getNuxeoRepository().getId(), id, null, null,
                                 null, null, null, null, null);
                     } catch (CmisRuntimeException e) {
                         log.error("Cannot get document: " + id, e);
@@ -1167,7 +1167,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                     // could not fetch
                     v = null;
                 } else {
-                    NuxeoPropertyDataBase<?> pd = (NuxeoPropertyDataBase<?>) data.getProperty(col.getPropertyId());
+                    NuxeoPropertyDataBase<?> pd = data.getProperty(col.getPropertyId());
                     if (pd == null) {
                         v = null;
                     } else {
@@ -1415,7 +1415,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
 
         protected void walkAny(Tree colNode, String op, Tree exprNode) {
-            int token = ((Tree) colNode).getTokenStartIndex();
+            int token = colNode.getTokenStartIndex();
             ColumnReference col = (ColumnReference) query.getColumnReference(Integer.valueOf(token));
             PropertyDefinition<?> pd = col.getPropertyDefinition();
             if (pd.getCardinality() != Cardinality.MULTI) {
@@ -1456,7 +1456,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
 
         protected Boolean walkIsNullOrIsNotNull(Tree colNode, boolean isNull) {
-            int token = ((Tree) colNode).getTokenStartIndex();
+            int token = colNode.getTokenStartIndex();
             ColumnReference col = (ColumnReference) query.getColumnReference(Integer.valueOf(token));
             PropertyDefinition<?> pd = col.getPropertyDefinition();
             boolean multi = pd.getCardinality() == Cardinality.MULTI;

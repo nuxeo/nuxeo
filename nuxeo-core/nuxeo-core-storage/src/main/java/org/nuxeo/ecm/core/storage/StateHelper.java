@@ -354,7 +354,7 @@ public class StateHelper {
             List<Object> la = (List<Object>) a;
             @SuppressWarnings("unchecked")
             List<Object> lb = (List<Object>) b;
-            return (Serializable) diff(la, lb);
+            return diff(la, lb);
         }
         if (a instanceof State && b instanceof State) {
             StateDiff diff = diff((State) a, (State) b);

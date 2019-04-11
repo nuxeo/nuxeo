@@ -60,7 +60,7 @@ public class BlockingVariableMapper extends VariableMapper {
         ValueExpression ve = null;
         try {
             if (hasVariable(variable)) {
-                ve = (ValueExpression) vars.get(variable);
+                ve = vars.get(variable);
             } else {
                 // resolve to a value expression resolving to null if variable
                 // is supposed to be blocked

@@ -234,7 +234,7 @@ public class NuxeoObjectData implements ObjectData {
                 Map<String, PropertyDefinition<?>> propertyDefinitions = t.getPropertyDefinitions();
                 for (PropertyDefinition<?> pd : propertyDefinitions.values()) {
                     if (propertyIds == STAR_FILTER || propertyIds.contains(pd.getId())) {
-                        props.add((PropertyData<?>) NuxeoPropertyData.construct(this, pd, callContext));
+                        props.add(NuxeoPropertyData.construct(this, pd, callContext));
                     }
                 }
             }

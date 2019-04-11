@@ -143,12 +143,12 @@ public class DeltaLong extends Delta {
 
     @Override
     public float floatValue() {
-        return (float) longValue();
+        return longValue();
     }
 
     @Override
     public double doubleValue() {
-        return (double) longValue();
+        return longValue();
     }
 
     @Override

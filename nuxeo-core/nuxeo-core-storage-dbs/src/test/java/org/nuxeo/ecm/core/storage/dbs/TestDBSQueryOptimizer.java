@@ -164,12 +164,12 @@ public class TestDBSQueryOptimizer {
         assertEquals("ecm:acp/*1", info.prefix);
         assertEquals(3, info.count);
 
-        Expression me10 = (Expression) me1.predicates.get(0);
+        Expression me10 = me1.predicates.get(0);
         info = (PrefixInfo) me10.getInfo();
         assertEquals("ecm:acp/*1", info.prefix);
         assertEquals(1, info.count);
 
-        Expression me11 = (Expression) me1.predicates.get(1);
+        Expression me11 = me1.predicates.get(1);
         info = (PrefixInfo) me11.getInfo();
         assertEquals("ecm:acp/*1/acl/*1", info.prefix);
         assertEquals(2, info.count);

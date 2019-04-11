@@ -56,7 +56,7 @@ public class PropertyDeprecationRemover implements DocumentTransformer {
     @SuppressWarnings("unchecked")
     public boolean transform(ExportedDocument xdoc) throws IOException {
         Element root = xdoc.getDocument().getRootElement();
-        for (Element schema : (List<Element>) root.elements("schema")) {
+        for (Element schema : root.elements("schema")) {
             String schemaName = schema.attributeValue("name");
             if (removeHandler.hasMarkedProperties(schemaName)) {
                 // schema has removed properties - get them

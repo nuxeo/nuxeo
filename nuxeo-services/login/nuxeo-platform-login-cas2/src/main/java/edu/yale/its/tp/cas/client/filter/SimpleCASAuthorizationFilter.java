@@ -108,7 +108,7 @@ public class SimpleCASAuthorizationFilter implements Filter {
             // break the fiter chain by throwing exception
             throw new ServletException(FILTER_NAME + ": no authorized users set.");
 
-        } else if (!this.authorizedUsers.contains(((String) session.getAttribute(CASFilter.CAS_FILTER_USER)))) {
+        } else if (!this.authorizedUsers.contains((session.getAttribute(CASFilter.CAS_FILTER_USER)))) {
             // this user is not among the authorized users
             // break the filter chain by throwing exception
             throw new ServletException(FILTER_NAME + ": user " + session.getAttribute(CASFilter.CAS_FILTER_USER)

@@ -97,7 +97,7 @@ public class InputFileInfo implements Serializable {
     public Blob getConvertedBlob() throws ConverterException {
         Blob convertedBlob = null;
         if (blob instanceof Blob) {
-            convertedBlob = (Blob) blob;
+            convertedBlob = blob;
         } else if (blob instanceof InputStream) {
             InputStream upFile = (InputStream) blob;
             try {

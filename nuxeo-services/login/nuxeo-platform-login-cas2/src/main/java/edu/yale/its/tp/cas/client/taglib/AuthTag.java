@@ -88,7 +88,7 @@ public class AuthTag extends TagSupport {
         casValidate = null;
         try {
             service = Util.getService(request,
-                    (String) pageContext.getServletContext().getInitParameter("edu.yale.its.tp.cas.serverName"));
+                    pageContext.getServletContext().getInitParameter("edu.yale.its.tp.cas.serverName"));
         } catch (ServletException ex) {
             throw new JspException(ex);
         }

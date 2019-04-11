@@ -102,7 +102,7 @@ public abstract class TestDocumentImport {
             ProducerPool<DocumentMessage> producers = new ProducerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     new RandomDocumentMessageProducerFactory(NB_DOCUMENTS, "en_US", 2), NB_PRODUCERS);
             List<ProducerStatus> ret = producers.start().get();
-            assertEquals(NB_PRODUCERS, (long) ret.size());
+            assertEquals(NB_PRODUCERS, ret.size());
             assertEquals(NB_PRODUCERS * NB_DOCUMENTS, ret.stream().mapToLong(r -> r.nbProcessed).sum());
 
             // 2. import documents
@@ -111,7 +111,7 @@ public abstract class TestDocumentImport {
                     new DocumentMessageConsumerFactory(root.getRepositoryName(), root.getPathAsString()),
                     ConsumerPolicy.BOUNDED);
             List<ConsumerStatus> ret2 = consumers.start().get();
-            assertEquals(NB_QUEUE, (long) ret2.size());
+            assertEquals(NB_QUEUE, ret2.size());
             assertEquals(NB_PRODUCERS * NB_DOCUMENTS, ret2.stream().mapToLong(r -> r.committed).sum());
         }
     }
@@ -131,7 +131,7 @@ public abstract class TestDocumentImport {
             ProducerPool<BlobMessage> blobProducers = new ProducerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
                     new RandomStringBlobMessageProducerFactory(NB_BLOBS, "en_US", 2, "1234"), NB_PRODUCERS);
             List<ProducerStatus> blobProducersStatus = blobProducers.start().get();
-            assertEquals(NB_PRODUCERS, (long) blobProducersStatus.size());
+            assertEquals(NB_PRODUCERS, blobProducersStatus.size());
             assertEquals(NB_PRODUCERS * NB_BLOBS, blobProducersStatus.stream().mapToLong(r -> r.nbProcessed).sum());
 
             // 2. import blobs
@@ -143,7 +143,7 @@ public abstract class TestDocumentImport {
             ConsumerPool<BlobMessage> blobConsumers = new ConsumerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
                     blobFactory, ConsumerPolicy.BOUNDED);
             List<ConsumerStatus> blobConsumersStatus = blobConsumers.start().get();
-            assertEquals(NB_QUEUE, (long) blobConsumersStatus.size());
+            assertEquals(NB_QUEUE, blobConsumersStatus.size());
             assertEquals(NB_PRODUCERS * NB_BLOBS, blobConsumersStatus.stream().mapToLong(r -> r.committed).sum());
 
             manager.createIfNotExists(DEFAULT_LOG_DOC_NAME, NB_QUEUE);
@@ -153,7 +153,7 @@ public abstract class TestDocumentImport {
             ProducerPool<DocumentMessage> docProducers = new ProducerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     randomDocFactory, NB_PRODUCERS);
             List<ProducerStatus> docProducersStatus = docProducers.start().get();
-            assertEquals(NB_PRODUCERS, (long) docProducersStatus.size());
+            assertEquals(NB_PRODUCERS, docProducersStatus.size());
             assertEquals(NB_PRODUCERS * NB_DOCUMENTS, docProducersStatus.stream().mapToLong(r -> r.nbProcessed).sum());
 
             // 4. import documents without creating blobs
@@ -163,7 +163,7 @@ public abstract class TestDocumentImport {
             ConsumerPool<DocumentMessage> docConsumers = new ConsumerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     docFactory, ConsumerPolicy.BOUNDED);
             List<ConsumerStatus> docConsumersStatus = docConsumers.start().get();
-            assertEquals(NB_QUEUE, (long) docConsumersStatus.size());
+            assertEquals(NB_QUEUE, docConsumersStatus.size());
             assertEquals(NB_PRODUCERS * NB_DOCUMENTS, docConsumersStatus.stream().mapToLong(r -> r.committed).sum());
 
         }
@@ -186,7 +186,7 @@ public abstract class TestDocumentImport {
                             NB_BLOBS),
                     NB_PRODUCERS);
             List<ProducerStatus> blobProducersStatus = blobProducers.start().get();
-            assertEquals(NB_PRODUCERS, (long) blobProducersStatus.size());
+            assertEquals(NB_PRODUCERS, blobProducersStatus.size());
             // assertEquals(NB_PRODUCERS * NB_BLOBS, blobProducersStatus.stream().mapToLong(r -> r.nbProcessed).sum());
 
             // 2. import blobs
@@ -199,7 +199,7 @@ public abstract class TestDocumentImport {
             ConsumerPool<BlobMessage> blobConsumers = new ConsumerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
                     blobFactory, ConsumerPolicy.BOUNDED);
             List<ConsumerStatus> blobConsumersStatus = blobConsumers.start().get();
-            assertEquals(NB_QUEUE, (long) blobConsumersStatus.size());
+            assertEquals(NB_QUEUE, blobConsumersStatus.size());
             // assertEquals(NB_PRODUCERS * NB_BLOBS, blobConsumersStatus.stream().mapToLong(r -> r.committed).sum());
 
             manager.createIfNotExists(DEFAULT_LOG_DOC_NAME, NB_QUEUE);
@@ -209,7 +209,7 @@ public abstract class TestDocumentImport {
             ProducerPool<DocumentMessage> docProducers = new ProducerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     randomDocFactory, NB_PRODUCERS);
             List<ProducerStatus> docProducersStatus = docProducers.start().get();
-            assertEquals(NB_PRODUCERS, (long) docProducersStatus.size());
+            assertEquals(NB_PRODUCERS, docProducersStatus.size());
             assertEquals(NB_PRODUCERS * NB_DOCUMENTS, docProducersStatus.stream().mapToLong(r -> r.nbProcessed).sum());
 
             // 4. import documents without creating blobs
@@ -219,7 +219,7 @@ public abstract class TestDocumentImport {
             ConsumerPool<DocumentMessage> docConsumers = new ConsumerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     docFactory, ConsumerPolicy.BOUNDED);
             List<ConsumerStatus> docConsumersStatus = docConsumers.start().get();
-            assertEquals(NB_QUEUE, (long) docConsumersStatus.size());
+            assertEquals(NB_QUEUE, docConsumersStatus.size());
             assertEquals(NB_PRODUCERS * NB_DOCUMENTS, docConsumersStatus.stream().mapToLong(r -> r.committed).sum());
 
         }
@@ -272,7 +272,7 @@ public abstract class TestDocumentImport {
             ProducerPool<DocumentMessage> producers = new ProducerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     new RandomDocumentMessageProducerFactory(NB_DOCUMENTS, "en_US", 2), NB_PRODUCERS);
             List<ProducerStatus> ret = producers.start().get();
-            assertEquals(NB_PRODUCERS, (long) ret.size());
+            assertEquals(NB_PRODUCERS, ret.size());
             assertEquals(NB_PRODUCERS * NB_DOCUMENTS, ret.stream().mapToLong(r -> r.nbProcessed).sum());
         }
     }
@@ -291,14 +291,14 @@ public abstract class TestDocumentImport {
             ProducerPool<DocumentMessage> producers = new ProducerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     new RandomDocumentMessageProducerFactory(NB_DOCUMENTS, "en_US", 2, false), NB_PRODUCERS);
             List<ProducerStatus> ret = producers.start().get();
-            assertEquals(NB_PRODUCERS, (long) ret.size());
+            assertEquals(NB_PRODUCERS, ret.size());
 
             // 2. import documents into Redis
             // DocumentModel root = session.getRootDocument();
             ConsumerPool<DocumentMessage> consumers = new ConsumerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     new RedisDocumentMessageConsumerFactory(REDIS_PREFIX), ConsumerPolicy.BOUNDED);
             List<ConsumerStatus> ret2 = consumers.start().get();
-            assertEquals(NB_QUEUE, (long) ret2.size());
+            assertEquals(NB_QUEUE, ret2.size());
         }
         RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
         assertEquals(NB_PRODUCERS * NB_DOCUMENTS,
@@ -322,7 +322,7 @@ public abstract class TestDocumentImport {
                             NB_BLOBS),
                     NB_PRODUCERS);
             List<ProducerStatus> blobProducersStatus = blobProducers.start().get();
-            assertEquals(NB_PRODUCERS, (long) blobProducersStatus.size());
+            assertEquals(NB_PRODUCERS, blobProducersStatus.size());
 
             // 2. import blobs
             manager.createIfNotExists(DEFAULT_LOG_BLOB_INFO_NAME, 1);
@@ -334,7 +334,7 @@ public abstract class TestDocumentImport {
             ConsumerPool<BlobMessage> blobConsumers = new ConsumerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
                     blobFactory, ConsumerPolicy.BOUNDED);
             List<ConsumerStatus> blobConsumersStatus = blobConsumers.start().get();
-            assertEquals(NB_QUEUE, (long) blobConsumersStatus.size());
+            assertEquals(NB_QUEUE, blobConsumersStatus.size());
             // assertEquals(NB_PRODUCERS * NB_BLOBS, blobConsumersStatus.stream().mapToLong(r -> r.committed).sum());
 
             manager.createIfNotExists(DEFAULT_LOG_DOC_NAME, NB_QUEUE);
@@ -344,7 +344,7 @@ public abstract class TestDocumentImport {
             ProducerPool<DocumentMessage> docProducers = new ProducerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     randomDocFactory, NB_PRODUCERS);
             List<ProducerStatus> docProducersStatus = docProducers.start().get();
-            assertEquals(NB_PRODUCERS, (long) docProducersStatus.size());
+            assertEquals(NB_PRODUCERS, docProducersStatus.size());
             assertEquals(NB_PRODUCERS * NB_DOCUMENTS, docProducersStatus.stream().mapToLong(r -> r.nbProcessed).sum());
 
             // 4. import documents without creating blobs
@@ -353,7 +353,7 @@ public abstract class TestDocumentImport {
             ConsumerPool<DocumentMessage> docConsumers = new ConsumerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     docFactory, ConsumerPolicy.BOUNDED);
             List<ConsumerStatus> docConsumersStatus = docConsumers.start().get();
-            assertEquals(NB_QUEUE, (long) docConsumersStatus.size());
+            assertEquals(NB_QUEUE, docConsumersStatus.size());
         }
     }
 

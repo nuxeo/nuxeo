@@ -252,7 +252,7 @@ public class CmisSuiteSession2 {
             for (int i = 0; i < 2; i++) {
                 boolean okRequest = i == 0;
 
-                request.setHeader("Digest", "md5=" + (String) (okRequest ? contentMD5Base64 : "bogusMD5Sum"));
+                request.setHeader("Digest", "md5=" + (okRequest ? contentMD5Base64 : "bogusMD5Sum"));
                 HttpEntity reqEntity = getCreateDocumentHttpEntity(files[i]);
                 request.setEntity(reqEntity);
                 try (CloseableHttpResponse response = httpClient.execute(request)) {
@@ -304,7 +304,7 @@ public class CmisSuiteSession2 {
                     assertNotNull(objectId);
                 }
 
-                request.setHeader("Digest", "md5=" + (String) (okRequest ? contentMD5Base64 : "bogusMD5Sum"));
+                request.setHeader("Digest", "md5=" + (okRequest ? contentMD5Base64 : "bogusMD5Sum"));
                 reqEntity = getCheckInHttpEntity(files[i]);
                 request.setEntity(reqEntity);
                 try (CloseableHttpResponse response = httpClient.execute(request)) {
@@ -342,7 +342,7 @@ public class CmisSuiteSession2 {
             for (int i = 0; i < 2; i++) {
                 boolean okRequest = i == 0;
 
-                request.setHeader("Digest", "md5=" + (String) (okRequest ? contentMD5Base64 : "bogusMD5Sum"));
+                request.setHeader("Digest", "md5=" + (okRequest ? contentMD5Base64 : "bogusMD5Sum"));
                 session.clear();
                 String changeToken = session.getObjectByPath("/testfolder1/testfile1").getChangeToken();
                 HttpEntity reqEntity = getSetContentStreamHttpEntity(files[i], changeToken);

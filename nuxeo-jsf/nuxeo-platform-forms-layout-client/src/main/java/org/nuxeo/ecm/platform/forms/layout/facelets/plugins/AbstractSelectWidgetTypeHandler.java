@@ -249,7 +249,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends AbstractWidgetType
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             FaceletHandler optionsHandler = getOptionsFaceletHandler(ctx, helper, widget);
             FaceletHandler[] nextHandlers = new FaceletHandler[] {};
-            nextHandlers = (FaceletHandler[]) ArrayUtils.add(nextHandlers, optionsHandler);
+            nextHandlers = ArrayUtils.add(nextHandlers, optionsHandler);
             FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, nextHandlers, helper, true, true);
             // maybe add convert handler for easier integration of select2
             // widgets handling multiple values

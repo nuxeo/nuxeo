@@ -205,7 +205,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
         String initiator = null;
         for (Task task : tis) {
             if (task.getName().equals(TASK_NAME)) {
-                initiator = (String) task.getVariable(TaskService.VariableName.initiator.name());
+                initiator = task.getVariable(TaskService.VariableName.initiator.name());
                 task.end(session);
                 // make sure taskDoc is attached to prevent sending event with null session
                 DocumentModel taskDocument = task.getDocument();

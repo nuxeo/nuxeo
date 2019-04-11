@@ -80,7 +80,7 @@ public class NuxeoProperty<T> implements Property<T> {
 
     @Override
     public T getFirstValue() {
-        return (T) prop.getFirstValue();
+        return prop.getFirstValue();
     }
 
     @Override
@@ -104,7 +104,7 @@ public class NuxeoProperty<T> implements Property<T> {
 
     @Override
     public List<T> getValues() {
-        return (List<T>) prop.getValues();
+        return prop.getValues();
     }
 
     @Override

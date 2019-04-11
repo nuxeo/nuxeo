@@ -51,7 +51,7 @@ public class LitmusTest extends AbstractServerTest {
                 assertTrue(s.contains(" 0 failed."));
             }
         }
-        assertEquals(0L, (long) p.waitFor());
+        assertEquals(0L, p.waitFor());
     }
 
 }

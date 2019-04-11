@@ -129,7 +129,7 @@ public class ExportGroupManagementActions implements Serializable {
         UserManager userManager = Framework.getService(UserManager.class);
         List<NuxeoGroup> groups = new ArrayList<>();
         PageProvider currentPP = contentViewActions.getCurrentContentView().getCurrentPageProvider();
-        List<DocumentModel> groupModels = (ArrayList<DocumentModel>) currentPP.getCurrentPage();
+        List<DocumentModel> groupModels = currentPP.getCurrentPage();
         for (DocumentModel groupModel : groupModels) {
             NuxeoGroup group = userManager.getGroup(groupModel.getId());
             groups.add(group);

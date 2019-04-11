@@ -640,7 +640,7 @@ public class Locator {
      * @since 8.3
      */
     public static final boolean scrollAndForceClick(WebElement element) {
-        JavascriptExecutor executor = (JavascriptExecutor) AbstractTest.driver;
+        JavascriptExecutor executor = AbstractTest.driver;
         scrollToElement(element);
         try {
             // forced click to workaround non-effective clicks in miscellaneous situations

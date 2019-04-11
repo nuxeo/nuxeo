@@ -74,7 +74,7 @@ public class BlobProperty extends MapProperty {
 
     @Override
     public final Object clone() throws CloneNotSupportedException {
-        return (BlobProperty) super.clone();
+        return super.clone();
     }
 
     @Override
