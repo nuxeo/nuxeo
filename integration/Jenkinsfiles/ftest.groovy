@@ -23,9 +23,10 @@ def zipfilter = getBinding().hasVariable("ZIPFILTER")?ZIPFILTER:'nuxeo-server-to
 currentBuild.setDescription("Branch: $BRANCH -> $PARENT_BRANCH, DB: $DBPROFILE, VERSION: $DBVERSION")
 
 node('SLAVE') {
-    tool name: 'ant-1.9', type: 'ant'
-    tool name: 'java-11-openjdk', type: 'hudson.model.JDK'
-    tool name: 'maven-3', type: 'hudson.tasks.Maven$MavenInstallation'
+    tool name: 'ant-1.9'
+    tool name: 'maven-3'
+    jdk = tool name: 'java-11-openjdk'
+    env.JAVA_HOME = "${jdk}"
 
     timestamps {
         def sha = stage('clone') {

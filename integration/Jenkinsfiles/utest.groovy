@@ -20,12 +20,13 @@
 currentBuild.setDescription("Branch: $BRANCH -> $PARENT_BRANCH, DB: $DBPROFILE, VERSION: $DBVERSION")
 
 node('SLAVE&&STATIC') {
-    tool name: 'ant-1.9', type: 'ant'
-    tool name: 'java-11-openjdk', type: 'hudson.model.JDK'
-    tool name: 'maven-3', type: 'hudson.tasks.Maven$MavenInstallation'
+    tool name: 'ant-1.9'
+    tool name: 'maven-3'
+    jdk = tool name: 'java-11-openjdk'
+    env.JAVA_HOME = "${jdk}"
 
     def timeoutHours = params.NX_TIMEOUT_HOURS == null ? '3' : params.NX_TIMEOUT_HOURS
-    
+
     timeout(time: Integer.parseInt(timeoutHours), unit: 'HOURS') {
         timestamps {
             def sha
