@@ -60,6 +60,7 @@ public class NewAnnotationPopup extends PopupPanel {
 
         public AnnotationTextArea() {
             addKeyboardListener(new KeyboardListenerAdapter() {
+                @Override
                 public void onKeyUp(Widget sender, char keyCode, int modifiers) {
                     String content = getText();
                     if (content.trim().equals("")) {
@@ -182,6 +183,7 @@ public class NewAnnotationPopup extends PopupPanel {
         submit.addClickListener(new CommitListener(element, annotationName));
 
         cancel.addClickListener(new ClickListener() {
+            @Override
             public void onClick(Widget sender) {
                 cancel();
             }
@@ -236,6 +238,7 @@ public class NewAnnotationPopup extends PopupPanel {
             this.element = element;
         }
 
+        @Override
         public void onClick(Widget sender) {
             String text = annotationTextArea.getText();
             if (text.length() > AnnotationConstant.MAX_ANNOTATION_TEXT_LENGTH) {

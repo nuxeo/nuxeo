@@ -88,6 +88,7 @@ public class DocumentTypeDescriptor {
         return "DocType: " + name;
     }
 
+    @Override
     public DocumentTypeDescriptor clone() {
         DocumentTypeDescriptor clone = new DocumentTypeDescriptor();
         clone.name = name;

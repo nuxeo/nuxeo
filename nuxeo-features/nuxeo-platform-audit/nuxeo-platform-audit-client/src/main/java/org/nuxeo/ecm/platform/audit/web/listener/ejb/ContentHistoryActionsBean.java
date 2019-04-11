@@ -106,6 +106,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         sortInfo = new SortInfo(EVENT_DATE, false);
     }
 
+    @Override
     @Factory(value = "latestLogEntries", scope = EVENT)
     public List<LogEntry> computeLatestLogEntries() {
         if (latestLogEntries == null) {
@@ -123,6 +124,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         return latestLogEntries;
     }
 
+    @Override
     @Factory(value = "logEntries", scope = EVENT)
     public List<LogEntry> computeLogEntries() {
         if (logEntries == null) {
@@ -131,6 +133,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         return logEntries;
     }
 
+    @Override
     @Factory(value = "logEntriesComments", scope = EVENT)
     public Map<Long, String> computeLogEntriesComments() {
         if (logEntriesComments == null) {
@@ -140,6 +143,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         return logEntriesComments;
     }
 
+    @Override
     @Factory(value = "logEntriesLinkedDocs", scope = EVENT)
     public Map<Long, LinkedDocument> computeLogEntrieslinkedDocs() {
         if (logEntriesLinkedDocs == null) {
@@ -149,6 +153,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         return logEntriesLinkedDocs;
     }
 
+    @Override
     public List<LogEntry> computeLogEntries(DocumentModel document) {
         if (document == null) {
             return null;
@@ -202,6 +207,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         }
     }
 
+    @Override
     public String doSearch() {
         // toggle newOrderDirection
         if (StringUtils.isEmpty(newSortColumn)) {
@@ -242,6 +248,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         }
     }
 
+    @Override
     public SortInfo getSortInfo() {
         return sortInfo;
     }

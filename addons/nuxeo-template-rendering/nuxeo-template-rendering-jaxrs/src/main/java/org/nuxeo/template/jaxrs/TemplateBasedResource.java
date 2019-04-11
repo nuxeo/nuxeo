@@ -46,6 +46,7 @@ public class TemplateBasedResource extends DefaultObject {
         this.uuid = uuid;
     }
 
+    @Override
     protected void initialize(Object... args) {
         if (args != null && args.length > 0) {
             this.uuid = (String) args[0];

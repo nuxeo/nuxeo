@@ -40,6 +40,7 @@ public class SynchronousUnicityCheckListener extends AbstractUnicityChecker impl
 
     private static final Log log = LogFactory.getLog(SynchronousUnicityCheckListener.class);
 
+    @Override
     public void handleEvent(Event event) {
         if (!isUnicityCheckEnabled()) {
             return;

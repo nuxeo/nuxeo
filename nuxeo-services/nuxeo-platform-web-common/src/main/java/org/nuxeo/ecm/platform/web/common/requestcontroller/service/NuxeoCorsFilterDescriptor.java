@@ -135,6 +135,7 @@ public class NuxeoCorsFilterDescriptor implements Serializable, Cloneable {
         };
     }
 
+    @Override
     public NuxeoCorsFilterDescriptor clone() throws CloneNotSupportedException {
         NuxeoCorsFilterDescriptor n = new NuxeoCorsFilterDescriptor();
         n.name = name;

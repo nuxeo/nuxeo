@@ -26,6 +26,7 @@ import fr.opensagres.xdocreport.remoting.resources.domain.Resource;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class NonRecursiveResource extends Resource {
+    @Override
     public Resource getParent() {
         return null;
     }

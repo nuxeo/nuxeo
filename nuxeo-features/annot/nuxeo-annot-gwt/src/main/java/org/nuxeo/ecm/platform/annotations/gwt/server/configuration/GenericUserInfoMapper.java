@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 public class GenericUserInfoMapper implements UserInfoMapper {
 
+    @Override
     public Map<String, String> getUserInfo(NuxeoPrincipal principal) {
         Map<String, String> userInfo = new HashMap<>();
         userInfo.put("userName", principal.getName());

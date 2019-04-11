@@ -32,6 +32,7 @@ public class TemplateRestHelper extends AbstractRenditionRestHelper {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     protected Blob renderAsBlob(DocumentModel doc, String renditionName) {
 
         TemplateBasedDocument template = doc.getAdapter(TemplateBasedDocument.class);

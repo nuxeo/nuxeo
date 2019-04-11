@@ -35,6 +35,7 @@ public class DirectorySelectOneRadioWidgetTypeHandler extends DirectorySelectOne
         super(config);
     }
 
+    @Override
     protected String getEditComponentType() {
         return HtmlSelectOneRadio.COMPONENT_TYPE;
     }

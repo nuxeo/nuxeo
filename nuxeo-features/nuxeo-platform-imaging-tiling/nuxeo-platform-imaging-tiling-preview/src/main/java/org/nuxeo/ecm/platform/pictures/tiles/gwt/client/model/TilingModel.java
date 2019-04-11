@@ -66,6 +66,7 @@ public class TilingModel {
     private List<TilingModelListener> listeners = new ArrayList<>();
 
     private TilingInfoCallback tilingInfoCallback = new TilingInfoCallback() {
+        @Override
         public void tilingInfoUpdated() {
             updateModel();
 

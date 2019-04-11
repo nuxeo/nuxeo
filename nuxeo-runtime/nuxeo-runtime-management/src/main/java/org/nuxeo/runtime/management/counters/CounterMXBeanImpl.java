@@ -35,6 +35,7 @@ public class CounterMXBeanImpl extends org.javasimon.jmx.CounterMXBeanImpl imple
         super(counter);
     }
 
+    @Override
     public String sampleAsString() {
         CounterSample sample = sample();
         return sample.toString();
@@ -58,6 +59,7 @@ public class CounterMXBeanImpl extends org.javasimon.jmx.CounterMXBeanImpl imple
         doFillMap(sample, map, clazz.getSuperclass());
     }
 
+    @Override
     public Map<String, Serializable> sampleAsMap() {
         HashMap<String, Serializable> map = new HashMap<>();
         CounterSample sample = sample();

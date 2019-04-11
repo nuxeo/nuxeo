@@ -32,6 +32,7 @@ import com.google.inject.Scope;
 public class CoreScope implements Scope {
 
     protected final ThreadLocal<Map<Key<?>, Object>> values = new ThreadLocal<Map<Key<?>, Object>>() {
+        @Override
         protected java.util.Map<Key<?>, Object> initialValue() {
             return new HashMap<>();
         };

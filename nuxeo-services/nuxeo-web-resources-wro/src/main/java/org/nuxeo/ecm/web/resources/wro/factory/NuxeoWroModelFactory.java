@@ -103,6 +103,7 @@ public class NuxeoWroModelFactory implements WroModelFactory {
         return null;
     }
 
+    @Override
     public void destroy() {
     }
 

@@ -34,22 +34,27 @@ public abstract class AbstractNode implements Node {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     public boolean isLiteral() {
         return false;
     }
 
+    @Override
     public boolean isBlank() {
         return false;
     }
 
+    @Override
     public boolean isResource() {
         return false;
     }
 
+    @Override
     public boolean isQNameResource() {
         return false;
     }
 
+    @Override
     public int compareTo(Node o) {
         // dummy override, just used to compare statements lists
         return toString().compareTo(o.toString());

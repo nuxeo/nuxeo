@@ -46,6 +46,7 @@ public class XMLPictureTilesSerializer implements PictureTilesSerializer {
         root.addElement("height").setText(info.getHeight() + "");
     }
 
+    @Override
     public String serialize(PictureTiles tiles) {
         org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(rootTag);
         rootElem.addNamespace(picturetilesNSPrefix, picturetilesNS);

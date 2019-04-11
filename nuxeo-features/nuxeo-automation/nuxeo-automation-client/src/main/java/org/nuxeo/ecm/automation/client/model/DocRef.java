@@ -39,14 +39,17 @@ public class DocRef implements OperationInput {
         this.ref = ref;
     }
 
+    @Override
     public String getInputType() {
         return "document";
     }
 
+    @Override
     public String getInputRef() {
         return "doc:" + ref;
     }
 
+    @Override
     public boolean isBinary() {
         return false;
     }

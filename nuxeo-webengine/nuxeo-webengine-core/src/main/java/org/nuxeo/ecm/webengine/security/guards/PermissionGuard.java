@@ -46,6 +46,7 @@ public class PermissionGuard implements Guard {
         this.perm = perm;
     }
 
+    @Override
     public boolean check(Adaptable context) {
         CoreSession session = context.getAdapter(CoreSession.class);
         DocumentModel doc = context.getAdapter(DocumentModel.class);

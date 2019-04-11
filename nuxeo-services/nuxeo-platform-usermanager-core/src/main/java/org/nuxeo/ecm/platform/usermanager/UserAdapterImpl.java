@@ -85,6 +85,7 @@ public class UserAdapterImpl implements UserAdapter {
     /**
      * @since 8.1
      */
+    @Override
     public String getTenantId() {
         return (String) dataModel.getValue(userConfig.tenantIdKey);
     }

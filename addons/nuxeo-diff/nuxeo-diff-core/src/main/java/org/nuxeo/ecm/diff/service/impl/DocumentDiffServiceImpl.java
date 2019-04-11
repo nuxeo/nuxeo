@@ -57,6 +57,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public DocumentDiff diff(CoreSession session, DocumentModel leftDoc, DocumentModel rightDoc) {
 
         // Input sources to hold XML exports
@@ -78,6 +79,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public DocumentDiff diff(String leftXML, String rightXML) {
 
         // Process the XML diff
@@ -92,6 +94,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void configureXMLUnit() {
 
         XMLUnit.setIgnoreWhitespace(true);
@@ -102,6 +105,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void configureDiff(Diff diff) {
 
         diff.overrideDifferenceListener(new IgnoreStructuralDifferenceListener());

@@ -76,10 +76,12 @@ public class RenderingServiceImpl extends DefaultComponent implements RenderingS
         }
     }
 
+    @Override
     public RenderingEngine getEngine(String name) {
         return engines.get(name);
     }
 
+    @Override
     public Collection<RenderingResult> process(RenderingContext renderingCtx) throws RenderingException {
         List<RenderingResult> ret = new ArrayList<>();
 
@@ -96,6 +98,7 @@ public class RenderingServiceImpl extends DefaultComponent implements RenderingS
         return ret;
     }
 
+    @Override
     public void registerEngine(RenderingEngine engine) {
         RenderingEngine existing = engines.put(engine.getFormatName(), engine);
         if (existing != null) {
@@ -105,6 +108,7 @@ public class RenderingServiceImpl extends DefaultComponent implements RenderingS
         }
     }
 
+    @Override
     public void unregisterEngine(String name) {
         engines.remove(name);
     }

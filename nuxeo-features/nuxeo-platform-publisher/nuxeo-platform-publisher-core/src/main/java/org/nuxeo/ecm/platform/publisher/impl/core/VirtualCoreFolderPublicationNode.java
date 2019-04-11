@@ -60,18 +60,22 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
         this.factory = factory;
     }
 
+    @Override
     public String getTitle() {
         return "Sections";
     }
 
+    @Override
     public String getName() {
         return "sections";
     }
 
+    @Override
     public PublicationNode getParent() {
         return null;
     }
 
+    @Override
     public List<PublicationNode> getChildrenNodes() {
         List<PublicationNode> childrenNodes = new ArrayList<>();
         CoreSession session = getCoreSession();
@@ -98,10 +102,12 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
         return Framework.getService(CoreSessionService.class).getCoreSession(coreSessionId);
     }
 
+    @Override
     public List<PublishedDocument> getChildrenDocuments() {
         return Collections.emptyList();
     }
 
+    @Override
     public String getPath() {
         return path;
     }

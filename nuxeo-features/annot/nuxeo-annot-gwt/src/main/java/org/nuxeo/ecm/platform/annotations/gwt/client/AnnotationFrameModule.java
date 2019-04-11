@@ -43,6 +43,7 @@ public class AnnotationFrameModule implements EntryPoint {
     /**
      * This is the entry point method.
      */
+    @Override
     public void onModuleLoad() {
         waitForAnnoteaServerUrlRegistered();
     }
@@ -65,12 +66,14 @@ public class AnnotationFrameModule implements EntryPoint {
         webConfigurationService = GWT.create(WebConfigurationService.class);
         String url = getParentWindowUrl();
         webConfigurationService.getWebConfiguration(url, new AsyncCallback<WebConfiguration>() {
+            @Override
             public void onFailure(Throwable throwable) {
                 Log.debug("onFailure: " + throwable);
                 webConfiguration = WebConfiguration.DEFAULT_WEB_CONFIGURATION;
                 initModule();
             }
 
+            @Override
             public void onSuccess(WebConfiguration result) {
                 webConfiguration = result == null ? WebConfiguration.DEFAULT_WEB_CONFIGURATION : result;
                 initModule();

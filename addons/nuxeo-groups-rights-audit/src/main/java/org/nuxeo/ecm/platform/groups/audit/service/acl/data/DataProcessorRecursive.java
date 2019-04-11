@@ -60,6 +60,7 @@ public class DataProcessorRecursive extends DataProcessor implements IDataProces
      * @param session
      * @param doc
      */
+    @Override
     protected void doAnalyze(CoreSession session, DocumentModel doc, int depth) {
         initSummarySet();
         processDocument(doc);

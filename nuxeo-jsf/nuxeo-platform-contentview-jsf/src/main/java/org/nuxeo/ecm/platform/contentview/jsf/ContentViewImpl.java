@@ -850,6 +850,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
     /**
      * @since 8.4
      */
+    @Override
     public void setQuickFilters(List<QuickFilter> quickFilters) {
         this.quickFilters = quickFilters;
     }
@@ -857,6 +858,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
     /**
      * @since 8.4
      */
+    @Override
     public List<QuickFilter> getQuickFilters() {
         return this.quickFilters;
     }

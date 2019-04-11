@@ -26,6 +26,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class ProbeScheduleListener implements EventListener {
 
+    @Override
     public void handleEvent(Event event) {
         Framework.getService(ProbeManager.class).runAllProbes();
     }

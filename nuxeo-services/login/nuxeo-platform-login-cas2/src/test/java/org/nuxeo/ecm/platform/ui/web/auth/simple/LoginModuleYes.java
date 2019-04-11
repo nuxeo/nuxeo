@@ -39,10 +39,12 @@ public class LoginModuleYes extends NuxeoAbstractServerLoginModule {
 
     protected NuxeoPrincipal identity;
 
+    @Override
     public boolean abort() throws LoginException {
         return true;
     }
 
+    @Override
     public boolean commit() throws LoginException {
         Set<Principal> principals = subject.getPrincipals();
         Principal identity = getIdentity();
@@ -51,12 +53,14 @@ public class LoginModuleYes extends NuxeoAbstractServerLoginModule {
         return true;
     }
 
+    @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
             Map<String, ?> options) {
 
         super.initialize(subject, callbackHandler, sharedState, options);
     }
 
+    @Override
     public boolean login() throws LoginException {
         NameCallback nc = new NameCallback("Username: ", SecurityConstants.ANONYMOUS);
 
@@ -73,6 +77,7 @@ public class LoginModuleYes extends NuxeoAbstractServerLoginModule {
         return true;
     }
 
+    @Override
     public boolean logout() throws LoginException {
         Principal identity = getIdentity();
         Set<Principal> principals = subject.getPrincipals();

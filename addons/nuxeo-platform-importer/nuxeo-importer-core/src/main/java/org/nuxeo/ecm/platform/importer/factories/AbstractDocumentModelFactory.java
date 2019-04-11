@@ -81,6 +81,7 @@ public abstract class AbstractDocumentModelFactory implements ImporterDocumentMo
      * @see org.nuxeo.ecm.platform.importer.base.ImporterDocumentModelFactory# isTargetDocumentModelFolderish
      * (org.nuxeo.ecm.platform.importer.base.SourceNode)
      */
+    @Override
     public boolean isTargetDocumentModelFolderish(SourceNode node) {
         return node.isFolderish();
     }

@@ -37,6 +37,7 @@ import java.util.Map;
  */
 public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory implements PublishedDocumentFactory {
 
+    @Override
     public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             {
 
@@ -64,6 +65,7 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory imple
         return new SimpleCorePublishedDocument(proxy);
     }
 
+    @Override
     public DocumentModel snapshotDocumentBeforePublish(DocumentModel doc) {
         // snapshoting is done as part of the publishing
         return doc;
@@ -77,6 +79,7 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory imple
         throw new NuxeoException("factory can not unwrap this PublishedDocument");
     }
 
+    @Override
     public PublishedDocument wrapDocumentModel(DocumentModel doc) {
         return new SimpleCorePublishedDocument(doc);
     }

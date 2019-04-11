@@ -66,22 +66,27 @@ public class DiffFieldDefinitionImpl implements DiffFieldDefinition {
         this.items = items;
     }
 
+    @Override
     public String getCategory() {
         return category;
     }
 
+    @Override
     public String getSchema() {
         return schema;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public boolean isDisplayContentDiffLinks() {
         return displayContentDiffLinks;
     }
 
+    @Override
     public List<DiffFieldItemDefinition> getItems() {
         return items;
     }

@@ -82,6 +82,7 @@ public class DummyBlobProvider extends AbstractBlobProvider {
         return k;
     }
 
+    @Override
     public List<AppLink> getAppLinks(String user, ManagedBlob blob) {
         AppLink link = new AppLink();
         link.setAppName("dummyApp");

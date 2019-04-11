@@ -60,26 +60,32 @@ public class LocalPackageData implements PackageData {
         this.root = file;
     }
 
+    @Override
     public ClassLoader getLoader() {
         return loader;
     }
 
+    @Override
     public File getEntry(String path) {
         return new File(root, path);
     }
 
+    @Override
     public InputStream getEntryAsStream(String path) throws IOException {
         return new FileInputStream(getEntry(path));
     }
 
+    @Override
     public File getManifest() {
         return getEntry(LocalPackage.MANIFEST);
     }
 
+    @Override
     public File getRoot() {
         return root;
     }
 
+    @Override
     public Class<?> loadClass(String name) throws PackageException {
         try {
             return loader.loadClass(name);

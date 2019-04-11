@@ -58,6 +58,7 @@ public class AnnotationListPopup extends PopupPanel {
         titleBar.add(title);
         titleBar.setCellWidth(title, "100%");
         PushButton closeButton = new PushButton(" ", new ClickListener() {
+            @Override
             public void onClick(Widget arg0) {
                 hide();
             }

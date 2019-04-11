@@ -37,6 +37,7 @@ public class UserIdentificationInfoCallbackHandler implements CallbackHandler {
         this.userIdent = userIdent;
     }
 
+    @Override
     public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
 
         for (Callback c : callbacks) {

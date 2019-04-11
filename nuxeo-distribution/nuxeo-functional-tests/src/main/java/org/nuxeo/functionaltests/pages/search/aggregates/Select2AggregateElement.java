@@ -44,6 +44,7 @@ public class Select2AggregateElement extends Select2WidgetElement implements Agg
         super(driver, element, multiple);
     }
 
+    @Override
     public Map<String, Integer> getAggregates() {
         Map<String, Integer> result = new HashMap<>();
         clickSelect2Field();

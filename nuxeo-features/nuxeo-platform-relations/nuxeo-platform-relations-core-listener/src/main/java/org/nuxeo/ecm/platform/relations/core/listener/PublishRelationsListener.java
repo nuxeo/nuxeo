@@ -91,6 +91,7 @@ public class PublishRelationsListener implements EventListener {
         return graphNamesForCopyFromReplacedProxy;
     }
 
+    @Override
     public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
 

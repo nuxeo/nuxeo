@@ -56,6 +56,7 @@ public class FileTreeIterator implements Iterator<File> {
         return filter;
     }
 
+    @Override
     public boolean hasNext() {
         if (queue.isEmpty()) {
             return false;
@@ -69,6 +70,7 @@ public class FileTreeIterator implements Iterator<File> {
         }
     }
 
+    @Override
     public File next() {
         if (!hasNext()) {
             throw new NoSuchElementException("No more files to iterate over");
@@ -80,6 +82,7 @@ public class FileTreeIterator implements Iterator<File> {
         return file;
     }
 
+    @Override
     public void remove() {
         if (file == null) {
             throw new IllegalStateException("there is no current file to delete");
@@ -97,16 +100,19 @@ public class FileTreeIterator implements Iterator<File> {
             this.file = file;
         }
 
+        @Override
         public boolean hasNext() {
             return file != null;
         }
 
+        @Override
         public File next() {
             File next = file;
             file = null;
             return next;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException("remove not supported");
         }
@@ -126,6 +132,7 @@ public class FileTreeIterator implements Iterator<File> {
             this.dir = dir;
         }
 
+        @Override
         public boolean hasNext() {
             if (children == null) {
                 children = filter == null ? dir.listFiles() : dir.listFiles(filter);
@@ -138,10 +145,12 @@ public class FileTreeIterator implements Iterator<File> {
             }
         }
 
+        @Override
         public File next() {
             return children[++pos];
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException("remove not supported");
         }

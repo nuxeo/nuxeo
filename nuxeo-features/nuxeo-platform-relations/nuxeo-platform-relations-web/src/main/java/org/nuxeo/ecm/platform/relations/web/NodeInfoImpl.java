@@ -59,34 +59,41 @@ public class NodeInfoImpl implements NodeInfo {
 
     // Node interface
 
+    @Override
     public NodeType getNodeType() {
         return node.getNodeType();
     }
 
+    @Override
     public boolean isBlank() {
         return node.isBlank();
     }
 
+    @Override
     public boolean isLiteral() {
         return node.isLiteral();
     }
 
+    @Override
     public boolean isQNameResource() {
         return node.isQNameResource();
     }
 
+    @Override
     public boolean isResource() {
         return node.isResource();
     }
 
     // NodeInfo interface
 
+    @Override
     public int compareTo(Node o) {
         return node.compareTo(o);
     }
 
     // Node Representation interface
 
+    @Override
     public String getAction() {
         if (visible && documentModel != null) {
             String docId = documentModel.getId();
@@ -96,10 +103,12 @@ public class NodeInfoImpl implements NodeInfo {
         return null;
     }
 
+    @Override
     public DocumentModel getDocumentModel() {
         return documentModel;
     }
 
+    @Override
     public String getHref() {
         if (documentModel == null && isResource()) {
             return ((Resource) node).getUri();
@@ -107,10 +116,12 @@ public class NodeInfoImpl implements NodeInfo {
         return null;
     }
 
+    @Override
     public String getIcon() {
         return DocumentModelFunctions.iconPath(documentModel);
     }
 
+    @Override
     public String getTitle() {
         String title = null;
         if (node.isLiteral()) {
@@ -135,18 +146,22 @@ public class NodeInfoImpl implements NodeInfo {
         return title;
     }
 
+    @Override
     public boolean isLink() {
         return getHref() != null;
     }
 
+    @Override
     public boolean isDocument() {
         return documentModel != null;
     }
 
+    @Override
     public boolean isDocumentVisible() {
         return documentModel != null && visible;
     }
 
+    @Override
     public boolean isText() {
         return !(isDocumentVisible() || isLink());
     }

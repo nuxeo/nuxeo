@@ -28,6 +28,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class UserAdapterFactory implements DocumentAdapterFactory {
 
+    @Override
     public Object getAdapter(DocumentModel doc, Class itf) {
         UserManager um = Framework.getService(UserManager.class);
         return new UserAdapterImpl(doc, um);

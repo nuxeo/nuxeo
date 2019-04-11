@@ -104,6 +104,7 @@ public class JSONDocumentObject extends DocumentObject {
         return Response.ok(createdDoc).status(Status.CREATED).build();
     }
 
+    @Override
     @DELETE
     public Response doDelete() {
         super.doDelete();

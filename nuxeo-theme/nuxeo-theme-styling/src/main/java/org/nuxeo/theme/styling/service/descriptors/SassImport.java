@@ -37,6 +37,7 @@ public class SassImport {
      */
     String content;
 
+    @Override
     public SassImport clone() {
         SassImport clone = new SassImport();
         clone.setSrc(src);

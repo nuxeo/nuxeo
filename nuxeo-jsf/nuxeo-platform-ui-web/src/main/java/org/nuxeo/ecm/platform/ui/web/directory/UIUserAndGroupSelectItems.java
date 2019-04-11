@@ -44,6 +44,7 @@ public class UIUserAndGroupSelectItems extends UISelectItems {
 
     // setters & getters
 
+    @Override
     public String getItemLabel() {
         return (String) getStateHelper().eval(UserAndGroupPropertyKeys.itemLabel);
     }

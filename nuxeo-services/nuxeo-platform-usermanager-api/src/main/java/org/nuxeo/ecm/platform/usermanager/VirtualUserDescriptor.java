@@ -67,14 +67,17 @@ public class VirtualUserDescriptor implements VirtualUser {
     @XNodeList(value = "group", type = ArrayList.class, componentType = String.class)
     public List<String> groups;
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
 
+    @Override
     public Map<String, Serializable> getProperties() {
         Map<String, Serializable> props = new HashMap<>();
         props.putAll(properties);
@@ -84,10 +87,12 @@ public class VirtualUserDescriptor implements VirtualUser {
         return props;
     }
 
+    @Override
     public List<String> getGroups() {
         return groups;
     }
 
+    @Override
     public boolean isSearchable() {
         return searchable;
     }

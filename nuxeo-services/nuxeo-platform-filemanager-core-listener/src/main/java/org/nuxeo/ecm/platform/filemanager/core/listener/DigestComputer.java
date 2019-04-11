@@ -100,6 +100,7 @@ public class DigestComputer implements EventListener {
         return Base64.encodeBase64String(b);
     }
 
+    @Override
     public void handleEvent(Event event) {
         if (!initIfNeeded()) {
             return;

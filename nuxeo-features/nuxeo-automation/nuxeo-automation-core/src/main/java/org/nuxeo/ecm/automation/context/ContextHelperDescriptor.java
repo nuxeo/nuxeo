@@ -52,6 +52,7 @@ public class ContextHelperDescriptor {
         return id;
     }
 
+    @Override
     public ContextHelperDescriptor clone() {
         ContextHelperDescriptor copy = new ContextHelperDescriptor();
         copy.id = id;

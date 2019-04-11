@@ -37,6 +37,7 @@ public class AuditEventMetricFactory implements ResourceFactory {
 
     protected ResourcePublisherService publisherService;
 
+    @Override
     public void configure(ResourcePublisherService service, ResourceFactoryDescriptor descriptor) {
         publisherService = service;
         auditService = Framework.getService(Logs.class);
@@ -63,6 +64,7 @@ public class AuditEventMetricFactory implements ResourceFactory {
         publisherService.unregisterResource(name, formatQualifiedName(name));
     }
 
+    @Override
     public void registerResources() {
         for (String name : auditService.getAuditableEventNames()) {
             doRegisterResource(name);

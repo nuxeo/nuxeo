@@ -26,6 +26,7 @@ package org.nuxeo.ecm.webengine.rendering;
  */
 public class MyRenderingExtensionFactory implements RenderingExtensionFactory {
 
+    @Override
     public Object createTemplate() {
         return "My Value 2";
     }

@@ -96,6 +96,7 @@ public class NuxeoDevWebappClassLoader extends NuxeoWebappClassLoader implements
         _children = null;
     }
 
+    @Override
     public synchronized void flushWebResources() {
         resourceEntries.clear();
         ResourceBundle.clearCache(this);
@@ -182,6 +183,7 @@ public class NuxeoDevWebappClassLoader extends NuxeoWebappClassLoader implements
         super.addURL(url);
     }
 
+    @Override
     public ClassLoader getParentClassLoader() {
         return parent;
     }

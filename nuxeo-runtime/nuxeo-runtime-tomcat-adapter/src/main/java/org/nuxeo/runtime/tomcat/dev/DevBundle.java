@@ -100,6 +100,7 @@ public class DevBundle implements Serializable {
      *
      * @since 9.3
      */
+    @Override
     public String toString() {
         return devBundleType.toString().toLowerCase() + ':' + path;
     }

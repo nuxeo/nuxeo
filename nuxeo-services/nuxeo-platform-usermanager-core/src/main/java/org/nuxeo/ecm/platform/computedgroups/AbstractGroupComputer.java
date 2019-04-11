@@ -47,6 +47,7 @@ public abstract class AbstractGroupComputer implements GroupComputer {
     /**
      * Default implementation that searches on all ids for a match.
      */
+    @Override
     public List<String> searchGroups(Map<String, Serializable> filter, Set<String> fulltext) {
 
         List<String> result = new ArrayList<>();
@@ -88,6 +89,7 @@ public abstract class AbstractGroupComputer implements GroupComputer {
      * Default implementation that returns true if method {@link GroupComputer#getAllGroupIds()} contains given group
      * name.
      */
+    @Override
     public boolean hasGroup(String name) {
         List<String> allGroupIds = getAllGroupIds();
         if (allGroupIds != null) {

@@ -25,26 +25,32 @@ public class FakeContentProvider implements ContentProvider {
 
     private static final long serialVersionUID = -5447072937714133528L;
 
+    @Override
     public Object[] getChildren(Object obj) {
         return null;
     }
 
+    @Override
     public Object[] getElements(Object input) {
         return null;
     }
 
+    @Override
     public String[] getFacets(Object object) {
         return null;
     }
 
+    @Override
     public String getLabel(Object obj) {
         return null;
     }
 
+    @Override
     public String getName(Object obj) {
         return null;
     }
 
+    @Override
     public boolean isContainer(Object obj) {
         return false;
     }

@@ -43,6 +43,7 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 @Produces({ "text/html", "*/*" })
 public class ScriptFileWriter implements MessageBodyWriter<ScriptFile> {
 
+    @Override
     public void writeTo(ScriptFile t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
 
@@ -50,10 +51,12 @@ public class ScriptFileWriter implements MessageBodyWriter<ScriptFile> {
         entityStream.flush();
     }
 
+    @Override
     public long getSize(ScriptFile arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
+    @Override
     public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return arg0 == ScriptFile.class;
     }

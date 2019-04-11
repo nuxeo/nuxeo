@@ -44,6 +44,7 @@ public class DeleteRelationsListener implements EventListener {
 
     private RelationManager relationManager;
 
+    @Override
     public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {

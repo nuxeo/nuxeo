@@ -93,6 +93,7 @@ public class UIFavicon extends UIComponentBase {
         getStateHelper().put(PropertyKeys.sizes, sizes);
     }
 
+    @Override
     public String getRendererType() {
         return null;
     }

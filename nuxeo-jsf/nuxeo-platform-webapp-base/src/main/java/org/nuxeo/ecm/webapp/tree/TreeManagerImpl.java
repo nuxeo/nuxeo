@@ -261,14 +261,17 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         return sorter;
     }
 
+    @Override
     public Filter getFilter(String pluginName) {
         return filters.get(pluginName);
     }
 
+    @Override
     public Filter getLeafFilter(String pluginName) {
         return leafFilters.get(pluginName);
     }
 
+    @Override
     public Sorter getSorter(String pluginName) {
         return sorters.get(pluginName);
     }

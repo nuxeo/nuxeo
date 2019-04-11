@@ -61,6 +61,7 @@ public class NuxeoHeaderDescriptor implements Serializable, Cloneable {
         return enabled;
     }
 
+    @Override
     public NuxeoHeaderDescriptor clone() throws CloneNotSupportedException {
         NuxeoHeaderDescriptor d = new NuxeoHeaderDescriptor();
         d.name = name;

@@ -31,6 +31,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  */
 public class RuntimeInventoryFactory extends AbstractResourceFactory {
 
+    @Override
     public void registerResources() {
         service.registerResource("runtime-inventory",
                 ObjectNameFactory.formatQualifiedName("factory", "RuntimeInventory"), RuntimeInventoryMBean.class,
@@ -39,6 +40,7 @@ public class RuntimeInventoryFactory extends AbstractResourceFactory {
 
     public void bindTree() {
         doVisitInventory(new Callback() {
+            @Override
             public void invokeFor(String name, String qualifiedName, Class<?> info, Object instance) {
                 service.registerResource(null, qualifiedName + ",management=inventory", info, instance);
             }
@@ -47,6 +49,7 @@ public class RuntimeInventoryFactory extends AbstractResourceFactory {
 
     public void unbindTree() {
         doVisitInventory(new Callback() {
+            @Override
             public void invokeFor(String name, String qualifiedName, Class<?> info, Object instance) {
                 service.unregisterResource(null, qualifiedName + ",management=inventory");
             }

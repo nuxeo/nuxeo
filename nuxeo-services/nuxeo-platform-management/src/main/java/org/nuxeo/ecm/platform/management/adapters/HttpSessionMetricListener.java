@@ -23,10 +23,12 @@ import javax.servlet.http.HttpSessionListener;
 
 public class HttpSessionMetricListener implements HttpSessionListener {
 
+    @Override
     public void sessionCreated(HttpSessionEvent se) {
         HttpSessionMetricFactory.mbeanAdapter.createdSessionCount += 1;
     }
 
+    @Override
     public void sessionDestroyed(HttpSessionEvent se) {
         HttpSessionMetricFactory.mbeanAdapter.destroyedSessionCount += 1;
     }

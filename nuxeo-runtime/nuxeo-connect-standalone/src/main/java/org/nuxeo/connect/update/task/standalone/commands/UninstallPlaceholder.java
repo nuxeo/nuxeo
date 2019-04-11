@@ -62,6 +62,7 @@ public class UninstallPlaceholder extends AbstractCommand {
         return new InstallPlaceholder(file);
     }
 
+    @Override
     public void readFrom(Element element) throws PackageException {
         String v = element.getAttribute("file");
         if (v.length() > 0) {
@@ -70,6 +71,7 @@ public class UninstallPlaceholder extends AbstractCommand {
         }
     }
 
+    @Override
     public void writeTo(XmlWriter writer) {
         writer.start(ID);
         if (file != null) {

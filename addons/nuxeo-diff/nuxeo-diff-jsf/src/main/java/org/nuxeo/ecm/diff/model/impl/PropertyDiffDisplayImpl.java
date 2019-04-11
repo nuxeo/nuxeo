@@ -57,6 +57,7 @@ public class PropertyDiffDisplayImpl implements PropertyDiffDisplay {
         this.styleClass = styleClass;
     }
 
+    @Override
     public Serializable getValue() {
         return value;
     }
@@ -65,6 +66,7 @@ public class PropertyDiffDisplayImpl implements PropertyDiffDisplay {
         this.value = value;
     }
 
+    @Override
     public DifferenceType getDifferenceType() {
         return differenceType;
     }
@@ -73,6 +75,7 @@ public class PropertyDiffDisplayImpl implements PropertyDiffDisplay {
         this.differenceType = differenceType;
     }
 
+    @Override
     public String getStyleClass() {
         return styleClass;
     }

@@ -47,6 +47,7 @@ public class ServiceTag extends BodyTagSupport {
     // *********************************************************************
     // Tag logic
 
+    @Override
     public int doEndTag() throws JspTagException {
         String service = null;
         if (bodyContent != null)

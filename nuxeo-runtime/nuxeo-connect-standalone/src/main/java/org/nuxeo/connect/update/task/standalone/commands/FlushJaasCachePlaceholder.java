@@ -53,9 +53,11 @@ public class FlushJaasCachePlaceholder extends PostInstallCommand {
         return new FlushJaasCachePlaceholder();
     }
 
+    @Override
     public void readFrom(Element element) throws PackageException {
     }
 
+    @Override
     public void writeTo(XmlWriter writer) {
         writer.start(ID);
         writer.end();

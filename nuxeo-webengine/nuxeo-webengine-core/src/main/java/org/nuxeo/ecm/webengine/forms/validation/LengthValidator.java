@@ -32,6 +32,7 @@ public class LengthValidator implements FieldValidator {
         this.max = max;
     }
 
+    @Override
     public void validate(String value, Object decoded) throws ValidationException {
         if (!validateLength(value.length())) {
             throw new ValidationException();

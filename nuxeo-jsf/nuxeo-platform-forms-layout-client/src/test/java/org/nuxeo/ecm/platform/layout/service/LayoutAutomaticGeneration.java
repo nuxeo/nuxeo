@@ -70,6 +70,7 @@ public class LayoutAutomaticGeneration {
         List<Field> fields = new ArrayList<>();
         fields.addAll(schema.getFields());
         Collections.sort(fields, new Comparator<Field>() {
+            @Override
             public int compare(Field f1, Field f2) {
                 return f1.getName().getLocalName().compareTo(f2.getName().getLocalName());
             }

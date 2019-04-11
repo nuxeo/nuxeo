@@ -47,6 +47,7 @@ public class LoginUrlTag extends BodyTagSupport {
     // *********************************************************************
     // Tag logic
 
+    @Override
     public int doEndTag() throws JspTagException {
         String loginUrl = null;
         if (bodyContent != null)

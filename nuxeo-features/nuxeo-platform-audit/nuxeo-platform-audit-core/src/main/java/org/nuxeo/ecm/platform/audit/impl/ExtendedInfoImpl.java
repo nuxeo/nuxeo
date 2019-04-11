@@ -77,6 +77,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
 
     private Long id;
 
+    @Override
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "LOG_EXTINFO_ID")
@@ -84,6 +85,7 @@ public class ExtendedInfoImpl implements ExtendedInfo {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
@@ -93,11 +95,13 @@ public class ExtendedInfoImpl implements ExtendedInfo {
         return ToStringBuilder.reflectionToString(this);
     }
 
+    @Override
     @Transient
     public Serializable getSerializableValue() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public <T> T getValue(Class<T> clazz) {
         return clazz.cast(this.getSerializableValue());
     }

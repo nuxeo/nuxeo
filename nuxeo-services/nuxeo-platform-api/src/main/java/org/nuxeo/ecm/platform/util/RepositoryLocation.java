@@ -46,6 +46,7 @@ public class RepositoryLocation implements Serializable, Comparable<RepositoryLo
         return name;
     }
 
+    @Override
     public int compareTo(RepositoryLocation o) {
         return name.compareTo(o.name);
     }

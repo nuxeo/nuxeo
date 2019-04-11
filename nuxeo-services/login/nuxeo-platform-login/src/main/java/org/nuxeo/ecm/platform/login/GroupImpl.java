@@ -49,6 +49,7 @@ public class GroupImpl implements Group {
      * @param user The principal to add to the group.
      * @return true if the member was added - false if the member could not be added.
      */
+    @Override
     public boolean addMember(Principal user) {
         if (groupMembers.contains(user)) {
             return false;
@@ -69,6 +70,7 @@ public class GroupImpl implements Group {
      * @param user The principal to remove from the group.
      * @return true if the principal was removed false if the principal was not a member
      */
+    @Override
     public boolean removeMember(Principal user) {
         return groupMembers.removeElement(user);
     }
@@ -76,6 +78,7 @@ public class GroupImpl implements Group {
     /**
      * returns the enumeration of the members in the group.
      */
+    @Override
     public Enumeration<? extends Principal> members() {
         return groupMembers.elements();
     }
@@ -124,6 +127,7 @@ public class GroupImpl implements Group {
      * @param member The principal whose membership must be checked for.
      * @return true if the principal is a member of this group, false otherwise
      */
+    @Override
     public boolean isMember(Principal member) {
 
         //
@@ -142,6 +146,7 @@ public class GroupImpl implements Group {
     /**
      * return the name of the principal.
      */
+    @Override
     public String getName() {
         return group;
     }

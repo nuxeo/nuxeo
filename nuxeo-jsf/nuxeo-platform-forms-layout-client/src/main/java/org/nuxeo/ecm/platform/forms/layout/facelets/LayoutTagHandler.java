@@ -159,6 +159,7 @@ public class LayoutTagHandler extends TagHandler {
         vars = tag.getAttributes().getAll();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     // TODO: add javadoc about variables exposed
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {

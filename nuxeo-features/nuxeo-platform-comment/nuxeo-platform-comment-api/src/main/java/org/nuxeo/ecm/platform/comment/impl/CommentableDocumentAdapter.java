@@ -48,30 +48,36 @@ public class CommentableDocumentAdapter implements CommentableDocument {
         this.docModel = docModel;
     }
 
+    @Override
     public DocumentModel addComment(DocumentModel comment) {
         return addComment(docModel, comment);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public DocumentModel addComment(DocumentModel comment, String path) {
         comment.setPropertyValue(COMMENT_PARENT_ID, docModel.getId());
         return commentManager.createLocatedComment(docModel, comment, path);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public DocumentModel addComment(DocumentModel parent, DocumentModel comment) {
         comment.setPropertyValue(COMMENT_PARENT_ID, parent.getId());
         return commentManager.createComment(parent, comment);
     }
 
+    @Override
     public void removeComment(DocumentModel comment) {
         commentManager.deleteComment(docModel.getCoreSession(), comment.getId());
     }
 
+    @Override
     public List<DocumentModel> getComments() {
         return getComments(docModel);
     }
 
+    @Override
     public List<DocumentModel> getComments(DocumentModel parent) {
         CoreSession session = docModel.getCoreSession();
         List<Comment> comments = commentManager.getComments(session, parent.getId());

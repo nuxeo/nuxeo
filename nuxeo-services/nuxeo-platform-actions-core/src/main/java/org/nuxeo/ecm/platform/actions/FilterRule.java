@@ -149,6 +149,7 @@ public class FilterRule {
         return getCacheKey().hashCode();
     }
 
+    @Override
     public FilterRule clone() {
         FilterRule clone = new FilterRule();
         clone.grant = grant;

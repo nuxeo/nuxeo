@@ -93,6 +93,7 @@ public class TilingPreviewPanel extends Composite implements TilingModelListener
 
         Button resetZoomButton = new Button();
         resetZoomButton.addClickListener(new ClickListener() {
+            @Override
             public void onClick(Widget arg0) {
                 Window.Location.assign(Window.Location.getHref());
                 decorate();
@@ -104,6 +105,7 @@ public class TilingPreviewPanel extends Composite implements TilingModelListener
 
         Button zoomInButton = new Button();
         zoomInButton.addClickListener(new ClickListener() {
+            @Override
             public void onClick(Widget arg0) {
                 model.zoomIn();
             }
@@ -114,6 +116,7 @@ public class TilingPreviewPanel extends Composite implements TilingModelListener
 
         Button zoomOutButton = new Button();
         zoomOutButton.addClickListener(new ClickListener() {
+            @Override
             public void onClick(Widget arg0) {
                 model.zoomOut();
             }
@@ -125,6 +128,7 @@ public class TilingPreviewPanel extends Composite implements TilingModelListener
         return buttons;
     }
 
+    @Override
     public void onModelChange(TilingModelEvent event, TilingModel model) {
         switch (event) {
         case MOVE_EVENT:

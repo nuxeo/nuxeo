@@ -52,22 +52,29 @@ public abstract class AbstractIOResourceAdapter implements IOResourceAdapter {
         properties = new HashMap<>();
     }
 
+    @Override
     public Map<String, Serializable> getProperties() {
         return properties;
     }
 
+    @Override
     public void setProperties(Map<String, Serializable> properties) {
         this.properties = properties;
     }
 
+    @Override
     public abstract IOResources extractResources(String repo, Collection<DocumentRef> sources);
 
+    @Override
     public abstract IOResources translateResources(String repo, IOResources resources, DocumentTranslationMap map);
 
+    @Override
     public abstract void storeResources(IOResources newResources);
 
+    @Override
     public abstract void getResourcesAsXML(OutputStream out, IOResources newResources);
 
+    @Override
     public abstract IOResources loadResourcesFromXML(InputStream stream);
 
     // helper methods

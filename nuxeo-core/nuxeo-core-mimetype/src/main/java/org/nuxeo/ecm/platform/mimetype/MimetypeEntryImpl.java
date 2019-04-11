@@ -62,38 +62,47 @@ public class MimetypeEntryImpl implements MimetypeEntry {
         this.oleSupported = oleSupported;
     }
 
+    @Override
     public List<String> getExtensions() {
         return extensions;
     }
 
+    @Override
     public String getIconPath() {
         return iconPath;
     }
 
+    @Override
     public List<String> getMimetypes() {
         return mimetypes;
     }
 
+    @Override
     public String getMajor() {
         return normalized.split("/")[0];
     }
 
+    @Override
     public String getMinor() {
         return normalized.split("/")[1];
     }
 
+    @Override
     public String getNormalized() {
         return normalized;
     }
 
+    @Override
     public boolean isBinary() {
         return binary;
     }
 
+    @Override
     public boolean isOnlineEditable() {
         return onlineEditable;
     }
 
+    @Override
     public boolean isOleSupported() {
         return oleSupported;
     }

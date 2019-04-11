@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class DefaultDocumentAnnotability implements DocumentAnnotability {
 
+    @Override
     public boolean isAnnotable(DocumentModel document) {
         return true;
     }

@@ -51,9 +51,11 @@ public class ReloadPropertiesPlaceholder extends PostInstallCommand {
         return new ReloadPropertiesPlaceholder();
     }
 
+    @Override
     public void readFrom(Element element) throws PackageException {
     }
 
+    @Override
     public void writeTo(XmlWriter writer) {
         writer.start(ID);
         writer.end();

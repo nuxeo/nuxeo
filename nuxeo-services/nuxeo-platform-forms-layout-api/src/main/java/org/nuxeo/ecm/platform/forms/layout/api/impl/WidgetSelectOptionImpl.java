@@ -70,14 +70,17 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
         this.itemRendered = itemRendered;
     }
 
+    @Override
     public Serializable getValue() {
         return value;
     }
 
+    @Override
     public String getVar() {
         return var;
     }
 
+    @Override
     public String getItemLabel() {
         return itemLabel;
     }
@@ -96,14 +99,17 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
         this.labels = labels;
     }
 
+    @Override
     public String getItemValue() {
         return itemValue;
     }
 
+    @Override
     public Serializable getItemDisabled() {
         return itemDisabled;
     }
 
+    @Override
     public Serializable getItemRendered() {
         return itemRendered;
     }

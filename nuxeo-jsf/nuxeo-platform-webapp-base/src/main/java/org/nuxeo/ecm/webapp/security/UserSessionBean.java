@@ -47,6 +47,7 @@ public class UserSessionBean implements Serializable, UserSession {
 
     private static final Log log = LogFactory.getLog(UserSessionBean.class);
 
+    @Override
     @Factory(value = "currentUser", scope = SESSION)
     public NuxeoPrincipal getCurrentUser() {
         if (currentUser == null) {
@@ -65,11 +66,13 @@ public class UserSessionBean implements Serializable, UserSession {
         return currentUser;
     }
 
+    @Override
     @Factory(value = "currentNuxeoPrincipal", scope = SESSION)
     public NuxeoPrincipal getCurrentNuxeoPrincipal() {
         return getCurrentUser();
     }
 
+    @Override
     public boolean isAdministrator() {
         NuxeoPrincipal user = getCurrentNuxeoPrincipal();
         if (user == null) {
@@ -79,6 +82,7 @@ public class UserSessionBean implements Serializable, UserSession {
         }
     }
 
+    @Override
     @Destroy
     public void destroy() {
     }

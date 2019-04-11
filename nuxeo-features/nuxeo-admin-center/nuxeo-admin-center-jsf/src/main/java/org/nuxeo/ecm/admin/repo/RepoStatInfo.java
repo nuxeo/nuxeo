@@ -65,6 +65,7 @@ public class RepoStatInfo {
         t1 = System.currentTimeMillis();
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 

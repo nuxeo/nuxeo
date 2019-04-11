@@ -55,6 +55,7 @@ public interface Module extends MessagesProvider {
 
     String getMediaTypeId(MediaType mt);
 
+    @Override
     Map<String, String> getMessages(String language);
 
     Messages getMessages();

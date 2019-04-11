@@ -102,10 +102,12 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
         return deprecatedVersion;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
@@ -143,34 +145,42 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
         return acceptingSubWidgets;
     }
 
+    @Override
     public boolean isList() {
         return list;
     }
 
+    @Override
     public boolean isComplex() {
         return complex;
     }
 
+    @Override
     public boolean isContainingForm() {
         return containingForm;
     }
 
+    @Override
     public List<String> getSupportedFieldTypes() {
         return supportedFieldTypes;
     }
 
+    @Override
     public List<String> getDefaultFieldTypes() {
         return defaultFieldTypes;
     }
 
+    @Override
     public List<FieldDefinition> getDefaultFieldDefinitions() {
         return defaultFieldDefinitions;
     }
 
+    @Override
     public List<String> getCategories() {
         return categories;
     }
 
+    @Override
     public Map<String, List<LayoutDefinition>> getPropertyLayouts() {
         return propertyLayouts;
     }
@@ -194,6 +204,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
         return null;
     }
 
+    @Override
     public List<LayoutDefinition> getPropertyLayouts(String mode, String additionalMode) {
         return getLayouts(propertyLayouts, mode, additionalMode);
     }
@@ -320,6 +331,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     /**
      * @since 5.6
      */
+    @Override
     public boolean isHandlingLabels() {
         return handlingLabels;
     }
@@ -334,6 +346,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     /**
      * @since 5.7.3
      */
+    @Override
     public Map<String, Map<String, Serializable>> getDefaultPropertyValues() {
         return defaultPropertyValues;
     }
@@ -341,6 +354,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     /**
      * @since 5.7.3
      */
+    @Override
     public Map<String, Serializable> getDefaultPropertyValues(String mode) {
         if (defaultPropertyValues != null) {
             Map<String, Serializable> res = new HashMap<>();
@@ -367,6 +381,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     /**
      * @since 6.0
      */
+    @Override
     public Map<String, Map<String, Serializable>> getDefaultControlValues() {
         return defaultControlValues;
     }
@@ -374,6 +389,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     /**
      * @since 6.0
      */
+    @Override
     public Map<String, Serializable> getDefaultControlValues(String mode) {
         if (defaultControlValues != null) {
             Map<String, Serializable> res = new HashMap<>();

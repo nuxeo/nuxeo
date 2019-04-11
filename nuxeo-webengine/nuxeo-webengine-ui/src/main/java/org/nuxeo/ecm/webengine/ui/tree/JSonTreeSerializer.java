@@ -58,6 +58,7 @@ public class JSonTreeSerializer implements TreeItemVisitor {
         return (JSONObject) root.accept(this);
     }
 
+    @Override
     public Object visit(TreeItem item) {
         JSONArray jsons = null;
         if (item.isExpanded()) {

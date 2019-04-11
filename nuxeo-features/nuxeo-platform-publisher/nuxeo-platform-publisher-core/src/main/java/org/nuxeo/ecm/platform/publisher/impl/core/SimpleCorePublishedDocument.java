@@ -50,14 +50,17 @@ public class SimpleCorePublishedDocument implements PublishedDocument {
         this.versionLabel = VersioningHelper.getVersionLabelFor(doc);
     }
 
+    @Override
     public DocumentRef getSourceDocumentRef() {
         return new IdRef(proxy.getSourceId());
     }
 
+    @Override
     public String getSourceRepositoryName() {
         return proxy.getRepositoryName();
     }
 
+    @Override
     public String getSourceVersionLabel() {
         return versionLabel;
     }
@@ -66,10 +69,12 @@ public class SimpleCorePublishedDocument implements PublishedDocument {
         return proxy;
     }
 
+    @Override
     public String getPath() {
         return proxy.getPathAsString();
     }
 
+    @Override
     public String getParentPath() {
         Path path = proxy.getPath();
         return path.removeLastSegments(1).toString();
@@ -79,6 +84,7 @@ public class SimpleCorePublishedDocument implements PublishedDocument {
         this.isPending = isPending;
     }
 
+    @Override
     public boolean isPending() {
         return isPending;
     }

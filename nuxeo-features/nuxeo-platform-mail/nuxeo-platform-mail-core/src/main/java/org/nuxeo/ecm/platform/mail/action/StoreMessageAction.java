@@ -51,6 +51,7 @@ public class StoreMessageAction implements MessageAction {
         this.parentPath = parentPath;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public boolean execute(ExecutionContext context) throws MessagingException {
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
@@ -87,6 +88,7 @@ public class StoreMessageAction implements MessageAction {
         return MAIL_MESSAGE;
     }
 
+    @Override
     public void reset(ExecutionContext context) {
         // do nothing
     }

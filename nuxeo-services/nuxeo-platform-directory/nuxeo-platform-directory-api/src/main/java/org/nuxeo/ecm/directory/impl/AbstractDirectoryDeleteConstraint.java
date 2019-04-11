@@ -35,6 +35,7 @@ public abstract class AbstractDirectoryDeleteConstraint implements DirectoryDele
 
     protected Map<String, String> properties;
 
+    @Override
     public void setProperties(Map<String, String> properties) {
         if (properties != null) {
             this.properties = properties;

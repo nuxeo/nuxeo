@@ -39,10 +39,12 @@ import freemarker.template.TemplateException;
  */
 public class FreemarkerMacro implements WikiMacro {
 
+    @Override
     public String getName() {
         return "freemarker";
     }
 
+    @Override
     public void eval(WikiParameters params, String content, WikiSerializerHandler serializer) throws IOException,
             TemplateException {
         Environment env = serializer.getEnvironment();
@@ -61,6 +63,7 @@ public class FreemarkerMacro implements WikiMacro {
         }
     }
 
+    @Override
     public void evalInline(WikiParameters params, String content, WikiSerializerHandler serializer) throws IOException,
             TemplateException {
         eval(params, content, serializer);

@@ -256,6 +256,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     // widget types
 
+    @Override
     public void registerWidgetType(String category, WidgetTypeDefinition desc) {
         String name = desc.getName();
         String className = desc.getHandlerClassName();
@@ -292,6 +293,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         log.info(String.format("Registered widget type '%s' for category '%s' ", name, category));
     }
 
+    @Override
     public void unregisterWidgetType(String category, WidgetTypeDefinition desc) {
         String name = desc.getName();
         WidgetTypeRegistry typeReg = widgetTypesByCat.get(category);
@@ -307,6 +309,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     // layout types
 
+    @Override
     public void registerLayoutType(String category, LayoutTypeDefinition layoutTypeDef) {
         LayoutTypeDefinitionRegistry reg = layoutTypeDefsByCat.get(category);
         if (reg == null) {
@@ -317,6 +320,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         log.info(String.format("Registered layout type '%s' for category '%s' ", layoutTypeDef.getName(), category));
     }
 
+    @Override
     public void unregisterLayoutType(String category, LayoutTypeDefinition layoutTypeDef) {
         LayoutTypeDefinitionRegistry reg = layoutTypeDefsByCat.get(category);
         if (reg != null) {
@@ -328,6 +332,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     // layouts
 
+    @Override
     public void registerLayout(String category, LayoutDefinition layoutDef) {
         LayoutDefinitionRegistry reg = layoutsByCat.get(category);
         if (reg == null) {
@@ -338,6 +343,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         log.info(String.format("Registered layout '%s' for category '%s' ", layoutDef.getName(), category));
     }
 
+    @Override
     public void unregisterLayout(String category, LayoutDefinition layoutDef) {
         LayoutDefinitionRegistry reg = layoutsByCat.get(category);
         if (reg != null) {
@@ -348,6 +354,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     // widgets
 
+    @Override
     public void registerWidget(String category, WidgetDefinition widgetDef) {
         WidgetDefinitionRegistry reg = widgetsByCat.get(category);
         if (reg == null) {
@@ -358,6 +365,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         log.info(String.format("Registered widget '%s' for category '%s' ", widgetDef.getName(), category));
     }
 
+    @Override
     public void unregisterWidget(String category, WidgetDefinition widgetDef) {
         WidgetDefinitionRegistry reg = widgetsByCat.get(category);
         if (reg != null) {
@@ -410,6 +418,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
 
     // service api
 
+    @Override
     public WidgetType getWidgetType(String category, String typeName) {
         WidgetTypeRegistry reg = widgetTypesByCat.get(category);
         if (reg != null) {
@@ -462,6 +471,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         return res;
     }
 
+    @Override
     public LayoutDefinition getLayoutDefinition(String category, String layoutName) {
         LayoutDefinitionRegistry reg = layoutsByCat.get(category);
         if (reg != null) {
@@ -470,6 +480,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         return null;
     }
 
+    @Override
     public List<String> getLayoutDefinitionNames(String category) {
         LayoutDefinitionRegistry reg = layoutsByCat.get(category);
         if (reg != null) {
@@ -478,6 +489,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         return Collections.emptyList();
     }
 
+    @Override
     public WidgetDefinition getWidgetDefinition(String category, String widgetName) {
         WidgetDefinitionRegistry reg = widgetsByCat.get(category);
         if (reg != null) {

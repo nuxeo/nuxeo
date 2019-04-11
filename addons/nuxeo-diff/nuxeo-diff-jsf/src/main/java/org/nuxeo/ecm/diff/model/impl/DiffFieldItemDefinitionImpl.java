@@ -43,10 +43,12 @@ public class DiffFieldItemDefinitionImpl implements DiffFieldItemDefinition {
         this.displayContentDiffLinks = displayContentDiffLinks;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public boolean isDisplayContentDiffLinks() {
         return displayContentDiffLinks;
     }

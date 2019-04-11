@@ -228,6 +228,7 @@ public class ServiceTicketValidator {
         // **********************************************
         // Parsing logic
 
+        @Override
         public void startElement(String ns, String ln, String qn, Attributes a) {
             // clear the buffer
             currentText = new StringBuilder();
@@ -243,11 +244,13 @@ public class ServiceTicketValidator {
             }
         }
 
+        @Override
         public void characters(char[] ch, int start, int length) {
             // store the body, in stages if necessary
             currentText.append(ch, start, length);
         }
 
+        @Override
         public void endElement(String ns, String ln, String qn) throws SAXException {
             if (authenticationSuccess) {
                 if (qn.equals(USER))
@@ -260,6 +263,7 @@ public class ServiceTicketValidator {
             }
         }
 
+        @Override
         public void endDocument() throws SAXException {
             // save values as appropriate
             if (authenticationSuccess) {

@@ -35,6 +35,7 @@ public class Not implements Guard {
         perm = guard;
     }
 
+    @Override
     public boolean check(Adaptable context) {
         return !perm.check(context);
     }

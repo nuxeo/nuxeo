@@ -64,6 +64,7 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
     // *********************************************************************
     // Response parser
 
+    @Override
     protected DefaultHandler newHandler() {
         return new ProxyHandler();
     }
@@ -87,12 +88,14 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
         // **********************************************
         // Parsing logic
 
+        @Override
         public void startElement(String ns, String ln, String qn, Attributes a) {
             super.startElement(ns, ln, qn, a);
             if (authenticationSuccess && qn.equals(PROXIES))
                 proxyFragment = true;
         }
 
+        @Override
         public void endElement(String ns, String ln, String qn) throws SAXException {
             super.endElement(ns, ln, qn);
             if (qn.equals(PROXIES))
@@ -101,6 +104,7 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
                 proxyList.add(currentText.toString().trim());
         }
 
+        @Override
         public void endDocument() throws SAXException {
             super.endDocument();
             if (authenticationSuccess)
@@ -114,6 +118,7 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
     /**
      * Clears internally manufactured state.
      */
+    @Override
     protected void clear() {
         super.clear();
         proxyList = null;

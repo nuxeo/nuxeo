@@ -56,6 +56,7 @@ public class CASFilterRequestWrapper extends HttpServletRequestWrapper {
      * Specifically, this returns the value of the session attribute, <code>CASFilter.CAS_FILTER_USER</code>.
      * </p>
      */
+    @Override
     public String getRemoteUser() {
         return (String) getSession().getAttribute(CASFilter.CAS_FILTER_USER);
     }

@@ -202,6 +202,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return helpLabels;
     }
 
+    @Override
     public void setHelpLabels(Map<String, String> helpLabels) {
         this.helpLabels = helpLabels;
     }
@@ -220,6 +221,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return labels;
     }
 
+    @Override
     public void setLabels(Map<String, String> labels) {
         this.labels = labels;
     }
@@ -241,6 +243,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return modes;
     }
 
+    @Override
     public void setModes(Map<String, String> modes) {
         this.modes = modes;
     }
@@ -250,6 +253,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -277,6 +281,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return properties;
     }
 
+    @Override
     public void setProperties(Map<String, Map<String, Serializable>> properties) {
         this.properties = properties;
     }
@@ -286,6 +291,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return widgetModeProperties;
     }
 
+    @Override
     public void setWidgetModeProperties(Map<String, Map<String, Serializable>> widgetModeProperties) {
         this.widgetModeProperties = widgetModeProperties;
     }
@@ -325,14 +331,17 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return subWidgets;
     }
 
+    @Override
     public void setSubWidgetDefinitions(WidgetDefinition[] subWidgets) {
         this.subWidgets = subWidgets;
     }
 
+    @Override
     public WidgetReference[] getSubWidgetReferences() {
         return subWidgetReferences;
     }
 
+    @Override
     public void setSubWidgetReferences(WidgetReference[] subWidgetReferences) {
         this.subWidgetReferences = subWidgetReferences;
     }
@@ -342,14 +351,17 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return type;
     }
 
+    @Override
     public void setType(String type) {
         this.type = type;
     }
 
+    @Override
     public String getTypeCategory() {
         return typeCategory;
     }
 
+    @Override
     public void setTypeCategory(String typeCategory) {
         this.typeCategory = typeCategory;
     }
@@ -359,10 +371,12 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return translated;
     }
 
+    @Override
     public void setTranslated(boolean translated) {
         this.translated = translated;
     }
 
+    @Override
     public boolean isHandlingLabels() {
         // migration code
         Map<String, Serializable> controls = getControls(BuiltinModes.ANY, BuiltinModes.ANY);
@@ -375,6 +389,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return handlingLabels;
     }
 
+    @Override
     public void setHandlingLabels(boolean handlingLabels) {
         this.handlingLabels = handlingLabels;
     }
@@ -399,6 +414,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return selectOptions;
     }
 
+    @Override
     public void setSelectOptions(WidgetSelectOption[] selectOptions) {
         this.selectOptions = selectOptions;
     }
@@ -408,6 +424,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return renderingInfos;
     }
 
+    @Override
     public void setRenderingInfos(Map<String, List<RenderingInfo>> renderingInfos) {
         this.renderingInfos = renderingInfos;
     }
@@ -432,6 +449,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return getRenderingInfos(renderingInfos, mode);
     }
 
+    @Override
     public boolean isDynamic() {
         return dynamic;
     }
@@ -440,10 +458,12 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         this.dynamic = dynamic;
     }
 
+    @Override
     public boolean isGlobal() {
         return global;
     }
 
+    @Override
     public void setGlobal(boolean global) {
         this.global = global;
     }

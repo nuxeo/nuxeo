@@ -107,6 +107,7 @@ public class TemplateProcessorDescriptor implements Serializable {
         return enabled;
     }
 
+    @Override
     public TemplateProcessorDescriptor clone() {
 
         TemplateProcessorDescriptor clone = new TemplateProcessorDescriptor();

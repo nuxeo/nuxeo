@@ -37,10 +37,12 @@ public class DefaultPermission implements Permission {
         this.guard = guard;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public boolean check(Adaptable context) {
         return guard.check(context);
     }

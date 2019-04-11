@@ -63,6 +63,7 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
 
     public static final String DEFAULT_VIEW_ID = "layoutDemoIntroduction";
 
+    @Override
     public String getUrlFromDocumentView(DocumentView docView) {
         DocumentLocation docLoc = docView.getDocumentLocation();
         if (docLoc != null) {
@@ -97,6 +98,7 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
     /**
      * Extracts view id and parameters, for both get and post methods
      */
+    @Override
     public DocumentView getDocumentViewFromUrl(String url) {
         // strip url of any jsessionid param
         int jsessionidIndex = url.indexOf(";jsessionid");

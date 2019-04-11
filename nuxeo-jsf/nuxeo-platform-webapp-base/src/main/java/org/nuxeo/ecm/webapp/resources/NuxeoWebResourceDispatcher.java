@@ -57,6 +57,7 @@ public class NuxeoWebResourceDispatcher implements ComponentSystemEventListener 
 
     private static String DEFER_JS_PROP = "nuxeo.jsf.deferJavaScriptLoading";
 
+    @Override
     public void processEvent(ComponentSystemEvent event) throws AbortProcessingException {
         FacesContext ctx = FacesContext.getCurrentInstance();
         UIViewRoot root = ctx.getViewRoot();

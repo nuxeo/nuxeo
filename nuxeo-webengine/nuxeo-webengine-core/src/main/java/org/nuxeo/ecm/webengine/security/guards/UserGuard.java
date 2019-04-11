@@ -44,6 +44,7 @@ public class UserGuard implements Guard {
         this.username = username;
     }
 
+    @Override
     public boolean check(Adaptable context) {
         Principal principal = context.getAdapter(Principal.class);
         if (principal == null) {

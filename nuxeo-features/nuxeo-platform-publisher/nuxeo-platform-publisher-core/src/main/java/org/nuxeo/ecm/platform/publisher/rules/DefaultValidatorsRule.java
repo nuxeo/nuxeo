@@ -39,6 +39,7 @@ public class DefaultValidatorsRule implements ValidatorsRule {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     public String[] computesValidatorsFor(DocumentModel doc) {
         UnrestrictedACPGetter acpg = new UnrestrictedACPGetter(doc);
         acpg.runUnrestricted();

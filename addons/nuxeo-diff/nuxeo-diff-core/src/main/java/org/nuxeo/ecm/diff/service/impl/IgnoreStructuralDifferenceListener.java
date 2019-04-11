@@ -68,6 +68,7 @@ public class IgnoreStructuralDifferenceListener implements DifferenceListener {
      * difference.</li>
      * </ul>
      */
+    @Override
     public int differenceFound(Difference difference) {
 
         boolean unBalancedSchema = false;
@@ -94,6 +95,7 @@ public class IgnoreStructuralDifferenceListener implements DifferenceListener {
                 : RETURN_ACCEPT_DIFFERENCE;
     }
 
+    @Override
     public void skippedComparison(Node control, Node test) {
     }
 }

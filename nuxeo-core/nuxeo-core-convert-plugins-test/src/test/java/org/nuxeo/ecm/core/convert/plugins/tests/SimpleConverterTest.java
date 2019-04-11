@@ -24,14 +24,17 @@ import static org.junit.Assert.assertTrue;
 
 public class SimpleConverterTest extends AbstractConverterTest {
 
+    @Override
     protected void checkTextConversion(String textContent) {
         assertTrue(textContent.trim().startsWith("Hello"));
     }
 
+    @Override
     protected void checkAny2TextConversion(String textContent) {
         checkTextConversion(textContent);
     }
 
+    @Override
     protected void checkArabicConversion(String textContent) {
 
         String trimedTextContent = textContent.trim();

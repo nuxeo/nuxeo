@@ -79,6 +79,7 @@ public class Tag implements Serializable {
     }
 
     protected static class TagLabelComparator implements Comparator<Tag> {
+        @Override
         public int compare(Tag t1, Tag t2) {
             return t1.label.compareToIgnoreCase(t2.label);
         }
@@ -90,6 +91,7 @@ public class Tag implements Serializable {
     public static final Comparator<Tag> LABEL_COMPARATOR = new TagLabelComparator();
 
     protected static class TagWeightComparator implements Comparator<Tag> {
+        @Override
         public int compare(Tag t1, Tag t2) {
             return t2.weight < t1.weight ? -1 : (t2.weight == t1.weight ? 0 : 1);
         }

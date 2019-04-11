@@ -67,6 +67,7 @@ public class SubscriptionStatusWrapper extends SubscriptionStatus {
         return "label.subscriptionStatus." + getContractStatus();
     }
 
+    @Override
     public boolean isError() {
         return errorMessage != null || isSecurityError || versionMismatch || canNotReachConnectServer;
     }

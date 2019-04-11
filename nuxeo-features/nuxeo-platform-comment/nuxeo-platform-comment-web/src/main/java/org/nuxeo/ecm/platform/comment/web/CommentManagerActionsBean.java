@@ -46,6 +46,7 @@ public class CommentManagerActionsBean extends AbstractCommentManagerActionsBean
 
     private static final long serialVersionUID = 6994714264125958209L;
 
+    @Override
     protected CommentableDocument getCommentableDoc() {
         if (commentableDoc == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -62,6 +63,7 @@ public class CommentManagerActionsBean extends AbstractCommentManagerActionsBean
      * Retrieves the list of comment trees associated with a document and constructs a flat list of comments associated
      * with their depth (to easily display them with indentation).
      */
+    @Override
     @Factory(value = "documentThreadedComments", scope = EVENT)
     public List<ThreadEntry> getCommentsAsThread() {
         return getCommentsAsThread(null);

@@ -51,6 +51,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
 
     protected EventProducer eventProducer;
 
+    @Override
     public void init(CoreSession coreSession, ValidatorsRule validatorsRule, Map<String, String> parameters)
             {
         this.coreSession = coreSession;
@@ -61,10 +62,12 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
         }
     }
 
+    @Override
     public void init(CoreSession coreSession, Map<String, String> parameters) {
         init(coreSession, null, parameters);
     }
 
+    @Override
     public String getName() {
         return this.getClass().getSimpleName();
     }
@@ -86,6 +89,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
         return getParameter(TARGET_PUBLISHED_DOCUMENT_STATE);
     }
 
+    @Override
     public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode) {
         return publishDocument(doc, targetNode, null);
     }
@@ -97,6 +101,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
         return false;
     }
 
+    @Override
     public DocumentModel snapshotDocumentBeforePublish(DocumentModel doc) {
 
         if (isSnapshotingEnabled() && needToVersionDocument(doc)) {
@@ -111,24 +116,30 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
         }
     }
 
+    @Override
     public String[] getValidatorsFor(DocumentModel dm) {
         return validatorsRule.computesValidatorsFor(dm);
     }
 
+    @Override
     public ValidatorsRule getValidatorsRule() {
         return validatorsRule;
     }
 
+    @Override
     public void validatorPublishDocument(PublishedDocument publishedDocument, String comment) {
     }
 
+    @Override
     public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) {
     }
 
+    @Override
     public boolean canManagePublishing(PublishedDocument publishedDocument) {
         return false;
     }
 
+    @Override
     public boolean hasValidationTask(PublishedDocument publishedDocument) {
         return false;
     }

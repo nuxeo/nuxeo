@@ -69,6 +69,7 @@ public class Main extends ModuleRoot {
             }
         }
         Collections.sort(list, new Comparator<ModuleShortcut>() {
+            @Override
             public int compare(ModuleShortcut o1, ModuleShortcut o2) {
                 return o1.title.compareTo(o2.title);
             }

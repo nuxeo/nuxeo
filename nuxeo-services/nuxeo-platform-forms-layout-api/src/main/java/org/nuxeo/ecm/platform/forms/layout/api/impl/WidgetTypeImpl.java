@@ -54,18 +54,22 @@ public class WidgetTypeImpl implements WidgetType {
         this.properties = properties;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public Class<?> getWidgetTypeClass() {
         return typeClass;
     }
 
+    @Override
     public Map<String, String> getProperties() {
         return properties;
     }
 
+    @Override
     public List<String> getAliases() {
         return aliases;
     }

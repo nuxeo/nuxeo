@@ -58,6 +58,7 @@ public class ContentDiffDisplayImpl extends PropertyDiffDisplayImpl implements C
         this.displayTextConversion = displayTextConversion;
     }
 
+    @Override
     public boolean isDisplayHtmlConversion() {
         return displayHtmlConversion;
     }
@@ -66,6 +67,7 @@ public class ContentDiffDisplayImpl extends PropertyDiffDisplayImpl implements C
         this.displayHtmlConversion = displayHtmlConversion;
     }
 
+    @Override
     public boolean isDisplayTextConversion() {
         return displayTextConversion;
     }

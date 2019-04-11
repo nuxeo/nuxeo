@@ -52,6 +52,7 @@ public class FileWriter implements MessageBodyWriter<File> {
 
     private static final Log log = LogFactory.getLog(FileWriter.class);
 
+    @Override
     public void writeTo(File t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         try (FileInputStream in = new FileInputStream(t)) {
@@ -66,11 +67,13 @@ public class FileWriter implements MessageBodyWriter<File> {
         }
     }
 
+    @Override
     public long getSize(File arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         long n = arg0.length();
         return n <= 0 ? -1 : n;
     }
 
+    @Override
     public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return File.class.isAssignableFrom(arg0);
     }

@@ -118,6 +118,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         return (OperationRegistry) connector.execute(req);
     }
 
+    @Override
     public synchronized void shutdown() {
         adapterManager.clear();
         url = null;
@@ -125,6 +126,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         registry = null;
     }
 
+    @Override
     public Session getSession() throws IOException {
         Connector connector = newConnector();
         if (requestInterceptor != null) {
@@ -150,10 +152,12 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         return login(connector);
     }
 
+    @Override
     public Session getSession(final String username, final String password) throws IOException {
         return getSession(new BasicAuthInterceptor(username, password));
     }
 
+    @Override
     public Session getSession(final String token) throws IOException {
         return getSession(new TokenAuthInterceptor(token));
     }
@@ -163,6 +167,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         return getSession();
     }
 
+    @Override
     public Session getSession(TokenCallback cb) throws IOException {
         String token = cb.getLocalToken();
         if (token == null) {

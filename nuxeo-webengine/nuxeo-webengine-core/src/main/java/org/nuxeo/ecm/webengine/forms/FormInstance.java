@@ -37,6 +37,7 @@ public interface FormInstance extends FormDataProvider {
 
     Blob[] getBlobs(String key);
 
+    @Override
     Map<String, String[]> getFormFields();
 
     Map<String, Blob[]> getBlobFields();

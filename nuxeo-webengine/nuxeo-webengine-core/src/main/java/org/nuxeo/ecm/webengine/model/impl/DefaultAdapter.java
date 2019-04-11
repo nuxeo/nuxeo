@@ -40,6 +40,7 @@ public class DefaultAdapter extends AbstractResource<ResourceTypeImpl> implement
         return true;
     }
 
+    @Override
     public Resource getTarget() {
         return prev;
     }

@@ -60,6 +60,7 @@ public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin, NuxeoA
         return false;
     }
 
+    @Override
     public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
         if (!initialized) {
@@ -95,22 +96,27 @@ public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin, NuxeoA
         return false;
     }
 
+    @Override
     public void initPlugin(Map<String, String> parameters) {
         // NOP
     }
 
+    @Override
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
         return Boolean.FALSE;
     }
 
+    @Override
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;
     }
 
+    @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         return null;
     }
 
+    @Override
     public Boolean handleLogout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         return Boolean.FALSE;
     }

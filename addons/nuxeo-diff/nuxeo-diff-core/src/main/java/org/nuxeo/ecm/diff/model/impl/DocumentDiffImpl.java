@@ -49,26 +49,32 @@ public class DocumentDiffImpl implements DocumentDiff {
         docDiff = new HashMap<>();
     }
 
+    @Override
     public Map<String, SchemaDiff> getDocDiff() {
         return docDiff;
     }
 
+    @Override
     public int getSchemaCount() {
         return docDiff.size();
     }
 
+    @Override
     public boolean isDocDiffEmpty() {
         return getSchemaCount() == 0;
     }
 
+    @Override
     public List<String> getSchemaNames() {
         return new ArrayList<>(docDiff.keySet());
     }
 
+    @Override
     public SchemaDiff getSchemaDiff(String schema) {
         return docDiff.get(schema);
     }
 
+    @Override
     public SchemaDiff initSchemaDiff(String schema) {
         SchemaDiff schemaDiff = new SchemaDiffImpl();
         docDiff.put(schema, schemaDiff);

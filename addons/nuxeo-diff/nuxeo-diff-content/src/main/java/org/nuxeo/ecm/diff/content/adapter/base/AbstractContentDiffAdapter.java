@@ -40,20 +40,24 @@ public abstract class AbstractContentDiffAdapter implements ContentDiffAdapter {
 
     protected DocumentModel adaptedDoc;
 
+    @Override
     public String getFileContentDiffURL(DocumentModel otherDoc, ContentDiffConversionType conversionType, String locale) {
         return ContentDiffHelper.getContentDiffURL(adaptedDoc, otherDoc, conversionType.name(), locale);
     }
 
+    @Override
     public String getFileContentDiffURL(DocumentModel otherDoc, String xpath, ContentDiffConversionType conversionType,
             String locale) {
         return ContentDiffHelper.getContentDiffURL(adaptedDoc, otherDoc, xpath, conversionType.name(), locale);
     }
 
+    @Override
     public List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc, ContentDiffConversionType conversionType,
             Locale locale) throws ContentDiffException, ConversionException {
         return getContentDiffBlobs(otherDoc, conversionType, locale);
     }
 
+    @Override
     public List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc, String xpath,
             ContentDiffConversionType conversionType, Locale locale) throws ContentDiffException, ConversionException {
         return getContentDiffBlobs(otherDoc, xpath, conversionType, locale);
@@ -65,6 +69,7 @@ public abstract class AbstractContentDiffAdapter implements ContentDiffAdapter {
     protected abstract List<Blob> getContentDiffBlobs(DocumentModel otherDoc, String xpath,
             ContentDiffConversionType conversionType, Locale locale) throws ContentDiffException, ConversionException;
 
+    @Override
     public void setAdaptedDocument(DocumentModel doc) {
         this.adaptedDoc = doc;
     }

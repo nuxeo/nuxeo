@@ -49,6 +49,7 @@ public class SendMailAction implements MessageAction {
         this.textMessage = textMessage;
     }
 
+    @Override
     public boolean execute(ExecutionContext context) throws MessagingException {
         Message message = context.getMessage();
         if (log.isDebugEnabled()) {
@@ -65,6 +66,7 @@ public class SendMailAction implements MessageAction {
         return true;
     }
 
+    @Override
     public void reset(ExecutionContext context) {
         // do nothing
     }

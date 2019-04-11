@@ -61,18 +61,22 @@ public class DirectoryUIDescriptor implements DirectoryUI {
     @XNodeList(value = "deleteConstraint", type = ArrayList.class, componentType = DirectoryDeleteConstraintDescriptor.class)
     List<DirectoryDeleteConstraintDescriptor> deleteConstraints;
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getLayout() {
         return layout;
     }
 
+    @Override
     public String getView() {
         return view;
     }
 
+    @Override
     public String getSortField() {
         return sortField;
     }
@@ -81,10 +85,12 @@ public class DirectoryUIDescriptor implements DirectoryUI {
         return enabled;
     }
 
+    @Override
     public Boolean isReadOnly() {
         return readOnly;
     }
 
+    @Override
     public List<DirectoryDeleteConstraint> getDeleteConstraints() {
         List<DirectoryDeleteConstraint> res = new ArrayList<>();
         if (deleteConstraints != null) {

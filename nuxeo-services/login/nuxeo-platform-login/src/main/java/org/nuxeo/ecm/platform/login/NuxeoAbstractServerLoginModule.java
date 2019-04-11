@@ -68,11 +68,13 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
 
     protected abstract NuxeoPrincipal createIdentity(String username) throws LoginException;
 
+    @Override
     public boolean abort() throws LoginException {
         log.trace("abort");
         return true;
     }
 
+    @Override
     public boolean commit() throws LoginException {
         log.trace("commit, loginOk=" + loginOk);
         if (!loginOk) {
@@ -102,6 +104,7 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
         return true;
     }
 
+    @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
             Map<String, ?> options) {
         this.subject = subject;
@@ -136,6 +139,7 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
         }
     }
 
+    @Override
     public boolean logout() throws LoginException {
         log.trace("logout");
         // Remove the user identity

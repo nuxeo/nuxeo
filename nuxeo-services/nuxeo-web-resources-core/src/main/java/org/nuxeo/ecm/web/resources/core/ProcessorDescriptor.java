@@ -53,6 +53,7 @@ public class ProcessorDescriptor implements Processor {
     @XNodeList(value = "types/type", type = ArrayList.class, componentType = String.class)
     protected List<String> types;
 
+    @Override
     public String getName() {
         return name;
     }
@@ -64,6 +65,7 @@ public class ProcessorDescriptor implements Processor {
         return enabled != null;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled == null || Boolean.TRUE.equals(enabled);
     }
@@ -83,6 +85,7 @@ public class ProcessorDescriptor implements Processor {
         return order;
     }
 
+    @Override
     public Class<?> getTargetProcessorClass() {
         return klass;
     }

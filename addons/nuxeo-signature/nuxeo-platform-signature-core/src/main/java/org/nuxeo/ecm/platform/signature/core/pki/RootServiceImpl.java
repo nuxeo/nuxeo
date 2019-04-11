@@ -205,6 +205,7 @@ public class RootServiceImpl extends DefaultComponent implements RootService {
     /**
      * Public certificate for the CA root. Encoded as an ASN.1 DER ("anybody there?") formatted byte array.
      */
+    @Override
     public byte[] getRootPublicCertificate() throws CertException {
         X509Certificate certificate;
         try {

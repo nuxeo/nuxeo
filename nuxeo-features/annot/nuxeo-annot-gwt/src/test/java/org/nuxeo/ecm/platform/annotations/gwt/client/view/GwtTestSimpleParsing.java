@@ -44,6 +44,7 @@ public class GwtTestSimpleParsing extends AbstractDocumentGWTTest {
         assertFalse(resultInnerHtml.contains("decorate1"));
     }
 
+    @Override
     public String getInnerHtml() {
         return new StringBuilder("<!-- Page 1 -->").append("<a name=\"1\"></a>").append(
                 "<div style=\"position: relative; width: 595px; height: 842px;\">").append("<style type=\"text/css\">").append(

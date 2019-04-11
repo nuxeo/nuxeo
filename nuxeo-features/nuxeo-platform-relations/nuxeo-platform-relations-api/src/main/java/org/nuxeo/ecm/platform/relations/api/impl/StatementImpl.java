@@ -89,18 +89,22 @@ public class StatementImpl implements Statement {
         this.object = object;
     }
 
+    @Override
     public Node getObject() {
         return object;
     }
 
+    @Override
     public void setObject(Node object) {
         this.object = object;
     }
 
+    @Override
     public Resource getPredicate() {
         return predicate;
     }
 
+    @Override
     public void setPredicate(Node predicate) {
         if (predicate != null && !predicate.isResource()) {
             throw new InvalidPredicateException();
@@ -108,10 +112,12 @@ public class StatementImpl implements Statement {
         this.predicate = (Resource) predicate;
     }
 
+    @Override
     public Subject getSubject() {
         return subject;
     }
 
+    @Override
     public void setSubject(Node subject) {
         if (subject != null) {
             if (subject instanceof Subject) {
@@ -122,10 +128,12 @@ public class StatementImpl implements Statement {
         }
     }
 
+    @Override
     public Map<Resource, Node[]> getProperties() {
         return properties;
     }
 
+    @Override
     public Map<String, Node[]> getStringProperties() {
         Map<String, Node[]> stringProps = new HashMap<>();
         for (Map.Entry<Resource, Node[]> property : properties.entrySet()) {
@@ -134,6 +142,7 @@ public class StatementImpl implements Statement {
         return stringProps;
     }
 
+    @Override
     public Node getProperty(Resource property) {
         // return first one found
         Node node = null;
@@ -144,11 +153,13 @@ public class StatementImpl implements Statement {
         return node;
     }
 
+    @Override
     public Node[] getProperties(Resource property) {
         Node[] values = properties.get(property);
         return values;
     }
 
+    @Override
     public void setProperties(Map<Resource, Node[]> properties) {
         if (properties != null) {
             for (Map.Entry<Resource, Node[]> property : properties.entrySet()) {
@@ -159,6 +170,7 @@ public class StatementImpl implements Statement {
         }
     }
 
+    @Override
     public void setProperty(Resource property, Node value) {
         if (property != null && value != null) {
             Node[] values = { value };
@@ -166,20 +178,24 @@ public class StatementImpl implements Statement {
         }
     }
 
+    @Override
     public void setProperties(Resource property, Node[] values) {
         if (property != null && values != null && values.length > 0) {
             properties.put(property, values);
         }
     }
 
+    @Override
     public void deleteProperties() {
         properties.clear();
     }
 
+    @Override
     public void deleteProperty(Resource property) {
         properties.remove(property);
     }
 
+    @Override
     public void deleteProperty(Resource property, Node value) {
         if (properties.containsKey(property)) {
             List<Node> valuesList = new ArrayList<>();
@@ -193,6 +209,7 @@ public class StatementImpl implements Statement {
         }
     }
 
+    @Override
     public void deleteProperties(Resource property, Node[] values) {
         if (properties.containsKey(property) && values != null && values.length > 0) {
             List<Node> valuesList = new ArrayList<>();
@@ -206,6 +223,7 @@ public class StatementImpl implements Statement {
         }
     }
 
+    @Override
     public void addProperties(Map<Resource, Node[]> properties) {
         if (properties != null) {
             for (Map.Entry<Resource, Node[]> property : properties.entrySet()) {
@@ -214,6 +232,7 @@ public class StatementImpl implements Statement {
         }
     }
 
+    @Override
     public void addProperty(Resource property, Node value) {
         if (property != null && value != null) {
             if (properties.containsKey(property)) {
@@ -230,6 +249,7 @@ public class StatementImpl implements Statement {
         }
     }
 
+    @Override
     public void addProperties(Resource property, Node[] values) {
         if (property != null && values != null && values.length > 0) {
             if (properties.containsKey(property)) {
@@ -279,6 +299,7 @@ public class StatementImpl implements Statement {
         return result;
     }
 
+    @Override
     public int compareTo(Statement o) {
         // dumb implementation, just used to compare statements lists
         return toString().compareTo(o.toString());

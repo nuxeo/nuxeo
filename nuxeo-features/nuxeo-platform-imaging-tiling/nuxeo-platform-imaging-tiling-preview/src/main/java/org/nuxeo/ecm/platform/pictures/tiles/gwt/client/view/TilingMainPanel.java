@@ -63,6 +63,7 @@ public class TilingMainPanel extends Composite {
 
             final ThumbnailButton thumbnailButton = this;
             addClickListener(new ClickListener() {
+                @Override
                 public void onClick(Widget arg0) {
                     showThumbnail = !showThumbnail;
                     previewControllerPanel.setVisible(showThumbnail);
@@ -115,6 +116,7 @@ public class TilingMainPanel extends Composite {
     private void loadControllerPanelTilingInfo() {
         final TilingInfo tilingInfo = new TilingInfo(repoId, docId, contextPath, 64, 64, 3);
         tilingInfo.updateTilingInfo(new TilingInfoCallback() {
+            @Override
             public void tilingInfoUpdated() {
                 // Continue the loading
                 loadModelTilingInfo(tilingInfo);
@@ -132,6 +134,7 @@ public class TilingMainPanel extends Composite {
         final TilingInfo currentTilingInfo = new TilingInfo(repoId, docId, contextPath, TILE_WIDTH, TILE_HEIGHT,
                 maxTiles);
         currentTilingInfo.updateTilingInfo(new TilingInfoCallback() {
+            @Override
             public void tilingInfoUpdated() {
                 finishLoading(tilingInfo, currentTilingInfo);
             }

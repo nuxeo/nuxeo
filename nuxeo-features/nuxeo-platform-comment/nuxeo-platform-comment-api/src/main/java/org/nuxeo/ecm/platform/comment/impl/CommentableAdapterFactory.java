@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
  */
 public class CommentableAdapterFactory implements DocumentAdapterFactory {
 
+    @Override
     public Object getAdapter(DocumentModel doc, Class itf) {
         if (doc.hasFacet("Commentable")) {
             return new CommentableDocumentAdapter(doc);

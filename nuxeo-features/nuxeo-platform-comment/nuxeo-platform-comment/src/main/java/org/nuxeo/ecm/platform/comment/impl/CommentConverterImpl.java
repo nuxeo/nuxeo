@@ -30,10 +30,12 @@ import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
  */
 public class CommentConverterImpl implements CommentConverter {
 
+    @Override
     public String getDocumentType() {
         return CommentsConstants.COMMENT_DOC_TYPE;
     }
 
+    @Override
     public void updateDocumentModel(DocumentModel docModel, DocumentModel comment) {
         docModel.copyContent(comment);
     }

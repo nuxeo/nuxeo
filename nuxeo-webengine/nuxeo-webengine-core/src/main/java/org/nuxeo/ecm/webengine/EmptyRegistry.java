@@ -30,31 +30,38 @@ import javax.ws.rs.ext.MessageBodyWriter;
 @Deprecated
 public class EmptyRegistry implements ResourceRegistry {
 
+    @Override
     public void addBinding(ResourceBinding binding) {
         // TODO Auto-generated method stub
     }
 
+    @Override
     public void addMessageBodyReader(MessageBodyReader<?> reader) {
         // TODO Auto-generated method stub
     }
 
+    @Override
     public void addMessageBodyWriter(MessageBodyWriter<?> writer) {
         // TODO Auto-generated method stub
     }
 
+    @Override
     public void clear() {
         // TODO Auto-generated method stub
     }
 
+    @Override
     public ResourceBinding[] getBindings() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public void reload() {
         // TODO Auto-generated method stub
     }
 
+    @Override
     public void removeBinding(ResourceBinding binding) {
         // TODO Auto-generated method stub
     }

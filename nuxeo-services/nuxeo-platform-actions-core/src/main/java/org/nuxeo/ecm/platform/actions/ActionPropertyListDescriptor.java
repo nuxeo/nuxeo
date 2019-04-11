@@ -43,6 +43,7 @@ public class ActionPropertyListDescriptor implements Serializable {
         return values;
     }
 
+    @Override
     public ActionPropertyListDescriptor clone() {
         ActionPropertyListDescriptor clone = new ActionPropertyListDescriptor();
         if (values != null) {

@@ -31,6 +31,7 @@ import freemarker.template.TemplateModelException;
  */
 public class MyRenderingExtension implements TemplateMethodModelEx {
 
+    @Override
     public Object exec(List arguments) throws TemplateModelException {
         return "My Value 1";
     }

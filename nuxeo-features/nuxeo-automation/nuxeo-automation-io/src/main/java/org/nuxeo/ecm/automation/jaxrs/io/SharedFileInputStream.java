@@ -60,10 +60,12 @@ public class SharedFileInputStream extends InputStream implements SharedInputStr
         this.in.skip(start);
     }
 
+    @Override
     public long getPosition() {
         return this.current;
     }
 
+    @Override
     public SharedFileInputStream newStream(long start, long end) {
         try {
             long length;
@@ -78,10 +80,12 @@ public class SharedFileInputStream extends InputStream implements SharedInputStr
         }
     }
 
+    @Override
     public int read(byte[] buffer) throws IOException {
         return read(buffer, 0, buffer.length);
     }
 
+    @Override
     public int read(byte[] buffer, int offset, int len) throws IOException {
         int i = 0;
         if (len == 0)
@@ -98,6 +102,7 @@ public class SharedFileInputStream extends InputStream implements SharedInputStr
         return i;
     }
 
+    @Override
     public int read() throws IOException {
         if (this.current == this.length)
             return -1;
@@ -105,10 +110,12 @@ public class SharedFileInputStream extends InputStream implements SharedInputStr
         return this.in.read();
     }
 
+    @Override
     public boolean markSupported() {
         return true;
     }
 
+    @Override
     public long skip(long len) throws IOException {
         for (int count = 0; count < len; ++count) {
             if (read() < 0)
@@ -117,11 +124,13 @@ public class SharedFileInputStream extends InputStream implements SharedInputStr
         return len;
     }
 
+    @Override
     public void mark(int limit) {
         this.marked = this.current;
         this.in.mark(limit);
     }
 
+    @Override
     public void reset() throws IOException {
         current = marked;
         in.reset();

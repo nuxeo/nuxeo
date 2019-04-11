@@ -40,11 +40,13 @@ public class APIHelper implements RenderingExtensionFactory {
     public static final APIHelper INSTANCE = new APIHelper();
 
     public static final Comparator<DocumentType> DOCTYPE_COMPARATOR = new Comparator<DocumentType>() {
+        @Override
         public int compare(DocumentType o1, DocumentType o2) {
             return o1.getName().compareTo(o2.getName());
         }
     };
 
+    @Override
     public Object createTemplate() {
         return this;
     }

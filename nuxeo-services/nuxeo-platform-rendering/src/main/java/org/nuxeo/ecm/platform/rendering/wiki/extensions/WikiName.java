@@ -33,6 +33,7 @@ public class WikiName implements WikiFilter {
 
     public static final Pattern pattern = Pattern.compile("[A-Z]+[a-z]+[A-Z][A-Za-z]*");
 
+    @Override
     public String apply(String content) {
         Matcher matcher = pattern.matcher(content);
         if (matcher.matches()) {

@@ -55,18 +55,22 @@ public class DiffComplexFieldDefinitionImpl implements DiffComplexFieldDefinitio
         this.excludedItems = excludedItems;
     }
 
+    @Override
     public String getSchema() {
         return schema;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public List<DiffFieldItemDefinition> getIncludedItems() {
         return includedItems;
     }
 
+    @Override
     public List<DiffFieldItemDefinition> getExcludedItems() {
         return excludedItems;
     }

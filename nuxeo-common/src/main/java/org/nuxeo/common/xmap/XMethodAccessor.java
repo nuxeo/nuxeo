@@ -42,10 +42,12 @@ public class XMethodAccessor implements XAccessor {
         this.klass = klass;
     }
 
+    @Override
     public Class getType() {
         return setter.getParameterTypes()[0];
     }
 
+    @Override
     public void setValue(Object instance, Object value) {
         try {
             setter.invoke(instance, value);
@@ -64,6 +66,7 @@ public class XMethodAccessor implements XAccessor {
         return "XMethodSetter {method: " + setter + '}';
     }
 
+    @Override
     public Object getValue(Object instance) {
         // lazy initialization for getter to keep the compatibility
         // with current xmap definition

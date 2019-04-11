@@ -47,6 +47,7 @@ public class DocumentXMLExporterImpl implements DocumentXMLExporter {
     /**
      * {@inheritDoc}
      */
+    @Override
     public InputStream exportXML(DocumentModel doc, CoreSession session) {
 
         byte[] xmlExportByteArray = exportXMLAsByteArray(doc, session);
@@ -56,6 +57,7 @@ public class DocumentXMLExporterImpl implements DocumentXMLExporter {
     /**
      * {@inheritDoc}
      */
+    @Override
     public InputSource exportXMLAsInputSource(DocumentModel doc, CoreSession session) {
 
         InputStream xmlExportInputStream = exportXML(doc, session);
@@ -65,6 +67,7 @@ public class DocumentXMLExporterImpl implements DocumentXMLExporter {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final byte[] exportXMLAsByteArray(DocumentModel doc, CoreSession session) {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

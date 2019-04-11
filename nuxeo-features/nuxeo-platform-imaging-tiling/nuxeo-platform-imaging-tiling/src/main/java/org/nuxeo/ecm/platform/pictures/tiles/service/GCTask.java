@@ -54,6 +54,7 @@ public class GCTask implements Runnable {
         GC_INTERVAL = interval;
     }
 
+    @Override
     public void run() {
         log.debug("starting GC thread");
         while (GCEnabled) {

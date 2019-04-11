@@ -142,10 +142,12 @@ public class WebAnnotationConfigurationServiceImpl extends DefaultComponent impl
         }
     }
 
+    @Override
     public List<WebAnnotationDefinitionDescriptor> getAllWebAnnotationDefinitions() {
         return new ArrayList<>(annotationDefinitionsDescriptors.values());
     }
 
+    @Override
     public List<WebAnnotationDefinitionDescriptor> getEnabledWebAnnotationDefinitions() {
         List<WebAnnotationDefinitionDescriptor> definitions = new ArrayList<>();
         for (WebAnnotationDefinitionDescriptor def : annotationDefinitionsDescriptors.values()) {
@@ -156,22 +158,27 @@ public class WebAnnotationConfigurationServiceImpl extends DefaultComponent impl
         return definitions;
     }
 
+    @Override
     public UserInfoMapper getUserInfoMapper() {
         return userInfoMapper;
     }
 
+    @Override
     public WebPermission getWebPermission() {
         return webPermission;
     }
 
+    @Override
     public Map<String, FilterDescriptor> getFilterDefinitions() {
         return filterDescriptors;
     }
 
+    @Override
     public Set<String> getDisplayedFields() {
         return displayedFields;
     }
 
+    @Override
     public Map<String, String> getFieldLabels() {
         return fieldLabels;
     }

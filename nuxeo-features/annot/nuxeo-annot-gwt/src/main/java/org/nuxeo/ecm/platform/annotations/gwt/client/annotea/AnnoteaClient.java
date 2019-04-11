@@ -60,10 +60,12 @@ public class AnnoteaClient {
         postRequest = new RequestBuilder(RequestBuilder.POST, URL.encode(controller.getAnnoteaServerUrl()));
         try {
             postRequest.sendRequest(request, new RequestCallback() {
+                @Override
                 public void onError(Request request, Throwable exception) {
                     Window.alert("Error while sending data to annotea server: " + exception.toString());
                 }
 
+                @Override
                 public void onResponseReceived(Request request, Response response) {
                     responseManager.processSubmitAnnotationResponse(response.getText());
                     getAnnotationList(controller.getDocumentUrl());
@@ -88,9 +90,11 @@ public class AnnoteaClient {
         RequestBuilder getRequest = new RequestBuilder(RequestBuilder.GET, URL.encode(url));
         try {
             getRequest.sendRequest(null, new RequestCallback() {
+                @Override
                 public void onError(Request request, Throwable exception) {
                 }
 
+                @Override
                 public void onResponseReceived(Request request, Response response) {
                     responseManager.processAnnotationListResponse(response.getText());
                     if (forceDecorate) {
@@ -119,9 +123,11 @@ public class AnnoteaClient {
 
         try {
             req.sendRequest(null, new RequestCallback() {
+                @Override
                 public void onError(Request arg0, Throwable arg1) {
                 }
 
+                @Override
                 public void onResponseReceived(Request arg0, Response arg1) {
                     getAnnotationList(Window.Location.getHref(), true);
                     controller.reloadAnnotations();

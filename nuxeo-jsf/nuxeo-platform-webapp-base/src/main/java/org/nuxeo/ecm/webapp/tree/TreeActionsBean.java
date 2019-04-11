@@ -99,6 +99,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
     @In(create = true)
     protected TreeInvalidatorBean treeInvalidator;
 
+    @Override
     public List<DocumentTreeNode> getTreeRoots() {
         return getTreeRoots(false);
     }
@@ -200,6 +201,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
         requestMap.put(NODE_SELECTED_MARKER, Boolean.TRUE);
     }
 
+    @Override
     public String getCurrentDocumentPath() {
         if (currentDocumentPath == null) {
             DocumentModel currentDoc = navigationContext.getCurrentDocument();
@@ -235,6 +237,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
         return result;
     }
 
+    @Override
     @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetCurrentDocumentData() {
@@ -271,6 +274,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
         return false;
     }
 
+    @Override
     @Observer(value = { EventNames.GO_HOME, EventNames.DOMAIN_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED,
             EventNames.DOCUMENT_SECURITY_CHANGED, EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
     @BypassInterceptors
@@ -306,6 +310,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
     /**
      * @since 6.0
      */
+    @Override
     public void toggleListener() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
@@ -315,6 +320,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
     /**
      * @since 6.0
      */
+    @Override
     public boolean isNodeExpandEvent() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext != null) {

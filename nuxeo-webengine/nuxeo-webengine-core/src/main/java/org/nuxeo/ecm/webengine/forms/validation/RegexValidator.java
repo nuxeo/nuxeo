@@ -34,6 +34,7 @@ public class RegexValidator implements FieldValidator {
         this.pattern = Pattern.compile(regex);
     }
 
+    @Override
     public void validate(String value, Object decoded) throws ValidationException {
         if (!pattern.matcher(value).matches()) {
             throw new ValidationException();

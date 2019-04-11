@@ -44,6 +44,7 @@ public class Or implements Guard {
         perms = guards;
     }
 
+    @Override
     public boolean check(Adaptable context) {
         for (Guard perm : perms) {
             if (perm.check(context)) {

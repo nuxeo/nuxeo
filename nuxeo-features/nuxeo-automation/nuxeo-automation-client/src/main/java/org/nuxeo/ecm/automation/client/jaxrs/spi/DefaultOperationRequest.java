@@ -63,6 +63,7 @@ public class DefaultOperationRequest implements OperationRequest {
         this.ctx = ctx;
     }
 
+    @Override
     public Session getSession() {
         return session;
     }
@@ -102,6 +103,7 @@ public class DefaultOperationRequest implements OperationRequest {
         return null;
     }
 
+    @Override
     public OperationRequest setInput(Object input) {
         if (input == null) {
             checkInput("void");
@@ -112,14 +114,17 @@ public class DefaultOperationRequest implements OperationRequest {
         return this;
     }
 
+    @Override
     public Object getInput() {
         return input;
     }
 
+    @Override
     public String getUrl() {
         return session.getClient().getBaseUrl() + op.url;
     }
 
+    @Override
     public OperationRequest set(String key, Object value) {
         Param param = getParam(key);
         if (param == null) {
@@ -157,28 +162,34 @@ public class DefaultOperationRequest implements OperationRequest {
         return this;
     }
 
+    @Override
     public OperationRequest setContextProperty(String key, Object value) {
         ctx.put(key, value);
         return this;
     }
 
+    @Override
     public Map<String, Object> getContextParameters() {
         return ctx;
     }
 
+    @Override
     public Map<String, Object> getParameters() {
         return params;
     }
 
+    @Override
     public Object execute() throws IOException {
         return session.execute(this);
     }
 
+    @Override
     public OperationRequest setHeader(String key, String value) {
         headers.put(key, value);
         return this;
     }
 
+    @Override
     public Map<String, String> getHeaders() {
         return headers;
     }

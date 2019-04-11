@@ -40,14 +40,17 @@ public class RenderingInfoImpl implements RenderingInfo {
         this.translated = translated;
     }
 
+    @Override
     public String getLevel() {
         return level;
     }
 
+    @Override
     public String getMessage() {
         return message;
     }
 
+    @Override
     public boolean isTranslated() {
         return translated;
     }

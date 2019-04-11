@@ -55,14 +55,17 @@ public class FormManager implements InvocationHandler, Form {
         // TODO when implementing file upload - remove here any previously created file
     }
 
+    @Override
     public Collection<String> unknownKeys() {
         return unknownKeys;
     }
 
+    @Override
     public Map<String, String[]> fields() {
         return fields;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void load(FormDataProvider data, Form proxy) throws ValidationException {
         ValidationException ve = null;
@@ -126,6 +129,7 @@ public class FormManager implements InvocationHandler, Form {
         }
     }
 
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (method.getDeclaringClass() == Form.class) {
             try {

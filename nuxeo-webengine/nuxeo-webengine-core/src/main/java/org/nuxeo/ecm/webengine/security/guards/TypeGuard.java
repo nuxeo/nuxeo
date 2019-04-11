@@ -43,6 +43,7 @@ public class TypeGuard implements Guard {
         this.type = type;
     }
 
+    @Override
     public boolean check(Adaptable context) {
         return context.getAdapter(DocumentModel.class).getType().equals(type);
     }

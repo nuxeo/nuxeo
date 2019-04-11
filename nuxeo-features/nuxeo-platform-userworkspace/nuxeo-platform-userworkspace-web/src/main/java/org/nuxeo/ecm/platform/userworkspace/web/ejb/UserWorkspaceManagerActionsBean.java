@@ -102,6 +102,7 @@ public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActi
         initialized = true;
     }
 
+    @Override
     public DocumentModel getCurrentUserPersonalWorkspace() {
         if (!initialized) {
             initialize();
@@ -117,6 +118,7 @@ public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActi
                 navigationContext.getCurrentDocument());
     }
 
+    @Override
     public String navigateToCurrentUserPersonalWorkspace() {
         if (!initialized) {
             initialize();
@@ -142,6 +144,7 @@ public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActi
     }
 
     // Rux INA-221: create a new method for the 2 separated links
+    @Override
     public String navigateToOverallWorkspace() {
         if (!initialized) {
             initialize();

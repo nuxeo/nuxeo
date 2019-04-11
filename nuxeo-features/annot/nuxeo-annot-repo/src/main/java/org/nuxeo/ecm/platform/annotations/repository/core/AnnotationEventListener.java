@@ -41,6 +41,7 @@ public class AnnotationEventListener implements EventListener {
 
     private final DefaultNuxeoUriResolver resolver = new DefaultNuxeoUriResolver();
 
+    @Override
     public void afterAnnotationCreated(NuxeoPrincipal principal, Annotation annotation) {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
             listener.afterAnnotationCreated(principal, getDocumentLocation(annotation), annotation);
@@ -60,42 +61,49 @@ public class AnnotationEventListener implements EventListener {
         return listeners;
     }
 
+    @Override
     public void afterAnnotationDeleted(NuxeoPrincipal principal, Annotation annotation) {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
             listener.afterAnnotationDeleted(principal, getDocumentLocation(annotation), annotation);
         }
     }
 
+    @Override
     public void afterAnnotationRead(NuxeoPrincipal principal, Annotation annotation) {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
             listener.afterAnnotationRead(principal, getDocumentLocation(annotation), annotation);
         }
     }
 
+    @Override
     public void afterAnnotationUpdated(NuxeoPrincipal principal, Annotation annotation) {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
             listener.afterAnnotationUpdated(principal, getDocumentLocation(annotation), annotation);
         }
     }
 
+    @Override
     public void beforeAnnotationCreated(NuxeoPrincipal principal, Annotation annotation) {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
             listener.beforeAnnotationCreated(principal, getDocumentLocation(annotation), annotation);
         }
     }
 
+    @Override
     public void beforeAnnotationDeleted(NuxeoPrincipal principal, Annotation annotation) {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
             listener.beforeAnnotationDeleted(principal, getDocumentLocation(annotation), annotation);
         }
     }
 
+    @Override
     public void beforeAnnotationRead(NuxeoPrincipal principal, String annotationId) {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
             listener.beforeAnnotationRead(principal, annotationId);
         }
     }
 
+    @Override
     public void beforeAnnotationUpdated(NuxeoPrincipal principal, Annotation annotation) {
         for (AnnotatedDocumentEventListener listener : getListeners()) {
             listener.beforeAnnotationUpdated(principal, getDocumentLocation(annotation), annotation);

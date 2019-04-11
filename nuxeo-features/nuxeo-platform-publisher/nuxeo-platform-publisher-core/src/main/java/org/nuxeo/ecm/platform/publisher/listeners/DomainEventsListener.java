@@ -44,6 +44,7 @@ public class DomainEventsListener implements EventListener {
 
     public static final String DISABLE_DOMAIN_LISTENER = "disableDomainListener";
 
+    @Override
     public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         Boolean disableListener = (Boolean) ctx.getProperty(DISABLE_DOMAIN_LISTENER);

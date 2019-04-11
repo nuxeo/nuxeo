@@ -45,39 +45,48 @@ public class MemoryStore implements ResourceStore {
         this.location = "java:" + System.identityHashCode(this);
     }
 
+    @Override
     public boolean exists(String name) {
         return store.containsKey(name);
     }
 
+    @Override
     public byte[] getBytes(String name) {
         return store.get(name);
     }
 
+    @Override
     public InputStream getStream(String name) {
         byte[] data = store.get(name);
         return data == null ? null : new ByteArrayInputStream(data);
     }
 
+    @Override
     public URL getURL(String name) { // TODO not yet implemented
         return null;
     }
 
+    @Override
     public long lastModified(String name) {
         return 0;
     }
 
+    @Override
     public void put(String name, InputStream data) throws IOException {
         store.put(name, IOUtils.toByteArray(data));
     }
 
+    @Override
     public void put(String name, byte[] data) throws IOException {
         store.put(name, data);
     }
 
+    @Override
     public void remove(String name) {
         store.remove(name);
     }
 
+    @Override
     public String getLocation() {
         return "java";
     }

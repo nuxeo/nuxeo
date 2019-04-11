@@ -32,18 +32,22 @@ public class NullRangeXPointer implements XPointer {
         this.xpointerString = xpointer;
     }
 
+    @Override
     public String getMethod() {
         return null;
     }
 
+    @Override
     public String getUrl() {
         return null;
     }
 
+    @Override
     public String getXPath() {
         return null;
     }
 
+    @Override
     public String getXpointerString() {
         return xpointerString;
     }

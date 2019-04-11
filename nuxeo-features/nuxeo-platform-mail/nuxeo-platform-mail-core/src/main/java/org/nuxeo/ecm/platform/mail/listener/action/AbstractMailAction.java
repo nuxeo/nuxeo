@@ -35,10 +35,12 @@ import org.nuxeo.ecm.platform.mail.action.MessageAction;
  */
 public abstract class AbstractMailAction implements MessageAction {
 
+    @Override
     public boolean execute(ExecutionContext context) throws MessagingException {
         throw new RuntimeException("Not implemented");
     }
 
+    @Override
     public void reset(ExecutionContext context) {
         // do nothing
     }

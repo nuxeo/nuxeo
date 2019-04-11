@@ -49,6 +49,7 @@ public class SelectOneRadioDirectoryWidgetElement extends WidgetElement {
         }
     }
 
+    @Override
     public String getInputValue() {
         List<WebElement> options = getInputElement().findElements(By.xpath(".//input[type='radio']"));
         for (WebElement option : options) {

@@ -154,6 +154,7 @@ public class AsyncSession implements Session {
             super(method, url + ASYNC_ADAPTER, input);
         }
 
+        @Override
         protected AsyncSession getSession() {
             return AsyncSession.this;
         }

@@ -245,6 +245,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         }
     }
 
+    @Override
     public boolean login() throws LoginException {
         loginOk = false;
 

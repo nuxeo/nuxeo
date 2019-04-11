@@ -33,14 +33,17 @@ public class SimpleFormDataProvider extends HashMap<String, String[]> implements
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     public Collection<String> getKeys() {
         return keySet();
     }
 
+    @Override
     public String[] getList(String key) {
         return get(key);
     }
 
+    @Override
     public String getString(String key) {
         String[] v = get(key);
         if (v != null && v.length > 0) {
@@ -49,6 +52,7 @@ public class SimpleFormDataProvider extends HashMap<String, String[]> implements
         return null;
     }
 
+    @Override
     public Map<String, String[]> getFormFields() {
         return this;
     }

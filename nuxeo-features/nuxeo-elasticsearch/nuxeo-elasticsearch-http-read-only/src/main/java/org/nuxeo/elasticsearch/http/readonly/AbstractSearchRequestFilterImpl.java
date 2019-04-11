@@ -56,6 +56,7 @@ public abstract class AbstractSearchRequestFilterImpl implements SearchRequestFi
 
     }
 
+    @Override
     public void init(CoreSession session, String indices, String types, String rawQuery, String payload) {
         RequestValidator validator = new RequestValidator();
         this.indices = validator.getIndices(indices);
@@ -69,10 +70,12 @@ public abstract class AbstractSearchRequestFilterImpl implements SearchRequestFi
         }
     }
 
+    @Override
     public String getTypes() {
         return types;
     }
 
+    @Override
     public String getIndices() {
         return indices;
     }
@@ -89,6 +92,7 @@ public abstract class AbstractSearchRequestFilterImpl implements SearchRequestFi
         }
     }
 
+    @Override
     public @NotNull String getUrl() {
         if (url == null) {
             url = "/" + indices + "/" + types + "/_search";
@@ -99,6 +103,7 @@ public abstract class AbstractSearchRequestFilterImpl implements SearchRequestFi
         return url;
     }
 
+    @Override
     public abstract String getPayload() throws JSONException;
 
     protected Map<String, String> getQueryMap() {

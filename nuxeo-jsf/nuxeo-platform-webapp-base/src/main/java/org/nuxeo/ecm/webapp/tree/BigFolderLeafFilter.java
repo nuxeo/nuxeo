@@ -41,6 +41,7 @@ public class BigFolderLeafFilter implements Filter {
     /**
      * Accepts if the document has the {@code BigFolder} facet.
      */
+    @Override
     public boolean accept(DocumentModel document) {
         return document.hasFacet(FacetNames.BIG_FOLDER);
     }

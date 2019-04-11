@@ -71,6 +71,7 @@ public class ContextExtensionFactoryDescriptor implements Serializable {
         return name;
     }
 
+    @Override
     public ContextExtensionFactoryDescriptor clone() {
         ContextExtensionFactoryDescriptor copy = new ContextExtensionFactoryDescriptor();
         copy.name = name;

@@ -249,6 +249,7 @@ public class TilingPreviewControllerPanel extends FocusPanel implements TilingMo
         event.cancelBubble(true);
     }
 
+    @Override
     public void onModelChange(TilingModelEvent event, TilingModel model) {
         switch (event) {
         case TILING_INFO_UPDATED:

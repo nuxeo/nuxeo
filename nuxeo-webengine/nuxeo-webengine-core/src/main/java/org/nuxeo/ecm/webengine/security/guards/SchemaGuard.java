@@ -43,6 +43,7 @@ public class SchemaGuard implements Guard {
         this.schema = schema;
     }
 
+    @Override
     public boolean check(Adaptable context) {
         return context.getAdapter(DocumentModel.class).hasSchema(schema);
     }

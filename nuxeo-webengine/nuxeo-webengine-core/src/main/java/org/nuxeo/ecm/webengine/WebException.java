@@ -285,6 +285,7 @@ public class WebException extends WebApplicationException {
         return type;
     }
 
+    @Override
     public Throwable getCause() {
         return cause;
     }

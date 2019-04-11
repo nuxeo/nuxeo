@@ -103,10 +103,12 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements Director
         registry.remove(desc.getName());
     }
 
+    @Override
     public DirectoryUI getDirectoryInfo(String directoryName) {
         return registry.get(directoryName);
     }
 
+    @Override
     public List<String> getDirectoryNames() {
         List<String> dirNames = new ArrayList<>(registry.keySet());
         Collections.sort(dirNames, String.CASE_INSENSITIVE_ORDER);

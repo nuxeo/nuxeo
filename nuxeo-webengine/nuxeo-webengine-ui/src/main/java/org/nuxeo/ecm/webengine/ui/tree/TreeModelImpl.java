@@ -41,14 +41,17 @@ public class TreeModelImpl implements TreeModel {
         this.provider = provider;
     }
 
+    @Override
     public ContentProvider getContentProvider() {
         return provider;
     }
 
+    @Override
     public void setContentProvider(ContentProvider provider) {
         this.provider = provider;
     }
 
+    @Override
     public void setInput(Object input) {
         if (input == null) {
             root = null;
@@ -57,18 +60,22 @@ public class TreeModelImpl implements TreeModel {
         }
     }
 
+    @Override
     public TreeItem getRoot() {
         return root;
     }
 
+    @Override
     public TreeItem findAndReveal(String path) {
         return findAndReveal(new Path(path));
     }
 
+    @Override
     public TreeItem find(String path) {
         return find(new Path(path));
     }
 
+    @Override
     public TreeItem findAndReveal(Path path) {
         if (root == null) {
             return null;
@@ -76,6 +83,7 @@ public class TreeModelImpl implements TreeModel {
         return root.findAndReveal(path);
     }
 
+    @Override
     public TreeItem find(Path path) {
         if (root == null) {
             return null;
@@ -88,6 +96,7 @@ public class TreeModelImpl implements TreeModel {
         return null;
     }
 
+    @Override
     public Object getInput() {
         return root == null ? null : root.getObject();
     }

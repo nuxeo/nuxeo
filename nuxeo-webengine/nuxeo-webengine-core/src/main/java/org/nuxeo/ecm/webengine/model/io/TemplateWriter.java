@@ -41,15 +41,18 @@ import org.nuxeo.ecm.webengine.model.Template;
 @Produces("*/*")
 public class TemplateWriter implements MessageBodyWriter<Template> {
 
+    @Override
     public void writeTo(Template t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         t.render(entityStream);
     }
 
+    @Override
     public long getSize(Template arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
+    @Override
     public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return Template.class.isAssignableFrom(arg0);
     }

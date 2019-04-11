@@ -71,6 +71,7 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
         this.params = new ArrayList<>();
     }
 
+    @Override
     public int compareTo(OperationDocumentation o) {
         String s1 = label == null ? id : label;
         String s2 = o.label == null ? o.id : o.label;
@@ -166,6 +167,7 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
             return name + " [" + type + "] " + (isRequired ? "required" : "optional");
         }
 
+        @Override
         public int compareTo(Param o) {
             if (isRequired && !o.isRequired) {
                 return -1;

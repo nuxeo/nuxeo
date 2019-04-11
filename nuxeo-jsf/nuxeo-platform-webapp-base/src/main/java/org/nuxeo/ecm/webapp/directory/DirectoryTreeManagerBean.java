@@ -84,10 +84,12 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     /*
      * The directoryTrees need a working core session in order to perform search actions.
      */
+    @Override
     public boolean isInitialized() {
         return documentManager != null;
     }
 
+    @Override
     public DirectoryTreeNode get(String treeName) {
         DirectoryTreeService dirTreeService = getDirectoryTreeService();
         if (seamReload.isDevModeSet() && seamReload.shouldResetCache(dirTreeService, treeModelsTimestamp)) {
@@ -141,10 +143,12 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         return treeModel;
     }
 
+    @Override
     public List<String> getDirectoryTreeNames() {
         return getDirectoryTreeService().getDirectoryTrees();
     }
 
+    @Override
     public List<DirectoryTreeNode> getDirectoryTrees() {
         if (directoryTrees == null) {
             directoryTrees = new LinkedList<>();
@@ -155,6 +159,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         return directoryTrees;
     }
 
+    @Override
     public String getSelectedTreeName() {
         if (selectedTree == null) {
             List<String> names = getDirectoryTreeNames();
@@ -165,6 +170,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         return selectedTree;
     }
 
+    @Override
     public void setSelectedTreeName(String treeName) {
         selectedTree = treeName;
     }
@@ -178,6 +184,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         return res;
     }
 
+    @Override
     public DirectoryTreeNode getSelectedTree() {
         return get(getSelectedTreeName());
     }
@@ -190,10 +197,12 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         return directoryTreeService;
     }
 
+    @Override
     public String getLabelFor(String directoryTreeName, String fullPath) {
         return getLabelFor(directoryTreeName, fullPath, false);
     }
 
+    @Override
     public String getLabelFor(String directoryTreeName, String fullPath, boolean includeDirectoryTreeLabel) {
         DirectoryTreeNode rootNode = get(directoryTreeName);
         List<String> labels = new ArrayList<>();

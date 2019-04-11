@@ -185,6 +185,7 @@ public class AnnotationPopupEventListener implements EventListener {
         }
     }
 
+    @Override
     public void onBrowserEvent(Event event) {
         onEvent(event);
     }

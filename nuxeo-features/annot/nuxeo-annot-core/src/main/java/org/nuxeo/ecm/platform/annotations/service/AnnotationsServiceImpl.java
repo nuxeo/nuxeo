@@ -70,6 +70,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
         resolver = configuration.getUriResolver();
     }
 
+    @Override
     public Annotation addAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl) {
         String id = idGenerator.getNext();
         return addAnnotation(annotation, user, baseUrl, id);
@@ -85,11 +86,13 @@ public class AnnotationsServiceImpl implements AnnotationsService {
 
     }
 
+    @Override
     public void deleteAnnotation(Annotation annotation, NuxeoPrincipal user) {
         Graph graph = relationManager.getGraphByName(AnnotationsConstants.DEFAULT_GRAPH_NAME);
         graph.remove(annotation.getStatements());
     }
 
+    @Override
     public void deleteAnnotationFor(URI uri, Annotation annotation, NuxeoPrincipal user) {
         List<Statement> statementsToDelete = new ArrayList<>();
 
@@ -113,6 +116,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
         graph.remove(statementsToDelete);
     }
 
+    @Override
     public Annotation getAnnotation(String id, NuxeoPrincipal user, String baseUrl) {
         String uri = AnnotationsConstants.DEFAULT_BASE_URI + id;
         String query = GET_ANN_QUERY.replaceFirst("source", uri);
@@ -133,6 +137,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
         return ((Literal) result.get(0)).getValue();
     }
 
+    @Override
     public List<Annotation> queryAnnotations(URI uri, NuxeoPrincipal user) {
         AnnotationQuery query = new AnnotationQuery();
         Graph graph = relationManager.getGraphByName(AnnotationsConstants.DEFAULT_GRAPH_NAME);
@@ -148,12 +153,14 @@ public class AnnotationsServiceImpl implements AnnotationsService {
         return query.getAnnotationsCountForURIs(uri, graph);
     }
 
+    @Override
     public Annotation updateAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl) {
         String id = annotation.getId();
         deleteAnnotation(annotation, user);
         return addAnnotation(annotation, user, baseUrl, id);
     }
 
+    @Override
     public Graph getAnnotationGraph() {
         return relationManager.getGraphByName(AnnotationsConstants.DEFAULT_GRAPH_NAME);
     }

@@ -70,10 +70,12 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         this.append = append;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
@@ -87,6 +89,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
     }
 
     // FIXME: the parameter 'action' is not used!
+    @Override
     public boolean accept(Action action, ActionContext context) {
         if (log.isDebugEnabled()) {
             if (action == null) {

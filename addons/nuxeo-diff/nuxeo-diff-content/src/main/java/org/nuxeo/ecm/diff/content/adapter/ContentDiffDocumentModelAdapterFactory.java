@@ -40,6 +40,7 @@ public class ContentDiffDocumentModelAdapterFactory implements DocumentAdapterFa
         return contentDiffAdapterManager;
     }
 
+    @Override
     public Object getAdapter(DocumentModel doc, Class<?> itf) {
         return getContentDiffAdapterManager().getAdapter(doc);
     }

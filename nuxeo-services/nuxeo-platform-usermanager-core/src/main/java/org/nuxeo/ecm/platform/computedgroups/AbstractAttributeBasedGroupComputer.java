@@ -40,6 +40,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends AbstractGroupC
 
     protected abstract String getAttributeForGroupComputation();
 
+    @Override
     public List<String> getAllGroupIds() {
 
         List<String> companies = new ArrayList<>();
@@ -56,6 +57,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends AbstractGroupC
         return companies;
     }
 
+    @Override
     public List<String> getGroupMembers(String groupName) {
 
         Map<String, Serializable> filter = new HashMap<>();
@@ -71,6 +73,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends AbstractGroupC
         return memberIds;
     }
 
+    @Override
     public List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
         List<String> grpNames = new ArrayList<>();
         String property = (String) nuxeoPrincipal.getModel().getProperty(getUM().getUserSchemaName(),
@@ -81,10 +84,12 @@ public abstract class AbstractAttributeBasedGroupComputer extends AbstractGroupC
         return grpNames;
     }
 
+    @Override
     public List<String> getParentsGroupNames(String groupName) {
         return null;
     }
 
+    @Override
     public List<String> getSubGroupsNames(String groupName) {
         return null;
     }

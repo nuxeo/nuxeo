@@ -36,6 +36,7 @@ public class DOCX2TextConverter extends XmlZip2TextConverter {
 
     private static final String WORD_DOCUMENT_ZIP_ENTRY_NAME = "word/document.xml";
 
+    @Override
     protected void readXmlZipContent(ZipInputStream zis, XMLReader reader, StringBuilder sb) throws IOException,
             SAXException {
 

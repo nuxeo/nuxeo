@@ -123,6 +123,7 @@ public class DefaultDocumentView implements DocumentView {
         return fields.get(name);
     }
 
+    @Override
     public Object get(DocumentModel doc, String name) throws PropertyException {
         Field field = fields.get(name);
         if (field != null) {
@@ -139,6 +140,7 @@ public class DefaultDocumentView implements DocumentView {
         return UNKNOWN;
     }
 
+    @Override
     public Collection<String> keys(DocumentModel doc) {
         Collection<String> keys = new ArrayList<>(fields.keySet());
         keys.addAll(Arrays.asList(doc.getSchemas()));
@@ -158,150 +160,180 @@ public class DefaultDocumentView implements DocumentView {
     }
 
     protected static final Field SESSION = new Field() {
+        @Override
         public final String getName() {
             return "session";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getCoreSession();
         }
     };
 
     protected static final Field ID = new Field() {
+        @Override
         public final String getName() {
             return "id";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getId();
         }
     };
 
     protected static final Field NAME = new Field() {
+        @Override
         public final String getName() {
             return "name";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getName();
         }
     };
 
     protected static final Field PATH = new Field() {
+        @Override
         public final String getName() {
             return "path";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getPathAsString();
         }
     };
 
     protected static final Field TYPE = new Field() {
+        @Override
         public final String getName() {
             return "type";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getType();
         }
     };
 
     protected static final Field SCHEMAS = new Field() {
+        @Override
         public final String getName() {
             return "schemas";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getSchemas();
         }
     };
 
     protected static final Field FACETS = new Field() {
+        @Override
         public final String getName() {
             return "facets";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getFacets();
         }
     };
 
     protected static final Field STATE = new Field() {
+        @Override
         public final String getName() {
             return "state";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getCurrentLifeCycleState();
         }
     };
 
     protected static final Field LOCKED = new Field() {
+        @Override
         public final String getName() {
             return "isLocked";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.isLocked();
         }
     };
 
     protected static final Field LIFE_CYCLE_STATE = new Field() {
+        @Override
         public final String getName() {
             return "lifeCycleState";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getCurrentLifeCycleState();
         }
     };
 
     protected static final Field LIFE_CYCLE_POLICY = new Field() {
+        @Override
         public final String getName() {
             return "lifeCyclePolicy";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getLifeCyclePolicy();
         }
     };
 
     protected static final Field ALLOWED_STATE_TRANSITIONS = new Field() {
+        @Override
         public final String getName() {
             return "allowedStateTransitions";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getAllowedStateTransitions();
         }
     };
 
     protected static final Field IS_FOLDER = new Field() {
+        @Override
         public final String getName() {
             return "isFolder";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getFacets().contains(FacetNames.FOLDERISH);
         }
     };
 
     protected static final Field TITLE = new Field() {
+        @Override
         public String getName() {
             return "title";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getTitle();
         }
     };
 
     protected static final Field AUTHOR = new Field() {
+        @Override
         public String getName() {
             return "author";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             try {
                 return doc.getPropertyValue("dc:creator");
@@ -313,10 +345,12 @@ public class DefaultDocumentView implements DocumentView {
     };
 
     protected static final Field CREATED = new Field() {
+        @Override
         public String getName() {
             return "created";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             try {
                 Calendar cal = (Calendar) doc.getPropertyValue("dc:created");
@@ -331,10 +365,12 @@ public class DefaultDocumentView implements DocumentView {
     };
 
     protected static final Field MODIFIED = new Field() {
+        @Override
         public String getName() {
             return "modified";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             try {
                 Calendar cal = (Calendar) doc.getPropertyValue("dc:modified");
@@ -349,10 +385,12 @@ public class DefaultDocumentView implements DocumentView {
     };
 
     protected static final Field CONTENT = new Field() {
+        @Override
         public String getName() {
             return "content";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             try {
                 Blob blob = (Blob) doc.getPropertyValue("file:content");
@@ -367,30 +405,36 @@ public class DefaultDocumentView implements DocumentView {
     };
 
     protected static final Field SID = new Field() {
+        @Override
         public String getName() {
             return "sessionId";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getSessionId();
         }
     };
 
     protected static final Field REPOSITORY = new Field() {
+        @Override
         public String getName() {
             return "repository";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getRepositoryName();
         }
     };
 
     protected static final Field PARENT = new Field() {
+        @Override
         public String getName() {
             return "parent";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             CoreSession session = doc.getCoreSession();
             return session.getParentDocument(doc.getRef());
@@ -398,10 +442,12 @@ public class DefaultDocumentView implements DocumentView {
     };
 
     protected static final Field CHILDREN = new Field() {
+        @Override
         public String getName() {
             return "children";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             CoreSession session = doc.getCoreSession();
             return session.getChildren(doc.getRef());
@@ -409,20 +455,24 @@ public class DefaultDocumentView implements DocumentView {
     };
 
     protected static final Field REF = new Field() {
+        @Override
         public String getName() {
             return "ref";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getRef();
         }
     };
 
     protected static final Field VERSIONS = new Field() {
+        @Override
         public String getName() {
             return "versions";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             CoreSession session = doc.getCoreSession();
             return session.getVersions(doc.getRef());
@@ -430,10 +480,12 @@ public class DefaultDocumentView implements DocumentView {
     };
 
     protected static final Field PROXIES = new Field() {
+        @Override
         public String getName() {
             return "proxies";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             CoreSession session = doc.getCoreSession();
             return session.getProxies(doc.getRef(), null);
@@ -441,20 +493,24 @@ public class DefaultDocumentView implements DocumentView {
     };
 
     protected static final Field VERSION_LABEL = new Field() {
+        @Override
         public String getName() {
             return "versionLabel";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getVersionLabel();
         }
     };
 
     protected static final Field SOURCE_ID = new Field() {
+        @Override
         public String getName() {
             return "sourceId";
         }
 
+        @Override
         public Object getValue(DocumentModel doc) {
             return doc.getSourceId();
         }

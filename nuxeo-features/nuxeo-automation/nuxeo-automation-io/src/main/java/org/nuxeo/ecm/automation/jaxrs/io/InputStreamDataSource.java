@@ -45,18 +45,22 @@ public class InputStreamDataSource implements DataSource {
         this.ctype = ctype;
     }
 
+    @Override
     public OutputStream getOutputStream() throws IOException {
         throw new UnsupportedOperationException("data source is not writeable");
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
         return in;
     }
 
+    @Override
     public String getContentType() {
         return ctype;
     }

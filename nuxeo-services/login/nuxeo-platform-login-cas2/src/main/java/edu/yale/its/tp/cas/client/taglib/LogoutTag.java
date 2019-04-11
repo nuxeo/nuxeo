@@ -62,6 +62,7 @@ public class LogoutTag extends TagSupport {
     // *********************************************************************
     // Tag logic
 
+    @Override
     public int doStartTag() throws JspException {
         try {
 
@@ -85,6 +86,7 @@ public class LogoutTag extends TagSupport {
         }
     }
 
+    @Override
     public int doEndTag() {
         return SKIP_PAGE;
     }
@@ -122,6 +124,7 @@ public class LogoutTag extends TagSupport {
     }
 
     // Releases any resources we may have (or inherit)
+    @Override
     public void release() {
         super.release();
         init();

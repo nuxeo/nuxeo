@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 public class CounterListener implements EventListener {
     protected static int counter = 0;
 
+    @Override
     public void handleEvent(Event event) {
         DocumentEventContext docEventContext = null;
         if (!(event.getContext() instanceof DocumentEventContext)) {

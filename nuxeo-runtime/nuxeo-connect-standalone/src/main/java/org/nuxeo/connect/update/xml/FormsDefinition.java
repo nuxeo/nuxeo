@@ -32,10 +32,12 @@ public class FormsDefinition implements Forms {
     @XNodeList(value = "form", type = FormDefinition[].class, componentType = FormDefinition.class)
     protected Form[] forms;
 
+    @Override
     public Form[] getForms() {
         return forms;
     }
 
+    @Override
     public void setForms(Form[] forms) {
         this.forms = forms;
     }

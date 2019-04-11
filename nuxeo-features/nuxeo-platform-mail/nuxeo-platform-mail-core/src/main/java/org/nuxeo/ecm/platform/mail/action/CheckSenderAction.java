@@ -50,6 +50,7 @@ public class CheckSenderAction implements MessageAction {
 
     private static final Log log = LogFactory.getLog(CheckSenderAction.class);
 
+    @Override
     public boolean execute(ExecutionContext context) throws MessagingException {
         Message message = context.getMessage();
         Address[] addresses = message.getFrom();
@@ -85,6 +86,7 @@ public class CheckSenderAction implements MessageAction {
         return principal;
     }
 
+    @Override
     public void reset(ExecutionContext context) {
         // do nothing
     }

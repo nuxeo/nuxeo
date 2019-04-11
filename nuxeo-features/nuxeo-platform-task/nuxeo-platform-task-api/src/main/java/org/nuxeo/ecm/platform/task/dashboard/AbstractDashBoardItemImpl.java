@@ -57,6 +57,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
         return I18NUtils.getMessageString("messages", label, null, locale);
     }
 
+    @Override
     public String getI18nTaskName() {
         if (locale == null) {
             return getName();
@@ -69,6 +70,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
         return getI18nLabel(labelKey, locale);
     }
 
+    @Override
     public String getI18nDirective() {
         String directiveKey = getDirective();
         if (directiveKey == null) {
@@ -102,6 +104,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
         return Boolean.parseBoolean(getTask().getVariable(Task.TaskVariableName.needi18n.name()));
     }
 
+    @Override
     public Map<String, Object> asMap() {
 
         boolean createdFromCreateTaskOperation = isCreatedFromCreateTaskOperation();
@@ -129,6 +132,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
 
     }
 
+    @Override
     public String getDocumentLink(boolean includeWorkflowTab) {
         DocumentModel doc = getDocument();
         DocumentViewCodecManager documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
@@ -157,6 +161,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
         return locale;
     }
 
+    @Override
     public void setLocale(Locale locale) {
         this.locale = locale;
     }

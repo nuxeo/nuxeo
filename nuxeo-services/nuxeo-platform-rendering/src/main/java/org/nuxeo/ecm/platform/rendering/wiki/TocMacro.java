@@ -32,14 +32,17 @@ import org.wikimodel.wem.WikiParameters;
  */
 public class TocMacro implements WikiMacro {
 
+    @Override
     public String getName() {
         return "toc";
     }
 
+    @Override
     public void eval(WikiParameters params, String content, WikiSerializerHandler serializer) throws IOException {
         evalInline(params, content, serializer);
     }
 
+    @Override
     public void evalInline(WikiParameters params, String content, WikiSerializerHandler serializer) throws IOException {
         serializer.writer.writeText(new TocText(content));
     }

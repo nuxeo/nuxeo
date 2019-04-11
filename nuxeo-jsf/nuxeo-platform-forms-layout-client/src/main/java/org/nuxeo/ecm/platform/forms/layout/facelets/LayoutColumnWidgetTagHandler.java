@@ -35,6 +35,7 @@ public class LayoutColumnWidgetTagHandler extends LayoutRowWidgetTagHandler {
         super(config);
     }
 
+    @Override
     protected String getInstanceName() {
         return RenderVariables.columnVariables.layoutColumn.name();
     }

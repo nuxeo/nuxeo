@@ -40,6 +40,7 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
 
     protected LayoutDemoManager service;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -54,6 +55,7 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         service = null;

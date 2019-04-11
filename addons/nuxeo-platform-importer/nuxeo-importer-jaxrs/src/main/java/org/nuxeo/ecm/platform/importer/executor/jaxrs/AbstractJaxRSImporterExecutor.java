@@ -76,6 +76,7 @@ public abstract class AbstractJaxRSImporterExecutor extends AbstractImporterExec
         return "Logging desactivated";
     }
 
+    @Override
     @GET
     @Path("status")
     public String getStatus() {
@@ -88,6 +89,7 @@ public abstract class AbstractJaxRSImporterExecutor extends AbstractImporterExec
         return Boolean.toString(super.isRunning());
     }
 
+    @Override
     @GET
     @Path("kill")
     public String kill() {

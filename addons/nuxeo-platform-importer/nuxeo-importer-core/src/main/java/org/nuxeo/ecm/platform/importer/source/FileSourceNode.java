@@ -47,10 +47,12 @@ public class FileSourceNode implements SourceNode {
         this.file = new File(path);
     }
 
+    @Override
     public BlobHolder getBlobHolder() throws IOException {
         return new SimpleBlobHolder(Blobs.createBlob(file));
     }
 
+    @Override
     public List<SourceNode> getChildren() throws IOException {
 
         List<SourceNode> children = new ArrayList<>();
@@ -61,14 +63,17 @@ public class FileSourceNode implements SourceNode {
         return children;
     }
 
+    @Override
     public boolean isFolderish() {
         return file.isDirectory();
     }
 
+    @Override
     public String getName() {
         return file.getName();
     }
 
+    @Override
     public String getSourcePath() {
         return file.getAbsolutePath();
     }

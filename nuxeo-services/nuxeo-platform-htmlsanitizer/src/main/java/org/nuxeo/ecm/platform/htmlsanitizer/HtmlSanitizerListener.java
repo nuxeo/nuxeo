@@ -34,6 +34,7 @@ public class HtmlSanitizerListener implements EventListener {
 
     public static final String DISABLE_HTMLSANITIZER_LISTENER = "disableHtmlSanitizerListener";
 
+    @Override
     public void handleEvent(Event event) {
         String eventId = event.getName();
         if (!eventId.equals(DocumentEventTypes.ABOUT_TO_CREATE)

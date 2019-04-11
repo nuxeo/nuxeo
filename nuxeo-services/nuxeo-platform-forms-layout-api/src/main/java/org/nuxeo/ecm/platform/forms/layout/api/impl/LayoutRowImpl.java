@@ -65,6 +65,7 @@ public class LayoutRowImpl implements LayoutRow {
         this.definitionId = definitionId;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -75,18 +76,22 @@ public class LayoutRowImpl implements LayoutRow {
         return definitionId;
     }
 
+    @Override
     public boolean isAlwaysSelected() {
         return alwaysSelected;
     }
 
+    @Override
     public boolean isSelectedByDefault() {
         return selectedByDefault;
     }
 
+    @Override
     public Widget[] getWidgets() {
         return widgets;
     }
 
+    @Override
     public int getSize() {
         if (widgets != null) {
             return widgets.length;
@@ -94,6 +99,7 @@ public class LayoutRowImpl implements LayoutRow {
         return 0;
     }
 
+    @Override
     public Map<String, Serializable> getProperties() {
         if (properties == null) {
             return Collections.emptyMap();
@@ -101,6 +107,7 @@ public class LayoutRowImpl implements LayoutRow {
         return Collections.unmodifiableMap(properties);
     }
 
+    @Override
     public Serializable getProperty(String name) {
         if (properties != null) {
             return properties.get(name);

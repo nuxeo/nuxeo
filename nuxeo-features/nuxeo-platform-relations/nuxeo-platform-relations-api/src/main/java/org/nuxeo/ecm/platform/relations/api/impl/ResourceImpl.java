@@ -42,14 +42,17 @@ public class ResourceImpl extends AbstractNode implements Resource {
         this.uri = uri;
     }
 
+    @Override
     public String getUri() {
         return uri;
     }
 
+    @Override
     public void setUri(String uri) {
         this.uri = uri;
     }
 
+    @Override
     public NodeType getNodeType() {
         return NodeType.RESOURCE;
     }

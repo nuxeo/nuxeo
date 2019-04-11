@@ -40,6 +40,7 @@ public abstract class AbstractLayoutManager extends DefaultComponent implements 
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     public abstract String getDefaultStoreCategory();
 
     protected String getStoreCategory(String cat) {

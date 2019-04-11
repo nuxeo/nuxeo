@@ -79,6 +79,7 @@ public class SimpleCASAuthorizationFilter implements Filter {
     // *********************************************************************
     // Initialization
 
+    @Override
     public void init(FilterConfig config) throws ServletException {
         this.authorizedUsersString = config.getInitParameter(AUTHORIZED_USER_STRING);
         StringTokenizer tokenizer = new StringTokenizer(authorizedUsersString);
@@ -91,6 +92,7 @@ public class SimpleCASAuthorizationFilter implements Filter {
     // *********************************************************************
     // Filter processing
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws ServletException,
             IOException {
 
@@ -120,6 +122,7 @@ public class SimpleCASAuthorizationFilter implements Filter {
     // *********************************************************************
     // Destruction
 
+    @Override
     public void destroy() {
     }
 

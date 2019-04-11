@@ -27,6 +27,7 @@ import org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterFactory;
  */
 public class PictureContentDiffAdapterFactory implements ContentDiffAdapterFactory {
 
+    @Override
     public ContentDiffAdapter getAdapter(DocumentModel doc) {
         ImageMagickContentDiffAdapter adapter = new ImageMagickContentDiffAdapter();
         adapter.setAdaptedDocument(doc);

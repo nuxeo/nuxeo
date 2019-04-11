@@ -46,10 +46,12 @@ public class GroovyClassProxy implements ClassProxy {
         this.className = className;
     }
 
+    @Override
     public String getClassName() {
         return className;
     }
 
+    @Override
     public Class<?> get() {
         try {
             Class<?> clazz = loader.loadClass(className, true, false);

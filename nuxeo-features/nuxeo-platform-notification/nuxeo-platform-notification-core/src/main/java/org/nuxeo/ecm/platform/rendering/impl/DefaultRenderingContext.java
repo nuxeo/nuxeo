@@ -36,6 +36,7 @@ public class DefaultRenderingContext extends HashMap<String, Object> implements 
 
     private static final long serialVersionUID = -5442029141468819238L;
 
+    @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter.isAssignableFrom(getClass())) {
             return adapter.cast(this);
@@ -43,6 +44,7 @@ public class DefaultRenderingContext extends HashMap<String, Object> implements 
         return null;
     }
 
+    @Override
     public boolean accept(RenderingEngine engine) {
         return true;
     }

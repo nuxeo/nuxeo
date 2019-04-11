@@ -56,6 +56,7 @@ public class ResourcesAccessorBean implements ResourcesAccessor {
     @In(create = true)
     private Map<String, String> messages;
 
+    @Override
     public Map<String, String> getMessages() {
         if (messages == null) {
             log.warn("Unable to get message map");

@@ -47,6 +47,7 @@ public class AuthorizedProxyTag extends BodyTagSupport {
     // *********************************************************************
     // Tag logic
 
+    @Override
     public int doEndTag() throws JspTagException {
         String authorizedProxy = null;
         if (bodyContent != null)

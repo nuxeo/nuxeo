@@ -48,10 +48,12 @@ public class JerseyApplication extends WebEngineApplication implements Injectabl
         return set;
     }
 
+    @Override
     public ComponentScope getScope() {
         return ComponentScope.PerRequest;
     }
 
+    @Override
     public Injectable<?> getInjectable(ComponentContext cc, Context a, Type t) {
         if (!(t instanceof Class<?>)) {
             return null;
@@ -59,6 +61,7 @@ public class JerseyApplication extends WebEngineApplication implements Injectabl
         Class<?> c = (Class<?>) t;
         if (c == WebContext.class) {
             return new Injectable<Object>() {
+                @Override
                 public Object getValue() {
                     return WebEngine.getActiveContext();
                 }

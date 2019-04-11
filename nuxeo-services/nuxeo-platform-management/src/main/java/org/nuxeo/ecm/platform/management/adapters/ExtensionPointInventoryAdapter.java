@@ -31,14 +31,17 @@ public class ExtensionPointInventoryAdapter implements ExtensionPointInventoryMB
         this.point = point;
     }
 
+    @Override
     public Integer getContributionsCount() {
         return point.getContributions().length;
     }
 
+    @Override
     public String getDescription() {
         return point.getDocumentation();
     }
 
+    @Override
     public String getName() {
         return point.getName();
     }

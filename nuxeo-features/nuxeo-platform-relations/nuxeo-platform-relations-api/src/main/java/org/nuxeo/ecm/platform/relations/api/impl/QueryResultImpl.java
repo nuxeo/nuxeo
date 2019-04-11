@@ -55,26 +55,32 @@ public class QueryResultImpl implements QueryResult {
         this.results = results;
     }
 
+    @Override
     public Integer getCount() {
         return count;
     }
 
+    @Override
     public void setCount(Integer count) {
         this.count = count;
     }
 
+    @Override
     public List<Map<String, Node>> getResults() {
         return results;
     }
 
+    @Override
     public void setResults(List<Map<String, Node>> results) {
         this.results = results;
     }
 
+    @Override
     public List<String> getVariableNames() {
         return variableNames;
     }
 
+    @Override
     public void setVariableNames(List<String> variableNames) {
         this.variableNames = variableNames;
     }

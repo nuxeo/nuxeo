@@ -39,6 +39,7 @@ public class SummaryImpl extends HashMap<String, SummaryEntry> implements Summar
 
     private static final long serialVersionUID = -7791997708511426604L;
 
+    @Override
     public boolean hasChild(SummaryEntry parentEntry) {
         Set<String> key = keySet();
 
@@ -51,6 +52,7 @@ public class SummaryImpl extends HashMap<String, SummaryEntry> implements Summar
         return false;
     }
 
+    @Override
     public List<SummaryEntry> getChildren(SummaryEntry parentEntry) {
         List<SummaryEntry> children = null;
         Set<String> key = keySet();
@@ -68,6 +70,7 @@ public class SummaryImpl extends HashMap<String, SummaryEntry> implements Summar
         return children;
     }
 
+    @Override
     public String displayEntry(StringBuffer sb, SummaryEntry parentEntry) {
         if (sb == null) {
             sb = new StringBuffer();
@@ -89,6 +92,7 @@ public class SummaryImpl extends HashMap<String, SummaryEntry> implements Summar
         return sb.toString();
     }
 
+    @Override
     public String toFlatList() {
         StringBuilder sb = new StringBuilder();
         List<SummaryEntry> entryList = new ArrayList<>();
@@ -112,6 +116,7 @@ public class SummaryImpl extends HashMap<String, SummaryEntry> implements Summar
         return toTreeString();
     }
 
+    @Override
     public String toTreeString() {
         return displayEntry(null, getSummaryRoot());
     }
@@ -121,6 +126,7 @@ public class SummaryImpl extends HashMap<String, SummaryEntry> implements Summar
      *
      * @return the root SummaryEntry in the map
      */
+    @Override
     public SummaryEntry getSummaryRoot() {
         return get(new IdRef("0").toString());
     }

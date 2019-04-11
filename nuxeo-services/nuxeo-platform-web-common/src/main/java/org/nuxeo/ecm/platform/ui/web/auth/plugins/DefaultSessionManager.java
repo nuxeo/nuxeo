@@ -27,6 +27,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionM
 
 public class DefaultSessionManager implements NuxeoAuthenticationSessionManager {
 
+    @Override
     public boolean canBypassRequest(ServletRequest request) {
         return false;
     }
@@ -37,19 +38,23 @@ public class DefaultSessionManager implements NuxeoAuthenticationSessionManager 
         return false;
     }
 
+    @Override
     public void onAfterSessionReinit(ServletRequest request) {
         // NOP
     }
 
+    @Override
     public void onAuthenticatedSessionCreated(ServletRequest request, HttpSession session,
             CachableUserIdentificationInfo cachableUserInfo) {
         // NOP
     }
 
+    @Override
     public void onBeforeSessionReinit(ServletRequest request) {
         // NOP
     }
 
+    @Override
     public boolean needResetLogin(ServletRequest req) {
         return false;
     }

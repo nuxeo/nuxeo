@@ -40,17 +40,20 @@ public class AnnotationModule implements EntryPoint {
 
     private WebConfiguration webConfiguration;
 
+    @Override
     public void onModuleLoad() {
         fixXMLHttpRequest();
         webConfigurationService = GWT.create(WebConfigurationService.class);
         String url = Window.Location.getHref();
         webConfigurationService.getWebConfiguration(url, new AsyncCallback<WebConfiguration>() {
+            @Override
             public void onFailure(Throwable throwable) {
                 Log.debug("onFailure: " + throwable);
                 webConfiguration = WebConfiguration.DEFAULT_WEB_CONFIGURATION;
                 initModule();
             }
 
+            @Override
             public void onSuccess(WebConfiguration result) {
                 webConfiguration = result == null ? WebConfiguration.DEFAULT_WEB_CONFIGURATION : result;
                 initModule();

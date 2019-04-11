@@ -47,6 +47,7 @@ public class ValidateUrlTag extends BodyTagSupport {
     // *********************************************************************
     // Tag logic
 
+    @Override
     public int doEndTag() throws JspTagException {
         String validateUrl = null;
         if (bodyContent != null)

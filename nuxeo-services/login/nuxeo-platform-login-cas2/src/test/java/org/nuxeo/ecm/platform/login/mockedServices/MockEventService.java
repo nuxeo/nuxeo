@@ -25,9 +25,11 @@ import org.nuxeo.ecm.core.event.EventProducer;
 
 public class MockEventService implements EventProducer {
 
+    @Override
     public void fireEvent(Event event) {
     }
 
+    @Override
     public void fireEventBundle(EventBundle event) {
     }
 

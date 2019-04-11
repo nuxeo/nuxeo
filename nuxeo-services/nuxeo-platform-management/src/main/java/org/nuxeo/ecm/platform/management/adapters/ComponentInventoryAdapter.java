@@ -38,14 +38,17 @@ public class ComponentInventoryAdapter implements ComponentInventoryMBean {
         this.info = info;
     }
 
+    @Override
     public String getDescription() {
         return info.getDocumentation();
     }
 
+    @Override
     public Integer getExtensionPointsCount() {
         return info.getExtensionPoints().length;
     }
 
+    @Override
     public Set<String> getExtensionPointsName() {
         Set<String> names = new HashSet<>();
         for (ExtensionPoint extensionPoint : info.getExtensionPoints()) {
@@ -54,24 +57,29 @@ public class ComponentInventoryAdapter implements ComponentInventoryMBean {
         return names;
     }
 
+    @Override
     public String getName() {
         return info.getName().getRawName();
     }
 
+    @Override
     public Map<String, Property> getProperties() {
         return info.getProperties();
     }
 
+    @Override
     public Set<String> getProvidedServices() {
         Set<String> names = new HashSet<>();
         names.addAll(Arrays.asList(info.getProvidedServiceNames()));
         return names;
     }
 
+    @Override
     public Integer getProvidedServicesCount() {
         return info.getProvidedServiceNames().length;
     }
 
+    @Override
     public String getVersion() {
         return info.getVersion().toString();
     }

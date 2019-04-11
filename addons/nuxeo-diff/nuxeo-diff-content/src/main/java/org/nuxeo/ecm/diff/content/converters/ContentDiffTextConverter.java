@@ -40,6 +40,7 @@ public class ContentDiffTextConverter extends AbstractContentDiffConverter {
 
     private static final String ANY_2_TEXT_CONVERTER_NAME = "any2text";
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         BlobHolder convertedBlobHolder = convert(ANY_2_TEXT_CONVERTER_NAME, blobHolder, parameters);

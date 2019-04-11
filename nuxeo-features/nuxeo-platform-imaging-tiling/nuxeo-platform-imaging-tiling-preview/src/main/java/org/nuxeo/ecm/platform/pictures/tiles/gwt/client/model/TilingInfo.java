@@ -198,10 +198,12 @@ public class TilingInfo {
         try {
             getRequest.sendRequest(null, new RequestCallback() {
 
+                @Override
                 public void onError(Request arg0, Throwable arg1) {
                     Log.error("Error sending tiling info request: " + arg1);
                 }
 
+                @Override
                 public void onResponseReceived(Request arg0, Response resp) {
                     parseResponse(resp.getText());
                     if (callback != null) {

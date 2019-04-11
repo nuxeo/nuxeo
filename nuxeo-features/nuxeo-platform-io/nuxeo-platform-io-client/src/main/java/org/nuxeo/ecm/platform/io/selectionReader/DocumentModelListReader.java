@@ -47,6 +47,7 @@ public class DocumentModelListReader extends AbstractDocumentReader {
         return new ExportedDocumentImpl(docList.remove(0));
     }
 
+    @Override
     public void close() {
         docList = null;
     }

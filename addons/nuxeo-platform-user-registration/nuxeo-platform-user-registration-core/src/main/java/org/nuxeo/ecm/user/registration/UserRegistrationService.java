@@ -46,6 +46,7 @@ public interface UserRegistrationService extends UserInvitationService {
      *
      * @param requestId
      */
+    @Override
     Map<String, Serializable> validateRegistrationAndSendEmail(String requestId,
             Map<String, Serializable> additionnalInfo) throws UserRegistrationException;
 

@@ -118,10 +118,12 @@ public class LayoutDemoService extends DefaultComponent implements LayoutDemoMan
         }
     }
 
+    @Override
     public DemoWidgetType getWidgetType(String widgetTypeName) {
         return widgetTypeRegistry.get(widgetTypeName);
     }
 
+    @Override
     public DemoWidgetType getWidgetTypeByViewId(String viewId) {
         if (!widgetTypeByViewId.containsKey(viewId)) {
             return null;
@@ -130,6 +132,7 @@ public class LayoutDemoService extends DefaultComponent implements LayoutDemoMan
         return widgetTypeRegistry.get(name);
     }
 
+    @Override
     public List<DemoWidgetType> getWidgetTypes(String category) {
         List<String> wTypes = widgetTypesByCategory.get(category);
         List<DemoWidgetType> res = new ArrayList<>();

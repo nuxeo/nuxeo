@@ -77,14 +77,17 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
         this.caseSensitive = caseSensitive;
     }
 
+    @Override
     public Serializable getValue() {
         return value;
     }
 
+    @Override
     public String getVar() {
         return var;
     }
 
+    @Override
     public String getItemLabel() {
         return itemLabel;
     }
@@ -103,22 +106,27 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
         this.labels = labels;
     }
 
+    @Override
     public String getItemValue() {
         return itemValue;
     }
 
+    @Override
     public Serializable getItemDisabled() {
         return itemDisabled;
     }
 
+    @Override
     public Serializable getItemRendered() {
         return itemRendered;
     }
 
+    @Override
     public String getOrdering() {
         return ordering;
     }
 
+    @Override
     public Boolean getCaseSensitive() {
         return caseSensitive;
     }

@@ -51,6 +51,7 @@ public class FileBlob extends Blob implements HasFile {
         return (int) length;
     }
 
+    @Override
     public File getFile() {
         return file;
     }

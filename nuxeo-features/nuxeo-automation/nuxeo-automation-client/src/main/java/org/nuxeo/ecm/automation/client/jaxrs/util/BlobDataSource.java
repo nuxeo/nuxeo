@@ -37,18 +37,22 @@ public class BlobDataSource implements DataSource {
         this.blob = blob;
     }
 
+    @Override
     public String getContentType() {
         return blob.getMimeType();
     }
 
+    @Override
     public InputStream getInputStream() throws IOException {
         return blob.getStream();
     }
 
+    @Override
     public String getName() {
         return blob.getFileName();
     }
 
+    @Override
     public OutputStream getOutputStream() throws IOException {
         throw new UnsupportedOperationException("blob data source is read only");
     }

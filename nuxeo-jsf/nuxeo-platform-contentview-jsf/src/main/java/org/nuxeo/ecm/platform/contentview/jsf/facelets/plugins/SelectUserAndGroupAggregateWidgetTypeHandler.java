@@ -70,11 +70,13 @@ public abstract class SelectUserAndGroupAggregateWidgetTypeHandler extends Abstr
         return props;
     }
 
+    @Override
     protected String getOptionComponentType(WidgetSelectOption selectOption) {
         return UIUserAndGroupSelectItems.COMPONENT_TYPE;
     }
 
     // do not rely on selectOptions to be filled
+    @Override
     protected boolean shouldAddWidgetPropsHandler(Widget widget) {
         return true;
     }

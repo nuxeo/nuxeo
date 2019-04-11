@@ -51,6 +51,7 @@ public class StatsTask implements Runnable {
         this.cmdInstance = instance;
     }
 
+    @Override
     public synchronized void run() {
         StatsTaskRunner runner = new StatsTaskRunner(repositoryName, includeBlob, rootDocRef, this);
 

@@ -40,6 +40,7 @@ public class DefaultMetadataMapper implements MetadataMapper {
 
     private final TimeZone timezone = TimeZone.getDefault();
 
+    @Override
     public void updateMetadata(Annotation annotation, NuxeoPrincipal user) {
         Calendar calendar = Calendar.getInstance();
         calendar.toString();

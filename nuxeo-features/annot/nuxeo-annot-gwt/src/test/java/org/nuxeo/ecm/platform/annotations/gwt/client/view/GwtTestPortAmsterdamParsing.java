@@ -45,6 +45,7 @@ public class GwtTestPortAmsterdamParsing extends AbstractDocumentGWTTest {
                 + "<span class=\"decorate decorate0\"> Au large d'Amsterda</span>m"));
     }
 
+    @Override
     public String getInnerHtml() {
         return new StringBuilder("<p class=\"MsoNormal\"><span>Dans le port d&#39;Amsterdam <br />").append(
                 " Y a des marins qui chantent<br /> Les r&ecirc;ves qui les hantent<br />").append(

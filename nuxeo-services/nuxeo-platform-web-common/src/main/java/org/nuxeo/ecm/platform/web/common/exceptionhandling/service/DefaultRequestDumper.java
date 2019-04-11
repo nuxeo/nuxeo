@@ -36,6 +36,7 @@ public class DefaultRequestDumper implements RequestDumper {
 
     protected List<String> attributes = new ArrayList<>();
 
+    @Override
     public String getDump(HttpServletRequest request) {
         StringBuilder builder = new StringBuilder();
         builder.append("\nRequest Attributes:\n\n");
@@ -60,6 +61,7 @@ public class DefaultRequestDumper implements RequestDumper {
         return builder.toString();
     }
 
+    @Override
     public void setNotListedAttributes(List<String> attributes) {
         this.attributes = attributes;
     }

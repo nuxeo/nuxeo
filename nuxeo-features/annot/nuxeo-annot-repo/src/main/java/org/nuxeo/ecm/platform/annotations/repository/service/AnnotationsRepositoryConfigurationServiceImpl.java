@@ -35,6 +35,7 @@ public class AnnotationsRepositoryConfigurationServiceImpl implements Annotation
 
     private GraphManagerEventListener graphManagerEventListener;
 
+    @Override
     public GraphManagerEventListener getGraphManagerEventListener() {
         return graphManagerEventListener;
     }
@@ -49,10 +50,12 @@ public class AnnotationsRepositoryConfigurationServiceImpl implements Annotation
         listeners.put(listenerName, listener);
     }
 
+    @Override
     public List<AnnotatedDocumentEventListener> getEventListeners() {
         return new ArrayList<>(listeners.values());
     }
 
+    @Override
     public List<String> getEventIds() {
         return eventIds;
     }
