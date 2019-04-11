@@ -80,6 +80,9 @@ public abstract class UserAndGroupSelectItemFactory extends SelectItemFactory {
 
     protected SelectItem getSelectItem(Object value) {
         String entryId = retrieveEntryIdFrom(value);
+        if (entryId == null) {
+            return null;
+        }
 
         DocumentModel entry = null;
         boolean isGroup = false;
