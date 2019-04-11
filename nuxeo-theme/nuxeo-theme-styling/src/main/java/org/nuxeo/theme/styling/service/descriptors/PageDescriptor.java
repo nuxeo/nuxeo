@@ -98,6 +98,7 @@ public class PageDescriptor {
     /**
      * @deprecated since 7.4: use resources instead
      */
+    @Deprecated
     public boolean getAppendStyles() {
         return appendStyles;
     }
@@ -105,6 +106,7 @@ public class PageDescriptor {
     /**
      * @deprecated since 7.4: use resources instead
      */
+    @Deprecated
     public List<String> getStyles() {
         return styles;
     }

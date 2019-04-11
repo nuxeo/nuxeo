@@ -96,6 +96,7 @@ public class BulkEditActions implements Serializable {
      *
      * @deprecated not yet used since 5.7
      */
+    @Deprecated
     protected List<String> getCommonSchemas() {
         if (documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SELECTION)) {
             return Collections.emptyList();

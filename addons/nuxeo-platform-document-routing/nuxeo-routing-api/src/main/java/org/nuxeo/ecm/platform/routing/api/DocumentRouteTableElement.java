@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
  * @deprecated since 5.9.2 - Use only routes of type 'graph'
  */
+@Deprecated
 public class DocumentRouteTableElement {
 
     protected final DocumentRouteElement element;

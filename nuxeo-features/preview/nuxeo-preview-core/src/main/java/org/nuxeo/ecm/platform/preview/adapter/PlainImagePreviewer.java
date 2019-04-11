@@ -33,6 +33,7 @@ import org.nuxeo.ecm.platform.preview.api.PreviewException;
  * @since 10.3
  * @deprecated since 10.3
  */
+@Deprecated
 public class PlainImagePreviewer extends AbstractPreviewer implements MimeTypePreviewer {
 
     @Override

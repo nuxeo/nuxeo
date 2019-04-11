@@ -59,12 +59,14 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
      * @since 10.3
      * @deprecated since 10.3
      */
+    @Deprecated
     public static final String OLD_PREVIEW_PROPERTY = "nuxeo.old.jsf.preview";
 
     /**
      * @since 10.3
      * @deprecated since 10.3
      */
+    @Deprecated
     public static final String TEXT_ANNOTATIONS_PROPERTY = "nuxeo.text.annotations";
 
     protected String defaultFieldXPath;
@@ -191,6 +193,7 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
      * @since 10.3
      * @deprecated since 10.3
      */
+    @Deprecated
     protected List<Blob> getPreviewFromMimeTypePreviewer(MimeTypePreviewer mtPreviewer, Blob blob2Preview) {
         // this context data comes from the PreviewRestlet
         boolean oldPreview = Boolean.TRUE.equals(adaptedDoc.getContextData(OLD_PREVIEW_PROPERTY));

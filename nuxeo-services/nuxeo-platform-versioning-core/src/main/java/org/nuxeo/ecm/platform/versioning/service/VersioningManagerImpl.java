@@ -36,6 +36,7 @@ public class VersioningManagerImpl extends DefaultComponent implements Versionin
     /**
      * @deprecated since 10.10, seems unused
      */
+    @Deprecated
     public static final String COMPONENT_ID = "org.nuxeo.ecm.platform.versioning.VersioningManager";
 
     @Override

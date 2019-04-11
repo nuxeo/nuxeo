@@ -83,6 +83,7 @@ public interface ImagingService {
      * @deprecated since 7.2. Please use instead
      * {@link org.nuxeo.binary.metadata.api.BinaryMetadataService#readMetadata(Blob)}
      */
+    @Deprecated
     Map<String, Object> getImageMetadata(Blob blob);
 
     /**

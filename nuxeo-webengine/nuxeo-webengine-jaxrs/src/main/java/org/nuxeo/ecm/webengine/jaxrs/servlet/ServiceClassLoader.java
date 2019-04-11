@@ -38,6 +38,7 @@ import com.sun.jersey.server.impl.provider.RuntimeDelegateImpl;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @deprecated This class is deprecated since jersey 1.11 which fixed OSGi class loader problems.
  */
+@Deprecated
 public class ServiceClassLoader extends ClassLoader {
 
     public static ClassLoader getLoader() {

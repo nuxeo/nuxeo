@@ -57,6 +57,7 @@ public class ContentTabSubPage extends AbstractContentTabSubPage {
      * @since 8.3
      * @deprecated since 9.1 not used anymore as we now have {@link ContentViewSelectionActions#delete()}
      */
+    @Deprecated
     public static final String DELETE = "Delete";
 
     /**

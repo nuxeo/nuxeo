@@ -26,6 +26,7 @@ package org.nuxeo.ecm.core.model;
  * @since 6.0
  * @deprecated since 10.2, use {@link org.nuxeo.ecm.core.api.lock.LockManager} instead
  */
+@Deprecated
 public interface LockManager extends org.nuxeo.ecm.core.api.lock.LockManager {
 
     /**

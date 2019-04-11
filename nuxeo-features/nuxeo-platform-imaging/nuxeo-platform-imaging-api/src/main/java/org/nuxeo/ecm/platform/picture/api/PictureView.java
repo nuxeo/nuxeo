@@ -73,6 +73,7 @@ public interface PictureView {
      *
      * @deprecated since 7.2, use {@link #getBlob} instead
      */
+    @Deprecated
     Blob getContent();
 
     /**

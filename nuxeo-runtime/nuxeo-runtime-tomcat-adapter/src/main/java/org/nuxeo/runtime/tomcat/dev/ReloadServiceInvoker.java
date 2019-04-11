@@ -57,6 +57,7 @@ public class ReloadServiceInvoker {
      * @deprecated since 5.6, use {@link #runDeploymentPreprocessor} instead, also see
      *             org.nuxeo.runtime.reload.ReloadService
      */
+    @Deprecated
     protected Method installWebResources;
 
     protected Method flush;
@@ -228,6 +229,7 @@ public class ReloadServiceInvoker {
     /**
      * @deprecated since 9.3, use {@link #reloadBundles(List, List)} instead. Kept for backward compatibility.
      */
+    @Deprecated
     protected void deployBundles(List<File> files) throws ReflectiveOperationException {
         deployBundles.invoke(reloadService, files);
     }
@@ -235,6 +237,7 @@ public class ReloadServiceInvoker {
     /**
      * @deprecated since 9.3, use {@link #reloadBundles(List, List)} instead. Kept for backward compatibility.
      */
+    @Deprecated
     protected void undeployBundles(List<String> bundleNames) throws ReflectiveOperationException {
         undeployBundles.invoke(reloadService, bundleNames);
     }

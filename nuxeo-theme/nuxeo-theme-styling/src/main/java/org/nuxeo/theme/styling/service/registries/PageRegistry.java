@@ -114,6 +114,7 @@ public class PageRegistry extends ContributionFragmentRegistry<PageDescriptor> {
     /**
      * @deprecated since 7.4: use {@link #getConfigurationApplyingToAll()} instead.
      */
+    @Deprecated
     public PageDescriptor getConfigurationApplyingToAllThemes() {
         return getConfigurationApplyingToAll();
     }

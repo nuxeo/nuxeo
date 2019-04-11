@@ -35,6 +35,7 @@ public class PathSegmentServiceDefault implements PathSegmentService {
     /**
      * @deprecated since 7.4, use {@link PathSegmentService#NUXEO_MAX_SEGMENT_SIZE_PROPERTY} instead
      */
+    @Deprecated
     public static final String NUXEO_MAX_SEGMENT_SIZE_PROPERTY = PathSegmentService.NUXEO_MAX_SEGMENT_SIZE_PROPERTY;
 
     @Override
