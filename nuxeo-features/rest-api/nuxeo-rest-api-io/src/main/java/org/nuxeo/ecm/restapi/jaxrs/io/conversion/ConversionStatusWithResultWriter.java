@@ -21,15 +21,11 @@ package org.nuxeo.ecm.restapi.jaxrs.io.conversion;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
-import org.nuxeo.ecm.core.convert.api.ConversionStatus;
-import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 
 /**

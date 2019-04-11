@@ -28,10 +28,8 @@ import javax.inject.Inject;
 
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaNormalization;
-import org.apache.avro.message.SchemaStore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.lib.stream.codec.AvroSchemaStore;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.avro.AvroService;
 import org.nuxeo.runtime.test.runner.Deploy;

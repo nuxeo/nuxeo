@@ -21,7 +21,6 @@
 package org.nuxeo.ecm.core;
 
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;

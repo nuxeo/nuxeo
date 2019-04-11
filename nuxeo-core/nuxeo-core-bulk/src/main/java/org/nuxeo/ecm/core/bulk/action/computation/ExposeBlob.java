@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.bulk.action.computation;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 

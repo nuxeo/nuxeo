@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingContributionRegistry;
 import org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingDescriptor;
 import org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingService;

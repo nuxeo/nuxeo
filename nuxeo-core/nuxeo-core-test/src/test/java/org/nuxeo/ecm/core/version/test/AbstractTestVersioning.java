@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 9.1

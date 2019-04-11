@@ -22,8 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.web.common.RequestCleanupHandler;
 import org.nuxeo.ecm.platform.web.common.RequestContext;
 

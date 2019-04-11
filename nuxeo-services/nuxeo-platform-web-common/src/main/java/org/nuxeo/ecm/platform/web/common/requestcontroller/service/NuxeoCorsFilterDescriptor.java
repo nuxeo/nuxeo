@@ -25,7 +25,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.regex.Pattern;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;

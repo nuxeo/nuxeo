@@ -36,7 +36,6 @@ import org.nuxeo.ecm.automation.elasticsearch.ElasticsearchBulkIndexOperation;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.test.CoreFeature;

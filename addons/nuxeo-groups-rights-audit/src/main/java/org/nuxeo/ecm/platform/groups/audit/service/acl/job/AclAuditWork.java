@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.AclExcelLayoutBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.IAclExcelLayoutBuilder;

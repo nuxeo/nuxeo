@@ -42,7 +42,6 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.engine.adapter.HttpRequest;
 import org.restlet.engine.adapter.HttpResponse;
-import org.restlet.engine.adapter.ServerCall;
 import org.restlet.ext.servlet.internal.ServletCall;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;

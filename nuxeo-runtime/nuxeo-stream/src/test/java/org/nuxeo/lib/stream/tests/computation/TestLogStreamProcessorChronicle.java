@@ -25,8 +25,6 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
-import org.nuxeo.lib.stream.computation.StreamProcessor;
-import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 

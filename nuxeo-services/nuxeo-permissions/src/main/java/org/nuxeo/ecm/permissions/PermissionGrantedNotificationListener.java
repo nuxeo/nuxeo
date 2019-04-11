@@ -57,7 +57,6 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 
 /**

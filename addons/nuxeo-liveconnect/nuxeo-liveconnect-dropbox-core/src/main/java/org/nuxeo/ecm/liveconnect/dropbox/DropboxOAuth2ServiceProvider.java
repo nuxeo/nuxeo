@@ -20,8 +20,6 @@ package org.nuxeo.ecm.liveconnect.dropbox;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.liveconnect.core.AbstractLiveConnectOAuth2ServiceProvider;
 
 import com.google.api.client.http.GenericUrl;

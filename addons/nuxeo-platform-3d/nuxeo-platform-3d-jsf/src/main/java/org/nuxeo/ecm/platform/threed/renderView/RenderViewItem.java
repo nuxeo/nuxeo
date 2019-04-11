@@ -25,8 +25,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 
-import java.util.Calendar;
-
 /**
  * Small DTO to precompute the thumbnail URLs for JSF
  *

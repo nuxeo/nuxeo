@@ -38,7 +38,6 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import edu.yale.its.tp.cas.client.*;
-import edu.yale.its.tp.cas.client.filter.*;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 

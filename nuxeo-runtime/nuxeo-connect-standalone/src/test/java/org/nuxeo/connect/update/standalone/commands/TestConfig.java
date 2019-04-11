@@ -39,8 +39,6 @@ import org.junit.Before;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.connect.update.util.PackageBuilder;
-import org.nuxeo.connect.update.xml.XmlWriter;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.runtime.test.TargetResourceLocator;

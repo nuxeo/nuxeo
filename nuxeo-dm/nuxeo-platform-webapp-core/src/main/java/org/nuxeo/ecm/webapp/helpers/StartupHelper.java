@@ -26,7 +26,6 @@ import static org.jboss.seam.ScopeType.SESSION;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 

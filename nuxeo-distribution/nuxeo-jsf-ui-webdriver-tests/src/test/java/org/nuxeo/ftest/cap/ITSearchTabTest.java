@@ -20,8 +20,6 @@ package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
 import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
 import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
 import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;

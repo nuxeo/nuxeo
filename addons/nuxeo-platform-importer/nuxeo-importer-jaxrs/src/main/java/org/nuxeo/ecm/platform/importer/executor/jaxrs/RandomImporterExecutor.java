@@ -25,7 +25,6 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunner;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;

@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.util.Calendar;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**

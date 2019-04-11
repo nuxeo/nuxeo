@@ -39,7 +39,6 @@ import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.pattern.producer.ProducerPool;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.stream.StreamService;
 
 /**

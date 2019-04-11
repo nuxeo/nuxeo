@@ -34,7 +34,6 @@ import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.DirectoryBundleFile;
 import org.nuxeo.osgi.JarBundleFile;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 
 /**

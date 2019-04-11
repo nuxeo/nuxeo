@@ -29,8 +29,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 
 /**
  * Used to control the server administrative status: the status of the server can be passive or active.

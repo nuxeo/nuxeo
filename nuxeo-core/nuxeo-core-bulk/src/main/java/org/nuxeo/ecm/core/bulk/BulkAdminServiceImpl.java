@@ -45,7 +45,6 @@ import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
-import org.nuxeo.lib.stream.computation.log.LogStreamProcessor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.model.Descriptor;

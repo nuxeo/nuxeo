@@ -24,8 +24,6 @@ import static org.junit.Assert.assertNull;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
-
 import javax.inject.Inject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;

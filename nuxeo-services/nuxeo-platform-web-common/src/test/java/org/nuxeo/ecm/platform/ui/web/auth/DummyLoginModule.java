@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.ui.web.auth;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Collections;
 import java.util.Map;
 
 import javax.security.auth.Subject;

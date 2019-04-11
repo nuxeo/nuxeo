@@ -19,20 +19,10 @@
 package org.nuxeo.ecm.webengine.app.jersey;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.HttpHeaders;
-
 import org.nuxeo.ecm.webengine.jaxrs.Activator;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.ApplicationServlet;
 

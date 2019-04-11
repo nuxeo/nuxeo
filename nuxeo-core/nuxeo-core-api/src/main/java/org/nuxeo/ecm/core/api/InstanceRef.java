@@ -20,8 +20,6 @@ package org.nuxeo.ecm.core.api;
 
 import java.io.InvalidObjectException;
 import java.io.ObjectStreamException;
-import java.security.Principal;
-
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**

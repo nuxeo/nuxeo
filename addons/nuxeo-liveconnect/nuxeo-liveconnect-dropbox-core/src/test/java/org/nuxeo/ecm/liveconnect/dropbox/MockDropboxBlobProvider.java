@@ -35,7 +35,6 @@ import org.nuxeo.ecm.liveconnect.core.LiveConnectFile;
 import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
 
 import com.dropbox.core.v2.files.FileMetadata;
-import com.dropbox.core.json.JsonReadException;
 
 /**
  * @since 7.3

@@ -25,7 +25,6 @@ package org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 
 /**

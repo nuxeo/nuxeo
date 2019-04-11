@@ -20,19 +20,14 @@ package org.nuxeo.ecm.quota.count;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.nuxeo.ecm.core.api.versioning.VersioningService.VERSIONING_OPTION;
-import static org.nuxeo.ecm.quota.count.QuotaFeature.createFakeBlob;
-
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
@@ -40,7 +35,6 @@ import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @since 5.7

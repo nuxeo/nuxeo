@@ -26,10 +26,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ACE_STATUS_UPDATED
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_COMMENT;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_NOTIFY;
-import static org.nuxeo.ecm.permissions.Constants.ACE_KEY;
-import static org.nuxeo.ecm.permissions.Constants.ACL_NAME_KEY;
 import static org.nuxeo.ecm.permissions.Constants.COMMENT_KEY;
-import static org.nuxeo.ecm.permissions.Constants.PERMISSION_NOTIFICATION_EVENT;
 import static org.nuxeo.ecm.permissions.PermissionHelper.computeDirectoryId;
 
 import java.util.List;
@@ -44,9 +41,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;

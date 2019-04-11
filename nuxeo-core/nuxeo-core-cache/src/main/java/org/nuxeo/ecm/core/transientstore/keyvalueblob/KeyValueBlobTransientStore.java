@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManagerComponent;
 import org.nuxeo.ecm.core.blob.BlobProvider;
-import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.transientstore.api.MaximumTransientSpaceExceeded;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig;

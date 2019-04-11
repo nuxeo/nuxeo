@@ -20,8 +20,6 @@ package org.nuxeo.ecm.platform.search.core;
 
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
-
 /**
  * @since 8.3
  */

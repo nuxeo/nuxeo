@@ -23,8 +23,6 @@ package org.nuxeo.ecm.platform.annotations.api;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 

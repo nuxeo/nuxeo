@@ -33,7 +33,6 @@ import java.util.List;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.DirectoryBundleFile;
 import org.nuxeo.osgi.JarBundleFile;
-import org.osgi.framework.BundleException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

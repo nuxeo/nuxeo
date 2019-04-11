@@ -22,7 +22,6 @@ package org.nuxeo.elasticsearch.http.readonly.filter;
 
 import org.json.JSONException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.http.readonly.AbstractSearchRequestFilterImpl;

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.api.model.impl;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Calendar;

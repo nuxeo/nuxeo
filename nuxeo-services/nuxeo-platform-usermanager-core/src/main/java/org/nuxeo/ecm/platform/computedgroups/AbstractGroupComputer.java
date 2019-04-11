@@ -29,7 +29,6 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
-import org.nuxeo.ecm.directory.BaseSession.FieldDetector;
 import org.nuxeo.ecm.directory.memory.MapExpressionEvaluator;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;

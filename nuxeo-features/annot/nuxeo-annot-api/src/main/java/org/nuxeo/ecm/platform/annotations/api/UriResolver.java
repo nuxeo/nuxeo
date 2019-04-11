@@ -22,7 +22,6 @@
 package org.nuxeo.ecm.platform.annotations.api;
 
 import java.net.URI;
-import java.util.List;
 
 /**
  * @author Alexandre Russel

@@ -19,9 +19,7 @@
 package org.nuxeo.ecm.core.storage.sql.listeners;
 
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;

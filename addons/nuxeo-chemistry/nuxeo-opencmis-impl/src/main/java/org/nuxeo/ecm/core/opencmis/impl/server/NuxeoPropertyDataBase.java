@@ -17,7 +17,6 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.opencmis.impl.client;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
