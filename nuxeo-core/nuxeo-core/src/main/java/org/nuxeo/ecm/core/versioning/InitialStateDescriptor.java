@@ -25,7 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * Descriptor to contribute the initial version state of a document.
- * 
+ *
  * @author Laurent Doguin
  * @since 5.4.2
  */

@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * Class implementing this interface will be able to use contribution from the versioningRules extension point.
- * 
+ *
  * @author Laurent Doguin
  * @since 5.4.2
  */

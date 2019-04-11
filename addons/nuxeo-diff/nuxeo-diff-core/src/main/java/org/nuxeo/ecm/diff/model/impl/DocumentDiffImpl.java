@@ -28,7 +28,7 @@ import org.nuxeo.ecm.diff.model.SchemaDiff;
 
 /**
  * Implementation of DocumentDiff using a HashMap.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public class DocumentDiffImpl implements DocumentDiff {

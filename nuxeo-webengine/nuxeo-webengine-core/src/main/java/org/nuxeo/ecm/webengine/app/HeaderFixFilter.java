@@ -40,7 +40,7 @@ import org.nuxeo.ecm.webengine.jaxrs.HttpFilter;
  * This filter is used to fix the http headers sent to Nuxeo. Sometimes Nuxeo Drive send content type or mime type
  * equals to 'pdf' instead of 'application/pdf', this filter is used to fix this value before giving it to appropriate
  * webengine object.
- * 
+ *
  * @since 9.2
  */
 public class HeaderFixFilter extends HttpFilter {

@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Extracts Closed Captions from a Video.
- * 
+ *
  * @since 8.4
  */
 @Operation(id = ExtractClosedCaptionsFromVideo.ID, category = Constants.CAT_CONVERSION, label = "Extracts closed captions from the video.", description = "Extracts the closed captions from the whole video or from a part of it when startAt and end time is provided. The output format references how the output is generated, and xpath can be used to indicate the video blob when using documents.")

@@ -29,7 +29,7 @@ import org.nuxeo.ecm.platform.task.Task;
 /**
  * A small service adding Routing behavior to tasks.
  * <p>
- * 
+ *
  * @deprecated since 5.6, use DocumentRoutingService instead
  */
 @Deprecated

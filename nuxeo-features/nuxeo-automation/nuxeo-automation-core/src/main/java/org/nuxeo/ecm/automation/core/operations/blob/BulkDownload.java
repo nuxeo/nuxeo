@@ -60,7 +60,7 @@ public class BulkDownload {
 
     @OperationMethod
     public Blob run(DocumentModelList docs) throws IOException {
-        
+
         DownloadService downloadService = Framework.getService(DownloadService.class);
         List<Blob> blobs = docs.stream().map(doc -> {
             Blob blob = downloadService.resolveBlob(doc);

@@ -19,7 +19,7 @@
 
 /**
  * Defines the allowed type of bundles for hot-deployment.
- * 
+ *
  * @since 5.5
  */
 package org.nuxeo.runtime.tomcat.dev;

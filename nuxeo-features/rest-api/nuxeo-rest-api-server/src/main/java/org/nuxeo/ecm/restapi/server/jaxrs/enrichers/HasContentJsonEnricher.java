@@ -36,7 +36,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Enricher that tells whether a "Folderish" or a "Collection" has children or members.
- * 
+ *
  * @since 10.3
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)

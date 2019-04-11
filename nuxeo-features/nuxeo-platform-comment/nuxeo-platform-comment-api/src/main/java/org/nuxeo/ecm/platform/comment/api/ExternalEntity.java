@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.comment.api;
 
 /**
  * External entity interface.
- * 
+ *
  * @since 10.3
  */
 public interface ExternalEntity {
@@ -42,14 +42,14 @@ public interface ExternalEntity {
 
     /**
      * Gets annotation origin.
-     * 
+     *
      * @return the origin
      */
     String getOrigin();
 
     /**
      * Sets annotation origin.
-     * 
+     *
      * @param origin the origin
      */
     void setOrigin(String origin);

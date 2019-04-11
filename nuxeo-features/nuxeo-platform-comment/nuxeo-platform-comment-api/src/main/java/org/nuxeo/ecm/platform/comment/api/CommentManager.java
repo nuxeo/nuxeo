@@ -218,7 +218,7 @@ public interface CommentManager {
 
     /**
      * Gets all comments for a document.
-     * 
+     *
      * @param session the core session
      * @param documentId the document id
      * @param pageSize the page size to query, give null or 0 to disable pagination
@@ -248,7 +248,7 @@ public interface CommentManager {
 
     /**
      * Updates a comment.
-     * 
+     *
      * @param session the core session
      * @param commentId the comment id
      * @param comment the updated comment

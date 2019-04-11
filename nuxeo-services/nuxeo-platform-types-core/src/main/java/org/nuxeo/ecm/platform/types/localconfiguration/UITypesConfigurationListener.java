@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  * Listener validating that the selected default type is part of the allowed type on the document.
  * <p>
  * If not, the default type is reset.
- * 
+ *
  * @since 5.7.3
  */
 public class UITypesConfigurationListener implements EventListener {

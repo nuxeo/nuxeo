@@ -83,16 +83,16 @@ public class SAMLAuthenticatorWithMapperTest {
     	        .put("metadata", metadata)
     	        .putAll(params == null ? new HashMap<String, String>() : params)
     	        .build();
-    	
+
     	samlAuth = new SAMLAuthenticationProvider();
     	samlAuth.initPlugin(newParams);
     }
-    
+
     private Map<String, String> getParamMap(boolean createIfNeeded, boolean update) {
     	Map<String, String> resultMap = new HashMap<>();
     	resultMap.put("userResolverCreateIfNeeded", Boolean.valueOf(createIfNeeded).toString());
     	resultMap.put("userResolverUpdate", Boolean.valueOf(update).toString());
-    	
+
     	return resultMap;
     }
 
@@ -111,7 +111,7 @@ public class SAMLAuthenticatorWithMapperTest {
         NuxeoPrincipal principal = userManager.getPrincipal("user@dummy");
         assertEquals("user@dummy", principal.getEmail());
     }
-    
+
     @Test(expected = NullPointerException.class)
     @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml")
     public void testUserDoesNotExistAndNoCreation() throws Exception {
@@ -140,7 +140,7 @@ public class SAMLAuthenticatorWithMapperTest {
             user.setPropertyValue(userManager.getUserEmailField(), "user@dummy");
             user = userManager.createUser(user);
         }
-        
+
         HttpServletRequest req = getMockRequest("/saml-response.xml", "POST", "http://localhost:8080/login",
                 "text/html");
         HttpServletResponse resp = mock(HttpServletResponse.class);

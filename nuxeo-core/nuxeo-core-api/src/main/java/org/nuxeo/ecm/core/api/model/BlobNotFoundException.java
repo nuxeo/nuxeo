@@ -22,7 +22,7 @@ import org.nuxeo.ecm.core.api.PropertyException;
 
 /**
  * Indicates a blob is missing.
- * 
+ *
  * @since 10.2
  */
 public class BlobNotFoundException extends PropertyException {

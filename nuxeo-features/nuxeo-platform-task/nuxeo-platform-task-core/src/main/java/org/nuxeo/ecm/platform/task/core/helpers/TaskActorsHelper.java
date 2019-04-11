@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  * Helper class for dealing with task actors.
  * <p>
  * Provides a method to build the task actors list.
- * 
+ *
  * @author ataillefer
  */
 public final class TaskActorsHelper {
@@ -42,7 +42,7 @@ public final class TaskActorsHelper {
 
     /**
      * Gets the task actors list: prefixed and unprefixed names of the principal and all its groups.
-     * 
+     *
      * @param principal the principal
      * @return the actors and group
      */

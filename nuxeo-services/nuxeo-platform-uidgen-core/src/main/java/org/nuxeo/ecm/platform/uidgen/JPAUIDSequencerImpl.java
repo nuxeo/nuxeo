@@ -48,7 +48,7 @@ public class JPAUIDSequencerImpl extends AbstractUIDSequencer {
     public static final int MAX_POOL_SIZE = 2;
     public static final long KEEP_ALIVE_TIME = 10L;
     public static final int QUEUE_SIZE = 1000;
-    
+
     private static volatile PersistenceProvider persistenceProvider;
 
     protected ThreadPoolExecutor tpe;

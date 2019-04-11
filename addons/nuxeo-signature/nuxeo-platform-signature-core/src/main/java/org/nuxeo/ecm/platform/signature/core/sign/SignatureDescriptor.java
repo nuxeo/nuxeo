@@ -53,7 +53,7 @@ public class SignatureDescriptor {
             return appearanceClass;
         }
     }
-    
+
     /**
      * @since 5.8 Definition of the layout applied on signatures.
      */

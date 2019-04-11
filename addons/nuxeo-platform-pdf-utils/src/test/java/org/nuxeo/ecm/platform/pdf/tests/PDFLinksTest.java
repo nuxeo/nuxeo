@@ -51,7 +51,7 @@ public class PDFLinksTest {
     private static final String PDF_LINKED_2_LOCAL_PATH = TestUtils.PDF_LINKED_2_PATH.replace("files/", "");
 
     private static final String PDF_LINKED_3_LOCAL_PATH = TestUtils.PDF_LINKED_3_PATH.replace("files/", "");
-    
+
     @Inject
     CoreSession coreSession;
 

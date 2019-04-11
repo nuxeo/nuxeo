@@ -22,16 +22,16 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * 
+ *
  * Probes to be evaluated at a health check
- * 
+ *
  * @since 9.3
  */
 @XObject("probe")
 public class HealthCheckProbesDescriptor {
     @XNode("@name")
     private String name;
-    
+
     @XNode("@enabled")
     private boolean enabled = true;
 

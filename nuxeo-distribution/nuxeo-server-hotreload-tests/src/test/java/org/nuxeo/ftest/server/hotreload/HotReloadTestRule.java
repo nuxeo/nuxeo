@@ -53,7 +53,7 @@ import org.nuxeo.functionaltests.RestHelper;
  * <li>org.nuxeo.dev=true</li>
  * <li>nuxeo.server.sdkInstallReloadTimer=false</li>
  * </ul>
- * 
+ *
  * @since 9.3
  */
 public class HotReloadTestRule implements TestRule {

@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * Exception throws by the {@link DocumentsSizeUpdater} to enforce Quotas in case a transaction tries to add too
  * much Blobs
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */

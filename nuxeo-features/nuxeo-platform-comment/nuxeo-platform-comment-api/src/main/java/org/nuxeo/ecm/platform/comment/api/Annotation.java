@@ -23,7 +23,7 @@ import org.nuxeo.ecm.platform.comment.api.Comment;
 
 /**
  * Annotation interface
- * 
+ *
  * @since 10.1
  */
 public interface Annotation extends Comment {

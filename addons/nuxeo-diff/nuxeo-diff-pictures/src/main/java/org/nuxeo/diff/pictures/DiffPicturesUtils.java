@@ -71,7 +71,7 @@ public class DiffPicturesUtils {
      * <p>
      * If blobs are null or are not pictures, we do nothing, it will fails with later (or here with a null pointer
      * exception)
-     * 
+     *
      * @return true if the 2 blobs are pictures with same format and dimensions
      * @since 7.10
      */
@@ -95,17 +95,17 @@ public class DiffPicturesUtils {
 
         return result;
     }
-    
+
     public static Blob getDocumentBlob(DocumentModel inDoc, String inXPath) {
-        
+
        Blob b;
-       
+
        if (StringUtils.isBlank(inXPath) || "null".equals(inXPath) || "default".equals(inXPath)) {
             b = (Blob) inDoc.getPropertyValue(DiffPictures.DEFAULT_XPATH);
         } else {
             b = (Blob) inDoc.getPropertyValue(inXPath);
         }
-       
+
        return b;
     }
 

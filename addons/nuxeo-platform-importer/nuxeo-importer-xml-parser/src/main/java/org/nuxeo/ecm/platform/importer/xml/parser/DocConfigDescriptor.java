@@ -49,7 +49,7 @@ public class DocConfigDescriptor {
     @XNode("@updateExistingDocuments")
     protected boolean update = false;
 
-    
+
     public DocConfigDescriptor() {
     }
 

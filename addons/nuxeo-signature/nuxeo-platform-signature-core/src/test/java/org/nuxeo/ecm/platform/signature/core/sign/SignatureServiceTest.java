@@ -414,7 +414,7 @@ public class SignatureServiceTest {
         assertEquals("foo.pdf", signedBlob.getFilename());
         assertEquals(Arrays.asList("Signature2", "Signature1"), getSignatureNames(signedBlob));
     }
-    
+
     @Test public void testGetDefaultSignatureAppearance() throws Exception {
         SignatureServiceImpl ssi = (SignatureServiceImpl) signatureService;
         assertNotNull(ssi.getSignatureAppearanceFactory());

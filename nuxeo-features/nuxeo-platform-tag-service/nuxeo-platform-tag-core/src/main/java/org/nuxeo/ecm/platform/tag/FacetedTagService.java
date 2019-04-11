@@ -60,7 +60,7 @@ public class FacetedTagService extends AbstractTagService {
 
     /**
      * Context data to disable versioning, used by NoVersioningFacetedTagFilter.
-     * 
+     *
      * @since 9.10
      */
     public static final String DISABLE_VERSIONING = "tag.facet.disable.versioning";

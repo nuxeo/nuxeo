@@ -23,7 +23,7 @@ import java.util.Date;
 /**
  * Parse and encode W3c dates. Only UTC dates are supported (ending in Z): YYYY-MM-DDThh:mm:ssZ (without milliseconds)
  * We use a custom parser since it should work on GWT too.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DateUtils {

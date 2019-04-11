@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Blob utility methods.
- * 
+ *
  * @since 9.3
  */
 public class BlobUtils {
@@ -64,7 +64,7 @@ public class BlobUtils {
 
     /**
      * Zip the given blob.
-     * 
+     *
      * @param blob the blob
      * @param filename if no filename is given, the blob's filename will be used
      * @return a zip containing the blob
@@ -98,7 +98,7 @@ public class BlobUtils {
 
     /**
      * Zip a list of blob.
-     * 
+     *
      * @param blobs the blob list
      * @param fileName if no filename is given, the first blob's filename will be used
      * @return a zip containing the list of blob

@@ -183,7 +183,7 @@ public class SAMLAuthenticatorTest {
 
         String redirectUri = (String) req.getSession(true).getAttribute(NXAuthConstants.START_PAGE_SAVE_KEY);
         assertEquals("/relay", redirectUri);
-        
+
         Cookie cookie = cookies.stream()
                                .filter(c -> c.getName().equals(SAMLAuthenticationProvider.SAML_SESSION_KEY))
                                .findFirst()

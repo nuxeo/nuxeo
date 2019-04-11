@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  * events.
  * <p/>
  * Usage leverages try-with-resources java feature:
- * 
+ *
  * <pre>
  * {@code
  *     try (CapturingEventListener listener = new CapturingEventListener("event")) {

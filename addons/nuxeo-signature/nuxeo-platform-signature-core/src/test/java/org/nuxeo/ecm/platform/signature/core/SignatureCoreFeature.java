@@ -25,7 +25,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * Minimal requirements to test nuxeo-platform-signature-core bundle.
- * 
+ *
  * @since 10.1
  */
 @Features(DirectoryFeature.class)

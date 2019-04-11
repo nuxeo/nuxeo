@@ -24,7 +24,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Simple probe to check if the runtime is started
- * 
+ *
  * @since 9.3
  */
 public class RuntimeStartedProbe implements Probe {

@@ -86,7 +86,7 @@ public class MockDropboxBlobProvider extends DropboxBlobProvider {
 
         //try {
         //file = DbxEntry.Reader.readFully(is).asFile();
-        file =  null; //TODO: Fix this test 
+        file =  null; //TODO: Fix this test
         //  } catch (JsonReadException e) {
         //    throw new UnsupportedOperationException(e);
         // }

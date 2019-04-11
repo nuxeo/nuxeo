@@ -76,7 +76,7 @@ public class DiffPicturesWithDocsOp {
 
     @OperationMethod()
     public Blob run() throws OperationException, CommandNotAvailable, IOException {
-        
+
         Map<String, Serializable> serializableParameters = new HashMap<>();
         if (parameters != null && parameters.size() > 0) {
             Set<String> parameterNames = parameters.keySet();

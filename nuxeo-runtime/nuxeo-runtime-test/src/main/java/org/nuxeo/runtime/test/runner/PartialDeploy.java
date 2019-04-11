@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
  * <pre>
  * &#64;PartialDeploy(bundle = "com.extensions.wonderful-SANDBOX", extensions = {TargetExtensions.Something.class})
  * </pre>
- * 
+ *
  * @since 9.1
  */
 @Inherited

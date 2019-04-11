@@ -23,7 +23,7 @@ import javax.management.MXBean;
 
 /**
  * Expose dev bundles reloading feature to management interface
- * 
+ *
  * @since 5.5
  */
 @MXBean(true)

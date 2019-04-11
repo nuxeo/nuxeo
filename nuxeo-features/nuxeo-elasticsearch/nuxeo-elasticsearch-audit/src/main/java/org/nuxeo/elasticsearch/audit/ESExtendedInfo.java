@@ -24,7 +24,7 @@ import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 
 /**
  * Extended info for the {@link ESAuditBackend}.
- * 
+ *
  * @since 7.10
  */
 public class ESExtendedInfo implements ExtendedInfo {

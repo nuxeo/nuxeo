@@ -45,7 +45,7 @@ public class ImporterRunnerConfiguration {
         private int nbThreads = 5;
 
         private String jobName;
-        
+
         private String repository=null;
 
         public Builder(SourceNode sourceNode, String importWritePath, ImporterLogger log) {
@@ -65,7 +65,7 @@ public class ImporterRunnerConfiguration {
             this.repository = repo;
             return this;
         }
-        
+
         public Builder batchSize(Integer batchSize) {
             if (batchSize != null) {
                 this.batchSize = batchSize;
@@ -107,7 +107,7 @@ public class ImporterRunnerConfiguration {
     public final String jobName;
 
     public final ImporterLogger log;
-    
+
     public final String repositoryName;
 
     protected ImporterRunnerConfiguration(String repositoryName, SourceNode sourceNode, String importWritePath, ImporterLogger log,

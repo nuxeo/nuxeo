@@ -24,7 +24,7 @@ import java.text.NumberFormat;
 
 /**
  * Helper class mainly used for UI display
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */

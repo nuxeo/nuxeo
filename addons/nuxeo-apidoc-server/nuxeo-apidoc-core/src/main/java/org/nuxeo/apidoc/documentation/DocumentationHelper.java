@@ -56,14 +56,14 @@ public class DocumentationHelper {
      * HTML.
      * <p>
      * <ul>
-     * <li>standalone newlines are turned into {@code 
+     * <li>standalone newlines are turned into {@code
      * <p/>
      * }</li>
      * <li>{@code <code>} blocks are turned into a {@code <div class="code">}
      * with a {@code
      *
-     * 
-    
+     *
+
     <pre>
      * <code>}</li>
      * <li>{@code @author} blocks are removed</li>

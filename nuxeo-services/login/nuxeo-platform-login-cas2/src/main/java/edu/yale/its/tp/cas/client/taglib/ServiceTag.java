@@ -39,7 +39,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
  * <p>
  * Tag for indicating the current service for the cas:auth tag.
  * </p>
- * 
+ *
  * @author Shawn Bayern
  */
 public class ServiceTag extends BodyTagSupport {
