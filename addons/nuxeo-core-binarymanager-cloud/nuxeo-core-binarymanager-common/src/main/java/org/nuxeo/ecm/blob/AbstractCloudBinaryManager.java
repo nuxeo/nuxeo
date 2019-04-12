@@ -78,6 +78,8 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
 
     protected int directDownloadExpire;
 
+    protected boolean transientFlag;
+
     public static final String CACHE_SIZE_PROPERTY = "cachesize";
 
     public static final String CACHE_COUNT_PROPERTY = "cachecount";
@@ -109,6 +111,8 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         if (directDownloadExpire < 0) {
             directDownloadExpire = DEFAULT_DIRECTDOWNLOAD_EXPIRE;
         }
+
+        transientFlag = Boolean.parseBoolean(getProperty("transient"));
 
         // Setup remote client
         setupCloudClient();
@@ -242,4 +246,10 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
             return DownloadHelper.getRFC2231ContentDisposition(servletRequest, blob.getFilename());
         }
     }
+
+    @Override
+    public boolean isTransient() {
+        return transientFlag;
+    }
+
 }
