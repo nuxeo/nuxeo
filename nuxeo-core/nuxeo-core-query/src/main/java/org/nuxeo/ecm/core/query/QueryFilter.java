@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 
 /**
- * Filtering parameters that can be passed when executing a {@link FilterableQuery}.
+ * Filtering parameters that can be passed when executing a query.
  * <p>
  * This includes filtering on the BROWSE permission for the given principal, filtering on facets, and applying query
  * transformers.

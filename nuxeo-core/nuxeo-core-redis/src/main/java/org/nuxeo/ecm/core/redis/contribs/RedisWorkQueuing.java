@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,14 @@
  */
 package org.nuxeo.ecm.core.redis.contribs;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +37,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.work.NuxeoBlockingQueue;
@@ -59,16 +59,14 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     private static final Log log = LogFactory.getLog(RedisWorkQueuing.class);
 
-    protected static final String UTF_8 = "UTF-8";
-
     /**
      * Global hash of Work instance id -> serialoized Work instance.
      */
     protected static final String KEY_DATA = "data";
 
     /**
-     * Global hash of Work instance id -> Work state. The completed state ( {@value #STATE_COMPLETED_B}) is followed by
-     * a completion time in milliseconds.
+     * Global hash of Work instance id -> Work state. The completed state is followed by a completion time in
+     * milliseconds.
      */
     protected static final String KEY_STATE = "state";
 
@@ -347,19 +345,11 @@ public class RedisWorkQueuing implements WorkQueuing {
      */
 
     protected String string(byte[] bytes) {
-        try {
-            return new String(bytes, UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException("Should not happen, cannot decode string in UTF-8", e);
-        }
+        return new String(bytes, UTF_8);
     }
 
     protected byte[] bytes(String string) {
-        try {
-            return string.getBytes(UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException("Should not happen, cannot encode string in UTF-8", e);
-        }
+        return string.getBytes(UTF_8);
     }
 
     protected byte[] bytes(Work.State state) {
@@ -482,12 +472,8 @@ public class RedisWorkQueuing implements WorkQueuing {
             Set<byte[]> keys = jedis.keys(keyBytes(key(queuePrefix, "*")));
             Set<String> queueIds = new HashSet<>(keys.size());
             for (byte[] bytes : keys) {
-                try {
-                    String queueId = new String(bytes, offset, bytes.length - offset, UTF_8);
-                    queueIds.add(queueId);
-                } catch (IOException e) {
-                    throw new NuxeoException(e);
-                }
+                String queueId = new String(bytes, offset, bytes.length - offset, UTF_8);
+                queueIds.add(queueId);
             }
             return queueIds;
         });
@@ -620,12 +606,7 @@ public class RedisWorkQueuing implements WorkQueuing {
             case STATE_RUNNING_B:
                 return State.RUNNING;
             default:
-                String msg;
-                try {
-                    msg = new String(bytes, UTF_8);
-                } catch (UnsupportedEncodingException e) {
-                    msg = Arrays.toString(bytes);
-                }
+                String msg = new String(bytes, UTF_8);
                 log.error("Unknown work state: " + msg + ", work: " + workId);
                 return null;
             }

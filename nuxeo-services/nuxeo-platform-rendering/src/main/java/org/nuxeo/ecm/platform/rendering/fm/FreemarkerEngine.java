@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,13 +168,6 @@ public class FreemarkerEngine implements RenderingEngine {
         return new View(this, path, object);
     }
 
-    /**
-     * @param template
-     * @param input
-     * @param writer
-     * @param baseUrl a base URL used for resolving referenced files in extends directive.
-     * @throws RenderingException
-     */
     @Override
     public void render(String template, Object input, Writer writer) throws RenderingException {
         try {

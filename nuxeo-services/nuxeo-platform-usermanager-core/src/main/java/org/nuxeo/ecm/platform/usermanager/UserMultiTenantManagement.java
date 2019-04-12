@@ -42,7 +42,6 @@ public interface UserMultiTenantManagement {
     /**
      * Transform the Group DocumentModel store it into the tenant described by the context
      *
-     * @param um
      * @param group to modified
      * @param context that bring the tenant information
      */
@@ -59,8 +58,7 @@ public interface UserMultiTenantManagement {
     /**
      * Transform the GroupName to add to tenant characteristic.
      *
-     * @param um
-     * @param group to modified
+     * @param groupname to modified
      * @param context that bring the tenant information
      */
     String groupnameTranformer(UserManager um, String groupname, DocumentModel context);

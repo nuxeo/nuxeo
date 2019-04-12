@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,7 +167,7 @@ public class BaseTest {
                 builder.header(headerKey, headers.get(headerKey));
             }
         }
-        ClientResponse response = null;
+        ClientResponse response;
         switch (requestType) {
         case GET:
             response = builder.get(ClientResponse.class);
@@ -219,12 +219,6 @@ public class BaseTest {
     }
 
     /**
-     * @param get
-     * @param string
-     * @param queryParamsForPage
-     * @return
-     * @throws IOException
-     * @throws JsonProcessingException
      * @since 5.8
      */
     protected JsonNode getResponseAsJson(RequestType responseType, String url,

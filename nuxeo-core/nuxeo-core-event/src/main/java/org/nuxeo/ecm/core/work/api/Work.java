@@ -180,7 +180,7 @@ public interface Work extends Serializable {
      * To allow for suspension by the {@link WorkManager}, it should periodically call {@link #isSuspending}, and if
      * {@code true} call {@link #suspended} return early with saved state data.
      * <p>
-     * Clean up can by implemented by {@link #cleanUp()}.
+     * Clean up can by implemented by {@link #cleanUp(boolean, Exception)}.
      *
      * @see #isSuspending
      * @see #suspended
@@ -249,8 +249,7 @@ public interface Work extends Serializable {
     /**
      * CALLED BY THE WORK MANAGER (not user code) to get this work instance's state.
      * <p>
-     * Used only to get the final state of a completed instance ( {@link State#COMPLETED}, {@link State#FAILED} or
-     * {@link State#CANCELED}).
+     * Used only to get the final state of a completed instance.
      *
      * @since 5.8
      */

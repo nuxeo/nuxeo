@@ -46,12 +46,12 @@ public interface WorkQueuing {
 
     /**
      * Starts up this {@link WorkQueuing} and attempts to resume work previously suspended and saved at shutdown time.
-     * @return
      */
     NuxeoBlockingQueue init(WorkQueueDescriptor config);
 
     /**
      * Enable/disable this {@code queueId} processing
+     * 
      * @since 8.3
      */
     void setActive(String queueId, boolean value);
@@ -66,8 +66,6 @@ public interface WorkQueuing {
      * Gets the blocking queue of work used by the {@link ThreadPoolExecutor}.
      *
      * @since 8.1
-     * @param queueId
-     * @return
      */
     NuxeoBlockingQueue getQueue(String queueId);
 
@@ -117,7 +115,7 @@ public interface WorkQueuing {
      *
      * @param workId the id of the work to find
      * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
-     *        RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for SCHEDULED or RUNNING
+     *            RUNNING}, or {@code null} for SCHEDULED or RUNNING
      * @return the found work instance, or {@code null} if not found
      */
     Work find(String workId, State state);
@@ -135,8 +133,8 @@ public interface WorkQueuing {
      * Checks if a work instance with the given id is in the given state.
      *
      * @param workId the work id
-     * @param state the state, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING RUNNING}, {@link State#COMPLETED
-     *        COMPLETED}, or {@code null} for non-completed
+     * @param state the state, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING RUNNING}, or {@code null} for
+     *            non-completed
      * @return {@code true} if a work instance with the given id is in the given state
      * @since 5.8
      */
@@ -145,8 +143,7 @@ public interface WorkQueuing {
     /**
      * Gets the state in which a work instance is.
      * <p>
-     * This can be {@link State#SCHEDULED}, {@link State#RUNNING}, {@link State#COMPLETED}, {@link State#FAILED}, or
-     * {@link State#CANCELED}.
+     * This can be {@link State#SCHEDULED} or {@link State#RUNNING}.
      *
      * @param workId the id of the work to find
      * @return the work state, or {@code null} if not found
@@ -162,7 +159,7 @@ public interface WorkQueuing {
      *
      * @param queueId the queue id
      * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
-     *        RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for non-completed
+     *            RUNNING}, or {@code null} for non-completed
      * @return the list of work instances in the given state
      */
     List<Work> listWork(String queueId, State state);
@@ -172,7 +169,7 @@ public interface WorkQueuing {
      *
      * @param queueId the queue id
      * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
-     *        RUNNING},  or {@code null} for non-completed
+     *            RUNNING}, or {@code null} for non-completed
      * @return the list of work ids in the given state
      */
     List<String> listWorkIds(String queueId, State state);
@@ -181,8 +178,7 @@ public interface WorkQueuing {
      * Gets the number of work instances in the given state in a given queue.
      *
      * @param queueId the queue id
-     * @param state the state, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING RUNNING} or
-     *        {@link State#COMPLETED COMPLETED}
+     * @param state the state, {@link State#SCHEDULED SCHEDULED} or {@link State#RUNNING RUNNING}
      * @return the number of scheduled work instances in the queue
      * @since 5.8
      */
@@ -202,7 +198,7 @@ public interface WorkQueuing {
      */
     void listen(Listener listener);
 
-    public interface Listener {
+    interface Listener {
 
         void queueActivated(WorkQueueMetrics metric);
 
@@ -222,9 +218,7 @@ public interface WorkQueuing {
 
                     @Override
                     public void queueChanged(Work work, WorkQueueMetrics metrics) {
-                        log.trace(String.format("%s -> changed on %s %s",
-                                metrics,
-                                work.getWorkInstanceState(),
+                        log.trace(String.format("%s -> changed on %s %s", metrics, work.getWorkInstanceState(),
                                 work.getSchedulePath()));
                     }
 

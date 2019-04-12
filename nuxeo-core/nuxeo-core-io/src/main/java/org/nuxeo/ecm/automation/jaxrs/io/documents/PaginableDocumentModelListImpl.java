@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,11 @@ package org.nuxeo.ecm.automation.jaxrs.io.documents;
 import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
 import org.nuxeo.ecm.automation.core.util.PaginablePageProvider;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 
 /**
- * Wraps a {@link PageProvider} as a {@link DocumentList}
+ * Wraps a {@link PageProvider} as a {@link DocumentModelList}
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,6 @@ import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.thoughtworks.xstream.io.json.JsonWriter;
 
 /**
  * Convert {@link DirectoryEntry} to Json.
@@ -64,7 +63,7 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link ExtensibleEntityJsonWriter#extend(DirectoryEntry, JsonWriter)}.
+ * {@link DirectoryEntryJsonWriter#extend(Object, JsonGenerator)}.
  * </p>
  * <p>
  * Format is:

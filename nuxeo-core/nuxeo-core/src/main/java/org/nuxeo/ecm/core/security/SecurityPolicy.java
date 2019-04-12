@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,6 @@ public interface SecurityPolicy {
      * @param principal principal to check
      * @param permission permission to check
      * @param resolvedPermissions permissions or groups of permissions containing permission
-     * @param additionalPrincipals
      * @return access: GRANT, DENY, or UNKNOWN. When UNKNOWN is returned, following policies or default core security
      *         are applied.
      */
@@ -87,7 +86,7 @@ public interface SecurityPolicy {
     /**
      * Get the transformer to use to apply this policy to a query.
      * <p>
-     * Called only when {@link #isExpressibleInQuery()} returned {@code true}
+     * Called only when {@link #isExpressibleInQuery(String)} returned {@code true}
      *
      * @param repositoryName the target repository name.
      * @return the transformer

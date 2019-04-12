@@ -6342,7 +6342,7 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
               <show>protected</show>
-              <additionalparam>-Xdoclint:none</additionalparam>
+              <additionalparam>-Xdoclint:reference</additionalparam>
               <!-- <includeDependencySources>true</includeDependencySources> -->
               <!-- <includeTransitiveDependencySources>true</includeTransitiveDependencySources> -->
               <linksource>true</linksource>

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: WidgetDefinition.java 28498 2008-01-05 11:46:25Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 import java.io.Serializable;
@@ -166,7 +164,7 @@ public interface WidgetDefinition extends Serializable {
     /**
      * @since 5.6
      * @see #isHandlingLabels()
-     * @deprecated since 5.7: this was added prematurely, see {@link #setControls()} for a more generic management of
+     * @deprecated since 5.7: this was added prematurely, see {@link #setControls(Map)} for a more generic management of
      *             rendering controls
      */
     @Deprecated

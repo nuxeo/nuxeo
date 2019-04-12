@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -340,7 +340,7 @@ public class StateHelper {
     /**
      * Does a diff of two values.
      *
-     * @return a {@link StateDiff}, a {@link ListDiff}, {@link #NOP}, or an actual value (including {@code null})
+     * @return a {@link StateDiff}, a {@link ListDiff}, {@link State#NOP}, or an actual value (including {@code null})
      */
     public static Serializable diff(Object a, Object b) {
         if (equalsLoose(a, b)) {

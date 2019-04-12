@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.thoughtworks.xstream.io.json.JsonWriter;
 
 /**
  * Convert {@link DocumentModel} to Json.
@@ -60,7 +59,7 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link ExtensibleEntityJsonWriter#extend(DocumentModel, JsonWriter)}.
+ * {@link DocumentModelJsonWriter#extend(Object, JsonGenerator)}.
  * </p>
  * <p>
  * Format is:

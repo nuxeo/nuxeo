@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.server.WebApplication;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.ResourceBinding;
@@ -81,7 +82,6 @@ public class ModuleImpl implements Module {
 
     /**
      * @deprecated Use {@link WebApplication} to declare modules - modules may have multiple roots
-     * @return
      */
     @Deprecated
     protected ResourceType rootType;
@@ -151,7 +151,6 @@ public class ModuleImpl implements Module {
 
     /**
      * @deprecated Use {@link WebApplication} to declare modules
-     * @return
      */
     @Deprecated
     public ResourceType getRootType() {
@@ -165,7 +164,6 @@ public class ModuleImpl implements Module {
 
     /**
      * @deprecated Use {@link WebApplication} to declare modules
-     * @return
      */
     @Override
     @Deprecated

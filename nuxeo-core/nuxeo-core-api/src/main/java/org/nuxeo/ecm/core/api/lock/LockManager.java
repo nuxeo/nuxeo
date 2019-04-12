@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.nuxeo.ecm.core.api.Lock;
 /**
  * Manager of locks for a repository.
  * <p>
- * The method {@link #close} must be called when done with the lock manager.
+ * The method {@link #closeLockManager} must be called when done with the lock manager.
  *
  * @since 6.0
  */
@@ -62,8 +62,7 @@ public interface LockManager {
      * doesn't match, the returned lock will return {@code true} for {@link Lock#getFailed}.
      *
      * @param id the document id
-     * @param the owner to check, or {@code null} for no check
-     * @param force {@code true} to just do the remove and not return the previous lock
+     * @param owner the owner to check, or {@code null} for no check
      * @return the previous lock (may be {@code null}), with a failed flag if locking failed
      */
     Lock removeLock(String id, String owner);

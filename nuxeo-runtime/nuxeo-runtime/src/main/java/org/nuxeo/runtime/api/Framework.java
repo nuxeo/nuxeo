@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,10 +88,9 @@ public final class Framework {
      * Property to control strict runtime mode
      *
      * @since 5.6
-     * @see #handleDevError(Throwable)
      * @deprecated since 9.1 This property is not documented and doesn't work.
      */
-    @Deprecated
+    @Deprecated(since = "9.1")
     public static final String NUXEO_STRICT_RUNTIME_SYSTEM_PROP = "org.nuxeo.runtime.strict";
 
     /**
@@ -244,16 +243,9 @@ public final class Framework {
      *
      * @deprecated since 9.10, use {@link #getService} instead
      */
-    @Deprecated
+    @Deprecated(since = "9.10")
     public static <T> T getLocalService(Class<T> serviceClass) {
         return getService(serviceClass);
-    }
-
-    /**
-     * Lookup a registered object given its key.
-     */
-    public static Object lookup(String key) {
-        return null; // TODO
     }
 
     /**
@@ -365,7 +357,6 @@ public final class Framework {
      *
      * @param cbHandler used to fetch the login info
      * @return the login context
-     * @throws LoginException
      */
     public static LoginContext login(CallbackHandler cbHandler) throws LoginException {
         checkRuntimeInitialized();
@@ -520,11 +511,11 @@ public final class Framework {
 
     /**
      * @see FileEventTracker
-     * @param aFile The file to delete
-     * @param aMarker the marker Object
+     * @param file the file to delete
+     * @param marker the marker Object
      */
-    public static void trackFile(File aFile, Object aMarker) {
-        FileEvent.onFile(Framework.class, aFile, aMarker).send();
+    public static void trackFile(File file, Object marker) {
+        FileEvent.onFile(Framework.class, file, marker).send();
     }
 
     /**

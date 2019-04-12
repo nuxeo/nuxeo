@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public interface ImagingService {
      *
      * @return the image metadata as a map String -> Object
      * @deprecated since 7.2. Please use instead
-     * {@link org.nuxeo.binary.metadata.api.BinaryMetadataService#readMetadata(Blob)}
+     * {@link org.nuxeo.binary.metadata.api.BinaryMetadataService#readMetadata(Blob, boolean)}
      */
     @Deprecated
     Map<String, Object> getImageMetadata(Blob blob);

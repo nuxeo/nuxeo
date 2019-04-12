@@ -115,7 +115,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
      * @deprecated since 9.3, this method is only used in deployBundles and undeployBundles which are deprecated. Keep
      *             it for backward compatibility.
      */
-    @Deprecated
+    @Deprecated(since = "9.3")
     protected void refreshComponents() {
         String reloadStrategy = Framework.getProperty(RELOAD_STRATEGY_PARAMETER, RELOAD_STRATEGY_VALUE_DEFAULT);
         log.info("Refresh components. Strategy={}", reloadStrategy);
@@ -141,7 +141,8 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void reload() throws InterruptedException {
+    @SuppressWarnings("deprecation")
+    public void reload() {
         log.debug("Starting reload");
 
         try {
@@ -194,7 +195,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
      * @deprecated since 9.3 use {@link #reloadBundles(ReloadContext)} instead.
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "9.3")
     public void deployBundles(List<File> files, boolean reloadResources) throws BundleException {
         long begin = System.currentTimeMillis();
         List<String> missingNames = files.stream()
@@ -241,7 +242,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
      * @deprecated since 9.3 use {@link #reloadBundles(ReloadContext)} instead.
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "9.3")
     public void undeployBundles(List<String> bundleNames, boolean reloadResources) throws BundleException {
         long begin = System.currentTimeMillis();
         log.info(() -> {
@@ -613,7 +614,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
      *             NXP-9642 is done.
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "5.6")
     public void installWebResources(File file) throws IOException {
         log.info("Install web resources");
         if (file.isDirectory()) {
@@ -677,7 +678,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     /**
      * @deprecated since 9.3 should not be needed anymore
      */
-    @Deprecated
+    @Deprecated(since = "9.3")
     protected void triggerReloadWithNewTransaction(String eventId) {
         if (TransactionHelper.isTransactionMarkedRollback()) {
             throw new AssertionError("The calling transaction is marked rollback");
@@ -702,7 +703,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     /**
      * @deprecated since 9.3 should not be needed anymore
      */
-    @Deprecated
+    @Deprecated(since = "9.3")
     protected void triggerReload(String eventId) {
         log.info("About to send reload event for id: {}", eventId);
         Framework.getService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, BEFORE_RELOAD_EVENT_ID, this, null));

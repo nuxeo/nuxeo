@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,6 @@ public interface AdapterFactory<T> {
 
     /**
      * Adapt the given object and return the adapter instance.
-     *
-     * @param toAdapt
-     * @return
      */
     T getAdapter(Session session, Class<T> clazz);
 

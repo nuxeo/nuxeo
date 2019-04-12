@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertyJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -42,7 +43,6 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.thoughtworks.xstream.io.json.JsonWriter;
 
 /**
  * Convert {@link NuxeoPrincipal} to Json.
@@ -52,7 +52,7 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link ExtensibleEntityJsonWriter#extend(NuxeoPrincipal, JsonWriter)}.
+ * {@link NuxeoPrincipalJsonWriter#extend(Object, JsonGenerator)}.
  * </p>
  * <p>
  * Format is:
@@ -62,7 +62,7 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  * {
  *   "entity-type":"user",
  *   "id":"USERNAME",
- *   "properties":{   <- depending on the user schema / format is managed by {@link DocumentPropertyJsonWriter}
+ *   "properties":{   <- depending on the user schema / format is managed by {@link DocumentPropertyJsonWriter }
  *     "firstName":"FIRSTNAME",
  *     "lastName":"LASTNAME",
  *     "username":"USERNAME",

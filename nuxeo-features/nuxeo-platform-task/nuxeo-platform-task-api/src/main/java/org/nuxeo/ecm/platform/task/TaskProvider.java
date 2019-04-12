@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
 
@@ -33,7 +34,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
 public interface TaskProvider extends Serializable {
 
     /**
-     * @param coreSession
      * @return A list of task instances where the current user is an actor. Doesn't take into account tasks that were
      *         delegated to this user.
      * @throws IllegalStateException If the currentUser is null.
@@ -54,8 +54,6 @@ public interface TaskProvider extends Serializable {
      *
      * @since 5.5
      * @param actors a list used as actorId to retrieve the tasks.
-     * @param coreSession
-     * @return
      */
     List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession);
 
@@ -74,21 +72,13 @@ public interface TaskProvider extends Serializable {
      * and so the documents linked to the tasks are detached.
      *
      * @param dm the document.
-     * @param user
-     * @param coreSession
-     * @return
      */
-    List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, CoreSession coreSssion);
+    List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, CoreSession coreSession);
 
     /**
      * Returns the list of task instances associated with this document assigned to one of the actor in the list or its
      * pool. Doesn't take into account tasks that were delegated to these users. The query is done in unrestricted mode
      * and so the documents linked to the tasks are detached.
-     *
-     * @param dm
-     * @param actors
-     * @param coreSession
-     * @return
      */
     List<Task> getTaskInstances(DocumentModel dm, List<String> actors, CoreSession coreSession);
 
@@ -151,8 +141,8 @@ public interface TaskProvider extends Serializable {
      * @param comment string added to the task comments and used as a notification comment
      * @param eventName the core event name to use when notifying
      * @param isValidated boolean marker to state if the task was validated or rejected
-     * @throws NuxeoException when trying to end a task without being granted the right to do so (see
-     *             {@link #canEndTask(NuxeoPrincipal, Task)}), or when any other error occurs
+     * @throws NuxeoException when trying to end a task without being granted the right to do so, or when any other
+     *             error occurs
      * @return the name of the Seam event to raise
      */
     String endTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment, String eventName,

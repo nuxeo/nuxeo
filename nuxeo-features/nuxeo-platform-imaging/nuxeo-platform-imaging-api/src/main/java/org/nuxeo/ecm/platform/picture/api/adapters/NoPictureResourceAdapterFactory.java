@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
- * Factory instantiating {@link NoPictureResourceAdapter} adapter.
+ * Factory instantiating {@link NoPictureAdapter} adapter.
+ *
+ * @deprecated since 11.1, doesn't seem used
  */
+@Deprecated(since = "11.1")
 public class NoPictureResourceAdapterFactory implements DocumentAdapterFactory {
 
     @Override

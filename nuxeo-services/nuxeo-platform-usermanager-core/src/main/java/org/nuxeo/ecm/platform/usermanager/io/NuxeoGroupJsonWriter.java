@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertyJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -51,7 +52,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link ExtensibleEntityJsonWriter#extend(NuxeoGroup, JsonWriter)}.
+ * {@link NuxeoGroupJsonWriter#extend(Object, JsonGenerator)}.
  * </p>
  * <p>
  * Format is:
@@ -63,7 +64,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *   "groupname": "GROUP_NAME", <- deprecated, for backward compatibility
  *   "grouplabel": "GROUP_DISPLAY_NAME", <- deprecated, for backward compatibility
  *   "id": "GROUP_NAME",
- *   "properties":{   <- depending on the group schema / format is managed by {@link DocumentPropertyJsonWriter}
+ *   "properties":{   <- depending on the group schema / format is managed by {@link DocumentPropertyJsonWriter }
  *     "groupname":"GROUP_NAME",
  *     "grouplabel":"GROUP_DISPLAY_NAME",
  *     "description": "GROUP_DESCRIPTION"

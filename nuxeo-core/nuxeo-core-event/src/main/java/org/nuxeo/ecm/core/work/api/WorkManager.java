@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,8 @@ public interface WorkManager {
      */
     void schedule(Work work, Scheduling scheduling, boolean afterCommit);
 
-    /** Admin API **/
+    // Admin API
+
     /**
      * Lists the ids of the existing work queues.
      *
@@ -206,8 +207,8 @@ public interface WorkManager {
      *
      * @param queueId the queue id
      * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
-     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for non-completed (
-     *            {@link State#SCHEDULED SCHEDULED} or {@link State#RUNNING RUNNING})
+     *            RUNNING}, or {@code null} for non-completed ( {@link State#SCHEDULED SCHEDULED} or
+     *            {@link State#RUNNING RUNNING})
      * @return the number of work instances in the given state
      * @since 5.8
      * @deprecated since 5.8,
@@ -252,7 +253,8 @@ public interface WorkManager {
      */
     boolean isStarted();
 
-    /** Works lookup API **/
+    // Works lookup API
+
     /**
      * Gets the state in which a work instance is.
      * <p>

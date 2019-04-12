@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * A high-level repository descriptor, from which you get a {@link CoreSession} when calling {@link #open}.
+ * A high-level repository descriptor, from which you get a {@link CoreSession} when calling {@code open}.
  * <p>
  * This is obsolete as an extension point, use org.nuxeo.ecm.core.storage.sql.RepositoryService instead. Descriptor kept
  * for backward-compatibility.

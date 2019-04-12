@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ public interface AutomationClient {
 
     /**
      * @since 6.0
-     * @param interceptor
      */
     void setRequestInterceptor(RequestInterceptor interceptor);
 
@@ -96,9 +95,6 @@ public interface AutomationClient {
     /**
      * Register an adapter for a given type. Registration is not thread safe. You should register adapters at
      * initialization time. An adapter type can be bound to a single adaptable type.
-     *
-     * @param typeToAdapt
-     * @param adapterType
      */
     // FIXME: this javadoc doesn't correspond to the method signature.
     void registerAdapter(AdapterFactory<?> factory);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,7 +189,7 @@ public interface Session extends Connection {
      * Checks if a child node with the given name exists.
      * <p>
      * There are two kinds of children, the regular children documents and the complex properties. The {@code boolean}
-     * {@value #complexProp} allows a choice between those.
+     * {@code complexProp} allows a choice between those.
      *
      * @param parent the parent node
      * @param name the child name
@@ -279,7 +279,7 @@ public interface Session extends Connection {
      * This is much more complex that removing a property node ( {@link #removePropertyNode}).
      *
      * @param node the node to remove
-     * @see {@link #removePropertyNode}
+     * @see #removePropertyNode
      */
     void removeNode(Node node);
 
@@ -289,7 +289,7 @@ public interface Session extends Connection {
      * This is much less complex that removing a generic document node ( {@link #removeNode}).
      *
      * @param node the property node to remove
-     * @see {@link #removeNode}
+     * @see #removeNode
      */
     void removePropertyNode(Node node);
 

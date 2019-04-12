@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -462,10 +462,10 @@ public interface PageProvider<T> extends Serializable {
     void setHighlights(List<String> highlights);
 
     /**
-     * Limit of number of results beyond which the page provider may not be able to compute {@link #getResultsCount())}
+     * Limit of number of results beyond which the page provider may not be able to compute {@link #getResultsCount()}
      * or navigate.
      * <p>
-     * Requesting results beyond this limit may result in error. When {@link #getResultsCount())} is negative, it means
+     * Requesting results beyond this limit may result in error. When {@link #getResultsCount()} is negative, it means
      * there may be more results than this limit.
      * <p>
      * 0 means there is no limit.

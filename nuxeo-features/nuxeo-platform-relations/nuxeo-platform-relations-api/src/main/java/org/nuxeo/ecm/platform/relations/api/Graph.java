@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: Graph.java 25079 2007-09-18 14:49:05Z atchertchian $
  */
 
 package org.nuxeo.ecm.platform.relations.api;
@@ -40,8 +38,6 @@ public interface Graph extends Serializable {
 
     /**
      * Sets the graph description.
-     *
-     * @param graphDescription
      */
     void setDescription(GraphDescription graphDescription);
 
@@ -50,7 +46,7 @@ public interface Graph extends Serializable {
      * <p>
      * Namespaces are prefix/namespace bindings, as rdf for http://www.w3.org/1999/02/22-rdf-syntax-ns#.
      *
-     * @returns namespaces map of namespace bindings for the graph
+     * @return namespaces map of namespace bindings for the graph
      */
     Map<String, String> getNamespaces();
 
@@ -102,7 +98,6 @@ public interface Graph extends Serializable {
     /**
      * Returns all statements in the graph matching the pattern.
      *
-     * @param statement pattern to match, can hold null nodes as wildcards
      * @return list of Statement instances matching the pattern
      * @since 5.5
      */
@@ -146,7 +141,6 @@ public interface Graph extends Serializable {
     /**
      * Returns true if given resource appears in any statement of the graph.
      *
-     * @param resource
      * @return true or false
      */
     boolean hasResource(Resource resource);

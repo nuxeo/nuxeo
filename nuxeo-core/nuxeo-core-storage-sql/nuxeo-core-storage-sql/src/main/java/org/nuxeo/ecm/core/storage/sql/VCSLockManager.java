@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.cluster.ClusterService;
  * Manager of locks that serializes access to them.
  * <p>
  * The public methods called by the session are {@link #setLock}, {@link #removeLock} and {@link #getLock}. Method
- * {@link #shutdown} must be called when done with the lock manager.
+ * {@link #closeLockManager()} must be called when done with the lock manager.
  * <p>
  * In cluster mode, changes are executed in a begin/commit so that tests/updates can be atomic.
  * <p>
@@ -106,7 +106,7 @@ public class VCSLockManager implements LockManager {
      * <p>
      * The mapper will from then on be only used and closed by the lock manager.
      * <p>
-     * {@link #close} must be called when done with the lock manager.
+     * {@link #closeLockManager()} must be called when done with the lock manager.
      */
     public VCSLockManager(String repositoryName) {
         this(Framework.getService(SQLRepositoryService.class).getRepositoryImpl(repositoryName));
@@ -117,7 +117,7 @@ public class VCSLockManager implements LockManager {
      * <p>
      * The mapper will from then on be only used and closed by the lock manager.
      * <p>
-     * {@link #close} must be called when done with the lock manager.
+     * {@link #closeLockManager()} must be called when done with the lock manager.
      *
      * @since 9.3
      */
@@ -209,8 +209,8 @@ public class VCSLockManager implements LockManager {
                 throw exception;
             }
         }
-        LockException exception = new LockException("Failed to lock " + id + ", too much concurrency (tried "
-                + LOCK_RETRIES + " times)");
+        LockException exception = new LockException(
+                "Failed to lock " + id + ", too much concurrency (tried " + LOCK_RETRIES + " times)");
         for (Throwable t : suppressed) {
             exception.addSuppressed(t);
         }

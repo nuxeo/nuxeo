@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * This is a contribution registry that is managing contribution fragments and merge them as needed. The implementation
- * will be notified through {@link #contributionUpdated(String, Object)} each time you need to store or remove a
+ * will be notified through {@link #contributionUpdated(String, Object, Object)} each time you need to store or remove a
  * contribution. Note that contribution objects that are registered by your implementation <b>must</b> not be modified.
  * You can see them as immutable objects - otherwise your local changes will be lost at the next update event.
  * <p>
@@ -72,19 +72,16 @@ import java.util.stream.Collectors;
  * called.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @see SimpleContributionRegistry<T>
+ * @see SimpleContributionRegistry
  * @deprecated since 10.3 use DefaultComponent descriptors management methods instead
  */
-@Deprecated
+@Deprecated(since = "10.3")
 public abstract class ContributionFragmentRegistry<T> {
 
     protected Map<String, FragmentList<T>> contribs = new HashMap<>();
 
     /**
      * Returns the contribution ID given the contribution object
-     *
-     * @param contrib
-     * @return
      */
     public abstract String getContributionId(T contrib);
 
@@ -96,9 +93,8 @@ public abstract class ContributionFragmentRegistry<T> {
      * <p>
      * The second parameter is the contribution that should be updated when merging, as well as stored and used. This
      * usually represents a clone of the original contribution or a merge of multiple contribution fragments.
-     * Modifications on this object at application level will be lost on next
-     * {@link #contributionUpdated(String, Object, Object)} call on the same object id: modifications should be done in
-     * the {@link #merge(Object, Object)} method.
+     * Modifications on this object at application level will be lost on next method call on the same object id:
+     * modifications should be done in the {@link #merge(Object, Object)} method.
      * <p>
      * The last parameter is the new contribution object, unchanged (original) which was neither cloned nor merged. This
      * object should never be modified at application level, because it will be used each time a subsequent merge is
@@ -115,17 +111,11 @@ public abstract class ContributionFragmentRegistry<T> {
      * <p>
      * The first parameter is the contribution ID that should be remove and the second parameter the original
      * contribution fragment that as unregistered causing the contribution to be removed.
-     *
-     * @param id
-     * @param origContrib
      */
     public abstract void contributionRemoved(String id, T origContrib);
 
     /**
      * CLone the given contribution object
-     *
-     * @param object
-     * @return
      */
     public abstract T clone(T orig);
 
@@ -153,8 +143,6 @@ public abstract class ContributionFragmentRegistry<T> {
      * Add a new contribution. This will start install the new contribution and will notify the implementation about the
      * value to add. (the final value to add may not be the same object as the one added - but a merge between multiple
      * contributions)
-     *
-     * @param contrib
      */
     public synchronized void addContribution(T contrib) {
         String id = getContributionId(contrib);
@@ -168,7 +156,6 @@ public abstract class ContributionFragmentRegistry<T> {
      * <p>
      * Uses standard equality to check for old objects (useEqualsMethod == false).
      *
-     * @param contrib
      * @see #removeContribution(Object, boolean)
      */
     public synchronized void removeContribution(T contrib) {
@@ -211,9 +198,6 @@ public abstract class ContributionFragmentRegistry<T> {
      * Since 5.5, this method has made protected as it should not be used by the service retrieving merged resources
      * (otherwise merge will be done again). If you'd really like to call it, add a public method on your registry
      * implementation that will call it.
-     *
-     * @param id
-     * @return
      */
     protected synchronized T getContribution(String id) {
         FragmentList<T> head = contribs.get(id);
@@ -222,12 +206,10 @@ public abstract class ContributionFragmentRegistry<T> {
 
     /**
      * Get an array of all contribution fragments
-     *
-     * @return
      */
     @SuppressWarnings("unchecked")
     public synchronized FragmentList<T>[] getFragments() {
-        return contribs.values().toArray(new FragmentList[contribs.size()]);
+        return contribs.values().toArray(new FragmentList[0]);
     }
 
     protected FragmentList<T> addFragment(String id, T contrib) {

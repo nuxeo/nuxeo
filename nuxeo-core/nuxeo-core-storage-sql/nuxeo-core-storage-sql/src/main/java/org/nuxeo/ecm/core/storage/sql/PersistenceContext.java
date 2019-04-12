@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -663,7 +663,7 @@ public class PersistenceContext {
      *
      * @param rowId the fragment id
      * @param allowAbsent {@code true} to return an absent fragment as an object instead of {@code null}
-     * @return the fragment, or {@code null} if none is found and {@value allowAbsent} was {@code false}
+     * @return the fragment, or {@code null} if none is found and {@code allowAbsent} was {@code false}
      */
     protected Fragment get(RowId rowId, boolean allowAbsent) {
         Fragment fragment = getIfPresent(rowId);
@@ -728,7 +728,7 @@ public class PersistenceContext {
      * <p>
      * Deleted fragments are skipped.
      *
-     * @param id the fragment id
+     * @param rowIds the row ids
      * @param allowAbsent {@code true} to return an absent fragment as an object instead of skipping it
      * @return the fragments, in arbitrary order (no {@code null}s)
      */

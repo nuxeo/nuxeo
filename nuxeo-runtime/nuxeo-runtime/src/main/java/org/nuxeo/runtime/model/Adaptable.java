@@ -38,10 +38,6 @@ package org.nuxeo.runtime.model;
  * <p>
  * Clients may implement this interface, or obtain a default implementation of this interface by subclassing
  * <code>PlatformObject</code>.
- *
- * @see AdapterFactory
- * @see AdapterManager
- * @see AdaptableObject
  */
 public interface Adaptable {
 
