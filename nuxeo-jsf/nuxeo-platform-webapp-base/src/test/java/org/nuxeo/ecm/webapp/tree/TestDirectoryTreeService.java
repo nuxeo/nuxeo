@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,12 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Salem Aouana
  */
-package org.nuxeo.ecm.platform.audit.web;
 
-import static org.junit.Assert.assertEquals;
+package org.nuxeo.ecm.webapp.tree;
+
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
@@ -26,32 +27,38 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ActionService;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
+import org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor;
+import org.nuxeo.ecm.webapp.directory.DirectoryTreeService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @since 11.1
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy("org.nuxeo.ecm.platform.audit.web.tests:actions-bundle.xml")
-@Deploy("org.nuxeo.ecm.platform.audit.web.tests:nxauditclient-bundle.xml")
-public class TestRegisterAuditAction {
+@Deploy("org.nuxeo.ecm.actions:OSGI-INF/actions-framework.xml")
+@Deploy("org.nuxeo.ecm.webapp.base:OSGI-INF/directorytreemanager-framework.xml")
+@Deploy("org.nuxeo.ecm.webapp.base.tests:test-directory-tree-contrib.xml")
+public class TestDirectoryTreeService {
+
+    @Inject
+    protected DirectoryTreeService directoryTreeService;
 
     @Inject
     protected ActionManager actionService;
 
     @Test
-    public void testRegistration() {
-        Action act1 = actionService.getAction("TAB_CONTENT_HISTORY");
-
-        assertEquals("action.view.history", act1.getLabel());
-        assertEquals("/icons/file.gif", act1.getIcon());
-        assertEquals("/incl/tabs/document_history.xhtml", act1.getLink());
-        assertTrue(act1.isEnabled());
+    public void shouldRegisterActionContribution() {
+        assertNotNull(directoryTreeService);
+        assertNotNull(actionService);
+        assertTrue(directoryTreeService.getDirectoryTrees().contains("anyNavigation"));
+        Action action = actionService.getAction(DirectoryTreeDescriptor.ACTION_ID_PREFIX + "anyNavigation");
+        assertNotNull(action);
     }
-
 }

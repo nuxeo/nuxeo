@@ -44,10 +44,7 @@ public class ConversationTrashManager implements Serializable {
     }
 
     public static boolean isTrashManagementEnabled() {
-        TrashManagementService trashManagementService = (TrashManagementService) Framework.getRuntime()
-                                                                                          .getComponent(
-                                                                                                  TrashManagementService.NAME);
-        return trashManagementService.isTrashManagementEnabled();
+        return Framework.getService(TrashManagementService.class).isTrashManagementEnabled();
     }
 
     /**
@@ -55,7 +52,7 @@ public class ConversationTrashManager implements Serializable {
      */
     @Deprecated
     protected static TrashManagementService getService() {
-        return (TrashManagementService) Framework.getRuntime().getComponent(TrashManagementService.NAME);
+        return Framework.getService(TrashManagementService.class);
     }
 
 }

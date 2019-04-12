@@ -71,8 +71,7 @@ public class TestLoginScreenConfig {
 
     private PluggableAuthenticationService getAuthService() {
         PluggableAuthenticationService authService;
-        authService = (PluggableAuthenticationService) Framework.getRuntime()
-                                                                .getComponent(PluggableAuthenticationService.NAME);
+        authService = Framework.getService(PluggableAuthenticationService.class);
 
         return authService;
     }

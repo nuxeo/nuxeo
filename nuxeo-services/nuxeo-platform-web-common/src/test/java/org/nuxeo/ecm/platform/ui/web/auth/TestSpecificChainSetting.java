@@ -48,8 +48,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 public class TestSpecificChainSetting {
 
     private PluggableAuthenticationService getAuthService() {
-        Object object = Framework.getRuntime().getComponent(PluggableAuthenticationService.NAME);
-        return (PluggableAuthenticationService) object;
+        return Framework.getService(PluggableAuthenticationService.class);
     }
 
     @Test

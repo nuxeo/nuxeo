@@ -49,7 +49,7 @@ public final class NXCore {
      */
     @Deprecated
     public static LifeCycleService getLifeCycleService() {
-        return (LifeCycleService) Framework.getRuntime().getComponent(LifeCycleServiceImpl.NAME);
+        return Framework.getService(LifeCycleService.class);
     }
 
     /**
@@ -57,7 +57,7 @@ public final class NXCore {
      */
     @Deprecated
     public static SecurityService getSecurityService() {
-        return (SecurityService) Framework.getRuntime().getComponent(SecurityService.NAME);
+        return Framework.getService(SecurityService.class);
     }
 
 }

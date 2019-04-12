@@ -418,8 +418,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
         String documentType = navigationContext.getCurrentDocument().getType();
 
         // BBB: use the platform service if it defines permissions (deprecated)
-        UIPermissionService service = (UIPermissionService) Framework.getRuntime().getComponent(
-                UIPermissionService.NAME);
+        UIPermissionService service = Framework.getService(UIPermissionService.class);
         String[] settablePermissions = service.getUIPermissions(documentType);
 
         if (settablePermissions == null || settablePermissions.length == 0) {

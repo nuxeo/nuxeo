@@ -178,9 +178,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
     @Override
     public boolean handleAnonymousException(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime()
-                                                                                               .getComponent(
-                                                                                                       PluggableAuthenticationService.NAME);
+        PluggableAuthenticationService authService = Framework.getService(PluggableAuthenticationService.class);
         if (authService == null) {
             return false;
         }
@@ -201,9 +199,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
     @Override
     public String getLoginURL(HttpServletRequest request) {
-        PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime()
-                                                                                               .getComponent(
-                                                                                                       PluggableAuthenticationService.NAME);
+        PluggableAuthenticationService authService = Framework.getService(PluggableAuthenticationService.class);
         Map<String, String> urlParameters = new HashMap<>();
         urlParameters.put(SECURITY_ERROR, "true");
         urlParameters.put(FORCE_ANONYMOUS_LOGIN, "true");

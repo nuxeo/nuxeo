@@ -128,7 +128,7 @@ public class TagsMigrator extends AbstractRepositoryMigrator {
 
     @Override
     public void notifyStatusChange() {
-        TagServiceImpl tagService = (TagServiceImpl) Framework.getRuntime().getComponent(TagServiceImpl.NAME);
+        TagServiceImpl tagService = Framework.getService(TagServiceImpl.class);
         tagService.invalidateTagServiceImplementation();
     }
 

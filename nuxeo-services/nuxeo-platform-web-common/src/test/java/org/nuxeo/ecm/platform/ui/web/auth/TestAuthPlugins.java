@@ -47,8 +47,7 @@ public class TestAuthPlugins {
     protected HotDeployer hotDeployer;
 
     private PluggableAuthenticationService getAuthService() {
-        Object object = Framework.getRuntime().getComponent(PluggableAuthenticationService.NAME);
-        return (PluggableAuthenticationService) object;
+        return Framework.getService(PluggableAuthenticationService.class);
     }
 
     @Test

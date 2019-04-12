@@ -2,6 +2,9 @@
 <component name="org.nuxeo.ecm.platform.login.LoginPluginRegistry">
 
   <implementation class="org.nuxeo.ecm.platform.login.LoginPluginRegistry" version="1.0.0" />
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.login.LoginPluginRegistry" />
+  </service>
 
   <documentation>
     Login module for Nuxeo.

@@ -4,6 +4,10 @@
 
   <implementation class="org.nuxeo.ecm.platform.types.TypeService" />
 
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.types.TypeManager" />
+  </service>
+
   <extension-point name="types">
     <object class="org.nuxeo.ecm.platform.types.Type" />
   </extension-point>

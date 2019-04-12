@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webapp.trashManagement.test.contrib">
+  <extension target="org.nuxeo.ecm.webapp.trashManagement.TrashManagementService" point="config">
+    <trashConfig enabled="false" />
+  </extension>
+</component>

@@ -61,7 +61,7 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
 
     @Override
     protected String probeSession(CoreSession session) {
-        CommentService commentComponent = (CommentService) Framework.getRuntime().getComponent(CommentService.NAME);
+        CommentService commentComponent =  Framework.getService(CommentService.class);
         CommentServiceConfig commentServiceConfig = commentComponent.getConfig();
         if (commentServiceConfig != null) {
             Graph graph = Framework.getService(RelationManager.class).getGraph(commentServiceConfig.graphName, session);
@@ -74,7 +74,7 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
 
     @Override
     protected void migrateSession(CoreSession session) {
-        CommentService commentComponent = (CommentService) Framework.getRuntime().getComponent(CommentService.NAME);
+        CommentService commentComponent = Framework.getService(CommentService.class);
         CommentServiceConfig commentServiceConfig = commentComponent.getConfig();
         if (commentServiceConfig != null) {
             RelationManager relationManager = Framework.getService(RelationManager.class);
@@ -143,7 +143,7 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
 
     @Override
     public void notifyStatusChange() {
-        CommentService commentComponent = (CommentService) Framework.getRuntime().getComponent(CommentService.NAME);
+        CommentService commentComponent = Framework.getService(CommentService.class);
         commentComponent.invalidateCommentManagerImplementation();
     }
 }

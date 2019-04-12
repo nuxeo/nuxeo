@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
 import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
 import org.nuxeo.runtime.api.Framework;
@@ -57,7 +58,7 @@ public class TestActionFilter {
 
     @Before
     public void before() throws Exception {
-        as = (ActionService) Framework.getRuntime().getComponent(ActionService.ID);
+        as = (ActionService) Framework.getService(ActionManager.class);
         facesContext = new MockFacesContext();
         facesContext.setCurrent();
         assertNotNull(FacesContext.getCurrentInstance());

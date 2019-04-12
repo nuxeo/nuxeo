@@ -3,6 +3,10 @@
 
   <implementation class="org.nuxeo.ecm.platform.actions.ActionService" />
 
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.actions.ejb.ActionManager" />
+  </service>
+
   <extension-point name="filters">
     <object class="org.nuxeo.ecm.platform.actions.DefaultActionFilter" />
     <object class="org.nuxeo.ecm.platform.actions.FilterFactory" />

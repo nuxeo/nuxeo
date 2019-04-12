@@ -5,6 +5,7 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.platform.tag.TagService" />
+    <provide interface="org.nuxeo.ecm.platform.tag.TagServiceImpl" />
   </service>
 
 </component>

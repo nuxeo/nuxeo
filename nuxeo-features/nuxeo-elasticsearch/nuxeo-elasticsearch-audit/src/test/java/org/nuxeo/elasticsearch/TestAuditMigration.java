@@ -89,20 +89,19 @@ public class TestAuditMigration {
     @Inject
     protected AutomationService automationService;
 
+    @Inject
+    protected NXAuditEventsService auditEventsService;
+
     protected DefaultAuditBackend jpaBackend;
 
     @Before
     public void setupIndex() throws Exception {
-        // make sure that the audit bulker don't drain pending log entries while we reset the index
+        // make sure that the auditEventsService bulker don't drain pending log entries while we reset the index
         LogEntryGen.flushAndSync();
         esa.initIndexes(true);
 
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                     .getComponent(NXAuditEventsService.NAME);
-        Assert.assertNotNull(audit);
-
         // start with JPA based Audit
-        jpaBackend = (DefaultAuditBackend) audit.getAuditStorage(DEFAULT_AUDIT_STORAGE);
+        jpaBackend = (DefaultAuditBackend) auditEventsService.getAuditStorage(DEFAULT_AUDIT_STORAGE);
 
     }
 

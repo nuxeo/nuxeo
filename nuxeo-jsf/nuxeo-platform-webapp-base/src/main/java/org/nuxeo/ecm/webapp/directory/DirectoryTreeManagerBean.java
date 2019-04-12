@@ -186,7 +186,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         if (directoryTreeService != null) {
             return directoryTreeService;
         }
-        directoryTreeService = (DirectoryTreeService) Framework.getRuntime().getComponent(DirectoryTreeService.NAME);
+        directoryTreeService = Framework.getService(DirectoryTreeService.class);
         return directoryTreeService;
     }
 

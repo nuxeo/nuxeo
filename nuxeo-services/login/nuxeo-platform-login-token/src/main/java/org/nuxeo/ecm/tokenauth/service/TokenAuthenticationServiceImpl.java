@@ -136,9 +136,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
         // Don't provide token for anonymous user unless 'allowAnonymous' parameter is explicitly set to true in
         // the authentication plugin configuration
         if (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAnonymous()) {
-            PluggableAuthenticationService authenticationService = (PluggableAuthenticationService) Framework.getRuntime()
-                                                                                                             .getComponent(
-                                                                                                                     PluggableAuthenticationService.NAME);
+            PluggableAuthenticationService authenticationService = Framework.getService(
+                    PluggableAuthenticationService.class);
             AuthenticationPluginDescriptor tokenAuthPluginDesc = authenticationService.getDescriptor("TOKEN_AUTH");
             if (tokenAuthPluginDesc == null || !(Boolean.parseBoolean(
                     tokenAuthPluginDesc.getParameters().get(TokenAuthenticator.ALLOW_ANONYMOUS_KEY)))) {

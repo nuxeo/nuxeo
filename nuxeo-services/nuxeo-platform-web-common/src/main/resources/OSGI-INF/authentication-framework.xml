@@ -2,6 +2,11 @@
 <component name="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
   <implementation
           class="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" />
+  </service>
+
   <documentation>
     The pluggable authentication service defines a plugin API for the Nuxeo Authentication Filter.
     This service let you :

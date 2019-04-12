@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.audit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
@@ -64,7 +63,6 @@ import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -113,6 +111,9 @@ public class TestNXAuditEventsService {
     @Inject
     protected TransactionalFeature txFeature;
 
+    @Inject
+    protected NXAuditEventsService auditEventsService;
+
     public void waitForAsyncCompletion() {
         txFeature.nextTransaction(Duration.ofSeconds(20));
     }
@@ -123,10 +124,7 @@ public class TestNXAuditEventsService {
 
     @Test
     public void testAuditContribution() {
-        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime()
-                                                                            .getComponent(NXAuditEventsService.NAME);
-        assertNotNull(auditService);
-        Set<AdapterDescriptor> registeredAdapters = auditService.getDocumentAdapters();
+        Set<AdapterDescriptor> registeredAdapters = auditEventsService.getDocumentAdapters();
         assertEquals(1, registeredAdapters.size());
 
         AdapterDescriptor ad = registeredAdapters.iterator().next();

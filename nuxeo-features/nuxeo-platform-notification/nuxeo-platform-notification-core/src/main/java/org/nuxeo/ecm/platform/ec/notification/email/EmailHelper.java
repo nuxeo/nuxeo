@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.rendering.RenderingException;
 import org.nuxeo.ecm.platform.rendering.RenderingResult;
 import org.nuxeo.ecm.platform.rendering.RenderingService;
@@ -191,8 +192,8 @@ public class EmailHelper {
         }
         // First, try to get the session from JNDI, as would be done under J2EE.
         try {
-            NotificationService service = (NotificationService) Framework.getRuntime()
-                                                                         .getComponent(NotificationService.NAME);
+            NotificationService service = (NotificationService) Framework.getService(NotificationManager.class);
+
             InitialContext ic = new InitialContext();
             session = (Session) ic.lookup(service.getMailSessionJndiName());
         } catch (NamingException ex) {

@@ -102,7 +102,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
 
         try {
             final RuntimeService runtime = Framework.getRuntime();
-            loginPluginManager = (LoginPluginRegistry) runtime.getComponent(LoginPluginRegistry.NAME);
+            loginPluginManager = Framework.getService(LoginPluginRegistry.class);
         } catch (Throwable t) {
             log.error("Unable to load Plugin Registry : " + t.getMessage());
         }

@@ -81,8 +81,7 @@ public class ExternalRequestFilter implements Filter {
                 }
 
                 if (requestedUrl != null) {
-                    PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                            PluggableAuthenticationService.NAME);
+                    PluggableAuthenticationService service = Framework.getService(PluggableAuthenticationService.class);
                     String baseURL = service.getBaseURL(request);
                     HttpServletResponse httpResponse = (HttpServletResponse) response;
                     httpResponse.sendRedirect(baseURL + requestedUrl);

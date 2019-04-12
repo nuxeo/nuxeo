@@ -5,6 +5,7 @@
   <service>
     <provide interface="org.nuxeo.ecm.core.api.trash.TrashService" />
     <provide interface="org.nuxeo.ecm.core.trash.TrashService" />
+    <provide interface="org.nuxeo.ecm.core.trash.TrashServiceImpl" />
   </service>
 
   <implementation class="org.nuxeo.ecm.core.trash.TrashServiceImpl" />

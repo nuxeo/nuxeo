@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.directory;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.actions.ActionService;
+import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -70,7 +71,7 @@ public class DirectoryTreeService extends DefaultComponent {
      * @since 6.0
      */
     protected ActionService getActionService() {
-        return (ActionService) Framework.getRuntime().getComponent(ActionService.ID);
+        return (ActionService) Framework.getService(ActionManager.class);
     }
 
     public List<String> getDirectoryTrees() {

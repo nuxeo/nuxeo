@@ -691,9 +691,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 if (service != null) {
                     return;
                 }
-                PluggableAuthenticationService svc = (PluggableAuthenticationService) Framework.getRuntime()
-                                                                                               .getComponent(
-                                                                                                       PluggableAuthenticationService.NAME);
+                PluggableAuthenticationService svc = Framework.getService(PluggableAuthenticationService.class);
                 new ComponentManager.Listener() {
                     // nullify service field if components are restarting
                     @Override
@@ -1211,9 +1209,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     public static LoginContext loginAs(String username) throws LoginException {
         UserIdentificationInfo userIdent = new UserIdentificationInfo(username, "");
         userIdent.setLoginPluginName(TrustingLoginPlugin.NAME);
-        PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime()
-                                                                                               .getComponent(
-                                                                                                       PluggableAuthenticationService.NAME);
+        PluggableAuthenticationService authService = Framework.getService(PluggableAuthenticationService.class);
         CallbackHandler callbackHandler;
         if (authService != null) {
             callbackHandler = authService.getCallbackHandler(userIdent);

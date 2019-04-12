@@ -94,8 +94,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
             return cas2Authenticator;
         }
 
-        PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                PluggableAuthenticationService.NAME);
+        PluggableAuthenticationService service = Framework.getService(PluggableAuthenticationService.class);
         if (service == null) {
             throw new NuxeoException("Can't initialize Nuxeo Pluggable Authentication Service");
         }

@@ -25,11 +25,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.FileImporter;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -41,12 +43,12 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.platform.filemanager.core:OSGI-INF/nxfilemanager-service.xml")
 @Deploy("org.nuxeo.ecm.platform.filemanager.core.tests:nxfilemanager-test-contribs.xml")
 public class TestFileManagerComponent {
+    @Inject
+    protected FileManager fileManager;
 
     @Test
     public void testPlugins() {
-        FileManagerService filemanagerService = (FileManagerService) Framework.getRuntime()
-                                                                              .getComponent(FileManagerService.NAME);
-        FileImporter testPlu = filemanagerService.getPluginByName("plug");
+        FileImporter testPlu = ((FileManagerService) fileManager).getPluginByName("plug");
         List<String> filters = testPlu.getFilters();
         assertEquals(2, filters.size());
     }

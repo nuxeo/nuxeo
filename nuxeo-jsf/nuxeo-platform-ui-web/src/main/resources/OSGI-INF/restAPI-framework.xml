@@ -4,6 +4,9 @@
   <implementation
           class="org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService" />
 
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService" />
+  </service>
   <documentation>
     The Pluggable Restlet service provides extension point to register new Restlets and
     handle their configuration (Seam or Conversation usage).
