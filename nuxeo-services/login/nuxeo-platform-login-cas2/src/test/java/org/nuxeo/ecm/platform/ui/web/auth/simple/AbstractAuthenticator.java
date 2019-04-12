@@ -59,8 +59,7 @@ public abstract class AbstractAuthenticator {
     protected FilterChain chain;
 
     protected PluggableAuthenticationService getAuthService() {
-        return (PluggableAuthenticationService) Framework.getRuntime()
-                                                         .getComponent(PluggableAuthenticationService.NAME);
+        return Framework.getService(PluggableAuthenticationService.class);
     }
 
     protected void initRequest() throws ServletException {

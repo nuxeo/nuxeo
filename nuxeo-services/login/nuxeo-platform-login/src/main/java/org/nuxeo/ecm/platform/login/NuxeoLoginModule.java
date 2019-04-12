@@ -89,7 +89,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         log.debug("NuxeoLoginModule initialized");
 
         final RuntimeService runtime = Framework.getRuntime();
-        loginPluginManager = (LoginPluginRegistry) runtime.getComponent(LoginPluginRegistry.NAME);
+        loginPluginManager = Framework.getService(LoginPluginRegistry.class);
     }
 
     /**

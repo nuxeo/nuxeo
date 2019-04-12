@@ -56,14 +56,12 @@ public class TestAuditWithMongoDB extends AbstractAuditStorageTest {
     @Inject
     protected CoreSession session;
 
+    @Inject
+    protected NXAuditEventsService auditEventsService;
+
     @Test
-    public void shouldUseMongoDBBackend() throws Exception {
-
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                     .getComponent(NXAuditEventsService.NAME);
-        assertNotNull(audit);
-
-        AuditBackend backend = audit.getBackend();
+    public void shouldUseMongoDBBackend() {
+        AuditBackend backend = auditEventsService.getBackend();
         assertTrue(backend instanceof MongoDBAuditBackend);
     }
 
@@ -110,9 +108,7 @@ public class TestAuditWithMongoDB extends AbstractAuditStorageTest {
         entryById = reader.getLogEntryByID(123L);
         assertNull(entryById);
 
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                     .getComponent(NXAuditEventsService.NAME);
-        AuditBackend backend = audit.getBackend();
+        AuditBackend backend = auditEventsService.getBackend();
         assertEquals(1L, backend.getEventsCount(entry.getEventId()).longValue());
     }
 

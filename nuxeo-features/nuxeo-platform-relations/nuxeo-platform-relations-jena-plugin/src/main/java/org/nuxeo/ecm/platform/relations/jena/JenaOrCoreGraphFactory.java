@@ -25,6 +25,7 @@ import org.nuxeo.ecm.platform.relations.CoreGraphFactory;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.GraphDescription;
 import org.nuxeo.ecm.platform.relations.api.GraphFactory;
+import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.services.RelationService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -42,7 +43,8 @@ public class JenaOrCoreGraphFactory implements GraphFactory {
 
     @Override
     public Graph createGraph(GraphDescription graphDescription, CoreSession session) {
-        RelationService service = (RelationService) Framework.getRuntime().getComponent(RelationService.NAME);
+        RelationService service = (RelationService) Framework.getService(RelationManager.class);
+
         String name = graphDescription.getName();
 
         Graph graph;

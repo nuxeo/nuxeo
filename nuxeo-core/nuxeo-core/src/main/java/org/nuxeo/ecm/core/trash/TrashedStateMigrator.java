@@ -57,7 +57,7 @@ public class TrashedStateMigrator extends AbstractRepositoryMigrator {
 
     @Override
     public void notifyStatusChange() {
-        TrashServiceImpl trashService = (TrashServiceImpl) Framework.getRuntime().getComponent(TrashServiceImpl.NAME);
+        TrashServiceImpl trashService = Framework.getService(TrashServiceImpl.class);
         trashService.invalidateTrashServiceImplementation();
     }
 

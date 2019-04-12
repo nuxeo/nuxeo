@@ -54,6 +54,8 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.platform.userworkspace.core.service.AbstractUserWorkspaceImpl;
+import org.nuxeo.ecm.platform.userworkspace.core.service.UserWorkspaceDescriptor;
+import org.nuxeo.ecm.platform.userworkspace.core.service.UserWorkspaceServiceImplComponent;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -79,6 +81,9 @@ public class TestUserWorkspace {
 
     @Inject
     protected PathSegmentService pathSegments;
+
+    @Inject
+    protected UserWorkspaceServiceImplComponent userWorkspaceService;
 
     @Test
     public void testRestrictedAccess() throws Exception {
@@ -372,6 +377,12 @@ public class TestUserWorkspace {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
             assertNotNull(uw);
         }
+    }
+
+    @Test
+    public void shouldRetrieveUserWorkspaceConfigWithoutFailure() {
+        UserWorkspaceDescriptor configuration = userWorkspaceService.getConfiguration();
+        assertNotNull(configuration);
     }
 
     /**

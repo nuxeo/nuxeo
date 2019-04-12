@@ -61,8 +61,7 @@ public class ESAuditMigrationWork extends AbstractWork {
     @Override
     public void work() {
 
-        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime().getComponent(
-                NXAuditEventsService.NAME);
+        NXAuditEventsService auditService = Framework.getService(NXAuditEventsService.class);
         AuditBackendDescriptor config = new AuditBackendDescriptor();
         AuditBackend sourceBackend = config.newInstance(auditService);
         sourceBackend.onApplicationStarted();

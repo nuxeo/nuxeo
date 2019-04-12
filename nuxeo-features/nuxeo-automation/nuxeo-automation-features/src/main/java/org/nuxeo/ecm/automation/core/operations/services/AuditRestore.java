@@ -55,9 +55,8 @@ public class AuditRestore {
 
     @OperationMethod
     public void run() {
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                     .getComponent(NXAuditEventsService.NAME);
-        auditBackend.restore(audit.getAuditStorage(auditStorageId), batchSize, keepAlive);
+        NXAuditEventsService auditEventsService = Framework.getService(NXAuditEventsService.class);
+        auditBackend.restore(auditEventsService.getAuditStorage(auditStorageId), batchSize, keepAlive);
     }
 
 }

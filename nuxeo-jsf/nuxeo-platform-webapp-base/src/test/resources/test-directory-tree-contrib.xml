@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webapp.directory.test.directoryTreeService">
+  <require>org.nuxeo.ecm.webapp.directory.DirectoryTreeService</require>
+  <extension target="org.nuxeo.ecm.webapp.directory.DirectoryTreeService"
+             point="trees">
+    <directoryTree name="anyNavigation" label="any.navigation.subjects"
+                   contentView="anyContentView" field="subjects" schema="querynav"
+                   outcome="any_subjects_virtual_navigation">
+      <directory>any</directory>
+    </directoryTree>
+  </extension>
+</component>

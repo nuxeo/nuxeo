@@ -41,7 +41,7 @@ public final class NXDublinCore {
      */
     @Deprecated
     public static DublinCoreStorageService getDublinCoreStorageService() {
-        return (DublinCoreStorageService) Framework.getRuntime().getComponent(DublinCoreStorageService.ID);
+        return Framework.getService(DublinCoreStorageService.class);
     }
 
 }

@@ -60,7 +60,7 @@ public class TypeTest {
     protected HotDeployer hotDeployer;
 
     private TypeService getTypeService() {
-        return (TypeService) Framework.getRuntime().getComponent(TypeService.ID);
+        return (TypeService) Framework.getService(TypeManager.class);
     }
 
     @Test

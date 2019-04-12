@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webapp.tree.nav;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.actions.ActionService;
+import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -79,14 +80,14 @@ public class NavTreeService extends DefaultComponent {
     }
 
     protected DirectoryTreeService getDirectoryTreeService() {
-        return (DirectoryTreeService) Framework.getRuntime().getComponent(DirectoryTreeService.NAME);
+        return Framework.getService(DirectoryTreeService.class);
     }
 
     /**
      * @since 6.0
      */
     protected ActionService getActionService() {
-        return (ActionService) Framework.getRuntime().getComponent(ActionService.ID);
+        return (ActionService) Framework.getService(ActionManager.class);
     }
 
     /**

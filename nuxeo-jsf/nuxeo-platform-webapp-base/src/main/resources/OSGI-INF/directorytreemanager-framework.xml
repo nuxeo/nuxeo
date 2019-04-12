@@ -24,6 +24,9 @@
  -->
   <implementation
           class="org.nuxeo.ecm.webapp.directory.DirectoryTreeService" />
+  <service>
+    <provide interface="org.nuxeo.ecm.webapp.directory.DirectoryTreeService" />
+  </service>
   <extension-point name="trees">
     <object
             class="org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor" />

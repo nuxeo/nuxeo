@@ -21,6 +21,7 @@
 
 package org.nuxeo.ecm.platform.ec.notification.service;
 
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -37,7 +38,7 @@ public final class NotificationServiceHelper {
      * Locates the notification service using NXRuntime.
      */
     public static NotificationService getNotificationService() {
-        return (NotificationService) Framework.getRuntime().getComponent(NotificationService.NAME);
+        return (NotificationService) Framework.getService(NotificationManager.class);
     }
 
     public static UserManager getUsersService() {

@@ -51,7 +51,7 @@ public abstract class BaseDocumentsListsManager implements Serializable {
     protected final Map<String, DocumentsListDescriptor> documentsLists_descriptors = new HashMap<>();
 
     protected DocumentsListsService getService() {
-        return (DocumentsListsService) Framework.getRuntime().getComponent(DocumentsListsService.NAME);
+        return Framework.getService(DocumentsListsService.class);
     }
 
     protected String userName;

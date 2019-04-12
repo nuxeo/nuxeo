@@ -206,8 +206,7 @@ public class Cas2Authenticator
         if (httpRequest.getRequestURI() == null) {
             return false;
         }
-        PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                PluggableAuthenticationService.NAME);
+        PluggableAuthenticationService service = Framework.getService(PluggableAuthenticationService.class);
         if (service == null) {
             return false;
         }
@@ -450,8 +449,7 @@ public class Cas2Authenticator
         Cookie alternativeAuthPluginCookie = getCookie(httpRequest, ALTERNATIVE_AUTH_PLUGIN_COOKIE_NAME);
         if (alternativeAuthPluginCookie != null) {
             String alternativeAuthPluginName = alternativeAuthPluginCookie.getValue();
-            PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                    PluggableAuthenticationService.NAME);
+            PluggableAuthenticationService authService = Framework.getService(PluggableAuthenticationService.class);
             NuxeoAuthenticationPlugin alternativeAuthPlugin = authService.getPlugin(alternativeAuthPluginName);
             if (alternativeAuthPlugin == null) {
                 log.error(String.format("No alternative authentication plugin named %s, will remove cookie %s.",

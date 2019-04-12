@@ -99,6 +99,9 @@ public abstract class AbstractTestTagService {
     @Inject
     protected HotDeployer deployer;
 
+    @Inject
+    protected NXAuditEventsService auditEventsService;
+
     protected boolean proxies;
 
     // Oracle fails if we do too many connections in a short time, sleep
@@ -880,9 +883,7 @@ public abstract class AbstractTestTagService {
         }
 
         // Also check that the event was not logged in the audit
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                     .getComponent(NXAuditEventsService.NAME);
-        AuditBackend backend = audit.getBackend();
+        AuditBackend backend = auditEventsService.getBackend();
         assertEquals(0, backend
                                .queryLogs(new AuditQueryBuilder().predicate(Predicates.eq(LOG_PRINCIPAL_NAME, "bob"))
                                                                  .and(Predicates.eq(LOG_EVENT_ID, DOCUMENT_UPDATED)))

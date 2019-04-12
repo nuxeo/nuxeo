@@ -136,11 +136,11 @@ public class RedisFeature implements RunnerFeature {
             @Override
             public void afterActivation(ComponentManager mgr) {
                 // overwrite the redis config (before redis component is started)
-                RedisComponent comp = (RedisComponent) Framework.getRuntime().getComponent("org.nuxeo.ecm.core.redis");
-                if (comp != null) {
+                RedisComponent redisComponent = (RedisComponent) Framework.getService(RedisAdmin.class);
+                if (redisComponent != null) {
                     Mode mode = getMode();
                     if (!Mode.disabled.equals(mode)) {
-                        comp.registerContribution(getDescriptor(mode), RedisComponent.XP_CONFIG, null);
+                        redisComponent.registerContribution(getDescriptor(mode), RedisComponent.XP_CONFIG, null);
                     }
                 }
             }

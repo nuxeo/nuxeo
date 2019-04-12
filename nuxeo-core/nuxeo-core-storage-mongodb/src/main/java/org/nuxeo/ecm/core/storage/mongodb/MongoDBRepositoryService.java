@@ -27,6 +27,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.mongodb.MongoDBComponent;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionConfig;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
 /**
  * Service holding the configuration for MongoDB repositories.
@@ -76,8 +77,8 @@ public class MongoDBRepositoryService extends DefaultComponent {
             connection.dbname = dbName;
             connection.id = id;
 
-            DefaultComponent component = (DefaultComponent) Framework.getRuntime()
-                                                                     .getComponent(MongoDBComponent.COMPONENT_NAME);
+            MongoDBComponent component = (MongoDBComponent) Framework.getService(MongoDBConnectionService.class);
+
             consumer.accept(component, connection);
         }
     }

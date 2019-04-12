@@ -213,7 +213,9 @@ public class NXAuditEventsService extends DefaultComponent {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.getCanonicalName().equals(DocumentHistoryReader.class.getCanonicalName())) {
+        if (adapter == NXAuditEventsService.class) {
+            return adapter.cast(this);
+        } else if (adapter.getCanonicalName().equals(DocumentHistoryReader.class.getCanonicalName())) {
             return adapter.cast(new DocumentHistoryReaderImpl());
         } else {
             if (backend != null) {

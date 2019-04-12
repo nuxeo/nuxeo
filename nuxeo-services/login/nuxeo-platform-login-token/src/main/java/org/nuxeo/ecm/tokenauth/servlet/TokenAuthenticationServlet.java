@@ -77,9 +77,8 @@ public class TokenAuthenticationServlet extends HttpServlet {
         // the authentication plugin configuration
         Principal principal = req.getUserPrincipal();
         if (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAnonymous()) {
-            PluggableAuthenticationService authenticationService = (PluggableAuthenticationService) Framework.getRuntime()
-                                                                                                             .getComponent(
-                                                                                                                     PluggableAuthenticationService.NAME);
+            PluggableAuthenticationService authenticationService = Framework.getService(
+                    PluggableAuthenticationService.class);
             AuthenticationPluginDescriptor tokenAuthPluginDesc = authenticationService.getDescriptor(
                     TOKEN_AUTH_PLUGIN_NAME);
             if (tokenAuthPluginDesc == null || !(Boolean.parseBoolean(

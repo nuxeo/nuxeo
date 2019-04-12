@@ -8,6 +8,7 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.platform.comment.api.CommentManager" />
+    <provide interface="org.nuxeo.ecm.platform.comment.service.CommentService" />
   </service>
 
   <extension-point name="config">

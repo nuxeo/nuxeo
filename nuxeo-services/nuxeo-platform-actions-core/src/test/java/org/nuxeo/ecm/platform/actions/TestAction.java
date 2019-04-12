@@ -37,6 +37,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -57,7 +58,7 @@ public class TestAction {
     protected HotDeployer hotDeployer;
 
     public ActionService getService() {
-        return (ActionService) Framework.getRuntime().getComponent(ActionService.ID);
+        return (ActionService) Framework.getService(ActionManager.class);
     }
 
     @Test

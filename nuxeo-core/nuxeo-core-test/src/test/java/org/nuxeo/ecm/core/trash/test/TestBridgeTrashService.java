@@ -19,14 +19,12 @@
 package org.nuxeo.ecm.core.trash.test;
 
 import static org.nuxeo.ecm.core.trash.TrashServiceImpl.MIGRATION_ID;
-import static org.nuxeo.ecm.core.trash.TrashServiceImpl.NAME;
 import static org.nuxeo.ecm.core.trash.TrashServiceImpl.MIGRATION_STEP_LIFECYCLE_TO_PROPERTY;
 
 import javax.inject.Inject;
 
 import org.nuxeo.ecm.core.test.MigrationFeature;
 import org.nuxeo.ecm.core.trash.TrashServiceImpl;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
@@ -38,11 +36,13 @@ public class TestBridgeTrashService extends AbstractTestTrashService {
     @Inject
     protected MigrationFeature migrationFeature;
 
+    @Inject
+    protected TrashServiceImpl trashService;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
         migrationFeature.changeStatus(MIGRATION_ID, MIGRATION_STEP_LIFECYCLE_TO_PROPERTY);
-        TrashServiceImpl trashService = (TrashServiceImpl) Framework.getRuntime().getComponent(NAME);
         trashService.invalidateTrashServiceImplementation();
     }
 

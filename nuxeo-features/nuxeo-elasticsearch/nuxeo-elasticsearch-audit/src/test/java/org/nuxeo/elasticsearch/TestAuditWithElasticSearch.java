@@ -72,6 +72,9 @@ public class TestAuditWithElasticSearch extends AbstractAuditStorageTest {
     @Inject
     protected ElasticSearchAdmin esa;
 
+    @Inject
+    protected NXAuditEventsService auditEventsService;
+
     @Before
     public void setupIndex() throws Exception {
         // make sure that the audit bulker don't drain pending log entries while we reset the index
@@ -80,13 +83,8 @@ public class TestAuditWithElasticSearch extends AbstractAuditStorageTest {
     }
 
     @Test
-    public void shouldUseESBackend() throws Exception {
-
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                     .getComponent(NXAuditEventsService.NAME);
-        assertNotNull(audit);
-
-        AuditBackend backend = audit.getBackend();
+    public void shouldUseESBackend() {
+        AuditBackend backend = auditEventsService.getBackend();
         assertNotNull(backend);
 
         assertTrue(backend instanceof ESAuditBackend);
@@ -106,7 +104,7 @@ public class TestAuditWithElasticSearch extends AbstractAuditStorageTest {
 
         LogEntryGen.flushAndSync();
 
-        // test audit trail
+        // test auditEventsService trail
         AuditReader reader = Framework.getService(AuditReader.class);
         List<LogEntry> trail = reader.getLogEntriesFor(doc.getId(), doc.getRepositoryName());
 
@@ -131,9 +129,7 @@ public class TestAuditWithElasticSearch extends AbstractAuditStorageTest {
         entryById = reader.getLogEntryByID(123L);
         assertNull(entryById);
 
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                     .getComponent(NXAuditEventsService.NAME);
-        AuditBackend backend = audit.getBackend();
+        AuditBackend backend = auditEventsService.getBackend();
         assertEquals(1L, backend.getEventsCount(entry.getEventId()).longValue());
     }
 

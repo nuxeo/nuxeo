@@ -152,14 +152,13 @@ public class MongoDBAuditPageProvider extends AbstractPageProvider<LogEntry> imp
     }
 
     protected MongoDBAuditBackend getMongoDBBackend() {
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                     .getComponent(NXAuditEventsService.NAME);
-        AuditBackend backend = audit.getBackend();
+        NXAuditEventsService auditEventsService = Framework.getService(NXAuditEventsService.class);
+        AuditBackend backend = auditEventsService.getBackend();
         if (backend instanceof MongoDBAuditBackend) {
             return (MongoDBAuditBackend) backend;
         }
         throw new NuxeoException(
-                "Unable to use MongoDBAuditPageProvider if audit service is not configured to run with MongoDB");
+                "Unable to use MongoDBAuditPageProvider if auditEventsService service is not configured to run with MongoDB");
     }
 
     protected Bson buildAuditFilter() {

@@ -74,7 +74,9 @@ public class TrashServiceImpl extends DefaultComponent {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
-        if (trashService == null) {
+        if (adapter == TrashServiceImpl.class) {
+            return adapter.cast(this);
+        } else if (trashService == null) {
             synchronized (this) {
                 if (trashService == null) {
                     trashService = recomputeTrashService();

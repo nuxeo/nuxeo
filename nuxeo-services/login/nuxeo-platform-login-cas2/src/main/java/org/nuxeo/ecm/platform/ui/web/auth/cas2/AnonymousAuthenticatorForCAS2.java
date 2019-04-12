@@ -87,8 +87,7 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
             return casAuthenticator;
         }
 
-        PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                PluggableAuthenticationService.NAME);
+        PluggableAuthenticationService service = Framework.getService(PluggableAuthenticationService.class);
         if (service == null) {
             log.error("Can't get PluggableAuthenticationService");
             return null;

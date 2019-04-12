@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,32 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Salem Aouana
  */
-package org.nuxeo.runtime;
 
-import javax.inject.Inject;
+package org.nuxeo.ecm.webapp.trash;
+
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.services.event.Event;
-import org.nuxeo.runtime.services.event.EventService;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.webapp.trashManagement.ConversationTrashManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @since 11.1
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
-@Deploy("org.nuxeo.runtime.test.tests:ListenerExtension.xml")
-public class TestEventService {
-    @Inject
-    protected EventService eventService;
+@Features(CoreFeature.class)
+@Deploy("org.nuxeo.ecm.webapp.core")
+public class TestTrashManagementService {
 
     @Test
-    public void testSend() {
-        Event event = new Event("repository", "theId", this, null);
-        eventService.sendEvent(event);
+    @Deploy("org.nuxeo.ecm.webapp.core.tests:OSGI-INF/trashManagement-disabling-test-contrib.xml")
+    public void shouldRetrieveTrashManagementStatus() {
+        assertFalse(ConversationTrashManager.isTrashManagementEnabled());
     }
 }

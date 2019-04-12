@@ -170,8 +170,7 @@ public class LoginScreenHelper {
     }
 
     protected static PluggableAuthenticationService getPluggableAuthenticationService() {
-        return (PluggableAuthenticationService) Framework.getRuntime()
-                                                         .getComponent(PluggableAuthenticationService.NAME);
+        return Framework.getService(PluggableAuthenticationService.class);
     }
 
 }

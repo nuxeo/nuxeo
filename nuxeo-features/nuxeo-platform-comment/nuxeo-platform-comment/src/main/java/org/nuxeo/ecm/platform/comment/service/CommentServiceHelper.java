@@ -33,7 +33,7 @@ public final class CommentServiceHelper {
     }
 
     public static CommentService getCommentService() {
-        return (CommentService) Framework.getRuntime().getComponent(CommentService.ID);
+        return Framework.getService(CommentService.class);
     }
 
 }
