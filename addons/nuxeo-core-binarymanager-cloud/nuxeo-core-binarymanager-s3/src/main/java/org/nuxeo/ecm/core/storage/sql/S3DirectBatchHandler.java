@@ -90,6 +90,11 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
      */
     public static final String ROLE_ARN_PROPERTY = "roleArn";
 
+    /**
+     * @since 11.1
+     */
+    public static final String BLOB_PROVIDER_ID_PROPERTY = "blobProvider";
+
     // keys in the batch properties, returned to the client
 
     public static final String INFO_AWS_SECRET_KEY_ID = "awsSecretKeyId";
@@ -126,6 +131,8 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     protected String roleArn;
 
+    protected String blobProviderId;
+
     @Override
     protected void initialize(Map<String, String> properties) {
         super.initialize(properties);
@@ -156,6 +163,8 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
                     BUCKET_PREFIX_PROPERTY, bucketPrefix));
             bucketPrefix += "/";
         }
+
+        blobProviderId = defaultString(properties.get(BLOB_PROVIDER_ID_PROPERTY), transientStoreName);
     }
 
     protected AWSSecurityTokenService initializeSTSClient(AWSCredentialsProvider credentials) {
@@ -251,15 +260,18 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
             }
         }
 
-        String blobKey = transientStoreName + ':' + etag;
         String filename = fileInfo.getFilename();
         long length = newMetadata.getContentLength();
-        String digest = newMetadata.getContentMD5();
-        String blobProviderId = transientStoreName; // TODO decouple this
-        Binary binary = new LazyBinary(blobKey, blobProviderId, null);
-        Blob blob = new BinaryBlob(binary, blobKey, filename, mimeType, encoding, digest, length);
+        String digest = newMetadata.getContentMD5() != null ? newMetadata.getContentMD5() : etag;
+        Binary binary = new LazyBinary(digest, blobProviderId, null);
+        Blob blob = new BinaryBlob(binary, digest, filename, mimeType, encoding, digest, length);
         Batch batch = getBatch(batchId);
-        batch.addFile(fileIndex, blob, filename, mimeType);
+        try {
+            batch.addFile(fileIndex, blob, filename, mimeType);
+        } catch (NuxeoException e) {
+            amazonS3.deleteObject(bucket, newMetadata.getETag());
+            throw e;
+        }
 
         return true;
     }
