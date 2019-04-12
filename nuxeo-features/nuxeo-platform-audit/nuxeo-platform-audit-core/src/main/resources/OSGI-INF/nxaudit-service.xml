@@ -21,7 +21,7 @@
   <implementation class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" />
 
   <service>
-    <provide interface="org.nuxeo.ecm.platform.audit.service.AuditBackend"/>
+    <provide interface="org.nuxeo.ecm.platform.audit.service.AuditBackend" />
     <provide interface="org.nuxeo.ecm.platform.audit.api.AuditReader" />
     <provide interface="org.nuxeo.ecm.platform.audit.api.AuditLogger" />
     <provide interface="org.nuxeo.ecm.platform.audit.api.Logs" />
@@ -40,7 +40,7 @@
 
       <programlisting>
         <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
-          point="event">
+                   point="event">
           <event name="documentCreated" />
           <event name="documentCreatedByCopy" />
           <event name="documentDuplicated" />
@@ -72,7 +72,7 @@
     </documentation>
 
     <object
-      class="org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor" />
+            class="org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor" />
   </extension-point>
 
   <extension-point name="adapter">
@@ -103,16 +103,16 @@
   </extension-point>
 
   <extension-point name="bulk">
-     <documentation>
-       CAUTION: Deprecated since 10.10, audit bulker is now handled with nuxeo-stream, no replacement
+    <documentation>
+      CAUTION: Deprecated since 10.10, audit bulker is now handled with nuxeo-stream, no replacement
       Allows to configure bulk processing
     </documentation>
 
-    <object class="org.nuxeo.ecm.platform.audit.service.extension.AuditBulkerDescriptor"/>
+    <object class="org.nuxeo.ecm.platform.audit.service.extension.AuditBulkerDescriptor" />
   </extension-point>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
-    point="event">
+             point="event">
     <documentation>
       Those default auditable events match Nuxeo core base events.
       <p />
@@ -147,10 +147,10 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
-    point="backend">
+             point="backend">
 
     <backend class="org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend">
-       <require>org.nuxeo.ecm.core.persistence.PersistenceComponent</require>
+      <require>org.nuxeo.ecm.core.persistence.PersistenceComponent</require>
     </backend>
 
   </extension>

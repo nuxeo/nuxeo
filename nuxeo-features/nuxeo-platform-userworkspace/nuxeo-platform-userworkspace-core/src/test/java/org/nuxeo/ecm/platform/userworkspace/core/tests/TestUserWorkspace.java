@@ -355,8 +355,8 @@ public class TestUserWorkspace {
             assertNotNull(uw);
         }
         List<DocumentModel> docs = session.getChildren(session.getRootDocument().getRef())
-                                        .stream()
-                                        .collect(Collectors.toList());
+                                          .stream()
+                                          .collect(Collectors.toList());
         TrashService trashService = Framework.getService(TrashService.class);
         trashService.trashDocuments(docs);
         coreFeature.waitForAsyncCompletion();

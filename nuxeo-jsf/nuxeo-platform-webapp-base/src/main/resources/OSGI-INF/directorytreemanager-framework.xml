@@ -23,10 +23,10 @@
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
  -->
   <implementation
-    class="org.nuxeo.ecm.webapp.directory.DirectoryTreeService" />
+          class="org.nuxeo.ecm.webapp.directory.DirectoryTreeService" />
   <extension-point name="trees">
     <object
-      class="org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor" />
+            class="org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor" />
   </extension-point>
   <documentation>
     Registry for DirectoryTreeDescriptor instances used to build

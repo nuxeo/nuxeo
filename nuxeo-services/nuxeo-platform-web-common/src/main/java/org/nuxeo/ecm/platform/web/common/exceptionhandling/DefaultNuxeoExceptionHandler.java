@@ -163,7 +163,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                             + " handler=" + handler);
                 }
                 parameters.getListener().responseComplete();
-            } else if (!DownloadHelper.isClientAbortError(t)){
+            } else if (!DownloadHelper.isClientAbortError(t)) {
                 // do not throw an error, just log it: afterDispatch needs to be called
                 log.error("Cannot forward to error page: response is already committed", t);
             }
