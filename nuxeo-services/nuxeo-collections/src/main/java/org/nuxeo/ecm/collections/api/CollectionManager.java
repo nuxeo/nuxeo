@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public interface CollectionManager {
      * @param newTitle the title of the new collection
      * @param newDescription the description of the new collection
      * @param documentListToBeAdded the list of document to be added
-     * @param session the core session
+     * @param documentManager the core session
      */
     void addToNewCollection(String newTitle, String newDescription, List<DocumentModel> documentListToBeAdded,
             CoreSession documentManager);
@@ -197,7 +197,7 @@ public interface CollectionManager {
      * Restore the collection members of the version.
      *
      * @param collection the collection
-     * @param collection the version
+     * @param version the version
      *
      * @since 7.3
      */
@@ -226,11 +226,6 @@ public interface CollectionManager {
     /**
      * Create a collection with a given name, description and path.
      *
-     * @param session
-     * @param title
-     * @param description
-     * @param path
-     * @return
      * @since 5.9.4
      */
     DocumentModel createCollection(final CoreSession session, String title, String description, String path);
@@ -245,7 +240,6 @@ public interface CollectionManager {
     /**
      * Get user collections root document.
      *
-     * @param context contextual document
      * @param session the core session
      * @return the user collections root document
      * @since 10.3
@@ -253,9 +247,6 @@ public interface CollectionManager {
     DocumentModel getUserDefaultCollections(final CoreSession session);
 
     /**
-     * @param documentToBeRemoved
-     * @param collectionId
-     * @param session
      * @since 6.0
      */
     void doRemoveFromCollection(DocumentModel documentToBeRemoved, String collectionId, CoreSession session);

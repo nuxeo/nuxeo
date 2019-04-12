@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -175,8 +175,6 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
      * Creates the bootstrap file. It is called from the browser's addon. The URL composition tells the case and what to
      * create. The structure is depicted in the NXP-1881. Rux NXP-1959: add new tag on root level describing the action:
      * actionEdit, actionNew or actionFromTemplate.
-     *
-     * @return the bootstrap file content
      */
     public void getBootstrap() throws IOException {
         String currentRepoID = documentManager.getRepositoryName();
@@ -470,7 +468,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     //
 
     /**
-     * @deprecated use {@link #isLiveEditable(DocumentModel doc, String blobXpath)}
+     * @deprecated use {@link #isDocumentLiveEditable(DocumentModel doc, String blobXpath)}
      */
     @Deprecated
     public boolean isLiveEditable(Blob blob) {
@@ -483,7 +481,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
 
     /**
      * @param document the document to edit.
-     * @param blobXPath XPath to the blob property
+     * @param blob the blob
      * @return true if the document is immutable and the blob's mime type is supported, false otherwise.
      * @since 5.4
      */

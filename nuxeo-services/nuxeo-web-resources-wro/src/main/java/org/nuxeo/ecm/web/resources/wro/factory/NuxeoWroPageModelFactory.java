@@ -35,7 +35,7 @@ import ro.isdc.wro.model.group.Group;
 /**
  * Generates a {@link WroModel} using contributions to the {@link ThemeStylingService} service.
  * <p>
- * Maps {@link PageResourceBundle} elements to wro groups, and map their ordered resources (with resolved dependencies)
+ * Maps {@link PageDescriptor} elements to wro groups, and map their ordered resources (with resolved dependencies)
  * to wro resources.
  *
  * @since 7.10

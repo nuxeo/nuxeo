@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public interface UserProfileService {
     /**
      * Get the current user profile. It's stored in its user workspace.
      *
-     * @param the current CoreSession
+     * @param session the current CoreSession
      * @return the user profile DocumentModel
      */
     DocumentModel getUserProfileDocument(CoreSession session);
@@ -41,8 +41,8 @@ public interface UserProfileService {
     /**
      * Get the profile of a specific user. It's stored in its user workspace.
      *
-     * @param the user name
-     * @param the current CoreSession
+     * @param userName the user name
+     * @param session the current CoreSession
      * @return the user profile DocumentModel
      */
     DocumentModel getUserProfileDocument(String userName, CoreSession session);
@@ -50,8 +50,8 @@ public interface UserProfileService {
     /**
      * Get a DocumentModel containing both user and user profile schemas
      *
-     * @param the user DocumentModel
-     * @param the current CoreSession
+     * @param userModel the user DocumentModel
+     * @param session the current CoreSession
      * @return a SimpleDocumentModel with the two schemas
      */
     DocumentModel getUserProfile(DocumentModel userModel, CoreSession session);

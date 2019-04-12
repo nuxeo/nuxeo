@@ -69,9 +69,8 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     /**
      * TODO FIXME XXX uncommented <code>return true;</code> see NXP-1653.
      *
-     * @see DefaultPropertyFactory line 216
-     * @see {@link ListProperty#getValue}
-     * @see {@link ListProperty#accept}
+     * @see #getValue
+     * @see #accept
      */
     @Override
     public boolean isContainer() {

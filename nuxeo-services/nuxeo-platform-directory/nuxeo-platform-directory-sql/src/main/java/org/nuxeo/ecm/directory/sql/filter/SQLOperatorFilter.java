@@ -30,7 +30,7 @@ import java.sql.SQLException;
  * side part.
  *
  * @since 5.7
- * @deprecated since 10.3, use {@link org.nuxeo.ecm.directory.sql.SQLSession#query(org.nuxeo.ecm.core.query.sql.model.QueryBuilder)} instead
+ * @deprecated since 10.3, use {@link org.nuxeo.ecm.directory.sql.SQLSession#query(org.nuxeo.ecm.core.query.sql.model.QueryBuilder, boolean)} instead
  */
 @Deprecated
 public class SQLOperatorFilter extends SQLComplexFilter {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ import org.apache.commons.logging.LogFactory;
  * <ul>
  * <li>AES/ECB/PKCS5Padding (128)</li>
  * <li>DES/ECB/PKCS5Padding (64)</li>
- * <ul/>
+ * </ul>
  *
  * @since 7.4
  */

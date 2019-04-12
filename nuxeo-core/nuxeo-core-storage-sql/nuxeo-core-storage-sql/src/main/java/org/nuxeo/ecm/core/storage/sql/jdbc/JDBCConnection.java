@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,6 @@ public class JDBCConnection {
      *
      * @param model the model
      * @param sqlInfo the sql info
-     * @param noSharing whether to use no-sharing mode for the connection
      */
     public JDBCConnection(Model model, SQLInfo sqlInfo) {
         this.model = model;

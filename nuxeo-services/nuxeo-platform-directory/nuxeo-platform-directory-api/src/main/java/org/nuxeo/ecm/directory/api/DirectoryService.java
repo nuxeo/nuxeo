@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,6 @@ public interface DirectoryService {
      * <p>
      * This method prefers to throw rather than returning null.
      *
-     * @param directoryName
      * @return the session
      */
     Session open(String directoryName);
@@ -98,8 +97,6 @@ public interface DirectoryService {
      * <p>
      * This method prefers to throw rather than returning null.
      *
-     * @param directoryName
-     * @param documentContext
      * @return the session
      */
     Session open(String directoryName, DocumentModel documentContext);
@@ -123,7 +120,7 @@ public interface DirectoryService {
     /**
      * Gets the password field for a directory.
      *
-     * @param id the directory id
+     * @param directoryName the directory name
      * @return the password field for the directory
      */
     String getDirectoryPasswordField(String directoryName);

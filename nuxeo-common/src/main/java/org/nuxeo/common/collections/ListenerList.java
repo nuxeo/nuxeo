@@ -29,7 +29,7 @@ import java.util.Comparator;
  * <p>
  * Contains code from Eclipse org.eclipse.core.runtime.ListenerList class
  *
- * @see http://www.eclipse.org
+ * @link http://www.eclipse.org
  */
 public class ListenerList {
 

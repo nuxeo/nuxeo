@@ -56,7 +56,6 @@ public class DataSourceHelper {
      * <p>
      * For a datasource {@code "jdbc/foo"}, then it's sufficient to pass {@code "foo"} to this method.
      *
-     * @param partialName the partial name
      * @return the datasource JNDI name
      */
     public static String getDataSourceJNDIName(String name) {
@@ -78,7 +77,6 @@ public class DataSourceHelper {
      *
      * @param partialName the partial name
      * @return the datasource
-     * @throws NamingException
      */
     public static DataSource getDataSource(String partialName) throws NamingException {
         return getDataSource(partialName, DataSource.class);

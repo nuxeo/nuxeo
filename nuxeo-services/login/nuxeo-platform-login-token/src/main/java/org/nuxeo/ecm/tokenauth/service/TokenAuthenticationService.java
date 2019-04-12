@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.io.Serializable;
 import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator;
 import org.nuxeo.ecm.tokenauth.TokenAuthenticationException;
 import org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet;

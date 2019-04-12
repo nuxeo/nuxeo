@@ -1,5 +1,5 @@
-/*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+/*19
+ * (C) Copyright 2006-20 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: BuiltinModes.java 28460 2008-01-03 15:34:05Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 /**
@@ -82,7 +80,7 @@ public class BuiltinModes {
      * Returns the default mode to use for a widget, given the layout mode.
      * <p>
      * Returns {@link BuiltinWidgetModes#EDIT} for all modes bound to edit, {@link BuiltinWidgetModes#VIEW} for modes
-     * {@link #VIEW}, {@link #HEADER} and {@link #SUMMARY}. {@link #PDF} and {@link #CSV} are respectively bound to
+     * {@link #VIEW} and {@link #SUMMARY}. {@link #PDF} and {@link #CSV} are respectively bound to
      * {@link BuiltinWidgetModes#PDF} and {@link BuiltinWidgetModes#CSV}. In other cases, returns
      * {@link BuiltinWidgetModes#PLAIN}.
      * <p>

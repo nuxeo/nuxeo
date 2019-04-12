@@ -117,10 +117,10 @@ public interface Paginable<T> extends List<T> {
     List<QuickFilter> getAvailableQuickFilters();
 
     /**
-     * Limit of number of results beyond which the page provider may not be able to compute {@link #getResultsCount())}
+     * Limit of number of results beyond which the page provider may not be able to compute {@link #getResultsCount()}
      * or navigate.
      * <p>
-     * Requesting results beyond this limit may result in error. When {@link #getResultsCount())} is negative, it means
+     * Requesting results beyond this limit may result in error. When {@link #getResultsCount()} is negative, it means
      * there may be more results than this limit.
      * <p>
      * 0 means there is no limit.

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,7 +158,7 @@ public class BulkCommand implements Serializable {
          *
          * @param action the registered bulk action name
          * @param nxqlQuery the query that represent the document set to apply the action
-         * @param user the user with whose rights the computation will be executed
+         * @param username the user with whose rights the computation will be executed
          * @since 11.1
          */
         public Builder(String action, String nxqlQuery, String username) {

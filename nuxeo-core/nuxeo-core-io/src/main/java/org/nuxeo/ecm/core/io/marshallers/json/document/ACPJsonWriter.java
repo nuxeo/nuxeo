@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * </p>
  * <p>
  * This marshaller is also extensible: extend it and simply override
- * {@link ExtensibleEntityJsonWriter#extend(ACP, JsonGenerator)}.
+ * {@link ACPJsonWriter#extend(Object, JsonGenerator)}.
  * </p>
  * <p>
  * Format is:
@@ -68,9 +68,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *             <-- additional property provided by extend() method
  * }
  * </pre>
- *
  * </p>
- *
  * @since 7.2
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)

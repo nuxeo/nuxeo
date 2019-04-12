@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
  * <p>
  * So a collector is in fact collecting the result of each individual invocation over a collections of inputs. The
  * collector will be asked by the chain execution to add an individual result by calling
- * {@link #add(OperationContext, Object)}. This method is taking as argument the return value of the invocation - so it
- * must accept the same type of object - see T generic type. When all partial results are collected the collector will
- * be asked to return the operation result through the {@link #getOutput()} method.
+ * {@link #collect(OperationContext, Object)}. This method is taking as argument the return value of the invocation - so
+ * it must accept the same type of object - see T generic type. When all partial results are collected the collector
+ * will be asked to return the operation result through the {@link #getOutput()} method.
  * <p>
  * So when writing a collector you <b>must</b> ensure that the collected type is compatible with the one returned by the
  * operation method where the collector is used.

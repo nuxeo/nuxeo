@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public interface Reader<EntityType> extends Marshaller<EntityType> {
      *
      * @param clazz The requested marshalled class.
      * @param genericType The requested marshalled generic type.
-     * @param mediatype The input mediatype.
+     * @param mediaType The input media type.
      * @param in The input of this marshaller.
      * @throws IOException If some error append while reading entity from in.
      * @since 7.2

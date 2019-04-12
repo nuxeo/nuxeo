@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,11 @@ import java.util.concurrent.Callable;
 public interface RepositoryFactory extends Callable<Object> {
 
     /**
-     * Constructs the low-level repository with the name previously passed to {@link #init}.
+     * Constructs the low-level repository with the name previously passed to {@code init}.
      *
      * @return a low-level Repository
      */
-    @Override Object call();
+    @Override
+    Object call();
 
 }

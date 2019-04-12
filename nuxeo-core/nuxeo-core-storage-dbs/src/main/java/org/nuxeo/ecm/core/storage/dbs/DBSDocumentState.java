@@ -102,8 +102,8 @@ public class DBSDocumentState {
     }
 
     /**
-     * Gets the state. If the caller changes the state, it must also call {@link #dirty} to inform this object that the
-     * state is dirtied.
+     * Gets the state. If the caller changes the state, it must also call {@link #markDirty()} to inform this object
+     * that the state is dirtied.
      */
     public State getState() {
         return state;

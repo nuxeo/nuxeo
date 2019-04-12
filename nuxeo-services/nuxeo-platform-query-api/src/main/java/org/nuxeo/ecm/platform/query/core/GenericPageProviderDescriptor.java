@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 
 /**
- * Page provider descriptor accepting a custom class name. The expected interface is {@link ContentViewPageProvider},
- * all other attributes are common to other page provider descriptors.
+ * Page provider descriptor accepting a custom class name. The expected interface is {@link PageProvider}, all other
+ * attributes are common to other page provider descriptors.
  *
  * @author Anahide Tchertchian
  * @since 5.4

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.picture;
@@ -29,8 +27,8 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Helper to handle the UNDEFINED Exif data type.
  * <p>
- * See {@link http ://www.leadtools.com/help/leadtools/v15/Main/API/Dllaux/ExifComments.htm}.
  *
+ * @link https://www.leadtools.com/help/leadtools/v15/main/api/dllaux/exifcomments.htm
  * @author btatar
  */
 public class ExifHelper {

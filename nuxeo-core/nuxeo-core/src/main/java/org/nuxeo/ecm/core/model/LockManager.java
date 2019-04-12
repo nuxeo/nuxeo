@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ package org.nuxeo.ecm.core.model;
 /**
  * Manager of locks for a repository.
  * <p>
- * The method {@link #close} must be called when done with the lock manager.
+ * The method {@link #closeLockManager()} must be called when done with the lock manager.
  *
  * @since 6.0
  * @deprecated since 10.2, use {@link org.nuxeo.ecm.core.api.lock.LockManager} instead

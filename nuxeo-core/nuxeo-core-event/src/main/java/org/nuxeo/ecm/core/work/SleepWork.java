@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class SleepWork extends AbstractWork {
 
     /**
      * If debug is true, then the various debug* methods must be called in the proper order for the work to start and
-     * stop: {@link #debugStart}, {@link #debugFinish}.
+     * stop.
      *
      * @param durationMillis the sleep duration
      * @param debug {@code true} for debug

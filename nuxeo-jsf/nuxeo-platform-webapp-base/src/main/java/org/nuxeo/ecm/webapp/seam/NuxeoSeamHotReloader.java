@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,6 @@ public class NuxeoSeamHotReloader implements Serializable {
      * Returns true if dev mode is set and current user is an administrator.
      *
      * @since 5.6
-     * @return
      */
     public boolean getCanTriggerFlush() {
         return isDevModeSet() && currentUser != null && currentUser.isAdministrator();
@@ -100,7 +99,7 @@ public class NuxeoSeamHotReloader implements Serializable {
      * The reload service flush method should already be triggerd by install/uninstall of modules. This method makes it
      * possible to force it again, and to propagate it to the Seam layer for current user.
      *
-     * @see #resetSeamComponentsCaches()
+     * @see #triggerResetOnSeamComponents()
      * @see #shouldResetCache(Long)
      * @see #shouldResetCache(TimestampedService, Long)
      * @since 5.6
@@ -125,7 +124,6 @@ public class NuxeoSeamHotReloader implements Serializable {
      * Returns true if reload service has sent a runtime flush event since given timestamp.
      *
      * @since 5.6
-     * @param cacheTimestamp
      * @see ReloadService#lastFlushed()
      */
     public boolean shouldResetCache(Long cacheTimestamp) {
@@ -158,8 +156,6 @@ public class NuxeoSeamHotReloader implements Serializable {
      * Returns true if given service has changed since given timestamp.
      *
      * @since 5.6
-     * @param service
-     * @param cacheTimestamp
      * @see TimestampedService
      */
     public boolean shouldResetCache(TimestampedService service, Long cacheTimestamp) {

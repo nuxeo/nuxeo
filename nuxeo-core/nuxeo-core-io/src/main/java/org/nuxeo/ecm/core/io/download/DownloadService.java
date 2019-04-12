@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ public interface DownloadService {
      */
     String REQUEST_ATTR_DOWNLOAD_RENDITION = "nuxeo.download.rendition";
 
-    public static class ByteRange {
+    class ByteRange {
 
         private final long start;
 
@@ -123,7 +123,7 @@ public interface DownloadService {
     /**
      * Stores the blobs for later download.
      *
-     * @param the list of blobs to store
+     * @param blobs the list of blobs to store
      * @return the store key used for retrieving the blobs (@see {@link DownloadService#getDownloadUrl(String)}
      * @since 9.1
      */
@@ -143,7 +143,6 @@ public interface DownloadService {
      */
     String getDownloadUrl(DocumentModel doc, String xpath, String filename);
 
-
     /**
      * Gets the URL to use to download the blob at the given xpath in the given document.
      * <p>
@@ -151,7 +150,8 @@ public interface DownloadService {
      * <p>
      * Returns something like {@code nxfile/reponame/docuuid/blobholder:0/foo.jpg?changeToken=5-1}
      *
-     * @param doc the document
+     * @param repositoryName the document repository
+     * @param docId the document id
      * @param xpath the blob's xpath or blobholder index, or {@code null} for default
      * @param filename the blob's filename, or {@code null} for default
      * @param changeToken the doc changeToken which will be appended as a query parameter for optimized http caching.
@@ -182,7 +182,7 @@ public interface DownloadService {
      * <p>
      * Returns something like {@code nxbigblob/key}
      *
-     * @param key The key of stored blobs to download
+     * @param storeKey The key of stored blobs to download
      * @return the download URL
      * @since 9.1
      */
@@ -231,7 +231,8 @@ public interface DownloadService {
      * @param reason the download reason
      * @since 9.1
      */
-    void downloadBlob(HttpServletRequest request, HttpServletResponse response, String storeKey, String reason) throws IOException;
+    void downloadBlob(HttpServletRequest request, HttpServletResponse response, String storeKey, String reason)
+            throws IOException;
 
     /**
      * Triggers a blob download.
@@ -274,7 +275,7 @@ public interface DownloadService {
             throws IOException;
 
     /**
-     * Triggers a blob download. The actual byte transfer is done through a {@link DownloadExecutor}.
+     * Triggers a blob download.
      *
      * @param doc the document, if available
      * @param xpath the blob's xpath or blobholder index, if available
@@ -334,7 +335,7 @@ public interface DownloadService {
      * Checks whether the download of the blob is allowed.
      *
      * @param doc the doc for which this download occurs, if available
-     * @param blobXPath the blob's xpath or blobholder index, if available
+     * @param xpath the blob's xpath or blobholder index, if available
      * @param blob the blob
      * @param reason the download reason
      * @param extendedInfos an optional map of extended informations to log

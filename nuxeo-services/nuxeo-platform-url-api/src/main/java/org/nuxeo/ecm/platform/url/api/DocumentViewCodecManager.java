@@ -63,8 +63,7 @@ public interface DocumentViewCodecManager extends Serializable {
     DocumentView getDocumentViewFromUrl(String url, boolean hasBaseUrl, String baseUrl);
 
     /**
-     * Returns a DocumentView calling {@link DocumentViewCodec#getDocumentViewFromUrl(String, boolean, String)} on codec
-     * with given name.
+     * Returns a DocumentView calling {@link DocumentViewCodec#getDocumentViewFromUrl(String)} on codec with given name.
      *
      * @param url the original url from request, including request parameters if any.
      * @param hasBaseUrl boolean indicating if base url should be removed from given url.
@@ -81,7 +80,7 @@ public interface DocumentViewCodecManager extends Serializable {
      * value. am docView the original document view from request
      *
      * @param docView the original document view from request
-     * @param hasBaseUrl boolean indicating if base url should be added to the url returned by the codec.
+     * @param needBaseUrl boolean indicating if base url should be added to the url returned by the codec.
      * @param baseUrl value of the base url.
      */
     String getUrlFromDocumentView(DocumentView docView, boolean needBaseUrl, String baseUrl);
@@ -89,8 +88,9 @@ public interface DocumentViewCodecManager extends Serializable {
     /**
      * Returns an URL calling {@link DocumentViewCodec#getUrlFromDocumentView(DocumentView) on codec with given name.
      *
+     * @param codecName the codec name to use
      * @param docView the original document view from request
-     * @param hasBaseUrl boolean indicating if base url should be added to the url returned by the codec.
+     * @param needBaseUrl boolean indicating if base url should be added to the url returned by the codec.
      * @param baseUrl value of the base url.
      */
     String getUrlFromDocumentView(String codecName, DocumentView docView, boolean needBaseUrl, String baseUrl);

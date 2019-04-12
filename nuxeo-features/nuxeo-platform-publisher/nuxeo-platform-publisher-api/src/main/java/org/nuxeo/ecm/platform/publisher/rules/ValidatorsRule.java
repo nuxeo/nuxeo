@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@
 
 package org.nuxeo.ecm.platform.publisher.rules;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
-
 import java.io.Serializable;
+
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Validators rule API.
@@ -39,7 +39,6 @@ public interface ValidatorsRule extends Serializable {
      *
      * @param dm a Nuxeo Core document model. (the document that just has been published)
      * @return a list of principal names.
-     * @throws PublishingValidatorException TODO
      */
     String[] computesValidatorsFor(DocumentModel dm);
 

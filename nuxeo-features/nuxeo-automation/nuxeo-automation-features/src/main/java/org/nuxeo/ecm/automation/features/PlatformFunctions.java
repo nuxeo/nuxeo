@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -200,12 +200,11 @@ public class PlatformFunctions extends CoreFunctions {
      * list of object. ex: concatenateInto(myList, a, anotherList) with a is scalar object and anotherList is a list of
      * object will produced myList.add(a) and the same for each object contained into the anotherList list.
      *
-     * @param <T>
      * @param list List of values of type A
      * @param values Value can be instance of java.util.Collection<Object> or an array of Objects or simply a scalar
      *            Object. If Null, the parameter is ignored
      * @return the list that contains the list contain and value (see value description)
-     * @exception xxxxx if in values there is at least one object type not compatible with the collection list
+     * @throws ClassCastException if in values there is at least one object type not compatible with the collection list
      */
     @SuppressWarnings("unchecked")
     public <T> List<T> concatenateIntoList(List<T> list, Object... values) {

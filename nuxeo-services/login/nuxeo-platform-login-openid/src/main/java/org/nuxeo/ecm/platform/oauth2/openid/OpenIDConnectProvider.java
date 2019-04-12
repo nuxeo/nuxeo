@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,8 +120,6 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
     /**
      * Create a state token to prevent request forgery. Store it in the session for later validation.
-     *
-     * @param HttpServletRequest request
      */
     public String createStateToken(HttpServletRequest request) {
         String state = new BigInteger(130, new SecureRandom()).toString(32);
@@ -132,8 +130,6 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
     /**
      * Ensure that this is no request forgery going on, and that the user sending us this connect request is the user
      * that was supposed to.
-     *
-     * @param HttpServletRequest request
      */
     public boolean verifyStateToken(HttpServletRequest request) {
         return request.getParameter(OpenIDConnectAuthenticator.STATE_URL_PARAM_NAME)

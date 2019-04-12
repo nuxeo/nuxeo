@@ -39,7 +39,7 @@ public interface ComputationContext {
      *
      * @param streamName The name of the stream on which the record should be emitted.
      * @param key The key associated with the record. Only relevant when routing method is `GROUP_BY`.
-     * @param data: The binary blob to send downstream.
+     * @param data The binary blob to send downstream.
      */
     default void produceRecord(String streamName, String key, byte[] data) {
         produceRecord(streamName, Record.of(key, data));

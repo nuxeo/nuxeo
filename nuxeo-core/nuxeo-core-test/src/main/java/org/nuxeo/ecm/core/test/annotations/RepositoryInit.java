@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ package org.nuxeo.ecm.core.test.annotations;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * Implement this class to provide an initializer for the {@link RepositoryInitializer} annotation in tests.
+ * Implement this class to provide an initializer for the {@link RepositoryConfig} annotation in tests.
  */
 public interface RepositoryInit {
 

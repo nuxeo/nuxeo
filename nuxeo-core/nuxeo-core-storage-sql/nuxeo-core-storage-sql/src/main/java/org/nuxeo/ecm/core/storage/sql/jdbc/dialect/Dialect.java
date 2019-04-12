@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1010,7 +1010,7 @@ public abstract class Dialect {
      *
      * @param columns the columns to upsert (first one being the key column)
      * @param values the values to upsert (first one being the key value)
-     * @param outcolumns the columns to use in the prepared statement
+     * @param outColumns the columns to use in the prepared statement
      * @param outValues the values to use in the prepared statement
      * @since 10.10
      */

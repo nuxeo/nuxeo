@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public class ModelProperty {
     /**
      * Create a model for an intermediate segment of a complex property.
      *
-     * @param name the canonical segment name
+     * @param propertyName the canonical segment name
      * @since 5.7.3
      */
     public ModelProperty(String propertyName) {

@@ -1405,7 +1405,8 @@ public interface CoreSession {
 
     /**
      * Provides the full list of all permissions or groups of permissions that contain the given one (inclusive). It
-     * makes the method {@link org.nuxeo.ecm.core.security.SecurityService#getPermissionsToCheck} available remote.
+     * makes the method {@link org.nuxeo.ecm.core.security.SecurityService#getPermissionsToCheck(String)} available
+     * remote.
      *
      * @return the list, as an array of strings.
      */

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class DataModelImpl implements DataModel {
     /**
      * Builds a data model using the given data.
      *
-     * @param schema a schema name.
+     * @param schemaName a schema name.
      * @param data the data (map String&gt;Object) to put in the DataModel.
      */
     public DataModelImpl(String schemaName, Map<String, Object> data) {

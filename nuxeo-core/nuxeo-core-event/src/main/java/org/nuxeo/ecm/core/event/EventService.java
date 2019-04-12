@@ -29,9 +29,9 @@ import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
  * The service is able to run in a transactional mode where all events are recorded and fired after the transaction
  * commits in one step as an event bundle.
  * <p>
- * To start a transaction, the framework calls the {@link #transactionStarted()} method, and at transaction commit the
- * framework calls {@link #transactionCommitted()} to fire the event bundle. Upon rollback the framework calls
- * {@link #transactionRolledback()} to clean up recorded events.
+ * To start a transaction, the framework calls the {@code transactionStarted()} method, and at transaction commit the
+ * framework calls {@code transactionCommitted()} to fire the event bundle. Upon rollback the framework calls
+ * {@code transactionRolledback()} to clean up recorded events.
  * <p>
  * Events are recorded in a thread variable so they are valid only in the current thread.
  * <p>

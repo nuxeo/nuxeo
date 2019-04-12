@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,8 @@
 
 package org.nuxeo.common.utils;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.common.utils.UserAgentMatcher.isMSIE6or7;
-
-import java.io.UnsupportedEncodingException;
 
 /**
  * RFC-2231 specifies how a MIME parameter value, like {@code Content-Disposition}'s {@code filename}, can be encoded to
@@ -33,10 +32,6 @@ import java.io.UnsupportedEncodingException;
  */
 public class RFC2231 {
 
-    private static final String UTF8 = "UTF-8";
-
-    private static final byte[] UNKNOWN_BYTES = { '?' };
-
     // Utility class
     private RFC2231() {
     }
@@ -44,17 +39,12 @@ public class RFC2231 {
     /**
      * Does a simple %-escaping of the UTF-8 bytes of the value. Keep only some know safe characters.
      *
-     * @param buf the buffer to which escaped chars are appended
+     * @param sb the builder to which escaped chars are appended
      * @param value the value to escape
      */
     public static void percentEscape(StringBuilder sb, String value) {
         byte[] bytes;
-        try {
-            bytes = value.getBytes(UTF8);
-        } catch (UnsupportedEncodingException e) {
-            // cannot happen with UTF-8
-            bytes = UNKNOWN_BYTES;
-        }
+        bytes = value.getBytes(UTF_8);
         for (byte b : bytes) {
             if (b < '+' || b == ';' || b == ',' || b == '\\' || b > 'z') {
                 sb.append('%');

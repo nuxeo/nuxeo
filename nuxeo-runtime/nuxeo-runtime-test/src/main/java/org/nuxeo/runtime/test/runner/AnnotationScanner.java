@@ -84,10 +84,6 @@ public class AnnotationScanner {
 
     /**
      * TODO when collecting annotations annotated with {@link Inherited} they will be collected twice.
-     *
-     * @param clazz
-     * @param result
-     * @param visitedClasses
      */
     protected List<Annotation> collectAnnotations(Class<?> clazz) {
         if (visitedClasses.contains(clazz)) {

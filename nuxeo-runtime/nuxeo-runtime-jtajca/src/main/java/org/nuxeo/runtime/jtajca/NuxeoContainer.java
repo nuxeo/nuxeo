@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,7 +158,6 @@ public class NuxeoContainer {
     /**
      * Creates and installs in the container a new ConnectionManager.
      *
-     * @param name the repository name
      * @param config the pool configuration
      * @return the created connection manager
      */
@@ -258,7 +257,7 @@ public class NuxeoContainer {
      * Exposes the {@link #rootContext}.
      *
      * @since 5.7
-     * @see https://jira.nuxeo.com/browse/NXP-10331
+     * @link https://jira.nuxeo.com/browse/NXP-10331
      */
     public static Context getRootContext() {
         return rootContext;
@@ -566,8 +565,6 @@ public class NuxeoContainer {
      * Creates a Geronimo pooled connection manager using a Geronimo transaction manager.
      * <p>
      * The pool uses the transaction manager for recovery, and when using XATransactions for cache + enlist/delist.
-     *
-     * @throws NamingException
      */
     public static NuxeoConnectionManager createConnectionManager(NuxeoConnectionTrackingCoordinator coordinator,
             NuxeoConnectionManagerConfiguration config) {
