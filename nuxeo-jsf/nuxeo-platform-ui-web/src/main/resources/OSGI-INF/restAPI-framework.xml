@@ -2,7 +2,7 @@
 <component name="org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService">
 
   <implementation
-      class="org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService"/>
+          class="org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService" />
 
   <documentation>
     The Pluggable Restlet service provides extension point to register new Restlets and
@@ -16,11 +16,11 @@
       This extension point lets you contribute new Restlets: ie, new REST API executor.
       Sample contribution:
       <restletPlugin
-          name="name of the restlet"
-          class="implementation class, you can use BaseNuxeoRestlet as a base clas"
-          enabled="true"
-          useSeam="true/false : indicate if Seam components will be used"
-          useConversation="true/false : indicate if Seam conversation must be restored">
+              name="name of the restlet"
+              class="implementation class, you can use BaseNuxeoRestlet as a base clas"
+              enabled="true"
+              useSeam="true/false : indicate if Seam components will be used"
+              useConversation="true/false : indicate if Seam conversation must be restored">
         <urlPatterns>
           <urlPattern>/{repo}/{docid}/pluginUpload</urlPattern>
         </urlPatterns>
@@ -28,7 +28,7 @@
     </documentation>
 
     <object
-        class="org.nuxeo.ecm.platform.ui.web.restAPI.service.RestletPluginDescriptor"/>
+            class="org.nuxeo.ecm.platform.ui.web.restAPI.service.RestletPluginDescriptor" />
   </extension-point>
 
 </component>

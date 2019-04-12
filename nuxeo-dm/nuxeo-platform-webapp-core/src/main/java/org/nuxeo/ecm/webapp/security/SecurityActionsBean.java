@@ -252,7 +252,8 @@ public class SecurityActionsBean extends InputController implements SecurityActi
                 }
             }
         } else {
-            log.debug("no entry for documentType in visibleUserPermissions this should never happend, using default mapping ...");
+            log.debug(
+                    "no entry for documentType in visibleUserPermissions this should never happend, using default mapping ...");
         }
 
         if (grant) {

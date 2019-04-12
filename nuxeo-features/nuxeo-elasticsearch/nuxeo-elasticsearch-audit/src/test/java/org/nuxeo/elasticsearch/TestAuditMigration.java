@@ -150,13 +150,20 @@ public class TestAuditMigration {
         Framework.getService(WorkManager.class).awaitCompletion(1, TimeUnit.MINUTES);
 
         LogEntryGen.flushAndSync();
-
-        String singleQuery = "            {\"query\": {\n" + "                \"bool\" : {\n"
-                + "                  \"must\" : {\n" + "                    \"match\" : {\n"
-                + "                      \"docUUID\" : {\n" + "                        \"query\" : \"mydoc\"\n"
-                + "                      }\n"
-                + "                    }\n" + "                  }\n" + "                }\n"
-                + "              }}          \n" + "";
+        String singleQuery = "{\n" + //
+                "  \"query\": {\n" + //
+                "    \"bool\" : {\n" + //
+                "        \"must\" : {\n" + //
+                "          \"match\" : {\n" + //
+                "            \"docUUID\" : {\n" + //
+                "              \"query\" : \"mydoc\"\n" + //
+                "            }\n" + //
+                "          }\n" + //
+                "        }\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}";
         List<LogEntry> migratedEntries = (List<LogEntry>) backend.nativeQuery(singleQuery, 0, 1001);
         Assert.assertEquals(1000, migratedEntries.size());
     }

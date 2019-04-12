@@ -56,8 +56,8 @@ import edu.yale.its.tp.cas.client.ServiceTicketValidator;
  * @author Benjamin Jalon
  * @author Thierry Martins
  */
-public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthenticationPluginLogoutExtension,
-        LoginResponseHandler {
+public class Cas2Authenticator
+        implements NuxeoAuthenticationPlugin, NuxeoAuthenticationPluginLogoutExtension, LoginResponseHandler {
 
     protected static final String CAS_SERVER_HEADER_KEY = "CasServer";
 
@@ -357,8 +357,11 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthen
 
         ProxyTicketValidator proxyValidator;
         try {
-            proxyValidator = (ProxyTicketValidator) Framework.getRuntime().getContext().loadClass(
-                    proxyValidatorClassName).getDeclaredConstructor().newInstance();
+            proxyValidator = (ProxyTicketValidator) Framework.getRuntime()
+                                                             .getContext()
+                                                             .loadClass(proxyValidatorClassName)
+                                                             .getDeclaredConstructor()
+                                                             .newInstance();
         } catch (ReflectiveOperationException e) {
             log.error("checkProxyCasTicket during the ProxyTicketValidator initialization", e);
             return null;

@@ -82,7 +82,8 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
             List<Statement> statements = graph.getStatements();
             checkShutdownRequested();
 
-            processBatched(BATCH_SIZE, statements, statement -> migrateComments(session, relationManager, commentServiceConfig, statement),
+            processBatched(BATCH_SIZE, statements,
+                    statement -> migrateComments(session, relationManager, commentServiceConfig, statement),
                     "Migrating comments");
             reportProgress("Done", statements.size(), statements.size());
         }

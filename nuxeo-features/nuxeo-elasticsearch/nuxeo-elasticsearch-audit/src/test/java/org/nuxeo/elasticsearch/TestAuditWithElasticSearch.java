@@ -64,7 +64,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features({ RepositoryElasticSearchFeature.class })
 @Deploy("org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.audit:audit-test-contrib.xml")
-public class TestAuditWithElasticSearch  extends AbstractAuditStorageTest {
+public class TestAuditWithElasticSearch extends AbstractAuditStorageTest {
 
     @Inject
     protected CoreSession session;

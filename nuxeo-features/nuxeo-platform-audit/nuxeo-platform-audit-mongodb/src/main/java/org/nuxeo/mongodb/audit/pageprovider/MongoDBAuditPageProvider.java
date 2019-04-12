@@ -201,7 +201,8 @@ public class MongoDBAuditPageProvider extends AbstractPageProvider<LogEntry> imp
             String fixedPart = getFixedPart();
             if (StringUtils.isNotBlank(quickFiltersClause)) {
                 fixedPart = StringUtils.isNotBlank(fixedPart)
-                        ? NXQLQueryBuilder.appendClause(fixedPart, quickFiltersClause) : quickFiltersClause;
+                        ? NXQLQueryBuilder.appendClause(fixedPart, quickFiltersClause)
+                        : quickFiltersClause;
             }
 
             // Where clause based on DocumentModel

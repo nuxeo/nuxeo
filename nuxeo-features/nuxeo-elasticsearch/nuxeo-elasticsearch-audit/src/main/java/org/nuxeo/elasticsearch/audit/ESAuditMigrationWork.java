@@ -68,13 +68,13 @@ public class ESAuditMigrationWork extends AbstractWork {
         sourceBackend.onApplicationStarted();
 
         try {
-        @SuppressWarnings("unchecked")
-        List<Long> res = (List<Long>) sourceBackend.nativeQuery("select count(*) from LogEntry", 1, 20);
-        long nbEntriesToMigrate = res.get(0);
+            @SuppressWarnings("unchecked")
+            List<Long> res = (List<Long>) sourceBackend.nativeQuery("select count(*) from LogEntry", 1, 20);
+            long nbEntriesToMigrate = res.get(0);
 
-        AuditLogger destBackend = auditService.getBackend();
+            AuditLogger destBackend = auditService.getBackend();
 
-        TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.commitOrRollbackTransaction();
             long t0 = System.currentTimeMillis();
             long nbEntriesMigrated = 0;
             int pageIdx = 1;
@@ -82,8 +82,9 @@ public class ESAuditMigrationWork extends AbstractWork {
             while (nbEntriesMigrated < nbEntriesToMigrate) {
                 int pageIdxF = pageIdx;
                 @SuppressWarnings("unchecked")
-                List<LogEntry> entries = TransactionHelper.runInTransaction(() -> (List<LogEntry>) sourceBackend.nativeQuery(
-                        "from LogEntry log order by log.id asc", pageIdxF, batchSize));
+                List<LogEntry> entries = TransactionHelper.runInTransaction(
+                        () -> (List<LogEntry>) sourceBackend.nativeQuery("from LogEntry log order by log.id asc",
+                                pageIdxF, batchSize));
 
                 if (entries.size() == 0) {
                     log.warn("Migration ending after " + nbEntriesMigrated + " entries");

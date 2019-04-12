@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.webapp.security.UIPermissionService">
   <implementation
-    class="org.nuxeo.ecm.webapp.security.UIPermissionService" />
+          class="org.nuxeo.ecm.webapp.security.UIPermissionService" />
   <documentation>
     This service provides the list of permissions displayed in the UI
     for a document type.
@@ -14,7 +14,7 @@
   </documentation>
   <extension-point name="uiPermissions">
     <object
-      class="org.nuxeo.ecm.webapp.security.UIPermissionListDescriptor" />
+            class="org.nuxeo.ecm.webapp.security.UIPermissionListDescriptor" />
   </extension-point>
   <documentation>
     Example:
