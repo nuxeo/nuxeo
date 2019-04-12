@@ -59,11 +59,11 @@ node(env.NODELABEL) {
                                     sh '''#!/bin/bash -x
                                         REGION="eu-west-1"
                                         VPC=$(aws cloudformation list-exports --query "Exports[?Name=='qa-generic-revival-VPCStack'].Value" --output text --region ${REGION})
-                                        SUBNET=$(aws cloudformation list-exports --query "Exports[?Name=='qa-generic-revival-SubnetSlaveStack'].Value" --output text --region ${REGION}) 
+                                        SUBNET=$(aws cloudformation list-exports --query "Exports[?Name=='qa-generic-revival-SubnetSlaveStack'].Value" --output text --region ${REGION})
                                         aws cloudformation create-stack --stack-name aurora-db --template-body file://$WORKSPACE/integration/Jenkinsfiles/cfn_aurora_db.yaml --parameters file://<(jq -n --arg vpc "$VPC" --arg db_adminname "$NX_DB_ADMINNAME" --arg db_adminuser "$NX_DB_ADMINUSER" --arg db_adminpass "$NX_DB_ADMINPASS" --arg subnet "$SUBNET" '[{ParameterKey: "VPC", ParameterValue: $vpc}, {ParameterKey: "NXDBADMINNAME", ParameterValue: $db_adminname}, {ParameterKey: "NXDBADMINUSER", ParameterValue: $db_adminuser}, {ParameterKey: "NXDBADMINPASS", ParameterValue: $db_adminpass}, {ParameterKey: "SUBNET", ParameterValue: $subnet}]') --capabilities CAPABILITY_NAMED_IAM --region ${REGION}
                                         aws cloudformation wait stack-create-complete --stack-name aurora-db --region ${REGION}
                                         export NX_DB_HOST=$(aws cloudformation list-exports --query "Exports[?Name=='aurora-db-DatabaseId'].Value" --output text --region ${REGION})
-                                        mvn -B -f $WORKSPACE/pom.xml install -Pqa,addons,customdb,$DBPROFILE -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT
+                                        mvn -B -V -f $WORKSPACE/pom.xml install -Pqa,addons,customdb,$DBPROFILE -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT
                                     '''
 
                                 } finally {
@@ -72,7 +72,7 @@ node(env.NODELABEL) {
                                         aws cloudformation delete-stack --stack-name aurora-db --region ${REGION}
                                         aws cloudformation wait stack-delete-complete --stack-name aurora-db --region ${REGION}
                                     '''
-                                    archive '**/target/failsafe-reports/*, **/target/*.png, **/target/**/*.log, **/target/**/log/*'
+                                    archiveArtifacts '**/target/failsafe-reports/*, **/target/*.png, **/target/**/*.log, **/target/**/log/*'
                                     junit '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
                                 }
                             }
