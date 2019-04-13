@@ -128,6 +128,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
                     conversationId = Conversation.instance().getId();
                 }
 
+                @SuppressWarnings("rawtypes")
                 Map<String, Map> conversationMap = TypedCollections.dynamicallyCastMap(
                         (Map) sessionMap.get(CONVERSATION_VIEW_MAP), String.class, Map.class);
                 if (conversationMap == null) {
@@ -135,6 +136,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
                     sessionMap.put(CONVERSATION_VIEW_MAP, conversationMap);
                 }
 
+                @SuppressWarnings("rawtypes")
                 Map<String, Map> logicalMap = TypedCollections.dynamicallyCastMap(
                         conversationMap.get(conversationId), String.class, Map.class);
                 if (logicalMap == null) {
@@ -250,12 +252,13 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
 
         // noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (sessionObj) {
-            Map<String, Map> conversationMap = (Map) externalCtx.getSessionMap().get(CONVERSATION_VIEW_MAP);
+            @SuppressWarnings("rawtypes")
+            Map<String, Map> conversationMap = (Map<String, Map>) externalCtx.getSessionMap().get(CONVERSATION_VIEW_MAP);
             if (conversationMap == null) {
                 return null;
             }
-            Map logicalMap = null;
-            for (Map lm : conversationMap.values()) {
+            Map<?, ?> logicalMap = null;
+            for (Map<?, ?> lm : conversationMap.values()) {
                 if (lm.get(idInLogicalMap) != null) {
                     logicalMap = lm;
                     break;
@@ -263,7 +266,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
             }
 
             if (logicalMap != null) {
-                Map actualMap = (Map) logicalMap.get(idInLogicalMap);
+                Map<?, ?> actualMap = (Map<?, ?>) logicalMap.get(idInLogicalMap);
                 if (actualMap != null) {
                     RequestStateManager.set(ctx, RequestStateManager.LOGICAL_VIEW_MAP, idInLogicalMap);
                     Object[] state = (Object[]) actualMap.get(idInActualMap);

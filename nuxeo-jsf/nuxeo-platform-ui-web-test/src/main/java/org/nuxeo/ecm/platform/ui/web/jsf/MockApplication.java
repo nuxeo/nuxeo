@@ -52,7 +52,8 @@ import org.jboss.el.ExpressionFactoryImpl;
 public class MockApplication extends Application {
 
     @Override
-    public Object evaluateExpressionGet(FacesContext context, String expression, Class expectedType) throws ELException {
+    public Object evaluateExpressionGet(FacesContext context, String expression,
+            @SuppressWarnings("rawtypes") Class expectedType) throws ELException {
         return ((MockFacesContext) context).evaluateExpressionGet(context, expression, expectedType);
     }
 
@@ -61,7 +62,7 @@ public class MockApplication extends Application {
     }
 
     @Override
-    public void addConverter(Class targetClass, String converterClass) {
+    public void addConverter(Class<?> targetClass, String converterClass) {
     }
 
     @Override
@@ -84,7 +85,7 @@ public class MockApplication extends Application {
     }
 
     @Override
-    public Converter createConverter(Class targetClass) {
+    public Converter createConverter(Class<?> targetClass) {
         return null;
     }
 
@@ -94,7 +95,7 @@ public class MockApplication extends Application {
     }
 
     @Override
-    public MethodBinding createMethodBinding(String ref, Class[] params) throws ReferenceSyntaxException {
+    public MethodBinding createMethodBinding(String ref, Class<?>[] params) throws ReferenceSyntaxException {
         return null;
     }
 

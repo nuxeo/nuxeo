@@ -51,7 +51,7 @@ public class JSONLiveConnectBlobDecoder implements JSONBlobDecoder {
             return null;
         }
         try {
-            return ((LiveConnectBlobProvider) provider).toBlob(new LiveConnectFileInfo(
+            return ((LiveConnectBlobProvider<?>) provider).toBlob(new LiveConnectFileInfo(
                     jsonObject.get("user").textValue(), jsonObject.get("fileId").textValue()));
         } catch (IOException e) {
             throw new NuxeoException(e);

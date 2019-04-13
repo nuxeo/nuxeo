@@ -81,26 +81,26 @@ public class TestRepositoryDescriptor {
         fti = fulltextIndexes.get(0);
         assertNull(fti.name);
         assertNull(fti.fieldType);
-        assertEquals(new HashSet(), fti.fields);
-        assertEquals(new HashSet(Collections.singleton("dc:creator")), fti.excludeFields);
+        assertEquals(new HashSet<>(), fti.fields);
+        assertEquals(new HashSet<>(Collections.singleton("dc:creator")), fti.excludeFields);
 
         fti = fulltextIndexes.get(1);
         assertEquals("titraille", fti.name);
         assertNull(fti.fieldType);
-        assertEquals(new HashSet(Arrays.asList("dc:title", "dc:description")), fti.fields);
-        assertEquals(new HashSet(), fti.excludeFields);
+        assertEquals(new HashSet<>(Arrays.asList("dc:title", "dc:description")), fti.fields);
+        assertEquals(new HashSet<>(), fti.excludeFields);
 
         fti = fulltextIndexes.get(2);
         assertEquals("blobs", fti.name);
         assertEquals("blob", fti.fieldType);
-        assertEquals(new HashSet(), fti.fields);
-        assertEquals(new HashSet(Collections.singleton("foo:bar")), fti.excludeFields);
+        assertEquals(new HashSet<>(), fti.fields);
+        assertEquals(new HashSet<>(Collections.singleton("foo:bar")), fti.excludeFields);
 
         fti = fulltextIndexes.get(3);
         assertEquals("pictures", fti.name);
         assertNull(fti.fieldType);
-        assertEquals(new HashSet(Collections.singleton("picture:views/*/filename")), fti.fields);
-        assertEquals(new HashSet(), fti.excludeFields);
+        assertEquals(new HashSet<>(Collections.singleton("picture:views/*/filename")), fti.fields);
+        assertEquals(new HashSet<>(), fti.excludeFields);
 
         assertTrue(fulltextDescriptor.getFulltextExcludedTypes().contains("Folder"));
         assertTrue(fulltextDescriptor.getFulltextExcludedTypes().contains("Workspace"));

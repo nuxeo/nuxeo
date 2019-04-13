@@ -110,7 +110,7 @@ public class DropboxBlobProvider extends AbstractLiveConnectBlobProvider<Dropbox
         LiveConnectFileInfo fileInfo = toFileInfo(blob);
         String filePath = fileInfo.getFileId();
         try {
-            DbxDownloader downloader = getDropboxClient(getCredential(fileInfo)).files()
+            DbxDownloader<?> downloader = getDropboxClient(getCredential(fileInfo)).files()
                     .getThumbnailBuilder(filePath)
                     .withFormat(ThumbnailFormat.JPEG)
                     .withSize(ThumbnailSize.W64H64)

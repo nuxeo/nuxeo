@@ -547,7 +547,7 @@ public class ObjectCodecService {
 
         @SuppressWarnings("unchecked")
         public DocumentAdapterCodec(DocumentAdapterDescriptor descriptor) {
-            super(descriptor.getInterface());
+            super((Class<BusinessAdapter>) descriptor.getInterface());
             this.descriptor = descriptor;
         }
 

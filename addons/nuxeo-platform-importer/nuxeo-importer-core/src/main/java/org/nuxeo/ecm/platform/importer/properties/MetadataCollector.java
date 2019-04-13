@@ -167,7 +167,7 @@ public class MetadataCollector {
         mdProperties.load(new FileInputStream(propertyFile));
 
         Map<String, String> stringMap = new HashMap<>();
-        Enumeration names = mdProperties.propertyNames();
+        Enumeration<?> names = mdProperties.propertyNames();
         while (names.hasMoreElements()) {
             String name = (String) names.nextElement();
             stringMap.put(name, mdProperties.getProperty(name));

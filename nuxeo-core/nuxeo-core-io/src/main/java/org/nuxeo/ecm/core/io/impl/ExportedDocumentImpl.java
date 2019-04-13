@@ -295,13 +295,13 @@ public class ExportedDocumentImpl implements ExportedDocument {
             if (TypeConstants.isContentType(ctype)) {
                 readBlob(element, ctype, (Blob) value, inlineBlobs);
             } else {
-                readComplex(element, ctype, (Map) value, inlineBlobs);
+                readComplex(element, ctype, (Map<Object, Object>) value, inlineBlobs);
             }
         } else if (type.isListType()) {
             if (value instanceof List) {
-                readList(element, (ListType) type, (List) value, inlineBlobs);
+                readList(element, (ListType) type, (List<Object>) value, inlineBlobs);
             } else if (value.getClass().getComponentType() != null) {
-                readList(element, (ListType) type, PrimitiveArrays.toList(value), inlineBlobs);
+                readList(element, (ListType) type, (List<Object>) PrimitiveArrays.toList(value), inlineBlobs);
             } else {
                 throw new IllegalArgumentException("A value of list type is neither list neither array: " + value);
             }
@@ -326,17 +326,18 @@ public class ExportedDocumentImpl implements ExportedDocument {
         element.addElement(ExportConstants.BLOB_DIGEST).addText(blob.getDigest() != null ? blob.getDigest() : "");
     }
 
-    protected final void readComplex(Element element, ComplexType ctype, Map map, boolean inlineBlobs)
+    protected final void readComplex(Element element, ComplexType ctype, Map<Object, Object> map, boolean inlineBlobs)
             throws IOException {
-        Iterator<Map.Entry> it = map.entrySet().iterator();
+        Iterator<Map.Entry<Object, Object>> it = map.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry entry = it.next();
+            Map.Entry<Object, Object> entry = it.next();
             readProperty(element, ctype.getNamespace(), ctype.getField(entry.getKey().toString()), entry.getValue(),
                     inlineBlobs);
         }
     }
 
-    protected final void readList(Element element, ListType ltype, List list, boolean inlineBlobs) throws IOException {
+    protected final void readList(Element element, ListType ltype, List<Object> list, boolean inlineBlobs)
+            throws IOException {
         Field field = ltype.getField();
         for (Object obj : list) {
             readProperty(element, Namespace.DEFAULT_NS, field, obj, inlineBlobs);

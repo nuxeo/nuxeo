@@ -510,7 +510,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             List<String> jarLocations = result.undeployedBundlesAsStream().map(Bundle::getLocation).collect(
                     Collectors.toList());
             log.debug("Clear JarFileFactory caches for jars={}", jarLocations);
-            Class jarFileFactory = Class.forName("sun.net.www.protocol.jar.JarFileFactory");
+            Class<?> jarFileFactory = Class.forName("sun.net.www.protocol.jar.JarFileFactory");
 
             Field factoryInstanceField = jarFileFactory.getDeclaredField("instance");
             factoryInstanceField.setAccessible(true);

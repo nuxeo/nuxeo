@@ -267,6 +267,7 @@ public class SAMLAuthenticatorTest {
         when(conditions.getNotOnOrAfter()).thenReturn(DateTime.now().minusSeconds(30));
 
         // Validation passes with default 60s time skew
+        @SuppressWarnings("rawtypes")
         SAMLMessageContext context = new BasicSAMLMessageContext();
         try {
             profile.validateAssertion(assertion, context);
@@ -308,6 +309,7 @@ public class SAMLAuthenticatorTest {
         when(conditions.getNotBefore()).thenReturn(DateTime.now().plusSeconds(30));
 
         // Validation passes with default 60s time skew
+        @SuppressWarnings("rawtypes")
         SAMLMessageContext context = new BasicSAMLMessageContext();
         try {
             profile.validateAssertion(assertion, context);

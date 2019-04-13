@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 public class PictureResourceAdapterFactory implements DocumentAdapterFactory {
 
     @Override
-    public Object getAdapter(DocumentModel doc, Class cls) {
+    public Object getAdapter(DocumentModel doc, Class<?> cls) {
         if (doc.hasFacet(PICTURE_FACET) || doc.hasSchema(PICTURE_SCHEMA_NAME)) {
             PictureResourceAdapter adapter = new DefaultPictureAdapter();
             adapter.setDocumentModel(doc);

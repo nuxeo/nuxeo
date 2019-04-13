@@ -2887,7 +2887,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         //Initially icon is null
         checkValue("icon", null, ob);
         Properties props = createProperties("icon", "my/icon");
-        Holder idHolder = new Holder<>(ob.getId());
+        Holder<String> idHolder = new Holder<>(ob.getId());
         Holder<String> changeTokenHolder = getChangeTokenHolder(ob);
         objService.updateProperties(repositoryId, idHolder, changeTokenHolder, props, null);
 

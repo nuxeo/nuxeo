@@ -64,6 +64,7 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
 
     protected int priority;
 
+    @SuppressWarnings("rawtypes")
     protected Class<? extends AsyncService> asyncService;
 
     public InvokableMethod(OperationType op, Method method, OperationMethod anno) {
@@ -244,6 +245,7 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         return consume;
     }
 
+    @SuppressWarnings("rawtypes")
     public Class<? extends AsyncService> getAsyncService() {
         return asyncService;
     }

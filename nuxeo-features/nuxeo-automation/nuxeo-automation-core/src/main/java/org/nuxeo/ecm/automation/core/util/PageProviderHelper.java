@@ -238,16 +238,16 @@ public class PageProviderHelper {
         return searchDocumentModel;
     }
 
-    public static String buildQueryString(PageProvider provider) {
+    public static String buildQueryString(PageProvider<?> provider) {
         return buildQueryStringWithPageProvider(provider, false);
     }
 
-    public static String buildQueryStringWithAggregates(PageProvider provider) {
+    public static String buildQueryStringWithAggregates(PageProvider<?> provider) {
         return buildQueryStringWithPageProvider(provider, provider.hasAggregateSupport());
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected static String buildQueryStringWithPageProvider(PageProvider provider, boolean useAggregates) {
+    @SuppressWarnings("unchecked")
+    protected static String buildQueryStringWithPageProvider(PageProvider<?> provider, boolean useAggregates) {
         String quickFiltersClause = "";
         List<QuickFilter> quickFilters = provider.getQuickFilters();
         if (quickFilters != null) {

@@ -44,7 +44,7 @@ public class XAnnotatedList extends XAnnotatedMember {
     protected static final AttributeValueVisitor attributeVisitor = new AttributeValueVisitor();
 
     // indicates the type of the collection components
-    protected Class componentType;
+    protected Class<?> componentType;
 
     protected boolean isNullByDefault;
 
@@ -93,7 +93,7 @@ public class XAnnotatedList extends XAnnotatedMember {
                 }
             } else {
                 try {
-                    Collection col = (Collection) type.getDeclaredConstructor().newInstance();
+                    Collection<Object> col = (Collection<Object>) type.getDeclaredConstructor().newInstance();
                     col.addAll(values);
                     return col;
                 } catch (ReflectiveOperationException e) {
@@ -113,9 +113,9 @@ public class XAnnotatedList extends XAnnotatedMember {
             if (v instanceof Object[]) {
                 objects = (Object[]) v;
             } else if (v instanceof List) {
-                objects = ((List) v).toArray();
+                objects = ((List<?>) v).toArray();
             } else if (v instanceof Collection) {
-                objects = ((Collection) v).toArray();
+                objects = ((Collection<?>) v).toArray();
             } else {
                 objects = PrimitiveArrays.toObjectArray(v);
             }

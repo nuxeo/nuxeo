@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
-public class UIComment implements Comparable, Serializable {
+public class UIComment implements Comparable<Object>, Serializable {
 
     private static final long serialVersionUID = 2457051749449691092L;
 
@@ -76,8 +76,8 @@ public class UIComment implements Comparable, Serializable {
         return children.remove(child);
     }
 
-    public DataModel getDataModel() {
-        return new ListDataModel(children);
+    public DataModel<UIComment> getDataModel() {
+        return new ListDataModel<>(children);
     }
 
     // TODO : override equals and hashCode

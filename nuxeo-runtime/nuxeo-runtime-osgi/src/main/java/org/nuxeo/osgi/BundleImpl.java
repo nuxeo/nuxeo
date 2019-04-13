@@ -444,6 +444,7 @@ public class BundleImpl implements Bundle {
         return symbolicName;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Map getSignerCertificates(int signersType) {
         throw new UnsupportedOperationException("not yet implemented");

@@ -71,7 +71,7 @@ public class RedisSentinelDescriptor extends RedisPoolDescriptor {
         for (RedisHostDescriptor host : hosts) {
             sentinels.add(host.name + ":" + host.port);
         }
-        GenericObjectPoolConfig cfg = new JedisPoolConfig();
+        GenericObjectPoolConfig<?> cfg = new JedisPoolConfig();
         Pool<Jedis> sentinel = new JedisSentinelPool(master, sentinels, cfg, timeout, password, database);
         RedisExecutor base = new RedisPoolExecutor(sentinel);
         return new RedisFailoverExecutor(failoverTimeout, base);

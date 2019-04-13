@@ -56,7 +56,7 @@ public class ProxyTicketReceptor extends HttpServlet {
     // *********************************************************************
     // Private state
 
-    private static Map pgt;
+    private static Map<String, String> pgt;
 
     private static String casProxyUrl;
 
@@ -68,7 +68,7 @@ public class ProxyTicketReceptor extends HttpServlet {
         super.init(config);
         synchronized (ProxyTicketReceptor.class) {
             if (pgt == null)
-                pgt = new HashMap();
+                pgt = new HashMap<>();
 
             // retrieve the URL for CAS
             if (casProxyUrl == null) {
@@ -120,7 +120,7 @@ public class ProxyTicketReceptor extends HttpServlet {
         // retrieve PGT
         String pgtId = null;
         synchronized (pgt) {
-            pgtId = (String) pgt.get(pgtIou);
+            pgtId = pgt.get(pgtIou);
         }
         if (pgtId == null)
             return null;

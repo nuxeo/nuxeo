@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 public class TypeInfoAdapterFactory implements DocumentAdapterFactory {
 
     @Override
-    public Object getAdapter(DocumentModel doc, Class itf) {
+    public Object getAdapter(DocumentModel doc, Class<?> itf) {
         return new TypeInfoAdapter(doc);
     }
 

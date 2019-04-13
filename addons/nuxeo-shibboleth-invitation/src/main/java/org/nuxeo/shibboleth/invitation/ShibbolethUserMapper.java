@@ -87,10 +87,12 @@ public class ShibbolethUserMapper implements UserMapper {
         String companyKey = MoreObjects.firstNonNull(metadata.get("company"), "company");
         String passwordKey = MoreObjects.firstNonNull(metadata.get("password"), "password");
 
-        String email = (String) ((Map) userObject).get(emailKey);
-        ShibbolethUserInfo userInfo = new ShibbolethUserInfo((String) ((Map) userObject).get(usernameKey),
-                (String) ((Map) userObject).get(passwordKey), (String) ((Map) userObject).get(firstNameKey),
-                (String) ((Map) userObject).get(lastNameKey), (String) ((Map) userObject).get(companyKey), email);
+        @SuppressWarnings("unchecked")
+        Map<String, String> userObjectMap = (Map<String, String>) userObject;
+        String email = userObjectMap.get(emailKey);
+        ShibbolethUserInfo userInfo = new ShibbolethUserInfo(userObjectMap.get(usernameKey),
+                userObjectMap.get(passwordKey), userObjectMap.get(firstNameKey), userObjectMap.get(lastNameKey),
+                userObjectMap.get(companyKey), email);
 
         // Check if email has been provided and if invitation has been assigned to a user with email as username
         DocumentModel userDoc = null;

@@ -544,7 +544,7 @@ public class ChainSelect extends UIInput implements ResettableComponent {
                         rows[i] = String.valueOf(values[i]);
                     }
                 } else if (value instanceof List) {
-                    List valueList = (List) value;
+                    List<?> valueList = (List<?>) value;
                     rows = new String[valueList.size()];
                     for (int i = 0; i < rows.length; i++) {
                         rows[i] = String.valueOf(valueList.get(i));

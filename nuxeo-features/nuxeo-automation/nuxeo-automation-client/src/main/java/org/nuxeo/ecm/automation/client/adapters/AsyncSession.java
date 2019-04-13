@@ -99,7 +99,7 @@ public class AsyncSession implements Session {
                 throws RemoteException, IOException {
             this.status = status;
             this.headers = headers;
-            List redirects = (List) ctx.getAttribute(HttpClientContext.REDIRECT_LOCATIONS);
+            List<?> redirects = (List<?>) ctx.getAttribute(HttpClientContext.REDIRECT_LOCATIONS);
             this.redirected = CollectionUtils.isNotEmpty(redirects);
             try {
                 this.result = super.handleResult(status, headers, stream, ctx);
@@ -176,7 +176,7 @@ public class AsyncSession implements Session {
             CompletableFuture<Object> resultFuture = new CompletableFuture<>();
             long deadline = System.nanoTime() + duration.toNanos();
             CompletableRequest req = new CompletableRequest(Request.GET, location);
-            Future pollFuture = executor.submit(() -> {
+            Future<?> pollFuture = executor.submit(() -> {
                 do {
                     req.call().thenAccept(res -> {
                         if (req.isRedirected()) {

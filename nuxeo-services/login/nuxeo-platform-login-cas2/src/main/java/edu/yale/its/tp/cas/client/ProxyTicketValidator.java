@@ -49,7 +49,7 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
     // *********************************************************************
     // Additive state
 
-    protected List proxyList;
+    protected List<String> proxyList;
 
     // *********************************************************************
     // Accessors
@@ -57,7 +57,7 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
     /**
      * Retrieves a list of proxies involved in the current authentication.
      */
-    public List getProxyList() {
+    public List<String> getProxyList() {
         return proxyList;
     }
 
@@ -81,7 +81,7 @@ public class ProxyTicketValidator extends ServiceTicketValidator {
         // **********************************************
         // Parsing state
 
-        protected List proxyList = new ArrayList();
+        protected List<String> proxyList = new ArrayList<>();
 
         protected boolean proxyFragment = false;
 

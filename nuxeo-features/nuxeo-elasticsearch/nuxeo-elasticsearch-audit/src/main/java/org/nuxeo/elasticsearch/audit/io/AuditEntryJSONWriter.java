@@ -137,6 +137,7 @@ public class AuditEntryJSONWriter {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     static class MapEntrySerializer extends JsonSerializer<Map> {
 
         @Override

@@ -775,7 +775,7 @@ public class TestPropertyModel {
 
         HashMap<String, Serializable> map = book.getMap();
         // remove name so that it will be a phantom
-        ((Map) ((Map) map.get("book:file")).get("fileName")).remove("name");
+        ((Map<String, ?>) ((Map<String, ?>) map.get("book:file")).get("fileName")).remove("name");
 
         // remove null values - since they are related to phantom props
         clearMap(map);

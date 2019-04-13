@@ -60,7 +60,7 @@ public class XAnnotatedMap extends XAnnotatedList {
     protected Object getValue(Context ctx, Element base) {
         Map<String, Object> values;
         try {
-            values = (Map) type.getDeclaredConstructor().newInstance();
+            values = (Map<String, Object>) type.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new IllegalArgumentException(e);
         }

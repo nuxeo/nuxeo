@@ -43,7 +43,7 @@ public class RequestFilterService extends DefaultComponent {
 
     protected static final String FILTER_EXT_POINT = "filters";
 
-    protected Map<String, Class> requestFilters;
+    protected Map<String, Class<? extends SearchRequestFilter>> requestFilters;
 
     @Override
     public void activate(ComponentContext context) {
@@ -56,17 +56,17 @@ public class RequestFilterService extends DefaultComponent {
         requestFilters = null;
     }
 
-    public Map<String, Class> getRequestFilters() {
+    public Map<String, Class<? extends SearchRequestFilter>> getRequestFilters() {
         return requestFilters;
 
     }
 
     public SearchRequestFilter getRequestFilters(String indices) throws ReflectiveOperationException {
-        Class<?> clazz = requestFilters.get(indices);
+        Class<? extends SearchRequestFilter> clazz = requestFilters.get(indices);
         if (clazz == null) {
             return null;
         }
-        return (SearchRequestFilter) clazz.getDeclaredConstructor().newInstance();
+        return clazz.getDeclaredConstructor().newInstance();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class RequestFilterService extends DefaultComponent {
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (FILTER_EXT_POINT.equals(extensionPoint)) {
             RequestFilterDescriptor des = (RequestFilterDescriptor) contribution;
-            Class filter = requestFilters.remove(des.getIndex());
+            Class<? extends SearchRequestFilter> filter = requestFilters.remove(des.getIndex());
             if (filter != null) {
                 log.info("Unregistered filter: " + filter + " for index " + des.getIndex());
             }

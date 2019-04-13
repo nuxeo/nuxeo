@@ -37,9 +37,8 @@ import freemarker.template.TemplateModel;
 public class BlockDirective implements TemplateDirectiveModel {
 
     @Override
-    @SuppressWarnings("rawtypes")
-    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
-            throws TemplateException, IOException {
+    public void execute(Environment env, @SuppressWarnings("rawtypes") Map params, TemplateModel[] loopVars,
+            TemplateDirectiveBody body) throws TemplateException, IOException {
 
         String name = null;
         SimpleScalar scalar = (SimpleScalar) params.get("name");

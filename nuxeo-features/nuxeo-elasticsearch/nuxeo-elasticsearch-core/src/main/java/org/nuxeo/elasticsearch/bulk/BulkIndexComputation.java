@@ -125,7 +125,7 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
         DataBucket in = codec.decode(record.getData());
         if (in.getCount() > 0) {
             BulkRequest bulkRequest = decodeRequest(in);
-            for (DocWriteRequest request : bulkRequest.requests()) {
+            for (DocWriteRequest<?> request : bulkRequest.requests()) {
                 bulkProcessor.add(request);
             }
             BulkStatus delta = BulkStatus.deltaOf(in.getCommandId());

@@ -64,7 +64,7 @@ public class NXRadioRenderer extends RadioRenderer {
             }
         }
 
-        Class type = String.class;
+        Class<?> type = String.class;
         if (curValue != null) {
             type = curValue.getClass();
             if (type.isArray()) {
@@ -73,7 +73,7 @@ public class NXRadioRenderer extends RadioRenderer {
                     type = curValue.getClass();
                 }
             } else if (Collection.class.isAssignableFrom(type)) {
-                Iterator valueIter = ((Collection) curValue).iterator();
+                Iterator<?> valueIter = ((Collection<?>) curValue).iterator();
                 if (null != valueIter && valueIter.hasNext()) {
                     curValue = valueIter.next();
                     if (null != curValue) {

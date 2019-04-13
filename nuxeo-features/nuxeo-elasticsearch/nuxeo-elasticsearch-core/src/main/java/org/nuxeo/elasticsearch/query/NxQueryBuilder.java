@@ -109,7 +109,7 @@ public class NxQueryBuilder {
         fetchFromElasticsearch = Boolean.parseBoolean(Framework.getProperty(FETCH_DOC_FROM_ES_PROPERTY, "false"));
     }
 
-    public static String getAggregateFilterId(Aggregate agg) {
+    public static String getAggregateFilterId(Aggregate<?> agg) {
         return agg.getId() + AGG_FILTER_SUFFIX;
     }
 
@@ -287,8 +287,8 @@ public class NxQueryBuilder {
         return lowerNxql.startsWith("select") && !lowerNxql.startsWith("select * from");
     }
 
-    public SortBuilder[] getSortBuilders() {
-        SortBuilder[] ret;
+    public SortBuilder<?>[] getSortBuilders() {
+        SortBuilder<?>[] ret;
         if (sortInfos.isEmpty()) {
             return new SortBuilder[0];
         }
@@ -329,7 +329,7 @@ public class NxQueryBuilder {
 
     protected QueryBuilder getAggregateFilter() {
         BoolQueryBuilder ret = QueryBuilders.boolQuery();
-        for (AggregateEsBase agg : aggregates) {
+        for (AggregateEsBase<?, ?> agg : aggregates) {
             QueryBuilder filter = agg.getEsFilter();
             if (filter != null) {
                 ret.must(filter);
@@ -343,7 +343,7 @@ public class NxQueryBuilder {
 
     protected QueryBuilder getAggregateFilterExceptFor(String id) {
         BoolQueryBuilder ret = QueryBuilders.boolQuery();
-        for (AggregateEsBase agg : aggregates) {
+        for (AggregateEsBase<?, ?> agg : aggregates) {
             if (!agg.getId().equals(id)) {
                 QueryBuilder filter = agg.getEsFilter();
                 if (filter != null) {
@@ -363,7 +363,7 @@ public class NxQueryBuilder {
 
     public List<FilterAggregationBuilder> getEsAggregates() {
         List<FilterAggregationBuilder> ret = new ArrayList<>(aggregates.size());
-        for (AggregateEsBase agg : aggregates) {
+        for (AggregateEsBase<?, ?> agg : aggregates) {
             FilterAggregationBuilder fagg = null;
             fagg = new FilterAggregationBuilder(getAggregateFilterId(agg), getAggregateFilterExceptFor(agg.getId()));
             fagg.subAggregation(agg.getEsAggregate());
@@ -378,11 +378,11 @@ public class NxQueryBuilder {
         // Build query with security checks
         request.query(makeQuery());
         // Add sort
-        for (SortBuilder sortBuilder : getSortBuilders()) {
+        for (SortBuilder<?> sortBuilder : getSortBuilders()) {
             request.sort(sortBuilder);
         }
         // Add Aggregate
-        for (AbstractAggregationBuilder aggregate : getEsAggregates()) {
+        for (AbstractAggregationBuilder<?> aggregate : getEsAggregates()) {
             request.aggregation(aggregate);
         }
         // Add Aggregate post filter

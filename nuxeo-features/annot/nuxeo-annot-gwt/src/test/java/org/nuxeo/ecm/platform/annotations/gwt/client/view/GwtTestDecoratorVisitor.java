@@ -46,7 +46,7 @@ public class GwtTestDecoratorVisitor extends AbstractDocumentGWTTest {
         visitor.process(bNode);
         assertNotNull(bNode);
 
-        NodeList list = bNode.getChildNodes();
+        NodeList<?> list = bNode.getChildNodes();
         SpanElement span = SpanElement.as(bNode.getParentElement());
         assertEquals(3, list.getLength());
         assertEquals(span.getInnerHTML(),
@@ -71,7 +71,7 @@ public class GwtTestDecoratorVisitor extends AbstractDocumentGWTTest {
         visitor.process(bNode);
         assertNotNull(bNode);
 
-        NodeList list = bNode.getChildNodes();
+        NodeList<?> list = bNode.getChildNodes();
         SpanElement span = SpanElement.as(bNode.getParentElement());
         assertEquals(3, list.getLength());
         assertEquals(span.getInnerHTML(),
@@ -94,7 +94,7 @@ public class GwtTestDecoratorVisitor extends AbstractDocumentGWTTest {
         AnnoteaDecoratorVisitor processor = new AnnoteaDecoratorVisitor(bNode, 48, 13, getDefaultAnnotation(), null);
         Visitor visitor = new Visitor(processor);
         visitor.process(bNode.getOwnerDocument());
-        NodeList list = bNode.getChildNodes();
+        NodeList<?> list = bNode.getChildNodes();
         assertEquals(2, list.getLength());
 
         DivElement div = DivElement.as(RootPanel.getBodyElement().getElementsByTagName("div").getItem(0));

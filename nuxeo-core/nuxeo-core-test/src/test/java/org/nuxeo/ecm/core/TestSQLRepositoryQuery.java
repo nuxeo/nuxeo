@@ -3583,7 +3583,7 @@ public class TestSQLRepositoryQuery {
     @LogCaptureFeature.FilterOn(logLevel = "WARN")
     public void testScrollApiEmtpy() throws Exception {
         // do a scroll that return nothing
-        ScrollResult ret = session.scroll("SELECT * FROM File", 10, 1);
+        ScrollResult<String> ret = session.scroll("SELECT * FROM File", 10, 1);
         assertFalse(ret.hasResults());
         // wait for the scroll timeout
         Thread.sleep(1100);
@@ -3633,7 +3633,7 @@ public class TestSQLRepositoryQuery {
     public void testScrollBadUsageInvalidScrollId() {
         exception.expect(NuxeoException.class);
         exception.expectMessage("Unknown or timed out scrollId");
-        ScrollResult ret = session.scroll("foo");
+        ScrollResult<String> ret = session.scroll("foo");
         assertFalse(ret.hasResults());
     }
 
@@ -3661,7 +3661,7 @@ public class TestSQLRepositoryQuery {
             assertEquals("Timed out scrollId", e.getMessage());
         }
         // This new call will clean leaked scroll
-        ScrollResult ret4 = session.scroll("SELECT * FROM Document", 1, 1);
+        ScrollResult<String> ret4 = session.scroll("SELECT * FROM Document", 1, 1);
         assertTrue(ret4.hasResults());
 
         // ret2 is now unknown because it has been cleaned

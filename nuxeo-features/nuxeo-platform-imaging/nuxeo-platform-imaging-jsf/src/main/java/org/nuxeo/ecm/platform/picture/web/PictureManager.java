@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.picture.web;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -112,7 +113,7 @@ public interface PictureManager {
      *
      * @param selectItems an Array holding the selectItems.
      */
-    void setSelectItems(ArrayList selectItems);
+    void setSelectItems(ArrayList<Map<String, Object>> selectItems);
 
     /**
      * Gets the selectedItems. This array contains an index and the title of each picture's view. It's used to
@@ -120,7 +121,7 @@ public interface PictureManager {
      *
      * @return an Array holding the selectItems.
      */
-    ArrayList getSelectItems();
+    ArrayList<Map<String, Object>> getSelectItems();
 
     String getCropCoords();
 

@@ -31,7 +31,7 @@ public interface XAccessor {
      *
      * @return the setter object type
      */
-    Class getType();
+    Class<?> getType();
 
     /**
      * Sets the value of the underlying member.

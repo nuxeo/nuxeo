@@ -304,7 +304,7 @@ public class TestSQLRepositoryProperties {
     public void testComplexList() {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:complexList") instanceof List);
-        assertEquals(0, ((List) doc.getPropertyValue("tp:complexList")).size());
+        assertEquals(0, ((List<?>) doc.getPropertyValue("tp:complexList")).size());
         ArrayList<Map<String, Serializable>> values = new ArrayList<>();
         Map<String, Serializable> item = new HashMap<>();
         item.put("string", "foo");
@@ -318,8 +318,8 @@ public class TestSQLRepositoryProperties {
 
         Serializable actual = doc.getPropertyValue("tp:complexList");
         assertTrue(actual instanceof List);
-        assertEquals(1, ((List) actual).size());
-        assertEquals(item, ((List) actual).get(0));
+        assertEquals(1, ((List<?>) actual).size());
+        assertEquals(item, ((List<?>) actual).get(0));
     }
 
     @Test
@@ -536,7 +536,8 @@ public class TestSQLRepositoryProperties {
         field = schemaManager.getField("tp:fileComplexList");
         type = field.getType();
         itemType = ((ListType) type).getFieldType();
-        Map<String, Serializable> map = (Map) itemType.newInstance();
+        @SuppressWarnings("unchecked")
+        Map<String, Serializable> map = (Map<String, Serializable>) itemType.newInstance();
         assertEquals(2, map.size());
         assertTrue(map.containsKey("filename"));
         assertTrue(map.containsKey("blob"));
@@ -549,7 +550,7 @@ public class TestSQLRepositoryProperties {
     public void testBlobListValue() {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:fileList") instanceof List);
-        assertEquals(0, ((List) doc.getPropertyValue("tp:fileList")).size());
+        assertEquals(0, ((List<?>) doc.getPropertyValue("tp:fileList")).size());
         ArrayList<Blob> values = new ArrayList<>();
         Blob blob = Blobs.createBlob("My content");
         values.add(blob);
@@ -559,7 +560,8 @@ public class TestSQLRepositoryProperties {
         Serializable actual = doc.getPropertyValue("tp:fileList");
         assertTrue(actual instanceof List);
 
-        List<Blob> blobs = (List) actual;
+        @SuppressWarnings("unchecked")
+        List<Blob> blobs = (List<Blob>) actual;
         assertEquals(1, blobs.size());
         assertNotNull(blobs.get(0));
     }
@@ -569,7 +571,7 @@ public class TestSQLRepositoryProperties {
     public void testSubBlobValue() {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:fileComplexList") instanceof List);
-        assertEquals(0, ((List) doc.getPropertyValue("tp:fileComplexList")).size());
+        assertEquals(0, ((List<?>) doc.getPropertyValue("tp:fileComplexList")).size());
         ArrayList<Map<String, Serializable>> values = new ArrayList<>();
         Map<String, Serializable> item = new HashMap<>();
         Blob blob = Blobs.createBlob("My content");
@@ -581,7 +583,8 @@ public class TestSQLRepositoryProperties {
 
         Object actual = doc.getPropertyValue("tp:fileComplexList");
         assertTrue(actual instanceof List);
-        List<Map<String, Serializable>> items = (List) actual;
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> items = (List<Map<String, Serializable>>) actual;
         assertEquals(1, items.size());
         assertNotNull(items.get(0));
         Map<String, Serializable> actualItem = items.get(0);
@@ -678,7 +681,7 @@ public class TestSQLRepositoryProperties {
     public void testComplexPropertyChain() {
         Property p = doc.getProperty("tp:complexChain");
         assertTrue(p.getValue() instanceof Map);
-        assertEquals(2, ((Map) p.getValue()).size());
+        assertEquals(2, ((Map<?, ?>) p.getValue()).size());
         p.setValue("string", "test");
         Map<String, Serializable> map = new HashMap<>();
         map.put("string", "test2");
@@ -811,10 +814,10 @@ public class TestSQLRepositoryProperties {
         // not null on list
         String propName = "tp:externalFileList";
         assertTrue(doc.getPropertyValue(propName) instanceof List);
-        assertEquals(0, ((List) doc.getPropertyValue(propName)).size());
+        assertEquals(0, ((List<?>) doc.getPropertyValue(propName)).size());
 
         File file = createTempFile();
-        ArrayList<Map> values = new ArrayList<>();
+        ArrayList<Map<String, String>> values = new ArrayList<>();
         Map<String, String> map = new HashMap<>();
         String uri = String.format("fs:%s", file.getName());
         map.put(ExternalBlobProperty.URI, uri);
@@ -826,7 +829,8 @@ public class TestSQLRepositoryProperties {
 
         Serializable actual = doc.getPropertyValue(propName);
         assertTrue(actual instanceof List);
-        List<Blob> blobs = (List) actual;
+        @SuppressWarnings("unchecked")
+        List<Blob> blobs = (List<Blob>) actual;
         assertEquals(1, blobs.size());
         assertNotNull(blobs.get(0));
         assertTrue(blobs.get(0) instanceof Blob);
@@ -846,7 +850,7 @@ public class TestSQLRepositoryProperties {
         String propName = "tp:externalFileComplexList";
         // not null on list
         assertTrue(doc.getPropertyValue(propName) instanceof List);
-        assertEquals(0, ((List) doc.getPropertyValue(propName)).size());
+        assertEquals(0, ((List<?>) doc.getPropertyValue(propName)).size());
         ArrayList<Map<String, Serializable>> values = new ArrayList<>();
         Map<String, Serializable> item = new HashMap<>();
 
@@ -864,7 +868,8 @@ public class TestSQLRepositoryProperties {
 
         Object actual = doc.getPropertyValue(propName);
         assertTrue(actual instanceof List);
-        List<Map<String, Serializable>> items = (List) actual;
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> items = (List<Map<String, Serializable>>) actual;
         assertEquals(1, items.size());
         assertNotNull(items.get(0));
         Map<String, Serializable> actualItem = items.get(0);

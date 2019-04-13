@@ -200,15 +200,15 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
 
     protected void displayRequestInformation(HttpServletRequest request) {
         log.debug(">>>>>>>>>>>>> Here is the request: ");
-        for (Enumeration headerNames = request.getHeaderNames(); headerNames.hasMoreElements();) {
+        for (Enumeration<String> headerNames = request.getHeaderNames(); headerNames.hasMoreElements();) {
             String headerName = (String) headerNames.nextElement();
             log.debug("header " + headerName + " : [" + request.getHeader(headerName) + "]");
         }
-        for (Enumeration attributeNames = request.getAttributeNames(); attributeNames.hasMoreElements();) {
+        for (Enumeration<String> attributeNames = request.getAttributeNames(); attributeNames.hasMoreElements();) {
             String attributeName = (String) attributeNames.nextElement();
             log.debug("attribute " + attributeName + " : [" + request.getAttribute(attributeName) + "]");
         }
-        for (Enumeration parameterNames = request.getParameterNames(); parameterNames.hasMoreElements();) {
+        for (Enumeration<String> parameterNames = request.getParameterNames(); parameterNames.hasMoreElements();) {
             String parameterName = (String) parameterNames.nextElement();
             log.debug("parameter " + parameterName + " : [" + request.getParameter(parameterName) + "]");
         }

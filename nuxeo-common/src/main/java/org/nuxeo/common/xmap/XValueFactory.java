@@ -57,15 +57,15 @@ public abstract class XValueFactory {
         return at != null ? deserialize(context, at.getNodeValue()) : null;
     }
 
-    public static void addFactory(Class klass, XValueFactory factory) {
+    public static void addFactory(Class<?> klass, XValueFactory factory) {
         defaultFactories.put(klass, factory);
     }
 
-    public static XValueFactory getFactory(Class type) {
+    public static XValueFactory getFactory(Class<?> type) {
         return defaultFactories.get(type);
     }
 
-    public static Object getValue(Context context, Class klass, String value) {
+    public static Object getValue(Context context, Class<?> klass, String value) {
         XValueFactory factory = defaultFactories.get(klass);
         if (factory == null) {
             return null;

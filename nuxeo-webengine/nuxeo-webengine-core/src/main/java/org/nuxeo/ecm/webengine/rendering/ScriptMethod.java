@@ -44,7 +44,7 @@ import freemarker.template.TemplateModelIterator;
 public class ScriptMethod implements TemplateMethodModelEx {
 
     @Override
-    public Object exec(List arguments) throws TemplateModelException {
+    public Object exec(@SuppressWarnings("rawtypes") List arguments) throws TemplateModelException {
         int size = arguments.size();
         if (size < 1) {
             throw new TemplateModelException("Invalid number of arguments for script(...) method");

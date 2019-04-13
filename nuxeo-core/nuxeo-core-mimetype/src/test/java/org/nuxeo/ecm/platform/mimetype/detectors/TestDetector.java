@@ -65,7 +65,7 @@ public class TestDetector {
 
         // by byte[]
         byte[] data = FileUtils.readFileToByteArray(xlsFile);
-        String[] returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd', "dummy", new HashMap());
+        String[] returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd', "dummy", new HashMap<>());
         assertTrue(returnedByteMimetype.length > 0);
     }
 
@@ -114,7 +114,7 @@ public class TestDetector {
         // by byte[]
         File xmlFile = getFileFromTestResource("test-data/TestWord2003AsXML.xml.txt");
         byte[] data = FileUtils.readFileToByteArray(xmlFile);
-        String[] returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd', "dummy", new HashMap());
+        String[] returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd', "dummy", new HashMap<>());
         assertEquals("application/msword", returnedByteMimetype[0]);
     }
 
@@ -200,7 +200,7 @@ public class TestDetector {
         // FIXME: no need for these variables
         int dummyInt = 0;
         long dummyLong = 0;
-        Map dummyMap = new HashMap();
+        Map<?, ?> dummyMap = new HashMap<>();
         String dummyString = "dummy";
         char dummyChar = dummyString.charAt(0);
 
@@ -243,7 +243,7 @@ public class TestDetector {
         // FIXME: no need for these variables
         int dummyInt = 0;
         long dummyLong = 0;
-        Map dummyMap = new HashMap();
+        Map<?, ?> dummyMap = new HashMap<>();
         String dummyString = "dummy";
         char dummyChar = dummyString.charAt(0);
 

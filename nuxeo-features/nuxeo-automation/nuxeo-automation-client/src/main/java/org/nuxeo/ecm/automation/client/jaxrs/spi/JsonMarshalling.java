@@ -368,7 +368,7 @@ public class JsonMarshalling {
                 jg.writeString(obj.toString());
             } else if (obj instanceof Iterable) {
                 jg.writeStartArray();
-                for (Object object : (Iterable) obj) {
+                for (Object object : (Iterable<?>) obj) {
                     write(jg, object);
                 }
                 jg.writeEndArray();

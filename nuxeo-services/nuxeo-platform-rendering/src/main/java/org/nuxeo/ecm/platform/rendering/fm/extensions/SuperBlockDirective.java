@@ -37,9 +37,8 @@ import freemarker.template.TemplateModelException;
 public class SuperBlockDirective implements TemplateDirectiveModel {
 
     @Override
-    @SuppressWarnings("rawtypes")
-    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
-            throws TemplateException, IOException {
+    public void execute(Environment env, @SuppressWarnings("rawtypes") Map params, TemplateModel[] loopVars,
+            TemplateDirectiveBody body) throws TemplateException, IOException {
 
         if (body != null) {
             throw new TemplateModelException("Didn't expect a body");

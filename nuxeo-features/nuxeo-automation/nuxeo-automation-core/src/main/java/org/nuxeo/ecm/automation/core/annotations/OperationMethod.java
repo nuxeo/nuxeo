@@ -79,5 +79,6 @@ public @interface OperationMethod {
 
     boolean async() default false;
 
+    @SuppressWarnings("rawtypes")
     Class<? extends AsyncService> asyncService() default AsyncService.class;
 }

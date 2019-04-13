@@ -94,7 +94,7 @@ public class ExcelBuilder implements IExcelBuilder {
 
     protected CreationHelper create;
 
-    protected Drawing drawing;
+    protected Drawing<?> drawing;
 
     protected Font boldFont;
 

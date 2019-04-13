@@ -328,7 +328,8 @@ public class PictureBookManagerBean extends InputController implements PictureBo
 
     protected void initSelectItems() {
         DocumentModel doc = getCurrentDocument();
-        List<Map<String, Object>> views = (List) doc.getProperty("picturebook", "picturetemplates");
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> views = (List<Map<String, Object>>) doc.getProperty("picturebook", "picturetemplates");
         selectItems = new ArrayList<>(views.size());
         String label;
         SelectItem selectItem;

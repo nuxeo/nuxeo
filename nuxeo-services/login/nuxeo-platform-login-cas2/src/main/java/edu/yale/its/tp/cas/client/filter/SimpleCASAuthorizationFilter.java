@@ -74,7 +74,7 @@ public class SimpleCASAuthorizationFilter implements Filter {
 
     private String authorizedUsersString;
 
-    private List authorizedUsers;
+    private List<String> authorizedUsers;
 
     // *********************************************************************
     // Initialization
@@ -83,9 +83,9 @@ public class SimpleCASAuthorizationFilter implements Filter {
     public void init(FilterConfig config) throws ServletException {
         this.authorizedUsersString = config.getInitParameter(AUTHORIZED_USER_STRING);
         StringTokenizer tokenizer = new StringTokenizer(authorizedUsersString);
-        this.authorizedUsers = new ArrayList();
+        this.authorizedUsers = new ArrayList<>();
         while (tokenizer.hasMoreTokens()) {
-            this.authorizedUsers.add(tokenizer.nextElement());
+            this.authorizedUsers.add((String) tokenizer.nextElement());
         }
     }
 

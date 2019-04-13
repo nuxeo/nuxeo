@@ -99,7 +99,7 @@ public class PDFPageNumbering {
         inFontSize = inFontSize <= 0 ? DEFAULT_FONT_SIZE : inFontSize;
         int[] rgb = PDFUtils.hex255ToRGB(inHex255Color);
         try (PDDocument doc = PDFUtils.load(blob, password)) {
-            List allPages;
+            List<?> allPages;
             PDFont font;
             int max;
             if (StringUtils.isBlank(inFontName)) {

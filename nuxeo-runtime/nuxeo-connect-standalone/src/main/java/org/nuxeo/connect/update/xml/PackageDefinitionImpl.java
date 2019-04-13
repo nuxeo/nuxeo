@@ -252,7 +252,7 @@ public class PackageDefinitionImpl implements PackageDefinition {
     @XNodeList(value = "platforms/platform", type = String[].class, componentType = String.class)
     @Override
     public void setTargetPlatforms(String[] platforms) {
-        MutableObject packageDependencies = new MutableObject();
+        MutableObject<?> packageDependencies = new MutableObject<>();
         this.platforms = PackageDescriptor.fixTargetPlatforms(name, platforms, packageDependencies);
         setDependencies((PackageDependency[]) packageDependencies.getValue());
     }

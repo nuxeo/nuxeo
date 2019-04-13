@@ -80,7 +80,7 @@ public class OOoMimetypeSniffer implements MagicDetector {
 
     @Override
     public String[] process(byte[] data, int offset, int length, long bitmask, char comparator, String mimeType,
-            Map params) {
+            @SuppressWarnings("rawtypes") Map params) {
         String[] mimetypes = {};
         File file = null;
         try {
@@ -99,7 +99,7 @@ public class OOoMimetypeSniffer implements MagicDetector {
 
     @Override
     public String[] process(File file, int offset, int length, long bitmask, char comparator, String mimeType,
-            Map params) {
+            @SuppressWarnings("rawtypes") Map params) {
         return guessOOo(file);
     }
 

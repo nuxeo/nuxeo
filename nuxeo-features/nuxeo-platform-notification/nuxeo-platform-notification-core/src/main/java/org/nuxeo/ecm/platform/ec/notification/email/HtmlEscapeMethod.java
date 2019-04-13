@@ -34,7 +34,7 @@ import freemarker.template.TemplateModelException;
 public class HtmlEscapeMethod implements TemplateMethodModel {
 
     @Override
-    public Object exec(List arg0) throws TemplateModelException {
+    public Object exec(@SuppressWarnings("rawtypes") List arg0) throws TemplateModelException {
         if (arg0.size() != 1) {
             throw new IllegalArgumentException();
         }

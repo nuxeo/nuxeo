@@ -65,7 +65,7 @@ public class XlsMimetypeSniffer implements MagicDetector {
 
     @Override
     public String[] process(byte[] data, int offset, int length, long bitmask, char comparator, String mimeType,
-            Map params) {
+            @SuppressWarnings("rawtypes") Map params) {
 
         String[] mimetypes = { "" };
         File file = null;
@@ -87,7 +87,7 @@ public class XlsMimetypeSniffer implements MagicDetector {
 
     @Override
     public String[] process(File file, int offset, int length, long bitmask, char comparator, String mimeType,
-            Map params) {
+            @SuppressWarnings("rawtypes") Map params) {
 
         return guessExcel(file);
     }

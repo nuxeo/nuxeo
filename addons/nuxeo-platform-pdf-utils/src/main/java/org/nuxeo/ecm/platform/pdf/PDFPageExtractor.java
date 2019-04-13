@@ -141,7 +141,7 @@ public class PDFPageExtractor {
         }
         try (PDDocument pdfDoc = PDFUtils.load(pdfBlob, password)) {
             // Get all PDF pages.
-            List pages = pdfDoc.getDocumentCatalog().getAllPages();
+            List<?> pages = pdfDoc.getDocumentCatalog().getAllPages();
             // Convert each page to PNG.
             for (Object pageObject : pages) {
                 PDPage page = (PDPage) pageObject;

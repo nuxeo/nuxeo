@@ -60,7 +60,7 @@ public class LocaleMessagesMethod implements TemplateMethodModelEx {
     }
 
     @Override
-    public Object exec(List arguments) throws TemplateModelException {
+    public Object exec(@SuppressWarnings("rawtypes") List arguments) throws TemplateModelException {
         int size = arguments.size();
         if (size < 2) {
             throw new TemplateModelException("Invalid number of arguments for messages(key, local [, args ..]) method");

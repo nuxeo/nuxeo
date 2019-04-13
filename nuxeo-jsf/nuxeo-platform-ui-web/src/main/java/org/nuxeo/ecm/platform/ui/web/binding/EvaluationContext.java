@@ -57,7 +57,7 @@ public final class EvaluationContext extends ELContext {
     }
 
     @Override
-    public Object getContext(Class key) {
+    public Object getContext(@SuppressWarnings("rawtypes") Class key) {
         return elContext.getContext(key);
     }
 
@@ -72,7 +72,7 @@ public final class EvaluationContext extends ELContext {
     }
 
     @Override
-    public void putContext(Class key, Object contextObject) {
+    public void putContext(@SuppressWarnings("rawtypes") Class key, Object contextObject) {
         elContext.putContext(key, contextObject);
     }
 

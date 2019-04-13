@@ -37,11 +37,12 @@ public class OperationCheckExecutionFlowChainContext {
     @Context
     CoreSession session;
 
+    @SuppressWarnings("unchecked")
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
         // Check if chain parameters injected into execution flow operation
         // exists
-        if (((Map) ctx.get(Constants.VAR_RUNTIME_CHAIN)).get("exampleKey2").equals("exampleValue2")) {
+        if (((Map<String, Object>) ctx.get(Constants.VAR_RUNTIME_CHAIN)).get("exampleKey2").equals("exampleValue2")) {
             return doc;
         }
         return null;

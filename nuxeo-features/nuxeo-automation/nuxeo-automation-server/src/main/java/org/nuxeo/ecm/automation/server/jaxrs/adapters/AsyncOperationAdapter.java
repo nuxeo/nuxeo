@@ -278,7 +278,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         TransientStore ts = getTransientStore();
         // store only taskId for async tasks
         if (isAsync(executionId)) {
-            Serializable taskId = output instanceof AsyncStatus ? ((AsyncStatus) output).getId() : output;
+            Serializable taskId = output instanceof AsyncStatus ? ((AsyncStatus<?>) output).getId() : output;
             ts.putParameter(executionId, TRANSIENT_STORE_TASK_ID, taskId);
         } else {
             if (output instanceof DocumentModel) {
@@ -302,7 +302,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         TransientStore ts = getTransientStore();
 
         if (isAsync(executionId)) {
-            AsyncService service = getAsyncService(executionId);
+            AsyncService<Serializable, ?, ?> service = getAsyncService(executionId);
             if (service != null) {
                 Serializable taskId = ts.getParameter(executionId, TRANSIENT_STORE_TASK_ID);
                 return service.getResult(taskId);
@@ -342,10 +342,12 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         return getTransientStore().getParameter(executionId, TRANSIENT_STORE_TASK_ID);
     }
 
-    protected AsyncService getAsyncService(String executionId) {
+    protected AsyncService<Serializable, ?, ?> getAsyncService(String executionId) {
         String serviceClass = (String) getTransientStore().getParameter(executionId, TRANSIENT_STORE_SERVICE);
         try {
-            return (AsyncService) Framework.getService(Class.forName(serviceClass));
+            @SuppressWarnings("unchecked")
+            AsyncService<Serializable, ?, ?> asyncService = (AsyncService<Serializable, ?, ?>) Framework.getService(Class.forName(serviceClass));
+            return asyncService;
         } catch (ClassNotFoundException e) {
             log.error("AsyncService class {} not found", serviceClass);
             return null;

@@ -78,7 +78,7 @@ public class MockExternalContext extends ExternalContext {
     }
 
     @Override
-    public Map getInitParameterMap() {
+    public Map<?, ?> getInitParameterMap() {
         return null;
     }
 

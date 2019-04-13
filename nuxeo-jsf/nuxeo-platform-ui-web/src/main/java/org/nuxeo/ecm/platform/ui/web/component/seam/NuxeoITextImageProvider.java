@@ -49,7 +49,8 @@ public class NuxeoITextImageProvider implements ImageProvider {
     }
 
     @Override
-    public Image getImage(String src, HashMap h, ChainedProperties cprops, DocListener doc) {
+    public Image getImage(String src, @SuppressWarnings("rawtypes") HashMap h, ChainedProperties cprops,
+            DocListener doc) {
         if (!src.startsWith("http")) {
             // add base url
             String base = VirtualHostHelper.getServerURL(request, false);

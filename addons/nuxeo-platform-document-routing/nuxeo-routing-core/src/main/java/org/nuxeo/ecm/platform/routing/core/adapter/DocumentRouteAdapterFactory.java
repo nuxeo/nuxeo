@@ -41,7 +41,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.StepElementRunner;
 public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
 
     @Override
-    public Object getAdapter(DocumentModel doc, @SuppressWarnings("rawtypes") Class itf) {
+    public Object getAdapter(DocumentModel doc, Class<?> itf) {
         String type = doc.getType();
         if (doc.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {
             ExecutionTypeValues executionType = getExecutionType(doc, type);
