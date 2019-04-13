@@ -68,7 +68,7 @@ public class CursorResult<C, O> implements Iterator<O>, Closeable {
         if (cursor == null) {
             return false;
         } else if (cursor instanceof Iterator) {
-            return ((Iterator) cursor).hasNext();
+            return ((Iterator<?>) cursor).hasNext();
         }
         throw new IllegalStateException(
                 "Cursor doesn't implement Iterator interface, you must provide an implementation of #hasNext and #next method");

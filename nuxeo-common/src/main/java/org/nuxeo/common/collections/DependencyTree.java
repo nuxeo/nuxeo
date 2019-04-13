@@ -347,7 +347,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
             if (!(obj instanceof Entry)) {
                 return false;
             }
-            return key.equals(((Entry) obj).key);
+            return key.equals(((Entry<?, ?>) obj).key);
         }
 
         @Override

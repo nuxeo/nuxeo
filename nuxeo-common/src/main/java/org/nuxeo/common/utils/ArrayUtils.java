@@ -80,7 +80,7 @@ public final class ArrayUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> T[] intersect(final T[]... arrays) {
-        final Class type = arrays.getClass().getComponentType().getComponentType();
+        final Class<?> type = arrays.getClass().getComponentType().getComponentType();
         if (arrays.length == 0) {
             return (T[]) Array.newInstance(type, 0);
         }

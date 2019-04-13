@@ -44,8 +44,8 @@ import freemarker.template.TemplateModelException;
 public class RenderDirective implements TemplateDirectiveModel {
 
     @Override
-    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
-            throws TemplateException, IOException {
+    public void execute(Environment env, @SuppressWarnings("rawtypes") Map params, TemplateModel[] loopVars,
+            TemplateDirectiveBody body) throws TemplateException, IOException {
         int size = params.size();
         if (size != 1) {
             throw new TemplateModelException("Invalid number of arguments for render(...) method");

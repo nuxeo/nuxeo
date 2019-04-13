@@ -98,7 +98,7 @@ public class AddItemToListPropertyTest {
 
         // Check there is no value already.
         assertNotNull(doc.getPropertyValue("ds:fields"));
-        assertEquals(((Collection) doc.getPropertyValue("ds:fields")).size(), 0);
+        assertEquals(((Collection<?>) doc.getPropertyValue("ds:fields")).size(), 0);
 
         String fieldsDataAsJson = readPropertiesFromFile("creationFields.json");
 
@@ -128,7 +128,7 @@ public class AddItemToListPropertyTest {
                     fieldsDataAsJson);
 
             DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
-            List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
+            List<?> dbFields = (List<?>) resultDoc.getPropertyValue("ds:fields");
             assertEquals(2, dbFields.size());
         }
     }

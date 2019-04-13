@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 public class BlobHolderAdapterFactory implements DocumentAdapterFactory {
 
     @Override
-    public Object getAdapter(DocumentModel doc, Class itf) {
+    public Object getAdapter(DocumentModel doc, Class<?> itf) {
         return Framework.getService(BlobHolderAdapterService.class).getBlobHolderAdapter(doc);
     }
 

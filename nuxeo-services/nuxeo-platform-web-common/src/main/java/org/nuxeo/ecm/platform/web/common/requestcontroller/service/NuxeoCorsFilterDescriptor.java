@@ -131,7 +131,7 @@ public class NuxeoCorsFilterDescriptor implements Serializable, Cloneable {
             }
 
             @Override
-            public Enumeration getInitParameterNames() {
+            public Enumeration<String> getInitParameterNames() {
                 return parameters.keys();
             }
         };

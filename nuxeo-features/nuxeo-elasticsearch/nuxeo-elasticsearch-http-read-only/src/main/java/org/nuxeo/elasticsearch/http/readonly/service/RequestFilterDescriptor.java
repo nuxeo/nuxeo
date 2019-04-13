@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.elasticsearch.http.readonly.filter.SearchRequestFilter;
 
 /**
  * @since 7.4
@@ -37,18 +38,18 @@ public class RequestFilterDescriptor {
     String index;
 
     @XNode("@filterClass")
-    private Class filterClass;
+    private Class<? extends SearchRequestFilter> filterClass;
 
     public RequestFilterDescriptor() {
     }
 
-    public RequestFilterDescriptor(String index, Class filterClass) {
+    public RequestFilterDescriptor(String index, Class<? extends SearchRequestFilter> filterClass) {
         super();
         this.index = index;
         this.filterClass = filterClass;
     }
 
-    public Class getFilterClass() {
+    public Class<? extends SearchRequestFilter> getFilterClass() {
         return filterClass;
     }
 
@@ -56,7 +57,7 @@ public class RequestFilterDescriptor {
         return index;
     }
 
-    public void setFilterClass(Class filterClass) {
+    public void setFilterClass(Class<? extends SearchRequestFilter> filterClass) {
         this.filterClass = filterClass;
     }
 

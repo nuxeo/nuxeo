@@ -36,7 +36,7 @@ public class XFieldAccessor implements XAccessor {
     }
 
     @Override
-    public Class getType() {
+    public Class<?> getType() {
         return field.getType();
     }
 

@@ -101,7 +101,7 @@ public class PDFLinks {
             stripper = new PDFTextStripperByArea();
             for (Object pageObject : pdfDoc.getDocumentCatalog().getAllPages()) {
                 PDPage page = (PDPage) pageObject;
-                List pageAnnotations = page.getAnnotations();
+                List<?> pageAnnotations = page.getAnnotations();
                 for (Object annotationObject : pageAnnotations) {
                     PDAnnotation annot = (PDAnnotation) annotationObject;
                     if (!(annot instanceof PDAnnotationLink)) {
@@ -165,7 +165,7 @@ public class PDFLinks {
         PDActionURI uri;
         PDFileSpecification fspec;
         List<LinkInfo> li = new ArrayList<>();
-        List allPages = pdfDoc.getDocumentCatalog().getAllPages();
+        List<?> allPages = pdfDoc.getDocumentCatalog().getAllPages();
         for (Object pageObject : allPages) {
             PDPage page = (PDPage) pageObject;
             stripper.extractRegions(page);

@@ -125,7 +125,7 @@ public abstract class AbstractLogManager implements LogManager {
 
     protected void checkInvalidAssignment(String group, LogPartition partition) {
         LogPartitionGroup key = new LogPartitionGroup(group, partition);
-        LogTailer ret = tailersAssignments.get(key);
+        LogTailer<?> ret = tailersAssignments.get(key);
         if (ret != null && !ret.closed()) {
             throw new IllegalArgumentException(
                     "Tailer for this partition already created: " + partition + ", group: " + group);
@@ -135,8 +135,7 @@ public abstract class AbstractLogManager implements LogManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    protected void checkInvalidCodec(LogPartition partition, Codec codec) {
+    protected <M extends Externalizable> void checkInvalidCodec(LogPartition partition, Codec<M> codec) {
         if (appenders.containsKey(partition.name())) {
             getAppender(partition.name(), codec);
         }
@@ -159,7 +158,7 @@ public abstract class AbstractLogManager implements LogManager {
                 ret.getCodec(), codec));
     }
 
-    protected boolean sameCodec(Codec codec1, Codec codec2) {
+    protected <M extends Externalizable> boolean sameCodec(Codec<M> codec1, Codec<M> codec2) {
         return codec1 == codec2
                 || !NO_CODEC.equals(codec1) && !NO_CODEC.equals(codec2) && codec1.getClass().isInstance(codec2);
     }

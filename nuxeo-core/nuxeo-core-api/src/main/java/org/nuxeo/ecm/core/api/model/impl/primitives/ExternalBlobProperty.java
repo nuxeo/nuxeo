@@ -97,7 +97,7 @@ public class ExternalBlobProperty extends MapProperty {
     public Serializable internalGetValue() throws PropertyException {
         Object mapValue = super.internalGetValue();
         if (mapValue instanceof Map) {
-            Blob blob = getBlobFromMap((Map) mapValue);
+            Blob blob = getBlobFromMap((Map<String, Object>) mapValue);
             if (blob != null && !(blob instanceof Serializable)) {
                 throw new PropertyException("Blob is not serializable: " + blob);
             }
@@ -120,7 +120,7 @@ public class ExternalBlobProperty extends MapProperty {
                 return (T) value;
             }
             if (Blob.class.isAssignableFrom(type)) {
-                return (T) getBlobFromMap((Map) value);
+                return (T) getBlobFromMap((Map<String, Object>) value);
             }
         }
         throw new PropertyConversionException(value.getClass(), type);

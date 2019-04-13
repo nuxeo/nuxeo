@@ -31,11 +31,11 @@ public class XMethodAccessor implements XAccessor {
 
     private final Method setter;
 
-    private final Class klass;
+    private final Class<?> klass;
 
     Method getter;
 
-    public XMethodAccessor(Method method, Class klass) {
+    public XMethodAccessor(Method method, Class<?> klass) {
         setter = method;
         setter.setAccessible(true);
         //
@@ -43,7 +43,7 @@ public class XMethodAccessor implements XAccessor {
     }
 
     @Override
-    public Class getType() {
+    public Class<?> getType() {
         return setter.getParameterTypes()[0];
     }
 
@@ -88,7 +88,7 @@ public class XMethodAccessor implements XAccessor {
         return null;
     }
 
-    private Method findGetter(Class klass) {
+    private Method findGetter(Class<?> klass) {
         String setterName = setter.getName();
         if (setterName.toLowerCase().startsWith("set")) {
             String suffix = setterName.substring(3);

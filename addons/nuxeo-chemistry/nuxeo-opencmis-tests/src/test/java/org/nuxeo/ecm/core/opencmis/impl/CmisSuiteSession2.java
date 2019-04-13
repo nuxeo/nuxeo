@@ -369,10 +369,10 @@ public class CmisSuiteSession2 {
         JsonNode root = mapper.readTree(content);
         String expectedContentStreamHash = new ContentStreamHashImpl(
                 ContentStreamHashImpl.ALGORITHM_MD5, contentMD5Hex).toString();
-        Iterator iter = root.path("succinctProperties").path("cmis:contentStreamHash").elements();
+        Iterator<JsonNode> iter = root.path("succinctProperties").path("cmis:contentStreamHash").elements();
         boolean found = false;
         while (iter.hasNext()) {
-            String hash = ((JsonNode) iter.next()).textValue();
+            String hash = iter.next().textValue();
             if (expectedContentStreamHash.equals(hash)) {
                 found = true;
                 break;

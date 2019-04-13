@@ -95,7 +95,7 @@ public class SubscribeAndUnsubscribeTest {
         String username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
 
         for (DocumentModel doc : listDocModel) {
-            List docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+            List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
             assertTrue(docSubscriptions.isEmpty());
         }
 
@@ -103,7 +103,7 @@ public class SubscribeAndUnsubscribeTest {
         listDocModel = (DocumentModelList) automationService.run(ctx, chain);
 
         for (DocumentModel doc : listDocModel) {
-            List docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+            List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
             assertEquals(4, docSubscriptions.size());
             assertTrue(docSubscriptions.contains("Creation"));
             assertTrue(docSubscriptions.contains("Modification"));
@@ -121,7 +121,7 @@ public class SubscribeAndUnsubscribeTest {
         listDocModel = (DocumentModelList) automationService.run(ctx, chain);
 
         for (DocumentModel doc : listDocModel) {
-            List docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+            List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
             assertTrue(docSubscriptions.isEmpty());
         }
     }
@@ -140,7 +140,7 @@ public class SubscribeAndUnsubscribeTest {
         String username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
 
         for (DocumentModel doc : listDocModel) {
-            List docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+            List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
             assertTrue(docSubscriptions.isEmpty());
         }
 
@@ -148,7 +148,7 @@ public class SubscribeAndUnsubscribeTest {
         listDocModel = (DocumentModelList) automationService.run(ctx, chain);
 
         for (DocumentModel doc : listDocModel) {
-            List docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+            List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
             assertEquals(1, docSubscriptions.size());
             assertTrue(docSubscriptions.contains("Creation"));
         }
@@ -163,7 +163,7 @@ public class SubscribeAndUnsubscribeTest {
         listDocModel = (DocumentModelList) automationService.run(ctx, chain);
 
         for (DocumentModel doc : listDocModel) {
-            List docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+            List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
             assertTrue(docSubscriptions.isEmpty());
         }
     }

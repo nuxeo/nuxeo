@@ -92,7 +92,7 @@ public class TestDocument {
     @Inject
     protected SchemaManager schemaManager;
 
-    protected Session session;
+    protected Session<?> session;
 
     @Before
     public void setUp() {

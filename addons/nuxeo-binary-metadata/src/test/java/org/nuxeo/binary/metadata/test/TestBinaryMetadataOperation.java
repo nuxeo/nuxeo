@@ -165,7 +165,7 @@ public class TestBinaryMetadataOperation extends BaseBinaryMetadataTest {
         automationService.run(operationContext, ReadMetadataFromBinaryToContext.ID, params);
         assertNotNull(operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA));
         assertEquals("Metal",
-                ((Map) operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA)).get("ID3:Genre"));
+                ((Map<?, ?>) operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA)).get("ID3:Genre"));
 
         // Run the same operation with specific properties listing
         operationContext.setInput(musicBlobHolder.getBlob());
@@ -176,7 +176,7 @@ public class TestBinaryMetadataOperation extends BaseBinaryMetadataTest {
         parameters.put("metadata", metadata);
         automationService.run(operationContext, ReadMetadataFromBinaryToContext.ID, parameters);
         assertNotNull(operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA));
-        assertNull(((Map) operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA)).get("ID3:Genre"));
-        assertEquals(2, ((Map) operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA)).size());
+        assertNull(((Map<?, ?>) operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA)).get("ID3:Genre"));
+        assertEquals(2, ((Map<?, ?>) operationContext.get(ReadMetadataFromBinaryToContext.CTX_BINARY_METADATA)).size());
     }
 }

@@ -70,7 +70,7 @@ public class AuthTag extends TagSupport {
 
     private String casLogin, casValidate, service; // from children
 
-    private List acceptedProxies; // from children
+    private List<String> acceptedProxies; // from children
 
     private HttpServletRequest request;
 
@@ -94,7 +94,7 @@ public class AuthTag extends TagSupport {
         } catch (ServletException ex) {
             throw new JspException(ex);
         }
-        acceptedProxies = new ArrayList();
+        acceptedProxies = new ArrayList<>();
         return EVAL_BODY_INCLUDE;
     }
 

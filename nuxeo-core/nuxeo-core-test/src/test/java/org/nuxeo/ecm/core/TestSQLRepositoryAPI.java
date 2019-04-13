@@ -3256,7 +3256,7 @@ public class TestSQLRepositoryAPI {
 
         doc = session.createDocument(doc);
 
-        List list = (List) doc.getProperty("testList", "attachments");
+        List<?> list = (List<?>) doc.getProperty("testList", "attachments");
         assertNotNull(list);
         assertTrue(list.isEmpty());
     }

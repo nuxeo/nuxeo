@@ -51,14 +51,14 @@ public @interface XNodeList {
      *
      * @return the type of items
      */
-    Class type();
+    Class<?> type();
 
     /**
      * The type of the objects in this collection.
      *
      * @return the type of items
      */
-    Class componentType();
+    Class<?> componentType();
 
     /**
      * Whether the container should be set to null when not specified in the XML file.

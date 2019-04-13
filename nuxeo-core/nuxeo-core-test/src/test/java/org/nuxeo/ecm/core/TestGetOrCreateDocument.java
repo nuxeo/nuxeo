@@ -84,7 +84,7 @@ public class TestGetOrCreateDocument {
         List<CompletableFuture<DocumentModelList>> futures = new ArrayList<>(NB_THREADS);
 
         for (int t = 0; t < NB_THREADS; t++) {
-            CompletableFuture completableFuture = CompletableFuture.supplyAsync(
+            CompletableFuture<DocumentModelList> completableFuture = CompletableFuture.supplyAsync(
                     () -> TransactionHelper.runInTransaction(() -> {
                         try (CloseableCoreSession s = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
                             return docs.stream().map(doc -> {

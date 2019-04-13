@@ -466,7 +466,7 @@ public class ModuleImpl implements Module {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Map<String, String> getMessages(String language) {
         log.info("Loading i18n files for module " + configuration.name);
         File file = new File(configuration.directory,

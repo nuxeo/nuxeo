@@ -207,7 +207,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
     }
 
     @Override
-    public void registerPojoMarshaller(Class clazz) {
+    public void registerPojoMarshaller(Class<?> clazz) {
         JsonMarshalling.addMarshaller(PojoMarshaller.forClass(clazz));
     }
 }

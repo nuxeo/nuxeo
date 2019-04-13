@@ -112,7 +112,8 @@ public class PictureManagerBean implements PictureManager, Serializable {
     @Override
     @SuppressWarnings("unchecked")
     public String getFileurlPicture() {
-        ArrayList<Map<String, Object>> views = (ArrayList) getCurrentDocument().getProperty("picture", "views");
+        ArrayList<Map<String, Object>> views = (ArrayList<Map<String, Object>>) getCurrentDocument().getProperty(
+                "picture", "views");
         return views.get(index).get("title") + ":content";
     }
 
@@ -135,7 +136,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @Override
-    public ArrayList getSelectItems() {
+    public ArrayList<Map<String, Object>> getSelectItems() {
         if (selectItems == null) {
             initSelectItems();
             return selectItems;
@@ -145,7 +146,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @Override
-    public void setSelectItems(ArrayList selectItems) {
+    public void setSelectItems(ArrayList<Map<String, Object>> selectItems) {
         this.selectItems = selectItems;
     }
 

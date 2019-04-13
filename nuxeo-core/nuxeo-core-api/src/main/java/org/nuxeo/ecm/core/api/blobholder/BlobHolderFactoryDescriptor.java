@@ -46,7 +46,7 @@ public class BlobHolderFactoryDescriptor implements Serializable {
     protected String facet;
 
     @XNode("@class")
-    private Class adapterClass;
+    private Class<BlobHolderFactory> adapterClass;
 
     public String getName() {
         return name;

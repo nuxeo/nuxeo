@@ -329,8 +329,8 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
         doc.setProperties(schemaName, data);
     }
 
-    protected static Class getFieldClass(Type fieldType) {
-        Class klass = JavaTypes.getClass(fieldType);
+    protected static Class<?> getFieldClass(Type fieldType) {
+        Class<?> klass = JavaTypes.getClass(fieldType);
         // for enumerated SimpleTypes we may need to lookup on the supertype
         // we do the recursion here and not in JavaTypes to avoid potential impacts
         if (klass == null) {
@@ -358,7 +358,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
             }
             Type ftype = ltype.getFieldType();
             if (ftype.isSimpleType()) { // these are stored as arrays
-                Class klass = getFieldClass(ftype);
+                Class<?> klass = getFieldClass(ftype);
                 if (klass.isPrimitive()) {
                     return PrimitiveArrays.toPrimitiveArray(list, klass);
                 } else {

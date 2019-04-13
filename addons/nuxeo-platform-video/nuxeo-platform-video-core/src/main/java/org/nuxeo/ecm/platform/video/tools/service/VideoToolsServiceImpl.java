@@ -53,7 +53,7 @@ public class VideoToolsServiceImpl extends DefaultComponent implements VideoTool
 
     protected static final Log log = LogFactory.getLog(VideoToolsServiceImpl.class);
 
-    protected Map<String, Class> videoTools;
+    protected Map<String, Class<?>> videoTools;
 
     @Override
     public void activate(ComponentContext context) {

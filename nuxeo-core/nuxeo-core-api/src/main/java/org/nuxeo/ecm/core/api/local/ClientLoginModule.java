@@ -100,7 +100,7 @@ public class ClientLoginModule implements LoginModule {
 
     private Subject subject;
 
-    private Map sharedState;
+    private Map<String, ?> sharedState;
 
     // active login stack
     private LoginStack stack;
@@ -112,7 +112,8 @@ public class ClientLoginModule implements LoginModule {
      * Initialize this LoginModule.
      */
     @Override
-    public void initialize(Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options) {
+    public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
+            Map<String, ?> options) {
         this.subject = subject;
         this.sharedState = sharedState;
         // Check if login must be propagated to entire JVM or only to the

@@ -48,8 +48,8 @@ public class RecordFilterChainImpl implements RecordFilterChain {
 
     @Override
     public Record beforeAppend(Record record) {
-        for (Iterator iterator = filters.iterator(); record != null && iterator.hasNext();) {
-            RecordFilter filter = (RecordFilter) iterator.next();
+        for (Iterator<RecordFilter> iterator = filters.iterator(); record != null && iterator.hasNext();) {
+            RecordFilter filter = iterator.next();
             record = filter.beforeAppend(record);
         }
         return record;
@@ -57,16 +57,16 @@ public class RecordFilterChainImpl implements RecordFilterChain {
 
     @Override
     public void afterAppend(Record record, LogOffset offset) {
-        for (Iterator iterator = filters.iterator(); record != null && iterator.hasNext();) {
-            RecordFilter filter = (RecordFilter) iterator.next();
+        for (Iterator<RecordFilter> iterator = filters.iterator(); record != null && iterator.hasNext();) {
+            RecordFilter filter = iterator.next();
             filter.afterAppend(record, offset);
         }
     }
 
     @Override
     public Record afterRead(Record record, LogOffset offset) {
-        for (Iterator iterator = filters.descendingIterator(); record != null && iterator.hasNext();) {
-            RecordFilter filter = (RecordFilter) iterator.next();
+        for (Iterator<RecordFilter> iterator = filters.descendingIterator(); record != null && iterator.hasNext();) {
+            RecordFilter filter = iterator.next();
             record = filter.afterRead(record, offset);
         }
         return record;

@@ -109,7 +109,7 @@ public interface AutomationClient {
      * @since 5.7.2
      * @param clazz the pojo bean to add to Marshalling
      */
-    void registerPojoMarshaller(Class clazz);
+    void registerPojoMarshaller(Class<?> clazz);
 
     /**
      * Cleanup any resources held by this client. After a shutdown the client is no more usable.

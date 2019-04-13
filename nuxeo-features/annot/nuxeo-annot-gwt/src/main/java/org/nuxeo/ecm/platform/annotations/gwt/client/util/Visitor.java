@@ -85,7 +85,7 @@ public class Visitor {
             return;
         }
 
-        NodeList list = node.getChildNodes();
+        NodeList<?> list = node.getChildNodes();
         if (list == null || list.getLength() == 0) {
             processIf(node);
         } else {

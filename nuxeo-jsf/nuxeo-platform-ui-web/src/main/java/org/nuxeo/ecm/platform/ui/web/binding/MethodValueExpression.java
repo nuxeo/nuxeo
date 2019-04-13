@@ -51,13 +51,13 @@ public class MethodValueExpression extends ValueExpression implements Externaliz
 
     private MethodExpression methodExpression;
 
-    private Class[] paramTypesClasses;
+    private Class<?>[] paramTypesClasses;
 
     public MethodValueExpression() {
     }
 
     public MethodValueExpression(FunctionMapper functionMapper, VariableMapper variableMapper,
-            MethodExpression methodExpression, Class[] paramTypesClasses) {
+            MethodExpression methodExpression, Class<?>[] paramTypesClasses) {
         this.functionMapper = functionMapper;
         this.variableMapper = variableMapper;
         this.methodExpression = methodExpression;

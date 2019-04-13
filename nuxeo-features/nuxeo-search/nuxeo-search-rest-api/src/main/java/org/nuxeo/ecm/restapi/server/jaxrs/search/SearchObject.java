@@ -359,7 +359,7 @@ public class SearchObject extends QueryExecutor {
         PageProviderDefinition def = providerName == null ? PageProviderHelper.getQueryPageProviderDefinition(query)
                 : PageProviderHelper.getPageProviderDefinition(providerName);
 
-        PageProvider provider = PageProviderHelper.getPageProvider(ctx.getCoreSession(), def, namedParameters, sortBy, sortOrder, pageSize, currentPageIndex, null, quickfilters, queryParameters);
+        PageProvider<?> provider = PageProviderHelper.getPageProvider(ctx.getCoreSession(), def, namedParameters, sortBy, sortOrder, pageSize, currentPageIndex, null, quickfilters, queryParameters);
         return PageProviderHelper.buildQueryString(provider);
     }
 }

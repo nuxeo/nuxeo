@@ -455,7 +455,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             type = ((ListType) type).getFieldType();
             Collection<Object> values;
             if (type.isComplexType()) {
-                values = (Collection) prop.getChildren();
+                values = (Collection<Object>) (Collection<?>) prop.getChildren();
             } else if (value instanceof Object[]) {
                 values = Arrays.asList((Object[]) value);
             } else if (value instanceof List<?>) {

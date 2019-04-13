@@ -86,7 +86,7 @@ public class VocabularyTreeNode {
 
     protected String orderingField;
 
-    protected Comparable orderingValue;
+    protected Comparable<Object> orderingValue;
 
     protected char keySeparator;
 
@@ -104,7 +104,7 @@ public class VocabularyTreeNode {
 
     public VocabularyTreeNode(int level, String id, String description, String path, String vocabularyName,
             DirectoryService directoryService, boolean displayObsoleteEntries, char keySeparator, String orderingField,
-            Comparable orderingValue) {
+            Comparable<Object> orderingValue) {
         this.level = level;
         this.id = id;
         this.label = description;
@@ -137,9 +137,9 @@ public class VocabularyTreeNode {
             } else {
                 childPath = path + keySeparator + childIdendifier;
             }
-            Comparable orderingValue = null;
+            Comparable<Object> orderingValue = null;
             if (!StringUtils.isBlank(orderingField)) {
-                orderingValue = (Comparable) result.getProperty(schemaName, orderingField);
+                orderingValue = (Comparable<Object>) result.getProperty(schemaName, orderingField);
             }
             children.add(new VocabularyTreeNode(level + 1, childIdendifier, childLabel, childPath, vocabularyName,
                     getDirectoryService(), displayObsoleteEntries, keySeparator, orderingField, orderingValue));
@@ -255,7 +255,7 @@ public class VocabularyTreeNode {
         return path;
     }
 
-    public Comparable getOrdering() {
+    public Comparable<Object> getOrdering() {
         return orderingValue;
     }
 

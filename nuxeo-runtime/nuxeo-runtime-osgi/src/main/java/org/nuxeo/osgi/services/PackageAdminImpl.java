@@ -84,7 +84,7 @@ public class PackageAdminImpl implements PackageAdmin {
     }
 
     @Override
-    public Bundle getBundle(Class clazz) {
+    public Bundle getBundle(@SuppressWarnings("rawtypes") Class clazz) {
         throw new UnsupportedOperationException("Not implemented");
     }
 

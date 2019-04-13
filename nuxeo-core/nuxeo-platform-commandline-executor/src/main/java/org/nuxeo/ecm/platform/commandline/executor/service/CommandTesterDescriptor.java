@@ -42,7 +42,7 @@ public class CommandTesterDescriptor implements Serializable {
     protected String name;
 
     @XNode("@class")
-    protected Class className;
+    protected Class<CommandTester> className;
 
     public String getName() {
         if (name == null) {
@@ -51,7 +51,7 @@ public class CommandTesterDescriptor implements Serializable {
         return name;
     }
 
-    public Class getTesterClass() {
+    public Class<CommandTester> getTesterClass() {
         return className;
     }
 

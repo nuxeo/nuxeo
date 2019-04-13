@@ -97,8 +97,8 @@ public abstract class TestTools {
             }
             // Create another log with non computation record and different encoding
             manager.createIfNotExists(LOG_NAME_2, LOG_SIZE);
-            LogAppender appender2 = manager.getAppender(LOG_NAME_2,
-                    new AvroBinaryCodec(KeyValueMessage.class));
+            LogAppender<KeyValueMessage> appender2 = manager.getAppender(LOG_NAME_2,
+                    new AvroBinaryCodec<>(KeyValueMessage.class));
             appender2.append(0, KeyValueMessage.of("foo", "bar".getBytes(UTF_8)));
             try (LogTailer<Record> tailer = manager.createTailer("someGroup", LOG_NAME_2)) {
                 tailer.read(DEF_TIMEOUT);

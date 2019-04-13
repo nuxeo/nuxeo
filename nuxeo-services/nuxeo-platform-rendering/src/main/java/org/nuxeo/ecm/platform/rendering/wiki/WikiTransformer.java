@@ -85,9 +85,8 @@ public class WikiTransformer implements TemplateDirectiveModel {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
-    public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
-            throws TemplateException, IOException {
+    public void execute(Environment env, @SuppressWarnings("rawtypes") Map params, TemplateModel[] loopVars,
+            TemplateDirectiveBody body) throws TemplateException, IOException {
 
         SimpleScalar scalar = (SimpleScalar) params.get("syntax");
         if (scalar != null) {

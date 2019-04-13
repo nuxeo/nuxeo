@@ -47,7 +47,7 @@ import com.sun.faces.facelets.el.VariableMapperWrapper;
 @Deprecated
 public class MethodResultTagHandler extends MetaTagHandler {
 
-    private static final Class[] DEFAULT_PARAM_TYPES_CLASSES = new Class[0];
+    private static final Class<?>[] DEFAULT_PARAM_TYPES_CLASSES = new Class[0];
 
     private final TagAttribute name;
 
@@ -65,7 +65,7 @@ public class MethodResultTagHandler extends MetaTagHandler {
         paramTypes = getAttribute("paramTypes");
     }
 
-    private Class[] resolveParamTypes(FaceletContext ctx) {
+    private Class<?>[] resolveParamTypes(FaceletContext ctx) {
         // TODO: implement string parsing ?
         return DEFAULT_PARAM_TYPES_CLASSES;
     }
@@ -74,7 +74,7 @@ public class MethodResultTagHandler extends MetaTagHandler {
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
         String nameStr = name.getValue(ctx);
         // resolve given value as a method binding, paramtypes ignored for now
-        Class[] paramTypesClasses = resolveParamTypes(ctx);
+        Class<?>[] paramTypesClasses = resolveParamTypes(ctx);
         MethodExpression meth = value.getMethodExpression(ctx, Object.class, paramTypesClasses);
         Boolean invokeNow = false;
         if (immediate != null) {

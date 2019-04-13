@@ -290,6 +290,7 @@ public class SAMLAuthenticationProvider
         }
 
         // Create and populate the context
+        @SuppressWarnings("rawtypes")
         SAMLMessageContext context = new BasicSAMLMessageContext();
         populateLocalContext(context, request);
 
@@ -369,6 +370,7 @@ public class SAMLAuthenticationProvider
         HttpServletResponseAdapter outTransport = new HttpServletResponseAdapter(response, request.isSecure());
 
         // Create and populate the context
+        @SuppressWarnings("rawtypes")
         SAMLMessageContext context = new BasicSAMLMessageContext();
         context.setInboundMessageTransport(inTransport);
         context.setOutboundMessageTransport(outTransport);
@@ -470,7 +472,7 @@ public class SAMLAuthenticationProvider
         return new UserIdentificationInfo(userId, userId);
     }
 
-    protected AbstractSAMLProfile getProcessor(SAMLMessageContext context) {
+    protected AbstractSAMLProfile getProcessor(@SuppressWarnings("rawtypes") SAMLMessageContext context) {
         String profileId;
         SAMLObject message = context.getInboundSAMLMessage();
         if (message instanceof LogoutResponse || message instanceof LogoutRequest) {
@@ -500,7 +502,7 @@ public class SAMLAuthenticationProvider
         return null;
     }
 
-    private void populateLocalContext(SAMLMessageContext context, HttpServletRequest request) {
+    private void populateLocalContext(@SuppressWarnings("rawtypes") SAMLMessageContext context, HttpServletRequest request) {
         // Set local info
         context.setLocalEntityId(SAMLConfiguration.getEntityId());
         context.setLocalEntityRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
@@ -544,6 +546,7 @@ public class SAMLAuthenticationProvider
         SAMLCredential credential = getSamlCredential(request);
 
         // Create and populate the context
+        @SuppressWarnings("rawtypes")
         SAMLMessageContext context = new BasicSAMLMessageContext();
         populateLocalContext(context, request);
 

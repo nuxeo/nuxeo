@@ -241,6 +241,7 @@ public class HTTPHelperTest {
         try {
             File file = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext("test-data/sample.jpeg");
             byte[] answer = FileUtils.readFileToByteArray(file);
+            @SuppressWarnings("rawtypes")
             Body responseBody = new BinaryBody(answer);
             createMockServer("GET", SERVER_PATH + IMAGE_FILENAME, responseBody);
         } catch (IOException e) {
@@ -262,7 +263,7 @@ public class HTTPHelperTest {
      * @param path the path of the requests
      * @param answer the body of the http response
      */
-    public void createMockServer(String method, String path, Body answer) {
+    public void createMockServer(String method, String path, @SuppressWarnings("rawtypes") Body answer) {
         List<Header> requestHeaders = new ArrayList<>();
         requestHeaders.add(new Header(HttpHeaders.AUTHORIZATION, "Basic dGVzdDp0ZXN0"));
 

@@ -249,7 +249,7 @@ public class TestBlobDispatcher {
     // (has a different code path to compute the xpath)
     @Test
     public void testDispatchXPathOnDocument() throws Exception {
-        Session documentSession = ((AbstractSession) session).getSession();
+        Session<?> documentSession = ((AbstractSession) session).getSession();
         Document root = documentSession.getRootDocument();
         Document doc = root.addChild("doc", "File");
 

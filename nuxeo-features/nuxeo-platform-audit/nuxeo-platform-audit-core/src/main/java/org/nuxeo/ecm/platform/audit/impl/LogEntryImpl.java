@@ -106,7 +106,7 @@ public class LogEntryImpl implements LogEntry {
 
     protected transient UIAuditComment uiComment;
 
-    private Map<String, ExtendedInfoImpl> extendedInfos = new HashMap<>();
+    private Map<String, ExtendedInfo> extendedInfos = new HashMap<>();
 
     /**
      * @return the log identifier
@@ -347,14 +347,14 @@ public class LogEntryImpl implements LogEntry {
             @JoinColumn(name = "INFO_FK") })
     @org.hibernate.annotations.MapKey(columns = { @Column(name = "mapkey", nullable = false) })
     public Map<String, ExtendedInfo> getExtendedInfos() {
-        return (Map) extendedInfos;
+        return extendedInfos;
         // return (Map)getExtendedInfosImpl();
     }
 
     @Override
     @JsonDeserialize(keyAs = String.class, contentUsing = ExtendedInfoDeserializer.class)
     public void setExtendedInfos(Map<String, ExtendedInfo> infos) {
-        extendedInfos = (Map) infos;
+        extendedInfos = infos;
         // setExtendedInfosImpl((Map)infos);
     }
 

@@ -45,9 +45,9 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
 
     protected Subject subject;
 
-    protected Map sharedState;
+    protected Map<String, Object> sharedState;
 
-    protected Map options;
+    protected Map<String, Object> options;
 
     protected boolean loginOk;
 
@@ -104,13 +104,14 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
             Map<String, ?> options) {
         this.subject = subject;
         this.callbackHandler = callbackHandler;
-        this.sharedState = sharedState;
-        this.options = options;
+        this.sharedState = (Map<String, Object>) sharedState;
+        this.options = (Map<String, Object>) options;
         if (log.isTraceEnabled()) {
             log.trace("initialize, instance=@" + System.identityHashCode(this));
         }

@@ -259,6 +259,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
     /**
      * @since 10.3
      */
+    @SuppressWarnings("rawtypes")
     private void enrichBlobProperty(JsonGenerator jg, BlobProperty property) throws IOException {
         Set<String> enrichers = ctx.getEnrichers("blob");
         if (!enrichers.isEmpty()) {

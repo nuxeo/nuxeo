@@ -34,7 +34,7 @@ public class GuavaCacheMetric extends NuxeoMetricSet {
         super(name, names);
     }
 
-    public static MetricSet of(Cache cache, String name, String... names) {
+    public static MetricSet of(Cache<?, ?> cache, String name, String... names) {
         GuavaCacheMetric metrics = new GuavaCacheMetric(name, names);
         metrics.putGauge(() -> cache.size(), "size");
         metrics.putGauge(() -> cache.stats().averageLoadPenalty(), "average", "load", "penalty");

@@ -40,7 +40,7 @@ public class PreviewDocumentModelAdapterFactory implements DocumentAdapterFactor
     }
 
     @Override
-    public Object getAdapter(DocumentModel doc, Class itf) {
+    public Object getAdapter(DocumentModel doc, Class<?> itf) {
         return getPreviewAdapterManager().getAdapter(doc);
     }
 

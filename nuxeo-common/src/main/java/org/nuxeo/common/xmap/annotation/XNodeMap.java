@@ -55,14 +55,14 @@ public @interface XNodeMap {
     /**
      * The type of collection object.
      */
-    Class type();
+    Class<?> type();
 
     /**
      * The type of the objects in this collection.
      *
      * @return the type of items
      */
-    Class componentType();
+    Class<?> componentType();
 
     /**
      * Whether the container should be set to null when no value is specified.

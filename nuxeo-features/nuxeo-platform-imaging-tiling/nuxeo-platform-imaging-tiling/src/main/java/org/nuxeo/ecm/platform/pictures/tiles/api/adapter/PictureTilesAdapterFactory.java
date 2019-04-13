@@ -43,7 +43,7 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
     protected static final String ORIGINAL_VIEW_NAME = "Original";
 
     @Override
-    public Object getAdapter(DocumentModel doc, Class itf) {
+    public Object getAdapter(DocumentModel doc, Class<?> itf) {
         PictureTilingService tilingService = Framework.getService(PictureTilingService.class);
         String blobProperty = tilingService.getBlobProperty(doc.getType());
         PictureTilesAdapter ptAdapter = getPictureTilesAdapterFor(doc, blobProperty);

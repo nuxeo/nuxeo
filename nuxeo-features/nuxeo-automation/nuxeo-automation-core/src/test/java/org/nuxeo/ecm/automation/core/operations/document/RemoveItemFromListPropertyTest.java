@@ -87,7 +87,7 @@ public class RemoveItemFromListPropertyTest {
         doc = coreSession.getDocument(doc.getRef());
 
         // Check there is no value already.
-        List fields = (List) doc.getPropertyValue("ds:fields");
+        List<?> fields = (List<?>) doc.getPropertyValue("ds:fields");
         assertNotNull(fields);
         assertTrue(fields.isEmpty());
 
@@ -105,7 +105,7 @@ public class RemoveItemFromListPropertyTest {
         chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set("complexJsonProperties", fieldsDataAsJSon);
 
         doc = (DocumentModel) service.run(ctx, chain);
-        List dbFields = (List) doc.getPropertyValue("ds:fields");
+        List<?> dbFields = (List<?>) doc.getPropertyValue("ds:fields");
         assertEquals(2, dbFields.size());
     }
 
@@ -119,7 +119,7 @@ public class RemoveItemFromListPropertyTest {
     public void removeAllItemFromListPropertyTest() throws Exception {
         // Remove all the fields
         DocumentModel resultDoc = removeItemsFromListProperty("ds:fields", null);
-        List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
+        List<?> dbFields = (List<?>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(0, dbFields.size());
     }
 

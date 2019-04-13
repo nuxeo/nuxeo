@@ -66,7 +66,7 @@ public class MockHttpRequest extends MockHttpServletRequest {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Enumeration getHeaderNames() {
+    public Enumeration<String> getHeaderNames() {
         return new IteratorEnumeration(headers.keySet().iterator());
     }
 

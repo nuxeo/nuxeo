@@ -39,7 +39,7 @@ import org.nuxeo.ecm.platform.ui.web.binding.MetaMethodExpression;
  */
 public class MetaActionSourceRule extends MetaRule {
 
-    public static final Class[] ACTION_SIG = new Class[0];
+    public static final Class<?>[] ACTION_SIG = new Class[0];
 
     public static final MetaActionSourceRule Instance = new MetaActionSourceRule();
 

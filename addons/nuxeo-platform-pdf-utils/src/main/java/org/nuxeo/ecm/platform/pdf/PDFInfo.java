@@ -223,7 +223,7 @@ public class PDFInfo {
             permissions = pdfDoc.getCurrentAccessPermission();
             // Getting dimension is a bit tricky
             mediaBoxWidthInPoints = mediaBoxHeightInPoints = cropBoxWidthInPoints = cropBoxHeightInPoints = -1;
-            List allPages = docCatalog.getAllPages();
+            List<?> allPages = docCatalog.getAllPages();
             boolean gotMediaBox = false, gotCropBox = false;
             for (Object pageObject : allPages) {
                 PDPage page = (PDPage) pageObject;

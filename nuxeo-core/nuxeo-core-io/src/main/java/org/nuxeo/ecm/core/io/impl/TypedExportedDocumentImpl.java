@@ -125,7 +125,7 @@ public class TypedExportedDocumentImpl extends ExportedDocumentImpl {
             } else {
                 element.addAttribute(TYPE_ATTRIBUTE, COMPLEX_TYPE_ID);
                 if (value != null) {
-                    readComplex(element, ctype, (Map) value, inlineBlobs);
+                    readComplex(element, ctype, (Map<Object, Object>) value, inlineBlobs);
                 }
             }
         } else if (type.isListType()) {
@@ -146,9 +146,9 @@ public class TypedExportedDocumentImpl extends ExportedDocumentImpl {
             element.addAttribute(TYPE_ATTRIBUTE, typeId);
             if (value != null) {
                 if (value instanceof List) {
-                    readList(element, (ListType) type, (List) value, inlineBlobs);
+                    readList(element, (ListType) type, (List<Object>) value, inlineBlobs);
                 } else if (value.getClass().getComponentType() != null) {
-                    readList(element, (ListType) type, PrimitiveArrays.toList(value), inlineBlobs);
+                    readList(element, (ListType) type, (List<Object>) PrimitiveArrays.toList(value), inlineBlobs);
                 } else {
                     throw new IllegalArgumentException("A value of list type is neither list neither array: " + value);
                 }

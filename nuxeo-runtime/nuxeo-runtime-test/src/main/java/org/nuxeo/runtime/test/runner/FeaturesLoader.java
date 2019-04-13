@@ -189,7 +189,7 @@ class FeaturesLoader {
     protected Module onModule() {
         return new Module() {
 
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
             public void configure(Binder aBinder) {
                 for (Holder each : holders) {

@@ -41,7 +41,7 @@ public class CoreEventImpl implements CoreEvent {
 
     protected final Object source;
 
-    protected final Map<String, ?> info;
+    protected final Map<String, Object> info;
 
     protected final Date date;
 
@@ -76,10 +76,10 @@ public class CoreEventImpl implements CoreEvent {
         // CB: NXP-2253 - Values passed as parameters will be put into the info
         // map only if the map doesn't contain the corresponding keys.
         if (!this.info.containsKey(COMMENT_ATTRIBUTE)) {
-            ((Map) this.info).put(COMMENT_ATTRIBUTE, comment);
+            this.info.put(COMMENT_ATTRIBUTE, comment);
         }
         if (!this.info.containsKey(CATEGORY_ATTRIBUTE)) {
-            ((Map) this.info).put(CATEGORY_ATTRIBUTE, category);
+            this.info.put(CATEGORY_ATTRIBUTE, category);
         }
 
         this.comment = comment;

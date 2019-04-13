@@ -346,9 +346,9 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 cookieT.setText(cookie.getValue());
             }
             Element headersT = requestInfo.addElement(requestHeadersTag);
-            Enumeration hEnum = request.getHeaderNames();
+            Enumeration<String> hEnum = request.getHeaderNames();
             while (hEnum.hasMoreElements()) {
-                String hName = (String) hEnum.nextElement();
+                String hName = hEnum.nextElement();
                 if (!hName.equalsIgnoreCase("cookie")) {
                     Element headerT = headersT.addElement(requestHeaderTag);
                     headerT.addAttribute("name", hName);

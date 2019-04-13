@@ -35,7 +35,7 @@ public class XAnnotatedMember {
     protected boolean trim;
 
     /** The Java type of the described element. */
-    protected Class type;
+    protected Class<?> type;
 
     /** Not null if the described object is an xannotated object. */
     protected XAnnotatedObject xao;
@@ -66,7 +66,9 @@ public class XAnnotatedMember {
                 @SuppressWarnings("unchecked")
                 @Override
                 public Object deserialize(Context arg0, String arg1) {
-                    return Enum.valueOf(type, arg1);
+                    @SuppressWarnings("rawtypes")
+                    Class<Enum> enumType = (Class<Enum>) type;
+                    return Enum.valueOf(enumType, arg1);
                 }
             };
             xmap.setValueFactory(type, valueFactory);

@@ -135,7 +135,7 @@ public class DocumentMessage implements Message {
 
         @SuppressWarnings("unchecked")
         public Builder setProperties(HashMap<String, Serializable> properties) {
-            this.properties = (Map) properties.clone();
+            this.properties = (Map<String, Serializable>) properties.clone();
             return this;
         }
 

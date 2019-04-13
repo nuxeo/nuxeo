@@ -107,9 +107,9 @@ public final class SeamComponentCallHelper {
         Object seamComponent = getSeamComponentByName(seamName);
         Component component = Component.forName(seamName);
 
-        Class type = null;
+        Class<?> type = null;
         if (component.getType().isSessionBean() && !component.getBusinessInterfaces().isEmpty()) {
-            for (Class c : component.getBusinessInterfaces()) {
+            for (Class<?> c : component.getBusinessInterfaces()) {
                 if (c.isAnnotationPresent(EJB.LOCAL)) {
                     type = component.getBusinessInterfaces().iterator().next();
                     break;
@@ -206,7 +206,7 @@ public final class SeamComponentCallHelper {
     /**
      * Finds the method in the local interface of the Seam component.
      */
-    private static Method findMethod(String name, Class cls, Object[] params) {
+    private static Method findMethod(String name, Class<?> cls, Object[] params) {
         Map<Method, Integer> candidates = new HashMap<>();
 
         // for (Method m : cls.getDeclaredMethods()) {
