@@ -20,11 +20,13 @@
 package org.nuxeo.ecm.platform.audit.provider;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -48,6 +50,8 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
 
     protected static final String CORE_SESSION_PROPERTY = "coreSession";
 
+    protected static final String POWER_USERS_GROUP = "powerusers";
+
     protected List<DocumentModel> currentPage;
 
     @Override
@@ -58,9 +62,11 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
         currentPage = new ArrayList<>();
         PageProviderService pps = Framework.getService(PageProviderService.class);
         CoreSession coreSession = (CoreSession) getProperties().get(CORE_SESSION_PROPERTY);
+        if (coreSession == null || !canSearchUsersAndGroups(coreSession.getPrincipal())) {
+            return Collections.emptyList();
+        }
         PageProvider<?> pp = pps.getPageProvider(LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER, null, getPageSize(),
-                getCurrentPageIndex(), getProperties(),
-                coreSession != null ? coreSession.getRootDocument().getId() : new Object[] { null });
+                getCurrentPageIndex(), getProperties(), coreSession.getRootDocument().getId());
         @SuppressWarnings("unchecked")
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
         if (entries != null) {
@@ -103,6 +109,10 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
         PageProvider<?> pp = pps.getPageProvider(LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER, null, null, null,
                 null, null);
         return pp.getResultsCountLimit();
+    }
+
+    protected boolean canSearchUsersAndGroups(NuxeoPrincipal principal) {
+        return principal.isAdministrator() || principal.isMemberOf(POWER_USERS_GROUP);
     }
 
 }
