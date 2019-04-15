@@ -1,5 +1,6 @@
+# coding: utf-8
 """
-(C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+(C) Copyright 2016-2019 Nuxeo (http://nuxeo.com/) and contributors.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +14,7 @@ Lesser General Public License for more details.
 
 Contributors:
     Pierre-Gildas MILLON <pgmillon@nuxeo.com>
+    Mickaël Schoentgen <mschoentgen@nuxeo.com>
 """
 import os
 import unittest
@@ -23,7 +25,7 @@ from nxutils import Repository
 from release import Release, ReleaseInfo
 
 
-class TestMocks(object):
+class Mocks(object):
 
     def __init__(self):
         self.__dict__["_items"] = {}
@@ -42,7 +44,7 @@ class ReleaseTestCase(unittest.TestCase):
     def setUp(self):
         super(ReleaseTestCase, self).setUp()
 
-        self.mocks = TestMocks()
+        self.mocks = Mocks()
         patches = [
             patch('release.etree_parse', side_effect=self.mocks.etree_parse)
         ]
@@ -81,4 +83,3 @@ class ReleaseTestCase(unittest.TestCase):
         self.assertNextSnapshot('1.0.2-SNAPSHOT', '2.0.0-SNAPSHOT', policy='auto_major')
         self.assertNextSnapshot('1.2-SNAPSHOT', '2.0-SNAPSHOT', policy='auto_major')
         self.assertNextSnapshot('29-SNAPSHOT', '30-SNAPSHOT', policy='auto_major')
-

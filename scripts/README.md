@@ -7,7 +7,7 @@
 
 # Installation
  - (Optional) Create a Python virtalenv
- - Install requirements with pip install -r requirements.txt
+ - Install requirements with `python -m pip install -r requirements.txt`
 # Usage
 `./<script> <options>`
 
@@ -24,7 +24,7 @@
 Follow the Installation steps to acquire the dependencies
 Run:
     nuxeo$ cd scripts
-    nuxeo/scripts$ python -m tests
+    nuxeo/scripts$ python -m pytest
 
 # Contributing / Reporting issues
 https://jira.nuxeo.com/secure/CreateIssue!default.jspa?project=NXBT
