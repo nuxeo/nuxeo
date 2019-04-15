@@ -58,7 +58,6 @@
     <nuxeo.threed.version>11.1-SNAPSHOT</nuxeo.threed.version>
     <nuxeo.mongodb.ext.version>11.1-SNAPSHOT</nuxeo.mongodb.ext.version>
     <nuxeo.target.platforms.version>11.1-SNAPSHOT</nuxeo.target.platforms.version>
-    <nuxeo.web.ui.version>11.1-SNAPSHOT</nuxeo.web.ui.version>
     <nuxeo.jsf.to.web.ui.version>11.1-SNAPSHOT</nuxeo.jsf.to.web.ui.version>
     <nuxeo.adobe.cc.version>11.1-SNAPSHOT</nuxeo.adobe.cc.version>
     <nuxeo.wopi.version>11.1-SNAPSHOT</nuxeo.wopi.version>
@@ -125,8 +124,6 @@
     <module>nuxeo-platform-3d</module>
     <module>nuxeo-agenda</module>
     <module>nuxeo-target-platforms</module>
-    <module>nuxeo-web-ui</module>
-    <module>nuxeo-web-ui-itests</module>
     <module>nuxeo-api-playground</module>
     <module>nuxeo-jsf-to-web-ui</module>
     <module>nuxeo-audit-storage-directory</module>
@@ -1023,18 +1020,6 @@
         <groupId>org.nuxeo.utils</groupId>
         <artifactId>nuxeo-target-platforms-compat</artifactId>
         <version>${nuxeo.target.platforms.version}</version>
-      </dependency>
-
-      <!-- Web UI -->
-      <dependency>
-        <groupId>org.nuxeo.web.ui</groupId>
-        <artifactId>nuxeo-web-ui</artifactId>
-        <version>${nuxeo.web.ui.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.web.ui</groupId>
-        <artifactId>nuxeo-web-ui-itests</artifactId>
-        <version>${nuxeo.web.ui.version}</version>
       </dependency>
 
       <!-- JSF to Web UI -->
