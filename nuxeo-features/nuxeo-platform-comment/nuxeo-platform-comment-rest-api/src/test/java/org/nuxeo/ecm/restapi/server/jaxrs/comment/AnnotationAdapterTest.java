@@ -155,9 +155,11 @@ public class AnnotationAdapterTest extends BaseTest {
 
         fetchInvalidations();
         String xpath = "file:content";
+        String author = "author";
 
         Annotation annotation = new AnnotationImpl();
         annotation.setId("foo");
+        annotation.setAuthor(author);
         annotation.setParentId(file.getId());
         annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
@@ -166,6 +168,7 @@ public class AnnotationAdapterTest extends BaseTest {
 
         assertNull(annotation.getText());
         annotation.setText("test");
+        annotation.setAuthor("fakeAuthor");
         String jsonAnnotation = MarshallerHelper.objectToJson(annotation, CtxBuilder.session(session).get());
 
         try (CloseableClientResponse response = getResponse(RequestType.PUT,
@@ -176,6 +179,7 @@ public class AnnotationAdapterTest extends BaseTest {
 
             Annotation updatedAnnotation = annotationService.getAnnotation(session, annotation.getId());
             assertEquals("test", updatedAnnotation.getText());
+            assertEquals(author, updatedAnnotation.getAuthor());
         }
     }
 
@@ -306,11 +310,12 @@ public class AnnotationAdapterTest extends BaseTest {
         fetchInvalidations();
         String xpath = "file:content";
         String entityId = "foo";
+        String author = "toto";
 
         Annotation annotation = new AnnotationImpl();
         ((ExternalEntity) annotation).setEntityId(entityId);
         annotation.setParentId(file.getId());
-        annotation.setAuthor("toto");
+        annotation.setAuthor(author);
         annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
 
@@ -325,7 +330,7 @@ public class AnnotationAdapterTest extends BaseTest {
 
             fetchInvalidations();
             Annotation updatedAnnotation = annotationService.getExternalAnnotation(session, entityId);
-            assertEquals("titi", updatedAnnotation.getAuthor());
+            assertEquals(author, updatedAnnotation.getAuthor());
         }
     }
 
