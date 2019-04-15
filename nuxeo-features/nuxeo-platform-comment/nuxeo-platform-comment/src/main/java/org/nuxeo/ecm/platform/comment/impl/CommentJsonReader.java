@@ -61,7 +61,6 @@ public class CommentJsonReader extends EntityJsonReader<Comment> {
     protected static Comment fillCommentEntity(JsonNode jn, Comment comment) {
         // don't read id from given JsonNode, if needed it is read from path
         comment.setParentId(jn.get(COMMENT_PARENT_ID_FIELD).textValue());
-        comment.setAuthor(jn.get(COMMENT_AUTHOR_FIELD).textValue());
         comment.setText(jn.get(COMMENT_TEXT_FIELD).textValue());
 
         JsonNode creationDateNode = jn.get(COMMENT_CREATION_DATE_FIELD);

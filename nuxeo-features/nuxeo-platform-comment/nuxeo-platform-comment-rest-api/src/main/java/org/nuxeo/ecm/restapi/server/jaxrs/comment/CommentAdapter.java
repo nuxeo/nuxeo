@@ -31,6 +31,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.platform.comment.api.Comment;
@@ -51,6 +52,8 @@ public class CommentAdapter extends DefaultAdapter {
     @POST
     public Response createComment(Comment comment) {
         CommentManager commentManager = Framework.getService(CommentManager.class);
+        // Set logged user as author
+        comment.setAuthor(getContext().getCoreSession().getPrincipal().getName());
         Comment result = commentManager.createComment(getContext().getCoreSession(), comment);
         return Response.status(Response.Status.CREATED).entity(result).build();
     }
@@ -82,7 +85,11 @@ public class CommentAdapter extends DefaultAdapter {
     @Path("{commentId}")
     public Response updateComment(@PathParam("commentId") String commentId, Comment comment) {
         CommentManager commentManager = Framework.getService(CommentManager.class);
-        Comment updatedComment = commentManager.updateComment(getContext().getCoreSession(), commentId, comment);
+        // Fetch original comment author
+        CoreSession session = getContext().getCoreSession();
+        String author = commentManager.getComment(session, commentId).getAuthor();
+        comment.setAuthor(author);
+        Comment updatedComment = commentManager.updateComment(session, commentId, comment);
         return Response.ok(updatedComment).build();
     }
 
@@ -90,7 +97,11 @@ public class CommentAdapter extends DefaultAdapter {
     @Path("external/{entityId}")
     public Comment updateExternalComment(@PathParam("entityId") String entityId, Comment comment) {
         CommentManager commentManager = Framework.getService(CommentManager.class);
-        commentManager.updateExternalComment(getContext().getCoreSession(), entityId, comment);
+        // Fetch original comment author
+        CoreSession session = getContext().getCoreSession();
+        String author = commentManager.getExternalComment(session, entityId).getAuthor();
+        comment.setAuthor(author);
+        commentManager.updateExternalComment(session, entityId, comment);
         return comment;
     }
 
