@@ -24,6 +24,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
@@ -114,8 +115,33 @@ public class CommentAdapterTest extends BaseTest {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
-            assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
+            assertEquals(session.getPrincipal().getName(), node.get(COMMENT_AUTHOR_FIELD).textValue());
             assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
+        }
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    public void testCreateCommentSetCorrectAuthor() throws IOException {
+        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
+
+        Comment comment = instantiateComment(file.getId());
+        String fakeAuthor = "fakeAuthor";
+        comment.setAuthor(fakeAuthor);
+
+        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + file.getId() + "/@comment",
+                jsonComment)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            String author = node.get(COMMENT_AUTHOR_FIELD).textValue();
+            assertNotEquals(fakeAuthor, author);
+            assertEquals(session.getPrincipal().getName(), author);
         }
     }
 
@@ -135,7 +161,7 @@ public class CommentAdapterTest extends BaseTest {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
-            assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
+            assertEquals(session.getPrincipal().getName(), node.get(COMMENT_AUTHOR_FIELD).textValue());
             assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
             assertNotNull(node.get(COMMENT_CREATION_DATE_FIELD).textValue());
         }
@@ -312,10 +338,12 @@ public class CommentAdapterTest extends BaseTest {
         fetchInvalidations();
 
         Comment comment = createComment(file.getId());
+        String author = comment.getAuthor();
         String commentId = comment.getId();
         fetchInvalidations();
 
         comment.setText("And now I update it");
+        comment.setAuthor("fakeAuthor");
         String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
 
         try (CloseableClientResponse response = getResponse(RequestType.PUT,
@@ -326,6 +354,7 @@ public class CommentAdapterTest extends BaseTest {
 
             Comment updatedComment = commentManager.getComment(session, commentId);
             assertEquals("And now I update it", updatedComment.getText());
+            assertEquals(author, updatedComment.getAuthor());
         }
     }
 
@@ -419,11 +448,12 @@ public class CommentAdapterTest extends BaseTest {
 
         fetchInvalidations();
         String entityId = "foo";
+        String author = "toto";
 
         Comment comment = new CommentImpl();
         ((ExternalEntity) comment).setEntityId(entityId);
         comment.setParentId(file.getId());
-        comment.setAuthor("toto");
+        comment.setAuthor(author);
         comment = commentManager.createComment(session, comment);
 
         fetchInvalidations();
@@ -437,7 +467,8 @@ public class CommentAdapterTest extends BaseTest {
 
             fetchInvalidations();
             Comment updatedComment = commentManager.getExternalComment(session, entityId);
-            assertEquals("titi", updatedComment.getAuthor());
+            // Author should not be modified
+            assertEquals(author, updatedComment.getAuthor());
         }
     }
 
@@ -449,6 +480,7 @@ public class CommentAdapterTest extends BaseTest {
 
         Comment comment = instantiateComment(file.getId());
         ((ExternalEntity) comment).setEntityId(entityId);
+        comment.setAuthor(session.getPrincipal().getName());
         comment = commentManager.createComment(session, comment);
 
         fetchInvalidations();
@@ -464,13 +496,14 @@ public class CommentAdapterTest extends BaseTest {
     }
 
     protected Comment createComment(String documentId) {
-        return commentManager.createComment(session, instantiateComment(documentId));
+        Comment comment = instantiateComment(documentId);
+        comment.setAuthor(session.getPrincipal().getName());
+        return commentManager.createComment(session, comment);
     }
 
     protected Comment instantiateComment(String documentId) {
         Comment comment = new CommentImpl();
         comment.setParentId(documentId);
-        comment.setAuthor(session.getPrincipal().getName());
         comment.setText("Here my wonderful comment on " + documentId + "!");
         comment.setCreationDate(Instant.now());
         comment.setModificationDate(Instant.now());
