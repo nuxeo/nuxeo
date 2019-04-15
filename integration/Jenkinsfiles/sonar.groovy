@@ -1,3 +1,4 @@
+#!/usr/bin/env groovy
 /*
  * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
