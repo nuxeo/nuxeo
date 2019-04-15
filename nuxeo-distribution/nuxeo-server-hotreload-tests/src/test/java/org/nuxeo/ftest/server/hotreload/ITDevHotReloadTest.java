@@ -27,6 +27,10 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.functionaltests.AbstractTest.NUXEO_URL;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -224,8 +228,25 @@ public class ITDevHotReloadTest {
         assertEquals("New Workflow", RestHelper.getWorkflowInstanceTitle("newWorkflow"));
         // deploy second bundle with same jar name and resource change
         hotReloadRule.deployJarDevBundle(ITDevHotReloadTest.class,
-                                         "_testHotReloadJarFileFactoryFlush/second/jar-to-hot-reload.jar");
+                "_testHotReloadJarFileFactoryFlush/second/jar-to-hot-reload.jar");
         assertEquals("New Workflow (2)", RestHelper.getWorkflowInstanceTitle("newWorkflow"));
+    }
+
+    @Test
+    public void testHotReloadFileImporters() throws IOException {
+        // FileManagerService plugins extension point issue appearing when doing 2 hot reloads
+        // see NXP-27147
+        hotReloadRule.deployJarDevBundle(ITDevHotReloadTest.class, "testHotReloadFileImporters");
+
+        Path tempPath = Files.createTempFile("", ".bin");
+        File tempFile = tempPath.toFile();
+        String docPath = "/default-domain/" + tempFile.getName();
+
+        RestHelper.operation("FileManager.Import", tempFile, Map.of("currentDocument", "/default-domain"), null);
+        RestHelper.addDocumentToDelete(docPath);
+
+        String docType = RestHelper.fetchDocumentType(docPath);
+        assertEquals("Foo", docType);
     }
 
 }

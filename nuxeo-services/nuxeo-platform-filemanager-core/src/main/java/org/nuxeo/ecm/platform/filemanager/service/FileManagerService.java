@@ -21,11 +21,11 @@ package org.nuxeo.ecm.platform.filemanager.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -62,9 +61,10 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.logging.DeprecationLogger;
+import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Extension;
 
 /**
  * FileManager registry service.
@@ -86,13 +86,22 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     public static final int MAX = 15;
 
+    /** @since 11.1 */
+    public static final String PLUGINS_EP = "plugins";
+
+    /** @since 11.1 */
+    public static final String UNICITY_EP = "unicity";
+
+    /** @since 11.1 */
+    public static final String VERSIONING_EP = "versioning";
+
     private static final Logger log = LogManager.getLogger(FileManagerService.class);
 
-    private final Map<String, FileImporter> fileImporters;
+    private Map<String, FileImporter> fileImporters;
 
-    private final List<FolderImporter> folderImporters;
+    private List<FolderImporter> folderImporters;
 
-    private final List<CreationContainerListProvider> creationContainerListProviders;
+    private List<CreationContainerListProvider> creationContainerListProviders;
 
     private List<String> fieldsXPath = new ArrayList<>();
 
@@ -122,10 +131,105 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     @Deprecated
     private boolean versioningAfterAdd = DEF_VERSIONING_AFTER_ADD;
 
-    public FileManagerService() {
-        fileImporters = new HashMap<>();
-        folderImporters = new LinkedList<>();
-        creationContainerListProviders = new LinkedList<>();
+    @Override
+    public void registerContribution(Object contribution, String xp, ComponentInstance component) {
+        if (PLUGINS_EP.equals(xp)) {
+            xp = computePluginsExtensionPoint(contribution.getClass());
+        }
+        super.registerContribution(contribution, xp, component);
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution, String xp, ComponentInstance component) {
+        if (PLUGINS_EP.equals(xp)) {
+            xp = computePluginsExtensionPoint(contribution.getClass());
+        }
+        super.unregisterContribution(contribution, xp, component);
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        super.start(context);
+
+        registerFileImporters();
+        registerFolderImporters();
+        registerCreationContainerListProviders();
+        registerUnicity();
+        registerVersioning();
+    }
+
+    protected void registerFileImporters() {
+        String xp = computePluginsExtensionPoint(FileImporterDescriptor.class);
+        fileImporters = getDescriptors(xp).stream()
+                                          .map(FileImporterDescriptor.class::cast)
+                                          .map(descriptor -> descriptor.newInstance(this))
+                                          .collect(Collectors.toMap(FileImporter::getName, Function.identity()));
+    }
+
+    protected void registerFolderImporters() {
+        String xp = computePluginsExtensionPoint(FolderImporterDescriptor.class);
+        folderImporters = getDescriptors(xp).stream()
+                                            .map(FolderImporterDescriptor.class::cast)
+                                            .map(descriptor -> descriptor.newInstance(this))
+                                            .collect(Collectors.toList());
+    }
+
+    protected void registerCreationContainerListProviders() {
+        String xp = computePluginsExtensionPoint(CreationContainerListProviderDescriptor.class);
+        creationContainerListProviders = getDescriptors(xp).stream()
+                                                           .map(CreationContainerListProviderDescriptor.class::cast)
+                                                           .map(CreationContainerListProviderDescriptor::newInstance)
+                                                           .collect(Collectors.toList());
+    }
+
+    protected void registerUnicity() {
+        getDescriptors(UNICITY_EP).stream().map(UnicityExtension.class::cast).forEach(unicityExtension -> {
+            if (unicityExtension.getAlgo() != null) {
+                digestAlgorithm = unicityExtension.getAlgo();
+            }
+            if (unicityExtension.getEnabled() != null) {
+                unicityEnabled = unicityExtension.getEnabled();
+            }
+            if (unicityExtension.getFields() != null) {
+                fieldsXPath = unicityExtension.getFields();
+            } else {
+                fieldsXPath.add("file:content");
+            }
+            if (unicityExtension.getComputeDigest() != null) {
+                computeDigest = unicityExtension.getComputeDigest();
+            }
+        });
+    }
+
+    /**
+     * @deprecated since 9.1
+     */
+    @Deprecated(since = "9.1")
+    protected void registerVersioning() {
+        getDescriptors(VERSIONING_EP).stream().map(VersioningDescriptor.class::cast).forEach(versioningDescriptor -> {
+            String message = "Extension point 'versioning' has been deprecated and corresponding behavior removed from "
+                    + "Nuxeo Platform. Please use versioning policy instead.";
+            DeprecationLogger.log(message, "9.1");
+            Framework.getRuntime().getMessageHandler().addWarning(message);
+
+            String defver = versioningDescriptor.defaultVersioningOption;
+            if (!StringUtils.isBlank(defver)) {
+                try {
+                    defaultVersioningOption = VersioningOption.valueOf(defver.toUpperCase(Locale.ENGLISH));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Illegal versioning option: {}, using {} instead", defver, DEF_VERSIONING_OPTION);
+                    defaultVersioningOption = DEF_VERSIONING_OPTION;
+                }
+            }
+            Boolean veradd = versioningDescriptor.versionAfterAdd;
+            if (veradd != null) {
+                versioningAfterAdd = veradd;
+            }
+        });
+    }
+
+    protected String computePluginsExtensionPoint(Class<?> klass) {
+        return String.format("%s-%s", PLUGINS_EP, klass.getSimpleName());
     }
 
     private Blob checkMimeType(Blob blob, String fullname) {
@@ -289,260 +393,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     public FileImporter getPluginByName(String name) {
         return fileImporters.get(name);
-    }
-
-    @Override
-    public void registerExtension(Extension extension) {
-        if (extension.getExtensionPoint().equals("plugins")) {
-            Object[] contribs = extension.getContributions();
-            for (Object contrib : contribs) {
-                if (contrib instanceof FileImporterDescriptor) {
-                    registerFileImporter((FileImporterDescriptor) contrib, extension);
-                } else if (contrib instanceof FolderImporterDescriptor) {
-                    registerFolderImporter((FolderImporterDescriptor) contrib, extension);
-                } else if (contrib instanceof CreationContainerListProviderDescriptor) {
-                    registerCreationContainerListProvider((CreationContainerListProviderDescriptor) contrib, extension);
-                }
-            }
-        } else if (extension.getExtensionPoint().equals("unicity")) {
-            Object[] contribs = extension.getContributions();
-            for (Object contrib : contribs) {
-                if (contrib instanceof UnicityExtension) {
-                    registerUnicityOptions((UnicityExtension) contrib);
-                }
-            }
-        } else if (extension.getExtensionPoint().equals("versioning")) {
-            String message = "Extension point 'versioning' has been deprecated and corresponding behavior removed from "
-                    + "Nuxeo Platform. Please use versioning policy instead.";
-            DeprecationLogger.log(message, "9.1");
-            Framework.getRuntime().getMessageHandler().addWarning(message);
-            Object[] contribs = extension.getContributions();
-            for (Object contrib : contribs) {
-                if (contrib instanceof VersioningDescriptor) {
-                    VersioningDescriptor descr = (VersioningDescriptor) contrib;
-                    String defver = descr.defaultVersioningOption;
-                    if (!StringUtils.isBlank(defver)) {
-                        try {
-                            defaultVersioningOption = VersioningOption.valueOf(defver.toUpperCase(Locale.ENGLISH));
-                        } catch (IllegalArgumentException e) {
-                            log.warn("Illegal versioning option: {}, using {} instead", defver, DEF_VERSIONING_OPTION);
-                            defaultVersioningOption = DEF_VERSIONING_OPTION;
-                        }
-                    }
-                    Boolean veradd = descr.versionAfterAdd;
-                    if (veradd != null) {
-                        versioningAfterAdd = veradd.booleanValue();
-                    }
-                }
-            }
-        } else {
-            log.warn("Unknown contribution {}: ignored", extension::getExtensionPoint);
-        }
-    }
-
-    @Override
-    public void unregisterExtension(Extension extension) {
-        if (extension.getExtensionPoint().equals("plugins")) {
-            Object[] contribs = extension.getContributions();
-
-            for (Object contrib : contribs) {
-                if (contrib instanceof FileImporterDescriptor) {
-                    unregisterFileImporter((FileImporterDescriptor) contrib);
-                } else if (contrib instanceof FolderImporterDescriptor) {
-                    unregisterFolderImporter((FolderImporterDescriptor) contrib);
-                } else if (contrib instanceof CreationContainerListProviderDescriptor) {
-                    unregisterCreationContainerListProvider((CreationContainerListProviderDescriptor) contrib);
-                }
-            }
-        } else if (extension.getExtensionPoint().equals("unicity")) {
-            // nothing to do
-
-        } else if (extension.getExtensionPoint().equals("versioning")) {
-            // set to default value
-            defaultVersioningOption = DEF_VERSIONING_OPTION;
-            versioningAfterAdd = DEF_VERSIONING_AFTER_ADD;
-        } else {
-            log.warn("Unknown contribution {}: ignored", extension::getExtensionPoint);
-        }
-    }
-
-    private void registerUnicityOptions(UnicityExtension unicityExtension) {
-        if (unicityExtension.getAlgo() != null) {
-            digestAlgorithm = unicityExtension.getAlgo();
-        }
-        if (unicityExtension.getEnabled() != null) {
-            unicityEnabled = unicityExtension.getEnabled().booleanValue();
-        }
-        if (unicityExtension.getFields() != null) {
-            fieldsXPath = unicityExtension.getFields();
-        } else {
-            fieldsXPath.add("file:content");
-        }
-        if (unicityExtension.getComputeDigest() != null) {
-            computeDigest = unicityExtension.getComputeDigest().booleanValue();
-        }
-    }
-
-    private void registerFileImporter(FileImporterDescriptor pluginExtension, Extension extension) {
-        String name = pluginExtension.getName();
-        if (name == null) {
-            log.error("Cannot register file importer without a name");
-            return;
-        }
-
-        String className = pluginExtension.getClassName();
-        if (fileImporters.containsKey(name)) {
-            log.info("Overriding file importer plugin {}", name);
-            FileImporter oldPlugin = fileImporters.get(name);
-            FileImporter newPlugin;
-            try {
-                newPlugin = className != null
-                        ? (FileImporter) extension.getContext()
-                                                  .loadClass(className)
-                                                  .getDeclaredConstructor()
-                                                  .newInstance()
-                        : oldPlugin;
-            } catch (ReflectiveOperationException e) {
-                throw new NuxeoException(e);
-            }
-            if (pluginExtension.isMerge()) {
-                mergeFileImporters(oldPlugin, newPlugin, pluginExtension);
-            } else {
-                fillImporterWithDescriptor(newPlugin, pluginExtension);
-            }
-            fileImporters.put(name, newPlugin);
-            log.info("Registered file importer {}", name);
-        } else if (className != null) {
-            FileImporter plugin;
-            try {
-                plugin = (FileImporter) extension.getContext()
-                                                 .loadClass(className)
-                                                 .getDeclaredConstructor()
-                                                 .newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new NuxeoException(e);
-            }
-            fillImporterWithDescriptor(plugin, pluginExtension);
-            fileImporters.put(name, plugin);
-            log.info("Registered file importer {}", name);
-        } else {
-            log.info("Unable to register file importer {}, className is null or plugin is not yet registered", name);
-        }
-    }
-
-    private void mergeFileImporters(FileImporter oldPlugin, FileImporter newPlugin, FileImporterDescriptor desc) {
-        List<String> filters = desc.getFilters();
-        if (filters != null && !filters.isEmpty()) {
-            List<String> oldFilters = oldPlugin.getFilters();
-            oldFilters.addAll(filters);
-            newPlugin.setFilters(oldFilters);
-        }
-        newPlugin.setName(desc.getName());
-        String docType = desc.getDocType();
-        if (docType != null) {
-            newPlugin.setDocType(docType);
-        }
-        newPlugin.setFileManagerService(this);
-        newPlugin.setEnabled(desc.isEnabled());
-        Integer order = desc.getOrder();
-        if (order != null) {
-            newPlugin.setOrder(desc.getOrder());
-        }
-    }
-
-    private void fillImporterWithDescriptor(FileImporter fileImporter, FileImporterDescriptor desc) {
-        List<String> filters = desc.getFilters();
-        if (filters != null && !filters.isEmpty()) {
-            fileImporter.setFilters(filters);
-        }
-        fileImporter.setName(desc.getName());
-        fileImporter.setDocType(desc.getDocType());
-        fileImporter.setFileManagerService(this);
-        fileImporter.setEnabled(desc.isEnabled());
-        fileImporter.setOrder(desc.getOrder());
-    }
-
-    private void unregisterFileImporter(FileImporterDescriptor pluginExtension) {
-        String name = pluginExtension.getName();
-        fileImporters.remove(name);
-        log.info("unregistered file importer: {}", name);
-    }
-
-    private void registerFolderImporter(FolderImporterDescriptor folderImporterDescriptor, Extension extension) {
-
-        String name = folderImporterDescriptor.getName();
-        String className = folderImporterDescriptor.getClassName();
-
-        FolderImporter folderImporter;
-        try {
-            folderImporter = (FolderImporter) extension.getContext()
-                                                       .loadClass(className)
-                                                       .getDeclaredConstructor()
-                                                       .newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new NuxeoException(e);
-        }
-        folderImporter.setName(name);
-        folderImporter.setFileManagerService(this);
-        folderImporters.add(folderImporter);
-        log.info("registered folder importer: {}", name);
-    }
-
-    private void unregisterFolderImporter(FolderImporterDescriptor folderImporterDescriptor) {
-        String name = folderImporterDescriptor.getName();
-        FolderImporter folderImporterToRemove = null;
-        for (FolderImporter folderImporter : folderImporters) {
-            if (name.equals(folderImporter.getName())) {
-                folderImporterToRemove = folderImporter;
-            }
-        }
-        if (folderImporterToRemove != null) {
-            folderImporters.remove(folderImporterToRemove);
-        }
-        log.info("unregistered folder importer: {}", name);
-    }
-
-    private void registerCreationContainerListProvider(CreationContainerListProviderDescriptor ccListProviderDescriptor,
-            Extension extension) {
-
-        String name = ccListProviderDescriptor.getName();
-        String[] docTypes = ccListProviderDescriptor.getDocTypes();
-        String className = ccListProviderDescriptor.getClassName();
-
-        CreationContainerListProvider provider;
-        try {
-            provider = (CreationContainerListProvider) extension.getContext()
-                                                                .loadClass(className)
-                                                                .getDeclaredConstructor()
-                                                                .newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new NuxeoException(e);
-        }
-        provider.setName(name);
-        provider.setDocTypes(docTypes);
-        if (creationContainerListProviders.contains(provider)) {
-            // equality and containment tests are based on unique names
-            creationContainerListProviders.remove(provider);
-        }
-        // add the new provider at the beginning of the list
-        creationContainerListProviders.add(0, provider);
-        log.info("registered creationContaineterList provider: {}", name);
-    }
-
-    private void unregisterCreationContainerListProvider(
-            CreationContainerListProviderDescriptor ccListProviderDescriptor) {
-        String name = ccListProviderDescriptor.getName();
-        CreationContainerListProvider providerToRemove = null;
-        for (CreationContainerListProvider provider : creationContainerListProviders) {
-            if (name.equals(provider.getName())) {
-                providerToRemove = provider;
-                break;
-            }
-        }
-        if (providerToRemove != null) {
-            creationContainerListProviders.remove(providerToRemove);
-        }
-        log.info("unregistered creationContaineterList provider: {}", name);
     }
 
     @Override

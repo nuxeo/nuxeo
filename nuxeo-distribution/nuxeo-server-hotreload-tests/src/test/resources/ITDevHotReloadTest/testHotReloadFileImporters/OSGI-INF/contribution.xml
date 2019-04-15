@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ftest.server.dev.hot.reload.contrib" version="1.0">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="Foo" extends="File" />
+
+    <doctype name="Domain" extends="Folder">
+      <schema name="domain"/>
+      <facet name="SuperSpace"/>
+      <facet name="NotCollectionMember" />
+      <subtypes>
+        <type>WorkspaceRoot</type>
+        <type>SectionRoot</type>
+        <type>TemplateRoot</type>
+        <type>Foo</type>
+      </subtypes>
+    </doctype>
+  </extension>
+
+  <require>org.nuxeo.ecm.platform.filemanager.service.FileManagerService.Plugins</require>
+  <extension target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService" point="plugins">
+    <plugin name="DefaultFileImporter" merge="true" docType="Foo" />
+  </extension>
+
+</component>
