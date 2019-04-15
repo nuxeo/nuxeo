@@ -1,5 +1,6 @@
+#!/usr/bin/env groovy
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,15 +53,16 @@ node('SLAVE&&STATIC') {
 
             try {
                 stage('tests') {
-                    withBuildStatus("$DBPROFILE-$DBVERSION/utest", 'https://github.com/nuxeo/nuxeo', sha, "${BUILD_URL}") {
-                       withDockerCompose("$JOB_NAME-$BUILD_NUMBER", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml", "mvn -B -V -f $WORKSPACE/pom.xml install -Pqa,addons,customdb,$DBPROFILE,${DBPROFILE}${DBVERSION} -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT") {
+                    withBuildStatus("$DBPROFILE-$DBVERSION/utest", 'https://github.com/nuxeo/nuxeo', sha, RUN_DISPLAY_URL) {
+                        withDockerCompose("$JOB_NAME-$BUILD_NUMBER", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml",
+                            "mvn -B -V -f $WORKSPACE/pom.xml install -Pqa,addons,customdb,$DBPROFILE,${DBPROFILE}${DBVERSION} -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT") {
                             archiveArtifacts '**/target/failsafe-reports/*, **/target/*.png, **/target/**/*.log, **/target/**/log/*'
                             junit '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
+                            warningsPublisher()
                         }
                     }
                 }
             } finally {
-                warningsPublisher()
                 claimPublisher()
             }
         }
