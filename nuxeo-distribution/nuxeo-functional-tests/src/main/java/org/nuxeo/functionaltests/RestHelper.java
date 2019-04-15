@@ -23,6 +23,7 @@ package org.nuxeo.functionaltests;
 import static org.nuxeo.functionaltests.AbstractTest.NUXEO_URL;
 import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -41,6 +43,7 @@ import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.acl.ACE;
+import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.directory.DirectoryEntry;
 import org.nuxeo.client.objects.operation.DocRef;
 import org.nuxeo.client.objects.user.Group;
@@ -409,6 +412,16 @@ public class RestHelper {
         return result.getTotalSize();
     }
 
+    /**
+     * Fetches the document type given its id or path.
+     *
+     * @since 11.1
+     */
+    public static String fetchDocumentType(String idOrPath) {
+        Document result = fetchDocumentByIdOrPath(idOrPath);
+        return result.getType();
+    }
+
     // ------------------
     // Directory Services
     // ------------------
@@ -468,6 +481,19 @@ public class RestHelper {
      */
     public static void operation(String operationId, Map<String, Object> parameters) {
         CLIENT.operation(operationId).parameters(parameters).execute();
+    }
+
+    /**
+     * @since 11.1
+     */
+    public static void operation(String operationId, File input, Map<String, Object> context,
+            Map<String, Object> parameters) {
+        FileBlob blob = new FileBlob(input);
+        CLIENT.operation(operationId)
+              .input(blob)
+              .context(Objects.requireNonNullElse(context, Map.of()))
+              .parameters(Objects.requireNonNullElse(parameters, Map.of()))
+              .execute();
     }
 
     /**

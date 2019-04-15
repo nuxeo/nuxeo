@@ -27,15 +27,24 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.runtime.model.Descriptor;
 
 @XObject("creationContainerListProvider")
-public class CreationContainerListProviderDescriptor {
+public class CreationContainerListProviderDescriptor implements Descriptor {
 
     @XNode("@name")
     protected String name;
 
+    /**
+     * @deprecated since 11.1.
+     */
+    @Deprecated(since = "11.1")
     @XNode("@class")
     protected String className;
+
+    @XNode("@class")
+    protected Class<? extends CreationContainerListProvider> klass;
 
     @XNodeList(value = "docType", type = ArrayList.class, componentType = String.class)
     protected List<String> docTypes = new ArrayList<>();
@@ -44,6 +53,10 @@ public class CreationContainerListProviderDescriptor {
         return name;
     }
 
+    /**
+     * @deprecated since 11.1.
+     */
+    @Deprecated(since = "11.1")
     public String getClassName() {
         return className;
     }
@@ -52,4 +65,22 @@ public class CreationContainerListProviderDescriptor {
         return docTypes.toArray(new String[docTypes.size()]);
     }
 
+    /**
+     * @since 11.1
+     */
+    public CreationContainerListProvider newInstance() {
+        try {
+            CreationContainerListProvider provider = klass.getDeclaredConstructor().newInstance();
+            provider.setName(name);
+            provider.setDocTypes(getDocTypes());
+            return provider;
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException(e);
+        }
+    }
+
+    @Override
+    public String getId() {
+        return name;
+    }
 }

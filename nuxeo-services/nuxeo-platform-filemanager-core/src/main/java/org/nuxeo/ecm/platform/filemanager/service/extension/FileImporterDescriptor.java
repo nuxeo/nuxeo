@@ -29,12 +29,15 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * @author akalogeropoulos
  */
 @XObject("plugin")
-public class FileImporterDescriptor implements Serializable {
+public class FileImporterDescriptor implements Descriptor, Serializable {
 
     public static final List<String> DEFAULT_FILTER = new ArrayList<>();
 
@@ -46,8 +49,18 @@ public class FileImporterDescriptor implements Serializable {
     @XNode("@name")
     protected String name;
 
+    /**
+     * @deprecated since 11.1.
+     */
+    @Deprecated(since = "11.1")
     @XNode("@class")
     protected String className;
+
+    /**
+     * @since 11.1
+     */
+    @XNode("@class")
+    protected Class<? extends FileImporter> klass;
 
     @XNode("@docType")
     protected String docType;
@@ -72,10 +85,18 @@ public class FileImporterDescriptor implements Serializable {
         this.name = name;
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link #klass}.
+     */
+    @Deprecated(since = "11.1")
     public String getClassName() {
         return className;
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link #klass}.
+     */
+    @Deprecated(since = "11.1")
     public void setClassName(String className) {
         this.className = className;
     }
@@ -121,5 +142,57 @@ public class FileImporterDescriptor implements Serializable {
      */
     public boolean isMerge() {
         return merge;
+    }
+
+    /**
+     * @since 11.1
+     */
+    public FileImporter newInstance(FileManagerService fileManagerService) {
+        try {
+            FileImporter fileImporter = klass.getDeclaredConstructor().newInstance();
+            fileImporter.setName(name);
+            fileImporter.setEnabled(enabled);
+            fileImporter.setDocType(docType);
+            fileImporter.setFilters(filters);
+            fileImporter.setOrder(order);
+            fileImporter.setFileManagerService(fileManagerService);
+            return fileImporter;
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException(e);
+        }
+    }
+
+    @Override
+    public String getId() {
+        return name;
+    }
+
+    @Override
+    public Descriptor merge(Descriptor o) {
+        FileImporterDescriptor other = (FileImporterDescriptor) o;
+        if (!other.merge) {
+            return other;
+        }
+
+        FileImporterDescriptor merged = new FileImporterDescriptor();
+        merged.name = other.name;
+        merged.enabled = other.enabled;
+        merged.klass = defaultValue(other.klass, klass);
+        merged.className = defaultValue(other.className, className);
+        merged.docType = defaultValue(other.docType, docType);
+        merged.filters = new ArrayList<>();
+        merged.filters.addAll(filters);
+        merged.filters.addAll(other.filters);
+        merged.order = defaultValue(other.order, order);
+        return merged;
+    }
+
+    protected <T> T defaultValue(T value, T defaultValue) {
+        return value == null ? defaultValue : value;
+    }
+
+    @Override
+    public boolean doesRemove() {
+        return !enabled;
     }
 }

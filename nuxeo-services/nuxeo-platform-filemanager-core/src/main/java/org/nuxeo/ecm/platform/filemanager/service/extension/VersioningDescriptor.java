@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.model.Descriptor;
 
 /**
  * @since 5.7
@@ -30,7 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @Deprecated
 @XObject("versioning")
-public class VersioningDescriptor implements Serializable {
+public class VersioningDescriptor implements Descriptor, Serializable {
 
     private static final long serialVersionUID = 8615121233156981874L;
 
@@ -40,4 +41,8 @@ public class VersioningDescriptor implements Serializable {
     @XNode("versionAfterAdd")
     public Boolean versionAfterAdd;
 
+    @Override
+    public String getId() {
+        return toString();
+    }
 }
