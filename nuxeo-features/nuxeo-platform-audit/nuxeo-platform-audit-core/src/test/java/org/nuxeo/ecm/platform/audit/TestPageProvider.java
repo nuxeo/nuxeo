@@ -21,20 +21,25 @@ package org.nuxeo.ecm.platform.audit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.audit.api.AuditPageProvider.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.audit.provider.LatestCreatedUsersOrGroupsPageProvider.LATEST_CREATED_USERS_OR_GROUPS_PROVIDER;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
@@ -425,9 +430,10 @@ public class TestPageProvider {
     @Test
     public void testLatestUserGroupPageProvider() throws Exception {
 
+        String testUsername = "Foo";
         DocumentModel userModel = userManager.getBareUserModel();
         String schemaName = userManager.getUserSchemaName();
-        userModel.setProperty(schemaName, "username", "Foo");
+        userModel.setProperty(schemaName, "username", testUsername);
         userModel = userManager.createUser(userModel);
 
         DocumentModel userModel2 = userManager.getBareUserModel();
@@ -444,9 +450,9 @@ public class TestPageProvider {
                 LatestCreatedUsersOrGroupsPageProvider.LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER);
         assertNotNull(ppdef);
 
-        PageProvider<?> pp = pps.getPageProvider(
-                LatestCreatedUsersOrGroupsPageProvider.LATEST_CREATED_USERS_OR_GROUPS_PROVIDER, null, Long.valueOf(6),
-                Long.valueOf(0), new HashMap<String, Serializable>());
+        Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
+        PageProvider<?> pp = pps.getPageProvider(LATEST_CREATED_USERS_OR_GROUPS_PROVIDER, null, Long.valueOf(6),
+                Long.valueOf(0), props);
 
         assertNotNull(pp);
 
@@ -454,6 +460,18 @@ public class TestPageProvider {
 
         assertNotNull(entries);
         assertEquals(2, entries.size());
+
+        // Check that a non-admin user cannot have results from the page provider
+        try (CoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(),
+                userManager.getPrincipal(testUsername))) {
+
+            props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) userSession);
+            pp = pps.getPageProvider(LATEST_CREATED_USERS_OR_GROUPS_PROVIDER, null, 6L, 0L, props);
+
+            entries = (List<DocumentModel>) pp.getCurrentPage();
+            assertEquals(0, entries.size());
+
+        }
     }
 
     protected void waitForAsyncCompletion() throws InterruptedException {
