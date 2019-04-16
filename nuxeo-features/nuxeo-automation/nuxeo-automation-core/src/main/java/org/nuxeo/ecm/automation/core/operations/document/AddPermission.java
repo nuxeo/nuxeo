@@ -21,6 +21,7 @@
 package org.nuxeo.ecm.automation.core.operations.document;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +40,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
@@ -101,6 +103,7 @@ public class AddPermission {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
+        validateParameters();
         addPermission(doc);
         return session.getDocument(doc.getRef());
     }
@@ -108,8 +111,16 @@ public class AddPermission {
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef docRef) {
         DocumentModel doc = session.getDocument(docRef);
+        validateParameters();
         addPermission(doc);
         return doc;
+    }
+
+    protected void validateParameters() {
+        // validate permission
+        if (!Arrays.asList(Framework.getService(PermissionProvider.class).getPermissions()).contains(permission)) {
+            throw new IllegalParameterException(String.format("Permission %s is invalid.", permission));
+        }
     }
 
     protected void addPermission(DocumentModel doc) {
