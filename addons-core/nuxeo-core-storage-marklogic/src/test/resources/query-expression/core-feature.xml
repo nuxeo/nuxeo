@@ -1,0 +1,36 @@
+<search xmlns="http://marklogic.com/appservices/search">
+  <query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>OrderedFolder</text>
+      <text>HiddenFile</text>
+      <text>DocWithAge</text>
+      <text>TemplateRoot</text>
+      <text>TestDocument2</text>
+      <text>TestDocumentWithDefaultPrefetch</text>
+      <text>SectionRoot</text>
+      <text>Document</text>
+      <text>Folder</text>
+      <text>WorkspaceRoot</text>
+      <text>HiddenFolder</text>
+      <text>Section</text>
+      <text>TestDocument</text>
+      <text>Relation</text>
+      <text>FolderWithSearch</text>
+      <text>MyDocType</text>
+      <text>Book</text>
+      <text>Note</text>
+      <text>ComplexDoc</text>
+      <text>Domain</text>
+      <text>File</text>
+      <text>Workspace</text>
+    </value-query>
+  </query>
+  <options xmlns="http://marklogic.com/appservices/search">
+    <transform-results apply="empty-snippet" />
+    <extract-document-data selected="include-with-ancestors">
+      <extract-path>/document/ecm__id</extract-path>
+    </extract-document-data>
+  </options>
+</search>

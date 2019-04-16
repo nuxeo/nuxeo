@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<search xmlns="http://marklogic.com/appservices/search">
+  <query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <value-query type="string">
+      <element ns="" name="ecm__ancestorIds__item" />
+      <text>ID</text>
+    </value-query>
+  </query>
+  <options xmlns="http://marklogic.com/appservices/search">
+    <transform-results apply="empty-snippet" />
+  </options>
+</search>
