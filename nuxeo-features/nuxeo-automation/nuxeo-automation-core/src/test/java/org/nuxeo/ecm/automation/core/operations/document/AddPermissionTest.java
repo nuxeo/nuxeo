@@ -213,6 +213,25 @@ public class AddPermissionTest {
 
     @Test
     @Deploy("org.nuxeo.ecm.automation.core:test-allow-virtual-user.xml")
+    public void shouldFailWhenPermissionDoesNotExist() throws OperationException {
+        DocumentModel doc = session.createDocumentModel("/", "src", "File");
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(doc);
+        List<String> users = Arrays.asList("foo");
+        String invalidPermission = "<a href=www.evil.com>New";
+        Map<String, Object> params = getParametersForAddOperation(null, users, null, invalidPermission, null, null,
+                null, false, false, null);
+        try {
+            automationService.run(ctx, AddPermission.ID, params);
+            fail(String.format("Calling %s with an invalid permission %s should fail.", AddPermission.ID,
+                    invalidPermission));
+        } catch (IllegalParameterException e) {
+            assertEquals(String.format("Permission %s is invalid.", invalidPermission), e.getOriginalMessage());
+        }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.core:test-allow-virtual-user.xml")
     public void shouldAddPermissionForUnexistingUserWhenAllowVirtualUserFlagIsTrue() throws OperationException {
         DocumentModel doc = session.getDocument(new PathRef("/src"));
         assertNotNull(doc.getACP());

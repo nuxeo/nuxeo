@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.core.api.NuxeoPrincipal.isTransientUsername;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
@@ -185,6 +187,11 @@ public class AddPermission {
                         String.join(",", unknownNames));
                 throw new IllegalParameterException(errorMsg);
             }
+        }
+
+        // validate permission
+        if (!Arrays.asList(Framework.getService(PermissionProvider.class).getPermissions()).contains(permission)) {
+            throw new IllegalParameterException(String.format("Permission %s is invalid.", permission));
         }
     }
 
