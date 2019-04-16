@@ -182,9 +182,14 @@ public class BackingServiceConfigurator {
             return Optional.empty();
         }
 
+        String[] classpathEntries = classPathEntry.split(":");
+
         List<URL> urlsList = new ArrayList<>();
 
-        Collection<File> files = getJarsFromClasspathEntry(templateDir.toPath(), classPathEntry);
+        List<File> files = new ArrayList<>();
+        for (String entry : classpathEntries) {
+            files.addAll(getJarsFromClasspathEntry(templateDir.toPath(), entry));
+        }
 
         if (!files.isEmpty()) {
             for (File file : files) {
