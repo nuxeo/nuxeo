@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.marklogic.test.repository">
+  <extension target="org.nuxeo.ecm.core.storage.marklogic.MarkLogicRepositoryService" point="repository">
+    <repository name="test" label="MarkLogic Repository">
+      <host>${nuxeo.test.marklogic.host}</host>
+      <port>${nuxeo.test.marklogic.port}</port>
+      <user>${nuxeo.test.marklogic.user}</user>
+      <password>${nuxeo.test.marklogic.password}</password>
+      <dbname>${nuxeo.test.marklogic.dbname}</dbname>
+      <changeTokenEnabled>${nuxeo.test.changetoken.enabled}</changeTokenEnabled>
+      <fulltext disabled="${nuxeo.test.fulltext.disabled}" searchDisabled="${nuxeo.test.fulltext.search.disabled}">
+        <index> <!-- name="default" implied -->
+          <!-- all props implied -->
+        </index>
+        <index name="title">
+          <field>dc:title</field>
+        </index>
+      </fulltext>
+      <range-element-indexes>
+        <!-- Basic elements -->
+        <range-element-index type="string">ecm:id</range-element-index>
+        <range-element-index type="string">ecm:parentId</range-element-index>
+        <range-element-index type="string">ecm:ancestorIds</range-element-index>
+        <range-element-index type="string">ecm:versionSeriesId</range-element-index>
+        <range-element-index type="string">ecm:proxyTargetId</range-element-index>
+        <range-element-index type="string">ecm:proxySeriesId</range-element-index>
+        <range-element-index type="string">ecm:racl</range-element-index> <!-- Technical element -->
+        <range-element-index type="string">ecm:name</range-element-index>
+        <range-element-index type="string">ecm:primaryType</range-element-index>
+        <range-element-index type="string">ecm:lifeCycleState</range-element-index>
+        <range-element-index type="string">dc:title</range-element-index>
+        <range-element-index type="dateTime">dc:created</range-element-index>
+        <range-element-index type="dateTime">dc:modified</range-element-index>
+        <range-element-index type="string">rend:renditionName</range-element-index>
+        <range-element-index type="dateTime">rend:modificationDate</range-element-index>
+        <range-element-index type="dateTime">rend:sourceModificationDate</range-element-index>
+        <range-element-index type="string">collectionMember:collectionIds</range-element-index>
+        <!-- Unit tests elements -->
+        <range-element-index type="string">dc:description</range-element-index>
+        <range-element-index type="string">dc:coverage</range-element-index>
+        <range-element-index type="long">ecm:pos</range-element-index>
+        <range-element-index type="string">ecm:lockOwner</range-element-index>
+        <range-element-index type="dateTime">ecm:lockCreated</range-element-index>
+        <range-element-index type="string">ecm:versionLabel</range-element-index>
+        <range-element-index type="string">firstname</range-element-index>
+        <range-element-index type="string">lastname</range-element-index>
+        <range-element-index type="string">tst:title</range-element-index>
+        <range-element-index type="dateTime">dc:issued</range-element-index>
+        <range-element-index type="string">nt:name</range-element-index>
+        <range-element-index type="string">dc:nature</range-element-index>
+        <range-element-index type="string">nxdoc:documentationId</range-element-index>
+      </range-element-indexes>
+    </repository>
+  </extension>
+</component>
