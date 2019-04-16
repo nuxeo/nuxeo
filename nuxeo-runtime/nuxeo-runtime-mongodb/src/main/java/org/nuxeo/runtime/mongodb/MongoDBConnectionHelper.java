@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 import javax.net.ssl.SSLContext;
@@ -82,17 +83,30 @@ public class MongoDBConnectionHelper {
      * @since 10.3
      */
     public static MongoClient newMongoClient(MongoDBConnectionConfig config) {
+        return newMongoClient(config, null);
+    }
+
+    /**
+     * Initializes a connection to the MongoDB server.
+     *
+     * @param config the MongoDB connection config
+     * @param optionsConsumer a consumer of the client options builder
+     * @return the MongoDB client
+     * @since 11.1
+     */
+    public static MongoClient newMongoClient(MongoDBConnectionConfig config,
+                                             Consumer<MongoClientOptions.Builder> optionsConsumer) {
         String server = config.server;
         if (StringUtils.isBlank(server)) {
             throw new RuntimeException("Missing <server> in MongoDB descriptor");
         }
-        MongoClientOptions.Builder optionsBuilder = MongoClientOptions.builder()
-                  // can help to prevent firewall disconnecting inactive connection, option not available from URI
-                  .socketKeepAlive(true)
-                  // don't wait forever by default, can be overridden using URI options
-                  .connectTimeout(MONGODB_OPTION_CONNECTION_TIMEOUT_MS)
-                  .socketTimeout(MONGODB_OPTION_SOCKET_TIMEOUT_MS)
-                  .description("Nuxeo");
+        MongoClientOptions.Builder optionsBuilder =
+                MongoClientOptions.builder()
+                                  // don't wait forever by default, can be overridden using URI options
+                                  .connectTimeout(
+                                          MONGODB_OPTION_CONNECTION_TIMEOUT_MS)
+                                  .socketTimeout(MONGODB_OPTION_SOCKET_TIMEOUT_MS)
+                                  .description("Nuxeo");
         SSLContext sslContext = getSSLContext(config);
         if (sslContext == null) {
             if (config.ssl != null) {
@@ -101,6 +115,9 @@ public class MongoDBConnectionHelper {
         } else {
             optionsBuilder.sslEnabled(true);
             optionsBuilder.sslContext(sslContext);
+        }
+        if (optionsConsumer != null) {
+            optionsConsumer.accept(optionsBuilder);
         }
         MongoClient client;
         if (server.startsWith("mongodb://")) {
