@@ -292,8 +292,8 @@ class ReleaseMP(object):
         """ Upload the given Marketplace package and update the config file."""
         uploaded = [url + ":"]
         mp_to_upload = self.mp_config.get(marketplace, "mp_to_upload")
-        mp_to_upload = mp_to_upload.replace(" ", "")
         for mp in mp_to_upload.split(","):
+            mp = mp.strip()
             for pkg in glob.glob(mp):
                 if os.path.isfile(pkg):
                     retcode = self.upload_file(url, pkg, dryrun=dryrun, owner=owner)
