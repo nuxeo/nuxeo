@@ -1,0 +1,6 @@
+cts:search(
+  fn:doc(),
+  cts:and-query((
+    cts:element-range-query(fn:QName("", "ecm__id"), "=", xs:string("ID"))
+  ))
+)
