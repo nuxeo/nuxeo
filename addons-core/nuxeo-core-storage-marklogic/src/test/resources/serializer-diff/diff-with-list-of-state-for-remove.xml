@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <list>
+    <diff>
+      <list__item xsi:type="xs:string">NOP</list__item>
+      <list__item>
+        <key2>NULL</key2>
+      </list__item>
+    </diff>
+    <rpush />
+  </list>
+</document>
