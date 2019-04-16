@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 import javax.net.ssl.SSLContext;
@@ -82,6 +83,19 @@ public class MongoDBConnectionHelper {
      * @since 10.3
      */
     public static MongoClient newMongoClient(MongoDBConnectionConfig config) {
+        return newMongoClient(config, null);
+    }
+
+    /**
+     * Initializes a connection to the MongoDB server.
+     *
+     * @param config the MongoDB connection config
+     * @param optionsConsumer a consumer of the client options builder
+     * @return the MongoDB client
+     * @since 11.1
+     */
+    public static MongoClient newMongoClient(MongoDBConnectionConfig config,
+                                             Consumer<MongoClientOptions.Builder> optionsConsumer) {
         String server = config.server;
         if (StringUtils.isBlank(server)) {
             throw new RuntimeException("Missing <server> in MongoDB descriptor");
@@ -101,6 +115,9 @@ public class MongoDBConnectionHelper {
         } else {
             optionsBuilder.sslEnabled(true);
             optionsBuilder.sslContext(sslContext);
+        }
+        if (optionsConsumer != null) {
+            optionsConsumer.accept(optionsBuilder);
         }
         MongoClient client;
         if (server.startsWith("mongodb://")) {
