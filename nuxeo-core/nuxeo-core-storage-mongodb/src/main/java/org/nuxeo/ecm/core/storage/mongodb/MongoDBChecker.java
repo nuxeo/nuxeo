@@ -18,26 +18,33 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
+import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.backingservices.BackingChecker;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionConfig;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionHelper;
 
 import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoClientURI;
 import com.mongodb.MongoTimeoutException;
-import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoDatabase;
 
 public class MongoDBChecker implements BackingChecker {
 
     private static final Log log = LogFactory.getLog(MongoDBChecker.class);
 
     public static final String TEMPLATE_NAME = "mongodb";
+
+    public static final String CONFIG_NAME = "mongodb-connection-config.xml";
 
     /**
      * @since 9.3
@@ -57,28 +64,37 @@ public class MongoDBChecker implements BackingChecker {
 
     @Override
     public void check(ConfigurationGenerator cg) throws ConfigurationException {
-        MongoClient ret = null;
-        String serverName = cg.getUserConfig().getProperty(ConfigurationGenerator.PARAM_MONGODB_SERVER);
-        String dbName = cg.getUserConfig().getProperty(ConfigurationGenerator.PARAM_MONGODB_NAME);
-
-        MongoClientOptions.Builder optionsBuilder = MongoClientOptions.builder()
-                                                                      .serverSelectionTimeout(
-                                                                              (int) TimeUnit.SECONDS.toMillis(getCheckTimeoutInSeconds(cg)))
-                                                                      .description("Nuxeo DB Check");
-        if (serverName.startsWith("mongodb://")) {
-            // allow mongodb:// URI syntax for the server, to pass everything in one string
-            ret = new MongoClient(new MongoClientURI(serverName, optionsBuilder));
+        File configFile = new File(cg.getConfigDir(), CONFIG_NAME);
+        if (!configFile.exists()) {
+            log.warn("Unable to find config file " + CONFIG_NAME);
         } else {
-            ret = new MongoClient(new ServerAddress(serverName), optionsBuilder.build());
+            MongoDBConnectionConfig config = getDescriptor(configFile, MongoDBConnectionConfig.class);
+            try (MongoClient mongoClient = MongoDBConnectionHelper.newMongoClient(config,
+                    builder -> builder.serverSelectionTimeout(
+                            (int) TimeUnit.SECONDS.toMillis(getCheckTimeoutInSeconds(cg)))
+                                      .description("Nuxeo DB Check"))) {
+                MongoDatabase database = mongoClient.getDatabase(config.dbname);
+                Document ping = new Document("ping", "1");
+                database.runCommand(ping);
+            } catch (MongoTimeoutException e) {
+                throw new ConfigurationException(String.format(
+                        "Unable to connect to MongoDB at %s, please check your connection", config.server));
+            }
         }
-        try {
-            Document ping = new Document("ping", "1");
-            ret.getDatabase(dbName).runCommand(ping);
-        } catch (MongoTimeoutException e) {
-            throw new ConfigurationException(
-                    String.format("Unable to connect to MongoDB at %s, please check your connection", serverName));
-        } finally {
-            ret.close();
+    }
+
+    /**
+     * Creates a descriptor instance for the specified file and descriptor class.
+     *
+     * @since 11.1
+     */
+    public <T> T getDescriptor(File file, Class<T> klass) throws ConfigurationException {
+        XMap xmap = new XMap();
+        xmap.register(klass);
+        try (InputStream inStream = new FileInputStream(file)) {
+            return (T) xmap.load(inStream);
+        } catch (IOException e) {
+            throw new ConfigurationException("Unable to load the configuration for " + klass.getSimpleName(), e);
         }
     }
 
