@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ecm__name xsi:type="xs:string">doc</ecm__name>
+  <ecm__racl>
+    <ecm__racl__item xsi:type="xs:string">Administrator</ecm__racl__item>
+    <ecm__racl__item xsi:type="xs:string">administrators</ecm__racl__item>
+    <ecm__racl__item xsi:type="xs:string">members</ecm__racl__item>
+  </ecm__racl>
+  <ecm__primaryType xsi:type="xs:string">TestDocument</ecm__primaryType>
+  <ecm__id xsi:type="xs:string">326203a5-56fb-4ae7-8983-123b814c9388</ecm__id>
+  <ecm__parentId xsi:type="xs:string">00000000-0000-0000-0000-000000000000</ecm__parentId>
+  <ecm__ancestorIds>
+    <ecm__ancestorIds__item xsi:type="xs:string">00000000-0000-0000-0000-000000000000</ecm__ancestorIds__item>
+  </ecm__ancestorIds>
+  <tp__complexList />
+</document>
