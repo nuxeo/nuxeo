@@ -1,0 +1,25 @@
+import module namespace extract = 'http://nuxeo.com/extract' at '/ext/nuxeo/extract.xqy';
+let $paths :=("/document/ecm__id","/document/ecm__name","/document/ecm__parentId")
+let $namespaces :=()
+for $i in cts:search(
+            fn:doc(),
+            cts:element-query(
+              fn:QName("","info__views"),
+              cts:element-query(
+                fn:QName("","info__views__item"),
+                cts:and-query((
+                  cts:element-value-query(
+                    fn:QName("","width"),
+                    "640",
+                    ("exact")
+                  ),
+                  cts:element-value-query(
+                    fn:QName("","height"),
+                    "480",
+                    ("exact")
+                  )
+                ))
+              )
+            )
+          )
+    return extract:extract-nodes($i, $paths, $namespaces)
