@@ -1,0 +1,27 @@
+cts:search(
+  fn:doc(),
+  cts:element-query(
+    fn:QName("","ecm__acp"),
+    cts:element-query(
+      fn:QName("","ecm__acp__item"),
+      cts:element-query(
+        fn:QName("","acl"),
+        cts:element-query(
+          fn:QName("","acl__item"),
+          cts:and-query((
+            cts:element-value-query(
+              fn:QName("","perm"),
+              ("Read","Browse"),
+              ("exact")
+            ),
+            cts:element-value-query(
+              fn:QName("","grant"),
+              "true",
+              ("exact")
+            )
+          ))
+        )
+      )
+    )
+  )
+)
