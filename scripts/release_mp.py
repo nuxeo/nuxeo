@@ -288,21 +288,12 @@ class ReleaseMP(object):
                 self.upload(CONNECT_PROD_URL, marketplace, dryrun=dryrun, owner=owner)
         os.chdir(cwd)
 
-    def is_list(tab_mp_ulpoad):
-      """ Check if instance of list """
-      if isinstance(tab_mp, (list, tuple)):
-        return(1);
-      else:
-        raise AssertionError(tab_mp_upload + " is not an instance of list")
-
     def upload(self, url, marketplace, dryrun=False, owner=None):
         """ Upload the given Marketplace package and update the config file."""
         uploaded = [url + ":"]
         mp_to_upload = self.mp_config.get(marketplace, "mp_to_upload")
         mp_to_upload = mp_to_upload.replace(" ", "")
-        tab_mp_upload = mp_to_upload.split(',')
-        if (is_list(tab_mp_upload)):
-          for mp in tab_mp_upload:
+        for mp in mp_to_upload.split(","):
             for pkg in glob.glob(mp):
                 if os.path.isfile(pkg):
                     retcode = self.upload_file(url, pkg, dryrun=dryrun, owner=owner)
