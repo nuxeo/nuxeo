@@ -163,14 +163,10 @@
     <restlet.version>2.4.1</restlet.version>
 
     <!-- JBoss properties -->
-    <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
     <version.org.jboss.vfs>2.1.2.GA</version.org.jboss.vfs>
     <version.org.jboss.cache.pojo>3.0.0.GA</version.org.jboss.cache.pojo>
     <version.org.jboss.microcontainer>2.0.6.GA</version.org.jboss.microcontainer>
     <version.org.jboss.integration>5.1.0.GA</version.org.jboss.integration>
-    <!-- should use same property name as JBoss to ease upgrades -->
-    <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
-    <javax.ejb.version>3.0-RC8</javax.ejb.version>
 
     <!-- deprecated property since removal of maven-nuxeo-plugin execution -->
     <eclipseVersion>${project.version}</eclipseVersion>
@@ -357,20 +353,6 @@
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-osgi</artifactId>
         <version>${nuxeo.runtime.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.jboss.jbossas</groupId>
-            <artifactId>jboss-as-system</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jboss.jbossas</groupId>
-            <artifactId>jboss-as-system-jmx</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jboss</groupId>
-            <artifactId>jboss-common-core</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
@@ -2702,23 +2684,6 @@
         <version>1.0</version>
       </dependency>
       <dependency>
-        <groupId>javax.ejb</groupId>
-        <artifactId>ejb</artifactId>
-        <version>${javax.ejb.version}</version>
-      </dependency>
-      <!-- NXP-10566: comment out dupplicate EL API and implementation, use
-        Tomcat deps instead -->
-      <!-- <dependency> -->
-      <!-- <groupId>javax.el</groupId> -->
-      <!-- <artifactId>el-api</artifactId> -->
-      <!-- <version>unknown</version> -->
-      <!-- </dependency> -->
-      <!-- <dependency> -->
-      <!-- <groupId>javax.el</groupId> -->
-      <!-- <artifactId>el-ri</artifactId> -->
-      <!-- <version>unknown</version> -->
-      <!-- </dependency> -->
-      <dependency>
         <groupId>com.sun.faces</groupId>
         <artifactId>jsf-api</artifactId>
         <version>${jsf.version}</version>
@@ -3164,60 +3129,12 @@
       <!-- Guessed versions of code included in JBoss 5.1.0.GA or at least
         compliant -->
       <dependency>
-        <groupId>org.jboss.aop</groupId>
-        <artifactId>jboss-aop</artifactId>
-        <!-- <version>2.2.1.Alpha3</version> -->
-        <version>2.2.0.Final</version>
-        <classifier>client</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.jbossas</groupId>
-        <artifactId>jboss-as-aspects</artifactId>
-        <version>${version.org.jboss.integration}</version>
-        <classifier>jboss-aspect-jdk50-client</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.ejb3</groupId>
-        <artifactId>jboss-ejb3-common</artifactId>
-        <version>1.0.3</version>
-        <classifier>client</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.ejb3</groupId>
-        <artifactId>jboss-ejb3-core</artifactId>
-        <version>1.6.0</version>
-        <classifier>client</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.ejb3</groupId>
-        <artifactId>jboss-ejb3-proxy-impl</artifactId>
-        <version>1.0.9</version>
-        <classifier>client</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.ejb3</groupId>
-        <artifactId>jboss-ejb3-proxy</artifactId>
-        <version>1.0.1</version>
-        <classifier>client</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.ejb3</groupId>
-        <artifactId>jboss-ejb3-security</artifactId>
-        <version>1.0.2</version>
-        <classifier>client</classifier>
-      </dependency>
-      <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging-log4j</artifactId>
         <version>2.1.0.GA</version>
       </dependency>
 
       <!-- jboss (+ hibernate, richfaces...) -->
-      <dependency>
-        <groupId>org.jboss.deployers</groupId>
-        <artifactId>jboss-deployers-vfs-spi</artifactId>
-        <version>${version.org.jboss.deployers}</version>
-      </dependency>
       <dependency>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-vfs</artifactId>
@@ -3230,76 +3147,14 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.jboss.javaee</groupId>
-        <artifactId>jboss-ejb-api</artifactId>
-        <version>${version.org.jboss.cache.pojo}</version>
-      </dependency>
-      <dependency>
         <groupId>org.jboss.microcontainer</groupId>
         <artifactId>jboss-dependency</artifactId>
         <version>${version.org.jboss.microcontainer}</version>
       </dependency>
       <dependency>
-        <groupId>org.jboss.deployers</groupId>
-        <artifactId>jboss-deployers-spi</artifactId>
-        <version>${version.org.jboss.deployers}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.deployers</groupId>
-        <artifactId>jboss-deployers-structure-spi</artifactId>
-        <version>${version.org.jboss.deployers}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.deployers</groupId>
-        <artifactId>jboss-deployers-vfs</artifactId>
-        <version>${version.org.jboss.deployers}</version>
-      </dependency>
-      <dependency>
         <groupId>org.jboss.microcontainer</groupId>
         <artifactId>jboss-kernel</artifactId>
         <version>${version.org.jboss.microcontainer}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.deployers</groupId>
-        <artifactId>jboss-deployers-core-spi</artifactId>
-        <version>${version.org.jboss.deployers}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.jbossas</groupId>
-        <artifactId>jboss-as-j2se</artifactId>
-        <version>${version.org.jboss.integration}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.jbossas</groupId>
-        <artifactId>jboss-as-system-jmx</artifactId>
-        <version>${version.org.jboss.integration}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.jbossas</groupId>
-        <artifactId>jboss-as-server</artifactId>
-        <version>${version.org.jboss.integration}</version>
-        <classifier>sources</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.jbossas</groupId>
-        <artifactId>jboss-as-ejb3</artifactId>
-        <version>${version.org.jboss.integration}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jbpm.jbpm3</groupId>
-        <artifactId>jbpm-jpdl</artifactId>
-        <version>3.3.1.GA</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-core</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
@@ -3440,19 +3295,9 @@
         <version>1.0.3.GA</version>
       </dependency>
       <dependency>
-        <groupId>org.jboss.jbossas</groupId>
-        <artifactId>jboss-as-system</artifactId>
-        <version>${version.org.jboss.integration}</version>
-      </dependency>
-      <dependency>
         <groupId>org.jboss.security</groupId>
         <artifactId>jbosssx</artifactId>
         <version>2.0.3.SP1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.jbossas</groupId>
-        <artifactId>jboss-as-server</artifactId>
-        <version>${version.org.jboss.integration}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.naming</groupId>
@@ -3469,37 +3314,6 @@
         <artifactId>jboss-common-core</artifactId>
         <version>2.2.14.GA</version>
       </dependency>
-      <dependency>
-        <groupId>org.jboss</groupId>
-        <artifactId>jboss-as</artifactId>
-        <version>${version.org.jboss.integration}</version>
-        <type>zip</type>
-        <classifier>light</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.jbossas</groupId>
-        <artifactId>jboss-as-aspects</artifactId>
-        <version>${version.org.jboss.integration}</version>
-        <classifier>jboss-aspects-jdk50-client</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.jbossas</groupId>
-        <artifactId>jboss-as-varia</artifactId>
-        <version>${version.org.jboss.integration}</version>
-        <classifier>logging-monitor</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.jbossas</groupId>
-        <artifactId>jboss-as-client</artifactId>
-        <version>${version.org.jboss.integration}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.jbossas</groupId>
-        <artifactId>jboss-as-connector</artifactId>
-        <version>${version.org.jboss.integration}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
@@ -4191,12 +4005,6 @@
             <artifactId>stax-api</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.ws</groupId>
-        <artifactId>jbossws-spi</artifactId>
-        <version>1.1.2.GA</version>
       </dependency>
 
       <dependency>
@@ -7196,8 +7004,6 @@
                 <link>http://www.restlet.org/documentation/2.0/jse/api/</link>
                 <link>http://docs.jboss.org/hibernate/core/3.3/api/</link>
                 <link>http://docs.jboss.com/seam/1.1.5.GA/api/</link>
-                <link>http://docs.jboss.com/jbpm/v3.1/javadoc.jbpm/</link>
-                <link>http://docs.jboss.com/jbpm/v3.1/javadoc.identity/</link>
                 <link>http://labs.jboss.com/jbossremoting/docs/api/</link>
               </links>
               <groups>
