@@ -1,0 +1,12 @@
+import module namespace extract = 'http://nuxeo.com/extract' at '/ext/nuxeo/extract.xqy';
+let $paths :=("/document/ecm__id")
+let $namespaces :=()
+for $i in cts:search(
+            fn:doc(),
+            cts:element-range-query(
+              fn:QName("","ecm__name"),
+              "<",
+              xs:long("10")
+            )
+          )
+    return extract:extract-nodes($i, $paths, $namespaces)

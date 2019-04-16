@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.marklogic.test.repository">
+  <extension target="org.nuxeo.ecm.core.storage.marklogic.MarkLogicRepositoryService" point="repository">
+    <repository name="test" label="MarkLogic Repository">
+      <host>${nuxeo.test.marklogic.host}</host>
+      <port>${nuxeo.test.marklogic.port}</port>
+      <user>${nuxeo.test.marklogic.user}</user>
+      <password>${nuxeo.test.marklogic.password}</password>
+      <dbname>${nuxeo.test.marklogic.dbname}</dbname>
+      <fulltext disabled="${nuxeo.test.fulltext.disabled}" searchDisabled="${nuxeo.test.fulltext.search.disabled}">
+        <index> <!-- name="default" implied -->
+          <!-- all props implied -->
+        </index>
+        <index name="title">
+          <field>dc:title</field>
+        </index>
+      </fulltext>
+    </repository>
+  </extension>
+</component>
