@@ -202,7 +202,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Path("token/provider/{providerId}/user/{nxuser}")
     public Response getProviderToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
-                                     @Context HttpServletRequest request) {
+            @Context HttpServletRequest request) {
         checkPermission(nxuser);
         NuxeoOAuth2ServiceProvider provider = getProvider(providerId);
         return Response.ok(getToken(provider, nxuser)).build();
@@ -212,14 +212,13 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      * Retrieves an OAuth2 Token.
      *
      * @since 9.2
-     *
      * @deprecated since 10.2 Use {@link #getProviderToken(String, String, HttpServletRequest)} instead.
      */
     @Deprecated
     @GET
     @Path("token/{providerId}/{nxuser}")
     public Response getToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
-                             @Context HttpServletRequest request) {
+            @Context HttpServletRequest request) {
         return getProviderToken(providerId, nxuser, request);
     }
 
@@ -232,7 +231,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @Path("token/provider/{providerId}/user/{nxuser}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateProviderToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
-                                        @Context HttpServletRequest request, NuxeoOAuth2Token token) {
+            @Context HttpServletRequest request, NuxeoOAuth2Token token) {
         checkPermission(nxuser);
         NuxeoOAuth2ServiceProvider provider = getProvider(providerId);
         return Response.ok(updateToken(provider, nxuser, token)).build();
@@ -242,16 +241,15 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      * Updates an OAuth2 Token.
      *
      * @since 9.2
-     *
      * @deprecated since 10.2 Use {@link #updateProviderToken(String, String, HttpServletRequest, NuxeoOAuth2Token)}
-     * instead.
+     *             instead.
      */
     @Deprecated
     @PUT
     @Path("token/{providerId}/{nxuser}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
-                                @Context HttpServletRequest request, NuxeoOAuth2Token token) {
+            @Context HttpServletRequest request, NuxeoOAuth2Token token) {
         return updateProviderToken(providerId, nxuser, request, token);
     }
 
@@ -263,7 +261,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @DELETE
     @Path("token/provider/{providerId}/user/{nxuser}")
     public Response deleteProviderToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
-                                        @Context HttpServletRequest request) {
+            @Context HttpServletRequest request) {
         checkPermission(nxuser);
         NuxeoOAuth2ServiceProvider provider = getProvider(providerId);
         deleteToken(getTokenDoc(provider, nxuser));
@@ -274,14 +272,13 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      * Deletes an OAuth2 Token.
      *
      * @since 9.2
-     *
      * @deprecated since 10.2 Use {@link #deleteProviderToken(String, String, HttpServletRequest)} instead.
      */
     @Deprecated
     @DELETE
     @Path("token/{providerId}/{nxuser}")
     public Response deleteToken(@PathParam("providerId") String providerId, @PathParam("nxuser") String nxuser,
-                                @Context HttpServletRequest request) {
+            @Context HttpServletRequest request) {
         return deleteProviderToken(providerId, nxuser, request);
     }
 
@@ -296,7 +293,8 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         checkNotAnonymousUser();
         String nxuser = request.getUserPrincipal().getName();
         return getTokens(nxuser).stream() // filter: make sure no client tokens are retrieved
-                .filter(token -> token.getClientId() == null).collect(Collectors.toList());
+                                .filter(token -> token.getClientId() == null)
+                                .collect(Collectors.toList());
     }
 
     /**
@@ -310,7 +308,8 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         checkNotAnonymousUser();
         String nxuser = request.getUserPrincipal().getName();
         return getTokens(nxuser).stream() // filter: make sure no provider tokens are retrieved
-                .filter(token -> token.getClientId() != null).collect(Collectors.toList());
+                                .filter(token -> token.getClientId() != null)
+                                .collect(Collectors.toList());
     }
 
     /**
@@ -321,7 +320,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Path("token/client/{clientId}/user/{nxuser}")
     public Response getClientToken(@PathParam("clientId") String clientId, @PathParam("nxuser") String nxuser,
-                              @Context HttpServletRequest request) {
+            @Context HttpServletRequest request) {
         checkPermission(nxuser);
         OAuth2Client client = getClient(clientId);
         return Response.ok(getToken(client, nxuser)).build();
@@ -336,7 +335,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @Path("token/client/{clientId}/user/{nxuser}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateClientToken(@PathParam("clientId") String clientId, @PathParam("nxuser") String nxuser,
-                                @Context HttpServletRequest request, NuxeoOAuth2Token token) {
+            @Context HttpServletRequest request, NuxeoOAuth2Token token) {
         checkPermission(nxuser);
         OAuth2Client client = Framework.getService(OAuth2ClientService.class).getClient(clientId);
         return Response.ok(updateToken(client, nxuser, token)).build();
@@ -350,7 +349,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @DELETE
     @Path("token/client/{clientId}/user/{nxuser}")
     public Response deleteClientToken(@PathParam("clientId") String clientId, @PathParam("nxuser") String nxuser,
-                                 @Context HttpServletRequest request) {
+            @Context HttpServletRequest request) {
         checkPermission(nxuser);
         OAuth2Client client = Framework.getService(OAuth2ClientService.class).getClient(clientId);
         deleteToken(getTokenDoc(client, nxuser));
@@ -375,8 +374,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
      */
     @GET
     @Path("client/{clientId}")
-    public Response getClient(@PathParam("clientId") String clientId,
-                              @Context HttpServletRequest request) {
+    public Response getClient(@PathParam("clientId") String clientId, @Context HttpServletRequest request) {
         OAuth2Client client = getClient(clientId);
         return Response.ok(client).build();
     }
@@ -448,8 +446,10 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         filter.put("clientId", client.getId());
         filter.put(NuxeoOAuth2Token.KEY_NUXEO_LOGIN, nxuser);
         OAuth2TokenStore tokenStore = new OAuth2TokenStore(TOKEN_SERVICE);
-        List<DocumentModel> tokens = tokenStore.query(filter).stream()
-                .filter(Objects::nonNull).collect(Collectors.toList());
+        List<DocumentModel> tokens = tokenStore.query(filter)
+                                               .stream()
+                                               .filter(Objects::nonNull)
+                                               .collect(Collectors.toList());
         if (tokens.size() > 1) {
             throw new NuxeoException("Found multiple " + client.getId() + " accounts for " + nxuser);
         } else if (tokens.size() == 0) {
