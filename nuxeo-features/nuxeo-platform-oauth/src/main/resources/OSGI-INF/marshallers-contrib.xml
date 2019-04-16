@@ -10,6 +10,7 @@
     <register class="org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2TokenReader" enable="true" />
     <register class="org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2TokenWriter" enable="true" />
     <register class="org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2TokenListWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientReader" enable="true" />
     <register class="org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientWriter" enable="true" />
     <register class="org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientListWriter" enable="true" />
   </extension>

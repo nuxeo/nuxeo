@@ -61,7 +61,7 @@
       }
     ]
   },
-  
+
   {
     "path": "/oauth2/token",
     "description": "Retrieves all OAuth2 tokens.",
@@ -71,6 +71,36 @@
         "nickname":"getOauth2Tokens",
         "type":"oauth2TokenDataList",
         "summary":"Retrieves all OAuth2 tokens.",
+        <#include "views/doc/errorresponses.ftl"/>
+      }
+    ]
+  },
+
+  {
+    "path": "/oauth2/token/search",
+    "description": "Search tokens that match service name or user parameter.",
+    "operations" : [
+      {
+        "method":"GET",
+        "nickname":"searchOauth2Tokens",
+        "type":"oauth2TokenDataList",
+        <@params names = ["matchOAuht2Tokens"]/>,
+        "summary":"Search tokens that match service name or user parameter.",
+        <#include "views/doc/errorresponses.ftl"/>
+      }
+    ]
+  },
+
+  {
+    "path": "/oauth2/token/{oAuth2TokenType}",
+    "description": "Retrieves all OAuth2 tokens by OAuth2 token type.",
+    "operations" : [
+      {
+        "method":"GET",
+        "nickname":"getOauth2TokensByType",
+        "type":"oauth2TokenDataList",
+        <@params names = ["oAuth2TokenType"]/>,
+        "summary":"Retrieves all OAuth2 tokens by OAuth2 token type. An OAuth2 token can be provided by Nuxeo or consumed.",
         <#include "views/doc/errorresponses.ftl"/>
       }
     ]
@@ -166,7 +196,7 @@
 
   {
     "path": "/oauth2/client",
-    "description": "Retrieves all OAuth2 clients.",
+    "description": "Adds and retrieves all OAuth2 clients.",
     "operations" : [
       {
         "method":"GET",
@@ -174,20 +204,43 @@
         "type":"oauth2ClientDataList",
         "summary":"Retrieves a OAuth2 client.",
         <#include "views/doc/errorresponses.ftl"/>
+      },
+      {
+        "method":"POST",
+        "nickname":"addOAuth2Client",
+        "type":"oauth2ClientData",
+        <@params names = ["oauth2ClientBody"]/>,
+        "summary":"Adds an OAuth2 client.",
+        <#include "views/doc/errorresponses.ftl"/>
       }
     ]
   },
 
   {
     "path": "/oauth2/client/{oauth2ClientId}",
-    "description": "Retrieves a OAuth2 client.",
+    "description": "Updates, deletes and retrieves an OAuth2 client.",
     "operations" : [
       {
         "method":"GET",
         "nickname":"getOauth2Client",
         "type":"oauth2ClientData",
         <@params names = ["oauth2ClientId"]/>,
-        "summary":"Retrieves a OAuth2 client.",
+        "summary":"Retrieves an OAuth2 client.",
+        <#include "views/doc/errorresponses.ftl"/>
+      },
+      {
+        "method":"PUT",
+        "nickname":"updateOAuth2Client",
+        "type":"oauth2ClientData",
+        <@params names = ["oauth2ClientBody"]/>,
+        "summary":"Update an OAuth2 client.",
+        <#include "views/doc/errorresponses.ftl"/>
+      },
+      {
+        "method":"DELETE",
+        "nickname":"deleteOAuth2Client",
+        <@params names = ["oauth2ClientId"]/>,
+        "summary":"Deletes an OAuth2 client token.",
         <#include "views/doc/errorresponses.ftl"/>
       }
     ]

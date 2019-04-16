@@ -1,3 +1,4 @@
 id,clientId,name,clientSecret,redirectURIs,autoGrant,enabled
-"id1","my-client","my-client-name","2113425ygfsd",null,true,true
-"id2","my-client-2","my-second-client-name","s234dsfsdss",null,true,true
+"id1","my-client","my-client-name","2113425ygfsd",nuxeo://authorize,true,true
+"id2","my-client-2","my-second-client-name","s234dsfsdss",nuxeo://authorize,true,true
+"id3","my-client-3","my-third-client-name","s234dsfsdss",nuxeo://authorize,false,false

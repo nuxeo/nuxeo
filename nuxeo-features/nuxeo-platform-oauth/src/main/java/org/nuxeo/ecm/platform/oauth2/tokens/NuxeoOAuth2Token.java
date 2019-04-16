@@ -42,6 +42,11 @@ public class NuxeoOAuth2Token {
 
     public static final String KEY_NUXEO_LOGIN = "nuxeoLogin";
 
+    /**
+     * @since 11.1
+     */
+    public static final String KEY_SERVICE_NAME = "serviceName";
+
     protected Long id;
 
     protected String serviceName;

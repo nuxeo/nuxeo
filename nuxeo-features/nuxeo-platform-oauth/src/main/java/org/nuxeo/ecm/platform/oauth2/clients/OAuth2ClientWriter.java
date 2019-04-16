@@ -20,6 +20,8 @@ package org.nuxeo.ecm.platform.oauth2.clients;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client.NAME_FIELD;
+import static org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client.REDIRECT_URI_FIELD;
 
 import java.io.IOException;
 
@@ -36,14 +38,41 @@ public class OAuth2ClientWriter extends ExtensibleEntityJsonWriter<OAuth2Client>
 
     public static final String ENTITY_TYPE = "oauth2Client";
 
+    /**
+     * @since 11.1
+     */
+    public static final String ID_FIELD = "id";
+
+    /**
+     * @since 11.1
+     */
+    public static final String SECRET_FIELD = "secret";
+
+    /**
+     * @since 11.1
+     */
+    public static final String ENABLED_FIELD = "isEnabled";
+
+    /**
+     * @since 11.1
+     */
+    public static final String AUTO_GRANT_FIELD = "isAutoGrant";
+
     public OAuth2ClientWriter() {
         super(ENTITY_TYPE, OAuth2Client.class);
     }
 
     @Override
     protected void writeEntityBody(OAuth2Client client, JsonGenerator jg) throws IOException {
-        jg.writeStringField("id", client.getId());
-        jg.writeStringField("name", client.getName());
-        jg.writeBooleanField("isEnabled", client.isEnabled());
+        jg.writeStringField(NAME_FIELD, client.getName());
+        jg.writeArrayFieldStart(REDIRECT_URI_FIELD);
+        for (String url : client.getRedirectURIs()) {
+            jg.writeString(url);
+        }
+        jg.writeEndArray();
+        jg.writeStringField(SECRET_FIELD, client.getSecret());
+        jg.writeStringField(ID_FIELD, client.getId());
+        jg.writeBooleanField(AUTO_GRANT_FIELD, client.isAutoGrant());
+        jg.writeBooleanField(ENABLED_FIELD, client.isEnabled());
     }
 }
