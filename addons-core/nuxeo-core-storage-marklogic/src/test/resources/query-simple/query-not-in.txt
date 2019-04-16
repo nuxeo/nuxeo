@@ -1,0 +1,8 @@
+cts:search(
+  fn:doc(),
+  cts:and-query((
+    cts:not-query(
+      cts:element-value-query(fn:QName("","ecm__id"),("ID1","ID2"))
+    )
+  ))
+)
