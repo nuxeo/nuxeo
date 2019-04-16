@@ -11,6 +11,7 @@ Nuxeo-Component: OSGI-INF/authentication-contrib.xml,
  OSGI-INF/schema-contrib.xml,
  OSGI-INF/directory-contrib.xml,
  OSGI-INF/oauth2clientservice-framework.xml,
+ OSGI-INF/oauth2tokenservice-framework.xml,
  OSGI-INF/marshallers-contrib.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.oauth;singleton:=true
 Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=oauth2;extends=base;headless=true;package=org/nuxeo/ecm/webengine/oauth2

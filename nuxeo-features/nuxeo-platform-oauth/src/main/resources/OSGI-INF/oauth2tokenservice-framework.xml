@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenService">
+  <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
+
+  <implementation class="org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenServiceImpl" />
+
+  <documentation>
+    Service to manage the OAuth2 tokens.
+
+    @author Salem Aouana
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenService" />
+  </service>
+
+</component>

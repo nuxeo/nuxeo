@@ -17,7 +17,25 @@
       "type": "string",
       "required": true
     },
+    "redirectURIs": {
+      "uniqueItems": false,
+      "type": "array",
+      "items": {
+        "type":"string"
+      },
+      "required": true
+    },
+    "secret": {
+      "uniqueItems": false,
+      "type": "string",
+      "required": false
+    },
     "isEnabled": {
+      "uniqueItems": false,
+      "type": "boolean",
+      "required": false
+    },
+    "isAutoGrant": {
       "uniqueItems": false,
       "type": "boolean",
       "required": false

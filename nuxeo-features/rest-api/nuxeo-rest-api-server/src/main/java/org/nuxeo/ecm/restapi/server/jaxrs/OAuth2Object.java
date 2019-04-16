@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token.SCHEMA;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +37,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -51,11 +52,14 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client;
 import org.nuxeo.ecm.platform.oauth2.clients.OAuth2ClientService;
+import org.nuxeo.ecm.platform.oauth2.enums.NuxeoOAuth2TokenType;
 import org.nuxeo.ecm.platform.oauth2.providers.AbstractOAuth2UserEmailProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
+import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenService;
+import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenServiceImpl;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -75,7 +79,13 @@ import com.google.api.client.auth.oauth2.Credential;
 @WebObject(type = "oauth2")
 public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
 
-    public static final String TOKEN_DIR = "oauth2Tokens";
+    protected static final String ACCESS_DENIED_MESSAGE = "You do not have permissions to perform this operation.";
+
+    /**
+     * @deprecated since 11.1. Use {@link OAuth2TokenServiceImpl#TOKEN_DIR} instead.
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
+    public static final String TOKEN_DIR = OAuth2TokenServiceImpl.TOKEN_DIR;
 
     /**
      * Lists all oauth2 service providers.
@@ -106,7 +116,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @Path("provider")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addProvider(@Context HttpServletRequest request, NuxeoOAuth2ServiceProvider provider) {
-        checkPermission(null);
+        checkPermission();
         Framework.doPrivileged(() -> {
             OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
             registry.addProvider(provider.getServiceName(), provider.getDescription(), provider.getTokenServerURL(),
@@ -126,7 +136,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateProvider(@PathParam("providerId") String providerId, @Context HttpServletRequest request,
             NuxeoOAuth2ServiceProvider provider) {
-        checkPermission(null);
+        checkPermission();
         getProvider(providerId);
         Framework.doPrivileged(() -> {
             OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
@@ -143,7 +153,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @DELETE
     @Path("provider/{providerId}")
     public Response deleteProvider(@PathParam("providerId") String providerId, @Context HttpServletRequest request) {
-        checkPermission(null);
+        checkPermission();
         getProvider(providerId);
         Framework.doPrivileged(() -> {
             OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
@@ -190,8 +200,33 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Path("token")
     public List<NuxeoOAuth2Token> getTokens(@Context HttpServletRequest request) {
-        checkPermission(null);
-        return getTokens();
+        return Framework.getService(OAuth2TokenService.class).getTokens(getPrincipal());
+    }
+
+    /**
+     * Retrieves all oAuth2 tokens by {@link NuxeoOAuth2TokenType}.
+     *
+     * @param type, the value of {@code NuxeoOAuth2TokenType}
+     * @return if <code>type</code> is {@link NuxeoOAuth2TokenType#AS_PROVIDER}, then we retrieve tokens that are
+     *         provided by Nuxeo, otherwise those used by Nuxeo to connect to others applications
+     * @since 11.1
+     */
+    @GET
+    @Path("token/{type}")
+    public List<NuxeoOAuth2Token> getTokens(@PathParam("type") NuxeoOAuth2TokenType type) {
+        return Framework.getService(OAuth2TokenService.class).getTokens(type, getPrincipal());
+    }
+
+    /**
+     * Search all oAuth2 tokens that match the query.
+     *
+     * @param query the query to match
+     * @since 11.1
+     */
+    @GET
+    @Path("token/search")
+    public List<NuxeoOAuth2Token> searchTokens(@QueryParam("q") String query) {
+        return Framework.getService(OAuth2TokenService.class).search(query, getPrincipal());
     }
 
     /**
@@ -291,10 +326,8 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @Path("token/provider")
     public List<NuxeoOAuth2Token> getProviderUserTokens(@Context HttpServletRequest request) {
         checkNotAnonymousUser();
-        String nxuser = request.getUserPrincipal().getName();
-        return getTokens(nxuser).stream() // filter: make sure no client tokens are retrieved
-                                .filter(token -> token.getClientId() == null)
-                                .collect(Collectors.toList());
+        return Framework.getService(OAuth2TokenService.class)
+                        .getTokens(request.getUserPrincipal().getName(), NuxeoOAuth2TokenType.AS_CLIENT);
     }
 
     /**
@@ -306,10 +339,8 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     @Path("token/client")
     public List<NuxeoOAuth2Token> getClientUserTokens(@Context HttpServletRequest request) {
         checkNotAnonymousUser();
-        String nxuser = request.getUserPrincipal().getName();
-        return getTokens(nxuser).stream() // filter: make sure no provider tokens are retrieved
-                                .filter(token -> token.getClientId() != null)
-                                .collect(Collectors.toList());
+        return Framework.getService(OAuth2TokenService.class)
+                        .getTokens(request.getUserPrincipal().getName(), NuxeoOAuth2TokenType.AS_PROVIDER);
     }
 
     /**
@@ -379,6 +410,54 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         return Response.ok(client).build();
     }
 
+    /**
+     * Creates a new oauth2 client.
+     *
+     * @param client the oAuth2Client to create
+     * @return the {@link Response}
+     * @since 11.1
+     */
+    @POST
+    @Path("client")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createClient(OAuth2Client client) {
+        OAuth2Client oAuth2Client = Framework.getService(OAuth2ClientService.class).create(client, getPrincipal());
+        return Response.status(Status.CREATED).entity(oAuth2Client).build();
+    }
+
+    /**
+     * Updates the oauth2 client.
+     *
+     * @param clientId the oAuth2 client id to update
+     * @param client the oAuth2Client to update
+     * @return the {@link Response}
+     * @since 11.1
+     */
+    @PUT
+    @Path("client/{clientId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateClient(@PathParam("clientId") String clientId, OAuth2Client client) {
+        OAuth2Client oAuth2Client = Framework.getService(OAuth2ClientService.class)
+                                             .update(clientId, client, getPrincipal());
+        return Response.ok(oAuth2Client).build();
+    }
+
+    /**
+     * Deletes the oauth2 client.
+     *
+     * @param clientId the oAuth2 client id to delete
+     * @return the {@link Response}
+     * @since 11.1
+     */
+    @DELETE
+    @Path("client/{clientId}")
+    public Response deleteClient(@PathParam("clientId") String clientId) {
+        Framework.getService(OAuth2ClientService.class).delete(clientId, getPrincipal());
+        return Response.noContent().build();
+    }
+
     protected List<NuxeoOAuth2ServiceProvider> getProviders() {
         OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
         return registry.getProviders()
@@ -397,23 +476,20 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         return (NuxeoOAuth2ServiceProvider) provider;
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link OAuth2TokenService#getTokens(NuxeoPrincipal)} instead.
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
     protected List<NuxeoOAuth2Token> getTokens() {
-        return getTokens((String) null);
+        return Framework.getService(OAuth2TokenService.class).getTokens(getPrincipal());
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link OAuth2TokenService#getTokens(String)} instead.
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
     protected List<NuxeoOAuth2Token> getTokens(String nxuser) {
-        return Framework.doPrivileged(() -> {
-            DirectoryService ds = Framework.getService(DirectoryService.class);
-            try (Session session = ds.open(TOKEN_DIR)) {
-                Map<String, Serializable> filter = new HashMap<>();
-                if (nxuser != null) {
-                    filter.put(NuxeoOAuth2Token.KEY_NUXEO_LOGIN, nxuser);
-                }
-                List<DocumentModel> docs = session.query(filter, Collections.emptySet(), Collections.emptyMap(), true,
-                        0, 0);
-                return docs.stream().map(NuxeoOAuth2Token::new).collect(Collectors.toList());
-            }
-        });
+        return Framework.getService(OAuth2TokenService.class).getTokens(nxuser);
     }
 
     protected OAuth2Client getClient(String clientId) {
@@ -487,7 +563,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
         entry.setProperty(SCHEMA, "creationDate", token.getCreationDate());
         Framework.doPrivileged(() -> {
             DirectoryService ds = Framework.getService(DirectoryService.class);
-            try (Session session = ds.open(TOKEN_DIR)) {
+            try (Session session = ds.open(OAuth2TokenServiceImpl.TOKEN_DIR)) {
                 session.updateEntry(entry);
             }
         });
@@ -496,7 +572,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     protected void deleteToken(DocumentModel token) {
         Framework.doPrivileged(() -> {
             DirectoryService ds = Framework.getService(DirectoryService.class);
-            try (Session session = ds.open(TOKEN_DIR)) {
+            try (Session session = ds.open(OAuth2TokenServiceImpl.TOKEN_DIR)) {
                 session.deleteEntry(token);
             }
         });
@@ -518,22 +594,30 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
                        .build();
     }
 
-    protected void checkPermission(String nxuser) {
-        if (!hasPermission(nxuser)) {
-            throw new WebSecurityException("You do not have permissions to perform this operation.");
+    protected void checkPermission() {
+        if (!getPrincipal().isAdministrator()) {
+            throw new WebSecurityException(ACCESS_DENIED_MESSAGE);
         }
     }
 
-    protected boolean hasPermission(String nxuser) {
-        NuxeoPrincipal principal = getContext().getCoreSession().getPrincipal();
-        return principal.isAdministrator() || (nxuser == null ? false : nxuser.equals(principal.getName()));
+    protected void checkPermission(String nxuser) {
+        NuxeoPrincipal principal = getPrincipal();
+        if (principal.isAdministrator()) {
+            return;
+        }
+        if (!nxuser.equals(principal.getName())) {
+            throw new WebSecurityException(ACCESS_DENIED_MESSAGE);
+        }
     }
 
     protected void checkNotAnonymousUser() {
-        NuxeoPrincipal principal = getContext().getCoreSession().getPrincipal();
-        if (principal.isAnonymous()) {
-            throw new WebSecurityException("You do not have permissions to perform this operation.");
+        if (getPrincipal().isAnonymous()) {
+            throw new WebSecurityException(ACCESS_DENIED_MESSAGE);
         }
+    }
+
+    protected NuxeoPrincipal getPrincipal() {
+        return getContext().getCoreSession().getPrincipal();
     }
 
 }
