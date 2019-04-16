@@ -83,9 +83,6 @@ Build: $RUN_DISPLAY_URL"""
                                     """
                                 }
                             }
-                            if (BRANCH_NAME == 'master') {
-                                step([$class: 'JiraIssueUpdater', issueSelector: [$class: 'DefaultIssueSelector'], scm: scm])
-                            }
                         } finally {
                             archiveArtifacts '**/target/failsafe-reports/*, **/target/*.png, **/target/**/*.log, **/target/**/log/*'
                             junit testDataPublishers: [[$class: 'ClaimTestDataPublisher']], testResults: '**/target/surefire-reports/*.xml, **/target/failsafe-reports/**/*.xml'
