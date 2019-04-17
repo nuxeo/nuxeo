@@ -44,8 +44,7 @@ public class WorkingPostTest extends PostTest {
     }
 
     protected User getUser() {
-        try {
-            InputStream in = this.getClass().getResourceAsStream("/user_full.json");
+        try (InputStream in = this.getClass().getResourceAsStream("/user_full.json")) {
             String fullUser = IOUtils.toString(in, UTF_8);
             return new User(fullUser, Resource.ENCODING_JSON);
         } catch (Exception e) {

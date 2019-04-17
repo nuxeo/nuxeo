@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVHelper.getList;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -140,7 +141,8 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
         } catch (PropertyNotFoundException e) {
             // ignore
         }
-        propertyWriter.write(property, Property.class, Property.class, TEXT_CSV_TYPE,
-                new OutputStreamWithCSVWriter(printer));
+        try (OutputStream out = new OutputStreamWithCSVWriter(printer)) {
+            propertyWriter.write(property, Property.class, Property.class, TEXT_CSV_TYPE, out);
+        }
     }
 }

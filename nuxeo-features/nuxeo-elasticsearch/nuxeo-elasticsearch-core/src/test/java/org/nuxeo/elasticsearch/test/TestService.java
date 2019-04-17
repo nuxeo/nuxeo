@@ -65,6 +65,7 @@ public class TestService {
         Assert.assertNotNull(esi);
         Assert.assertNotNull(esa);
 
+        @SuppressWarnings("resource") // not ours to close
         ESClient client = esa.getClient();
         Assert.assertNotNull(client);
 

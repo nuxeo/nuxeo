@@ -111,6 +111,7 @@ public class Log4JHelper {
     public static void setLevel(String[] loggerNames, Level level, boolean includeChildren) {
         if (includeChildren) {
             // don't use Configurator.setAllLevels(String, Level) in order to reload configuration only once
+            @SuppressWarnings("resource") // not ours to close
             LoggerContext loggerContext = LoggerContext.getContext(false);
             Configuration config = loggerContext.getConfiguration();
             boolean set = false;

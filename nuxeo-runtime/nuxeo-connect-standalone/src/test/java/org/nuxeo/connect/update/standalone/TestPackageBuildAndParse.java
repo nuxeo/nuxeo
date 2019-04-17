@@ -44,12 +44,14 @@ public class TestPackageBuildAndParse extends PackageTestCase {
     protected void doTestBuildAndParse(boolean cap) throws Exception {
         String name = "test-parse-" + (cap ? "cap" : "nocap");
 
-        InputStream xmlIn = getClass().getClassLoader().getResourceAsStream(
-                TEST_PACKAGES_PREFIX + name + "/package.xml");
+        XMap xmap = StandaloneUpdateService.createXmap();
 
         // check manifest
-        XMap xmap = StandaloneUpdateService.createXmap();
-        PackageDefinitionImpl packageDef = (PackageDefinitionImpl) xmap.load(xmlIn);
+        PackageDefinitionImpl packageDef;
+        try (InputStream xmlIn = getClass().getClassLoader().getResourceAsStream(
+                TEST_PACKAGES_PREFIX + name + "/package.xml")) {
+            packageDef = (PackageDefinitionImpl) xmap.load(xmlIn);
+        }
         assertEquals("nuxeo-automation", packageDef.getName());
         assertEquals("Nuxeo", packageDef.getVendor());
         assertTrue(packageDef.requireTermsAndConditionsAcceptance());

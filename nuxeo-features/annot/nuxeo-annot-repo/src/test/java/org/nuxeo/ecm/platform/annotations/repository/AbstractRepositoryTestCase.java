@@ -81,9 +81,10 @@ public abstract class AbstractRepositoryTestCase {
     public void setUp() throws Exception {
         assertNotNull(viewCodecManager);
         assertNotNull(manager);
-        InputStream is = getClass().getResourceAsStream("/annotea-spec-post.xml");
-        assertNotNull(is);
-        annotation = manager.getAnnotation(is);
+        try (InputStream is = getClass().getResourceAsStream("/annotea-spec-post.xml")) {
+            assertNotNull(is);
+            annotation = manager.getAnnotation(is);
+        }
     }
 
     protected void setUpRepository() throws Exception {
@@ -150,11 +151,14 @@ public abstract class AbstractRepositoryTestCase {
 
     protected Annotation getAnnotation(String url, int x) throws IOException {
 
-        InputStream is = getClass().getResourceAsStream("/annotation" + x + ".xml");
-        String template = IOUtils.readStringAndClose(new InputStreamReader(is), -1);
+        String template;
+        try (InputStream is = getClass().getResourceAsStream("/annotation" + x + ".xml")) {
+            template = IOUtils.readStringAndClose(new InputStreamReader(is), -1);
+        }
         template = template.replaceAll("docUrl", url);
-        is = new ByteArrayInputStream(template.getBytes("UTF-8"));
-        return manager.getAnnotation(is);
+        try (InputStream is = new ByteArrayInputStream(template.getBytes("UTF-8"))) {
+            return manager.getAnnotation(is);
+        }
     }
 
     protected void sleepForFulltext() {

@@ -375,54 +375,53 @@ public class TestSQLRepositoryFulltextQuery {
     @Test
     public void testFulltextScore() {
         String query;
-        IterableQueryResult res;
         Map<String, Serializable> map;
 
         createDocs();
         waitForFulltextIndexing();
 
         query = "SELECT ecm:uuid, ecm:fulltextScore FROM File WHERE ecm:fulltext = 'restaurant'";
-        res = session.queryAndFetch(query, "NXQL");
-        assertEquals(1, res.size());
-        map = res.iterator().next();
-        assertTrue(map.containsKey(NXQL.ECM_UUID));
-        assertTrue(map.containsKey(NXQL.ECM_FULLTEXT_SCORE));
-        res.close();
+        try (IterableQueryResult res = session.queryAndFetch(query, "NXQL")) {
+            assertEquals(1, res.size());
+            map = res.iterator().next();
+            assertTrue(map.containsKey(NXQL.ECM_UUID));
+            assertTrue(map.containsKey(NXQL.ECM_FULLTEXT_SCORE));
+        }
 
         // ORDER BY ecm:fulltextScore DESC added implicitly
         query = "SELECT ecm:uuid FROM File WHERE ecm:fulltext = 'restaurant'";
-        res = session.queryAndFetch(query, "NXQL");
-        assertEquals(1, res.size());
-        res.close();
+        try (IterableQueryResult res = session.queryAndFetch(query, "NXQL")) {
+            assertEquals(1, res.size());
+        }
 
         // but not here
         query = "SELECT ecm:uuid FROM File WHERE ecm:fulltext = 'restaurant' ORDER BY ecm:uuid";
-        res = session.queryAndFetch(query, "NXQL");
-        assertEquals(1, res.size());
-        res.close();
+        try (IterableQueryResult res = session.queryAndFetch(query, "NXQL")) {
+            assertEquals(1, res.size());
+        }
 
         // ORDER BY ecm:fulltextScore must always be DESC for DBS
         // without proxies
         query = "SELECT ecm:uuid FROM File WHERE ecm:fulltext = 'restaurant' AND ecm:isProxy = 0 ORDER BY ecm:fulltextScore DESC";
-        res = session.queryAndFetch(query, "NXQL");
-        assertEquals(1, res.size());
-        res.close();
+        try (IterableQueryResult res = session.queryAndFetch(query, "NXQL")) {
+            assertEquals(1, res.size());
+        }
 
         // same with proxies
         query = "SELECT ecm:uuid FROM File WHERE ecm:fulltext = 'restaurant' ORDER BY ecm:fulltextScore DESC";
-        res = session.queryAndFetch(query, "NXQL");
-        assertEquals(1, res.size());
-        res.close();
+        try (IterableQueryResult res = session.queryAndFetch(query, "NXQL")) {
+            assertEquals(1, res.size());
+        }
 
         query = "SELECT ecm:uuid, ecm:fulltextScore FROM File WHERE ecm:fulltext = 'restaurant' ORDER BY ecm:fulltextScore DESC";
-        res = session.queryAndFetch(query, "NXQL");
-        assertEquals(1, res.size());
-        res.close();
+        try (IterableQueryResult res = session.queryAndFetch(query, "NXQL")) {
+            assertEquals(1, res.size());
+        }
 
         // cannot select score if there's no search
         try {
             query = "SELECT ecm:fulltextScore FROM File";
-            res = session.queryAndFetch(query, "NXQL");
+            session.queryAndFetch(query, "NXQL");
             fail("query should fail");
         } catch (QueryParseException e) {
             assertTrue(e.toString(), e.getMessage().contains("ecm:fulltextScore cannot be used without ecm:fulltext"));
@@ -430,7 +429,7 @@ public class TestSQLRepositoryFulltextQuery {
         // cannot order by score if there's no search
         try {
             query = "SELECT ecm:uuid FROM File ORDER BY ecm:fulltextScore DESC";
-            res = session.queryAndFetch(query, "NXQL");
+            session.queryAndFetch(query, "NXQL");
             fail("query should fail");
         } catch (QueryParseException e) {
             assertTrue(e.toString(), e.getMessage().contains("ecm:fulltextScore cannot be used without ecm:fulltext"));

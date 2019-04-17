@@ -112,15 +112,16 @@ public class TestLayoutExport {
                                                   .get();
         writeJsonToFile(renderingCtx, layoutDef, file);
 
-        InputStream written = new FileInputStream(file);
-        InputStream expected = new FileInputStream(
-                FileUtils.getResourcePathFromContext("layout-export-" + langFilePath + ".json"));
+        try (InputStream written = new FileInputStream(file);
+                InputStream expected = new FileInputStream(
+                        FileUtils.getResourcePathFromContext("layout-export-" + langFilePath + ".json"))) {
 
-        String expectedString = IOUtils.toString(expected, UTF_8);
-        String writtenString = IOUtils.toString(written, UTF_8);
-        // order of select options may depend on directory database => do not
-        // check order of element by using the NON_EXTENSIBLE mode
-        JSONAssert.assertEquals(expectedString, writtenString, JSONCompareMode.NON_EXTENSIBLE);
+            String expectedString = IOUtils.toString(expected, UTF_8);
+            String writtenString = IOUtils.toString(written, UTF_8);
+            // order of select options may depend on directory database => do not
+            // check order of element by using the NON_EXTENSIBLE mode
+            JSONAssert.assertEquals(expectedString, writtenString, JSONCompareMode.NON_EXTENSIBLE);
+        }
     }
 
     @Test
@@ -142,15 +143,16 @@ public class TestLayoutExport {
         File file = Framework.createTempFile("layout-instance-export-" + langFilePath, ".json");
         writeJsonToFile(CtxBuilder.get(), layout, file);
 
-        InputStream written = new FileInputStream(file);
-        InputStream expected = new FileInputStream(
-                FileUtils.getResourcePathFromContext("layout-instance-export-" + langFilePath + ".json"));
+        try (InputStream written = new FileInputStream(file);
+                InputStream expected = new FileInputStream(
+                        FileUtils.getResourcePathFromContext("layout-instance-export-" + langFilePath + ".json"))) {
 
-        String expectedString = IOUtils.toString(expected, UTF_8);
-        String writtenString = IOUtils.toString(written, UTF_8);
-        // order of select options may depend on directory database => do not
-        // check order of element by using the NON_EXTENSIBLE mode
-        JSONAssert.assertEquals(expectedString, writtenString, JSONCompareMode.NON_EXTENSIBLE);
+            String expectedString = IOUtils.toString(expected, UTF_8);
+            String writtenString = IOUtils.toString(written, UTF_8);
+            // order of select options may depend on directory database => do not
+            // check order of element by using the NON_EXTENSIBLE mode
+            JSONAssert.assertEquals(expectedString, writtenString, JSONCompareMode.NON_EXTENSIBLE);
+        }
     }
 
     protected <T> void writeJsonToFile(RenderingContext ctx, T entity, File file) throws IOException {

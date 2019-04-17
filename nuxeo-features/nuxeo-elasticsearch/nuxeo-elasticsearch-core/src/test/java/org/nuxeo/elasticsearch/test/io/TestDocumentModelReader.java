@@ -148,13 +148,15 @@ public class TestDocumentModelReader {
 
         JsonFactory factory = new JsonFactory();
         OutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jsonGen = factory.createGenerator(out);
-        new JsonESDocumentWriter().writeESDocument(jsonGen, esDoc, null, null);
+        try (JsonGenerator jsonGen = factory.createGenerator(out)) {
+            new JsonESDocumentWriter().writeESDocument(jsonGen, esDoc, null, null);
+        }
         String esJson = out.toString();
 
         out = new ByteArrayOutputStream();
-        jsonGen = factory.createGenerator(out);
-        new JsonESDocumentWriter().writeESDocument(jsonGen, vcsDoc, null, null);
+        try (JsonGenerator jsonGen = factory.createGenerator(out)) {
+            new JsonESDocumentWriter().writeESDocument(jsonGen, vcsDoc, null, null);
+        }
         String vcsJson = out.toString();
 
         Assert.assertEquals(vcsJson, esJson);

@@ -1150,11 +1150,12 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testQueryEmptyString() throws Exception {
-        Session session = userDir.getSession();
-        Map<String, Serializable> filter = new HashMap<>();
-        filter.put("cn", "");
-        List<DocumentModel> docs = session.query(filter);
-        assertNotNull(docs);
+        try (Session session = userDir.getSession()) {
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put("cn", "");
+            List<DocumentModel> docs = session.query(filter);
+            assertNotNull(docs);
+        }
     }
 
     @Test

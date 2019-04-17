@@ -882,6 +882,7 @@ public class MultiDirectorySession extends BaseSession {
         return createEntry(fieldMap);
     }
 
+    @SuppressWarnings("resource") // dirInfo session must not be closed
     @Override
     public boolean hasEntry(String id) {
         init();

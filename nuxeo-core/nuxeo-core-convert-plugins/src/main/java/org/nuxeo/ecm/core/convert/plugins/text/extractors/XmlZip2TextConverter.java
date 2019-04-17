@@ -58,12 +58,11 @@ public abstract class XmlZip2TextConverter implements Converter {
 
             StringBuilder sb = new StringBuilder();
             UnclosableZipInputStream zis = new UnclosableZipInputStream(blobHolder.getBlob().getStream());
-            // ZipInputStream zis = new ZipInputStream(
-            // blobHolder.getBlob().getStream());
             try {
                 readXmlZipContent(zis, reader, sb);
             } finally {
-                zis.doClose();
+                zis.close(); // appease code analyzers
+                zis.doClose(); // real close
             }
             return new SimpleCachableBlobHolder(Blobs.createBlob(sb.toString()));
         } catch (IOException | ParserConfigurationException | SAXException e) {

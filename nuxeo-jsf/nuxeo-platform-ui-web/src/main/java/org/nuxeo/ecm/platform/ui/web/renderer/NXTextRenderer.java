@@ -47,6 +47,7 @@ public class NXTextRenderer extends TextRenderer {
     @Override
     protected void getEndTextToRender(FacesContext context, UIComponent component, String currentValue)
             throws IOException {
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         assert (writer != null);
         boolean shouldWriteIdAttribute = false;

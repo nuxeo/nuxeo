@@ -115,6 +115,7 @@ public class SelectionContext {
      *
      * @since 9.2
      */
+    @SuppressWarnings("resource") // Time.Context closed by stop()
     protected Selection getSelectionOrNull(Serializable selId) {
         final Timer.Context timerContext = cacheGetTimer.time();
         try {

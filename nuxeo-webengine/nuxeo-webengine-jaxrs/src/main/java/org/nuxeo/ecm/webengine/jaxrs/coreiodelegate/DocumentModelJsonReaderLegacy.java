@@ -141,8 +141,9 @@ public class DocumentModelJsonReaderLegacy implements Reader<DocumentModel> {
     @Override
     public DocumentModel read(Class<?> clazz, Type genericType, MediaType mediaType, InputStream in) throws IOException {
         try {
-            JsonParser parser = JsonFactoryProvider.get().createJsonParser(in);
-            return DocumentModel.class.cast(METHOD.invoke(null, parser, httpHeaders, request));
+            try (JsonParser parser = JsonFactoryProvider.get().createJsonParser(in)) {
+                return DocumentModel.class.cast(METHOD.invoke(null, parser, httpHeaders, request));
+            }
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             log.error("Unable to use legacy document model reading", e);
             return null;

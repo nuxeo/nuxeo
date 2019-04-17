@@ -191,10 +191,10 @@ public class TestCompareQueryAndFetch {
     protected void compareESAndCore(String nxql) throws Exception {
         IterableQueryResult coreResult = session.queryAndFetch(nxql, NXQL.NXQL);
         EsResult esRes = ess.queryAndAggregate(new NxQueryBuilder(session).nxql(nxql).limit(20));
-        IterableQueryResult esResult = esRes.getRows();
-        assertSameDocumentLists(coreResult, esResult);
-        coreResult.close();
-        esResult.close();
+        try (IterableQueryResult esResult = esRes.getRows()) {
+            assertSameDocumentLists(coreResult, esResult);
+            coreResult.close();
+        }
     }
 
     @Test

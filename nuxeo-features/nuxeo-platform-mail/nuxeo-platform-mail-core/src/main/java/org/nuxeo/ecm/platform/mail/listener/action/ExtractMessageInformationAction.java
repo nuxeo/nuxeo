@@ -370,14 +370,6 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             encoding = MimeUtility.getEncoding(part.getDataHandler());
         }
 
-        InputStream is = null;
-        try {
-            is = MimeUtility.decode(part.getInputStream(), encoding);
-        } catch (IOException ex) {
-            log.error("Unable to read content", ex);
-            return "";
-        }
-
         String contType = part.getContentType();
         final String charsetIdentifier = "charset=";
         final String ISO88591 = "iso-8859-1";
@@ -404,19 +396,25 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             charset = WINDOWS1252;
             log.debug("Using replacing charset: " + charset);
         }
-        String ret;
-        byte[] streamContent = IOUtils.toByteArray(is);
-        if ("".equals(charset)) {
-            ret = new String(streamContent);
-        } else {
-            try {
-                ret = new String(streamContent, charset);
-            } catch (UnsupportedEncodingException e) {
-                // try without encoding
+
+        try (InputStream is = MimeUtility.decode(part.getInputStream(), encoding)) {
+            String ret;
+            byte[] streamContent = IOUtils.toByteArray(is);
+            if ("".equals(charset)) {
                 ret = new String(streamContent);
+            } else {
+                try {
+                    ret = new String(streamContent, charset);
+                } catch (UnsupportedEncodingException e) {
+                    // try without encoding
+                    ret = new String(streamContent);
+                }
             }
+            return ret;
+        } catch (IOException ex) {
+            log.error("Unable to read content", ex);
+            return "";
         }
-        return ret;
     }
 
     public Collection<String> getHeaderValues(Message message, String headerName) throws MessagingException {

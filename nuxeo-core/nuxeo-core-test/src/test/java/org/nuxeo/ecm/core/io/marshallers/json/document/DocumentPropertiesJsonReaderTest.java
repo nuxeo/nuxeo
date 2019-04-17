@@ -60,9 +60,11 @@ public class DocumentPropertiesJsonReaderTest
                 "  \"note:note\": \"note content\" }";
 
         DocumentPropertiesJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentPropertiesJsonReader.class);
-        JsonParser jp = JsonFactoryProvider.get().createParser(propertiesJson);
-        JsonNode jn = jp.readValueAsTree();
-        List<Property> properties = reader.read(jn);
+        List<Property> properties;
+        try (JsonParser jp = JsonFactoryProvider.get().createParser(propertiesJson)) {
+            JsonNode jn = jp.readValueAsTree();
+            properties = reader.read(jn);
+        }
         assertNotNull(properties);
         assertEquals(2, properties.size());
         Schema titleSchema = properties.get(0).getSchema();
@@ -80,9 +82,11 @@ public class DocumentPropertiesJsonReaderTest
                 "\"dc:created\": \"2018-02-20T23:00:00.000Z\" }";
 
         DocumentPropertiesJsonReader reader = registry.getInstance(CtxBuilder.get(),DocumentPropertiesJsonReader.class);
-        JsonParser jp = JsonFactoryProvider.get().createParser(propertiesJson);
-        JsonNode jn = jp.readValueAsTree();
-        List<Property> properties = reader.read(jn);
+        List<Property> properties;
+        try (JsonParser jp = JsonFactoryProvider.get().createParser(propertiesJson)) {
+            JsonNode jn = jp.readValueAsTree();
+            properties = reader.read(jn);
+        }
         assertEquals(3, properties.size());
         Property dateListProperty = properties.get(1);
         assertEquals("tst2:dates", dateListProperty.getName());

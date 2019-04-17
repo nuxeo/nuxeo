@@ -322,6 +322,7 @@ public class TestCSVExportAction {
                     out.write(b);
                 }
             };
+            @SuppressWarnings("resource")
             PrintWriter printWriter = new PrintWriter(sos);
             when(response.getOutputStream()).thenReturn(sos);
             when(response.getWriter()).thenReturn(printWriter);

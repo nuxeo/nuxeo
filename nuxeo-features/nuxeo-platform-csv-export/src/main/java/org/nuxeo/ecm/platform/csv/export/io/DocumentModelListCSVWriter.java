@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.SCHEMA
 import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.XPATHS_CTX_DATA;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.commons.csv.CSVPrinter;
@@ -48,8 +49,9 @@ public class DocumentModelListCSVWriter extends AbstractCSVWriter<List<DocumentM
     protected void write(List<DocumentModel> entity, CSVPrinter printer) throws IOException {
         Writer<DocumentModel> writer = registry.getWriter(ctx, DocumentModel.class, TEXT_CSV_TYPE);
         for (DocumentModel doc : entity) {
-            writer.write(doc, DocumentModel.class, DocumentModel.class, TEXT_CSV_TYPE,
-                    new OutputStreamWithCSVWriter(printer));
+            try (OutputStream out = new OutputStreamWithCSVWriter(printer)) {
+                writer.write(doc, DocumentModel.class, DocumentModel.class, TEXT_CSV_TYPE, out);
+            }
             printer.println();
         }
     }

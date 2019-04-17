@@ -48,29 +48,33 @@ public class TestZipUtils {
     public void testGetZipContentByByStream() throws Exception {
         String path = "test-data/hello.odt";
         File sourceFile = FileUtils.getResourceFileFromContext(path);
-        InputStream stream = new FileInputStream(sourceFile);
+        try (InputStream stream = new FileInputStream(sourceFile)) {
 
-        List<String> contentNames = ZipUtils.getEntryNames(stream);
-        assertEquals("Number of elements", 9, contentNames.size());
+            List<String> contentNames = ZipUtils.getEntryNames(stream);
+            assertEquals("Number of elements", 9, contentNames.size());
+        }
 
-        stream = new FileInputStream(sourceFile);
-        assertTrue("Contains mimetype file", ZipUtils.hasEntry(stream, "mimetype"));
+        try (InputStream stream = new FileInputStream(sourceFile)) {
+            assertTrue("Contains mimetype file", ZipUtils.hasEntry(stream, "mimetype"));
+        }
 
-        stream = new FileInputStream(sourceFile);
-        try (InputStream entryContent = ZipUtils.getEntryContentAsStream(stream, "mimetype")) {
+        try (InputStream stream = new FileInputStream(sourceFile);
+                InputStream entryContent = ZipUtils.getEntryContentAsStream(stream, "mimetype")) {
             assertEquals("Mimetype content", "application/vnd.oasis.opendocument.text",
                     IOUtils.toString(entryContent, UTF_8));
         }
 
         // direct access to content - No need to close returned InputStream
 
-        stream = new FileInputStream(sourceFile);
-        String directString = ZipUtils.getEntryContentAsString(stream, "mimetype");
-        assertEquals("Mimetype content", "application/vnd.oasis.opendocument.text", directString);
+        try (InputStream stream = new FileInputStream(sourceFile)) {
+            String directString = ZipUtils.getEntryContentAsString(stream, "mimetype");
+            assertEquals("Mimetype content", "application/vnd.oasis.opendocument.text", directString);
+        }
 
-        stream = new FileInputStream(sourceFile);
-        byte[] bytes = ZipUtils.getEntryContentAsBytes(stream, "mimetype");
-        assertEquals("Mimetype file length", 39, bytes.length);
+        try (InputStream stream = new FileInputStream(sourceFile)) {
+            byte[] bytes = ZipUtils.getEntryContentAsBytes(stream, "mimetype");
+            assertEquals("Mimetype file length", 39, bytes.length);
+        }
     }
 
     @Test

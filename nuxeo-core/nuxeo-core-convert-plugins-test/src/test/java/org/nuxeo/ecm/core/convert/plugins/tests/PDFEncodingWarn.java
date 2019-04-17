@@ -34,10 +34,11 @@ public class PDFEncodingWarn {
     @Test
     public void extract() throws IOException {
         URL url = getClass().getResource("/test-docs/nutcracker.pdf");
-        PDDocument doc = PDDocument.load(url);
-        PDFTextStripper stripper = new PDF2TextConverter.PatchedPDFTextStripper();
-        stripper.getText(doc);
-        stripper.getText(doc);
+        try (PDDocument doc = PDDocument.load(url)) {
+            PDFTextStripper stripper = new PDF2TextConverter.PatchedPDFTextStripper();
+            stripper.getText(doc);
+            stripper.getText(doc);
+        }
     }
 
 }

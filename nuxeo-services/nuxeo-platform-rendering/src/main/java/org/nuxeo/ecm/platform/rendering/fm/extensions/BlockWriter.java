@@ -124,6 +124,7 @@ public class BlockWriter extends Writer {
         }
     }
 
+    @SuppressWarnings("resource")
     public void copyTo(Writer writer) throws TemplateException, IOException {
         // check first if you need to suppress this block
         if (ifBlockDefined != null) {

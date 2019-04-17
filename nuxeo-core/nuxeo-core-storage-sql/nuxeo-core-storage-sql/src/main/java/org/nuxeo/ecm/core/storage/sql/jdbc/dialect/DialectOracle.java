@@ -788,6 +788,7 @@ public class DialectOracle extends Dialect {
         return true;
     }
 
+    @SuppressWarnings("resource") // unwrapped connection not ours to close
     @Override
     public Array createArrayOf(int type, Object[] elements, Connection connection) throws SQLException {
         if (elements == null || elements.length == 0) {
@@ -813,10 +814,10 @@ public class DialectOracle extends Dialect {
         default:
             throw new AssertionError("Unknown type: " + type);
         }
-        connection = ConnectionHelper.unwrap(connection);
+        Connection unwrappedConnection = ConnectionHelper.unwrap(connection);
         try {
-            Object arrayDescriptor = arrayDescriptorConstructor.newInstance(typeName, connection);
-            return (Array) arrayConstructor.newInstance(arrayDescriptor, connection, elements);
+            Object arrayDescriptor = arrayDescriptorConstructor.newInstance(typeName, unwrappedConnection);
+            return (Array) arrayConstructor.newInstance(arrayDescriptor, unwrappedConnection, elements);
         } catch (ReflectiveOperationException e) {
             throw new SQLException(e);
         }

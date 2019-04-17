@@ -77,9 +77,9 @@ public class TestLocalConfigurationForSQLDirectory {
         Directory dir = dirService.getDirectory("userDirectory");
         assertEquals("userDirectory", dir.getName());
 
-        Session dirSession = dirService.open("userDirectory");
-        assertEquals(3, dirSession.getEntries().size());
-
+        try (Session dirSession = dirService.open("userDirectory")) {
+            assertEquals(3, dirSession.getEntries().size());
+        }
     }
 
     @Test
@@ -88,9 +88,9 @@ public class TestLocalConfigurationForSQLDirectory {
         Directory dir = dirService.getDirectory("userDirectory", null);
         assertEquals("userDirectory", dir.getName());
 
-        Session dirSession = dirService.open("userDirectory", null);
-        assertEquals(3, dirSession.getEntries().size());
-
+        try (Session dirSession = dirService.open("userDirectory", null)) {
+            assertEquals(3, dirSession.getEntries().size());
+        }
     }
 
     @Test
@@ -99,9 +99,9 @@ public class TestLocalConfigurationForSQLDirectory {
         Directory dir = dirService.getDirectory("userDirectory", workspace);
         assertEquals("userDirectory", dir.getName());
 
-        Session dirSession = dirService.open("userDirectory", workspace);
-        assertEquals(3, dirSession.getEntries().size());
-
+        try (Session dirSession = dirService.open("userDirectory", workspace)) {
+            assertEquals(3, dirSession.getEntries().size());
+        }
     }
 
     @Test
@@ -114,9 +114,9 @@ public class TestLocalConfigurationForSQLDirectory {
         // even id the userDirectory_ exists, we return the userDirectory
         // directory
 
-        Session dirSession = dirService.open("userDirectory", workspace);
-        assertEquals(3, dirSession.getEntries().size());
-
+        try (Session dirSession = dirService.open("userDirectory", workspace)) {
+            assertEquals(3, dirSession.getEntries().size());
+        }
     }
 
     @Test
@@ -127,9 +127,9 @@ public class TestLocalConfigurationForSQLDirectory {
         Directory dir = dirService.getDirectory("userDirectory", workspace);
         assertEquals("userDirectory_domain_a", dir.getName());
 
-        Session dirSession = dirService.open("userDirectory", workspace);
-        assertEquals(1, dirSession.getEntries().size());
-
+        try (Session dirSession = dirService.open("userDirectory", workspace)) {
+            assertEquals(1, dirSession.getEntries().size());
+        }
     }
 
     protected void initRepository() {

@@ -147,6 +147,7 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
      * @return The textual representation of the component
      * @throws IOException If the JSF helper class can't render the component
      */
+    @SuppressWarnings("resource") // ResponseWriters not ours to close
     public static String cmp2String(FacesContext facesContext, UIComponent component) throws IOException {
         ResponseWriter oldResponseWriter = facesContext.getResponseWriter();
         String contentType = oldResponseWriter != null ? oldResponseWriter.getContentType() : DEFAULT_CONTENT_TYPE;

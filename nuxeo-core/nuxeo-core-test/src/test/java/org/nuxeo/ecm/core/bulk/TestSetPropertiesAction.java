@@ -181,6 +181,7 @@ public class TestSetPropertiesAction {
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/bulk-low-scroll-size-contrib.xml")
     public void testAbort() throws Exception {
         StreamService streamService = Framework.getService(StreamService.class);
+        @SuppressWarnings("resource")
         LogManager logManager = streamService.getLogManager(BULK_LOG_MANAGER_NAME);
         try (LogTailer<Record> tailer = logManager.createTailer("test", ACTION_NAME)) {
             tailer.toLastCommitted();

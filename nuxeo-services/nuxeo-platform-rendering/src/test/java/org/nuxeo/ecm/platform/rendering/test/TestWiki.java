@@ -40,29 +40,31 @@ public class TestWiki {
     @Test
     public void test() throws Exception {
         InputStream in = TestWiki.class.getResourceAsStream("/testdata/test.wiki");
-        Reader reader = new InputStreamReader(in);
+        try (Reader reader = new InputStreamReader(in)) {
 
-        WikiSerializer engine = new WikiSerializer();
-        engine.addFilter(new PatternFilter("_([-A-Za-z0-9]+)_", "<i>$1</i>"));
-        engine.addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
-        engine.addFilter(new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
+            WikiSerializer engine = new WikiSerializer();
+            engine.addFilter(new PatternFilter("_([-A-Za-z0-9]+)_", "<i>$1</i>"));
+            engine.addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
+            engine.addFilter(new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
 
-        StringWriter writer = new StringWriter();
-        engine.serialize(reader, writer);
+            StringWriter writer = new StringWriter();
+            engine.serialize(reader, writer);
+        }
     }
 
     @Test
     public void test2() throws IOException, WikiParserException {
         InputStream in = TestWiki.class.getResourceAsStream("/testdata/test2.wiki");
-        Reader reader = new InputStreamReader(in);
+        try (Reader reader = new InputStreamReader(in)) {
 
-        WikiSerializer engine = new WikiSerializer();
-        engine.addFilter(new PatternFilter("_([-A-Za-z0-9]+)_", "<i>$1</i>"));
-        engine.addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
-        engine.addFilter(new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
+            WikiSerializer engine = new WikiSerializer();
+            engine.addFilter(new PatternFilter("_([-A-Za-z0-9]+)_", "<i>$1</i>"));
+            engine.addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
+            engine.addFilter(new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
 
-        StringWriter writer = new StringWriter();
-        engine.serialize(reader, writer);
+            StringWriter writer = new StringWriter();
+            engine.serialize(reader, writer);
+        }
 
         // System.out.println(writer.getBuffer());
     }
@@ -70,22 +72,23 @@ public class TestWiki {
     @Test
     public void test3() throws Exception {
         InputStream in = TestWiki.class.getResourceAsStream("/testdata/test3.wiki");
-        Reader reader = new InputStreamReader(in);
+        try (Reader reader = new InputStreamReader(in)) {
 
-        WikiSerializer engine = new WikiSerializer();
-        engine.addFilter(new PatternFilter("_([-A-Za-z0-9]+)_", "<i>$1</i>"));
-        engine.addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
-        engine.addFilter(new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
+            WikiSerializer engine = new WikiSerializer();
+            engine.addFilter(new PatternFilter("_([-A-Za-z0-9]+)_", "<i>$1</i>"));
+            engine.addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
+            engine.addFilter(new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
 
-        StringWriter writer = new StringWriter();
-        engine.serialize(reader, writer);
+            StringWriter writer = new StringWriter();
+            engine.serialize(reader, writer);
 
-        String out = writer.toString();
+            String out = writer.toString();
 
-        assertTrue(out.contains("<img src="));
-        assertFalse(out.contains("<script"));
+            assertTrue(out.contains("<img src="));
+            assertFalse(out.contains("<script"));
 
-        System.out.println(out);
+            System.out.println(out);
+        }
     }
 
 }

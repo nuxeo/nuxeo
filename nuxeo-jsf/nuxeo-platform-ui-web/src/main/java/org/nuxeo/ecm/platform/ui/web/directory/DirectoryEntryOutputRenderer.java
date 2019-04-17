@@ -56,6 +56,7 @@ public class DirectoryEntryOutputRenderer extends Renderer {
     public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
         String toWrite = getEntryLabel(context, component);
 
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         String style = (String) component.getAttributes().get("style");
         String styleClass = (String) component.getAttributes().get("styleClass");

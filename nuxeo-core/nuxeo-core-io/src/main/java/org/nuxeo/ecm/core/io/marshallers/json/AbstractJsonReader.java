@@ -125,7 +125,9 @@ public abstract class AbstractJsonReader<EntityType> implements Reader<EntityTyp
     protected <T> T readEntity(Class<?> clazz, Type genericType, JsonNode jn) throws IOException {
         Type effectiveGenericType = genericType != null ? genericType : clazz;
         Reader<T> reader = (Reader<T>) registry.getReader(ctx, clazz, effectiveGenericType, APPLICATION_JSON_TYPE);
-        return reader.read(clazz, effectiveGenericType, APPLICATION_JSON_TYPE, new InputStreamWithJsonNode(jn));
+        try (InputStream in = new InputStreamWithJsonNode(jn)) {
+            return reader.read(clazz, effectiveGenericType, APPLICATION_JSON_TYPE, in);
+        }
     }
 
     /**

@@ -170,6 +170,7 @@ public class TestMailInjection {
         assertEquals(mail.getProperty("mail:sender").getValue(String.class), "Nicolas Ulrich <nulrich:nuxeo.com>");
     }
 
+    @SuppressWarnings("resource") // test
     private Message getSampleMessage(String filePath) throws Exception {
         InputStream stream = new FileInputStream(getTestMailSource(filePath));
         return new MimeMessage(null, stream);

@@ -178,6 +178,7 @@ public class JenaGraph implements Graph {
      * @param forceReload boolean stating if the jena graph has to be reloaded using options
      * @return the Jena graph (model)
      */
+    @SuppressWarnings("resource") // baseConnection and wrappedConnection closed by GraphConnection.close
     protected synchronized GraphConnection openGraph(boolean forceReload) {
         // create model given backend
         if (backend.equals("memory")) {

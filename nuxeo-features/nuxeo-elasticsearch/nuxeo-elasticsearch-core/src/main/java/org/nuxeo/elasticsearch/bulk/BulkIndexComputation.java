@@ -151,8 +151,7 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
     protected BulkRequest decodeRequest(DataBucket bucket) {
         BulkRequest ret = new BulkRequest();
         ByteBuffer buffer = ByteBuffer.wrap(bucket.getData());
-        StreamInput in = new ByteBufferStreamInput(buffer);
-        try {
+        try (StreamInput in = new ByteBufferStreamInput(buffer)) {
             ret.readFrom(in);
             return ret;
         } catch (IOException e) {

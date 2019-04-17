@@ -129,11 +129,12 @@ public class TestHelpers {
 
         byte[] generated = getGeneratedInputStream(doc);
 
-        InputStream expected = new FileInputStream(getTestFile("layouts-generated-contrib.xml"));
+        try (InputStream expected = new FileInputStream(getTestFile("layouts-generated-contrib.xml"))) {
 
-        InputStream generatedStream = new ByteArrayInputStream(generated);
+            InputStream generatedStream = new ByteArrayInputStream(generated);
 
-        assertEquals(read(expected).replaceAll("\r?\n", ""), read(generatedStream).replaceAll("\r?\n", ""));
+            assertEquals(read(expected).replaceAll("\r?\n", ""), read(generatedStream).replaceAll("\r?\n", ""));
+        }
     }
 
     @Test
@@ -143,11 +144,12 @@ public class TestHelpers {
 
         byte[] generated = getGeneratedInputStream(doc);
 
-        InputStream expected = new FileInputStream(getTestFile("layouts-generated-with-labels-contrib.xml"));
+        try (InputStream expected = new FileInputStream(getTestFile("layouts-generated-with-labels-contrib.xml"))) {
 
-        InputStream generatedStream = new ByteArrayInputStream(generated);
+            InputStream generatedStream = new ByteArrayInputStream(generated);
 
-        assertEquals(read(expected).replaceAll("\r?\n", ""), read(generatedStream).replaceAll("\r?\n", ""));
+            assertEquals(read(expected).replaceAll("\r?\n", ""), read(generatedStream).replaceAll("\r?\n", ""));
+        }
     }
 
     protected String read(InputStream in) throws IOException {

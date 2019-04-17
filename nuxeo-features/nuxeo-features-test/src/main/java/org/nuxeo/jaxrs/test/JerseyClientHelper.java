@@ -112,6 +112,7 @@ public final class JerseyClientHelper {
             return this;
         }
 
+        @SuppressWarnings("resource") // Client builder
         public Client build() {
             RequestConfig requestConfig = RequestConfig.custom()
                                                        .setSocketTimeout(socketTimeout)

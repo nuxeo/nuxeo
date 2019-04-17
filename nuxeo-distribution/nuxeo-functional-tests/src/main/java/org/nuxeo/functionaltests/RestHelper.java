@@ -526,9 +526,9 @@ public class RestHelper {
      * @since 9.3
      */
     protected static boolean executeHTTP(Supplier<Response> fetcher) {
-        Response response = fetcher.get();
-        response.body().close();
-        return response.isSuccessful();
+        try (Response response = fetcher.get()) {
+            return response.isSuccessful();
+        }
     }
 
     /**

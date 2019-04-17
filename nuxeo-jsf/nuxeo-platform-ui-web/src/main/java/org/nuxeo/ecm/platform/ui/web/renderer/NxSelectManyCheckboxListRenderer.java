@@ -50,6 +50,7 @@ public class NxSelectManyCheckboxListRenderer extends SelectManyCheckboxListRend
 
         final String moreLessLimit = (String) component.getAttributes().get(MORE_LESS_LIMIT_PROPERTY);
         if (moreLessLimit != null) {
+            @SuppressWarnings("resource")
             ResponseWriter writer = context.getResponseWriter();
             final int moreLessLimitInt = Integer.parseInt(moreLessLimit);
             writer.startElement("a", component);
@@ -78,6 +79,7 @@ public class NxSelectManyCheckboxListRenderer extends SelectManyCheckboxListRend
         if (!items.hasNext()) {
             final String emptyChoiceMessage = (String) component.getAttributes().get(EMPTY_CHOICE_PROPERTY);
             if (StringUtils.isNotBlank(emptyChoiceMessage)) {
+                @SuppressWarnings("resource")
                 ResponseWriter writer = context.getResponseWriter();
                 writer.startElement("div", component);
                 writer.writeAttribute("class", "emptyResult", null);

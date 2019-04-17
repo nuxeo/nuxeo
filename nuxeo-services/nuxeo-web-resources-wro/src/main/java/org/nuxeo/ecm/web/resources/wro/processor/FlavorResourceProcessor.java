@@ -57,10 +57,10 @@ public class FlavorResourceProcessor extends AbstractFlavorProcessor {
     @Override
     protected void process(final Resource resource, final Reader reader, final Writer writer, String flavorName)
             throws IOException {
-        final InputStream is = new ProxyInputStream(new ReaderInputStream(reader, getEncoding())) {
-        };
-        final OutputStream os = new ProxyOutputStream(new WriterOutputStream(writer, getEncoding()));
-        try {
+        try (ReaderInputStream ris = new ReaderInputStream(reader, getEncoding());
+                InputStream is = new ProxyInputStream(ris) {
+                };
+                OutputStream os = new ProxyOutputStream(new WriterOutputStream(writer, getEncoding()))) {
             Map<String, String> presets = null;
             if (flavorName != null) {
                 ThemeStylingService s = Framework.getService(ThemeStylingService.class);
@@ -82,9 +82,6 @@ public class FlavorResourceProcessor extends AbstractFlavorProcessor {
         } catch (final Exception e) {
             log.error("Error while serving resource " + resource.getUri(), e);
             throw WroRuntimeException.wrap(e);
-        } finally {
-            IOUtils.closeQuietly(is);
-            IOUtils.closeQuietly(os);
         }
     }
 

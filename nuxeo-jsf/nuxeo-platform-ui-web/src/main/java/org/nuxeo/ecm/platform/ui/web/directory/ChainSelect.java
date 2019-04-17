@@ -297,6 +297,7 @@ public class ChainSelect extends UIInput implements ResettableComponent {
     public void encodeBegin(FacesContext context) throws IOException {
         init();
         rebuildOptions();
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         writer.startElement("div", this);
         if (cssStyle != null) {
@@ -312,6 +313,7 @@ public class ChainSelect extends UIInput implements ResettableComponent {
 
     @Override
     public void encodeEnd(FacesContext context) throws IOException {
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         writer.endElement("div");
     }

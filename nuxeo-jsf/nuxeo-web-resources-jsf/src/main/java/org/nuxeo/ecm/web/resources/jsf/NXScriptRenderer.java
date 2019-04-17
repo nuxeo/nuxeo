@@ -46,6 +46,7 @@ public class NXScriptRenderer extends AbstractResourceRenderer {
     public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
         String url = resolveUrl(context, component);
         if (url != null) {
+            @SuppressWarnings("resource")
             ResponseWriter writer = context.getResponseWriter();
             startElement(writer, component);
             writer.writeURIAttribute("src", url, "src");

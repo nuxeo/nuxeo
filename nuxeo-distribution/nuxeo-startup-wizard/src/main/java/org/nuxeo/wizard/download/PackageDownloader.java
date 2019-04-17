@@ -20,7 +20,6 @@ package org.nuxeo.wizard.download;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -45,10 +44,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -240,8 +239,7 @@ public class PackageDownloader {
     public boolean canReachServer() {
         if (canReachServer == null) {
             HttpGet ping = new HttpGet(getBaseUrl() + PACKAGES_XML);
-            try {
-                HttpResponse response = httpClient.execute(ping);
+            try (CloseableHttpResponse response = httpClient.execute(ping)) {
                 if (response.getStatusLine().getStatusCode() == 200) {
                     canReachServer = true;
                 } else {
@@ -274,7 +272,9 @@ public class PackageDownloader {
             }
             if (packageFile != null) {
                 try {
-                    downloadOptions = DownloadDescriptorParser.parsePackages(new FileInputStream(packageFile));
+                    try (InputStream in = new FileInputStream(packageFile)) {
+                        downloadOptions = DownloadDescriptorParser.parsePackages(in);
+                    }
 
                     // manage init from presets if available
                     Properties defaultSelection = getDefaultPackageSelection();
@@ -297,7 +297,7 @@ public class PackageDownloader {
                             }
                         }
                     }
-                } catch (FileNotFoundException e) {
+                } catch (IOException e) {
                     log.error("Unable to read packages.xml", e);
                 }
             }
@@ -308,8 +308,7 @@ public class PackageDownloader {
     protected File getRemotePackagesDescriptor() {
         File desc;
         HttpGet ping = new HttpGet(getBaseUrl() + PACKAGES_XML);
-        try {
-            HttpResponse response = httpClient.execute(ping);
+        try (CloseableHttpResponse response = httpClient.execute(ping)) {
             if (response.getStatusLine().getStatusCode() == 200) {
                 desc = new File(getDownloadDirectory(), PACKAGES_XML);
                 FileUtils.copyInputStreamToFile(response.getEntity().getContent(), desc);
@@ -331,7 +330,9 @@ public class PackageDownloader {
         if (desc.exists()) {
             try {
                 Properties props = new Properties();
-                props.load(new FileReader(desc));
+                try (FileReader reader = new FileReader(desc)) {
+                    props.load(reader);
+                }
                 return props;
             } catch (IOException e) {
                 log.warn("Unable to load presets", e);
@@ -346,7 +347,9 @@ public class PackageDownloader {
         Properties props = new Properties();
         props.put(PACKAGES_DEFAULT_SELECTION_PACKAGES, defaultSelPackages);
         try {
-            props.store(new FileWriter(desc), "Saved from Nuxeo SetupWizard");
+            try (FileWriter writer = new FileWriter(desc)) {
+                props.store(writer, "Saved from Nuxeo SetupWizard");
+            }
         } catch (IOException e) {
             log.error("Unable to save package selection", e);
         }
@@ -471,8 +474,7 @@ public class PackageDownloader {
                 }
                 File filePkg;
                 HttpGet dw = new HttpGet(url);
-                try {
-                    HttpResponse response = httpClient.execute(dw);
+                try (CloseableHttpResponse response = httpClient.execute(dw)) {
                     if (response.getStatusLine().getStatusCode() == 200) {
                         filePkg = new File(getDownloadDirectory(), pkg.filename);
                         Header clh = response.getFirstHeader("Content-Length");

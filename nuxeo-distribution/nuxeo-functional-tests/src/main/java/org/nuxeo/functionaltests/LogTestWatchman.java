@@ -175,12 +175,12 @@ public class LogTestWatchman extends TestWatchman {
         if (driver != null) {
             NuxeoClient client = new NuxeoClientForWebDriver(
                     new Builder().url(NUXEO_URL).authentication(ADMINISTRATOR, ADMINISTRATOR));
-            Response response = client.get(NUXEO_URL + "/restAPI/systemLog");
-            response.body().close();
-            if (response.isSuccessful()) {
-                driver.get(String.format("%s/restAPI/systemLog?token=dolog&level=WARN&message=----- WebDriver: %s",
-                        serverURL, URIUtils.quoteURIPathComponent(message, true)));
-                return;
+            try (Response response = client.get(NUXEO_URL + "/restAPI/systemLog")) {
+                if (response.isSuccessful()) {
+                    driver.get(String.format("%s/restAPI/systemLog?token=dolog&level=WARN&message=----- WebDriver: %s",
+                            serverURL, URIUtils.quoteURIPathComponent(message, true)));
+                    return;
+                }
             }
         }
         log.warn(String.format("Cannot log on server message: %s", message));

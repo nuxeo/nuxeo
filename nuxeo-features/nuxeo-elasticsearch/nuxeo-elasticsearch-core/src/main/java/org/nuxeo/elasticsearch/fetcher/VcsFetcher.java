@@ -51,11 +51,23 @@ public class VcsFetcher extends Fetcher {
     @Override
     public DocumentModelListImpl fetchDocuments() {
         Map<String, List<String>> repoHits = getHitsPerRepository();
+        List<DocumentModel> docs = fetchFromVcs(repoHits);
+        sortResults(docs);
+        addHighlights(docs);
+        DocumentModelListImpl ret = new DocumentModelListImpl(docs.size());
+        if (!docs.isEmpty()) {
+            ret.addAll(docs);
+        }
+        return ret;
+    }
+
+    @SuppressWarnings("resource") // session closed only if we opened it
+    protected List<DocumentModel> fetchFromVcs(Map<String, List<String>> repoHits) {
         List<DocumentModel> docs = new ArrayList<>();
         String openSessionRepository = getSession().getRepositoryName();
-        boolean closeSession;
-        CoreSession session;
         for (String repo : repoHits.keySet()) {
+            boolean closeSession;
+            CoreSession session;
             if (openSessionRepository.equals(repo)) {
                 session = getSession();
                 closeSession = false;
@@ -71,13 +83,7 @@ public class VcsFetcher extends Fetcher {
                 }
             }
         }
-        sortResults(docs);
-        addHighlights(docs);
-        DocumentModelListImpl ret = new DocumentModelListImpl(docs.size());
-        if (!docs.isEmpty()) {
-            ret.addAll(docs);
-        }
-        return ret;
+        return docs;
     }
 
     private Map<String, List<String>> getHitsPerRepository() {

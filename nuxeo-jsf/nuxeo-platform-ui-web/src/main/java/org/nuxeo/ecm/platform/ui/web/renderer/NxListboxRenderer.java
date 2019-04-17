@@ -46,6 +46,7 @@ public class NxListboxRenderer extends ListboxRenderer {
         final boolean disableSelect2 = Boolean.parseBoolean((String) component.getAttributes().get("disableSelect2"));
 
         if (!disableSelect2) {
+            @SuppressWarnings("resource")
             ResponseWriter writer = context.getResponseWriter();
             writer.startElement("script", component);
             Map<String, String> params = new HashMap<>();

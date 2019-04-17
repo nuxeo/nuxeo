@@ -23,6 +23,7 @@ package org.nuxeo.runtime.deployment.preprocessor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -154,8 +155,10 @@ public class PackZip {
             log.error("You should run this tool from a preprocessed nuxeo.ear folder");
         }
         DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        FileInputStream in = new FileInputStream(file);
-        Document doc = docBuilder.parse(in);
+        Document doc;
+        try (InputStream in = new FileInputStream(file)) {
+            doc = docBuilder.parse(in);
+        }
         Element root = doc.getDocumentElement();
         NodeList list = root.getElementsByTagName("module");
         Collection<String> paths = new ArrayList<>();

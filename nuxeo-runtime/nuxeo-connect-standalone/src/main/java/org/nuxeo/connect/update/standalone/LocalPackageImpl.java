@@ -97,8 +97,9 @@ public class LocalPackageImpl implements LocalPackage {
         }
         try {
             data = new LocalPackageData(parent, file);
-            InputStream in = new FileInputStream(data.getManifest());
-            def = (PackageDefinitionImpl) xmap.load(in);
+            try (InputStream in = new FileInputStream(data.getManifest())) {
+                def = (PackageDefinitionImpl) xmap.load(in);
+            }
         } catch (FileNotFoundException e) {
             throw new PackageException("Invalid package - no package.xml file found in package " + file.getName());
         } catch (IOException e) {

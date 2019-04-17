@@ -139,8 +139,10 @@ public class TestServiceRootFinder extends PublisherTestCase {
 
     private void changeUser(String userName) throws Exception {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        Session userdir = directoryService.open("userDirectory");
-        DocumentModel userModel = userdir.getEntry(userName);
+        DocumentModel userModel;
+        try (Session userdir = directoryService.open("userDirectory")) {
+            userModel = userdir.getEntry(userName);
+        }
         // set it on session
         NuxeoPrincipal originalUser = session.getPrincipal();
         originalUser.setModel(userModel);

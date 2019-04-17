@@ -151,8 +151,9 @@ public class TestMagickExecutors {
         ImageConverter.convert(file.getAbsolutePath(), out.getAbsolutePath());
 
         assertEquals("pdf", FilenameUtils.getExtension(out.getAbsolutePath()));
-        PDDocument doc = PDDocument.load(out);
-        assertNotNull(doc);
+        try (PDDocument doc = PDDocument.load(out)) {
+            assertNotNull(doc);
+        }
 
         out.delete();
     }

@@ -95,11 +95,12 @@ public class QueryResultsAreAutomaticallyClosedTest {
     @Test
     public void testTransactional() throws Exception {
         try (CloseableCoreSession session = coreFeature.openCoreSessionSystem()) {
-            IterableQueryResult results = session.queryAndFetch("SELECT * from Document", "NXQL");
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-            assertFalse(results.mustBeClosed());
-            assertWarnInLogs();
+            try (IterableQueryResult results = session.queryAndFetch("SELECT * from Document", "NXQL")) {
+                TransactionHelper.commitOrRollbackTransaction();
+                TransactionHelper.startTransaction();
+                assertFalse(results.mustBeClosed());
+                assertWarnInLogs();
+            }
         }
     }
 
@@ -118,6 +119,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
 
     }
 
+    @SuppressWarnings("resource") // we specifically test indirect close
     @Test
     public void testNested() throws Exception {
         IterableQueryResult mainResults;

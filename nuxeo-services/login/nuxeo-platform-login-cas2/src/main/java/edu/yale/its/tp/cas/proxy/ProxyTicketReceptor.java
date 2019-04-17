@@ -97,6 +97,7 @@ public class ProxyTicketReceptor extends HttpServlet {
                 pgt.put(pgtIou, pgtId);
             }
         }
+        @SuppressWarnings("resource")
         PrintWriter out = response.getWriter();
         out.println("<casClient:proxySuccess " + "xmlns:casClient=\"http://www.yale.edu/tp/casClient\"/>");
         out.flush();

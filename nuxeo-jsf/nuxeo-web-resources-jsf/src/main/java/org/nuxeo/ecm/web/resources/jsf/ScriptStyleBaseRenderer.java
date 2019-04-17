@@ -189,6 +189,7 @@ public abstract class ScriptStyleBaseRenderer extends Renderer implements Compon
             }
         }
         if (renderChildren) {
+            @SuppressWarnings("resource")
             ResponseWriter writer = context.getResponseWriter();
             startElement(writer, component);
             super.encodeChildren(context, component);

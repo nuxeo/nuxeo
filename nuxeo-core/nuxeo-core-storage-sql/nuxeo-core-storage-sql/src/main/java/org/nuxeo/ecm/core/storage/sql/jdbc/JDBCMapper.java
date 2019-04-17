@@ -930,6 +930,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         cursorResults.forEach((id, cursor) -> cursor.timedOut(id));
     }
 
+    @SuppressWarnings("resource") // PreparedStatement + ResultSet for cursor, must not be closed
     protected ScrollResult<String> scrollSearch(String query, QueryFilter queryFilter, int batchSize, int keepAliveSeconds) {
         QueryMaker queryMaker = findQueryMaker("NXQL");
         QueryMaker.Query q = queryMaker.buildQuery(sqlInfo, model, pathResolver, query, queryFilter);

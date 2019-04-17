@@ -101,8 +101,7 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             return null;
         }
         BlobManager blobManager = Framework.getService(BlobManager.class);
-        try {
-            InputStream is = blobManager.getThumbnail(blob);
+        try (InputStream is = blobManager.getThumbnail(blob)) {
             if (is == null) {
                 return null;
             }

@@ -51,6 +51,7 @@ public class FreemarkerMacro implements WikiMacro {
         if (env != null) {
             Template tpl = new Template("inline", new StringReader(content), env.getConfiguration(),
                     env.getTemplate().getEncoding());
+            @SuppressWarnings("resource") // not ours to close
             Writer oldw = env.getOut();
             Writer neww = new StringWriter();
             try {

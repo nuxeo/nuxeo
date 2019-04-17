@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.Writer;
 import java.util.Calendar;
 
 import org.javasimon.Sample;
@@ -77,7 +78,9 @@ public class MetricSerializer implements MetricSerializerMXBean {
             createTempFile();
         }
         closeOutput();
-        outputStream = new XStream().createObjectOutputStream(new FileWriter(file));
+        @SuppressWarnings("resource") // Writer closed by outputStream.close()
+        Writer writer = new FileWriter(file);
+        outputStream = new XStream().createObjectOutputStream(writer);
         for (String name : SimonManager.simonNames()) {
             SimonManager.getSimon(name).reset();
         }

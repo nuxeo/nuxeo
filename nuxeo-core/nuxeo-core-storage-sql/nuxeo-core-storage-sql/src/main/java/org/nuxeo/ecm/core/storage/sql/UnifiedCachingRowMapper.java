@@ -294,6 +294,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
         }
     }
 
+    @SuppressWarnings("resource") // Time.Context closed by stop()
     protected Row cacheGet(RowId rowId) {
         final Context context = cacheGetTimer.time();
         try {
@@ -419,6 +420,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
             }
         }
         if (!todo.isEmpty()) {
+            @SuppressWarnings("resource")
             final Context context = sorGetTimer.time();
             try {
                 // ask missing ones to underlying row mapper

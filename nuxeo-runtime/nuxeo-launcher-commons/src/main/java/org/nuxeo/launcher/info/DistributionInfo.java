@@ -22,6 +22,7 @@ package org.nuxeo.launcher.info;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -40,7 +41,9 @@ public class DistributionInfo {
 
     public DistributionInfo(File distFile) throws IOException {
         Properties distProps = new Properties();
-        distProps.load(new FileInputStream(distFile));
+        try (InputStream in = new FileInputStream(distFile)) {
+            distProps.load(in);
+        }
         name = distProps.getProperty(Environment.DISTRIBUTION_NAME, "unknown");
         server = distProps.getProperty(Environment.DISTRIBUTION_SERVER, "unknown");
         version = distProps.getProperty(Environment.DISTRIBUTION_VERSION, "unknown");

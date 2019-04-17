@@ -52,6 +52,7 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter implem
 
     private static final long serialVersionUID = -5307418102496342779L;
 
+    @SuppressWarnings("resource") // session closed only if we opened it
     @Override
     public Serializable getResourceRepresentation(Resource resource, Map<String, Object> context) {
         Serializable object = null;

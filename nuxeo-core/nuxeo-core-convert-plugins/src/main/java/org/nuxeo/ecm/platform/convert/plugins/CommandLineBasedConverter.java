@@ -140,6 +140,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
                 for (String blobParamName : blobParameters.keySet()) {
                     Blob blob = blobParameters.get(blobParamName);
                     // closed in finally block
+                    @SuppressWarnings("resource") // closed in finally
                     CloseableFile closeable = blob.getCloseableFile(
                             "." + FilenameUtils.getExtension(blob.getFilename()));
                     params.addNamedParameter(blobParamName, closeable.getFile());

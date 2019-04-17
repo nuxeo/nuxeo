@@ -64,9 +64,10 @@ public class TranslationMessagesDiffer {
     }
 
     public static TranslationProperties extractProps(File file) throws IOException {
-        InputStream in = new FileInputStream(file);
         TranslationProperties props = new TranslationProperties();
-        props.load(in);
+        try (InputStream in = new FileInputStream(file)) {
+            props.load(in);
+        }
         return props;
     }
 

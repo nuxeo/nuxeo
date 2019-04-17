@@ -130,7 +130,9 @@ public class NuxeoLauncherGUI {
                 updateServerStatus();
                 try {
                     Properties props = new Properties();
-                    props.load(new FileReader(getConfigurationGenerator().getDumpedConfig()));
+                    try (FileReader reader = new FileReader(getConfigurationGenerator().getDumpedConfig())) {
+                        props.load(reader);
+                    }
                     nuxeoFrame.updateLogsTab(props.getProperty("log.id"));
                 } catch (IOException e) {
                     log.error(e);
@@ -139,6 +141,7 @@ public class NuxeoLauncherGUI {
         });
         try {
             dumpedConfigMonitor.setRecursive(false);
+            @SuppressWarnings("resource")
             FileObject dumpedConfig = VFS.getManager().resolveFile(
                     getConfigurationGenerator().getDumpedConfig().getPath());
             dumpedConfigMonitor.addFile(dumpedConfig);

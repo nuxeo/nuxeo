@@ -231,15 +231,10 @@ public class PooledDataSourceFactory implements ObjectFactory {
                     return localTx;
                 }
 
-                Connection physicalConnection() throws ResourceException {
-                    return physicalConnection;
-                }
-
                 @Override
                 protected void localTransactionStart(boolean isSPI) throws ResourceException {
-                    Connection c = physicalConnection();
                     try {
-                        c.setAutoCommit(false);
+                        physicalConnection.setAutoCommit(false);
                     } catch (SQLException e) {
                         throw new LocalTransactionException("Unable to disable autoCommit", e);
                     }
@@ -248,14 +243,13 @@ public class PooledDataSourceFactory implements ObjectFactory {
 
                 @Override
                 protected void localTransactionCommit(boolean isSPI) throws ResourceException {
-                    Connection c = physicalConnection();
                     try {
                         if (commitBeforeAutoCommit) {
-                            c.commit();
+                            physicalConnection.commit();
                         }
                     } catch (SQLException e) {
                         try {
-                            c.rollback();
+                            physicalConnection.rollback();
                         } catch (SQLException e1) {
                             if (log != null) {
                                 e.printStackTrace(log);
@@ -264,7 +258,7 @@ public class PooledDataSourceFactory implements ObjectFactory {
                         throw new LocalTransactionException("Unable to commit", e);
                     } finally {
                         try {
-                            c.setAutoCommit(true);
+                            physicalConnection.setAutoCommit(true);
                         } catch (SQLException e) {
                             // don't rethrow inside finally
                             LogFactory.getLog(PooledDataSourceFactory.class)
@@ -368,8 +362,8 @@ public class PooledDataSourceFactory implements ObjectFactory {
             }
 
             CredentialExtractor credentialExtractor = new CredentialExtractor(subject, connectionRequestInfo, this);
-            Connection sqlConnection = getPhysicalConnection(subject, credentialExtractor);
-            return new ManagedJDBCConnection(this, sqlConnection, credentialExtractor, exceptionSorter, commitBeforeAutocommit);
+            return new ManagedJDBCConnection(this, getPhysicalConnection(subject, credentialExtractor),
+                    credentialExtractor, exceptionSorter, commitBeforeAutocommit);
         }
 
         protected Connection getPhysicalConnection(Subject subject, CredentialExtractor credentialExtractor) throws ResourceException {

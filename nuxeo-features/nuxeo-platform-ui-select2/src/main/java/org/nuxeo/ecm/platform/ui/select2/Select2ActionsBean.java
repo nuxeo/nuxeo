@@ -183,10 +183,9 @@ public class Select2ActionsBean implements Serializable {
      */
     public String encodeParameters(final Widget widget, final Map<String, String> defaultParams,
             final Map<String, Serializable> resolvedWidgetProperties) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        BufferedOutputStream out = new BufferedOutputStream(baos);
-
-        try (JsonGenerator jg = JsonHelper.createJsonGenerator(out)) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                BufferedOutputStream out = new BufferedOutputStream(baos);
+                JsonGenerator jg = JsonHelper.createJsonGenerator(out)) {
             jg.writeStartObject();
 
             // multiple is not in properties and we must add it because Select2
@@ -878,16 +877,17 @@ public class Select2ActionsBean implements Serializable {
 
         DocumentModel doc;
         doc = resolveReference(repo, storedReference, operationName, idProperty);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        BufferedOutputStream out = new BufferedOutputStream(baos);
-        JsonGenerator jg = JsonHelper.createJsonGenerator(out);
-        if (doc == null) {
-            processDocumentNotFound(storedReference, jg);
-        } else {
-            getDocumentModelWriter(schemaNames).write(doc, jg);
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                BufferedOutputStream out = new BufferedOutputStream(baos);
+                JsonGenerator jg = JsonHelper.createJsonGenerator(out)) {
+            if (doc == null) {
+                processDocumentNotFound(storedReference, jg);
+            } else {
+                getDocumentModelWriter(schemaNames).write(doc, jg);
+            }
+            jg.flush();
+            return new String(baos.toByteArray(), "UTF-8");
         }
-        jg.flush();
-        return new String(baos.toByteArray(), "UTF-8");
 
     }
 

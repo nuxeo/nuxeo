@@ -140,8 +140,9 @@ public class HttpConnector implements Connector {
         try {
             int status = resp.getStatusLine().getStatusCode();
             Header[] headers = resp.getAllHeaders();
-            InputStream content = entity == null ? null : entity.getContent();
-            return request.handleResult(status, headers, content, ctx);
+            try (InputStream content = entity == null ? null : entity.getContent()) {
+                return request.handleResult(status, headers, content, ctx);
+            }
         } finally {
             // needed to properly release resources and return the connection to the pool
             EntityUtils.consume(entity);

@@ -164,9 +164,10 @@ public class TestJenaGraphReification {
 
     @Test
     public void testRead() throws Exception {
-        InputStream in = new FileInputStream(getTestFile());
         assertEquals(0, graph.size().longValue());
-        graph.read(in, null, null);
+        try (InputStream in = new FileInputStream(getTestFile())) {
+            graph.read(in, null, null);
+        }
         assertNotEquals(0, graph.size().longValue());
         List<Statement> stmts = graph.getStatements();
         compareStatements(stmts, statements);

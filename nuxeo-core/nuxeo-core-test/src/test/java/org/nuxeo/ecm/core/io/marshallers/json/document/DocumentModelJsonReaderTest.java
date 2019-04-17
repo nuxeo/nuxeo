@@ -91,9 +91,11 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
                 "     \"note:note\": \"note content\" } }";
 
         DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
-        JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson);
-        JsonNode jn = jp.readValueAsTree();
-        DocumentModel noteDocument = reader.read(jn);
+        DocumentModel noteDocument;
+        try (JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson)) {
+            JsonNode jn = jp.readValueAsTree();
+            noteDocument = reader.read(jn);
+        }
         assertNotNull(noteDocument);
         assertTrue(noteDocument instanceof SimpleDocumentModel);
         assertEquals("note content", noteDocument.getPropertyValue("note:note"));
@@ -106,9 +108,11 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
 
         // when I parse it it
         DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
-        JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson);
-        JsonNode jn = jp.readValueAsTree();
-        DocumentModel noteDocument = reader.read(jn);
+        DocumentModel noteDocument;
+        try (JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson)) {
+            JsonNode jn = jp.readValueAsTree();
+            noteDocument = reader.read(jn);
+        }
 
         // then the default value must be set
         String[] schemas = noteDocument.getSchemas();
@@ -126,9 +130,11 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
 
         // when I parse it it
         DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
-        JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson);
-        JsonNode jn = jp.readValueAsTree();
-        DocumentModel noteDocument = reader.read(jn);
+        DocumentModel noteDocument;
+        try (JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson)) {
+            JsonNode jn = jp.readValueAsTree();
+            noteDocument = reader.read(jn);
+        }
 
         // then the property with the default value must null
         Map<String, Object> values = noteDocument.getDataModel("defaultvalue").getMap();
@@ -142,9 +148,11 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
 
         // when I parse it
         DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
-        JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson);
-        JsonNode jn = jp.readValueAsTree();
-        DocumentModel noteDocument = reader.read(jn);
+        DocumentModel noteDocument;
+        try (JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson)) {
+            JsonNode jn = jp.readValueAsTree();
+            noteDocument = reader.read(jn);
+        }
 
         // then the default value must be set
         String[] schemas = noteDocument.getSchemas();
@@ -162,9 +170,11 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
 
         // when I parse it
         DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
-        JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson);
-        JsonNode jn = jp.readValueAsTree();
-        DocumentModel noteDocument = reader.read(jn);
+        DocumentModel noteDocument;
+        try (JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson)) {
+            JsonNode jn = jp.readValueAsTree();
+            noteDocument = reader.read(jn);
+        }
 
         // then the property with the default value must null
         Map<String, Object> values = noteDocument.getDataModel("defaultvalue").getMap();

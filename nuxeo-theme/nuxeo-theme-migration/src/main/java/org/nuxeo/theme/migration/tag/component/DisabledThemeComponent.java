@@ -47,6 +47,7 @@ public class DisabledThemeComponent extends UIComponentBase {
 
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         writer.write("This theme tag is disabled. Please use another tag library");
         writer.flush();

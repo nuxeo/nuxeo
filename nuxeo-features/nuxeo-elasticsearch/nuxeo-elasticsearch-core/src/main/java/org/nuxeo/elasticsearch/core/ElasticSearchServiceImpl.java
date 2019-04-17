@@ -110,6 +110,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         return queryAndAggregate(queryBuilder).getDocuments();
     }
 
+    @SuppressWarnings("resource") // IterableQueryResult closed by EsResult.getRows().close()
     @Override
     public EsResult queryAndAggregate(NxQueryBuilder queryBuilder) {
         SearchResponse response = search(queryBuilder);
@@ -157,6 +158,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         esa.getClient().clearScroll(request);
     }
 
+    @SuppressWarnings("resource") // IterableQueryResult closed by EsResult.getRows().close()
     protected EsScrollResult getScrollResults(NxQueryBuilder queryBuilder, SearchResponse response, String scrollId,
             long keepAlive) {
         if (queryBuilder.returnsDocuments()) {

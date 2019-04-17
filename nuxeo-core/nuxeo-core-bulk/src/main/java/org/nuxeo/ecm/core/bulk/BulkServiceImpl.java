@@ -130,11 +130,16 @@ public class BulkServiceImpl implements BulkService {
             shardKey = command.getId();
         }
         // send command to bulk processor
+        return submit(shardKey, command.getId(), commandAsBytes);
+    }
+
+    @SuppressWarnings("resource") // LogManager not ours to close
+    protected String submit(String shardKey, String key, byte[] bytes) {
         LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
         LogAppender<Record> logAppender = logManager.getAppender(COMMAND_STREAM,
                 Framework.getService(CodecService.class).getCodec(RECORD_CODEC, Record.class));
-        logAppender.append(shardKey, Record.of(command.getId(), commandAsBytes));
-        return command.getId();
+        logAppender.append(shardKey, Record.of(key, bytes));
+        return key;
     }
 
     @Override
@@ -195,10 +200,15 @@ public class BulkServiceImpl implements BulkService {
         delta.setCompletedTime(Instant.now());
         delta.setState(ABORTED);
         byte[] statusAsBytes = BulkCodecs.getStatusCodec().encode(delta);
+        abort(commandId, statusAsBytes);
+        return status;
+    }
+
+    @SuppressWarnings("resource") // LogManager not ours to close
+    protected void abort(String key, byte[] bytes) {
         LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
         LogAppender<Record> logAppender = logManager.getAppender(STATUS_STREAM);
-        logAppender.append(commandId, Record.of(commandId, statusAsBytes));
-        return status;
+        logAppender.append(key, Record.of(key, bytes));
     }
 
     @Override

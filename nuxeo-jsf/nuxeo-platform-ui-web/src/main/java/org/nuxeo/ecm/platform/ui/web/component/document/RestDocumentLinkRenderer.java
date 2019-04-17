@@ -72,6 +72,7 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
             }
             return;
         }
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         assert (writer != null);
         writer.startElement("a", component);

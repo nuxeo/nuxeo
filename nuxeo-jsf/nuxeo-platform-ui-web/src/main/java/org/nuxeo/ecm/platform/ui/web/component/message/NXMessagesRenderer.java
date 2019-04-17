@@ -49,6 +49,7 @@ public class NXMessagesRenderer extends MessagesRenderer implements ComponentSys
 
     public static final String RENDERER_TYPE = "javax.faces.NXMessages";
 
+    @SuppressWarnings("resource") // ResponseWriter not ours to close
     @Override
     public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
         rendererParamsNotNull(context, component);

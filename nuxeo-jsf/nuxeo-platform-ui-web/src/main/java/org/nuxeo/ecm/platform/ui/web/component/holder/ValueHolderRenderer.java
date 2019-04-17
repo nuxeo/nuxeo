@@ -50,6 +50,7 @@ public class ValueHolderRenderer extends HiddenRenderer {
     protected void getEndTextToRender(FacesContext context, UIComponent component, String currentValue)
             throws IOException {
 
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         assert (writer != null);
 

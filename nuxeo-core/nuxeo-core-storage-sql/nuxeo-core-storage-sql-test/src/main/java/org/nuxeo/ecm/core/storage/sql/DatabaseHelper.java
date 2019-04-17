@@ -137,30 +137,31 @@ public abstract class DatabaseHelper {
         DatabaseMetaData metadata = connection.getMetaData();
         List<String> tableNames = new LinkedList<>();
         Set<String> truncateFirst = new HashSet<>();
-        ResultSet rs = metadata.getTables(catalog, schemaPattern, "%", new String[] { "TABLE" });
-        while (rs.next()) {
-            String tableName = rs.getString("TABLE_NAME");
-            if (tableName.indexOf('$') != -1) {
-                // skip Oracle 10g flashback/fulltext-index tables
-                continue;
+        try (ResultSet rs = metadata.getTables(catalog, schemaPattern, "%", new String[] { "TABLE" })) {
+            while (rs.next()) {
+                String tableName = rs.getString("TABLE_NAME");
+                if (tableName.indexOf('$') != -1) {
+                    // skip Oracle 10g flashback/fulltext-index tables
+                    continue;
+                }
+                if (tableName.toLowerCase().startsWith("trace_xe_")) {
+                    // Skip mssql 2012 system table
+                    continue;
+                }
+                if ("ACLR_USER_USERS".equals(tableName)) {
+                    // skip nested table that is dropped by the main table
+                    continue;
+                }
+                if ("ANCESTORS_ANCESTORS".equals(tableName)) {
+                    // skip nested table that is dropped by the main table
+                    continue;
+                }
+                if ("ACLR_MODIFIED".equals(tableName) && DATABASE instanceof DatabaseOracle) {
+                    // global temporary table on Oracle, must TRUNCATE before DROP
+                    truncateFirst.add(tableName);
+                }
+                tableNames.add(tableName);
             }
-            if (tableName.toLowerCase().startsWith("trace_xe_")) {
-                // Skip mssql 2012 system table
-                continue;
-            }
-            if ("ACLR_USER_USERS".equals(tableName)) {
-                // skip nested table that is dropped by the main table
-                continue;
-            }
-            if ("ANCESTORS_ANCESTORS".equals(tableName)) {
-                // skip nested table that is dropped by the main table
-                continue;
-            }
-            if ("ACLR_MODIFIED".equals(tableName) && DATABASE instanceof DatabaseOracle) {
-                // global temporary table on Oracle, must TRUNCATE before DROP
-                truncateFirst.add(tableName);
-            }
-            tableNames.add(tableName);
         }
         // not all databases can cascade on drop
         // remove hierarchy last because of foreign keys

@@ -82,8 +82,12 @@ public class KeycloakAuthenticationPlugin implements NuxeoAuthenticationPlugin,
             mappingName = parameters.get(KEYCLOAK_MAPPING_NAME_KEY);
         }
 
-        InputStream is = loadKeycloakConfigFile();
-        KeycloakDeployment kd = KeycloakNuxeoDeployment.build(is);
+        KeycloakDeployment kd;
+        try (InputStream is = loadKeycloakConfigFile()) {
+            kd = KeycloakNuxeoDeployment.build(is);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         keycloakAuthenticatorProvider = new KeycloakAuthenticatorProvider(new AdapterDeploymentContext(kd));
         LOGGER.info("Keycloak is using a per-deployment configuration loaded from: " + keycloakConfigFile);
     }
@@ -190,6 +194,7 @@ public class KeycloakAuthenticationPlugin implements NuxeoAuthenticationPlugin,
      *
      * @return the configuration file as an {@link InputStream}
      */
+    @SuppressWarnings("resource")
     private InputStream loadKeycloakConfigFile() {
 
         if (keycloakConfigFile.startsWith(PROTOCOL_CLASSPATH)) {

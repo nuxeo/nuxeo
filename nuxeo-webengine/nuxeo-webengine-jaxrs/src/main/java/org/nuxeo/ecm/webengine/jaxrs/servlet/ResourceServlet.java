@@ -63,6 +63,7 @@ public class ResourceServlet extends HttpServlet {
                 resp.addHeader("Content-Type", ctype);
             }
             try {
+                @SuppressWarnings("resource") // not ours to close
                 OutputStream out = resp.getOutputStream();
                 byte[] bytes = new byte[1024 * 64];
                 int r = in.read(bytes);

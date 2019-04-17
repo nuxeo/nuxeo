@@ -438,9 +438,10 @@ public class TestJenaGraph {
 
     @Test
     public void testRead() throws Exception {
-        InputStream in = new FileInputStream(getTestFile());
         assertSame(0L, graph.size());
-        graph.read(in, null, null);
+        try (InputStream in = new FileInputStream(getTestFile())) {
+            graph.read(in, null, null);
+        }
         assertNotSame(0L, graph.size());
         List<Statement> statements = graph.getStatements();
         Collections.sort(statements);

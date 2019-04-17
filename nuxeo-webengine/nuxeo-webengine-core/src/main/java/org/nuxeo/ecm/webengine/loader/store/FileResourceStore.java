@@ -75,13 +75,12 @@ public class FileResourceStore implements ResourceStore {
 
     @Override
     public byte[] getBytes(String name) {
-        InputStream in = getStream(name);
-        if (in != null) {
-            try {
+        try (InputStream in = getStream(name)) {
+            if (in != null) {
                 return IOUtils.toByteArray(in);
-            } catch (IOException e) {
-                log.error("Failed to read file: " + name, e);
             }
+        } catch (IOException e) {
+            log.error("Failed to read file: " + name, e);
         }
         return null;
     }

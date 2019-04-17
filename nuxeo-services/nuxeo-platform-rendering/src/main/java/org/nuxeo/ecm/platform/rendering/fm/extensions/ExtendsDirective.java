@@ -54,6 +54,7 @@ public class ExtendsDirective implements TemplateDirectiveModel {
             throw new TemplateModelException("src attribute is not defined");
         }
 
+        @SuppressWarnings("resource") // not ours to close
         BlockWriter writer = (BlockWriter) env.getOut();
         writer.suppressOutput = true;
         body.render(writer);

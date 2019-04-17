@@ -46,6 +46,7 @@ public class NXRadioRenderer extends RadioRenderer {
 
     private static final Attribute[] ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.SELECTONERADIO);
 
+    @SuppressWarnings("resource") // ResponseWriter not ours to close
     @Override
     protected void renderOption(FacesContext context, UIComponent component, Converter converter, SelectItem curItem,
             Object currentSelections, Object[] submittedValues, boolean alignVertical, int itemNumber,

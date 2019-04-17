@@ -112,7 +112,10 @@ public class TestComplexTypesMapping {
         File propFile = FileUtils.getResourceFileFromContext("testProperties.properties");
         Assert.assertNotNull(propFile);
 
-        Properties props = new Properties(Properties.loadProperties(new FileReader(propFile)));
+        Properties props;
+        try (FileReader reader = new FileReader(propFile)) {
+            props = new Properties(Properties.loadProperties(reader));
+        }
 
         DocumentHelper.setProperties(session, doc, props);
 

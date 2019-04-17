@@ -90,6 +90,7 @@ public class DevValve extends ValveBase {
             resp.setCharacterEncoding("UTF-8");
             resp.setStatus(200);
             try {
+                @SuppressWarnings("resource") // not ours to close
                 Writer out = resp.getWriter();
                 sendFile(file, out);
                 out.flush();

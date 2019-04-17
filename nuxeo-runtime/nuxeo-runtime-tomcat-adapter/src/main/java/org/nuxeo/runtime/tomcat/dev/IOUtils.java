@@ -48,7 +48,10 @@ public class IOUtils {
                 copyTree(child, new File(target, child.getName()));
             }
         } else {
-            copyContent(new FileInputStream(source), new FileOutputStream(target));
+            try (FileInputStream in = new FileInputStream(source); //
+                    FileOutputStream out = new FileOutputStream(target)) {
+                copyContent(in, out);
+            }
         }
     }
 
@@ -64,13 +67,20 @@ public class IOUtils {
         File backup = new File(target, name + "~bak");
         if (!backup.exists()) {
             backup.createNewFile();
-            IOUtils.copyContent(new FileInputStream(l10n), new FileOutputStream(backup));
+            try (FileInputStream in = new FileInputStream(l10n); //
+                    FileOutputStream out = new FileOutputStream(backup)) {
+                copyContent(in, out);
+            }
         }
-        IOUtils.copyContent(new FileInputStream(backup), new FileOutputStream(l10n));
+        try (FileInputStream in = new FileInputStream(backup); //
+                FileOutputStream out = new FileOutputStream(l10n)) {
+            copyContent(in, out);
+        }
         for (File file : files) {
-            InputStream in = new FileInputStream(file);
-            OutputStream out = new FileOutputStream(l10n, true);
-            IOUtils.copyContent(in, out);
+            try (InputStream in = new FileInputStream(file); //
+                    OutputStream out = new FileOutputStream(l10n, true)) { // append
+                copyContent(in, out);
+            }
         }
     }
 

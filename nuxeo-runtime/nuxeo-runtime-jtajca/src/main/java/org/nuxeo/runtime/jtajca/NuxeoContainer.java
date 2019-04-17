@@ -534,6 +534,7 @@ public class NuxeoContainer {
             if (transaction == null) {
                 throw new IllegalStateException("No transaction associated with current thread");
             }
+            @SuppressWarnings("resource")
             Timer.Context timerContext = timers.remove(transaction);
             transactionManager.commit();
             if (timerContext != null) {
@@ -551,6 +552,7 @@ public class NuxeoContainer {
             if (transaction == null) {
                 throw new IllegalStateException("No transaction associated with current thread");
             }
+            @SuppressWarnings("resource")
             Timer.Context timerContext = timers.remove(transaction);
             transactionManager.rollback();
             concurrentCount.dec();

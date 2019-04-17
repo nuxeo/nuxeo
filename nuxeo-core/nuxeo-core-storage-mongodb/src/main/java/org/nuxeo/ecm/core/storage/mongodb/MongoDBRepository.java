@@ -621,6 +621,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return new PartialList<>(projections, totalSize);
     }
 
+    @SuppressWarnings("resource") // cursor is being registered, must not be closed
     @Override
     public ScrollResult<String> scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
         cursorService.checkForTimedOutScroll();

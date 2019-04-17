@@ -2386,8 +2386,6 @@ public class TestSQLRepositoryQuery {
     @Test
     public void testSelectColumnMappings() {
         String query;
-        IterableQueryResult res;
-        Map<String, Serializable> map;
 
         DocumentModel file = session.createDocumentModel("/", "testfileForColumns", "File");
         file.setPropertyValue("dc:title", "special1");
@@ -2401,36 +2399,41 @@ public class TestSQLRepositoryQuery {
         session.save();
 
         query = "SELECT dc:title FROM File WHERE dc:title = 'special1' AND ecm:isVersion = 1";
-        res = session.queryAndFetch(query, "NXQL");
-        assertEquals(1, res.size());
-        map = res.iterator().next();
-        assertEquals("special1", map.get("dc:title"));
+        try (IterableQueryResult res = session.queryAndFetch(query, "NXQL")) {
+            assertEquals(1, res.size());
+            Map<String, Serializable> map = res.iterator().next();
+            assertEquals("special1", map.get("dc:title"));
+        }
 
         query = "SELECT uid:major_version FROM File WHERE dc:title = 'special1' AND ecm:isVersion = 1";
-        res = session.queryAndFetch(query, "NXQL");
-        assertEquals(1, res.size());
-        map = res.iterator().next();
-        assertEquals(1L, map.get("uid:major_version"));
+        try (IterableQueryResult res = session.queryAndFetch(query, "NXQL")) {
+            assertEquals(1, res.size());
+            Map<String, Serializable> map = res.iterator().next();
+            assertEquals(1L, map.get("uid:major_version"));
+        }
 
         query = "SELECT major_version, minor_version FROM File WHERE dc:title = 'special1' AND ecm:isVersion = 1";
-        res = session.queryAndFetch(query, "NXQL");
-        assertEquals(1, res.size());
-        map = res.iterator().next();
-        assertEquals(1L, map.get("major_version"));
-        assertEquals(0L, map.get("minor_version"));
+        try (IterableQueryResult res = session.queryAndFetch(query, "NXQL")) {
+            assertEquals(1, res.size());
+            Map<String, Serializable> map = res.iterator().next();
+            assertEquals(1L, map.get("major_version"));
+            assertEquals(0L, map.get("minor_version"));
+        }
 
         query = "SELECT uid:minor_version FROM File WHERE dc:title = 'special1' AND ecm:isVersion = 1";
-        res = session.queryAndFetch(query, "NXQL");
-        assertEquals(1, res.size());
-        map = res.iterator().next();
-        assertEquals(0L, map.get("uid:minor_version"));
+        try (IterableQueryResult res = session.queryAndFetch(query, "NXQL")) {
+            assertEquals(1, res.size());
+            Map<String, Serializable> map = res.iterator().next();
+            assertEquals(0L, map.get("uid:minor_version"));
+        }
 
         query = "SELECT content/name, content/length FROM File WHERE dc:title = 'special1' AND ecm:isVersion = 1";
-        res = session.queryAndFetch(query, "NXQL");
-        assertEquals(1, res.size());
-        map = res.iterator().next();
-        assertEquals("rucontent.txt", map.get("content/name"));
-        assertEquals(21L, map.get("content/length"));
+        try (IterableQueryResult res = session.queryAndFetch(query, "NXQL")) {
+            assertEquals(1, res.size());
+            Map<String, Serializable> map = res.iterator().next();
+            assertEquals("rucontent.txt", map.get("content/name"));
+            assertEquals(21L, map.get("content/length"));
+        }
     }
 
     @Test
