@@ -175,8 +175,8 @@
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>nuxeo</sonar.organization>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-    <it.jacoco.destFile>${session.executionRootDirectory}/target/jacoco-it.exec</it.jacoco.destFile>
-    <sonar.jacoco.reportPaths>${it.jacoco.destFile}</sonar.jacoco.reportPaths>
+    <it.jacoco.destFile>${session.executionRootDirectory}/target/jacoco.xml</it.jacoco.destFile>
+    <sonar.coverage.jacoco.xmlReportPaths>${it.jacoco.destFile}</sonar.coverage.jacoco.xmlReportPaths>
 
     <!-- MongoDB -->
     <mongo.java.driver.version>3.8.1</mongo.java.driver.version>
@@ -2175,7 +2175,7 @@
       <dependency>
         <groupId>org.codelibs.elasticsearch.module</groupId>
         <artifactId>analysis-common</artifactId>
-	<version>${elasticsearch.version}</version>
+  <version>${elasticsearch.version}</version>
       </dependency>
 
       <!-- apache -->
@@ -5395,7 +5395,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.2</version>
+          <version>0.8.3</version>
           <configuration>
             <propertyName>it.failsafe.argLine</propertyName>
             <destFile>${it.jacoco.destFile}</destFile>
@@ -5764,7 +5764,7 @@
         <plugin>
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
-          <version>3.4.0.905</version>
+          <version>3.6.0.1398</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.sonar-plugins</groupId>
