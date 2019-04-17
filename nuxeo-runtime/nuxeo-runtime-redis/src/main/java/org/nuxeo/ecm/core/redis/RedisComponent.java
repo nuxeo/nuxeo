@@ -80,7 +80,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
             return;
         }
         try {
-            executor.getPool().destroy();
+            executor.getPool().close();
         } finally {
             executor = null;
         }

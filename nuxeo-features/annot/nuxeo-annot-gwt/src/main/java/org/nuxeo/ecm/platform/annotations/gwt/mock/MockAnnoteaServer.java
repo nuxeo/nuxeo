@@ -49,6 +49,7 @@ public class MockAnnoteaServer extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        @SuppressWarnings("resource") // response
         Writer writer = resp.getWriter();
         writer.write(response.toString());
     }
@@ -56,6 +57,7 @@ public class MockAnnoteaServer extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         InputStream is = req.getInputStream();
+        @SuppressWarnings("resource") // request
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         String result;
         StringBuilder request = new StringBuilder();

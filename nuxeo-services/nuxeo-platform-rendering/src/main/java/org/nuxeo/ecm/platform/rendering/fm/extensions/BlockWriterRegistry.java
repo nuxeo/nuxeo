@@ -32,6 +32,7 @@ public class BlockWriterRegistry {
     protected final Map<String, BlockWriter> blockMap = new HashMap<>();
 
     public void addBlock(String name, BlockWriter bw) {
+        @SuppressWarnings("resource")
         BlockWriter existingBw = blockMap.get(name);
         if (existingBw != null) {
             // get the base block and set its superBlock

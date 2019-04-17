@@ -56,11 +56,13 @@ public class TestStreamService {
     public void testLogManagerAccess() {
         assertNotNull(service);
 
+        @SuppressWarnings("resource") // not ours to close
         LogManager manager = service.getLogManager("default");
         assertNotNull(manager);
 
-        manager = service.getLogManager("import");
-        assertNotNull(manager);
+        @SuppressWarnings("resource") // not ours to close
+        LogManager manager2 = service.getLogManager("import");
+        assertNotNull(manager2);
 
         try {
             service.getLogManager("unknown");
@@ -69,15 +71,17 @@ public class TestStreamService {
             // expected
         }
 
-        manager = service.getLogManager("default");
-        assertNotNull(manager);
+        @SuppressWarnings("resource") // not ours to close
+        LogManager manager3 = service.getLogManager("default");
+        assertNotNull(manager3);
 
-        manager.exists("input");
-        assertEquals(1, manager.size("input"));
+        manager3.exists("input");
+        assertEquals(1, manager3.size("input"));
     }
 
     @Test
     public void testBasicLogUsage() throws Exception {
+        @SuppressWarnings("resource")
         LogManager manager = service.getLogManager("default");
         String logName = "myLog";
         String key = "a key";
@@ -97,9 +101,11 @@ public class TestStreamService {
 
     @Test
     public void testStreamProcessor() throws Exception {
+        @SuppressWarnings("resource")
         LogManager manager = service.getLogManager("default");
         StreamManager streamManager = service.getStreamManager("default");
 
+        @SuppressWarnings("resource") // not ours to close
         LogTailer<Record> tailer = manager.createTailer("counter", "output");
 
         // add an input message

@@ -40,10 +40,11 @@ public class TestDataCapsule {
     public Blob getDataCapsule() throws IOException {
         StringWriter writer = new StringWriter();
         JsonFactory jsonFactory = Framework.getService(JsonFactoryManager.class).getJsonFactory();
-        JsonGenerator generator = jsonFactory.createJsonGenerator(writer);
+        try (JsonGenerator generator = jsonFactory.createJsonGenerator(writer)) {
 
-        generator.writeObject(new MyObject());
-        writer.close();
+            generator.writeObject(new MyObject());
+            writer.close();
+        }
         String json = writer.toString();
         return Blobs.createBlob(json, "application/json", null, ID);
     }

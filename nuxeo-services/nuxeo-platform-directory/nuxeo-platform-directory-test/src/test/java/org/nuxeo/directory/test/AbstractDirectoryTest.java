@@ -780,17 +780,18 @@ public abstract class AbstractDirectoryTest {
             dirtmp1 = (AbstractDirectory) directoryService.getDirectory("tmpdirectory1");
             assertNotNull(dirtmp1);
 
-            Session session = dirtmp1.getSession();
+            try (Session session = dirtmp1.getSession()) {
 
-            String schema1 = "tmpschema1";
-            DocumentModel entry = BaseSession.createEntryModel(null, schema1, null, null);
-            entry.setProperty(schema1, "id", "john");
-            entry.setProperty(schema1, "label", "monLabel");
+                String schema1 = "tmpschema1";
+                DocumentModel entry = BaseSession.createEntryModel(null, schema1, null, null);
+                entry.setProperty(schema1, "id", "john");
+                entry.setProperty(schema1, "label", "monLabel");
 
-            assertNull(session.getEntry("john"));
-            entry = session.createEntry(entry);
-            assertEquals("john", entry.getId());
-            assertNotNull(session.getEntry("john"));
+                assertNull(session.getEntry("john"));
+                entry = session.createEntry(entry);
+                assertEquals("john", entry.getId());
+                assertNotNull(session.getEntry("john"));
+            }
 
             // Open a new directory that uses the same table with a different
             // schema.
@@ -798,8 +799,9 @@ public abstract class AbstractDirectoryTest {
             dirtmp2 = (AbstractDirectory) directoryService.getDirectory("tmpdirectory2");
             assertNotNull(dirtmp2);
 
-            session = dirtmp2.getSession();
-            assertNotNull(session.getEntry("john"));
+            try (Session session = dirtmp2.getSession()) {
+                assertNotNull(session.getEntry("john"));
+            }
         } finally {
             if (dirtmp1 != null) {
                 dirtmp1.shutdown();
@@ -872,8 +874,7 @@ public abstract class AbstractDirectoryTest {
 
     @Test
     public void shouldFailWhenCreateDuplicateEntries() {
-        try {
-            Session session = directoryService.open("continentDirectory");
+        try (Session session = directoryService.open("continentDirectory")) {
             Map<String, Object> continent = Map.of("id", "middle-earth", "label", "Middle Earth");
             List<Map<String, Object>> entries = List.of(continent, continent);
             entries.forEach(session::createEntry);

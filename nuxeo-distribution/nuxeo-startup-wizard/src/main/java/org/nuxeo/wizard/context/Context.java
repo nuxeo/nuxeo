@@ -22,6 +22,7 @@ package org.nuxeo.wizard.context;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -88,8 +89,10 @@ public class Context {
             configurationGenerator.init();
             try {
                 Properties distribution = new Properties();
-                distribution.load(new FileInputStream(new File(configurationGenerator.getConfigDir(),
-                        "distribution.properties")));
+                try (InputStream in = new FileInputStream(
+                        new File(configurationGenerator.getConfigDir(), "distribution.properties"))) {
+                    distribution.load(in);
+                }
                 String name = distribution.getProperty(Environment.DISTRIBUTION_NAME, "unknown").toLowerCase();
                 String server = distribution.getProperty(Environment.DISTRIBUTION_SERVER, "unknown").toLowerCase();
                 String version = distribution.getProperty(Environment.DISTRIBUTION_VERSION, "unknown").toLowerCase();

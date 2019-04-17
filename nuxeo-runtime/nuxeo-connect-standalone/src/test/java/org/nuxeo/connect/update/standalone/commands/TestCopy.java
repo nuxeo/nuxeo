@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
@@ -66,7 +67,9 @@ public class TestCopy extends AbstractCommandTest {
         assertTrue(dst.isFile());
         assertEquals(IOUtils.createMd5(src), IOUtils.createMd5(dst));
         Properties goldstandard = new Properties();
-        goldstandard.load(new FileInputStream(goldStandardFile));
+        try (InputStream in = new FileInputStream(goldStandardFile)) {
+            goldstandard.load(in);
+        }
         assertEquals("Original property is missing", "value1", goldstandard.getProperty("param1"));
         assertEquals("Appended property is missing", "value2", goldstandard.getProperty("param2"));
         assertEquals("Appended property is missing", "value3", goldstandard.getProperty("param3"));
@@ -77,7 +80,9 @@ public class TestCopy extends AbstractCommandTest {
         super.uninstallDone(task, error);
         assertFalse(getTargetFile().exists());
         Properties goldstandard = new Properties();
-        goldstandard.load(new FileInputStream(goldStandardFile));
+        try (InputStream in = new FileInputStream(goldStandardFile)) {
+            goldstandard.load(in);
+        }
         assertEquals("Original property is missing", "value1", goldstandard.getProperty("param1"));
         assertNull("Appended property must be removed", goldstandard.getProperty("param2"));
         assertNull("Appended property must be removed", goldstandard.getProperty("param3"));

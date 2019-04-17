@@ -70,6 +70,7 @@ public class CursorService<C, O, R> {
      *
      * @return the scrollId associated to the cursor.
      */
+    @SuppressWarnings("resource") // CursorResult is being registered, must not be closed
     public String registerCursor(C cursor, int batchSize, int keepAliveSeconds) {
         return registerCursorResult(new CursorResult<>(cursor, batchSize, keepAliveSeconds));
     }
@@ -79,6 +80,7 @@ public class CursorService<C, O, R> {
      *
      * @return the scrollId associated to the cursor.
      */
+    @SuppressWarnings("resource") // CursorResult is being registered, must not be closed
     public String registerCursor(String scrollId, C cursor, int batchSize, int keepAliveSeconds) {
         return registerCursorResult(scrollId, new CursorResult<>(cursor, batchSize, keepAliveSeconds));
     }
@@ -121,6 +123,7 @@ public class CursorService<C, O, R> {
     /**
      * @return the next batch of cursor associated to the input <code>scrollId</code>
      */
+    @SuppressWarnings("resource") // CursorResult closed at end of scroll or after timeout
     public ScrollResult<R> scroll(String scrollId) {
         CursorResult<C, O> cursorResult = cursorResults.get(scrollId);
         if (cursorResult == null) {

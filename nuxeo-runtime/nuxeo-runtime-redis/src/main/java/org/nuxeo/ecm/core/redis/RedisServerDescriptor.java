@@ -84,6 +84,7 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
     @XNode("failoverTimeout")
     public int failoverTimeout = 300;
 
+    @SuppressWarnings("resource") // JedisPool closed by RedisComponent.stop
     @Override
     public RedisExecutor newExecutor() {
         SSLContext sslContext = getSSLContext();

@@ -59,6 +59,7 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         }
 
         UIHtmlEditor editorComp = (UIHtmlEditor) component;
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         Locale locale = context.getViewRoot().getLocale();
 

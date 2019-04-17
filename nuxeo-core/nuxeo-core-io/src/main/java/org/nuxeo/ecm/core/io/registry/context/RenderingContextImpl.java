@@ -79,6 +79,7 @@ public class RenderingContextImpl implements RenderingContext {
         return baseUrl;
     }
 
+    @SuppressWarnings("resource") // wrapped session will be closed when the wrapper is closed
     @Override
     public SessionWrapper getSession(DocumentModel document) {
         if (document != null) {
@@ -115,6 +116,7 @@ public class RenderingContextImpl implements RenderingContext {
             }
         }
         if (!StringUtils.isBlank(repoNameFound)) {
+            // this session will be closed when the wrapper is closed
             CoreSession repoSession = CoreInstance.openCoreSession(repoNameFound);
             return new SessionWrapper(repoSession, true);
         }

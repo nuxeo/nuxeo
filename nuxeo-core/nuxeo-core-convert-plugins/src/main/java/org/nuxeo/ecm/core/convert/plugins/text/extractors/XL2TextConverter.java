@@ -51,12 +51,10 @@ public class XL2TextConverter implements Converter {
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
-        InputStream stream = null;
         StringBuilder sb = new StringBuilder();
-        try {
-            stream = blobHolder.getBlob().getStream();
-            POIFSFileSystem fs = new POIFSFileSystem(stream);
-            HSSFWorkbook workbook = new HSSFWorkbook(fs);
+        try (InputStream stream = blobHolder.getBlob().getStream(); //
+                POIFSFileSystem fs = new POIFSFileSystem(stream); //
+                HSSFWorkbook workbook = new HSSFWorkbook(fs)) {
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 HSSFSheet sheet = workbook.getSheetAt(i);
                 Iterator<Row> rows = sheet.rowIterator();
@@ -74,14 +72,6 @@ public class XL2TextConverter implements Converter {
             return new SimpleCachableBlobHolder(Blobs.createBlob(sb.toString()));
         } catch (IOException e) {
             throw new ConversionException("Error during XL2Text conversion", blobHolder, e);
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    log.error("Error while closing Blob stream", e);
-                }
-            }
         }
     }
 

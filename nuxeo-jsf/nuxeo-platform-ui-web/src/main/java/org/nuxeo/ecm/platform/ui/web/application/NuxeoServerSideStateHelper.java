@@ -198,6 +198,7 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
         if (stateCapture != null) {
             stateCapture.append(id);
         } else {
+            @SuppressWarnings("resource")
             ResponseWriter writer = ctx.getResponseWriter();
 
             writer.startElement("input", null);

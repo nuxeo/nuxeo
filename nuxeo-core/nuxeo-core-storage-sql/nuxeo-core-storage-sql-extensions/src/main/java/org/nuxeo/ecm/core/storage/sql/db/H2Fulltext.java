@@ -299,6 +299,9 @@ public class H2Fulltext {
      * @param text the search query
      * @return the result set
      */
+    // we never close analyzers
+    // index writer closed by remove
+    @SuppressWarnings("resource")
     public static ResultSet search(Connection conn, String indexName, String text) throws SQLException {
         DatabaseMetaData meta = conn.getMetaData();
         if (indexName == null) {
@@ -428,6 +431,7 @@ public class H2Fulltext {
         }
     }
 
+    @SuppressWarnings("resource") // we never close analyzers
     private static Analyzer getAnalyzer(String analyzerName) throws SQLException {
         Analyzer analyzer = analyzers.get(analyzerName);
         if (analyzer == null) {
@@ -523,6 +527,7 @@ public class H2Fulltext {
         return e2;
     }
 
+    @SuppressWarnings("resource") // readStringAndClose does a close
     protected static String asString(Object data, int type) throws SQLException {
         if (data == null) {
             return "";

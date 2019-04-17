@@ -124,10 +124,12 @@ public class UIJavascriptList extends UIEditableList {
             requestMap.put("model", model);
 
             // render the template as escaped html
+            @SuppressWarnings("resource")
             ResponseWriter oldResponseWriter = context.getResponseWriter();
             StringWriter cacheingWriter = new StringWriter();
 
-            ResponseWriter newResponseWriter = context.getResponseWriter().cloneWithWriter(cacheingWriter);
+            @SuppressWarnings("resource")
+            ResponseWriter newResponseWriter = oldResponseWriter.cloneWithWriter(cacheingWriter);
 
             context.setResponseWriter(newResponseWriter);
 
@@ -150,6 +152,7 @@ public class UIJavascriptList extends UIEditableList {
             context.setResponseWriter(oldResponseWriter);
 
             String html = Functions.htmlEscape(cacheingWriter.toString());
+            @SuppressWarnings("resource")
             ResponseWriter writer = context.getResponseWriter();
             writer.write("<script type=\"text/x-html-template\">");
             writer.write(html);

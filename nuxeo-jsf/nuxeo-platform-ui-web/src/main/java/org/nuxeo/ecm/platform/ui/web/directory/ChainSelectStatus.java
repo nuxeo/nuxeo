@@ -130,6 +130,7 @@ public class ChainSelectStatus extends UIOutput {
         return values;
     }
 
+    @SuppressWarnings("resource") // ResponseWriter not ours to close
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
         ResponseWriter writer = context.getResponseWriter();
@@ -269,6 +270,7 @@ public class ChainSelectStatus extends UIOutput {
 
     @Override
     public void encodeEnd(FacesContext context) throws IOException {
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         writer.endElement("div");
 

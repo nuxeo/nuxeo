@@ -143,6 +143,7 @@ public class ChainSelectMany extends ChainSelectBase {
     }
 
     public void encodeReadWrite(FacesContext context) throws IOException {
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
 
         getChildren().clear();
@@ -168,6 +169,7 @@ public class ChainSelectMany extends ChainSelectBase {
     }
 
     public void encodeReadOnly(FacesContext context) throws IOException {
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         String[] values = (String[]) getSubmittedValue();
         if (values == null) {
@@ -222,6 +224,7 @@ public class ChainSelectMany extends ChainSelectBase {
     }
 
     private void encodeValue(FacesContext context) throws IOException {
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
 
         String[] values = (String[]) getSubmittedValue();

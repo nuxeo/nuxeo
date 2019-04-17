@@ -41,6 +41,7 @@ public class TestESRestClient extends TestESClient {
 
     protected ESRestClientFactory factory = new ESRestClientFactory();
 
+    @SuppressWarnings("resource") // test
     @Override
     public ESClient createClient(ElasticSearchEmbeddedNode embeddedNode) {
         ElasticSearchEmbeddedServerConfig config = new ElasticSearchEmbeddedServerConfig();
@@ -61,9 +62,10 @@ public class TestESRestClient extends TestESClient {
         ElasticSearchClientConfig config = new ElasticSearchClientConfig();
         config.options.put("addressList",
                 "myhost,localhost:9200,local:80,http://localhosted,https://mysecure,https://moresecure:445");
-        ESClient esClient = factory.create(null, config);
-        assertNotNull(esClient);
-        // Its not possible to get a reference to the list of hosts to check they are configured
+        try (ESClient esClient = factory.create(null, config)) {
+            assertNotNull(esClient);
+            // Its not possible to get a reference to the list of hosts to check they are configured
+        }
     }
 
     @Test
@@ -72,9 +74,10 @@ public class TestESRestClient extends TestESClient {
         config.options.put("addressList", "localhost:9200");
         config.options.put(ESRestClientFactory.AUTH_USER_OPT, "bob");
         config.options.put(ESRestClientFactory.AUTH_PASSWORD_OPT, "bob");
-        ESRestClient esClient = (ESRestClient) factory.create(null, config);
-        assertNotNull(esClient);
-        // Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+        try (ESRestClient esClient = (ESRestClient) factory.create(null, config)) {
+            assertNotNull(esClient);
+            // Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+        }
     }
 
     @Test
@@ -89,9 +92,10 @@ public class TestESRestClient extends TestESClient {
         config.options.put(ESRestClientFactory.KEY_STORE_PATH_OPT, null);
         config.options.put(ESRestClientFactory.KEY_STORE_PASSWORD_OPT, null);
         config.options.put(ESRestClientFactory.KEY_STORE_TYPE_OPT, null);
-        ESRestClient esClient = (ESRestClient) factory.create(null, config);
-        assertNotNull(esClient);
-        // Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+        try (ESRestClient esClient = (ESRestClient) factory.create(null, config)) {
+            assertNotNull(esClient);
+            // Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+        }
     }
 
     @Test
@@ -107,9 +111,10 @@ public class TestESRestClient extends TestESClient {
         config.options.put(ESRestClientFactory.KEY_STORE_PATH_OPT, keystoreFile.getAbsolutePath());
         config.options.put(ESRestClientFactory.KEY_STORE_PASSWORD_OPT, password);
         config.options.put(ESRestClientFactory.KEY_STORE_TYPE_OPT, null);
-        ESRestClient esClient = (ESRestClient) factory.create(null, config);
-        assertNotNull(esClient);
-        // This would error if it couldn't open the keystore.
+        try (ESRestClient esClient = (ESRestClient) factory.create(null, config)) {
+            assertNotNull(esClient);
+            // This would error if it couldn't open the keystore.
+        }
 
         keystoreFile.delete();
     }
@@ -129,9 +134,10 @@ public class TestESRestClient extends TestESClient {
         config.options.put(ESRestClientFactory.KEY_STORE_PATH_OPT, keystoreFile.getAbsolutePath());
         config.options.put(ESRestClientFactory.KEY_STORE_PASSWORD_OPT, password);
         config.options.put(ESRestClientFactory.KEY_STORE_TYPE_OPT, keystoreType);
-        ESRestClient esClient = (ESRestClient) factory.create(null, config);
-        assertNotNull(esClient);
-        // Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+        try (ESRestClient esClient = (ESRestClient) factory.create(null, config)) {
+            assertNotNull(esClient);
+            // Its not possible to get a reference to check the configuration, but the absence of an error is itself a test.
+        }
 
         keystoreFile.delete();
     }

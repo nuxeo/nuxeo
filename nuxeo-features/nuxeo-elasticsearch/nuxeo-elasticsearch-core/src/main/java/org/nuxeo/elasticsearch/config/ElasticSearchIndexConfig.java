@@ -133,13 +133,14 @@ public class ElasticSearchIndexConfig {
     }
 
     protected String contentOfFile(String filename) {
-        try {
-            return IOUtils.toString(getResourceStream(filename), "UTF-8");
+        try (InputStream stream = getResourceStream(filename)) {
+            return IOUtils.toString(stream, "UTF-8");
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot load resource file: " + filename, e);
         }
     }
 
+    @SuppressWarnings("resource") // closed by caller
     protected InputStream getResourceStream(String filename) {
         // First check if the resource is available on the config directory
         File file = new File(Environment.getDefault().getConfig(), filename);

@@ -189,6 +189,7 @@ public class FreemarkerEngine implements RenderingEngine {
                 template = "fs://" + template;
             }
             Template temp = cfg.getTemplate(template);
+            @SuppressWarnings("resource") // BlockWriter chaining makes close() hazardous
             BlockWriter bw = new BlockWriter(temp.getName(), "", new BlockWriterRegistry());
             Environment env = temp.createProcessingEnvironment(input, bw, wrapper);
             env.process();

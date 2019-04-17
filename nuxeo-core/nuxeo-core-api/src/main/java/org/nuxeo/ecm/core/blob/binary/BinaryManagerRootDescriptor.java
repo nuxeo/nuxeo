@@ -92,8 +92,10 @@ public class BinaryManagerRootDescriptor {
             trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
             trans.setOutputProperty(OutputKeys.INDENT, "yes");
             // don't use StreamResult(out) as it fails on paths with spaces
-            Result outputTarget = new StreamResult(new FileOutputStream(out));
-            trans.transform(new DOMSource(doc), outputTarget);
+            try (FileOutputStream stream = new FileOutputStream(out)) {
+                Result outputTarget = new StreamResult(stream);
+                trans.transform(new DOMSource(doc), outputTarget);
+            }
         } catch (TransformerException e) {
             throw (IOException) new IOException().initCause(e);
         }

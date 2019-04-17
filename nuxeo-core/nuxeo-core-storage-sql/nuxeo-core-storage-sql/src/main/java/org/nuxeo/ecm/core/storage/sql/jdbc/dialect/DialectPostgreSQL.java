@@ -168,13 +168,14 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     protected boolean getCompatibilityFulltextTable(DatabaseMetaData metadata) throws SQLException {
-        ResultSet rs = metadata.getColumns(null, null, Model.FULLTEXT_TABLE_NAME, "%");
-        while (rs.next()) {
-            // COLUMN_NAME=fulltext DATA_TYPE=1111 TYPE_NAME=tsvector
-            String columnName = rs.getString("COLUMN_NAME");
-            if (Model.FULLTEXT_FULLTEXT_KEY.equals(columnName)) {
-                String typeName = rs.getString("TYPE_NAME");
-                return "tsvector".equals(typeName);
+        try (ResultSet rs = metadata.getColumns(null, null, Model.FULLTEXT_TABLE_NAME, "%")) {
+            while (rs.next()) {
+                // COLUMN_NAME=fulltext DATA_TYPE=1111 TYPE_NAME=tsvector
+                String columnName = rs.getString("COLUMN_NAME");
+                if (Model.FULLTEXT_FULLTEXT_KEY.equals(columnName)) {
+                    String typeName = rs.getString("TYPE_NAME");
+                    return "tsvector".equals(typeName);
+                }
             }
         }
         return false;

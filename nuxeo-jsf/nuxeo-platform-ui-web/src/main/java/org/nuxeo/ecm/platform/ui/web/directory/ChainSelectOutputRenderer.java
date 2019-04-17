@@ -64,6 +64,7 @@ public class ChainSelectOutputRenderer extends Renderer {
         String cssStyle = comp.getCssStyle();
         String cssStyleClass = comp.getCssStyleClass();
 
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
 
         for (String value : values) {

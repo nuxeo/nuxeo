@@ -98,12 +98,11 @@ public class MultiPartFormRequestReader implements MessageBodyReader<ExecutionRe
             File tmp = Framework.createTempFile("nx-automation-mp-upload-", ".tmp");
             FileUtils.copyInputStreamToFile(in, tmp);
             // get the input from the saved file
-            in = new SharedFileInputStream(tmp);
-            try {
-                MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(in, ctype));
+            try (InputStream sfin = new SharedFileInputStream(tmp)) {
+                MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(sfin, ctype));
                 BodyPart part = mp.getBodyPart(0); // use content ids
-                InputStream pin = part.getInputStream();
-                try (JsonParser jp = factory.createParser(pin)) {
+                try (InputStream pin = part.getInputStream(); //
+                        JsonParser jp = factory.createParser(pin)) {
                     req = JsonRequestReader.readRequest(jp, headers, getCoreSession());
                 }
                 int cnt = mp.getCount();
@@ -125,11 +124,6 @@ public class MultiPartFormRequestReader implements MessageBodyReader<ExecutionRe
                             new IllegalStateException("Received only " + cnt + " part in a multipart request"));
                 }
             } finally {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    // do nothing
-                }
                 tmp.delete();
             }
         } catch (MessagingException | IOException e) {
@@ -154,9 +148,10 @@ public class MultiPartFormRequestReader implements MessageBodyReader<ExecutionRe
             // do nothing, keep the original filename
         }
 
-        InputStream pin = part.getInputStream();
         final File tmp = Framework.createTempFile("nx-automation-upload-", ".tmp");
-        FileUtils.copyInputStreamToFile(pin, tmp);
+        try (InputStream pin = part.getInputStream()) {
+            FileUtils.copyInputStreamToFile(pin, tmp);
+        }
         Blob blob = Blobs.createBlob(tmp, ctype, null, fname);
         RequestContext.getActiveContext(request).addRequestCleanupHandler(req -> tmp.delete());
         return blob;

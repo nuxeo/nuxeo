@@ -128,6 +128,7 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
+        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
@@ -183,6 +184,7 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
+        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
@@ -219,6 +221,7 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
+        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
@@ -262,6 +265,7 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
+        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
@@ -330,6 +334,7 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
+        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
@@ -374,6 +379,7 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
+        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
@@ -473,6 +479,7 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
+        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
@@ -564,6 +571,7 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
+        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
@@ -661,6 +669,7 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
+        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
@@ -698,6 +707,7 @@ public class TestDownloadService {
                     throw new NuxeoException("Not supposed to write to response");
                 }
             };
+            @SuppressWarnings("resource")
             PrintWriter printWriter = new PrintWriter(sos);
             when(resp.getOutputStream()).thenReturn(sos);
             when(resp.getWriter()).thenReturn(printWriter);

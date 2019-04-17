@@ -53,15 +53,16 @@ public class TestCachedLDAPSession extends TestLDAPSession {
 
     @Test
     public void testGetFromCache() {
-        Session ldapSession = userDir.getSession();
+        try (Session ldapSession = userDir.getSession()) {
 
-        // First call will update cache
-        DocumentModel entry = ldapSession.getEntry("user1");
-        Assert.assertNotNull(entry);
+            // First call will update cache
+            DocumentModel entry = ldapSession.getEntry("user1");
+            Assert.assertNotNull(entry);
 
-        // Second call will use the cache
-        entry = ldapSession.getEntry("user1");
-        Assert.assertNotNull(entry);
+            // Second call will use the cache
+            entry = ldapSession.getEntry("user1");
+            Assert.assertNotNull(entry);
+        }
     }
 
 }

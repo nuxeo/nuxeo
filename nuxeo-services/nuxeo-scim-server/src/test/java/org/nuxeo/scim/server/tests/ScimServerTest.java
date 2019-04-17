@@ -110,6 +110,7 @@ public class ScimServerTest {
 
     }
 
+    @SuppressWarnings("resource") // not important in a test
     protected static ClientConfig createHttpBasicClientConfig(final String userName, final String password) {
 
         final HttpParams params = new BasicHttpParams();

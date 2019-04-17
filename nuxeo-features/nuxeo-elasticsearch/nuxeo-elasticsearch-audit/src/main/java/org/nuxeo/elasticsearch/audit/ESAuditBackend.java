@@ -761,6 +761,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         esClient.bulk(bulkRequest);
     }
 
+    @SuppressWarnings("resource") // CursorResult is being registered, must not be closed
     @Override
     public ScrollResult<String> scroll(org.nuxeo.ecm.core.query.sql.model.QueryBuilder builder, int batchSize,
             int keepAliveSeconds) {

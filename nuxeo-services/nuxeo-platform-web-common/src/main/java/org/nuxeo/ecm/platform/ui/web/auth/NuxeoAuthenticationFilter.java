@@ -419,18 +419,18 @@ public class NuxeoAuthenticationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        final Timer.Context contextTimer = requestTimer.time();
-        concurrentCount.inc();
-        if (concurrentCount.getCount() > concurrentMaxCount.getCount()) {
-            concurrentMaxCount.inc();
-        }
-        try {
-            doInitIfNeeded();
-            doFilterInternal(request, response, chain);
-        } finally {
-            ClientLoginModule.clearThreadLocalLogin();
-            contextTimer.stop();
-            concurrentCount.dec();
+        try (Timer.Context contextTimer = requestTimer.time()) {
+            concurrentCount.inc();
+            if (concurrentCount.getCount() > concurrentMaxCount.getCount()) {
+                concurrentMaxCount.inc();
+            }
+            try {
+                doInitIfNeeded();
+                doFilterInternal(request, response, chain);
+            } finally {
+                ClientLoginModule.clearThreadLocalLogin();
+                concurrentCount.dec();
+            }
         }
     }
 

@@ -32,6 +32,7 @@ public class NestedJarBundleFile extends JarBundleFile {
 
     protected final String location;
 
+    @SuppressWarnings("resource")
     public NestedJarBundleFile(String location, File file) throws IOException {
         this(location, new JarFile(file));
     }

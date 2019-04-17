@@ -82,6 +82,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
         return getDocumentManager(currentServerLocation);
     }
 
+    @SuppressWarnings("resource") // session closed by remove()
     public CoreSession getDocumentManager(RepositoryLocation serverLocation) {
 
         if (serverLocation == null) {

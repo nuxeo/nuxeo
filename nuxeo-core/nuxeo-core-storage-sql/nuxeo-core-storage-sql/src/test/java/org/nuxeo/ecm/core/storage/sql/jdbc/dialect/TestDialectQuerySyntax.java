@@ -87,6 +87,8 @@ public class TestDialectQuerySyntax {
             {
                 allowing(m).next();
                 will(returnValue(false));
+
+                allowing(m).close();
             }
         });
         return m;

@@ -85,6 +85,7 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
      * @return the database configured by {@link MongoDBConnectionConfig} for the input id, or the default one if it
      *         doesn't exist
      */
+    @SuppressWarnings("resource") // client closed by stop()
     @Override
     public MongoDatabase getDatabase(String id) {
         MongoDBConnectionConfig config = getDescriptor(XP_CONNECTION, id);

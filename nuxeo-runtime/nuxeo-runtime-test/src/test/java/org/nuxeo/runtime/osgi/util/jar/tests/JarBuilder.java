@@ -99,24 +99,18 @@ public class JarBuilder {
     public URL buildFirst() throws FileNotFoundException, IOException {
         File file = File.createTempFile("test", ".jar", rootFile);
         builtFiles.add(file);
-        JarOutputStream output = new JarOutputStream(new FileOutputStream(file));
-        try {
+        try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
             writeEntry(output, new File(pkgdir, "JarBuilder$First.class"));
             writeEntry(output, new File("first.marker"));
-        } finally {
-            output.close();
         }
         return file.toURI().toURL();
     }
 
     public URL buildOther() throws FileNotFoundException, IOException {
         File file = File.createTempFile("test", ".jar", rootFile);
-        JarOutputStream output = new JarOutputStream(new FileOutputStream(file));
-        try {
+        try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
             writeEntry(output, new File(pkgdir, "JarBuilder$Other.class"));
             writeEntry(output, new File("other.marker"));
-        } finally {
-            output.close();
         }
         return file.toURI().toURL();
     }

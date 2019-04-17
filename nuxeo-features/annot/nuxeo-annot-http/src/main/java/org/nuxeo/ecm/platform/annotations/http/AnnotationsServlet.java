@@ -75,9 +75,10 @@ public class AnnotationsServlet extends HttpServlet {
 
         String replace_source = req.getParameter(REPLACE_SOURCE);
         if (replace_source != null) {
-            InputStream is = req.getInputStream();
-            facade.updateAnnotation(is, (NuxeoPrincipal) req.getUserPrincipal(), resp.getOutputStream(),
-                    getBaseUrl(req));
+            try (InputStream is = req.getInputStream()) {
+                facade.updateAnnotation(is, (NuxeoPrincipal) req.getUserPrincipal(), resp.getOutputStream(),
+                        getBaseUrl(req));
+            }
         } else {
             StringBuffer baseUrl = req.getRequestURL();
             facade.createAnnotation(req.getInputStream(), (NuxeoPrincipal) req.getUserPrincipal(),

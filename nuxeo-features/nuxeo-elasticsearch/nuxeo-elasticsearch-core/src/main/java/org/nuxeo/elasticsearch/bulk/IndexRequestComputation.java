@@ -147,8 +147,7 @@ public class IndexRequestComputation extends AbstractBulkComputation {
     }
 
     protected byte[] toBytes(BulkRequest request) {
-        BytesStreamOutput out = new BytesStreamOutput();
-        try {
+        try (BytesStreamOutput out = new BytesStreamOutput()) {
             request.writeTo(out);
             return BytesReference.toBytes(out.bytes());
         } catch (IOException e) {

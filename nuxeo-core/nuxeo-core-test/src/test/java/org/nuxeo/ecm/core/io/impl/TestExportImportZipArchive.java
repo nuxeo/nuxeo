@@ -120,17 +120,18 @@ public class TestExportImportZipArchive {
         reader.close();
 
         // check the zip contents
-        ZipInputStream zin = new ZipInputStream(new FileInputStream(archive));
-        ZipEntry entry = zin.getNextEntry();
         int nbDocs = 0;
         int nbBlobs = 0;
-        while (entry != null) {
-            if (entry.getName().endsWith(ExportConstants.DOCUMENT_FILE)) {
-                nbDocs++;
-            } else if (entry.getName().endsWith(".blob")) {
-                nbBlobs++;
+        try (ZipInputStream zin = new ZipInputStream(new FileInputStream(archive))) {
+            ZipEntry entry = zin.getNextEntry();
+            while (entry != null) {
+                if (entry.getName().endsWith(ExportConstants.DOCUMENT_FILE)) {
+                    nbDocs++;
+                } else if (entry.getName().endsWith(".blob")) {
+                    nbBlobs++;
+                }
+                entry = zin.getNextEntry();
             }
-            entry = zin.getNextEntry();
         }
         assertEquals(2, nbDocs);
         assertEquals(1, nbBlobs);

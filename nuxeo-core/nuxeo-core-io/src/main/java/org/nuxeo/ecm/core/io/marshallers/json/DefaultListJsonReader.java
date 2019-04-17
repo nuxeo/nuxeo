@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.io.marshallers.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -107,9 +108,10 @@ public abstract class DefaultListJsonReader<EntityType> extends EntityJsonReader
             Iterator<JsonNode> it = entriesNode.elements();
             while (it.hasNext()) {
                 entryNode = it.next();
-                InputStreamWithJsonNode in = new InputStreamWithJsonNode(entryNode);
-                EntityType doc = entryReader.read(elClazz, elClazz, APPLICATION_JSON_TYPE, in);
-                result.add(doc);
+                try (InputStream in = new InputStreamWithJsonNode(entryNode)) {
+                    EntityType doc = entryReader.read(elClazz, elClazz, APPLICATION_JSON_TYPE, in);
+                    result.add(doc);
+                }
             }
         }
         return result;

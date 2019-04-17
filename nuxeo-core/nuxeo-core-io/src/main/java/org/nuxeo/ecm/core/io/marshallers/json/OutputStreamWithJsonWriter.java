@@ -81,7 +81,8 @@ public class OutputStreamWithJsonWriter extends OutputStream {
 
     @Override
     public void close() throws IOException {
-        out.close();
+        flush();
+        // DO NOT close the OutputStream, it's owned by the JsonGenerator, not us
     }
 
 }

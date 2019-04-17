@@ -76,6 +76,7 @@ public class TestBulkProcessor {
 
     @Test
     public void testEmptyQuery() throws InterruptedException {
+        @SuppressWarnings("resource")
         LogManager logManager = stream.getLogManager(BULK_LOG_MANAGER_NAME);
         try (LogTailer<Record> tailer = logManager.createTailer("test", DONE_STREAM)) {
             tailer.toLastCommitted();

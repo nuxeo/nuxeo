@@ -155,6 +155,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         return getActionRegistry().getActions(category);
     }
 
+    @SuppressWarnings("resource") // timerContext closed by stop() in finally
     @Override
     public List<Action> getActions(String category, ActionContext context, boolean hideUnavailableActions) {
         final Timer.Context timerContext = actionsTimer.time();
@@ -186,6 +187,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         return log.isDebugEnabled() && LOG_MIN_DURATION_NS >= 0;
     }
 
+    @SuppressWarnings("resource") // timerContext closed by stop() in finally
     @Override
     public Action getAction(String actionId, ActionContext context, boolean hideUnavailableAction) {
         final Timer.Context timerContext = actionTimer.time();
@@ -266,6 +268,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         return getFilterRegistry().getFilter(filterId);
     }
 
+    @SuppressWarnings("resource") // timerContext closed by stop() in finally
     @Override
     public boolean checkFilter(String filterId, ActionContext context) {
         final Timer.Context timerContext = filterTimer.time();
@@ -285,6 +288,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         return checkFilters(null, filterIds, context);
     }
 
+    @SuppressWarnings("resource") // timerContext closed by stop() in finally
     protected boolean checkFilters(Action action, List<String> filterIds, ActionContext context) {
         if (filterIds == null || filterIds.isEmpty()) {
             return true;

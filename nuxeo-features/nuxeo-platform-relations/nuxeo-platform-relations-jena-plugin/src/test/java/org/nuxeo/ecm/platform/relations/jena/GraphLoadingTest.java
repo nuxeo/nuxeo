@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
@@ -66,12 +67,13 @@ public class GraphLoadingTest {
     }
 
     @Test
-    public void testGetStatement() {
-        InputStream is = getClass().getResourceAsStream("/post-rdf.xml");
-        assertNotNull(is);
+    public void testGetStatement() throws IOException {
         graph.clear();
         assertTrue(graph.getStatements().isEmpty());
-        graph.read(is, null, null);
+        try (InputStream is = getClass().getResourceAsStream("/post-rdf.xml")) {
+            assertNotNull(is);
+            graph.read(is, null, null);
+        }
         assertNotNull(graph);
         List<Statement> lists = graph.getStatements();
         assertEquals(12, lists.size());
@@ -85,24 +87,26 @@ public class GraphLoadingTest {
     }
 
     @Test
-    public void testGetAllStatementWithURN() {
-        InputStream is = getClass().getResourceAsStream("/post-rdf-with-about.xml");
-        assertNotNull(is);
+    public void testGetAllStatementWithURN() throws IOException {
         graph.clear();
         assertTrue(graph.getStatements().isEmpty());
-        graph.read(is, null, null);
+        try (InputStream is = getClass().getResourceAsStream("/post-rdf-with-about.xml")) {
+            assertNotNull(is);
+            graph.read(is, null, null);
+        }
         assertNotNull(graph);
         List<Statement> lists = graph.getStatements();
         assertEquals(12, lists.size());
     }
 
     @Test
-    public void testGetAllStatementWithURL() {
-        InputStream is = getClass().getResourceAsStream("/post-rdf-with-about-with-url.xml");
-        assertNotNull(is);
+    public void testGetAllStatementWithURL() throws IOException {
         graph.clear();
         assertTrue(graph.getStatements().isEmpty());
-        graph.read(is, null, null);
+        try (InputStream is = getClass().getResourceAsStream("/post-rdf-with-about-with-url.xml")) {
+            assertNotNull(is);
+            graph.read(is, null, null);
+        }
         assertNotNull(graph);
         List<Statement> lists = graph.getStatements();
         assertEquals(12, lists.size());

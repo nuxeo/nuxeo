@@ -57,10 +57,11 @@ public class TestDataSourceComponent {
         Connection conn = ds.getConnection();
         assertEquals(autocommit, conn.getAutoCommit());
         Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery("SELECT 123");
-        assertNotNull(rs);
-        assertTrue(rs.next());
-        assertEquals(123, rs.getInt(1));
+        try (ResultSet rs = st.executeQuery("SELECT 123")) {
+            assertNotNull(rs);
+            assertTrue(rs.next());
+            assertEquals(123, rs.getInt(1));
+        }
         st.close();
         conn.close();
     }
@@ -100,13 +101,10 @@ public class TestDataSourceComponent {
     }
 
     public int countPhysicalConnections(Connection conn) throws SQLException {
-        Statement st = conn.createStatement();
-        try {
-            ResultSet rs = st.executeQuery(COUNT_SQL);
+        try (Statement st = conn.createStatement(); //
+                ResultSet rs = st.executeQuery(COUNT_SQL)) {
             rs.next();
             return rs.getInt(1);
-        } finally {
-            st.close();
         }
     }
 

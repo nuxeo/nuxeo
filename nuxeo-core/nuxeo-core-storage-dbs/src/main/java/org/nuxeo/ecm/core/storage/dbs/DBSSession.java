@@ -214,6 +214,7 @@ public class DBSSession implements Session<QueryFilter> {
         return !closed;
     }
 
+    @SuppressWarnings("resource") // timerContext closed by stop() in finally
     @Override
     public void save() {
         final Timer.Context timerContext = saveTimer.time();
@@ -1486,6 +1487,7 @@ public class DBSSession implements Session<QueryFilter> {
         return new PartialList<>(docs, pl.totalSize());
     }
 
+    @SuppressWarnings("resource") // Time.Context closed by stop()
     protected PartialList<String> doQuery(String query, String queryType, QueryFilter queryFilter, int countUpTo) {
         final Timer.Context timerContext = queryTimer.time();
         try {
@@ -1742,6 +1744,7 @@ public class DBSSession implements Session<QueryFilter> {
         }
     }
 
+    @SuppressWarnings("resource") // Time.Context closed by stop()
     @Override
     public PartialList<Map<String, Serializable>> queryProjection(String query, String queryType,
             QueryFilter queryFilter, boolean distinctDocuments, long countUpTo, Object[] params) {

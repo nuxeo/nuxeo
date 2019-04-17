@@ -69,6 +69,7 @@ public class ChainSelectOne extends ChainSelectBase {
     }
 
     public void encodeReadOnly(FacesContext context) throws IOException {
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         String value = (String) getSubmittedValue();
         if (value == null) {
@@ -93,6 +94,7 @@ public class ChainSelectOne extends ChainSelectBase {
     }
 
     public void encodeReadWrite(FacesContext context) throws IOException {
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         writer.startElement("div", this);
         writer.writeAttribute("id", getClientId(context), "id");

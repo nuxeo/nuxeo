@@ -60,8 +60,7 @@ public class DocumentXMLExporterImpl implements DocumentXMLExporter {
     @Override
     public InputSource exportXMLAsInputSource(DocumentModel doc, CoreSession session) {
 
-        InputStream xmlExportInputStream = exportXML(doc, session);
-        return new InputSource(xmlExportInputStream);
+        return new InputSource(exportXML(doc, session));
     }
 
     /**

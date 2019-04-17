@@ -53,8 +53,10 @@ public class BlockDirective implements TemplateDirectiveModel {
         }
 
         String page = env.getTemplate().getName();
+        @SuppressWarnings("resource") // not ours to close
         BlockWriter writer = (BlockWriter) env.getOut();
         BlockWriterRegistry reg = writer.getRegistry();
+        @SuppressWarnings("resource") // BlockWriter chaining makes close() hazardous
         BlockWriter bw = new BlockWriter(page, name, reg);
         bw.ifBlockDefined = ifBlockDefined;
         writer.writeBlock(bw);

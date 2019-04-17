@@ -303,6 +303,7 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public void save() {
+        @SuppressWarnings("resource")
         final Timer.Context timerContext = saveTimer.time();
         try {
             checkLive();
@@ -1134,6 +1135,7 @@ public class SessionImpl implements Session, XAResource {
         return context.getMulti(rowIds, true);
     }
 
+    @SuppressWarnings("resource") // Time.Context closed by stop()
     @Override
     public PartialList<Serializable> query(String query, QueryFilter queryFilter, boolean countTotal) {
         final Timer.Context timerContext = queryTimer.time();
@@ -1144,6 +1146,7 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
+    @SuppressWarnings("resource") // Time.Context closed by stop()
     @Override
     public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
         final Timer.Context timerContext = queryTimer.time();
@@ -1176,6 +1179,7 @@ public class SessionImpl implements Session, XAResource {
         return queryAndFetch(query, queryType, queryFilter, false, params);
     }
 
+    @SuppressWarnings("resource") // Time.Context closed by stop()
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
             boolean distinctDocuments, Object... params) {
@@ -1196,6 +1200,7 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
+    @SuppressWarnings("resource") // Time.Context closed by stop()
     @Override
     public PartialList<Map<String, Serializable>> queryProjection(String query, String queryType,
             QueryFilter queryFilter, boolean distinctDocuments, long countUpTo, Object... params) {
@@ -1228,6 +1233,7 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public void updateReadAcls() {
+        @SuppressWarnings("resource")
         final Timer.Context timerContext = aclrUpdateTimer.time();
         try {
             mapper.updateReadAcls();

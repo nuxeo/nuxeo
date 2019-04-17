@@ -396,6 +396,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
         }
     }
 
+    @SuppressWarnings("resource") // LogManager not ours to close
     @Override
     public boolean await(long time, TimeUnit unit) throws InterruptedException {
         if (Framework.isBooleanPropertyFalse(STREAM_AUDIT_ENABLED_PROP)) {

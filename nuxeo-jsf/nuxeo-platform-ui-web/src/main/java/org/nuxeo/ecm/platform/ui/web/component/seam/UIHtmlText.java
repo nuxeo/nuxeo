@@ -44,9 +44,11 @@ public class UIHtmlText extends org.jboss.seam.pdf.ui.UIHtmlText {
 
     @Override
     public void encodeChildren(FacesContext context) throws IOException {
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
 
         StringWriter stringWriter = new StringWriter();
+        @SuppressWarnings("resource")
         ResponseWriter cachingResponseWriter = writer.cloneWithWriter(stringWriter);
         context.setResponseWriter(cachingResponseWriter);
         JSF.renderChildren(context, this);

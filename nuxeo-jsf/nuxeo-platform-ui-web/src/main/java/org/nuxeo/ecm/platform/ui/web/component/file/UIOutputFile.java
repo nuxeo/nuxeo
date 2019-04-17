@@ -355,6 +355,7 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
             }
         }
         if (iconPath.length() > 0) {
+            @SuppressWarnings("resource")
             ResponseWriter writer = context.getResponseWriter();
             writer.startElement("img", this);
             String src = context.getApplication().getViewHandler().getResourceURL(context, iconPath);

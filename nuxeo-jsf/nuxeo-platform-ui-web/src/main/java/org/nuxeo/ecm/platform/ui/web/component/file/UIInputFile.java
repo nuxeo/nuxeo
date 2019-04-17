@@ -506,7 +506,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
 
         notifyPreviousErrors(context);
 
-        // not ours to close
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         Blob blob = null;
         try {

@@ -84,6 +84,7 @@ public class NXImageRenderer extends ImageRenderer {
             return;
         }
 
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
 
         // do not even render tag if url is empty

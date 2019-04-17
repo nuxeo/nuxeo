@@ -130,6 +130,7 @@ public class TestMailInjection {
         visitor.visit(messages, initialExecutionContext);
     }
 
+    @SuppressWarnings("resource") // test
     private Message getSampleMessage(String filePath) throws Exception {
         InputStream stream = new FileInputStream(getTestMailSource(filePath));
         return new MimeMessage(null, stream);

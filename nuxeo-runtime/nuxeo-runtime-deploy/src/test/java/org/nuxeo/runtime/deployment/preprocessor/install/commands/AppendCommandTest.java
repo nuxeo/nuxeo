@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -88,7 +89,9 @@ public class AppendCommandTest {
         append(src, dest);
 
         Properties props = new Properties();
-        props.load(new FileReader(dest));
+        try (Reader reader = new FileReader(dest)) {
+            props.load(reader);
+        }
         assertEquals(2, props.size());
     }
 

@@ -85,39 +85,31 @@ public class TestConnectionManagement {
     @Test
     public void testNoTxNoBegin() throws Exception {
         TransactionHelper.commitOrRollbackTransaction(); // end tx
-        Connection connection = getConnection();
-        try {
+        try (Connection connection = getConnection()) {
             assertTrue(connection.getAutoCommit());
             connection.setAutoCommit(true); // already true, no effect
             connection.setAutoCommit(false);
             connection.setAutoCommit(true);
-            Statement st = connection.createStatement();
-            String sql = getValidationQuery(connection);
-            st.execute(sql);
-        } finally {
-            assertFalse(connection.isClosed());
-            connection.close();
-            assertTrue(connection.isClosed());
-            connection.close(); // close twice ok
-            assertTrue(connection.isClosed());
+            try (Statement st = connection.createStatement()) {
+                String sql = getValidationQuery(connection);
+                st.execute(sql);
+            }
         }
     }
 
     @Test
     public void testNoTxBegin() throws Exception {
         TransactionHelper.commitOrRollbackTransaction(); // end tx
-        Connection connection = getConnection();
-        try {
+        try (Connection connection = getConnection()) {
             // first thing set autoCommit=false, but no tx
             connection.setAutoCommit(false);
             connection.setAutoCommit(false); // already false, no effect
-            Statement st = connection.createStatement();
-            String sql = getValidationQuery(connection);
-            st.execute(sql);
+            try (Statement st = connection.createStatement()) {
+                String sql = getValidationQuery(connection);
+                st.execute(sql);
+            }
             connection.commit(); // needed for DB2 before close
             connection.setAutoCommit(true);
-        } finally {
-            connection.close();
         }
     }
 
@@ -127,51 +119,42 @@ public class TestConnectionManagement {
     @Test
     public void testBadTxBegin() throws Exception {
         TransactionHelper.setTransactionRollbackOnly(); // not ACTIVE
-        Connection connection = getConnection();
-        try {
+        try (Connection connection = getConnection()) {
             // first thing set autoCommit=false, but no tx
             connection.setAutoCommit(false);
             connection.setAutoCommit(false); // already false, no effect
-            Statement st = connection.createStatement();
-            String sql = getValidationQuery(connection);
-            st.execute(sql);
+            try (Statement st = connection.createStatement()) {
+                String sql = getValidationQuery(connection);
+                st.execute(sql);
+            }
             connection.commit(); // needed for DB2 before close
-        } finally {
-            connection.close();
         }
     }
 
     @Test
     public void testNoTxSwitchAutoCommit() throws Exception {
         TransactionHelper.commitOrRollbackTransaction(); // end tx
-        Connection connection = getConnection();
-        try {
+        try (Connection connection = getConnection()) {
             // use connection with autoCommit=true
             connection.createStatement();
             // then set autoCommit=false, but no tx
             connection.setAutoCommit(false);
             connection.setAutoCommit(false); // already false, no effect
-            Statement st = connection.createStatement();
-            String sql = getValidationQuery(connection);
-            st.execute(sql);
+            try (Statement st = connection.createStatement()) {
+                String sql = getValidationQuery(connection);
+                st.execute(sql);
+            }
             connection.commit(); // needed for DB2 before close
             connection.setAutoCommit(true);
-        } finally {
-            connection.close();
         }
     }
 
     @Test
     public void testNoBegin() throws Exception {
-        Connection connection = getConnection();
-        try {
-            Statement st = connection.createStatement();
+        try (Connection connection = getConnection(); //
+                Statement st = connection.createStatement()) {
             String sql = getValidationQuery(connection);
             st.execute(sql);
-        } finally {
-            assertFalse(connection.isClosed());
-            connection.close();
-            assertTrue(connection.isClosed());
         }
     }
 
@@ -180,18 +163,14 @@ public class TestConnectionManagement {
      */
     @Test
     public void testManualBegin1() throws Exception {
-        Connection connection = getConnection();
-        try {
+        try (Connection connection = getConnection()) {
             // first thing set autoCommit=false
             connection.setAutoCommit(false);
-            Statement st = connection.createStatement();
-            String sql = getValidationQuery(connection);
-            st.execute(sql);
+            try (Statement st = connection.createStatement()) {
+                String sql = getValidationQuery(connection);
+                st.execute(sql);
+            }
             connection.commit();
-        } finally {
-            assertFalse(connection.isClosed());
-            connection.close();
-            assertTrue(connection.isClosed());
         }
         TransactionHelper.commitOrRollbackTransaction();
     }
@@ -201,19 +180,15 @@ public class TestConnectionManagement {
      */
     @Test
     public void testManualBegin2() throws Exception {
-        Connection connection = getConnection();
-        try {
+        try (Connection connection = getConnection()) {
             // first thing use connection with autoCommit=true
             String sql = getValidationQuery(connection);
             // switch to no autocommit
             connection.setAutoCommit(false);
-            Statement st = connection.createStatement();
-            st.execute(sql);
+            try (Statement st = connection.createStatement()) {
+                st.execute(sql);
+            }
             connection.commit();
-        } finally {
-            assertFalse(connection.isClosed());
-            connection.close();
-            assertTrue(connection.isClosed());
         }
         TransactionHelper.commitOrRollbackTransaction();
     }
@@ -223,17 +198,12 @@ public class TestConnectionManagement {
      */
     @Test
     public void testCommitThenMoreWork() throws Exception {
-        Connection connection = getConnection();
-        try {
+        try (Connection connection = getConnection()) {
             connection.setAutoCommit(false);
             connection.createStatement();
             connection.commit();
             // keep working in transaction mode after commit
             connection.createStatement();
-        } finally {
-            assertFalse(connection.isClosed());
-            connection.close();
-            assertTrue(connection.isClosed());
         }
         TransactionHelper.commitOrRollbackTransaction();
     }
@@ -243,17 +213,13 @@ public class TestConnectionManagement {
      */
     @Test
     public void testCloseWithoutCommit() throws Exception {
-        Connection connection = getConnection();
-        try {
+        try (Connection connection = getConnection()) {
             connection.setAutoCommit(false);
-            Statement st = connection.createStatement();
-            String sql = getValidationQuery(connection);
-            st.execute(sql);
+            try (Statement st = connection.createStatement()) {
+                String sql = getValidationQuery(connection);
+                st.execute(sql);
+            }
             // don't commit, close() will do it automatically
-        } finally {
-            assertFalse(connection.isClosed());
-            connection.close();
-            assertTrue(connection.isClosed());
         }
         TransactionHelper.commitOrRollbackTransaction();
     }
@@ -266,9 +232,10 @@ public class TestConnectionManagement {
         Connection connection = getConnection();
         try {
             connection.setAutoCommit(false);
-            Statement st = connection.createStatement();
-            String sql = getValidationQuery(connection);
-            st.execute(sql);
+            try (Statement st = connection.createStatement()) {
+                String sql = getValidationQuery(connection);
+                st.execute(sql);
+            }
             // don't commit
             connection.setAutoCommit(true); // commits automatically
         } finally {
@@ -285,21 +252,17 @@ public class TestConnectionManagement {
      */
     @Test
     public void testUseAfterTxEnd() throws Exception {
-        Connection connection = getConnection();
-        try {
+        try (Connection connection = getConnection()) {
             connection.setAutoCommit(false);
-            Statement st = connection.createStatement();
-            String sql = getValidationQuery(connection);
-            st.execute(sql);
+            try (Statement st = connection.createStatement()) {
+                String sql = getValidationQuery(connection);
+                st.execute(sql);
+            }
             // tx just commits now
             // this will log an ERROR
             TransactionHelper.commitOrRollbackTransaction();
             // now keep using the connection
             connection.createStatement();
-        } finally {
-            assertFalse(connection.isClosed());
-            connection.close();
-            assertTrue(connection.isClosed());
         }
     }
 
@@ -308,12 +271,12 @@ public class TestConnectionManagement {
      */
     @Test
     public void testSeveralTx() throws Exception {
-        Connection connection = getConnection();
-        try {
+        try (Connection connection = getConnection()) {
             connection.setAutoCommit(false);
-            Statement st = connection.createStatement();
             String sql = getValidationQuery(connection);
-            st.execute(sql);
+            try (Statement st = connection.createStatement()) {
+                st.execute(sql);
+            }
             connection.commit();
             TransactionHelper.commitOrRollbackTransaction();
 
@@ -321,15 +284,12 @@ public class TestConnectionManagement {
 
             TransactionHelper.startTransaction();
             connection.setAutoCommit(false);
-            st = connection.createStatement();
-            st.execute(sql);
+            try (Statement st = connection.createStatement()) {
+                st.execute(sql);
+            }
             connection.commit();
             connection.setAutoCommit(true);
             TransactionHelper.commitOrRollbackTransaction();
-        } finally {
-            assertFalse(connection.isClosed());
-            connection.close();
-            assertTrue(connection.isClosed());
         }
     }
 

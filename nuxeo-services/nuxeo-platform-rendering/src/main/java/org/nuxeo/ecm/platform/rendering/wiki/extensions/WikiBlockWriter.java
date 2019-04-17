@@ -44,6 +44,7 @@ public class WikiBlockWriter extends WikiWriter {
     public void writeTo(WikiSerializerHandler handler, Writer writer) throws IOException {
         if (writer instanceof BlockWriter) {
             BlockWriter parentWriter = (BlockWriter) writer;
+            @SuppressWarnings("resource") // BlockWriter chaining makes close() hazardous
             BlockWriter bw = new BlockWriter("__dynamic__wiki", blockName, parentWriter.getRegistry());
             boolean parentSuppressOutput = parentWriter.getSuppressOutput();
             try {

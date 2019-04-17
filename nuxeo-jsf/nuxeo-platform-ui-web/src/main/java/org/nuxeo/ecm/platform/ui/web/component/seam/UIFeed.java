@@ -58,6 +58,7 @@ public class UIFeed extends org.jboss.seam.rss.ui.UIFeed {
              */
             throw new RuntimeException("Could not create feed", e);
         }
+        @SuppressWarnings("resource")
         Writer responseWriter = ((HttpServletResponse) facesContext.getExternalContext().getResponse()).getWriter();
         HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
         response.setContentType(MIMETYPE);

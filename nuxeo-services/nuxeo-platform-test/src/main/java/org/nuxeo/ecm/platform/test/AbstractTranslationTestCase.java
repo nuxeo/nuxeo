@@ -49,8 +49,9 @@ public abstract class AbstractTranslationTestCase {
     }
 
     protected TranslationProperties extractProps(String path) throws IOException {
-        InputStream in = getFromContext(path);
-        return extractProps(in);
+        try (InputStream in = getFromContext(path)) {
+            return extractProps(in);
+        }
     }
 
     protected TranslationProperties extractProps(InputStream in) throws IOException {

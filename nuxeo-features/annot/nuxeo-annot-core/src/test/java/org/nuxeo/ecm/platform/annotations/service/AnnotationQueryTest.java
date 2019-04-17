@@ -58,10 +58,11 @@ public class AnnotationQueryTest {
 
     @Test
     public void testgetAnnotationsForURIs() throws Exception {
-        InputStream is = getClass().getResourceAsStream("/post-rdf.xml");
-        assertNotNull(is);
-
-        Annotation annotation = manager.getAnnotation(is);
+        Annotation annotation;
+        try (InputStream is = getClass().getResourceAsStream("/post-rdf.xml")) {
+            assertNotNull(is);
+            annotation = manager.getAnnotation(is);
+        }
         assertNotNull(annotation);
 
         annotation.setSubject(new ResourceImpl("http://foo/1"));

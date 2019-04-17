@@ -127,6 +127,7 @@ public class UIFavicon extends UIComponentBase {
             mt = getMimetype(src);
         }
 
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         writer.startElement("link", this);
         writer.writeAttribute("rel", name, "rel");

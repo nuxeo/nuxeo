@@ -331,13 +331,15 @@ public class AESBinaryManager extends LocalBinaryManager {
         // TODO if stream source, avoid copy (no-copy optimization)
         File tmp = File.createTempFile("bin_", ".tmp", tmpDir);
         Framework.trackFile(tmp, tmp);
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(tmp));
-        IOUtils.copy(in, out);
+        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(tmp))) {
+            IOUtils.copy(in, out);
+        }
         in.close();
-        out.close();
         // encrypt an digest into final file
-        InputStream nin = new BufferedInputStream(new FileInputStream(tmp));
-        String digest = storeAndDigest(nin); // calls our storeAndDigest
+        String digest;
+        try (InputStream nin = new BufferedInputStream(new FileInputStream(tmp))) {
+            digest = storeAndDigest(nin); // calls our storeAndDigest
+        }
         // return a binary on our tmp file
         return new Binary(tmp, digest, blobProviderId);
     }

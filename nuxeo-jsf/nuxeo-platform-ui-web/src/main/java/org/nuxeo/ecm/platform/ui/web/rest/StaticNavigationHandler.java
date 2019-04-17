@@ -21,6 +21,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.rest;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -125,12 +126,14 @@ public class StaticNavigationHandler {
      * @since 5.6
      */
     protected void handleHotReloadResources(ServletContext context) {
-        InputStream stream = null;
         if (context != null) {
-            stream = context.getResourceAsStream("/WEB-INF/faces-config.xml");
-        }
-        if (stream != null) {
-            parse(stream);
+            try (InputStream stream = context.getResourceAsStream("/WEB-INF/faces-config.xml")) {
+                if (stream != null) {
+                    parse(stream);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

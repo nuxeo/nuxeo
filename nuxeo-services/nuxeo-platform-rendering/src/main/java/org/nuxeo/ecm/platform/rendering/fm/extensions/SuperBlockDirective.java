@@ -44,6 +44,7 @@ public class SuperBlockDirective implements TemplateDirectiveModel {
             throw new TemplateModelException("Didn't expect a body");
         }
 
+        @SuppressWarnings("resource") // not ours to close
         BlockWriter writer = (BlockWriter) env.getOut();
         writer.writeSuperBlock();
     }

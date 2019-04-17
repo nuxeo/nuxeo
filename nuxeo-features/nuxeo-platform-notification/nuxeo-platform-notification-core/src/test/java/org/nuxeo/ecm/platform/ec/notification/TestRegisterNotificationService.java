@@ -66,8 +66,9 @@ public class TestRegisterNotificationService {
     @Before
     public void setUp() throws Exception {
         File propertiesFile = FileUtils.getResourceFileFromContext("notifications.properties");
-        InputStream notificationsProperties = new FileInputStream(propertiesFile);
-        ((OSGiRuntimeService) Framework.getRuntime()).loadProperties(notificationsProperties);
+        try (InputStream notificationsProperties = new FileInputStream(propertiesFile)) {
+            ((OSGiRuntimeService) Framework.getRuntime()).loadProperties(notificationsProperties);
+        }
         hotDeployer.deploy("org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml");
     }
 

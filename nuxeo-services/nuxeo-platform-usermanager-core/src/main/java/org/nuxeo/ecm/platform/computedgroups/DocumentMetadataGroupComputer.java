@@ -125,14 +125,14 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
             String whereClause = String.format(whereClausePattern, username);
             String query = String.format(QUERY_PATTERN, xpath, whereClause);
 
-            IterableQueryResult docs = session.queryAndFetch(query, "NXQL");
-            for (Map<String, Serializable> doc : docs) {
-                String value = (String) doc.get(xpath);
-                if (value != null && !value.isEmpty() && !result.contains(value)) {
-                    result.add(value);
+            try (IterableQueryResult docs = session.queryAndFetch(query, "NXQL")) {
+                for (Map<String, Serializable> doc : docs) {
+                    String value = (String) doc.get(xpath);
+                    if (value != null && !value.isEmpty() && !result.contains(value)) {
+                        result.add(value);
+                    }
                 }
             }
-
         }
     }
 

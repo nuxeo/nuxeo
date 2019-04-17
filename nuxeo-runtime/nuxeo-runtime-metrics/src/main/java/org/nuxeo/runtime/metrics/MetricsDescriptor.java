@@ -182,6 +182,7 @@ public class MetricsDescriptor implements Serializable {
             }
 
             InetSocketAddress address = new InetSocketAddress(host, port);
+            @SuppressWarnings("resource") // closed by reporter.stop()
             Graphite graphite = new Graphite(address);
             reporter = GraphiteReporter.forRegistry(registry)
                                        .convertRatesTo(TimeUnit.SECONDS)
@@ -404,6 +405,7 @@ public class MetricsDescriptor implements Serializable {
             InstrumentedAppender appender = new InstrumentedAppender(registry, null, null, false);
             appender.start();
 
+            @SuppressWarnings("resource") // not ours to close
             LoggerContext context = (LoggerContext) LogManager.getContext(false);
             Configuration config = context.getConfiguration();
             config.getLoggerConfig(ROOT_LOGGER_NAME).addAppender(appender, INFO, null);
@@ -416,6 +418,7 @@ public class MetricsDescriptor implements Serializable {
                 return;
             }
             try {
+                @SuppressWarnings("resource") // not ours to close
                 LoggerContext context = (LoggerContext) LogManager.getContext(false);
                 Configuration config = context.getConfiguration();
                 config.getLoggerConfig(ROOT_LOGGER_NAME).removeAppender(appender.getName());

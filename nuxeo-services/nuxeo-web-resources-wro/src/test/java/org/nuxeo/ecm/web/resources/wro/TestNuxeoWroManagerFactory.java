@@ -119,8 +119,9 @@ public class TestNuxeoWroManagerFactory {
         UriLocatorFactory locator = victim.getUriLocatorFactory();
         String existing = Resource.PREFIX + "foldable-box.css";
         assertTrue(locator.getInstance(existing) instanceof NuxeoUriLocator);
-        InputStream in = locator.locate(existing);
-        assertNotNull(in);
+        try (InputStream in = locator.locate(existing)) {
+            assertNotNull(in);
+        }
         String unknown = Resource.PREFIX + "foo";
         assertTrue(locator.getInstance(unknown) instanceof NuxeoUriLocator);
         assertNull(locator.locate(unknown));
@@ -149,8 +150,9 @@ public class TestNuxeoWroManagerFactory {
         UriLocatorFactory locator = victim.getUriLocatorFactory();
         String existing = Resource.PREFIX + "all.css";
         assertTrue(locator.getInstance(existing) instanceof NuxeoUriLocator);
-        InputStream in = locator.locate(existing);
-        assertNotNull(in);
+        try (InputStream in = locator.locate(existing)) {
+            assertNotNull(in);
+        }
     }
 
 }

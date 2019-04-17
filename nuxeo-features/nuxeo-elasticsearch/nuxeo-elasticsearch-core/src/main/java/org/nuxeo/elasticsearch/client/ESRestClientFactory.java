@@ -107,6 +107,7 @@ public class ESRestClientFactory implements ESClientFactory {
         return createRestClient(config);
     }
 
+    @SuppressWarnings("resource") // factory for ESClient / RestHighLevelClient
     protected ESClient createLocalRestClient(ElasticSearchEmbeddedServerConfig serverConfig) {
         if (!serverConfig.httpEnabled()) {
             throw new IllegalArgumentException(
@@ -119,6 +120,7 @@ public class ESRestClientFactory implements ESClientFactory {
         return new ESRestClient(client.getLowLevelClient(), client);
     }
 
+    @SuppressWarnings("resource") // factory for ESClient / RestHighLevelClient
     protected ESClient createRestClient(ElasticSearchClientConfig config) {
         String addressList = config.getOption("addressList", "");
         if (addressList.isEmpty()) {

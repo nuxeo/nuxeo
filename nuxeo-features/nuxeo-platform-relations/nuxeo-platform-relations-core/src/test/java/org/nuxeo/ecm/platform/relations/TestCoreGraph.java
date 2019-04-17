@@ -501,9 +501,10 @@ public class TestCoreGraph {
     }
 
     public void TODOtestRead() throws Exception {
-        InputStream in = new FileInputStream(getTestFile());
         assertEquals(Long.valueOf(0), graph.size());
-        graph.read(in, null, null);
+        try (InputStream in = new FileInputStream(getTestFile())) {
+            graph.read(in, null, null);
+        }
         assertEquals(Long.valueOf(0), graph.size());
         List<Statement> statements = graph.getStatements();
         Collections.sort(statements);
@@ -532,9 +533,10 @@ public class TestCoreGraph {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         graph.write(out, null, null);
         InputStream written = new ByteArrayInputStream(out.toByteArray());
-        InputStream expected = new FileInputStream(getTestFile());
-        assertEquals(IOUtils.toString(expected, UTF_8).replaceAll("\r?\n", ""),
-                IOUtils.toString(written, UTF_8).replaceAll("\r?\n", ""));
+        try (InputStream expected = new FileInputStream(getTestFile())) {
+            assertEquals(IOUtils.toString(expected, UTF_8).replaceAll("\r?\n", ""),
+                    IOUtils.toString(written, UTF_8).replaceAll("\r?\n", ""));
+        }
     }
 
     public void TODOtestWritePath() throws Exception {
@@ -542,12 +544,13 @@ public class TestCoreGraph {
         File file = Framework.createTempFile("test", ".rdf");
         String path = file.getPath();
         graph.write(path, null, null);
-        InputStream written = new FileInputStream(new File(path));
-        InputStream expected = new FileInputStream(getTestFile());
+        try (InputStream written = new FileInputStream(new File(path));
+                InputStream expected = new FileInputStream(getTestFile())) {
 
-        String expectedString = IOUtils.toString(expected, UTF_8).replaceAll("\r?\n", "");
-        String writtenString = IOUtils.toString(written, UTF_8).replaceAll("\r?\n", "");
-        assertEquals(expectedString, writtenString);
+            String expectedString = IOUtils.toString(expected, UTF_8).replaceAll("\r?\n", "");
+            String writtenString = IOUtils.toString(written, UTF_8).replaceAll("\r?\n", "");
+            assertEquals(expectedString, writtenString);
+        }
     }
 
 }

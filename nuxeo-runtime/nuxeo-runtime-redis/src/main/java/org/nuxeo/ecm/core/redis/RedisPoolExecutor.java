@@ -41,6 +41,7 @@ public class RedisPoolExecutor extends RedisAbstractExecutor {
         this.pool = pool;
     }
 
+    @SuppressWarnings("resource") // Jedis resource from Pool<Jedis> must not be closed, just returned
     @Override
     public <T> T execute(RedisCallable<T> callable) throws JedisException {
         { // re-entrance

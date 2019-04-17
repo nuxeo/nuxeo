@@ -67,6 +67,7 @@ public class AutomationClientOSGiComplianceTest {
     }
 
     // Inject all automation client dependencies
+    @SuppressWarnings("resource") // tests
     public DefaultCompositeOption baseBundle() throws FileNotFoundException {
         DefaultCompositeOption options = new DefaultCompositeOption();
         File dependenciesDir = new File("target/dependency");

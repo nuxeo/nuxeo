@@ -403,6 +403,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
         collection.insertMany(entries);
     }
 
+    @SuppressWarnings("resource") // CursorResult is being registered, must not be closed
     @Override
     public ScrollResult<String> scroll(QueryBuilder builder, int batchSize, int keepAliveSeconds) {
         // prepare parameters

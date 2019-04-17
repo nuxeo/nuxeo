@@ -136,6 +136,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         if (config.logs.isEmpty()) {
             return;
         }
+        @SuppressWarnings("resource") // not ours to close
         LogManager manager = getLogManager(config.getId());
         config.logs.forEach(l -> {
             log.info("Create if not exists stream: {} with manager: {}", l.getId(), config.getId());

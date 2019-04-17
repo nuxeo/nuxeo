@@ -50,14 +50,15 @@ public final class DocumentUTUtils {
 
     public static String readContent(File file) throws IOException {
         char[] buffer = new char[2048];
-        InputStreamReader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
-        StringWriter writer = new StringWriter();
-        int length;
-        while ((length = reader.read(buffer, 0, 2048)) != -1) {
-            writer.write(buffer, 0, length);
+        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file), "UTF-8")) {
+            StringWriter writer = new StringWriter();
+            int length;
+            while ((length = reader.read(buffer, 0, 2048)) != -1) {
+                writer.write(buffer, 0, length);
+            }
+            String content = stripByteOrderMarkChar(writer.toString());
+            return content.trim();
         }
-        String content = stripByteOrderMarkChar(writer.toString());
-        return content.trim();
     }
 
     private static String stripByteOrderMarkChar(String content) {

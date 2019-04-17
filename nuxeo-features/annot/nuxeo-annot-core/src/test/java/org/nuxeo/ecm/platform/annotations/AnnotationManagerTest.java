@@ -52,10 +52,11 @@ public class AnnotationManagerTest {
 
     @Test
     public void testGetPostNewAnnotation() throws Exception {
-        InputStream is = getClass().getResourceAsStream("/post-rdf.xml");
-        assertNotNull(is);
-
-        Annotation annotation = manager.getAnnotation(is);
+        Annotation annotation;
+        try (InputStream is = getClass().getResourceAsStream("/post-rdf.xml")) {
+            assertNotNull(is);
+            annotation = manager.getAnnotation(is);
+        }
         assertNotNull(annotation);
         assertEquals("http://www.w3.org/2005/Incubator/", annotation.getAnnotates().toString());
 
@@ -65,19 +66,21 @@ public class AnnotationManagerTest {
 
     @Test
     public void testReadAnnoteaSpecPost() throws Exception {
-        InputStream is = getClass().getResourceAsStream("/annotea-spec-post.xml");
-        assertNotNull(is);
-
-        Annotation annotation = manager.getAnnotation(is);
+        Annotation annotation;
+        try (InputStream is = getClass().getResourceAsStream("/annotea-spec-post.xml")) {
+            assertNotNull(is);
+            annotation = manager.getAnnotation(is);
+        }
         assertNotNull(annotation);
     }
 
     @Test
     public void testGetCreatedAnnotation() throws Exception {
-        InputStream is = getClass().getResourceAsStream("/repo-rdf.xml");
-        assertNotNull(is);
-
-        Annotation annotation = manager.getAnnotation(is);
+        Annotation annotation;
+        try (InputStream is = getClass().getResourceAsStream("/repo-rdf.xml")) {
+            assertNotNull(is);
+            annotation = manager.getAnnotation(is);
+        }
         assertNotNull(annotation);
 
         Resource resource = annotation.getSubject();

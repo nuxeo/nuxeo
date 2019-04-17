@@ -919,54 +919,55 @@ public class LDAPReference extends AbstractReference implements Cloneable {
 
         LDAPDirectoryDescriptor targetDirconfig = getTargetDirectoryDescriptor();
         LDAPDirectory ldapTargetDirectory = (LDAPDirectory) getTargetDirectory();
-        LDAPSession targetSession = ldapTargetDirectory.getSession();
+        try (LDAPSession targetSession = ldapTargetDirectory.getSession()) {
 
-        // use the most specific scope between the one specified in the
-        // Directory and the specified in the Parent
-        String dn = directoryDn.endsWith(linkDn) && directoryDn.length() > linkDn.length() ? directoryDn : linkDn;
+            // use the most specific scope between the one specified in the
+            // Directory and the specified in the Parent
+            String dn = directoryDn.endsWith(linkDn) && directoryDn.length() > linkDn.length() ? directoryDn : linkDn;
 
-        // combine the ldapUrl search query with target
-        // directory own constraints
-        SearchControls scts = new SearchControls();
+            // combine the ldapUrl search query with target
+            // directory own constraints
+            SearchControls scts = new SearchControls();
 
-        // use the most specific scope
-        scts.setSearchScope(Math.min(scope, targetDirconfig.getSearchScope()));
+            // use the most specific scope
+            scts.setSearchScope(Math.min(scope, targetDirconfig.getSearchScope()));
 
-        // only fetch the ids of the targets
-        scts.setReturningAttributes(new String[] { targetSession.idAttribute });
+            // only fetch the ids of the targets
+            scts.setReturningAttributes(new String[] { targetSession.idAttribute });
 
-        // combine the filter of the target directory with the
-        // provided filter if any
-        String targetFilter = targetDirconfig.getSearchFilter();
-        if (filter == null || filter.length() == 0) {
-            filter = targetFilter;
-        } else if (targetFilter != null && targetFilter.length() > 0) {
-            filter = String.format("(&(%s)(%s))", targetFilter, filter);
-        }
-
-        // perform the request and collect the ids
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "LDAPReference.getLdapTargetIds(%s): LDAP search dn='%s' " + " filter='%s' scope='%s' [%s]",
-                    attributes, dn, dn, scts.getSearchScope(), this));
-        }
-
-        Name name = new CompositeName().add(dn);
-        NamingEnumeration<SearchResult> results = targetSession.getContext().search(name, filter, scts);
-        try {
-            while (results.hasMore()) {
-                // NXP-2461: check that id field is filled
-                Attribute attr = results.next().getAttributes().get(targetSession.idAttribute);
-                if (attr != null) {
-                    String collectedId = attr.get().toString();
-                    if (collectedId != null) {
-                        targetIds.add(collectedId);
-                    }
-                }
-
+            // combine the filter of the target directory with the
+            // provided filter if any
+            String targetFilter = targetDirconfig.getSearchFilter();
+            if (filter == null || filter.length() == 0) {
+                filter = targetFilter;
+            } else if (targetFilter != null && targetFilter.length() > 0) {
+                filter = String.format("(&(%s)(%s))", targetFilter, filter);
             }
-        } finally {
-            results.close();
+
+            // perform the request and collect the ids
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "LDAPReference.getLdapTargetIds(%s): LDAP search dn='%s' " + " filter='%s' scope='%s' [%s]",
+                        attributes, dn, dn, scts.getSearchScope(), this));
+            }
+
+            Name name = new CompositeName().add(dn);
+            NamingEnumeration<SearchResult> results = targetSession.getContext().search(name, filter, scts);
+            try {
+                while (results.hasMore()) {
+                    // NXP-2461: check that id field is filled
+                    Attribute attr = results.next().getAttributes().get(targetSession.idAttribute);
+                    if (attr != null) {
+                        String collectedId = attr.get().toString();
+                        if (collectedId != null) {
+                            targetIds.add(collectedId);
+                        }
+                    }
+
+                }
+            } finally {
+                results.close();
+            }
         }
 
         return targetIds;

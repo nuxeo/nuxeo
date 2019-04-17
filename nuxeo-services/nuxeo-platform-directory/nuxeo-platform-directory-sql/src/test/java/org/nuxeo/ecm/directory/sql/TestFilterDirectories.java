@@ -49,24 +49,26 @@ public class TestFilterDirectories {
 
     @Test
     public void testFilterDirectory() throws Exception {
-        Session unfiltredSession = directoryService.open("unfiltredTestDirectory");
-        assertNotNull(unfiltredSession);
-        assertEquals(5, unfiltredSession.getEntries().size());
-        assertNotNull(unfiltredSession.getEntry("1"));
-        assertNotNull(unfiltredSession.getEntry("2"));
-        assertNotNull(unfiltredSession.getEntry("5"));
-
         Map<String, Serializable> queryFilter = new HashMap<>();
         queryFilter.put("lang", "en");
-        assertEquals(2, unfiltredSession.query(queryFilter).size());
 
-        Session filtredSession = directoryService.open("filtredTestDirectory");
-        assertNotNull(filtredSession);
-        assertEquals(2, filtredSession.getEntries().size());
-        assertNotNull(filtredSession.getEntry("1"));
-        assertNull(filtredSession.getEntry("2"));
-        assertNull(filtredSession.getEntry("5"));
-        assertEquals(1, filtredSession.query(queryFilter).size());
+        try (Session unfiltredSession = directoryService.open("unfiltredTestDirectory")) {
+            assertNotNull(unfiltredSession);
+            assertEquals(5, unfiltredSession.getEntries().size());
+            assertNotNull(unfiltredSession.getEntry("1"));
+            assertNotNull(unfiltredSession.getEntry("2"));
+            assertNotNull(unfiltredSession.getEntry("5"));
+            assertEquals(2, unfiltredSession.query(queryFilter).size());
+        }
+
+        try (Session filtredSession = directoryService.open("filtredTestDirectory")) {
+            assertNotNull(filtredSession);
+            assertEquals(2, filtredSession.getEntries().size());
+            assertNotNull(filtredSession.getEntry("1"));
+            assertNull(filtredSession.getEntry("2"));
+            assertNull(filtredSession.getEntry("5"));
+            assertEquals(1, filtredSession.query(queryFilter).size());
+        }
     }
 
 }

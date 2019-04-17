@@ -65,6 +65,7 @@ public class RedisSentinelDescriptor extends RedisPoolDescriptor {
     @XNode("failoverTimeout")
     public int failoverTimeout = 300;
 
+    @SuppressWarnings("resource") // JedisSentinelPool closed by RedisComponent.stop()
     @Override
     public RedisExecutor newExecutor() throws RuntimeException {
         Set<String> sentinels = new HashSet<>();

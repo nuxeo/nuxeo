@@ -50,6 +50,7 @@ public class ChainSelectListboxRenderer extends Renderer {
     public void decode(FacesContext facesContext, UIComponent component) {
     }
 
+    @SuppressWarnings("resource") // ResponseWriter not ours to close
     @Override
     public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
         ChainSelectListboxComponent comp = (ChainSelectListboxComponent) component;

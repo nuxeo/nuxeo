@@ -86,6 +86,7 @@ public class TestBufferingServletResponse {
 
     @Test
     public void testWriter() throws Exception {
+        @SuppressWarnings("resource") // not ours to close
         PrintWriter w = response.getWriter();
         w.write("abc");
         // no flush, let stopBuffering do it

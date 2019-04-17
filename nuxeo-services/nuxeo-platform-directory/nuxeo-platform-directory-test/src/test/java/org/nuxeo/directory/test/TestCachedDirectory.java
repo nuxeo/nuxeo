@@ -82,38 +82,39 @@ public class TestCachedDirectory extends AbstractDirectoryTest {
 
     @Test
     public void testGetFromCache() throws Exception {
-        Session session = getDirectory().getSession();
-        MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-        Counter hitsCounter = metrics.counter(
-                MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "hits"));
-        Counter negativeHitsCounter = metrics.counter(
-                MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "neghits"));
-        Counter missesCounter = metrics.counter(
-                MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "misses"));
-        long baseHitsCount = hitsCounter.getCount();
-        long baseNegativeHitsCount = negativeHitsCounter.getCount();
-        long baseMissesCount = missesCounter.getCount();
+        try (Session session = getDirectory().getSession()) {
+            MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+            Counter hitsCounter = metrics.counter(
+                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "hits"));
+            Counter negativeHitsCounter = metrics.counter(
+                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "neghits"));
+            Counter missesCounter = metrics.counter(
+                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "misses"));
+            long baseHitsCount = hitsCounter.getCount();
+            long baseNegativeHitsCount = negativeHitsCounter.getCount();
+            long baseMissesCount = missesCounter.getCount();
 
-        // First call will update cache
-        DocumentModel entry = session.getEntry("user_1");
-        assertNotNull(entry);
-        assertEquals(baseHitsCount, hitsCounter.getCount());
-        assertEquals(baseNegativeHitsCount, negativeHitsCounter.getCount());
-        assertEquals(baseMissesCount + 1, missesCounter.getCount());
+            // First call will update cache
+            DocumentModel entry = session.getEntry("user_1");
+            assertNotNull(entry);
+            assertEquals(baseHitsCount, hitsCounter.getCount());
+            assertEquals(baseNegativeHitsCount, negativeHitsCounter.getCount());
+            assertEquals(baseMissesCount + 1, missesCounter.getCount());
 
-        // Second call will use the cache
-        entry = session.getEntry("user_1");
-        assertNotNull(entry);
-        assertEquals(baseHitsCount + 1, hitsCounter.getCount());
-        assertEquals(baseNegativeHitsCount, negativeHitsCounter.getCount());
-        assertEquals(baseMissesCount + 1, missesCounter.getCount());
+            // Second call will use the cache
+            entry = session.getEntry("user_1");
+            assertNotNull(entry);
+            assertEquals(baseHitsCount + 1, hitsCounter.getCount());
+            assertEquals(baseNegativeHitsCount, negativeHitsCounter.getCount());
+            assertEquals(baseMissesCount + 1, missesCounter.getCount());
 
-        // Again
-        entry = session.getEntry("user_1");
-        assertNotNull(entry);
-        assertEquals(baseHitsCount + 2, hitsCounter.getCount());
-        assertEquals(baseNegativeHitsCount, negativeHitsCounter.getCount());
-        assertEquals(baseMissesCount + 1, missesCounter.getCount());
+            // Again
+            entry = session.getEntry("user_1");
+            assertNotNull(entry);
+            assertEquals(baseHitsCount + 2, hitsCounter.getCount());
+            assertEquals(baseNegativeHitsCount, negativeHitsCounter.getCount());
+            assertEquals(baseMissesCount + 1, missesCounter.getCount());
+        }
     }
 
     @Test
@@ -128,37 +129,38 @@ public class TestCachedDirectory extends AbstractDirectoryTest {
     }
 
     protected void doTestNegativeCaching() throws Exception {
-        Session session = getDirectory().getSession();
-        MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-        Counter hitsCounter = metrics.counter(
-                MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "hits"));
-        Counter negativeHitsCounter = metrics.counter(
-                MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "neghits"));
-        Counter missesCounter = metrics.counter(
-                MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "misses"));
-        long baseHitsCount = hitsCounter.getCount();
-        long baseNegativeHitsCount = negativeHitsCounter.getCount();
-        long baseMissesCount = missesCounter.getCount();
+        try (Session session = getDirectory().getSession()) {
+            MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+            Counter hitsCounter = metrics.counter(
+                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "hits"));
+            Counter negativeHitsCounter = metrics.counter(
+                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "neghits"));
+            Counter missesCounter = metrics.counter(
+                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "misses"));
+            long baseHitsCount = hitsCounter.getCount();
+            long baseNegativeHitsCount = negativeHitsCounter.getCount();
+            long baseMissesCount = missesCounter.getCount();
 
-        // First call will update cache
-        DocumentModel entry = session.getEntry("NO_SUCH_USER");
-        assertNull(entry);
-        assertEquals(baseHitsCount, hitsCounter.getCount());
-        assertEquals(baseNegativeHitsCount, negativeHitsCounter.getCount());
-        assertEquals(baseMissesCount + 1, missesCounter.getCount());
+            // First call will update cache
+            DocumentModel entry = session.getEntry("NO_SUCH_USER");
+            assertNull(entry);
+            assertEquals(baseHitsCount, hitsCounter.getCount());
+            assertEquals(baseNegativeHitsCount, negativeHitsCounter.getCount());
+            assertEquals(baseMissesCount + 1, missesCounter.getCount());
 
-        // Second call will use the negative cache
-        entry = session.getEntry("NO_SUCH_USER");
-        assertNull(entry);
-        assertEquals(baseHitsCount, hitsCounter.getCount());
-        assertEquals(baseNegativeHitsCount + 1, negativeHitsCounter.getCount());
-        assertEquals(baseMissesCount + 1, missesCounter.getCount());
+            // Second call will use the negative cache
+            entry = session.getEntry("NO_SUCH_USER");
+            assertNull(entry);
+            assertEquals(baseHitsCount, hitsCounter.getCount());
+            assertEquals(baseNegativeHitsCount + 1, negativeHitsCounter.getCount());
+            assertEquals(baseMissesCount + 1, missesCounter.getCount());
 
-        // Again
-        entry = session.getEntry("NO_SUCH_USER");
-        assertNull(entry);
-        assertEquals(baseHitsCount, hitsCounter.getCount());
-        assertEquals(baseNegativeHitsCount + 2, negativeHitsCounter.getCount());
-        assertEquals(baseMissesCount + 1, missesCounter.getCount());
+            // Again
+            entry = session.getEntry("NO_SUCH_USER");
+            assertNull(entry);
+            assertEquals(baseHitsCount, hitsCounter.getCount());
+            assertEquals(baseNegativeHitsCount + 2, negativeHitsCounter.getCount());
+            assertEquals(baseMissesCount + 1, missesCounter.getCount());
+        }
     }
 }

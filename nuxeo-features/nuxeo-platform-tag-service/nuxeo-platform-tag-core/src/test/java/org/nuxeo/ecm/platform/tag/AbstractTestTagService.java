@@ -644,6 +644,7 @@ public abstract class AbstractTestTagService {
         testQueriesOnTags();
     }
 
+    @SuppressWarnings("resource") // test
     protected void testQueriesOnTags() throws Exception {
         String nxql;
         DocumentModelList dml;

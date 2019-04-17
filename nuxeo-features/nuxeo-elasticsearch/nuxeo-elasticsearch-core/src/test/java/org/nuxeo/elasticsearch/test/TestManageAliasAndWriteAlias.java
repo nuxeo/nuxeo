@@ -54,6 +54,7 @@ public class TestManageAliasAndWriteAlias {
 
     @Test
     public void testClientAliasMethods() {
+        @SuppressWarnings("resource") // not ours to close
         ESClient client = esa.getClient();
         assertFalse("Expecting alias does not exist", client.aliasExists("unknown-name"));
         assertFalse("Expecting alias does not exist", client.indexExists("unknown-name"));

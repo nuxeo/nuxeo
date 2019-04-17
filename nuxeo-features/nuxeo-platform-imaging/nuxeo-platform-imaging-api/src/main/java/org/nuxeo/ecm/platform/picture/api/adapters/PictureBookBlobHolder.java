@@ -41,6 +41,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
         super(doc, xPath);
     }
 
+    @SuppressWarnings("resource") // session closed only if we opened it
     @Override
     public Blob getBlob() {
         CoreSession session = getSession();
@@ -73,6 +74,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
         return getBlobs("Original");
     }
 
+    @SuppressWarnings("resource") // session closed only if we opened it
     public List<Blob> getBlobs(String title) {
         CoreSession session = getSession();
         boolean sessionOpened = false;

@@ -211,9 +211,9 @@ public class ModuleManager {
     public static ModuleConfiguration readConfiguration(final WebEngine engine, File file) throws IOException {
         XMap xmap = new XMap();
         xmap.register(ModuleConfiguration.class);
-        InputStream in = new BufferedInputStream(new FileInputStream(file));
-        ModuleConfiguration mc = (ModuleConfiguration) xmap.load(createXMapContext(engine), in);
-        return mc;
+        try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
+            return (ModuleConfiguration) xmap.load(createXMapContext(engine), in);
+        }
     }
 
     public void loadModuleRootResources(ModuleConfiguration mc) {

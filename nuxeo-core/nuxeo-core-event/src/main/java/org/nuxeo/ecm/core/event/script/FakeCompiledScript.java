@@ -45,8 +45,9 @@ public class FakeCompiledScript extends CompiledScript {
     @Override
     public Object eval(ScriptContext arg0) throws ScriptException {
         try {
-            Reader reader = script.getReader();
-            return engine.eval(reader, arg0);
+            try (Reader reader = script.getReader()) {
+                return engine.eval(reader, arg0);
+            }
         } catch (IOException e) {
             throw new ScriptException(e);
         }

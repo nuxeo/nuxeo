@@ -108,32 +108,23 @@ public class UserProfileImporter {
             return;
         }
 
-        InputStream is = getResourceAsStream(dataFileName);
-        if (is == null) {
-            log.error("Error locating CSV data file: " + dataFileName);
-            return;
-        }
+        try (InputStream is = getResourceAsStream(dataFileName)) {
+            if (is == null) {
+                log.error("Error locating CSV data file: " + dataFileName);
+                return;
+            }
 
-        Reader in = new BufferedReader(new InputStreamReader(is));
-        CSVParser parser = null;
-
-        try {
-            parser = CSVFormat.DEFAULT.withEscape(escapeCharacter).withHeader().parse(in);
-            doImport(session, parser, ups);
+            try (Reader in = new BufferedReader(new InputStreamReader(is));
+                    CSVParser parser = CSVFormat.DEFAULT.withEscape(escapeCharacter).withHeader().parse(in)) {
+                doImport(session, parser, ups);
+            }
         } catch (IOException e) {
             log.error("Unable to read CSV file", e);
-        } finally {
-            if (parser != null) {
-                try {
-                    parser.close();
-                } catch (IOException e) {
-                    log.debug(e, e);
-                }
-            }
         }
 
     }
 
+    @SuppressWarnings("resource") // closed by caller
     protected InputStream getResourceAsStream(String resource) {
         InputStream is = getClass().getClassLoader().getResourceAsStream(resource);
         if (is == null) {

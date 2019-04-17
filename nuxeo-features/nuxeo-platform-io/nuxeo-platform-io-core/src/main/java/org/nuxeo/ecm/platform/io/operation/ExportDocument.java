@@ -75,7 +75,9 @@ public class ExportDocument {
         DocumentWriter documentWriter = null;
         try {
             documentReader = makeDocumentReader(session, doc, exportAsTree, exportAsZip);
-            documentWriter = makeDocumentWriter(new FileOutputStream(tempFile), exportAsTree, exportAsZip);
+            @SuppressWarnings("resource") // closed by documentWriter.close()
+            FileOutputStream out = new FileOutputStream(tempFile);
+            documentWriter = makeDocumentWriter(out, exportAsTree, exportAsZip);
             DocumentPipe pipe = makePipe(exportAsTree);
             pipe.setReader(documentReader);
             pipe.setWriter(documentWriter);

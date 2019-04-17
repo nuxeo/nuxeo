@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,8 +93,9 @@ public class TestLayoutExport {
         assertNotNull(lTypeDef);
 
         File file = Framework.createTempFile("layouttype-export", ".json");
-        FileOutputStream out = new FileOutputStream(file);
-        JSONLayoutExporter.exportLayoutType(lTypeDef, out);
+        try (OutputStream out = new FileOutputStream(file)) {
+            JSONLayoutExporter.exportLayoutType(lTypeDef, out);
+        }
 
         try (InputStream written = new FileInputStream(file);
                 InputStream expected = new FileInputStream(
@@ -133,8 +135,9 @@ public class TestLayoutExport {
         assertNotNull(wTypeDef);
 
         File file = Framework.createTempFile("widgettype-export", ".json");
-        FileOutputStream out = new FileOutputStream(file);
-        JSONLayoutExporter.export(wTypeDef, out);
+        try (OutputStream out = new FileOutputStream(file)) {
+            JSONLayoutExporter.export(wTypeDef, out);
+        }
 
         try (InputStream written = new FileInputStream(file);
                 InputStream expected = new FileInputStream(
@@ -149,10 +152,11 @@ public class TestLayoutExport {
         assertNotNull(wTypeDef);
 
         File file = Framework.createTempFile("widgettypes-export", ".json");
-        FileOutputStream out = new FileOutputStream(file);
-        List<WidgetTypeDefinition> wTypeDefs = new ArrayList<>();
-        wTypeDefs.add(wTypeDef);
-        JSONLayoutExporter.export(wTypeDefs, out);
+        try (OutputStream out = new FileOutputStream(file)) {
+            List<WidgetTypeDefinition> wTypeDefs = new ArrayList<>();
+            wTypeDefs.add(wTypeDef);
+            JSONLayoutExporter.export(wTypeDefs, out);
+        }
 
         try (InputStream written = new FileInputStream(file);
                 InputStream expected = new FileInputStream(
@@ -548,8 +552,9 @@ public class TestLayoutExport {
         File file = Framework.createTempFile("layout-export", ".json");
         JSONObject obj = JSONLayoutExporter.exportToJson(WebLayoutManager.JSF_CATEGORY, lDef, null, null);
 
-        FileOutputStream out = new FileOutputStream(file);
-        out.write(obj.toString(2).getBytes(JSONLayoutExporter.ENCODED_VALUES_ENCODING));
+        try (OutputStream out = new FileOutputStream(file)) {
+            out.write(obj.toString(2).getBytes(JSONLayoutExporter.ENCODED_VALUES_ENCODING));
+        }
 
         try (InputStream written = new FileInputStream(file);
                 InputStream expected = new FileInputStream(

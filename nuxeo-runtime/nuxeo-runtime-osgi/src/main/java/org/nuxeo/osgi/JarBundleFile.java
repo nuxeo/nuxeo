@@ -53,6 +53,7 @@ public class JarBundleFile implements BundleFile {
 
     protected String urlBase;
 
+    @SuppressWarnings("resource")
     public JarBundleFile(File file) throws IOException {
         this(new JarFile(file));
     }

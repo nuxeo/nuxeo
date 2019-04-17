@@ -283,6 +283,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
         accept(false, provider -> provider.append(entries));
     }
 
+    @SuppressWarnings("resource") // CursorResult is being registered, must not be closed
     @Override
     public ScrollResult<String> scroll(QueryBuilder builder, int batchSize, int keepAliveSeconds) {
         // as we're using pages to scroll audit, we need to add an order to make results across pages deterministic

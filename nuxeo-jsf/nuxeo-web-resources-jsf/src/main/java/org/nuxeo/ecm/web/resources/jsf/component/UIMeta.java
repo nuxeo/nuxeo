@@ -95,6 +95,7 @@ public class UIMeta extends UIComponentBase {
             return;
         }
 
+        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         writer.startElement("meta", this);
         WebConfiguration webConfig = WebConfiguration.getInstance(context.getExternalContext());
