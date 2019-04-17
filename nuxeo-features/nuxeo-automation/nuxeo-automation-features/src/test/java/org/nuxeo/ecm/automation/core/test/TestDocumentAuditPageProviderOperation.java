@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -163,18 +164,25 @@ public class TestDocumentAuditPageProviderOperation {
 
     protected int nbEntries = 0;
 
+    protected OperationContext ctx;
+
     @Before
     @SuppressWarnings("unchecked")
     public void initRepo() {
         txFeature.nextTransaction();
         List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery("from LogEntry", 0, MAX_ENTRIES);
         nbEntries = entries.size();
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testSimpleQuery() throws Exception {
-        OperationContext ctx = new OperationContext(session);
 
         Map<String, Object> params = new HashMap<>();
         params.put("query", "from LogEntry");
@@ -192,7 +200,6 @@ public class TestDocumentAuditPageProviderOperation {
     @Test
     @SuppressWarnings("unchecked")
     public void testOwnerQuery() throws Exception {
-        OperationContext ctx = new OperationContext(session);
 
         Map<String, Object> params = new HashMap<>();
         params.put("query", "FROM LogEntry log WHERE log.principalName=?");
@@ -211,7 +218,6 @@ public class TestDocumentAuditPageProviderOperation {
     @Test
     @SuppressWarnings("unchecked")
     public void testEmptyPageProviderQuery() throws Exception {
-        OperationContext ctx = new OperationContext(session);
 
         Map<String, Object> params = new HashMap<>();
         params.put("providerName", "AUDIT_BROWSER");
@@ -238,7 +244,6 @@ public class TestDocumentAuditPageProviderOperation {
     @Test
     @SuppressWarnings("unchecked")
     public void testNonEmptyPageProviderQuery() throws Exception {
-        OperationContext ctx = new OperationContext(session);
 
         Map<String, Object> params = new HashMap<>();
         params.put("providerName", "AUDIT_BROWSER");
@@ -258,7 +263,6 @@ public class TestDocumentAuditPageProviderOperation {
     @Test
     @SuppressWarnings("unchecked")
     public void testNonEmptyPageProviderQuery2() throws Exception {
-        OperationContext ctx = new OperationContext(session);
 
         Map<String, Object> params = new HashMap<>();
         params.put("providerName", "AUDIT_BROWSER");
@@ -280,7 +284,6 @@ public class TestDocumentAuditPageProviderOperation {
     @Test
     @SuppressWarnings("unchecked")
     public void testPageProviderQueryViaId() throws Exception {
-        OperationContext ctx = new OperationContext(session);
 
         Map<String, Object> params = new HashMap<>();
         params.put("providerName", "AUDIT_BROWSER");

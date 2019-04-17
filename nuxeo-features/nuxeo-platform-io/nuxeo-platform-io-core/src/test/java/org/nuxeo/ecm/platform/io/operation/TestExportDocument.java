@@ -30,6 +30,8 @@ import java.util.zip.ZipInputStream;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -59,12 +61,23 @@ public class TestExportDocument {
     @Inject
     protected CoreSession session;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     @Test
     public void shouldExportDocumentAsXML() throws OperationException {
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Blob result = (Blob) as.run(ctx, ExportDocument.ID);
         assertNotNull(result);
@@ -76,7 +89,6 @@ public class TestExportDocument {
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Map<String, Object> params = new HashMap<>();
         params.put("exportAsZip", true);
@@ -107,7 +119,6 @@ public class TestExportDocument {
         DocumentModel file2 = session.createDocumentModel(folder2.getPathAsString(), "file2", "File");
         file2 = session.createDocument(file2);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(folder1);
         Map<String, Object> params = new HashMap<>();
         params.put("exportAsTree", true);

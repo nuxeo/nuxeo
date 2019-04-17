@@ -69,6 +69,8 @@ public class OperationChainTest {
     @Inject
     CoreSession session;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         src = session.createDocumentModel("/", "src", "Folder");
@@ -76,10 +78,12 @@ public class OperationChainTest {
         src = session.createDocument(src);
         session.save();
         src = session.getDocument(src.getRef());
+        ctx = new OperationContext(session);
     }
 
     @After
     public void clearRepo() throws Exception {
+        ctx.close();
         Framework.getService(EventService.class).waitForAsyncCompletion();
         session.removeChildren(session.getRootDocument().getRef());
     }
@@ -109,7 +113,6 @@ public class OperationChainTest {
      */
     @Test
     public void testChain1() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
@@ -130,7 +133,6 @@ public class OperationChainTest {
      */
     @Test
     public void testManagedChain1() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         service.run(ctx, "mychain");
@@ -166,7 +168,6 @@ public class OperationChainTest {
      */
     @Test
     public void testChain2() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src.getRef());
 
         OperationChain chain = new OperationChain("testChain");
@@ -197,7 +198,6 @@ public class OperationChainTest {
      */
     @Test
     public void testChain3() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
@@ -217,7 +217,6 @@ public class OperationChainTest {
      */
     @Test
     public void testChain3WithCtrl() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
@@ -240,7 +239,6 @@ public class OperationChainTest {
      */
     @Test
     public void testExpressionParams() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         NuxeoPrincipal principal = new UserPrincipal("Hello from Context!", null, false, false);
         ctx.put("messageHolder", principal);
@@ -259,7 +257,6 @@ public class OperationChainTest {
      */
     @Test
     public void testTemplateParams() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         NuxeoPrincipal principal = new UserPrincipal("Context", null, false, false);
         ctx.put("messageHolder", principal);
@@ -279,7 +276,6 @@ public class OperationChainTest {
      */
     @Test
     public void testInvalidChain() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
@@ -302,7 +298,6 @@ public class OperationChainTest {
      */
     @Test
     public void testInvalidInput() throws Exception {
-        OperationContext ctx = new OperationContext(session);
 
         OperationChain chain = new OperationChain("testChain");
         chain.add("o1").set("message", "Hello 1!");
@@ -333,7 +328,6 @@ public class OperationChainTest {
      */
     @Test
     public void testVoidInput() throws Exception {
-        OperationContext ctx = new OperationContext(session);
 
         OperationChain chain = new OperationChain("testChain");
         chain.add("v1").set("message", "Hello 1!");
@@ -363,7 +357,6 @@ public class OperationChainTest {
      */
     @Test
     public void testTypeAdapters() throws Exception {
-        OperationContext ctx = new OperationContext(session);
 
         OperationChain chain = new OperationChain("testChain");
         chain.add("a1").set("message", "Hello 1!");
@@ -392,7 +385,6 @@ public class OperationChainTest {
      */
     @Test
     public void testTypeAdapters2() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(session.getRootDocument());
 
         OperationChain chain = new OperationChain("testChain");
@@ -411,7 +403,6 @@ public class OperationChainTest {
      */
     @Test
     public void testOptionalParam() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
@@ -430,7 +421,6 @@ public class OperationChainTest {
      */
     @Test
     public void testRequiredParam() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
@@ -452,7 +442,6 @@ public class OperationChainTest {
      */
     @Test
     public void testAdaptableParam() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
@@ -472,7 +461,6 @@ public class OperationChainTest {
      */
     @Test
     public void testSetVar() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
@@ -485,7 +473,6 @@ public class OperationChainTest {
 
     @Test
     public void testStringListOperation() throws Exception {
-        OperationContext ctx = new OperationContext(session);
 
         OperationChain chain = new OperationChain("testSlo");
         chain.add("slo").set("emails", "a,b,c");
@@ -513,7 +500,6 @@ public class OperationChainTest {
         assertNull(doc.getPropertyValue("dc:issued"));
         assertEquals(date, src.getPropertyValue("dc:issued"));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         // this chain copy the dc:issue from the parent to the child
         DocumentModel out = (DocumentModel) service.run(ctx, "testDateCopy");

@@ -68,6 +68,8 @@ public class RemoveItemFromListPropertyTest {
 
     protected DocumentModel doc;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         coreSession.removeChildren(coreSession.getRootDocument().getRef());
@@ -99,18 +101,22 @@ public class RemoveItemFromListPropertyTest {
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
 
         // ADD new fields
-        OperationContext ctx = new OperationContext(coreSession);
-        ctx.setInput(doc);
-        OperationChain chain = new OperationChain("testChain");
-        chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set("complexJsonProperties", fieldsDataAsJSon);
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            ctx.setInput(doc);
+            OperationChain chain = new OperationChain("testChain");
+            chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set("complexJsonProperties", fieldsDataAsJSon);
 
-        doc = (DocumentModel) service.run(ctx, chain);
-        List<?> dbFields = (List<?>) doc.getPropertyValue("ds:fields");
-        assertEquals(2, dbFields.size());
+            doc = (DocumentModel) service.run(ctx, chain);
+            List<?> dbFields = (List<?>) doc.getPropertyValue("ds:fields");
+            assertEquals(2, dbFields.size());
+        }
+
+        ctx = new OperationContext(coreSession);
     }
 
     @After
     public void clearRepo() {
+        ctx.close();
         coreSession.removeChildren(coreSession.getRootDocument().getRef());
         coreSession.save();
     }
@@ -161,7 +167,6 @@ public class RemoveItemFromListPropertyTest {
     }
 
     protected DocumentModel removeItemsFromListProperty(String xpath, Integer index) throws OperationException {
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(doc);
 
         Map<String, Object> params = new HashMap<>();

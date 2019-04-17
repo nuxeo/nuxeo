@@ -67,14 +67,15 @@ public class TestSetCompoundDocs {
         doc = session.createDocumentModel("/default-domain/workspaces/folder/", "compoundDoc", "File");
         doc = session.createDocument(doc);
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(doc);
-        Map<String, Object> params = new HashMap<>();
-        params.put("compoundDocs", compoundDocs);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(doc);
+            Map<String, Object> params = new HashMap<>();
+            params.put("compoundDocs", compoundDocs);
 
-        doc = (DocumentModel) automationService.run(ctx, CompoundAttach.ID, params);
-        String[] docs = (String[]) doc.getPropertyValue("compound:docs");
-        assertEquals(1, docs.length);
-        assertEquals(file.getId(), docs[0]);
+            doc = (DocumentModel) automationService.run(ctx, CompoundAttach.ID, params);
+            String[] docs = (String[]) doc.getPropertyValue("compound:docs");
+            assertEquals(1, docs.length);
+            assertEquals(file.getId(), docs[0]);
+        }
     }
 }

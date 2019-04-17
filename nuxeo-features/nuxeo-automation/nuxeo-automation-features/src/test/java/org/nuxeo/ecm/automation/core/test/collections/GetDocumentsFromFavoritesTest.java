@@ -67,7 +67,6 @@ public class GetDocumentsFromFavoritesTest extends CollectionOperationsTestCase 
         chain = new OperationChain("test-chain");
         chain.add(GetDocumentsFromFavoritesOperation.ID);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(listDocuments.get(0));
         PaginableDocumentModelListImpl documentsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
@@ -82,7 +81,7 @@ public class GetDocumentsFromFavoritesTest extends CollectionOperationsTestCase 
         chain.add(GetDocumentsFromFavoritesOperation.ID);
         session.save();
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(listDocuments.get(0));
         documentsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
         // Check the result of the operation
@@ -97,7 +96,7 @@ public class GetDocumentsFromFavoritesTest extends CollectionOperationsTestCase 
         chain.add(GetDocumentsFromFavoritesOperation.ID);
         session.save();
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(listDocuments.get(0));
         documentsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
         // Check the result of the operation
@@ -107,7 +106,6 @@ public class GetDocumentsFromFavoritesTest extends CollectionOperationsTestCase 
 
     @Test
     public void canFetchFavorites() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
         DocumentModel favoritesRoot = (DocumentModel) service.run(ctx, FetchFavorites.ID);
         assertNotNull(favoritesRoot);
         assertTrue(favoritesRoot.hasFacet("Collection"));

@@ -54,6 +54,7 @@ public class OperationAdapter extends DefaultAdapter {
 
     public static final String NAME = "op";
 
+    @SuppressWarnings("resource") // ExecutionRequest's OperationContext not owned by us, don't close it
     @POST
     @Path("{operationName}")
     public Response doPost(@PathParam("operationName") String oid, @Context HttpServletRequest request,
@@ -85,6 +86,7 @@ public class OperationAdapter extends DefaultAdapter {
                 }
             }
 
+            // ExecutionRequest's OperationContext not owned by us, don't close it
             OperationContext ctx = xreq.createContext(request, response, getContext().getCoreSession());
             Object result = service.run(ctx, oid, xreq.getParams());
 

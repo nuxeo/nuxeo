@@ -90,6 +90,8 @@ public class BlobOperationsTest {
     @Inject
     CoreSession session;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         session.removeChildren(session.getRootDocument().getRef());
@@ -106,10 +108,12 @@ public class BlobOperationsTest {
         dst = session.createDocument(dst);
         session.save();
         dst = session.getDocument(dst.getRef());
+        ctx = new OperationContext(session);
     }
 
     @After
     public void clearRepo() {
+        ctx.close();
         Framework.getService(EventService.class).waitForAsyncCompletion();
     }
 
@@ -117,7 +121,6 @@ public class BlobOperationsTest {
 
     @Test
     public void testSetAndGetAndRemoveBlob() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
@@ -143,7 +146,6 @@ public class BlobOperationsTest {
 
     @Test
     public void testCreateAndAttachBlob() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         File file = Framework.createTempFile("nx-test-blob-", ".tmp");
@@ -168,7 +170,6 @@ public class BlobOperationsTest {
 
     @Test
     public void testSetAndGetAndRemoveBlobs() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         BlobList blobs = new BlobList();
@@ -200,7 +201,6 @@ public class BlobOperationsTest {
 
     @Test
     public void testRemoveBlobFromList() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         BlobList blobs = new BlobList();
@@ -241,7 +241,6 @@ public class BlobOperationsTest {
         dir.delete();
         dir.mkdirs();
 
-        OperationContext ctx = new OperationContext(session);
         Blob blob = Blobs.createBlob("test");
         blob.setFilename("myblob");
         ctx.setInput(blob);
@@ -285,7 +284,6 @@ public class BlobOperationsTest {
         assertEquals("initial_name.txt", blob.getFilename());
 
         // execute the set blob name operation
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(file);
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
@@ -324,7 +322,6 @@ public class BlobOperationsTest {
         docFile = session.createDocument(docFile);
         session.save();
         // execute operation chain containing GetAllDocumentBlobs one
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(docFile);
         OperationChain chain = new OperationChain("testBlobsChain");
         chain.add(FetchContextDocument.ID);
@@ -347,7 +344,6 @@ public class BlobOperationsTest {
         blobs.add(pdf1);
         blobs.add(pdf2);
         // Execute pdf merge operation
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(blobs);
         // Inject a blob into context
         ctx.put("blobToAppend", pdf1);
@@ -368,7 +364,6 @@ public class BlobOperationsTest {
         blobs.add(pdf2);
         params.clear();
         params.put("filename", "pdfresult");
-        ctx = new OperationContext(session);
         ctx.setInput(blobs);
         try {
             service.run(ctx, ConcatenatePDFs.ID, params);
@@ -386,7 +381,6 @@ public class BlobOperationsTest {
         params.clear();
         params.put("filename", "pdfresult");
         params.put("blob_to_append", "blobToAppend");
-        ctx = new OperationContext(session);
         ctx.setInput(blobs);
         // Inject a file into context for failing
         ctx.put("blobToAppend", pdfMerge1);

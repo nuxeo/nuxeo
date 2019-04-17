@@ -65,6 +65,8 @@ public class FacetOperationsTest {
 
     protected DocumentModel docWithFacet;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
 
@@ -89,10 +91,12 @@ public class FacetOperationsTest {
         docWithFacet = session.saveDocument(docWithFacet);
         session.save();
 
+        ctx = new OperationContext(session);
     }
 
     @After
     public void clearRepo() {
+        ctx.close();
         session.removeChildren(session.getRootDocument().getRef());
         session.save();
     }
@@ -103,7 +107,6 @@ public class FacetOperationsTest {
         assertNotNull(docNoFacet);
         assertFalse("New doc should not have the facet.", docNoFacet.hasFacet(THE_FACET));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(docNoFacet);
         OperationChain chain = new OperationChain("testAddFacet");
         chain.add(AddFacet.ID).set("facet", THE_FACET);
@@ -117,7 +120,6 @@ public class FacetOperationsTest {
     @Test(expected=OperationException.class)
     public void testAddUnknownFacet() throws OperationException {
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(docNoFacet);
         OperationChain chain = new OperationChain("testAddFacet");
         chain.add(AddFacet.ID).set("facet", "UnknownFacet");
@@ -134,7 +136,6 @@ public class FacetOperationsTest {
         assertNotNull(docWithFacet);
         assertTrue("New doc should have the facet.", docWithFacet.hasFacet(THE_FACET));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(docWithFacet);
         OperationChain chain = new OperationChain("testRemoveFacet");
         chain.add(RemoveFacet.ID).set("facet", THE_FACET);
@@ -148,7 +149,6 @@ public class FacetOperationsTest {
     @Test
     public void testRemoveUnknownFacet() throws OperationException {
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(docNoFacet);
         OperationChain chain = new OperationChain("testRemoveUnknownFacet");
         chain.add(RemoveFacet.ID).set("facet", "UnknownFacet");
@@ -164,7 +164,6 @@ public class FacetOperationsTest {
         assertNotNull(docNoFacet);
         assertFalse("New doc should not have the facet.", docNoFacet.hasFacet(THE_FACET));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(docNoFacet);
         OperationChain chain = new OperationChain("testAddFacet");
         chain.add(AddFacet.ID).set("facet", THE_FACET).set("save", false);
@@ -185,7 +184,6 @@ public class FacetOperationsTest {
         assertNotNull(docWithFacet);
         assertTrue("New doc should have the facet.", docWithFacet.hasFacet(THE_FACET));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(docWithFacet);
         OperationChain chain = new OperationChain("testRemoveFacet");
         chain.add(RemoveFacet.ID).set("facet", THE_FACET).set("save",  false);

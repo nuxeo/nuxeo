@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -85,6 +86,8 @@ public class DocumentUpdatePropertiesWithMultilineTest {
     @Inject
     CoreSession session;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         session.removeChildren(session.getRootDocument().getRef());
@@ -101,6 +104,12 @@ public class DocumentUpdatePropertiesWithMultilineTest {
         dst = session.createDocument(dst);
         session.save();
         dst = session.getDocument(dst.getRef());
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     /**
@@ -109,7 +118,6 @@ public class DocumentUpdatePropertiesWithMultilineTest {
     @Test
     @Ignore
     public void testUpdateWithMultilineDescription() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");

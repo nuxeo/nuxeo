@@ -159,24 +159,25 @@ public class TaskAutomationTest {
 
     @Test
     public void testGetUserTasks() throws Exception {
-        OperationContext ctx = new OperationContext(coreSession);
-        ctx.setInput(document);
-        automationService.run(ctx, "createSingleTaskChain");
-        ctx.clear();
-        OperationChain chain = new OperationChain("test");
-        chain.add(GetUserTasks.ID);
-        Blob blob = (Blob) automationService.run(ctx, chain);
-        JSONArray rows = new JSONArray(blob.getString());
-        assertEquals(1, rows.length());
-        JSONObject obj = rows.getJSONObject(0);
-        assertNotNull(obj.get("id")); // can be 1 or 2 depending
-        assertEquals(obj.get("docref"), document.getRef().toString());
-        assertEquals(obj.get("name"), "single test task");
-        assertEquals(obj.get("directive"), "test directive");
-        assertEquals(obj.get("comment"), "test comment");
-        assertNotNull(obj.get("startDate"));
-        assertNotNull(obj.get("dueDate"));
-        assertTrue((Boolean) obj.get("expired"));
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            ctx.setInput(document);
+            automationService.run(ctx, "createSingleTaskChain");
+            ctx.clear();
+            OperationChain chain = new OperationChain("test");
+            chain.add(GetUserTasks.ID);
+            Blob blob = (Blob) automationService.run(ctx, chain);
+            JSONArray rows = new JSONArray(blob.getString());
+            assertEquals(1, rows.length());
+            JSONObject obj = rows.getJSONObject(0);
+            assertNotNull(obj.get("id")); // can be 1 or 2 depending
+            assertEquals(obj.get("docref"), document.getRef().toString());
+            assertEquals(obj.get("name"), "single test task");
+            assertEquals(obj.get("directive"), "test directive");
+            assertEquals(obj.get("comment"), "test comment");
+            assertNotNull(obj.get("startDate"));
+            assertNotNull(obj.get("dueDate"));
+            assertTrue((Boolean) obj.get("expired"));
+        }
     }
 
     @Test

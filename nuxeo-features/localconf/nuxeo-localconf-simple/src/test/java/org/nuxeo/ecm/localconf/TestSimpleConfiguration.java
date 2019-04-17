@@ -52,6 +52,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = LocalConfRepositoryInit.class, cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.localconf")
 public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
 

@@ -29,6 +29,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -71,6 +73,18 @@ public class TestAutomationBulkAction {
     @Inject
     public TransactionalFeature txFeature;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     @Test
     public void testSetPropertyActionFromAutomation() throws Exception {
         // param for the automation operation
@@ -90,7 +104,6 @@ public class TestAutomationBulkAction {
         bulkActionParam.put("batchSize", "5");
         bulkActionParam.put("parameters", OBJECT_MAPPER.writeValueAsString(actionParams));
 
-        OperationContext ctx = new OperationContext(session);
         BulkStatus runResult = (BulkStatus) service.run(ctx, BulkRunAction.ID, bulkActionParam);
 
         assertNotNull(runResult);

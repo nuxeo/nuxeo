@@ -20,7 +20,9 @@
  */
 package org.nuxeo.ecm.platform.pdf.tests;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -58,6 +60,18 @@ public class PDFWatermarkingTextTest {
     @Inject
     AutomationService automationService;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(coreSession);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     @Test
     public void testServiceDefault() throws IOException {
         Blob blob = new FileBlob(getClass().getResourceAsStream(PDF_PATH));
@@ -93,7 +107,6 @@ public class PDFWatermarkingTextTest {
     public void testOpWithDefault() throws IOException, OperationException {
         Blob input = new FileBlob(getClass().getResourceAsStream(PDF_PATH));
         OperationChain chain;
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(input);
         chain = new OperationChain("testWithDefault");
         chain.add(PDFWatermarkTextOperation.ID).set("text",TEXT_WATERMARK);
@@ -106,7 +119,6 @@ public class PDFWatermarkingTextTest {
     public void testOpWithProperties() throws IOException, OperationException {
         Blob input = new FileBlob(getClass().getResourceAsStream(PDF_PATH));
         OperationChain chain;
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(input);
         chain = new OperationChain("testWithDefault");
         chain.add(PDFWatermarkTextOperation.ID).

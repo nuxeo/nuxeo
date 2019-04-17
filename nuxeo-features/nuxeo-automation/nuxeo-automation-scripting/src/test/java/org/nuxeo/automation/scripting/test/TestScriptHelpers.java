@@ -79,21 +79,24 @@ public class TestScriptHelpers {
 
     protected PrintStream outStream;
 
+    protected OperationContext ctx;
+
     @Before
     public void setUpStreams() {
         outStream = System.out;
         System.setOut(new PrintStream(outContent));
+        ctx = new OperationContext(session);
     }
 
     @After
     public void cleanUpStreams() throws IOException {
+        ctx.close();
         outContent.close();
         System.setOut(outStream);
     }
 
     @Test
     public void canUseConsoleHelper() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
         automationService.run(ctx, "Scripting.UseConsoleHelper", Collections.emptyMap());
         assertEquals("", outContent.toString());
         List<LogEvent> logs = logResult.getCaughtEvents();

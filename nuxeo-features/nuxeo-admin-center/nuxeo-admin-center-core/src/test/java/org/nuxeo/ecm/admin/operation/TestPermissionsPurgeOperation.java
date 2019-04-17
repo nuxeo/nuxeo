@@ -47,11 +47,12 @@ public class TestPermissionsPurgeOperation extends AbstractPermissionsPurge {
 
     @Override
     public void scheduleWork(List<String> usernames) throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Serializable> params = new HashMap<>();
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Serializable> params = new HashMap<>();
 
-        params.put("usernames", StringUtils.join(usernames, ","));
+            params.put("usernames", StringUtils.join(usernames, ","));
 
-        automationService.run(ctx, PermissionsPurge.ID, params);
+            automationService.run(ctx, PermissionsPurge.ID, params);
+        }
     }
 }

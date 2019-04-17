@@ -466,6 +466,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         return buildResponse(Status.OK, result);
     }
 
+    @SuppressWarnings("resource") // ExecutionRequest's OperationContext not owned by us, don't close it
     protected Object executeBatch(String batchId, String fileIdx, String operationId, HttpServletRequest request,
             ExecutionRequest xreq) {
         BatchManager bm = Framework.getService(BatchManager.class);
@@ -481,14 +482,14 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
         try {
             CoreSession session = ctx.getCoreSession();
+            // ExecutionRequest's OperationContext not owned by us, don't close it
+            OperationContext ctx = xreq.createContext(request, response, session);
+            Map<String, Object> params = xreq.getParams();
             Object result;
-            try (OperationContext ctx = xreq.createContext(request, response, session)) {
-                Map<String, Object> params = xreq.getParams();
-                if (StringUtils.isBlank(fileIdx)) {
-                    result = bm.execute(batchId, operationId, session, ctx, params);
-                } else {
-                    result = bm.execute(batchId, fileIdx, operationId, session, ctx, params);
-                }
+            if (StringUtils.isBlank(fileIdx)) {
+                result = bm.execute(batchId, operationId, session, ctx, params);
+            } else {
+                result = bm.execute(batchId, fileIdx, operationId, session, ctx, params);
             }
             return ResponseHelper.getResponse(result, request);
         } catch (MessagingException | IOException e) {

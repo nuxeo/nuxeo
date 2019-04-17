@@ -67,7 +67,6 @@ public class GetDocumentsFromCollectionTest extends CollectionOperationsTestCase
         chain = new OperationChain("test-chain");
         chain.add(GetDocumentsFromCollectionOperation.ID);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(collection);
         PaginableDocumentModelListImpl documentsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
         // Check the result of the operation
@@ -81,7 +80,7 @@ public class GetDocumentsFromCollectionTest extends CollectionOperationsTestCase
         chain = new OperationChain("test-chain-2");
         chain.add(GetDocumentsFromCollectionOperation.ID);
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(collection);
         documentsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
         // Check the result of the operation
@@ -94,7 +93,7 @@ public class GetDocumentsFromCollectionTest extends CollectionOperationsTestCase
         chain = new OperationChain("test-chain-3");
         chain.add(GetDocumentsFromCollectionOperation.ID);
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(collection);
         documentsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 

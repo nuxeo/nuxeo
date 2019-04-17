@@ -27,6 +27,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -61,6 +63,18 @@ public class TestFireEventOperation {
     @Inject
     protected EventService eventService;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     @Test
     public void testOperation() throws OperationException {
 
@@ -68,7 +82,6 @@ public class TestFireEventOperation {
         doc = session.createDocument(doc);
         session.save();
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
 
         String eventId = "testEvent";

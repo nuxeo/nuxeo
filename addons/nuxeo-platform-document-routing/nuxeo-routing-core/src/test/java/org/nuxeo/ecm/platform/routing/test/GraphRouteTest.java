@@ -1272,34 +1272,35 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         List<Task> tasks = taskService.getTaskInstances(doc, (NuxeoPrincipal) null, session);
         assertEquals(1, tasks.size());
 
-        OperationContext ctx = new OperationContext(session);
-        OperationChain chain = new OperationChain("testChain");
-        chain.add(BulkRestartWorkflow.ID).set("workflowId", routeDoc.getTitle());
-        automationService.run(ctx, chain);
-        // process invalidations from automation context
-        session.save();
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-        // query for all the workflows
-        DocumentModelList workflows = session.query(String.format(
-                "Select * from DocumentRoute where docri:participatingDocuments/* IN ('%s') and ecm:currentLifeCycleState = 'running'",
-                doc.getId()));
-        assertEquals(1, workflows.size());
-        String restartedWorkflowId = workflows.get(0).getId();
-        assertFalse(restartedWorkflowId.equals(route.getDocument().getId()));
+        try (OperationContext ctx = new OperationContext(session)) {
+            OperationChain chain = new OperationChain("testChain");
+            chain.add(BulkRestartWorkflow.ID).set("workflowId", routeDoc.getTitle());
+            automationService.run(ctx, chain);
+            // process invalidations from automation context
+            session.save();
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+            // query for all the workflows
+            DocumentModelList workflows = session.query(String.format(
+                    "Select * from DocumentRoute where docri:participatingDocuments/* IN ('%s') and ecm:currentLifeCycleState = 'running'",
+                    doc.getId()));
+            assertEquals(1, workflows.size());
+            String restartedWorkflowId = workflows.get(0).getId();
+            assertFalse(restartedWorkflowId.equals(route.getDocument().getId()));
 
-        chain.add(BulkRestartWorkflow.ID).set("workflowId", routeDoc.getTitle()).set("nodeId", "node2");
-        automationService.run(ctx, chain);
-        // process invalidations from automation context
-        session.save();
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-        // query for all the workflows
-        workflows = session.query(String.format(
-                "Select * from DocumentRoute where docri:participatingDocuments/* IN ('%s') and ecm:currentLifeCycleState = 'running'",
-                doc.getId()));
-        assertEquals(1, workflows.size());
-        assertFalse(restartedWorkflowId.equals(workflows.get(0).getId()));
+            chain.add(BulkRestartWorkflow.ID).set("workflowId", routeDoc.getTitle()).set("nodeId", "node2");
+            automationService.run(ctx, chain);
+            // process invalidations from automation context
+            session.save();
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+            // query for all the workflows
+            workflows = session.query(String.format(
+                    "Select * from DocumentRoute where docri:participatingDocuments/* IN ('%s') and ecm:currentLifeCycleState = 'running'",
+                    doc.getId()));
+            assertEquals(1, workflows.size());
+            assertFalse(restartedWorkflowId.equals(workflows.get(0).getId()));
+        }
     }
 
     @SuppressWarnings("unchecked")

@@ -22,6 +22,7 @@ import java.util.Collections;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,17 +54,24 @@ public class UserInviteTest {
     @Inject
     CoreSession session;
 
+    protected OperationContext ctx;
+
     @Before
     public void init() {
         DocumentModel container = session.createDocumentModel("Workspace");
         container.setPathInfo("/", "requests");
         session.createDocument(container);
         session.save();
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @Test
     public void testInviteUser() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         NuxeoPrincipal user = new NuxeoPrincipalImpl("user");
         ctx.setInput(user);
 

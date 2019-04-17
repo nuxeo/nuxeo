@@ -20,7 +20,9 @@
  */
 package org.nuxeo.ecm.platform.pdf.tests;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,10 +65,22 @@ public class PDFWatermarkingImageTest {
     @Inject
     AutomationService automationService;
 
+    protected OperationContext ctx;
+
     @BeforeClass
     public static void onceExecutedBeforeAll() {
         // javax.imageio.IIOException: Can't create cache file!
         ImageIO.setUseCache(false);
+    }
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(coreSession);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @Test
@@ -104,11 +118,9 @@ public class PDFWatermarkingImageTest {
     public void testWithDefault() throws IOException, OperationException {
         Blob blob = new FileBlob(getClass().getResourceAsStream(PDF_PATH));
         Blob image = new FileBlob(getClass().getResourceAsStream(JPEG_IMAGE_PATH));
-        OperationChain chain;
-        OperationContext ctx = new OperationContext(coreSession);
-        ctx.setInput(blob);
-        chain = new OperationChain("testWithDefault");
+        OperationChain chain = new OperationChain("testWithDefault");
         chain.add(PDFWatermarkImageOperation.ID).set("image",image);
+        ctx.setInput(blob);
         Blob result = (Blob) automationService.run(ctx, chain);
         Assert.assertNotNull(result);
         assertTrue(TestUtils.hasImageOnAllPages(result));
@@ -118,10 +130,8 @@ public class PDFWatermarkingImageTest {
     public void testWithProperties() throws IOException, OperationException {
         Blob blob = new FileBlob(getClass().getResourceAsStream(PDF_PATH));
         Blob image = new FileBlob(getClass().getResourceAsStream(JPEG_IMAGE_PATH));
-        OperationChain chain;
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(blob);
-        chain = new OperationChain("testWithDefault");
+        OperationChain chain = new OperationChain("testWithDefault");
         chain.add(PDFWatermarkImageOperation.ID).
                 set("image",image).
                 set("properties","scale=2.0");

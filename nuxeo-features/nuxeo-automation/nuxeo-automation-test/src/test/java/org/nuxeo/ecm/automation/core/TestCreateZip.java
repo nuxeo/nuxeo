@@ -70,16 +70,17 @@ public class TestCreateZip {
         doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("content doc1"));
         doc = session.createDocument(doc);
         session.save();
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(ws1);
-        OperationChain chain = new OperationChain("ZipWs");
-        chain.add(GetDocumentChildren.ID);
-        chain.add(GetDocumentBlob.ID);
-        chain.add(CreateZip.ID).set("filename", "zip.zip");
-        Blob zipBlob = (Blob) as.run(ctx, chain);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(ws1);
+            OperationChain chain = new OperationChain("ZipWs");
+            chain.add(GetDocumentChildren.ID);
+            chain.add(GetDocumentBlob.ID);
+            chain.add(CreateZip.ID).set("filename", "zip.zip");
+            Blob zipBlob = (Blob) as.run(ctx, chain);
 
-        assertNotNull(zipBlob);
-        assertTrue("ZIP blob '" + zipBlob.getFilename() + "' is empty", zipBlob.getLength() > 0);
+            assertNotNull(zipBlob);
+            assertTrue("ZIP blob '" + zipBlob.getFilename() + "' is empty", zipBlob.getLength() > 0);
+        }
     }
 
 }

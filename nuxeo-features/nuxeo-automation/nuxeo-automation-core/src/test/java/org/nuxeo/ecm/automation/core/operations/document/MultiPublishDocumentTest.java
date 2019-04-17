@@ -23,6 +23,8 @@ package org.nuxeo.ecm.automation.core.operations.document;
 import static org.junit.Assert.assertEquals;
 
 import com.google.inject.Inject;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,6 +64,8 @@ public class MultiPublishDocumentTest {
 
     protected DocumentModel fileToPublish;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
 
@@ -84,13 +88,17 @@ public class MultiPublishDocumentTest {
         fileToPublish.setPropertyValue("dc:title", "FileToPublish");
         fileToPublish = session.createDocument(fileToPublish);
         session.save();
+        ctx = new OperationContext(session);
+    }
 
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @Test
     public void testMultiPublishDocumentWithStringTarget() throws Exception {
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(fileToPublish);
         OperationChain chain = new OperationChain("multiPublishDocumentWithStringInput");
         chain.add(FetchContextDocument.ID);
@@ -104,7 +112,6 @@ public class MultiPublishDocumentTest {
     @Test
     public void testMultiPublishDocumentWithArrayTarget() throws Exception {
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(fileToPublish);
         OperationChain chain = new OperationChain("multiPublishDocumentWithArrayInput");
         chain.add(FetchContextDocument.ID);

@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,6 +65,8 @@ public class QueryAndFetchOperationTest {
 
     protected DocumentModel ws1;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         ws1 = session.createDocumentModel("/", "ws1", "Workspace");
@@ -81,12 +84,16 @@ public class QueryAndFetchOperationTest {
         ws3.setPropertyValue("dc:creator", fakeContributors[0]);
         ws3 = session.createDocument(ws3);
         session.save();
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @Test
     public void testSimplePageProviderWithParams() throws Exception {
-
-        OperationContext ctx = new OperationContext(session);
 
         Map<String, Object> params = new HashMap<>();
 
@@ -117,8 +124,6 @@ public class QueryAndFetchOperationTest {
     @Test
     public void testResultSetPageProviderWithNamedParams() throws Exception {
 
-        OperationContext ctx = new OperationContext(session);
-
         Map<String, Object> params = new HashMap<>();
 
         String providerName = "CURRENT_DOCUMENT_CHILDREN_FETCH_NAMED_PARAMS";
@@ -146,8 +151,6 @@ public class QueryAndFetchOperationTest {
     @Test
     public void testResultSetPageProviderWithNamedParamsAndDoc() throws Exception {
 
-        OperationContext ctx = new OperationContext(session);
-
         Map<String, Object> params = new HashMap<>();
 
         String providerName = "CURRENT_DOCUMENT_CHILDREN_FETCH_NAMED_PARAMS_WITH_DOC";
@@ -174,8 +177,6 @@ public class QueryAndFetchOperationTest {
 
     // @Test
     public void XXXtestDirectNXQL() throws Exception {
-
-        OperationContext ctx = new OperationContext(session);
 
         Map<String, Object> params = new HashMap<>();
 

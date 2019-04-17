@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -91,6 +92,8 @@ public class TestBulkActionWithAggregates {
 
     protected ZonedDateTime lastWeek;
 
+    protected OperationContext ctx;
+
     @Before
     public void before() throws Exception {
         if (!TransactionHelper.isTransactionActive()) {
@@ -119,6 +122,12 @@ public class TestBulkActionWithAggregates {
         workManager.awaitCompletion(20, TimeUnit.SECONDS);
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
         esa.refresh();
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @Test
@@ -126,7 +135,6 @@ public class TestBulkActionWithAggregates {
 
         String errorMessage = "Bulk action didn't finish";
 
-        OperationContext ctx = new OperationContext(session);
         // username and repository are retrieved from CoreSession
         Map<String, Serializable> params = new HashMap<>();
         params.put("action", SetPropertiesAction.ACTION_NAME);

@@ -107,10 +107,11 @@ public class TestBulkDownloadOperation {
         OperationChain chain = new OperationChain("test-chain");
         chain.add(BulkDownload.ID);
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(docs);
-
-        Blob blob = (Blob) automationService.run(ctx, BulkDownload.ID);
+        Blob blob;
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(docs);
+            blob = (Blob) automationService.run(ctx, BulkDownload.ID);
+        }
 
         assertNotNull(blob);
 

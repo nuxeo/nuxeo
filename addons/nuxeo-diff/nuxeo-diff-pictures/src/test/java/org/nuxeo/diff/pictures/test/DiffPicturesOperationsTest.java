@@ -31,6 +31,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -97,6 +98,8 @@ public class DiffPicturesOperationsTest {
     @Inject
     AutomationService automationService;
 
+    protected OperationContext ctx;
+
     @Before
     public void setUp() {
         fileImage = FileUtils.getResourceFileFromContext(ISLAND_PNG);
@@ -110,6 +113,12 @@ public class DiffPicturesOperationsTest {
         docImageModif = createPictureDocument(fileImageModif);
 
         coreSession.save();
+        ctx = new OperationContext(coreSession);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     protected DocumentModel createPictureDocument(File inFile) {
@@ -159,9 +168,6 @@ public class DiffPicturesOperationsTest {
         FileBlob fb1 = new FileBlob(fileImage, PNG_MIME_TYPE);
         FileBlob fb2 = new FileBlob(fileImageModif, PNG_MIME_TYPE);
 
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
-
         ctx.setInput(fb1);
         ctx.put("varBlob", fb2);
 
@@ -178,8 +184,6 @@ public class DiffPicturesOperationsTest {
 
     @Test
     public void testOperationWithDocss_defaultParameters() throws Exception {
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
 
         ctx.setInput(null);
 

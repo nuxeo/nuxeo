@@ -44,6 +44,7 @@ public class ExecutionRequest {
     }
 
     public ExecutionRequest(Object input) {
+        // this is closed by a RequestCleanupHandler
         restOperationContext = new RestOperationContext();
         this.input = input;
         params = new HashMap<>();
@@ -86,6 +87,7 @@ public class ExecutionRequest {
         return params;
     }
 
+    /** Sets up and returns the current {@link OperationContext}, which MUST NOT be closed. */
     public OperationContext createContext(HttpServletRequest request, HttpServletResponse response, CoreSession session) {
         restOperationContext.addRequestCleanupHandler(request);
         restOperationContext.setCoreSession(session);
@@ -95,6 +97,8 @@ public class ExecutionRequest {
     }
 
     /**
+     * Returns the current {@link OperationContext}, which MUST NOT be closed.
+     *
      * @since 7.1
      */
     public RestOperationContext getRestOperationContext() {

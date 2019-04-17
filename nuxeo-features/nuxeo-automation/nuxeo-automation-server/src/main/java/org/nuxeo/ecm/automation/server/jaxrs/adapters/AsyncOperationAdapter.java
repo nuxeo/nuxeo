@@ -120,6 +120,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     @Context
     protected AutomationServer srv;
 
+    @SuppressWarnings("resource") // ExecutionRequest's OperationContext not owned by us, don't close it
     @POST
     public Object doPost(ExecutionRequest xreq) {
         OperationResource op = (OperationResource) getTarget();
@@ -131,6 +132,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         String executionId = UUID.randomUUID().toString();
 
         // session will be set in the task thread
+        // ExecutionRequest's OperationContext not owned by us, don't close it
         OperationContext opCtx = xreq.createContext(request, response, null);
 
         opCtx.setCallback(new OperationCallback() {

@@ -86,8 +86,9 @@ public class TestContextHelpers {
         // Use it
         Map<String, Object> params = new HashMap<>();
         params.put("script", "Context.dummy = dummy.helper1();");
-        OperationContext ctx = new OperationContext();
-        automationService.run(ctx, "RunScript", params);
-        assertEquals("hello", ctx.get("dummy"));
+        try (OperationContext ctx = new OperationContext()) {
+            automationService.run(ctx, "RunScript", params);
+            assertEquals("hello", ctx.get("dummy"));
+        }
     }
 }

@@ -23,9 +23,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.core.test.CollectionFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -61,6 +64,18 @@ public class CollectionOperationsTestCase {
     AutomationService service;
 
     OperationChain chain;
+
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
 
     public static List<DocumentModel> createTestFiles(CoreSession session, final int nbFile) {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",

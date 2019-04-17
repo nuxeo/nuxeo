@@ -97,11 +97,19 @@ public class AddPermissionTest {
     @RuntimeService
     protected UserManager userManager;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() {
         DocumentModel doc = session.createDocumentModel("/", "src", "File");
         session.createDocument(doc);
         session.save();
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @After
@@ -117,7 +125,6 @@ public class AddPermissionTest {
         assertNotNull(doc.getACP());
         assertNull(doc.getACP().getACL("local"));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation(null, null, null, "Write", null, null, null, false,
                 false, null);
@@ -138,7 +145,6 @@ public class AddPermissionTest {
         assertNotNull(doc.getACP());
         assertNull(doc.getACP().getACL("local"));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation(null, null, "johndoe@nuxeo.com", "Write", null, null,
                 null, false, false, null);
@@ -165,7 +171,6 @@ public class AddPermissionTest {
         when(userManager.getUserModel("unexistingUser")).thenReturn(null);
         when(userManager.getUserModel("unexistingUser2")).thenReturn(null);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation(null, users, null, "Write", null, null, null, false,
                 false, null);
@@ -196,7 +201,6 @@ public class AddPermissionTest {
         when(userManager.getGroupModel("existingGroup")).thenReturn(new SimpleDocumentModel("group"));
         when(userManager.getGroupModel("unexistingGroup")).thenReturn(null);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation(null, users, null, "Write", null, null, null, false,
                 false, null);
@@ -224,7 +228,6 @@ public class AddPermissionTest {
 
         when(userManager.getUserModel("unexistingUser")).thenReturn(null);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation(null, singletonList("unexistingUser"), null, "Write",
                 "", null, null, false, false, null);
@@ -249,7 +252,6 @@ public class AddPermissionTest {
         List<String> groups = Arrays.asList("unexistingGroup1", "unexistingGroup2");
         groups.forEach(group -> when(userManager.getGroupModel(group)).thenReturn(null));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation(null, groups, null, "Read", null,
                 new GregorianCalendar(2018, 8, 2), new GregorianCalendar(2018, 8, 8), false, true, "Permission Given");
@@ -273,7 +275,6 @@ public class AddPermissionTest {
 
         when(userManager.getUserModel("existingUser")).thenReturn(new SimpleDocumentModel("user"));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation("existingUser", null, null, "Read", null,
                 new GregorianCalendar(2018, 8, 2), new GregorianCalendar(2018, 8, 8), false, false, null);
@@ -296,7 +297,6 @@ public class AddPermissionTest {
         assertNotNull(doc.getACP());
         assertNull(doc.getACP().getACL("local"));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation(null, null, "jane@nuxeo.com", "Write", null, null,
                 new GregorianCalendar(2018, 8, 8), false, false, null);
@@ -323,7 +323,6 @@ public class AddPermissionTest {
         when(userManager.getUserModel("existingUser2")).thenReturn(new SimpleDocumentModel("user"));
         when(userManager.getUserModel("existingUser3")).thenReturn(new SimpleDocumentModel("user"));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation("existingUser1", users, null, "Write", null, null,
                 null, false, false, null);
@@ -354,7 +353,6 @@ public class AddPermissionTest {
         when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
         when(userManager.getUserModel("existingUser2")).thenReturn(new SimpleDocumentModel("user"));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation(null, users, "user@nuxeo.com", "Write", null, null,
                 new GregorianCalendar(2018, 8, 8), false, false, null);
@@ -381,7 +379,6 @@ public class AddPermissionTest {
 
         when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation("existingUser1", null, "user@nuxeo.com", "Write",
                 null, null, new GregorianCalendar(2018, 8, 8), false, false, null);
@@ -408,7 +405,6 @@ public class AddPermissionTest {
 
         when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation(null, singletonList("existingUser1"), null, "Write",
                 null, null, new GregorianCalendar(2018, 8, 8), true, false, null);
@@ -432,7 +428,6 @@ public class AddPermissionTest {
         users.forEach(user -> when(userManager.getUserModel(user)).thenReturn(new SimpleDocumentModel(user)));
 
         DocumentModel doc = session.getDocument(new PathRef("/src"));
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
 
         DocumentModel documentModel = (DocumentModel) automationService.run(ctx, "testAddPermissionToUsers");

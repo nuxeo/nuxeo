@@ -32,6 +32,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -86,6 +88,18 @@ public class TestBulkRunAction {
     @Inject
     protected PageProviderService ppService;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     @Test
     public void testSetPropertyActionFromAutomationQuery() throws Exception {
 
@@ -101,7 +115,6 @@ public class TestBulkRunAction {
         complex.put("foo", foo);
         complex.put("bar", bar);
 
-        OperationContext ctx = new OperationContext(session);
         // username and repository are retrieved from CoreSession
         Map<String, Serializable> params = new HashMap<>();
         params.put("action", SetPropertiesAction.ACTION_NAME);
@@ -146,7 +159,6 @@ public class TestBulkRunAction {
         complex.put("foo", foo);
         complex.put("bar", bar);
 
-        OperationContext ctx = new OperationContext(session);
         // username and repository are retrieved from CoreSession
         Map<String, Serializable> params = new HashMap<>();
         params.put("action", SetPropertiesAction.ACTION_NAME);
@@ -187,7 +199,6 @@ public class TestBulkRunAction {
 
     @Test
     public void testParametersHandling() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         // username and repository are retrieved from CoreSession
         Map<String, Serializable> params = new HashMap<>();
 
@@ -262,7 +273,6 @@ public class TestBulkRunAction {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
         String nxql = String.format("SELECT * from ComplexDoc where ecm:parentId='%s'", model.getId());
 
-        OperationContext ctx = new OperationContext(session);
         Map<String, Serializable> params = new HashMap<>();
         params.put("action", SetPropertiesAction.ACTION_NAME);
         params.put("query", nxql);

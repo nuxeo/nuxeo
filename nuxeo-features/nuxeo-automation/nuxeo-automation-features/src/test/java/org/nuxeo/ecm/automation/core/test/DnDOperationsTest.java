@@ -26,6 +26,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -59,6 +61,18 @@ public class DnDOperationsTest {
     @Inject
     BatchManager batchManager;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     @Test
     public void testCreate() throws Exception {
 
@@ -71,7 +85,6 @@ public class DnDOperationsTest {
         file.setPropertyValue("dc:title", "MyFile");
         file = session.createDocument(file);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(blobs);
 
         Map<String, Object> params = new HashMap<>();
@@ -102,7 +115,7 @@ public class DnDOperationsTest {
         blobs.add(source2);
         blobs.add(source3);
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(blobs);
 
         params = new HashMap<>();

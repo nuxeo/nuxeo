@@ -324,37 +324,37 @@ public class PDFInfoTest {
         mapping.put("dc:expired", "Creation date");
         mapping.put("dc:issued", "Modification date");
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
-        ctx.setInput(pdfDocModel);
-        chain.add(PDFExtractInfoOperation.ID)
-            .set("properties", new Properties(mapping));
-        DocumentModel result = (DocumentModel) automationService.run(ctx, chain);
-        assertNotNull(result);
-        // PDF Version
-        assertEquals("1.3", result.getPropertyValue("dc:coverage"));
-        // Page count
-        assertEquals("13", result.getPropertyValue("dc:description"));
-        // Page layout
-        assertEquals("SinglePage", result.getPropertyValue("dc:format"));
-        // Title
-        assertEquals("Untitled 3", result.getPropertyValue("dc:language"));
-        // Author
-        assertEquals("", result.getPropertyValue("dc:nature"));
-        // Subject
-        assertEquals("", result.getPropertyValue("dc:publisher"));
-        // PDF producer
-        assertEquals("Mac OS X 10.9.5 Quartz PDFContext", result.getPropertyValue("dc:rights"));
-        // Content creator
-        assertEquals("TextEdit", result.getPropertyValue("dc:source"));
-        // Creation Date
-        Calendar cal = (Calendar) result.getPropertyValue("dc:expired");
-        cal.set(Calendar.MILLISECOND, 0);
-        assertEquals("2014-10-23 00:00:00", dateFormatter.format(cal.getTime()));
-        // Creation Modification
-        cal = (Calendar) result.getPropertyValue("dc:issued");
-        cal.set(Calendar.MILLISECOND, 0);
-        assertEquals("2014-10-23 00:00:00", dateFormatter.format(cal.getTime()));
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            ctx.setInput(pdfDocModel);
+            chain.add(PDFExtractInfoOperation.ID)
+                .set("properties", new Properties(mapping));
+            DocumentModel result = (DocumentModel) automationService.run(ctx, chain);
+            assertNotNull(result);
+            // PDF Version
+            assertEquals("1.3", result.getPropertyValue("dc:coverage"));
+            // Page count
+            assertEquals("13", result.getPropertyValue("dc:description"));
+            // Page layout
+            assertEquals("SinglePage", result.getPropertyValue("dc:format"));
+            // Title
+            assertEquals("Untitled 3", result.getPropertyValue("dc:language"));
+            // Author
+            assertEquals("", result.getPropertyValue("dc:nature"));
+            // Subject
+            assertEquals("", result.getPropertyValue("dc:publisher"));
+            // PDF producer
+            assertEquals("Mac OS X 10.9.5 Quartz PDFContext", result.getPropertyValue("dc:rights"));
+            // Content creator
+            assertEquals("TextEdit", result.getPropertyValue("dc:source"));
+            // Creation Date
+            Calendar cal = (Calendar) result.getPropertyValue("dc:expired");
+            cal.set(Calendar.MILLISECOND, 0);
+            assertEquals("2014-10-23 00:00:00", dateFormatter.format(cal.getTime()));
+            // Creation Modification
+            cal = (Calendar) result.getPropertyValue("dc:issued");
+            cal.set(Calendar.MILLISECOND, 0);
+            assertEquals("2014-10-23 00:00:00", dateFormatter.format(cal.getTime()));
+        }
     }
 
 }

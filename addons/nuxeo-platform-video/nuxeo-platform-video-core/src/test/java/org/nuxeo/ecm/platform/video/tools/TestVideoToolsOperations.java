@@ -84,6 +84,8 @@ public class TestVideoToolsOperations extends BaseVideoToolsTest {
     @Inject
     protected AutomationService service;
 
+    protected OperationContext ctx;
+
     @Before
     public void setUp() {
         folder = coreSession.createDocumentModel("/", "TestVideoTools", "Folder");
@@ -91,10 +93,12 @@ public class TestVideoToolsOperations extends BaseVideoToolsTest {
         folder = coreSession.createDocument(folder);
         folder = coreSession.saveDocument(folder);
         coreSession.save();
+        ctx = new OperationContext(coreSession);
     }
 
     @After
     public void cleanup() {
+        ctx.close();
         coreSession.removeDocument(folder.getRef());
     }
 
@@ -106,7 +110,6 @@ public class TestVideoToolsOperations extends BaseVideoToolsTest {
         DocumentModel watermarkDoc = createWatermarkDocument(FileUtils.getResourceFileFromContext(WATERMARK_PICTURE));
         assertNotNull(watermarkDoc);
 
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(videoDoc);
         OperationChain chain = new OperationChain("testAddWatermark");
         chain.add(AddWatermarkToVideo.ID)
@@ -131,7 +134,6 @@ public class TestVideoToolsOperations extends BaseVideoToolsTest {
         docList.add(doc1);
         docList.add(doc2);
 
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(docList);
         OperationChain chain = new OperationChain("testConcatTool");
         chain.add(ConcatVideos.ID);
@@ -155,7 +157,6 @@ public class TestVideoToolsOperations extends BaseVideoToolsTest {
         docList.add(doc1);
         docList.add(doc2);
 
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(docList);
         OperationChain chain = new OperationChain("testConcatTool");
         chain.add(ConcatVideos.ID).set("xpath", "file:content");
@@ -171,7 +172,6 @@ public class TestVideoToolsOperations extends BaseVideoToolsTest {
     public void testSliceTool() throws IOException, OperationException {
         DocumentModel doc = createVideoDocumentFromBlob(getTestVideo(TEST_VIDEO_SMALL));
 
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(doc);
         OperationChain chain = new OperationChain("testSliceTool");
         chain.add(SliceVideo.ID).set("startAt", "00:02").set("duration", "00:04");
@@ -189,7 +189,6 @@ public class TestVideoToolsOperations extends BaseVideoToolsTest {
     public void testSliceToolWithDuration() throws IOException, OperationException {
         DocumentModel doc = createVideoDocumentFromBlob(getTestVideo(TEST_VIDEO_SMALL));
 
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(doc);
         OperationChain chain = new OperationChain("testSliceTool");
         // slice the first 4 seconds of the video
@@ -208,7 +207,6 @@ public class TestVideoToolsOperations extends BaseVideoToolsTest {
     public void testSliceToolWithStart() throws IOException, OperationException {
         DocumentModel doc = createVideoDocumentFromBlob(getTestVideo(TEST_VIDEO_SMALL));
 
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(doc);
         OperationChain chain = new OperationChain("testSliceTool");
         chain.add(SliceVideo.ID).set("startAt", "00:02");
@@ -226,7 +224,6 @@ public class TestVideoToolsOperations extends BaseVideoToolsTest {
     public void testSliceInPartsTool() throws IOException, OperationException {
         DocumentModel doc = createVideoDocumentFromBlob(getTestVideo(TEST_VIDEO_WITH_CC));
 
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(doc);
         OperationChain chain = new OperationChain("testSliceInPartsTool");
         chain.add(SliceVideoInParts.ID).set("duration", "30");
@@ -244,7 +241,6 @@ public class TestVideoToolsOperations extends BaseVideoToolsTest {
     public void testSliceStartAt() throws IOException, OperationException {
         DocumentModel doc = createVideoDocumentFromBlob(getTestVideo(TEST_VIDEO_WITH_CC));
 
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(doc);
         OperationChain chain = new OperationChain("testSliceStartAtTool");
         chain.add(SliceVideo.ID).set("startAt", "00:30");
@@ -260,7 +256,6 @@ public class TestVideoToolsOperations extends BaseVideoToolsTest {
     public void testExtractClosedCaptions() throws IOException, OperationException {
         DocumentModel videoWithCC = createVideoDocumentFromBlob(getTestVideo(TEST_VIDEO_WITH_CC));
 
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(videoWithCC);
         OperationChain chain = new OperationChain("testExtractClosedCaptions");
         chain.add(ExtractClosedCaptionsFromVideo.ID).set("outFormat", "ttxt");
@@ -278,7 +273,6 @@ public class TestVideoToolsOperations extends BaseVideoToolsTest {
     public void testExtractClosedCaptionsFromSlice() throws IOException, OperationException {
         DocumentModel videoWithCC = createVideoDocumentFromBlob(getTestVideo(TEST_VIDEO_WITH_CC));
 
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(videoWithCC);
         OperationChain chain = new OperationChain("testExtractClosedCaptions");
         chain.add(ExtractClosedCaptionsFromVideo.ID).set("outFormat", "ttxt").set("startAt", "00:10").set("endAt", "00:20");

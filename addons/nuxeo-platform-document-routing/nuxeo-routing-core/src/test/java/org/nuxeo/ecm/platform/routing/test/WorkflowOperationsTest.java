@@ -31,6 +31,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,6 +74,8 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
     @Inject
     protected AutomationService automationService;
 
+    protected OperationContext ctx;
+
     @Before
     public void setUp() {
         assertNotNull(routing);
@@ -81,6 +84,12 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         doc.setPropertyValue("dc:title", "file");
         doc = session.createDocument(doc);
         routeDoc = createRoute("myroute", session);
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @Test
@@ -93,8 +102,6 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         routeDoc.addFacet("FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
         validate(routeDoc, session);
-        OperationContext ctx = new OperationContext();
-        ctx.setCoreSession(session);
         ctx.setInput(doc);
         // test start workflow with
         // variables in json format
@@ -141,8 +148,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
 
         // test SetWorkflowVar in new context
 
-        ctx = new OperationContext();
-        ctx.setCoreSession(session);
+        ctx.clear();
         ctx.setInput(doc);
         setWorkflowVar = new OperationChain("setWVar");
         setWorkflowVar.add(SetWorkflowVar.ID)
@@ -184,8 +190,6 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
 
         session.save();
         // invoke GetOpenedTasks operation without parameters
-        OperationContext ctx = new OperationContext();
-        ctx.setCoreSession(session);
         ctx.setInput(doc);
         List<DocumentModel> tasks = (List<DocumentModel>) automationService.run(ctx, GetOpenTasksOperation.ID,
                 new HashMap<>());
@@ -193,8 +197,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         assertEquals(1, tasks.size());
 
         // invoke GetOpenedTasks operation with parameters
-        ctx = new OperationContext();
-        ctx.setCoreSession(session);
+        ctx.clear();
         DocumentModelList docs = new DocumentModelListImpl();
         docs.add(doc);
 
@@ -208,8 +211,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         assertEquals(1, tasks.size());
 
         // invoke GetTaskNamesOperation
-        ctx = new OperationContext();
-        ctx.setCoreSession(session);
+        ctx.clear();
         params = new HashMap<>();
         params.put("locale", "en");
         params.put("searchTerm", "");
@@ -220,8 +222,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
 
         // invoke CompleteTaskOperation to end the task
         // send node and workflow vars
-        ctx = new OperationContext();
-        ctx.setCoreSession(session);
+        ctx.clear();
         ctx.setInput(tasks);
 
         Properties workflowVars = new Properties();
@@ -253,8 +254,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         assertEquals("testNodeVar", n1.getVariables().get("stringfield2"));
 
         // invoke GetTaskOperation to check that there are no more open tasks
-        ctx = new OperationContext();
-        ctx.setCoreSession(session);
+        ctx.clear();
         ctx.setInput(doc);
         tasks = (List<DocumentModel>) automationService.run(ctx, GetOpenTasksOperation.ID, new HashMap<>());
         assertNotNull(tasks);

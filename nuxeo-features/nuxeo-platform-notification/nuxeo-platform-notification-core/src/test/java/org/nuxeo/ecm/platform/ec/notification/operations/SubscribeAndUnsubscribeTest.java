@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,6 +73,8 @@ public class SubscribeAndUnsubscribeTest {
     @Inject
     protected AutomationService automationService;
 
+    protected OperationContext ctx;
+
     @Before
     public void setUp() {
         testWorkspace = coreSession.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
@@ -84,13 +87,18 @@ public class SubscribeAndUnsubscribeTest {
             listDocs.add(testFile);
         }
         listDocModel = new DocumentModelListImpl(listDocs);
+        ctx = new OperationContext(coreSession);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @Test
     public void testSubscribeAndUnsubscribeOperations() throws OperationException {
         OperationChain chain = new OperationChain("test-chain");
         chain.add(SubscribeOperation.ID);
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(listDocModel);
         String username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
 
@@ -113,7 +121,7 @@ public class SubscribeAndUnsubscribeTest {
 
         chain = new OperationChain("test-chain");
         chain.add(UnsubscribeOperation.ID);
-        ctx = new OperationContext(coreSession);
+        ctx.clear();
         ctx.setInput(listDocModel);
         username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
 
@@ -135,7 +143,6 @@ public class SubscribeAndUnsubscribeTest {
 
         OperationChain chain = new OperationChain("test-chain");
         chain.add(SubscribeOperation.ID).from(params);
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(listDocModel);
         String username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
 
@@ -155,7 +162,7 @@ public class SubscribeAndUnsubscribeTest {
 
         chain = new OperationChain("test-chain");
         chain.add(UnsubscribeOperation.ID).from(params);
-        ctx = new OperationContext(coreSession);
+        ctx.clear();
         ctx.setInput(listDocModel);
         username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
 

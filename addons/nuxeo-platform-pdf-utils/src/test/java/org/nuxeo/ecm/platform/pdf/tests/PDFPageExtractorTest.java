@@ -67,6 +67,8 @@ public class PDFPageExtractorTest {
     @Inject
     AutomationService automationService;
 
+    protected OperationContext ctx;
+
     @Before
     public void setUp() {
         testDocsFolder = coreSession.createDocumentModel("/", "test-pdf", "Folder");
@@ -85,10 +87,12 @@ public class PDFPageExtractorTest {
         pdfDocModel = coreSession.saveDocument(pdfDocModel);
         assertNotNull(pdfDocModel);
         encryptedPdfFileBlob = new FileBlob(FileUtils.getResourceFileFromContext(TestUtils.PDF_ENCRYPTED_PATH));
+        ctx = new OperationContext(coreSession);
     }
 
     @After
     public void tearDown() {
+        ctx.close();
         coreSession.removeDocument(testDocsFolder.getRef());
         coreSession.save();
     }
@@ -162,8 +166,6 @@ public class PDFPageExtractorTest {
     @Test
     public void testExtractPDFPagesOperation() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(pdfFileBlob);
         chain.add(PDFExtractPagesOperation.ID)
         .set("startPage", 1)
@@ -178,8 +180,6 @@ public class PDFPageExtractorTest {
     @Test
     public void testExtractPDFPagesOperationEncrypted() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(encryptedPdfFileBlob);
         chain.add(PDFExtractPagesOperation.ID)
         .set("startPage", 1)
@@ -195,8 +195,6 @@ public class PDFPageExtractorTest {
     @Test
     public void testConvertPDFToPicturesOperation() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(pdfDocModel);
         chain.add(PDFConvertToPicturesOperation.ID);
         BlobList result = (BlobList) automationService.run(ctx, chain);

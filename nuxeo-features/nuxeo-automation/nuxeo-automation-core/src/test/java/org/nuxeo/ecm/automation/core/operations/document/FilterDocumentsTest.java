@@ -25,6 +25,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -51,9 +53,20 @@ public class FilterDocumentsTest {
     @Inject
     protected AutomationService service;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     @Test
     public void testFilterDocuments() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
         DocumentModelList docs = session.query("Select * from Document");
         assertThat(docs.size()).isNotEqualTo(1);
 

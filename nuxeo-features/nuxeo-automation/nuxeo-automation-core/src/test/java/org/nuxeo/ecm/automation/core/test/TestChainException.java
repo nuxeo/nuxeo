@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,6 +69,8 @@ public class TestChainException {
     @Inject
     TracerFactory factory;
 
+    protected OperationContext ctx;
+
     public static class Populate implements RepositoryInit {
 
         @Override
@@ -86,6 +89,12 @@ public class TestChainException {
     public void fetchDocuments() throws Exception {
         src = session.getDocument(new PathRef("/src"));
         doc = session.getDocument(new PathRef("/doc"));
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @Test
@@ -100,7 +109,6 @@ public class TestChainException {
     public void testAutomationFilterContribution() throws Exception {
         AutomationFilter automationFilter = service.getAutomationFilter("filterA");
         assertNotNull(automationFilter);
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         assertEquals(Scripting.newTemplate("@{Document['dc:title']=='Source'}").eval(ctx),
                 automationFilter.getValue().eval(ctx));
@@ -114,12 +122,11 @@ public class TestChainException {
         }
 
         // verify for a simple catch chain if it has been run
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
         service.run(ctx, "anothercontributedchain");
         assertNotNull(factory.getTrace("chainExceptionA"));
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(src);
         assertTrue(service.run(ctx, "contributedchain") instanceof DocumentModel);
         // Verify that result is documentmodel from operation3 of
@@ -127,7 +134,7 @@ public class TestChainException {
         // Verify if chainExceptionA has been run after contributedchain failure
         assertNotNull(factory.getTrace("chainExceptionA"));
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(doc);
         // Verify that result is documentref from operation2 of chainExceptionB
         assertTrue(service.run(ctx, "contributedchain") instanceof DocumentRef);

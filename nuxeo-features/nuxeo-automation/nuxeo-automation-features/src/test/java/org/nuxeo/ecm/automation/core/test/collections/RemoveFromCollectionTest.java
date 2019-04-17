@@ -74,7 +74,6 @@ public class RemoveFromCollectionTest extends CollectionOperationsTestCase {
         chain = new OperationChain("test-chain");
         chain.add(RemoveFromCollectionOperation.ID).set("collection", collection);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(listDocs.get(0));
 
         DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
@@ -93,7 +92,6 @@ public class RemoveFromCollectionTest extends CollectionOperationsTestCase {
         chain = new OperationChain("test-chain");
         chain.add(RemoveFromCollectionOperation.ID).set("collection", collection);
 
-        OperationContext ctx = new OperationContext(session);
         DocumentModelList listDocModel = new DocumentModelListImpl(listDocs);
         ctx.setInput(listDocModel);
 
@@ -119,7 +117,6 @@ public class RemoveFromCollectionTest extends CollectionOperationsTestCase {
         chain = new OperationChain("test-chain");
         chain.add(RemoveFromCollectionOperation.ID).set("collection", collection);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
 
         try {
