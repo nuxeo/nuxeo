@@ -75,7 +75,6 @@ public class GetCollectionsTest extends CollectionOperationsTestCase {
         chain = new OperationChain("test-chain");
         chain.add(GetCollectionsOperation.ID).set("searchTerm", COLLECTION_NAME + 1);
 
-        OperationContext ctx = new OperationContext(session);
         PaginableDocumentModelListImpl collectionsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
         assertNotNull(collectionsList);

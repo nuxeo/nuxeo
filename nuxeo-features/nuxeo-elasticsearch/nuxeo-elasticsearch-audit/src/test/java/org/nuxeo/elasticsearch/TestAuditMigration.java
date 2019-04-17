@@ -206,17 +206,18 @@ public class TestAuditMigration {
         jpaBackend.addLogEntries(entries);
         txFeature.nextTransaction();
 
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Serializable> params = new HashMap<>();
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Serializable> params = new HashMap<>();
 
-        params.put("auditStorage", DEFAULT_AUDIT_STORAGE);
+            params.put("auditStorage", DEFAULT_AUDIT_STORAGE);
 
-        automationService.run(ctx, AuditRestore.ID, params);
+            automationService.run(ctx, AuditRestore.ID, params);
 
-        LogEntryGen.flushAndSync();
-        ESAuditBackend esBackend = (ESAuditBackend) Framework.getService(AuditBackend.class);
-        List<LogEntry> migratedEntries = esBackend.queryLogs(new AuditQueryBuilder());
-        Assert.assertEquals(1000, migratedEntries.size());
+            LogEntryGen.flushAndSync();
+            ESAuditBackend esBackend = (ESAuditBackend) Framework.getService(AuditBackend.class);
+            List<LogEntry> migratedEntries = esBackend.queryLogs(new AuditQueryBuilder());
+            Assert.assertEquals(1000, migratedEntries.size());
+        }
     }
 
 }

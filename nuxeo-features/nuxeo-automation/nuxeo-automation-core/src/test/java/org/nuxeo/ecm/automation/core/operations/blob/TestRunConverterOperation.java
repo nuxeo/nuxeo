@@ -23,7 +23,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -52,6 +54,18 @@ public class TestRunConverterOperation {
     @Inject
     protected AutomationService automationService;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     @Test
     public void iCanUseTheConverterOperation() throws Exception {
         Blob blob = Blobs.createBlob("Test blob");
@@ -59,7 +73,6 @@ public class TestRunConverterOperation {
         Map<String, Object> params = new HashMap<>();
         params.put("converter", NOPConverter.ID);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(blob);
 
         Blob resultBlob = (Blob) automationService.run(ctx, RunConverter.ID, params);

@@ -30,6 +30,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.transaction.Transaction;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,6 +68,8 @@ public class OperationsAndTxTests {
     @Inject
     CoreSession session;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         document = session.createDocumentModel("/", "src", "Folder");
@@ -74,16 +77,20 @@ public class OperationsAndTxTests {
         document = session.createDocument(document);
         session.save();
         document = session.getDocument(document.getRef());
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testRunOperationOnArrayWithTx() throws Exception {
 
-        OperationContext ctx = null;
         service.putOperation(RunOnListItemWithTx.class);
         try {
-            ctx = new OperationContext(session);
             String input = "dummyInput";
             ctx.setInput(input);
             String[] groups = new String[3];
@@ -132,12 +139,10 @@ public class OperationsAndTxTests {
     @Test
     @SuppressWarnings("unchecked")
     public void testRunOperationOnDocumentWithTx() throws Exception {
-        OperationContext ctx = null;
         service.putOperation(RunOnListItemWithTx.class);
         try {
             // storing in context which session and transaction id is
             // used in main process.
-            ctx = new OperationContext(session);
             Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
             getOrCreateList(ctx, "sids").add(session.getSessionId());
             getOrCreateList(ctx, "txids").add(tx.toString());
@@ -165,12 +170,10 @@ public class OperationsAndTxTests {
     @SuppressWarnings("unchecked")
     public void testRunOperationOnBlobWithTx() throws Exception {
 
-        OperationContext ctx = null;
         service.putOperation(RunOnListItemWithTx.class);
         try {
             // storing in context which session and transaction id is
             // used in main process.
-            ctx = new OperationContext(session);
             Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
             getOrCreateList(ctx, "sids").add(session.getSessionId());
             getOrCreateList(ctx, "txids").add(tx.toString());

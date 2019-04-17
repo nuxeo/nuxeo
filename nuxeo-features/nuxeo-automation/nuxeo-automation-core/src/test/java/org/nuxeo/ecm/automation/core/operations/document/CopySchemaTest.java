@@ -63,6 +63,8 @@ public class CopySchemaTest {
     private DocumentModel target2;
     private DocumentModelList targets;
 
+    protected OperationContext context;
+
     @Before
     public void setUp() {
         source = session.createDocumentModel("/", "Source", "File");
@@ -80,10 +82,12 @@ public class CopySchemaTest {
         targets = new DocumentModelListImpl();
         targets.add(target1);
         targets.add(target2);
+        context = new OperationContext(session);
     }
 
     @After
     public void tearDown() {
+        context.close();
         session.removeChildren(session.getRootDocument().getRef());
         session.save();
     }
@@ -98,7 +102,6 @@ public class CopySchemaTest {
         target1.setProperty(schema, property, target1.getName());
         session.saveDocument(target1);
 
-        OperationContext context = new OperationContext(session);
         context.setInput(target1);
         OperationChain chain = new OperationChain("testThrowException");
         chain.add(CopySchema.ID).set("schema", schema);
@@ -123,7 +126,6 @@ public class CopySchemaTest {
         target1.setProperty(schema, property, target1.getName());
         session.saveDocument(target1);
 
-        OperationContext context = new OperationContext(session);
         context.setInput(target1);
         OperationChain chain = new OperationChain("testSingleTargetSinglePropertyById");
         chain.add(CopySchema.ID).set("sourceId", source.getId()).set("schema", schema);
@@ -145,7 +147,6 @@ public class CopySchemaTest {
         target1.setProperty(schema, property, target1.getName());
         session.saveDocument(target1);
 
-        OperationContext context = new OperationContext(session);
         context.setInput(target1);
         OperationChain chain = new OperationChain("testSingleTargetSinglePropertyByPath");
         chain.add(CopySchema.ID).set("sourcePath", source.getPath().toString()).set("schema", schema);
@@ -168,7 +169,6 @@ public class CopySchemaTest {
         target1.setProperty(schema, "icon", "icon2");
         session.saveDocument(target1);
 
-        OperationContext context = new OperationContext(session);
         context.setInput(target1);
         OperationChain chain = new OperationChain("testSingleTargetFullSchema");
         chain.add(CopySchema.ID).set("sourceId", source.getId()).set("schema", schema);
@@ -197,7 +197,6 @@ public class CopySchemaTest {
         target2.setProperty(schema, property, target2.getName());
         session.saveDocument(target2);
 
-        OperationContext context = new OperationContext(session);
         context.setInput(targets);
         OperationChain chain = new OperationChain("testMultipleTargetsSingleProperty");
         chain.add(CopySchema.ID).set("sourceId", source.getId()).set("schema", schema);
@@ -228,7 +227,6 @@ public class CopySchemaTest {
         target2.setProperty(schema, "icon", "icon2");
         session.saveDocument(target2);
 
-        OperationContext context = new OperationContext(session);
         context.setInput(targets);
         OperationChain chain = new OperationChain("testMultipleTargersFullSchema");
         chain.add(CopySchema.ID).set("sourceId", source.getId()).set("schema", schema);
@@ -252,7 +250,6 @@ public class CopySchemaTest {
         target1.setPropertyValue("common:icon-expanded", "icon-expanded-target1");
         target1 = session.saveDocument(target1);
 
-        OperationContext context = new OperationContext(session);
         context.setInput(target1);
         OperationChain chain = new OperationChain("testSaveParameters_1");
         chain.add(CopySchema.ID).set("sourceId", source.getId()).set("schema", "common").set("saveDocument", false);

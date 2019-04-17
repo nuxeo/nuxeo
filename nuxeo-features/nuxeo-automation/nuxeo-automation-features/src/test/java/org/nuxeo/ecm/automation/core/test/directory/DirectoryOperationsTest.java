@@ -33,6 +33,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
@@ -85,6 +87,18 @@ public class DirectoryOperationsTest {
     @Inject
     protected DirectoryService directoryService;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     protected void createEntry(String id, String label, int obsolete) {
         Map<String, Object> m = new HashMap<>();
         m.put("id", id);
@@ -106,7 +120,6 @@ public class DirectoryOperationsTest {
         params.put("entries", newEntries);
         OperationParameters oparams = new OperationParameters(CreateDirectoryEntries.ID, params);
 
-        OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
         chain.add(oparams);
         Blob result = (Blob) service.run(ctx, chain);
@@ -141,7 +154,6 @@ public class DirectoryOperationsTest {
         params.put("entries", newEntries);
         OperationParameters oparams = new OperationParameters(CreateDirectoryEntries.ID, params);
 
-        OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
         chain.add(oparams);
         Blob result = (Blob) service.run(ctx, chain);
@@ -190,7 +202,6 @@ public class DirectoryOperationsTest {
         params.put("entries", newEntries);
         OperationParameters oparams = new OperationParameters(CreateDirectoryEntries.ID, params);
 
-        OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
         chain.add(oparams);
         try {
@@ -212,7 +223,6 @@ public class DirectoryOperationsTest {
         params.put("entries", "[\"entryToDelete\"]");
         OperationParameters oparams = new OperationParameters(DeleteDirectoryEntries.ID, params);
 
-        OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
         chain.add(oparams);
         Blob result = (Blob) service.run(ctx, chain);
@@ -239,7 +249,6 @@ public class DirectoryOperationsTest {
         params.put("entries", "[\"entryToMarkAsObsolete\"]");
         OperationParameters oparams = new OperationParameters(DeleteDirectoryEntries.ID, params);
 
-        OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
         chain.add(oparams);
         Blob result = (Blob) service.run(ctx, chain);
@@ -269,7 +278,6 @@ public class DirectoryOperationsTest {
         params.put("entries", entriesToUpdate);
         OperationParameters oparams = new OperationParameters(UpdateDirectoryEntries.ID, params);
 
-        OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
         chain.add(oparams);
         Blob result = (Blob) service.run(ctx, chain);
@@ -297,7 +305,6 @@ public class DirectoryOperationsTest {
         params.put("entries", entriesToRead);
         OperationParameters oparams = new OperationParameters(ReadDirectoryEntries.ID, params);
 
-        OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
         chain.add(oparams);
         Blob result = (Blob) service.run(ctx, chain);
@@ -332,7 +339,6 @@ public class DirectoryOperationsTest {
         params.put("directoryName", "continent");
         OperationParameters oparams = new OperationParameters(SuggestDirectoryEntries.ID, params);
 
-        OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
         chain.add(oparams);
         Blob result = (Blob) service.run(ctx, chain);
@@ -363,7 +369,6 @@ public class DirectoryOperationsTest {
 
         OperationParameters oparams = new OperationParameters(SuggestDirectoryEntries.ID, params);
 
-        OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("filterChain");
         chain.add(oparams);
         Blob result = (Blob) service.run(ctx, chain);

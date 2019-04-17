@@ -63,9 +63,6 @@ public class TestSetOperations extends AbstractSimpleConfigurationTest {
         parameters.put("key2", "value2");
         initializeSimpleConfiguration(workspace, parameters);
 
-        OperationContext ctx = new OperationContext(session);
-        assertNotNull(ctx);
-
         OperationChain chain = new OperationChain("testSimpleConfigurationChain");
         chain.add(FetchDocument.ID).set("value", PARENT_WORKSPACE_REF);
         chain.add(SetSimpleConfParamVar.ID).set("name", "simpleConfigurationParameter").set("parameterName", "key2");
@@ -83,9 +80,6 @@ public class TestSetOperations extends AbstractSimpleConfigurationTest {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("key1", "value1");
         initializeSimpleConfiguration(workspace, parameters);
-
-        OperationContext ctx = new OperationContext(session);
-        assertNotNull(ctx);
 
         OperationChain chain = new OperationChain("testSimpleConfigurationChain");
         chain.add(FetchDocument.ID).set("value", PARENT_WORKSPACE_REF);
@@ -105,9 +99,6 @@ public class TestSetOperations extends AbstractSimpleConfigurationTest {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("key1", "value1");
         initializeSimpleConfiguration(workspace, parameters);
-
-        OperationContext ctx = new OperationContext(session);
-        assertNotNull(ctx);
 
         OperationChain chain = new OperationChain("testSimpleConfigurationChain");
         chain.add(FetchDocument.ID).set("value", PARENT_WORKSPACE_REF);

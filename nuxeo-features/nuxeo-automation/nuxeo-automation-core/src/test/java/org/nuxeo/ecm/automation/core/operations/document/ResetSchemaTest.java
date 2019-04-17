@@ -63,6 +63,8 @@ public class ResetSchemaTest {
     private DocumentModel target2;
     private DocumentModelList targets;
 
+    protected OperationContext context;
+
     @Before
     public void setUp() {
         target1 = session.createDocumentModel("/", "Target1", "File");
@@ -76,10 +78,12 @@ public class ResetSchemaTest {
         targets = new DocumentModelListImpl();
         targets.add(target1);
         targets.add(target2);
+        context = new OperationContext(session);
     }
 
     @After
     public void tearDown() {
+        context.close();
         session.removeChildren(session.getRootDocument().getRef());
         session.save();
     }
@@ -93,7 +97,6 @@ public class ResetSchemaTest {
         assertTrue(target1.hasSchema(schema));
         target1.setProperty(schema, property, target1.getName());
 
-        OperationContext context = new OperationContext(session);
         context.setInput(target1);
         OperationChain chain = new OperationChain("testThrowException");
         chain.add(ResetSchema.ID);
@@ -113,7 +116,6 @@ public class ResetSchemaTest {
         assertTrue(target1.hasSchema(schema));
         target1.setProperty(schema, property, target1.getName());
 
-        OperationContext context = new OperationContext(session);
         context.setInput(target1);
         OperationChain chain = new OperationChain("testSingleTargetSingleProperty");
         chain.add(ResetSchema.ID).set("xpath", schema + ":" + property);
@@ -130,7 +132,6 @@ public class ResetSchemaTest {
         target1.setProperty(schema, "icon-expanded", "icon-expanded1");
         target1.setProperty(schema, "icon", "icon1");
 
-        OperationContext context = new OperationContext(session);
         context.setInput(target1);
         OperationChain chain = new OperationChain("testSingleTargetFullSchema");
         chain.add(ResetSchema.ID).set("schema", schema);
@@ -153,7 +154,6 @@ public class ResetSchemaTest {
         assertTrue(target2.hasSchema(schema));
         target2.setProperty(schema, property, target2.getName());
 
-        OperationContext context = new OperationContext(session);
         context.setInput(targets);
         OperationChain chain = new OperationChain("testMultipleTargetsSingleProperty");
         chain.add(ResetSchema.ID).set("xpath", schema + ":" + property);
@@ -175,7 +175,6 @@ public class ResetSchemaTest {
         target2.setProperty(schema, "icon-expanded", "icon-expanded2");
         target2.setProperty(schema, "icon", "icon2");
 
-        OperationContext context = new OperationContext(session);
         context.setInput(targets);
         OperationChain chain = new OperationChain("testMultipleTargetsFullSchema");
         chain.add(ResetSchema.ID).set("schema", schema);
@@ -194,7 +193,6 @@ public class ResetSchemaTest {
         target1.setPropertyValue("common:icon-expanded", "icon-expanded-target1");
         target1 = session.saveDocument(target1);
 
-        OperationContext context = new OperationContext(session);
         context.setInput(target1);
         OperationChain chain = new OperationChain("testSouldNotSaveTheDocument");
         chain.add(ResetSchema.ID).set("schema", "common").set("saveDocument", false);

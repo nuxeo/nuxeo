@@ -68,6 +68,8 @@ public class PDFEncryptionTest {
     @Inject
     AutomationService automationService;
 
+    protected OperationContext ctx;
+
     @Before
     public void setUp() {
         testDocsFolder = coreSession.createDocumentModel("/", "test-pdf", "Folder");
@@ -101,10 +103,12 @@ public class PDFEncryptionTest {
         pdfEncryptedDocModel = coreSession.createDocument(pdfEncryptedDocModel);
         pdfEncryptedDocModel = coreSession.saveDocument(pdfEncryptedDocModel);
         assertNotNull(pdfEncryptedDocModel);
+        ctx = new OperationContext(coreSession);
     }
 
     @After
     public void tearDown() {
+        ctx.close();
         coreSession.removeDocument(testDocsFolder.getRef());
         coreSession.save();
     }
@@ -182,8 +186,6 @@ public class PDFEncryptionTest {
     @Test
     public void testEncryptOperationSimple() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(pdfFileBlob);
         chain.add(PDFEncryptOperation.ID)
             .set("originalOwnerPwd", TestUtils.PDF_PROTECTED_OWNER_PASSWORD)
@@ -212,8 +214,6 @@ public class PDFEncryptionTest {
     @Test
     public void testEncryptOperationComplex() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(pdfFileBlob);
         HashMap<String, String> properties = new HashMap<>();
         properties.put("modify", "true");
@@ -251,8 +251,6 @@ public class PDFEncryptionTest {
     @Test
     public void testRemoveEncryptionOperation() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(pdfEncryptedFileBlob);
         chain.add(PDFRemoveEncryptionOperation.ID)
             .set("ownerPwd", TestUtils.PDF_ENCRYPTED_PASSWORD);
@@ -269,8 +267,6 @@ public class PDFEncryptionTest {
     @Test
     public void testEncryptReadOnlyOperationBlob() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(pdfFileBlob);
         chain.add(PDFEncryptReadOnlyOperation.ID)
             .set("ownerPwd", TestUtils.PDF_PROTECTED_OWNER_PASSWORD)
@@ -286,8 +282,6 @@ public class PDFEncryptionTest {
         File f = FileUtils.getResourceFileFromContext(TestUtils.PDF_ENCRYPTED_PATH);
         bl.add(new FileBlob(f));
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(bl);
         chain.add(PDFEncryptReadOnlyOperation.ID)
             .set("originalOwnerPwd", TestUtils.PDF_ENCRYPTED_PASSWORD)

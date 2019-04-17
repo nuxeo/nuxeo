@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,6 +74,8 @@ public class IterableOperationsTest {
     @Inject
     CoreSession session;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         src = session.createDocumentModel("/", "src", "Workspace");
@@ -88,6 +91,12 @@ public class IterableOperationsTest {
         dst = session.getDocument(dst.getRef());
 
         Framework.getService(EventService.class).waitForAsyncCompletion();
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     protected DocumentModel createFolder(String name, String title) throws Exception {
@@ -113,7 +122,6 @@ public class IterableOperationsTest {
      */
     @Test
     public void testChain1() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         DocumentModelListImpl docs = new DocumentModelListImpl();
         docs.add(src);
         docs.add(dst);
@@ -135,7 +143,6 @@ public class IterableOperationsTest {
      */
     @Test
     public void testChain2() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         DocumentRefList docs = new DocumentRefListImpl();
         docs.add(src.getRef());
         docs.add(dst.getRef());
@@ -162,7 +169,6 @@ public class IterableOperationsTest {
         DocumentModel f2 = createFile(root, "file2", "File 2");
         Framework.getService(EventService.class).waitForAsyncCompletion();
 
-        OperationContext ctx = new OperationContext(session);
         DocumentRefList docs = new DocumentRefListImpl();
         docs.add(f1.getRef());
         docs.add(f2.getRef());
@@ -190,7 +196,6 @@ public class IterableOperationsTest {
         DocumentModel f2 = createFile(root, "file2", "File 2");
         Framework.getService(EventService.class).waitForAsyncCompletion();
 
-        OperationContext ctx = new OperationContext(session);
         DocumentModelList docs = new DocumentModelListImpl();
         docs.add(f1);
         docs.add(f2);
@@ -217,7 +222,6 @@ public class IterableOperationsTest {
         Blob b2 = Blobs.createBlob("the content 2");
         blobs.add(b1);
         blobs.add(b2);
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(blobs);
 
         OperationChain chain = new OperationChain("testChain");

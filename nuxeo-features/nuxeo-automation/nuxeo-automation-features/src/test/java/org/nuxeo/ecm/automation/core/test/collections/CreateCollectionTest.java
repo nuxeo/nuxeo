@@ -59,8 +59,6 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
         chain = new OperationChain("test-chain");
         chain.add(CreateCollectionOperation.ID).from(params);
 
-        OperationContext ctx = new OperationContext(session);
-
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
         assertNotNull(doc);
         Assert.assertEquals(COLLECTION_NAME, doc.getTitle());
@@ -76,7 +74,6 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
         chain = new OperationChain("test-chain");
         chain.add(CreateCollectionOperation.ID).from(params);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(testWorkspace);
 
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
@@ -101,7 +98,6 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
         chain = new OperationChain("test-chain");
         chain.add(CreateCollectionOperation.ID).from(params);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
 
         try {

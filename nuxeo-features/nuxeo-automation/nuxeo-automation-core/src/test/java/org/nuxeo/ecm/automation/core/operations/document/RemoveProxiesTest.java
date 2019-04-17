@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,6 +56,8 @@ public class RemoveProxiesTest {
     protected DocumentModel section;
     protected DocumentModel fileToPublish;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         folder = session.createDocumentModel("/", "Folder", "Folder");
@@ -74,11 +77,16 @@ public class RemoveProxiesTest {
         fileToPublish = session.createDocument(fileToPublish);
         session.save();
         fileToPublish = session.getDocument(fileToPublish.getRef());
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @Test
     public void testRemoveProxies() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(fileToPublish);
         OperationChain chain = new OperationChain("publishDocument");
         chain.add(FetchContextDocument.ID);

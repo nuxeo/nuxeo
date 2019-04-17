@@ -29,6 +29,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -66,6 +68,18 @@ public class OperationAliasTest {
     @Inject
     AutomationService service;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     /**
      * Call an operation which has a parameter with an alias. Don't give the name of the parameter but its alias and
      * check it is resolved thanks its alias.
@@ -74,7 +88,6 @@ public class OperationAliasTest {
      */
     @Test
     public void testAliasOnOperationParam() throws InvalidChainException, OperationException, Exception {
-        OperationContext ctx = new OperationContext(session);
 
         Map<String, Object> params = new HashMap<>();
         params.put("paramAlias", HELLO_WORLD);
@@ -102,7 +115,6 @@ public class OperationAliasTest {
      */
     @Test
     public void testAliasOnOperation() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = new HashMap<>();
         params.put("paramName", HELLO_WORLD);
         Object result = service.run(ctx, ParamNameWithAliasOperation.ALIAS_OP, params);
@@ -117,7 +129,6 @@ public class OperationAliasTest {
     @Test
     public void testAliasOnChain() throws Exception {
         // We can call a chain with its alias.
-        OperationContext ctx = new OperationContext(session);
         Object result = service.run(ctx, "chainAlias2");
         assertNotNull(result);
         // And the another chain with its alias containing an operation named

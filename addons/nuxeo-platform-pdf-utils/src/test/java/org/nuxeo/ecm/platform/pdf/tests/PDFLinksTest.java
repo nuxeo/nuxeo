@@ -76,19 +76,20 @@ public class PDFLinksTest {
     @Test
     public void testGetLinksOperation() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        File f = FileUtils.getResourceFileFromContext(TestUtils.PDF_LINKED_1_PATH);
-        FileBlob fb = new FileBlob(f);
-        ctx.setInput(fb);
-        chain.add(PDFExtractLinksOperation.ID).set("getAll", true);
-        String result = (String) automationService.run(ctx, chain);
-        assertNotNull(result);
-        assertNotEquals("", result);
-        JSONArray array = new JSONArray(result);
-        assertEquals(3, array.length());
-        assertEquals(PDF_LINKED_2_LOCAL_PATH, ((JSONObject) array.get(0)).getString("link"));
-        assertEquals(PDF_LINKED_3_LOCAL_PATH, ((JSONObject) array.get(1)).getString("link"));
-        assertEquals(PDF_LINKED_2_LOCAL_PATH, ((JSONObject) array.get(2)).getString("link"));
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            File f = FileUtils.getResourceFileFromContext(TestUtils.PDF_LINKED_1_PATH);
+            FileBlob fb = new FileBlob(f);
+            ctx.setInput(fb);
+            chain.add(PDFExtractLinksOperation.ID).set("getAll", true);
+            String result = (String) automationService.run(ctx, chain);
+            assertNotNull(result);
+            assertNotEquals("", result);
+            JSONArray array = new JSONArray(result);
+            assertEquals(3, array.length());
+            assertEquals(PDF_LINKED_2_LOCAL_PATH, ((JSONObject) array.get(0)).getString("link"));
+            assertEquals(PDF_LINKED_3_LOCAL_PATH, ((JSONObject) array.get(1)).getString("link"));
+            assertEquals(PDF_LINKED_2_LOCAL_PATH, ((JSONObject) array.get(2)).getString("link"));
+        }
     }
 
 }

@@ -23,6 +23,7 @@ import java.net.URL;
 import javax.inject.Inject;
 
 import org.junit.runner.RunWith;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,6 +67,8 @@ public class RenderingServiceTest {
     @Inject
     CoreSession session;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         session.removeChildren(session.getRootDocument().getRef());
@@ -82,14 +85,18 @@ public class RenderingServiceTest {
         dst = session.createDocument(dst);
         session.save();
         dst = session.getDocument(dst.getRef());
+        ctx = new OperationContext(session);
+    }
 
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     // ------ Tests comes here --------
 
     @Test
     public void testRendering() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         OperationChain chain = new OperationChain("testRenderingFm");
         chain.add(FetchContextDocument.ID);
@@ -98,7 +105,7 @@ public class RenderingServiceTest {
         assertEquals("Hello Source", blob.getString());
 
         // again but with mvel
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(src);
         chain = new OperationChain("testRenderingMvel");
         chain.add(FetchContextDocument.ID);
@@ -107,7 +114,7 @@ public class RenderingServiceTest {
         assertEquals("Hello Source Administrator", blob.getString());
 
         // same test but using a list of docs
-        ctx = new OperationContext(session);
+        ctx.clear();
         DocumentModelList list = new DocumentModelListImpl();
         list.add(src);
         list.add(dst);
@@ -119,7 +126,7 @@ public class RenderingServiceTest {
         assertEquals("Source", blobs.get(0).getString());
         assertEquals("Destination", blobs.get(1).getString());
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(list);
         chain = new OperationChain("testRenderingFtl2");
         chain.add(RenderDocument.ID).set("template", "${This.title}");
@@ -137,7 +144,6 @@ public class RenderingServiceTest {
         url = getClass().getClassLoader().getResource("render.ftl");
         Framework.getService(ResourceService.class).addResource("render.ftl", url);
 
-        OperationContext ctx = new OperationContext(session);
         DocumentModelList list = new DocumentModelListImpl();
         list.add(src);
         list.add(dst);
@@ -149,7 +155,7 @@ public class RenderingServiceTest {
         r = r.replaceAll("\\s+", "");
         assertEquals("SourceDestination", r);
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(list);
         chain = new OperationChain("testRenderingFeed2");
         chain.add(RenderDocumentFeed.ID).set("template", Renderer.TEMPLATE_PREFIX + "render.ftl");

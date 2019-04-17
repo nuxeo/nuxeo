@@ -29,6 +29,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -68,6 +70,18 @@ public class TestHttpHelpers {
     @Inject
     protected ServletContainerFeature servletContainerFeature;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     protected String getBaseURL() {
         int port = servletContainerFeature.getPort();
         return "http://localhost:" + port;
@@ -77,7 +91,6 @@ public class TestHttpHelpers {
         Map<String, Object> params = new HashMap<>();
         params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \""
                 + getBaseURL() + "/api/v1/path/default-domain\");");
-        OperationContext ctx = new OperationContext(session);
         automationService.run(ctx, "RunScript", params);
         String result = ((Blob) ctx.get("result")).getString();
         assertNotEquals("Internal Server Error", result);
@@ -90,7 +103,6 @@ public class TestHttpHelpers {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-type", MediaType.APPLICATION_JSON);
         Map<String, Object> params = new HashMap<>();
-        OperationContext ctx = new OperationContext(session);
         ctx.put("data", data);
         ctx.put("headers", headers);
         params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"POST\", \""
@@ -106,7 +118,6 @@ public class TestHttpHelpers {
         Map<String, Object> params = new HashMap<>();
         params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \""
                 + getBaseURL() + "/api/v1/path/testBlob/@blob/file:content\");");
-        OperationContext ctx = new OperationContext(session);
         automationService.run(ctx, "RunScript", params);
         String result = ((Blob) ctx.get("result")).getString();
         assertNotEquals("Internal Server Error", result);
@@ -118,7 +129,6 @@ public class TestHttpHelpers {
         Map<String, Object> params = new HashMap<>();
         params.put("script", "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \""
                 + getBaseURL() + "/api/v1/path/testBlob2/@blob/file:content\");");
-        OperationContext ctx = new OperationContext(session);
         automationService.run(ctx, "RunScript", params);
         Blob result = ((Blob) ctx.get("result"));
         assertNotNull(result);

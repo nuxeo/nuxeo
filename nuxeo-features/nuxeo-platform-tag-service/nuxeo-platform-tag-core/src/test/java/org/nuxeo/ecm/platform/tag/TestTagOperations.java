@@ -30,6 +30,8 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -76,6 +78,18 @@ public class TestTagOperations {
     @Inject
     TagService tagService;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     @Test
     public void testTagOperationsSuite() throws Exception {
 
@@ -96,7 +110,6 @@ public class TestTagOperations {
     }
 
     public void testTagDocument(String inputTags) throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(document);
         Map<String, Object> params = new HashMap<>();
         params.put("tags", inputTags);
@@ -107,7 +120,6 @@ public class TestTagOperations {
     }
 
     public void testUntagDocument() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(document);
         Map<String, Object> params = new HashMap<>();
         params.put("tags", TAG_1);
@@ -118,7 +130,6 @@ public class TestTagOperations {
     }
 
     public void testRemoveTags() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(document);
         automationService.run(ctx, RemoveDocumentTags.ID);
         Set<String> tags = tagService.getTags(session, docId);

@@ -74,9 +74,9 @@ public abstract class AbstractPermissionsPurge {
         assertEquals("Read", ace.getPermission());
         assertTrue(ace.isEffective());
 
-        TransactionHelper.commitOrRollbackTransaction();
-
         scheduleWork(Collections.singletonList("leela"));
+
+        TransactionHelper.commitOrRollbackTransaction();
 
         workManager.awaitCompletion(10000, TimeUnit.SECONDS);
 

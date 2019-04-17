@@ -23,6 +23,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
@@ -73,6 +75,8 @@ public class DirectoryEntriesTest {
     @Inject
     AutomationService service;
 
+    protected OperationContext ctx;
+
     protected static final String continentContentJson = "["
             + "{\"id\":\"europe\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.europe\"},"
             + "{\"id\":\"africa\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.africa\"},"
@@ -87,6 +91,16 @@ public class DirectoryEntriesTest {
             + "{\"id\":\"atlantis\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Atlantis\"},"
             + "{\"id\":\"middleearth\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Middle-earth\"},"
             + "{\"id\":\"mu\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Mu\"}]";
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
 
     @Test
     public void testGlobalDirectoryEntries() throws Exception {
@@ -106,7 +120,6 @@ public class DirectoryEntriesTest {
     }
 
     protected StringBlob getDirectoryEntries(DocumentModel doc) throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
 
         OperationChain chain = new OperationChain("fakeChain");

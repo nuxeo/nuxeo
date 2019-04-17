@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -66,6 +67,8 @@ public class SendMailTest {
     @Inject
     CoreSession session;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         session.removeChildren(session.getRootDocument().getRef());
@@ -76,6 +79,12 @@ public class SendMailTest {
         src = session.createDocument(src);
         session.save();
         src = session.getDocument(src.getRef());
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     // ------ Tests comes here --------
@@ -90,7 +99,6 @@ public class SendMailTest {
         Blob blob = Blobs.createBlob("my content");
         blob.setFilename("thefile.txt");
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         OperationChain chain = new OperationChain("sendEMail");
         chain.add(FetchContextDocument.ID);

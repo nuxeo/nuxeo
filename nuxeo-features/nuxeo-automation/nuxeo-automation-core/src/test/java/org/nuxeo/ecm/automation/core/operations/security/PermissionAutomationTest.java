@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,6 +80,8 @@ public class PermissionAutomationTest {
     @RuntimeService
     protected UserManager userManager;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         src = session.createDocumentModel("/", "src", "Folder");
@@ -91,12 +94,17 @@ public class PermissionAutomationTest {
         when(userManager.getGroupModel("existingGroup")).thenReturn(new SimpleDocumentModel("group"));
         when(administratorGroupsProvider.getAdministratorsGroups()).thenReturn(
                 Collections.singletonList("administrators"));
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @Test
     public void canReplacePermission() throws OperationException {
         try {
-            OperationContext ctx = new OperationContext(session);
             ctx.setInput(src);
 
             // Add permission
@@ -126,7 +134,6 @@ public class PermissionAutomationTest {
         ACP acp = src.getACP();
         assertEquals(Access.GRANT, acp.getAccess("members", READ));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         automationService.run(ctx, BlockPermissionInheritance.ID);
         src.refresh();
@@ -140,7 +147,6 @@ public class PermissionAutomationTest {
         acp.blockInheritance(ACL.LOCAL_ACL, session.getPrincipal().getName());
         assertEquals(Access.DENY, acp.getAccess("members", READ));
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         automationService.run(ctx, UnblockPermissionInheritance.ID);
         src.refresh();

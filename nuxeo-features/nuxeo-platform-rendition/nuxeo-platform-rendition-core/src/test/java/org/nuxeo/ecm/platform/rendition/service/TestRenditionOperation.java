@@ -28,6 +28,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -83,11 +85,22 @@ public class TestRenditionOperation {
     @Inject
     protected RenditionService renditionService;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     @Test
     public void shouldGetPDFRendition() throws OperationException {
         DocumentModel file = createDummyFile();
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(file);
         Map<String, Object> params = new HashMap<>();
         params.put("renditionName", "pdf");
@@ -98,7 +111,7 @@ public class TestRenditionOperation {
         assertEquals("dummy.pdf", renditionBlob.getFilename());
 
         // do it again in order to check the cached blob
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(file);
         renditionBlob = (Blob) automationService.run(ctx, GetRendition.ID, params);
         assertNotNull(renditionBlob);
@@ -118,7 +131,6 @@ public class TestRenditionOperation {
         DocumentModel section = session.createDocumentModel("/", "section", "Section");
         section = session.createDocument(section);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(file);
         Map<String, Object> params = new HashMap<>();
         params.put("renditionName", "pdf");
@@ -147,14 +159,11 @@ public class TestRenditionOperation {
         DocumentModel section = session.createDocumentModel("/", "section", "Section");
         section = session.createDocument(section);
 
-        DocumentModel publishedRendition;
-        try (OperationContext ctx = new OperationContext(session)) {
-            ctx.setInput(file);
-            Map<String, Object> params = new HashMap<>();
-            params.put("target", section);
-            params.put("defaultRendition", true);
-            publishedRendition = (DocumentModel) automationService.run(ctx, PublishRendition.ID, params);
-        }
+        ctx.setInput(file);
+        Map<String, Object> params = new HashMap<>();
+        params.put("target", section);
+        params.put("defaultRendition", true);
+        DocumentModel publishedRendition = (DocumentModel) automationService.run(ctx, PublishRendition.ID, params);
         assertNotNull(publishedRendition);
         assertTrue(publishedRendition.isProxy());
         assertEquals(section.getRef(), publishedRendition.getParentRef());
@@ -179,14 +188,11 @@ public class TestRenditionOperation {
         DocumentModel section = session.createDocumentModel("/", "section", "Section");
         section = session.createDocument(section);
 
-        DocumentModelList publishedRenditions;
-        try (OperationContext ctx = new OperationContext(session)) {
-            ctx.setInput(new String[] { file1.getId(), file2.getId() });
-            Map<String, Object> params = new HashMap<>();
-            params.put("target", section);
-            params.put("defaultRendition", true);
-            publishedRenditions = (DocumentModelList) automationService.run(ctx, PublishRendition.ID, params);
-        }
+        ctx.setInput(new String[] { file1.getId(), file2.getId() });
+        Map<String, Object> params = new HashMap<>();
+        params.put("target", section);
+        params.put("defaultRendition", true);
+        DocumentModelList publishedRenditions = (DocumentModelList) automationService.run(ctx, PublishRendition.ID, params);
         assertNotNull(publishedRenditions);
         assertEquals(2, publishedRenditions.size());
     }
@@ -221,17 +227,15 @@ public class TestRenditionOperation {
         try (CloseableCoreSession totoSession = coreFeature.openCoreSession("toto")) {
             publishedDocs = totoSession.query(publishedDocQuery);
             assertEquals(2, publishedDocs.size());
-            try (OperationContext ctx = new OperationContext(totoSession)) {
-                ctx.setInput(file);
-                automationService.run(ctx, UnpublishAll.ID);
+            try (OperationContext totoCtx = new OperationContext(totoSession)) {
+                totoCtx.setInput(file);
+                automationService.run(totoCtx, UnpublishAll.ID);
             }
             publishedDocs = totoSession.query(publishedDocQuery);
             assertEquals(2, publishedDocs.size());
         }
-        try (OperationContext ctx = new OperationContext(session)) {
-            ctx.setInput(file);
-            automationService.run(ctx, UnpublishAll.ID);
-        }
+        ctx.setInput(file);
+        automationService.run(ctx, UnpublishAll.ID);
         publishedDocs = session.query(publishedDocQuery);
         assertEquals(0, publishedDocs.size());
     }
@@ -249,7 +253,6 @@ public class TestRenditionOperation {
     public void shouldThroughTraceExceptionForNonExistingRendition() throws OperationException {
         DocumentModel file = createDummyFile();
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(file);
         Map<String, Object> params = new HashMap<>();
         params.put("renditionName", "nonExistingRendition");

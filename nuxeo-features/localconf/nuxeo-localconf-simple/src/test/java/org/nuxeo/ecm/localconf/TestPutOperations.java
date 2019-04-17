@@ -65,9 +65,6 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
         parameters.put("key1", "value1");
         initializeSimpleConfiguration(workspace, parameters);
 
-        OperationContext ctx = new OperationContext(session);
-        assertNotNull(ctx);
-
         OperationChain chain = new OperationChain("testSimpleConfigurationChain");
         chain.add(FetchDocument.ID).set("value", PARENT_WORKSPACE_REF);
         chain.add(PutSimpleConfParam.ID).set("key", "key2").set("value", "value2");
@@ -91,9 +88,6 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
         existingParameters.put("key3", "value3");
         initializeSimpleConfiguration(workspace, existingParameters);
 
-        OperationContext ctx = new OperationContext(session);
-        assertNotNull(ctx);
-
         Map<String, String> newParameters = new HashMap<>();
         newParameters.put("key2", "newValue2");
         newParameters.put("key3", "newValue3");
@@ -114,8 +108,6 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
 
     @Test
     public void shouldAddFacetAndPutNewParameters() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        assertNotNull(ctx);
 
         // PutSimpleConfigurationParameters
         Map<String, String> parameters = new HashMap<>();
@@ -150,15 +142,14 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
     public void nonAuthorizedUserShouldNotBeAbleToPutNewParameter() throws Exception {
         addReadForEveryone(CHILD_WORKSPACE_REF);
 
-        try (CloseableCoreSession newSession = openSessionAs("user1")) {
-            OperationContext ctx = new OperationContext(newSession);
-            assertNotNull(ctx);
+        try (CloseableCoreSession newSession = openSessionAs("user1");
+                OperationContext newCtx = new OperationContext(newSession)) {
 
             // PutSimpleConfigurationParameter
             OperationChain chain = new OperationChain("testPutSimpleConfigurationParametersChain");
             chain.add(FetchDocument.ID).set("value", CHILD_WORKSPACE_REF);
             chain.add(PutSimpleConfParam.ID).set("key", "key1").set("value", "value1");
-            service.run(ctx, chain);
+            service.run(newCtx, chain);
         }
     }
 

@@ -117,19 +117,19 @@ public class SignPDFDocumentTest {
 
     @Test
     public void testSignPDFDocument() throws Exception {
-        OperationContext ctx = buildCtx(session);
-        Map<String, Object> params = buildParams();
-        Blob signedBlob = (Blob) automationService.run(ctx, SignPDFDocument.ID, params);
-        assertNotNull(signedBlob);
+        try (OperationContext ctx = buildCtx(session)) {
+            Map<String, Object> params = buildParams();
+            Blob signedBlob = (Blob) automationService.run(ctx, SignPDFDocument.ID, params);
+            assertNotNull(signedBlob);
+        }
     }
 
     @Test
     public void testNotAllowedToSignPDFDocument() throws Exception {
         try (CloseableCoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName(),
                 DEFAULT_USER_ID)) {
-            OperationContext ctx = buildCtx(notAdminSession);
-            Map<String, Object> params = buildParams();
-            try {
+            try (OperationContext ctx = buildCtx(notAdminSession)) {
+                Map<String, Object> params = buildParams();
                 automationService.run(ctx, SignPDFDocument.ID, params);
             } catch (OperationException e) {
                 assertNotNull(e.getMessage());

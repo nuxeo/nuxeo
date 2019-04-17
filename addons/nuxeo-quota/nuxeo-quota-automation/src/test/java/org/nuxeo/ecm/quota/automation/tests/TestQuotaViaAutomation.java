@@ -24,6 +24,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,12 +96,24 @@ public class TestQuotaViaAutomation {
 
     protected DocumentRef secondFileRef;
 
+    protected OperationContext ctx;
+
     protected static final boolean verboseMode = false;
 
     @Before
     public void cleanupSessionAssociationBeforeTest() throws Exception {
         // temp fix to be sure the session tx
         // will be correctly handled in the test
+    }
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     protected Blob getFakeBlob(int size) {
@@ -169,7 +182,6 @@ public class TestQuotaViaAutomation {
     }
 
     protected SimpleQuotaInfo getQuotaInfo(DocumentRef docRef) throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(docRef);
 
         OperationChain chain = new OperationChain("fakeChain");
@@ -179,7 +191,6 @@ public class TestQuotaViaAutomation {
     }
 
     protected SimpleQuotaInfo getQuotaInfoViaParameter(DocumentRef docRef) throws Exception {
-        OperationContext ctx = new OperationContext(session);
 
         OperationChain chain = new OperationChain("fakeChain");
         chain.add(GetQuotaInfoOperation.ID).set("documentRef", docRef);
@@ -188,12 +199,10 @@ public class TestQuotaViaAutomation {
     }
 
     protected Long setQuota(DocumentRef docRef, long size) throws Exception {
-        try (OperationContext ctx = new OperationContext(session)) {
-            OperationChain chain = new OperationChain("fakeChain");
-            chain.add(SetQuotaInfoOperation.ID).set("documentRef", docRef).set("targetSize", size);
+        OperationChain chain = new OperationChain("fakeChain");
+        chain.add(SetQuotaInfoOperation.ID).set("documentRef", docRef).set("targetSize", size);
 
-            return (Long) automationService.run(ctx, chain);
-        }
+        return (Long) automationService.run(ctx, chain);
     }
 
     @Test

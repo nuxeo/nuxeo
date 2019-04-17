@@ -26,6 +26,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -68,6 +70,18 @@ public class CreatePictureTest {
     @Inject
     BatchManager batchManager;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     @Test
     public void testCreate() throws Exception {
 
@@ -96,7 +110,6 @@ public class CreatePictureTest {
 
         DocumentModel root = session.getRootDocument();
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(root);
 
         Properties properties = new Properties();

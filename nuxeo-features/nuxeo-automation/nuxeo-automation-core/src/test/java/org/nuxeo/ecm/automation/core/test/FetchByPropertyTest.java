@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,6 +69,8 @@ public class FetchByPropertyTest {
     @Inject
     CoreSession session;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         doc1 = session.createDocumentModel("/", "doc1", "Workspace");
@@ -91,13 +94,18 @@ public class FetchByPropertyTest {
         doc4 = session.getDocument(doc4.getRef());
 
         session.save();
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     // ------ Tests comes here --------
 
     @Test
     public void testFetchOne() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchByProperty.ID).set("property", "dc:title").set("values", "title1");
 
@@ -118,7 +126,6 @@ public class FetchByPropertyTest {
 
     @Test
     public void testFetchMultiple() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchByProperty.ID).set("property", "dc:title").set("values", "title1, title3, title3"); // twice
                                                                                                            // title3
@@ -145,7 +152,6 @@ public class FetchByPropertyTest {
 
     @Test
     public void testEscaping() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchByProperty.ID).set("property", "dc:title").set("values", "\"sinead o'connor\"");
 

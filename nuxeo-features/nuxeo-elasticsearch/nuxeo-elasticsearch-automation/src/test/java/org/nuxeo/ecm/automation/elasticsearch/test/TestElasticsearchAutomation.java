@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,6 +82,18 @@ public class TestElasticsearchAutomation {
 
     protected DocumentRef rootRef;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(coreSession);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     public void waitForIndexing() throws Exception {
         Framework.getService(WorkManager.class).awaitCompletion(20, TimeUnit.SECONDS);
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
@@ -113,7 +126,6 @@ public class TestElasticsearchAutomation {
 
     @Test
     public void testIndexingAll() throws Exception {
-        OperationContext ctx = new OperationContext(coreSession);
         automationService.run(ctx, INDEX_CHAIN);
 
         assertEquals(2, ess.query(new NxQueryBuilder(coreSession).nxql("SELECT * from Document")).totalSize());
@@ -121,7 +133,6 @@ public class TestElasticsearchAutomation {
 
     @Test
     public void testIndexingFromRoot() throws Exception {
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(rootRef);
         automationService.run(ctx, INDEX_CHAIN);
 
@@ -131,7 +142,6 @@ public class TestElasticsearchAutomation {
     @Test
     public void testIndexingFromPath() throws Exception {
         // first index all
-        OperationContext ctx = new OperationContext(coreSession);
         automationService.run(ctx, INDEX_CHAIN);
         waitForIndexing();
 
@@ -145,7 +155,6 @@ public class TestElasticsearchAutomation {
 
     @Test
     public void testIndexingFromNxql() throws Exception {
-        OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput("SELECT ecm:uuid FROM Document WHERE ecm:primaryType = 'File'");
         automationService.run(ctx, INDEX_CHAIN);
 
@@ -154,7 +163,6 @@ public class TestElasticsearchAutomation {
 
     @Test
     public void testIndexingAllBulkService() throws Exception {
-        OperationContext ctx = new OperationContext(coreSession);
         Blob result = (Blob) automationService.run(ctx, ElasticsearchBulkIndexOperation.ID);
         assertNotNull(result);
         String commandId = new ObjectMapper().readTree(result.getString()).get("commandId").asText();

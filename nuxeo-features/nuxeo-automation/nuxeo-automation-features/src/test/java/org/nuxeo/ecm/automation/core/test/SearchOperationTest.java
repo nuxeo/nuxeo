@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,6 +72,8 @@ public class SearchOperationTest {
     @Inject
     CoreSession session;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         session.removeChildren(session.getRootDocument().getRef());
@@ -109,6 +112,12 @@ public class SearchOperationTest {
         ws3.setPropertyValue("dc:creator", fakeContributors[0]);
         ws3 = session.createDocument(ws3);
         session.save();
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     /**
@@ -116,7 +125,6 @@ public class SearchOperationTest {
      */
     @Test
     public void iCanPerformDocumentQueryInChain() throws Exception {
-        OperationContext ctx = new OperationContext(session);
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(DocumentPaginatedQuery.ID).set("query", "SELECT * FROM Workspace");
@@ -133,7 +141,6 @@ public class SearchOperationTest {
     @Test
     public void iCanPerformResultSetQuery() throws Exception {
         // Given an operation context and following parameters
-        OperationContext ctx = new OperationContext(session);
 
         // When I give a query on all Workspace documents
         Map<String, Object> params = new HashMap<>();
@@ -148,7 +155,6 @@ public class SearchOperationTest {
     @Test
     public void iCanApplySortParametersWithQuery() throws Exception {
         // Given an operation context and following parameters
-        OperationContext ctx = new OperationContext(session);
 
         // When I give a query and sort
         Map<String, Object> params = new HashMap<>();
@@ -176,7 +182,6 @@ public class SearchOperationTest {
      */
     @Test
     public void testQueryWithNamedParametersInvalid() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = getNamedParamsProps(null, null);
         params.put("query", "SELECT * FROM Document where dc:title=:foo ORDER BY dc:title");
         try {
@@ -196,7 +201,6 @@ public class SearchOperationTest {
      */
     @Test
     public void testQueryWithNamedParametersAndDoc() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = getNamedParamsProps("np:title", "WS1");
         params.put("query", "SELECT * FROM Document where dc:title=:np:title ORDER BY dc:title");
         DocumentModelList list = (DocumentModelList) service.run(ctx, DocumentPaginatedQuery.ID, params);
@@ -210,7 +214,6 @@ public class SearchOperationTest {
      */
     @Test
     public void testQueryWithNamedParametersAndDocInvalid() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = getNamedParamsProps("np:title", "WS1");
         params.put("query", "SELECT * FROM Document where dc:title=:foo ORDER BY dc:title");
         try {
@@ -229,7 +232,6 @@ public class SearchOperationTest {
      */
     @Test
     public void testQueryWithNamedParametersInWhereClause() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = getNamedParamsProps("parameter1", "WS1");
         params.put("query", "SELECT * FROM Document where dc:title=:parameter1 ORDER BY dc:title");
         DocumentModelList list = (DocumentModelList) service.run(ctx, DocumentPaginatedQuery.ID, params);
@@ -243,7 +245,6 @@ public class SearchOperationTest {
      */
     @Test
     public void testQueryWithNamedParametersInWhereClauseWithDoc() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = getNamedParamsProps("np:title", "WS1");
         params.put("query", "SELECT * FROM Document where dc:title=:np:title ORDER BY dc:title");
         DocumentModelList list = (DocumentModelList) service.run(ctx, DocumentPaginatedQuery.ID, params);
@@ -268,7 +269,6 @@ public class SearchOperationTest {
      */
     @Test
     public void testQueryWithNamedParameters() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = getNamedParamsProps("parameter1", "WS1");
         params.put("query", "SELECT * FROM Document where dc:title=:parameter1 ORDER BY dc:title");
         DocumentModelList list = (DocumentModelList) service.run(ctx, DocumentPaginatedQuery.ID, params);
@@ -282,7 +282,6 @@ public class SearchOperationTest {
      */
     @Test
     public void testQueryResultSetWithNamedParametersInWhereClause() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = getNamedParamsProps("parameter1", "WS1");
         params.put("query", "SELECT * FROM Document where dc:title=:parameter1 ORDER BY dc:title");
         PaginableRecordSetImpl list = (PaginableRecordSetImpl) service.run(ctx, ResultSetPaginatedQuery.ID, params);

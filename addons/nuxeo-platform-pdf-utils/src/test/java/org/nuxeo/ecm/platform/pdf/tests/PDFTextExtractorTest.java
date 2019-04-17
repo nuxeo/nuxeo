@@ -66,6 +66,8 @@ public class PDFTextExtractorTest {
     @Inject
     AutomationService automationService;
 
+    protected OperationContext ctx;
+
     @Before
     public void setUp() {
         testDocsFolder = coreSession.createDocumentModel("/", "test-pictures", "Folder");
@@ -78,10 +80,12 @@ public class PDFTextExtractorTest {
         doc.setPropertyValue("dc:title", f.getName());
         doc.setPropertyValue("file:content", new FileBlob(f));
         testDoc = coreSession.createDocument(doc);
+        ctx = new OperationContext(coreSession);
     }
 
     @After
     public void tearDown() {
+        ctx.close();
         coreSession.removeDocument(testDocsFolder.getRef());
         coreSession.save();
     }
@@ -101,8 +105,6 @@ public class PDFTextExtractorTest {
     @Test
     public void testExtractTextOperation() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(testDoc);
         chain.add(PDFExtractTextOperation.ID)
         .set("save", true)

@@ -61,6 +61,8 @@ public class PDFMergeTests {
     @Inject
     AutomationService automationService;
 
+    protected OperationContext ctx;
+
     @Before
     public void setUp() {
         testDocsFolder = coreSession.createDocumentModel("/", "test-pictures", "Folder");
@@ -82,10 +84,12 @@ public class PDFMergeTests {
         d.setPropertyValue("dc:title", f.getName());
         d.setPropertyValue("file:content", new FileBlob(f));
         docMergePDF3 = coreSession.createDocument(d);
+        ctx = new OperationContext(coreSession);
     }
 
     @After
     public void tearDown() {
+        ctx.close();
         coreSession.removeDocument(testDocsFolder.getRef());
         coreSession.save();
     }
@@ -172,8 +176,6 @@ public class PDFMergeTests {
     @Test
     public void testMergePDFOperationBlobs() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(new FileBlob(FileUtils.getResourceFileFromContext(TestUtils.PDF_MERGE_1)));
         ctx.put(TestUtils.PDF_MERGE_2, new FileBlob(FileUtils.getResourceFileFromContext(TestUtils.PDF_MERGE_2)));
         String mergedPDFName = "merged.pdf";
@@ -189,8 +191,6 @@ public class PDFMergeTests {
     @Test
     public void testMergePDFOperationBlobList() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         BlobList bl = new BlobList();
         bl.add(new FileBlob(FileUtils.getResourceFileFromContext(TestUtils.PDF_MERGE_1)));
         bl.add(new FileBlob(FileUtils.getResourceFileFromContext(TestUtils.PDF_MERGE_2)));
@@ -209,8 +209,6 @@ public class PDFMergeTests {
     @Test
     public void testMergePDFOperationBlobListAndBlob() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(new FileBlob(FileUtils.getResourceFileFromContext(TestUtils.PDF_MERGE_1)));
         BlobList bl = new BlobList();
         bl.add(new FileBlob(FileUtils.getResourceFileFromContext(TestUtils.PDF_MERGE_2)));
@@ -229,8 +227,6 @@ public class PDFMergeTests {
     @Test
     public void testMergePDFOperationDocuments() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(docMergePDF1);
         ctx.put(TestUtils.PDF_MERGE_2, new FileBlob(FileUtils.getResourceFileFromContext(TestUtils.PDF_MERGE_2)));
         String mergedPDFName = "merged.pdf";
@@ -246,8 +242,6 @@ public class PDFMergeTests {
     @Test
     public void testMergePDFOperationDocumentList() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         DocumentModelList docList = new DocumentModelListImpl();
         docList.add(docMergePDF1);
         docList.add(docMergePDF2);
@@ -266,8 +260,6 @@ public class PDFMergeTests {
     @Test
     public void testMergePDFOperationDocumentAndDocumentIDs() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(docMergePDF1);
         String[] docIDs = new String[2];
         docIDs[0] = docMergePDF2.getId();

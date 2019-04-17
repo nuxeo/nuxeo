@@ -61,7 +61,6 @@ public class AddAndRemoveFromFavoritesTest extends CollectionOperationsTestCase 
         chain = new OperationChain("test-chain");
         chain.add(AddToFavoritesOperation.ID);
 
-        OperationContext ctx = new OperationContext(session);
         DocumentModelList listDocModel = new DocumentModelListImpl(listDocs);
         ctx.setInput(listDocModel);
 
@@ -81,7 +80,7 @@ public class AddAndRemoveFromFavoritesTest extends CollectionOperationsTestCase 
         chain = new OperationChain("test-chain");
         chain.add(RemoveFromFavoritesOperation.ID);
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         listDocModel = new DocumentModelListImpl(listDocResult);
         ctx.setInput(listDocModel);
 

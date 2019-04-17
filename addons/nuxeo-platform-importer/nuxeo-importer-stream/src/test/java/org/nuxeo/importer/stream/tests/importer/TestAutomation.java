@@ -26,6 +26,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -64,12 +66,23 @@ public abstract class TestAutomation {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     public abstract void addExtraParams(Map<String, Object> params);
 
     @Test
     public void testRandomBlobImport() throws Exception {
         final int nbThreads = 4;
-        OperationContext ctx = new OperationContext(session);
 
         Map<String, Object> params = new HashMap<>();
         params.put("nbBlobs", 100);
@@ -88,7 +101,6 @@ public abstract class TestAutomation {
     @Test
     public void testFileBlobImport() throws Exception {
         final int nbThreads = 4;
-        OperationContext ctx = new OperationContext(session);
 
         Map<String, Object> params = new HashMap<>();
         params.put("nbBlobs", 10);
@@ -112,7 +124,6 @@ public abstract class TestAutomation {
         final int nbThreads = 4;
         final long nbDocuments = 100;
 
-        OperationContext ctx = new OperationContext(session);
 
         Map<String, Object> params = new HashMap<>();
         params.put("nbDocuments", nbDocuments);
@@ -140,7 +151,6 @@ public abstract class TestAutomation {
         final int nbThreads = 4;
         final String marker = "youknowforsearch";
 
-        OperationContext ctx = new OperationContext(session);
         // 1. generates random blob messages
         Map<String, Object> params = new HashMap<>();
         params.put("nbBlobs", nbBlobs);
@@ -201,7 +211,6 @@ public abstract class TestAutomation {
         final int nbDocuments = 20;
         final int nbThreads = 2;
 
-        OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = new HashMap<>();
         params.put("nbBlobs", nbBlobs);
         params.put("nbThreads", nbThreads);

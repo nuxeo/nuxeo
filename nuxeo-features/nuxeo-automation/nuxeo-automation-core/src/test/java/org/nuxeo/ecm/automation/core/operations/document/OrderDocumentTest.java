@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,6 +73,8 @@ public class OrderDocumentTest {
 
     protected DocumentModel file21;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
 
@@ -114,6 +117,12 @@ public class OrderDocumentTest {
         file21.setPropertyValue("dc:title", "File21");
         file21 = session.createDocument(file21);
         session.save();
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     @Test
@@ -229,7 +238,6 @@ public class OrderDocumentTest {
     }
 
     protected void moveBefore(DocumentModel src, DocumentModel dest) throws OperationException {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         Map<String, Object> params = new HashMap<>();
         if (dest != null) {
@@ -244,7 +252,6 @@ public class OrderDocumentTest {
     }
 
     protected void moveBeforeMultiple(DocumentModel[] srcList, DocumentModel dest) throws OperationException {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(Arrays.asList(srcList));
         Map<String, Object> params = new HashMap<>();
         if (dest != null) {

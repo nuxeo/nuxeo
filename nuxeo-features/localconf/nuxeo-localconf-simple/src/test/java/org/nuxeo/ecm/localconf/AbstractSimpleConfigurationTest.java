@@ -26,6 +26,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -54,11 +57,23 @@ public abstract class AbstractSimpleConfigurationTest {
     @Inject
     protected LocalConfigurationService localConfigurationService;
 
+    protected OperationContext ctx;
+
     public static final DocumentRef PARENT_WORKSPACE_REF = new PathRef("/default-domain/workspaces/workspace");
 
     public static final DocumentRef CHILD_WORKSPACE_REF = new PathRef("/default-domain/workspaces/workspace/workspace2");
 
     public static final DocumentRef FOLDER_REF = new PathRef("/default-domain/workspaces/workspace/a-folder");
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
 
     protected DocumentModel initializeSimpleConfiguration(DocumentModel doc, Map<String, String> parameters)
             {

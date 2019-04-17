@@ -26,6 +26,8 @@ import java.util.HashMap;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
@@ -67,6 +69,18 @@ public class CreateVocabularyEntryTest {
 
     private String vocabularyName = "continent";
 
+    protected OperationContext context;
+
+    @Before
+    public void createOperationContext() {
+        context = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        context.close();
+    }
+
     @Test
     public void shouldCreateEntry() throws OperationException {
         String entryId = "test_entry";
@@ -75,7 +89,6 @@ public class CreateVocabularyEntryTest {
         Session vocabularySession = directoryService.open(vocabularyName);
         assertFalse(vocabularySession.hasEntry(entryId));
 
-        OperationContext context = new OperationContext(session);
         OperationChain chain = new OperationChain("shouldCreateEntry");
         chain.add(CreateVocabularyEntry.ID).set("vocabularyName", vocabularyName).set("id", entryId);
         service.run(context, chain);
@@ -92,7 +105,6 @@ public class CreateVocabularyEntryTest {
         assertTrue(vocabularySession.hasEntry(entryId));
         int numberOfEntriesBefore = vocabularySession.query(new HashMap<>()).size();
 
-        OperationContext context = new OperationContext(session);
         OperationChain chain = new OperationChain("shouldNotCreateEntry");
         chain.add(CreateVocabularyEntry.ID).set("vocabularyName", vocabularyName).set("id", entryId);
         service.run(context, chain);

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,6 +70,8 @@ public class RelationOperationsTest {
     @Inject
     CoreSession session;
 
+    protected OperationContext ctx;
+
     @Before
     public void initRepo() throws Exception {
         session.removeChildren(session.getRootDocument().getRef());
@@ -85,13 +88,18 @@ public class RelationOperationsTest {
         dst = session.createDocument(dst);
         session.save();
         dst = session.getDocument(dst.getRef());
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
     }
 
     // ------ Tests comes here --------
 
     @Test
     public void testRelationOperations() throws Exception {
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         OperationChain chain = new OperationChain("createRelation");
         chain.add(FetchContextDocument.ID);
@@ -100,7 +108,7 @@ public class RelationOperationsTest {
 
         assertEquals(doc, src);
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(src);
         chain = new OperationChain("getRelation");
         chain.add(FetchContextDocument.ID);
@@ -110,7 +118,7 @@ public class RelationOperationsTest {
         assertEquals(1, docs.size());
         assertEquals(dst, docs.get(0));
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(src);
         chain = new OperationChain("getRelationWithGraphName");
         chain.add(FetchContextDocument.ID);
@@ -119,7 +127,7 @@ public class RelationOperationsTest {
 
         assertEquals(docs, docs2);
 
-        ctx = new OperationContext(session);
+        ctx.clear();
         ctx.setInput(src);
         chain = new OperationChain("deleteRelation");
         chain.add(FetchContextDocument.ID);

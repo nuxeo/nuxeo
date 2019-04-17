@@ -96,9 +96,10 @@ public class TestExcelExportGroups {
 
     @Test
     public void testExcelExportOperation() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        Blob export = (Blob) automationService.run(ctx, "testExportExcel");
-        Assert.assertTrue(export.getLength() > 0);
+        try (OperationContext ctx = new OperationContext(session)) {
+            Blob export = (Blob) automationService.run(ctx, "testExportExcel");
+            Assert.assertTrue(export.getLength() > 0);
+        }
     }
 
     private DocumentModel getGroup(String groupId) throws Exception {

@@ -72,13 +72,13 @@ public class PDFWatermarkingPDFTest {
     public void testOp() throws IOException, OperationException {
         Blob input = new FileBlob(getClass().getResourceAsStream(PDF_PATH));
         Blob overlayBlob = new FileBlob(getClass().getResourceAsStream(PDF_WATERMARK_PATH));
-        OperationChain chain;
-        OperationContext ctx = new OperationContext(coreSession);
-        ctx.setInput(input);
-        chain = new OperationChain("testWithDefault");
-        chain.add(PDFWatermarkPDFOperation.ID).set("overlayPdf",overlayBlob);
-        Blob result = (Blob) automationService.run(ctx, chain);
-        Assert.assertNotNull(result);
+        OperationChain chain = new OperationChain("testWithDefault");
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            ctx.setInput(input);
+            chain.add(PDFWatermarkPDFOperation.ID).set("overlayPdf", overlayBlob);
+            Blob result = (Blob) automationService.run(ctx, chain);
+            Assert.assertNotNull(result);
+        }
     }
 
 }

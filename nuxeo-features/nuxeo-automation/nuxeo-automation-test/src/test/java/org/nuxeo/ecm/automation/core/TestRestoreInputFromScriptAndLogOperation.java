@@ -20,7 +20,9 @@ package org.nuxeo.ecm.automation.core;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -57,13 +59,24 @@ public class TestRestoreInputFromScriptAndLogOperation {
     @Inject
     LogCaptureFeature.Result logCaptureResult;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     @Test
     public void testRestoreInput() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "test", "File");
         doc.setPropertyValue("dc:title", "test");
         doc = session.createDocument(doc);
 
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
 
         OperationChain chain = new OperationChain("testSetObjectInput");

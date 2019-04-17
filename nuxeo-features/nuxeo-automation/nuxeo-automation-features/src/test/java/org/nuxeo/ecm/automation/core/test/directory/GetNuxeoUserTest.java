@@ -24,6 +24,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
@@ -65,10 +67,20 @@ public class GetNuxeoUserTest {
     @Inject
     CoreSession session;
 
+    protected OperationContext ctx;
+
+    @Before
+    public void createOperationContext() {
+        ctx = new OperationContext(session);
+    }
+
+    @After
+    public void closeOperationContext() {
+        ctx.close();
+    }
+
     @Test
     public void shouldRetrieveCurrentPrincipalAsDoc() throws Exception {
-
-        OperationContext ctx = new OperationContext(session);
 
         // test without params
 
@@ -86,8 +98,6 @@ public class GetNuxeoUserTest {
 
     @Test
     public void shouldRetrievePrincipalAsDoc() throws Exception {
-
-        OperationContext ctx = new OperationContext(session);
 
         // test with params
 
@@ -116,7 +126,6 @@ public class GetNuxeoUserTest {
         params.put("searchTerm", "jdoe");
         OperationParameters oparams = new OperationParameters(SuggestUserEntries.ID, params);
 
-        OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("fakeChain");
         chain.add(oparams);
         Blob result = (Blob) service.run(ctx, chain);

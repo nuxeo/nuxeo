@@ -70,6 +70,8 @@ public class PDFPageNumberingTest {
     @Inject
     AutomationService automationService;
 
+    protected OperationContext ctx;
+
     @Before
     public void setUp() throws Exception {
         testDocsFolder = coreSession.createDocumentModel("/", "test-pictures", "Folder");
@@ -78,10 +80,12 @@ public class PDFPageNumberingTest {
         testDocsFolder = coreSession.saveDocument(testDocsFolder);
         pdfFileBlob = new FileBlob(FileUtils.getResourceFileFromContext(TestUtils.PDF_PATH));
         pdfMD5 = TestUtils.calculateMd5(pdfFileBlob.getFile());
+        ctx = new OperationContext(coreSession);
     }
 
     @After
     public void tearDown() {
+        ctx.close();
         coreSession.removeDocument(testDocsFolder.getRef());
         coreSession.save();
     }
@@ -150,8 +154,6 @@ public class PDFPageNumberingTest {
     @Test
     public void testAddPageNumbersOperationSimple() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(pdfFileBlob);
         chain.add(PDFAddPageNumbersOperation.ID);
         Blob result = (Blob) automationService.run(ctx, chain);
@@ -162,8 +164,6 @@ public class PDFPageNumberingTest {
     @Test
     public void testAddPageNumbersOperationComplex() throws Exception {
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
         ctx.setInput(pdfFileBlob);
         chain.add(PDFAddPageNumbersOperation.ID)
         .set("startAtPage", 2)
