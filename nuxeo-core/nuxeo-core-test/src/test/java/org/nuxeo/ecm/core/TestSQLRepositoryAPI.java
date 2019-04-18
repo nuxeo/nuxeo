@@ -61,6 +61,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -112,6 +113,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.schema.DocumentTypeDescriptor;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -3423,6 +3425,34 @@ public class TestSQLRepositoryAPI {
         assertTrue(proxy3.isProxy());
         assertEquals(doc.getVersionSeriesId(), proxy3.getVersionSeriesId());
         assertEquals(ver.getVersionLabel(), proxy3.getVersionLabel());
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    public void testProxyOnNullTarget() {
+
+        assumeTrue("test cannot be done on VCS as it does not allow atomic deletion of documents", isDBS());
+
+        DocumentModel root = session.getRootDocument();
+        DocumentModel docModel = session.createDocumentModel(root.getPathAsString(), "test", "File");
+
+        docModel = session.createDocument(docModel);
+        DocumentModel proxyModel = session.createProxy(docModel.getRef(), root.getRef());
+
+        Session internalSession = ((AbstractSession) session).getSession();
+        // Remove atomically proxy target
+        internalSession.removeDocument(docModel.getId());
+
+        String proxyId = proxyModel.getId();
+
+        // Querying this proxy should return no results as it has a null target
+        DocumentModelList list = session.query(String.format("SELECT * FROM Document WHERE ecm:uuid='%s'", proxyId));
+        assertEquals(0, list.size());
+
+        // Clean up proxy doc
+        internalSession.removeDocument(proxyId);
     }
 
     @Test
