@@ -413,7 +413,12 @@ public class DBSSession implements Session<QueryFilter> {
         List<DBSDocumentState> docStates = transaction.getStatesForUpdate(ids);
         List<Document> docs = new ArrayList<>(ids.size());
         for (DBSDocumentState docState : docStates) {
-            docs.add(getDocument(docState));
+            try {
+                docs.add(getDocument(docState));
+            } catch (DocumentNotFoundException e) {
+                // unknown type in db or null proxy target, ignore
+                continue;
+            }
         }
         return docs;
     }
@@ -433,6 +438,15 @@ public class DBSSession implements Session<QueryFilter> {
         DocumentType type = schemaManager.getDocumentType(typeName);
         if (type == null) {
             throw new DocumentNotFoundException("Unknown document type: " + typeName);
+        }
+
+        boolean isProxy = TRUE.equals(docState.get(KEY_IS_PROXY));
+        if (isProxy) {
+            String targetId = (String) docState.get(KEY_PROXY_TARGET_ID);
+            DBSDocumentState targetState = transaction.getStateForUpdate(targetId);
+            if (targetState == null) {
+                throw new DocumentNotFoundException("Proxy has null target");
+            }
         }
 
         if (isVersion) {
@@ -1446,6 +1460,20 @@ public class DBSSession implements Session<QueryFilter> {
         State state = transaction.getStateForRead(id);
         String fulltext = (String) state.get(KEY_FULLTEXT_BINARY);
         return Collections.singletonMap("binarytext", fulltext);
+    }
+
+    @Override
+    public void removeDocument(String id) {
+        transaction.save();
+
+        State state = transaction.getStateForRead(id);
+
+        if (TRUE.equals(state.get(KEY_IS_RETENTION_ACTIVE))) {
+            throw new DocumentExistsException("Cannot remove " + id + ", it is under active retention");
+        }
+
+        // remove doc
+        transaction.removeStates(Collections.singleton(id));
     }
 
     @Override
