@@ -1,3 +1,4 @@
+<#escape x as x?html>
 <html>
 <body>
 <div style="margin:0; padding:0; background-color:#e9ecef;font-family:Arial,sans-serif;" marginheight="0" marginwidth="0">
@@ -41,3 +42,4 @@
 </div>
 </body>
 <html>
+</#escape>
