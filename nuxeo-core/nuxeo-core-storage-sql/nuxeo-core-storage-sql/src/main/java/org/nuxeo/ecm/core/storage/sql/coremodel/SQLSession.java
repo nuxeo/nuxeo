@@ -508,7 +508,7 @@ public class SQLSession implements Session {
             try {
                 doc = newDocument(eachNode);
             } catch (DocumentNotFoundException e) {
-                // unknown type in db, ignore
+                // unknown type in db or null proxy target, ignore
                 continue;
             }
             docs.add(doc);
@@ -903,6 +903,11 @@ public class SQLSession implements Session {
     @Override
     public Map<String, String> getBinaryFulltext(String id) {
         return session.getBinaryFulltext(idFromString(id));
+    }
+
+    @Override
+    public void removeDocument(String id) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public boolean isChangeTokenEnabled() {

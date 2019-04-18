@@ -256,4 +256,13 @@ public interface Session {
      */
     Map<String, String> getBinaryFulltext(String id);
 
+    /**
+     * Removes a document. In DBS, this removal is done without checking if proxies are targeting the document, or if it
+     * has any children.
+     *
+     * @param id the document id
+     * @since 11.1
+     */
+    void removeDocument(String id);
+
 }
