@@ -1,3 +1,4 @@
+<#escape x as x?html>
 <html>
 <body>
 Hello ${userinfo.firstName} ${userinfo.lastName}, <br />
@@ -29,3 +30,4 @@ You can validate your invitation through this <a href="${info['enterPasswordUrl'
 The ${productName} Administrators team.
 </body>
 </html>
+</#escape>

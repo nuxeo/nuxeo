@@ -1,3 +1,4 @@
+<#escape x as x?html>
 <html>
 <body>
 Hello ${userinfo.firstName} ${userinfo.lastName}, <br />
@@ -34,3 +35,4 @@ Hello ${userinfo.firstName} ${userinfo.lastName}, <br />
 
 </body>
 </html>
+</#escape>
