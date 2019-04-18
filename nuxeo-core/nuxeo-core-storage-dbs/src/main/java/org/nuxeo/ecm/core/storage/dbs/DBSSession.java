@@ -418,7 +418,12 @@ public class DBSSession implements Session<QueryFilter> {
         List<DBSDocumentState> docStates = transaction.getStatesForUpdate(ids);
         List<Document> docs = new ArrayList<>(ids.size());
         for (DBSDocumentState docState : docStates) {
-            docs.add(getDocument(docState));
+            try {
+                docs.add(getDocument(docState));
+            } catch (DocumentNotFoundException e) {
+                // unknown type in db or null proxy target, ignore
+                continue;
+            }
         }
         return docs;
     }
@@ -438,6 +443,15 @@ public class DBSSession implements Session<QueryFilter> {
         DocumentType type = schemaManager.getDocumentType(typeName);
         if (type == null) {
             throw new DocumentNotFoundException("Unknown document type: " + typeName);
+        }
+
+        boolean isProxy = TRUE.equals(docState.get(KEY_IS_PROXY));
+        if (isProxy) {
+            String targetId = (String) docState.get(KEY_PROXY_TARGET_ID);
+            DBSDocumentState targetState = transaction.getStateForUpdate(targetId);
+            if (targetState == null) {
+                throw new DocumentNotFoundException("Proxy has null target");
+            }
         }
 
         if (isVersion) {
