@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -48,7 +47,6 @@ import javax.naming.NamingException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.text.StringEscapeUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -473,6 +471,11 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         String emailAdress = (String) registrationDoc.getPropertyValue(configuration.getUserInfoEmailField());
 
         Map<String, Serializable> input = new HashMap<>();
+        Map<String, Serializable> userinfo = new HashMap<>();
+        userinfo.put("firstName", registrationDoc.getPropertyValue(configuration.getUserInfoFirstnameField()));
+        userinfo.put("lastName", registrationDoc.getPropertyValue(configuration.getUserInfoLastnameField()));
+        userinfo.put("login", registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField()));
+        userinfo.put("id", registrationDoc.getId());
 
         String documentTitle = "";
 
@@ -483,7 +486,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         input.put("configurationName", configuration.getName());
         input.put("comment", registrationDoc.getPropertyValue("registration:comment"));
         input.put(UserInvitationService.REGISTRATION_CONFIGURATION_NAME, configuration.getName());
-        input.put("userinfo", (Serializable) getUserInfo(registrationDoc, configuration));
+        input.put("userinfo", (Serializable) userinfo);
         input.put("info", (Serializable) additionnalInfo);
         input.put("userAlreadyExists", checkUserFromRegistrationExistence(registrationDoc));
         input.put("productName", Framework.getProperty("org.nuxeo.ecm.product.name"));
@@ -509,19 +512,6 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         } else {
             testRendering = body;
         }
-    }
-
-    protected Map<String, Serializable> getUserInfo(DocumentModel registrationDoc,
-            UserRegistrationConfiguration configuration) {
-        Map<String, Serializable> userInfo = new HashMap<>();
-        // escape HTML entities to prevent HTML injection in the invitation emails
-        BiConsumer<String, String> escapeAndPut = (key, fieldName) -> userInfo.put(key,
-                StringEscapeUtils.escapeHtml4((String) registrationDoc.getPropertyValue(fieldName)));
-        escapeAndPut.accept("firstName", configuration.getUserInfoFirstnameField());
-        escapeAndPut.accept("lastName", configuration.getUserInfoLastnameField());
-        escapeAndPut.accept("login", configuration.getUserInfoUsernameField());
-        userInfo.put("id", registrationDoc.getId());
-        return userInfo;
     }
 
     private String renderSubjectTemplate(String emailTitle, Map<String, Serializable> input) {
