@@ -1455,6 +1455,25 @@ public class TestNxqlConversion {
                 "  }\n" +
                 "}", es);
         es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: INDEX(some:field) ANALYZER(my_analyzer) OPERATOR(match) SEMANTIC(and) */ dc:subjects = 'foo'")
+                .toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"match\" : {\n" +
+                "    \"some:field\" : {\n" +
+                "      \"query\" : \"foo\",\n" +
+                "      \"operator\" : \"AND\",\n" +
+                "      \"analyzer\" : \"my_analyzer\",\n" +
+                "      \"prefix_length\" : 0,\n" +
+                "      \"max_expansions\" : 50,\n" +
+                "      \"fuzzy_transpositions\" : true,\n" +
+                "      \"lenient\" : false,\n" +
+                "      \"zero_terms_query\" : \"NONE\",\n" +
+                "      \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "      \"boost\" : 1.0\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where /*+ES: OPERATOR(match_phrase) */ dc:title = 'foo'").toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"match_phrase\" : {\n" +
@@ -1567,6 +1586,26 @@ public class TestNxqlConversion {
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
                 "}", es);
+        
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: OPERATOR(simple_query_string) SEMANTIC(and) */ dc:title = '\"fried eggs\" +(eggplant | potato) -frittata'")
+                .toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"simple_query_string\" : {\n" +
+                "    \"query\" : \"\\\"fried eggs\\\" +(eggplant | potato) -frittata\",\n" +
+                "    \"fields\" : [\n" +
+                "      \"dc:title^1.0\"\n" +
+                "    ],\n" +
+                "    \"flags\" : -1,\n" +
+                "    \"default_operator\" : \"and\",\n" +
+                "    \"analyze_wildcard\" : false,\n" +
+                "    \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "    \"fuzzy_prefix_length\" : 0,\n" +
+                "    \"fuzzy_max_expansions\" : 50,\n" +
+                "    \"fuzzy_transpositions\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
+                "}", es);
 
         es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where /*+ES: INDEX(dc:title,dc:description) ANALYZER(fulltext) OPERATOR(query_string) */ dc:title = 'this AND that OR thus'")
@@ -1581,6 +1620,32 @@ public class TestNxqlConversion {
                 "    ],\n" +
                 "    \"type\" : \"best_fields\",\n" +
                 "    \"default_operator\" : \"or\",\n" +
+                "    \"analyzer\" : \"fulltext\",\n" +
+                "    \"max_determinized_states\" : 10000,\n" +
+                "    \"enable_position_increments\" : true,\n" +
+                "    \"fuzziness\" : \"AUTO\",\n" +
+                "    \"fuzzy_prefix_length\" : 0,\n" +
+                "    \"fuzzy_max_expansions\" : 50,\n" +
+                "    \"phrase_slop\" : 0,\n" +
+                "    \"escape\" : false,\n" +
+                "    \"auto_generate_synonyms_phrase_query\" : true,\n" +
+                "    \"fuzzy_transpositions\" : true,\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
+                "}", es);
+        
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: INDEX(dc:title,dc:description) ANALYZER(fulltext) OPERATOR(query_string) SEMANTIC(and) */ dc:title = 'this AND that OR thus'")
+                .toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"query_string\" : {\n" +
+                "    \"query\" : \"this AND that OR thus\",\n" +
+                "    \"fields\" : [\n" +
+                "      \"dc:description^1.0\",\n" +
+                "      \"dc:title^1.0\"\n" +
+                "    ],\n" +
+                "    \"type\" : \"best_fields\",\n" +
+                "    \"default_operator\" : \"and\",\n" +
                 "    \"analyzer\" : \"fulltext\",\n" +
                 "    \"max_determinized_states\" : 10000,\n" +
                 "    \"enable_position_increments\" : true,\n" +

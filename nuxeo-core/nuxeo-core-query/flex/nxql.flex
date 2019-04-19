@@ -282,6 +282,9 @@ EsIdentifier = [:jletter:] [a-zA-Z0-9_:.\\\^-]*
     "OPERATOR"          { return symbol(sym.OPERATOR); }
     "Operator"          { return symbol(sym.OPERATOR); }
     "operator"          { return symbol(sym.OPERATOR); }
+    "SEMANTIC"          { return symbol(sym.SEMANTIC); }
+    "Semantic"          { return symbol(sym.SEMANTIC); }
+    "semantic"          { return symbol(sym.SEMANTIC); }
     "("                 { return symbol(sym.LPARA); }
     ")"                 { return symbol(sym.RPARA); }
     ","                 { return symbol(sym.COMMA); }

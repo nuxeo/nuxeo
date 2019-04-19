@@ -51,7 +51,7 @@ terminal SELECT, FROM, WHERE, AS,
          ASC, DESC, AND, OR, NOT, SUM, SUB, DIV, MUL, EQ, NOTEQ, LT, GT, LTEQ, GTEQ,
          COMMA, LPARA, RPARA, LOCATION, STARTSWITH, TYPE,
          DATE, TIMESTAMP, OFFSET, IS, NULL, ISNULL, ISNOTNULL,
-         LHINT_ES, RHINT, INDEX, ANALYZER, OPERATOR;
+         LHINT_ES, RHINT, INDEX, ANALYZER, OPERATOR, SEMANTIC;
 
 terminal String IDENTIFIER, FROM_IDENTIFIER, PATH_IDENTIFIER, STRING, INTEGER, DOUBLE,
          ES_IDENTIFIER;
@@ -82,6 +82,7 @@ non terminal String        from_key;
 non terminal EsHint        es_hint;
 non terminal String        es_analyzer;
 non terminal String        es_operator;
+non terminal String        es_semantic;
 non terminal EsIdentifierList es_identifier_list;
 non terminal EsIdentifierList es_index;
 /* -------------Precedence and Associatively of Terminals Section----------- */
@@ -378,20 +379,32 @@ es_operator ::= OPERATOR LPARA ES_IDENTIFIER:v RPARA
                   {: RESULT = v; :}
                 ;
 
+es_semantic ::= SEMANTIC LPARA ES_IDENTIFIER:v RPARA
+                  {: RESULT = v; :}
+                ;
+
 es_hint ::= LHINT_ES es_index:index RHINT
-                {: RESULT = new EsHint(index, null, null); :}
+                {: RESULT = new EsHint(index, null, null, null); :}
             | LHINT_ES es_analyzer:analyzer RHINT
-                {: RESULT = new EsHint(null, analyzer, null); :}
+                {: RESULT = new EsHint(null, analyzer, null, null); :}
             | LHINT_ES es_operator:operator RHINT
-                {: RESULT = new EsHint(null, null, operator); :}
+                {: RESULT = new EsHint(null, null, operator, null); :}
+            | LHINT_ES es_operator:operator es_semantic:semantic RHINT
+                {: RESULT = new EsHint(null, null, operator, semantic); :}
             | LHINT_ES es_index:index es_analyzer:analyzer RHINT
-                {: RESULT = new EsHint(index, analyzer, null); :}
+                {: RESULT = new EsHint(index, analyzer, null, null); :}
             | LHINT_ES es_index:index es_operator:operator RHINT
-                {: RESULT = new EsHint(index, null, operator); :}
+                {: RESULT = new EsHint(index, null, operator, null); :}
+            | LHINT_ES es_index:index es_operator:operator es_semantic:semantic RHINT
+                {: RESULT = new EsHint(index, null, operator, semantic); :}
             | LHINT_ES es_analyzer:analyzer es_operator:operator RHINT
-                {: RESULT = new EsHint(null, analyzer, operator); :}
+                {: RESULT = new EsHint(null, analyzer, operator, null); :}
+            | LHINT_ES es_analyzer:analyzer es_operator:operator es_semantic:semantic RHINT
+                {: RESULT = new EsHint(null, analyzer, operator, semantic); :}
             | LHINT_ES es_index:index es_analyzer:analyzer es_operator:operator RHINT
-                {: RESULT = new EsHint(index, analyzer, operator); :}
+                {: RESULT = new EsHint(index, analyzer, operator, null); :}
+            | LHINT_ES es_index:index es_analyzer:analyzer es_operator:operator es_semantic:semantic RHINT
+                {: RESULT = new EsHint(index, analyzer, operator, semantic); :}
             | LHINT_ES RHINT
                 {: RESULT = null; :}
             ;

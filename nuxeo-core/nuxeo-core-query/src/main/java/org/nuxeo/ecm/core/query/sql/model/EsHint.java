@@ -35,11 +35,13 @@ public class EsHint implements Operand {
     public final String analyzer;
 
     public final String operator;
+    public final String semantic;
 
-    public EsHint(EsIdentifierList index, String analyzer, String operator) {
+    public EsHint(EsIdentifierList index, String analyzer, String operator, String semantic) {
         this.index = (index == null) ? null : index.toString();
         this.analyzer = analyzer;
         this.operator = operator;
+        this.semantic = semantic;
     }
 
     @Override
@@ -59,6 +61,9 @@ public class EsHint implements Operand {
         if (operator != null) {
             sb.append(String.format("OPERATOR(%s) ", operator));
         }
+        if (semantic != null) {
+            sb.append(String.format("SEMANTIC(%s) ", semantic));
+        }
         sb.append("*/");
         return sb.toString();
     }
@@ -76,7 +81,7 @@ public class EsHint implements Operand {
 
     private boolean equals(EsHint other) {
         return StringUtils.equals(index, other.index) && StringUtils.equals(analyzer, other.analyzer)
-                && StringUtils.equals(operator, other.operator);
+                && StringUtils.equals(operator, other.operator) && StringUtils.equals(semantic, other.semantic);
     }
 
     /**

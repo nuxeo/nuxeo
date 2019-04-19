@@ -357,7 +357,7 @@ public class TestQueryParser {
         assertTrue(lvalue instanceof Reference);
         assertEquals(1, ((Reference) lvalue).esHint.getIndex().size());
         assertEquals(new Reference(new Reference("dc:title"),
-                new EsHint(new EsIdentifierList("dc:title.ngram"), null, null)), lvalue);
+                new EsHint(new EsIdentifierList("dc:title.ngram"), null, null, null)), lvalue);
     }
 
     @Test
@@ -368,7 +368,7 @@ public class TestQueryParser {
         assertTrue(lvalue instanceof Reference);
         assertEquals(1, ((Reference) lvalue).esHint.getIndex().size());
         assertEquals(new Reference(new Reference("my-schema:article/author"),
-                new EsHint(new EsIdentifierList("my-schema:article.author"), null, null)), lvalue);
+                new EsHint(new EsIdentifierList("my-schema:article.author"), null, null, null)), lvalue);
     }
 
     @Test
@@ -379,7 +379,7 @@ public class TestQueryParser {
         assertTrue(lvalue instanceof Reference);
         assertEquals(1, ((Reference) lvalue).esHint.getIndex().size());
         assertEquals(new Reference(new Reference("dc:title"),
-                new EsHint(new EsIdentifierList("dc:title.ngram^3"), null, null)), lvalue);
+                new EsHint(new EsIdentifierList("dc:title.ngram^3"), null, null, null)), lvalue);
     }
 
     @Test
@@ -390,7 +390,7 @@ public class TestQueryParser {
         assertTrue(lvalue instanceof Reference);
         assertEquals(2, ((Reference) lvalue).esHint.getIndex().size());
         assertEquals(new Reference(new Reference("ecm:fulltext"),
-                new EsHint(new EsIdentifierList("dc:title,dc:description"), null, null)), lvalue);
+                new EsHint(new EsIdentifierList("dc:title,dc:description"), null, null, null)), lvalue);
     }
 
     @Test
@@ -398,7 +398,7 @@ public class TestQueryParser {
         SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: ANALYZER(fulltext) */ dc:title LIKE 'foo'");
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
-        assertEquals(new Reference(new Reference("dc:title"), new EsHint(null, "fulltext", null)), lvalue);
+        assertEquals(new Reference(new Reference("dc:title"), new EsHint(null, "fulltext", null, null)), lvalue);
     }
 
     @Test
@@ -407,7 +407,7 @@ public class TestQueryParser {
                 "SELECT p FROM t WHERE /*+ES: OPERATOR(regex) */ dc:title = 'foo|bar|ba*'");
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
-        assertEquals(new Reference(new Reference("dc:title"), new EsHint(null, null, "regex")), lvalue);
+        assertEquals(new Reference(new Reference("dc:title"), new EsHint(null, null, "regex", null)), lvalue);
     }
 
     @Test
@@ -417,7 +417,7 @@ public class TestQueryParser {
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
         assertEquals(new Reference(new Reference("dc:title"),
-                new EsHint(new EsIdentifierList("dc:title.ngram"), "fulltext", null)), lvalue);
+                new EsHint(new EsIdentifierList("dc:title.ngram"), "fulltext", null, null)), lvalue);
     }
 
     @Test
@@ -427,7 +427,27 @@ public class TestQueryParser {
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
         assertEquals(new Reference(new Reference("dc:title"),
-                new EsHint(new EsIdentifierList("dc:title.ngram"), "fulltext", "fuzzy")), lvalue);
+                new EsHint(new EsIdentifierList("dc:title.ngram"), "fulltext", "fuzzy", null)), lvalue);
+    }
+
+    @Test
+    public void testEsHintIndexAnalyzerAndOperatorAndSemantic() {
+        SQLQuery query = SQLQueryParser.parse(
+                "SELECT p FROM t WHERE /*+ES: Index(dc:title.ngram) analyzer(fulltext) operator(match) semantic(and)*/ dc:title = 'foo'");
+        Operand lvalue = query.getWhereClause().predicate.lvalue;
+        assertTrue(lvalue instanceof Reference);
+        assertEquals(new Reference(new Reference("dc:title"),
+                new EsHint(new EsIdentifierList("dc:title.ngram"), "fulltext", "match", "and")), lvalue);
+    }
+
+    @Test
+    public void testEsHintIndexAndOperatorAndSemantic() {
+        SQLQuery query = SQLQueryParser.parse(
+                "SELECT p FROM t WHERE /*+ES: Index(dc:title.ngram) operator(match) semantic(or)*/ dc:title = 'foo'");
+        Operand lvalue = query.getWhereClause().predicate.lvalue;
+        assertTrue(lvalue instanceof Reference);
+        assertEquals(new Reference(new Reference("dc:title"),
+                new EsHint(new EsIdentifierList("dc:title.ngram"), null, "match", "or")), lvalue);
     }
 
     @Test
@@ -438,7 +458,7 @@ public class TestQueryParser {
         assertTrue(pred instanceof Predicate);
         Operand lvalue = ((Predicate) pred).lvalue;
         assertTrue(lvalue instanceof Reference);
-        assertEquals(new Reference(new Reference("dc:description"), new EsHint(null, "fulltext2", null)), lvalue);
+        assertEquals(new Reference(new Reference("dc:description"), new EsHint(null, "fulltext2", null, null)), lvalue);
     }
 
     @Test

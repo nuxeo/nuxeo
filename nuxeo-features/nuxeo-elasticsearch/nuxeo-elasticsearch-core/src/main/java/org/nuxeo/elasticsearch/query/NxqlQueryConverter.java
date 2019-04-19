@@ -461,6 +461,18 @@ public final class NxqlQueryConverter {
             if (hint.analyzer != null) {
                 matchQuery.analyzer(hint.analyzer);
             }
+            if (hint.semantic != null) {
+                switch (hint.semantic.toLowerCase()) {
+                case "or":
+                    matchQuery.operator(org.elasticsearch.index.query.Operator.OR);
+                    break;
+                case "and":
+                    matchQuery.operator(org.elasticsearch.index.query.Operator.AND);
+                    break;
+                default:
+                    break;
+                }
+            }
             ret = matchQuery;
             break;
         case "match_phrase":
@@ -519,6 +531,18 @@ public final class NxqlQueryConverter {
             if (hint.analyzer != null) {
                 queryString.analyzer(hint.analyzer);
             }
+            if (hint.semantic != null) {
+                switch (hint.semantic.toLowerCase()) {
+                case "or":
+                    queryString.defaultOperator(org.elasticsearch.index.query.Operator.OR);
+                    break;
+                case "and":
+                    queryString.defaultOperator(org.elasticsearch.index.query.Operator.AND);
+                    break;
+                default:
+                    break;
+                }
+            }
             ret = queryString;
             break;
         case "simple_query_string":
@@ -532,6 +556,18 @@ public final class NxqlQueryConverter {
             }
             if (hint.analyzer != null) {
                 querySimpleString.analyzer(hint.analyzer);
+            }
+            if (hint.semantic != null) {
+                switch (hint.semantic.toLowerCase()) {
+                case "or":
+                    querySimpleString.defaultOperator(org.elasticsearch.index.query.Operator.OR);
+                    break;
+                case "and":
+                    querySimpleString.defaultOperator(org.elasticsearch.index.query.Operator.AND);
+                    break;
+                default:
+                    break;
+                }
             }
             ret = querySimpleString;
             break;
