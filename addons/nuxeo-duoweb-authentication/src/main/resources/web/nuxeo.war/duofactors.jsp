@@ -2,6 +2,7 @@
 <!-- Nuxeo Enterprise Platform -->
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page language="java"%>
+<%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@ page import="org.nuxeo.common.Environment"%>
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
 <%@ page import="org.nuxeo.ecm.platform.web.common.admin.AdminStatusHelper"%>
@@ -419,9 +420,9 @@ body {
 
 <script type="text/javascript">
     Duo.init({
-        'host': "<%= request.getParameter("host") %>",
-        'sig_request': "<%= request.getParameter("sig_request") %>",
-        'post_action': "<%= request.getParameter("post_action") %>"
+        'host': "<%= StringEscapeUtils.escapeEcmaScript(request.getParameter("host")) %>",
+        'sig_request': "<%= StringEscapeUtils.escapeEcmaScript(request.getParameter("sig_request")) %>",
+        'post_action': "<%= StringEscapeUtils.escapeEcmaScript(request.getParameter("post_action")) %>"
     });
 </script>
 
