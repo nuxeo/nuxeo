@@ -483,7 +483,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         try {
             CoreSession session = ctx.getCoreSession();
             // ExecutionRequest's OperationContext not owned by us, don't close it
-            OperationContext ctx = xreq.createContext(request, response, session);
+            OperationContext ctx = xreq.createContext(request, response, session); // NOSONAR
             Map<String, Object> params = xreq.getParams();
             Object result;
             if (StringUtils.isBlank(fileIdx)) {

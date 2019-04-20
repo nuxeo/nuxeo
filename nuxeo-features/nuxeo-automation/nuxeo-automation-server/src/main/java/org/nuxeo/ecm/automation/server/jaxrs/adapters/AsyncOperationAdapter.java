@@ -133,7 +133,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
         // session will be set in the task thread
         // ExecutionRequest's OperationContext not owned by us, don't close it
-        OperationContext opCtx = xreq.createContext(request, response, null);
+        OperationContext opCtx = xreq.createContext(request, response, null); // NOSONAR
 
         opCtx.setCallback(new OperationCallback() {
 
