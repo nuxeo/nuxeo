@@ -1,0 +1,185 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h2 id="" alt="Grid Layout">Grid Layout</h2>
+  <p class="specification">
+    The Grid layout is here to help you align blocks and widgets into columns and rows in a specific area. By following a pattern made of containers with CSS classes, you will easily design your customized tab content,
+    keeping a visual consistency, readablity, and adaptability between screens.</p>
+  <div class="gridContainer">
+    <div class="gridRow">
+      <div class="gridBox gridStyle5">
+        <div class="widgetPanel">
+          <h3>Containers construction</h3>
+          <p class="specification">
+            Your layout must contain the following elements:
+          </p>
+          <ul class="visibleList">
+            <li>A <span class="code">.gridContainer</span> div, containing several vertical <span class="code">.gridRow</span> div.</li>
+            <li>Each <span class="code">.gridRow</span> contains several horizontal <span class="code">.gridBox</span>.</li>
+            <li>A <span class="code">.gridBox</span> div may contain several vertical <span class="code">.widgetPanel</span>.</li>
+            <li>Each <span class="code">.gridBox</span> div has a secondary <span class="code">.gridStyle**</span> class to define its width.</li>
+          </ul>
+          <p class="specification">
+          The <span class="code">.gridStyle**</span> classes represent the width of each <span class="code">.gridBox</span> container.
+          The sum of all the <span class="code">.gridBox</span> in a <span class="code">.gridRow</span> line must always be equal to 12.
+          </p>
+        </div>
+      </div>
+      <div class="gridBox gridStyle7">
+        <div class="widgetPanel">
+        <h3>A 12-column based grid</h3>
+        <p class="specification">
+          The grid model included in the Nuxeo Platform styles is a 12-column based model.
+           It means that the sum of the <span class="code">.gridStyle**</span> classes, where ** are numbers from 1 to 12, in a single <span class="code">.gridRow</span> must be equal to 12.
+          Here are some examples of <span class="code">.gridStyle**</span> classes that you can use to define the width of each <span class="code">.gridBox</span>:
+          <ul class="visibleList">
+            <li><span class="code">.gridStyle12</span> = a 100% width layout</li>
+            <li><span class="code">.gridStyle6</span> + <span class="code">.gridStyle6</span> = a 50% / 50% layout</li>
+            <li><span class="code">.gridStyle8</span> + <span class="code">.gridStyle4</span> = a 66% / 33% layout</li>
+            <li><span class="code">.gridStyle4</span> + <span class="code">.gridStyle4</span> + <span class="code">.gridStyle4</span> = a 33% / 33% / 33% layout</li>
+            <li><span class="code">.gridStyle6</span> + <span class="code">.gridStyle3</span> + <span class="code">.gridStyle3</span> = a 50% / 25% / 25% layout</li>
+            <li><span class="code">.gridStyle3</span> + <span class="code">.gridStyle3</span> + <span class="code">.gridStyle3</span> + <span class="code">.gridStyle3</span> = a 25% / 25% / 25% / 25% layout</li>
+            <li>…</li>
+          </ul>
+        </p>
+        </div>
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="gridRow">
+      <div class="gridBox gridStyle8">
+        <div class="widgetPanel">
+          <h3>Containers structure</h3>
+          <p class="specification">
+            Let's say you need a layout with 2 rows:
+          </p>
+          <ul class="visibleList">
+            <li> a 50% / 50% width layout + a 33% / 33% / 33% width layout for the first one,</li>
+            <li> a 100% width layout for the second one.</li>
+          </ul>
+          <p class="specification">
+            This is how your layout must be constructed:</p>
+          <div class="gridContainer gridVisible">
+            <p><span class="code">.gridContainer</span></p>
+            <div class="gridRow gridVisible">
+              <p><span class="code">.gridRow</span></p>
+              <div class="gridBox gridStyle6 gridVisible"><span class="code">.gridBox</span><span class="code">.gridStyle6</span></div>
+              <div class="gridBox gridStyle6 gridVisible"><span class="code">.gridBox</span><span class="code">.gridStyle6</span></div>
+              <div class="gridBox gridStyle4 gridVisible"><span class="code">.gridBox</span><span class="code">.gridStyle4</span></div>
+              <div class="gridBox gridStyle4 gridVisible"><span class="code">.gridBox</span><span class="code">.gridStyle4</span></div>
+              <div class="gridBox gridStyle4 gridVisible"><span class="code">.gridBox</span><span class="code">.gridStyle4</span></div>
+              <div class="clear"></div>
+            </div>
+            <div class="gridRow gridVisible">
+              <p><span class="code">.gridRow</span></p>
+              <div class="gridBox gridStyle12 gridVisible"><span class="code">.gridBox</span><span class="code">.gridStyle12</span></div>
+              <div class="clear"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="gridBox gridStyle4">
+        <div class="widgetPanel">
+          <h3>Containers specifications</h3>
+          <h6>.gridContainer</h6>
+          <p class="specification">It is the main container of all your layout. No margins and padding, it is only a frame that will encompass your rows.</p>
+          <h6>.gridRow</h6>
+          <p class="specification">No padding and margins either, the <span class="code">.gridRow</span> will shelter each block you want to add. At the end of all the <span class="code">.gridRow</span>, don't forget to add a <span class="code">div class="clear"</span> closing tag to stop the <span class="code">.gridBox</span> imbrication.</p>
+          <h6>.gridBox</h6>
+          <p class="specification">
+            This class only defines the floating behavior of each box, allowing them to move down if the space is missing.
+          </p>
+          <h6>.gridStyle**</h6>
+          <p class="specification">This secondary class must be added to each <span class="code">.gridBox</span> to define the width.</p>
+          <h6>.widgetPanel</h6>
+          <p class="specification">This class will handle the space between the <span class="code">.gridBox</span> divs.</p>
+        </div>
+      </div>
+    </div>
+    <div class="gridRow">
+      <h3>Example: The Summary View</h3>
+      <p class="specification">
+        The best example of the grid usage is the summary view of a document.
+        You can design your layouts from the Tab feature of Nuxeo Studio.
+      </p>
+      <p class="specification">
+        This layout contains one <span class="code">.gridRow</span> in the <span class="code">.gridContainer</span>.
+        The <span class="code">.gridRow</span> holds two <span class="code">.gridBox</span> divs: <span class="code">.gridStyle7</span> + <span class="code">.gridStyle5</span>.
+        The <span class="code">.gridStyle7</span> div contains one widget for the picture, the <span class="code">.gridStyle5</span> div contains four widgets.
+      </p>
+      <div class="gridBox gridStyle7">
+        <div>
+          <div class="summaryActions">
+            <div class="widgetPanel actionsWidgetPanel">
+              <img class="fullMaxWidth" title="Sea in Chile" alt="Sea in Chile" src="/nuxeo/img/sea_in_chile.jpg" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="gridBox gridStyle5">
+        <div class="widgetPanel actionsWidgetPanel">
+          <div>
+            <h3 class="summaryTitle">Contributors</h3>
+            <span class="tag user creator"><a href="#">Lise Kemen</a></span>
+          </div>
+        </div>
+        <div class="widgetPanel actionsWidgetPanel">
+          <h3 class="summaryTitle">Associated tags
+            <a style="float:right" onclick="return false;" name="#" id="#" href="#">
+              <img src="/nuxeo/icons/action_add.gif" id="#" />
+            </a>
+          </h3>
+          <span id="#">
+            <span class="tag tagLink">
+              <a onclick="return false" href="#">boat</a>
+              <a onclick="return false;" id="#" href="#">
+                <img src="/nuxeo/icons/action_tag_delete.png" />
+              </a>
+            </span>
+            <span class="tag tagLink">
+              <a onclick= "return false" href="#">sea</a>
+              <a onclick="return false;" name="#" id="#" href="#"><img src="/nuxeo/icons/action_tag_delete.png" /></a>
+            </span>
+          </span>
+        </div>
+        <div class="widgetPanel actionsWidgetPanel">
+          <div class="content_block">
+            <h3 class="summaryTitle">Content</h3>
+            <div id="mainBlobDropZone" context="mainBlob" class="dropzone">
+              <table class="smallTable">
+                <tbody>
+                  <tr>
+                    <td docref="#" class="fieldColumn">
+                      <div mimetype="image/jpeg" filename="IMG_4164.JPG" class="dropout" draggable="true">
+                        <img src="/nuxeo/icons/image.gif" />sea_in_chile.jpg <span class="detail">5 MB</span>
+                      </div>
+                    </td>
+                    <td class="actionsColumn">
+                      <a href="#">
+                        <img title="Download" alt="Download" src="/nuxeo/icons/download.png" />
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="widgetPanel actionsWidgetPanel">
+          <div class="processMessage completeInfo">To have a blue box widget, you can use the class <span class="code">.coloredWidget</span></div>
+        </div>
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div>
+</c:if>
+
