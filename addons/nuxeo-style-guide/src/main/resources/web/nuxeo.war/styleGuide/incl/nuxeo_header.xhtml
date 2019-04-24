@@ -1,0 +1,25 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+  <ui:insert name="header_admin_message">
+    <div class="header_admin_messages">
+      <c:if test="#{adminMessageActivated}">
+        <div style="text-align: center; padding: 5px 5px 5px 25px; background-color:#fff9B4; font: normal 12px Arial,sans-serif;">
+          <h:outputText value="#{adminMessage}"/>
+        </div>
+      </c:if>
+    </div>
+  </ui:insert>
+
+  <div class="userServicesBlock">
+  </div>
+
+  <div class="clear"></div>
+
+</div>
