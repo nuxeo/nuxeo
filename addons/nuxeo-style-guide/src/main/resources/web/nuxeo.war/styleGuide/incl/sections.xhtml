@@ -1,0 +1,31 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <nxu:set var="actions"
+    value="#{styleGuideActions.pages}"
+    cache="true">
+  <nxu:set var="currentPageId"
+    value="#{styleGuideActions.currentPageId}"
+    cache="true">
+    <ul class="tabsBar vertical">
+      <c:forEach var="action" items="#{actions}">
+        <li class="#{nxu:test(currentPageId == action.id, 'selected', '')}">
+          <h:outputLink value="#{baseURL}styleGuide/#{action.id}">
+            <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+          </h:outputLink>
+        </li>
+      </c:forEach>
+    </ul>
+  </nxu:set>
+  </nxu:set>
+
+</c:if>
