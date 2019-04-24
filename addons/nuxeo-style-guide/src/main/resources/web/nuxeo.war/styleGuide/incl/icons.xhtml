@@ -1,0 +1,47 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <div class="gridRow">
+    <div class="gridBox gridStyle12">
+
+      <h2 id="icons" alt="Icons">Icons</h2>
+      <p class="specification">
+      This page lists all the icons available in the platform, listed by category.
+      </p>
+
+      <c:forEach var="styleGuideCat" items="#{styleGuideIcons.keySet()}">
+        <c:if test="#{styleGuideCat == 'unknown'}">
+          <h4>Others</h4>
+        </c:if>
+        <c:if test="#{styleGuideCat != 'unknown'}">
+          <h4>#{styleGuideCat}</h4>
+        </c:if>
+        <c:forEach var="icon" items="#{styleGuideIcons.get(styleGuideCat)}"
+          varStatus="status">
+          <div class="bubbleBox displayIB textAlignC">
+            <div class="bubbleHeader">
+              #{icon.filename}
+            </div>
+            <h:graphicImage value="#{icon.path}" alt="#{icon.label}" title="#{icon.label}" height="16px" />
+            <c:if test="#{not empty icon.description or true}">
+              <h:outputText value="#{icon.description}" escape="false" />
+            </c:if>
+          </div>
+        </c:forEach>
+      </c:forEach>
+
+    </div>
+    <div class="clear" />
+  </div>
+
+</c:if>
+
