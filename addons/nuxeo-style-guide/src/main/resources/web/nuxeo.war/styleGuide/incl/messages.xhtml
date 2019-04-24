@@ -1,0 +1,266 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h2 id="" alt="Messages">Messages</h2>
+  <p class="specification">Feedback, status and help messages are used to communicate with users after a task: to confirm that a task has been done, to tell that the platform is processing the task and needs a bit more time, to ask users to do the task one more time as the request couldn't be performed, to show users what actions can be done and where, or to indicate the state of a document.
+   A feedback message is always a good way to show users what happened or what is happening: the content of the message is as important than the presence of the message itself. The fewer surprise there is during a process, the more intuitive the interface will be.</p>
+   <p>If you want to display a feedback message under a field in a form, use only the class of the message type.</p>
+  <div class="gridRow">
+    <div class="gridBox gridStyle7">
+      <div class="widgetPanel">
+        <h3 id="" alt="Messages">Highlights in tables</h3>
+        <p class="specification">To highlight elements in a cell, you can use the classes <span class="code">.label</span> and <span class="code">.chip</span> and add a secondary class depending of your needs.</p>
+        <div class="gridBox gridStyle12">
+          <table class="dataTable">
+            <tbody>
+              <tr>
+                <td><span class="code">.label</span></td>
+                <td><span class="label">label 1</span></td>
+                <td><span class="code">.chip</span></td>
+                <td><span class="chip">1</span></td>
+              </tr>
+              <tr>
+                <td><span class="code">.label-light</span></td>
+                <td><span class="label label-light">label 1</span></td>
+                <td><span class="code">.chip-light</span></td>
+                <td><span class="chip chip-light">1</span></td>
+              </tr>
+              <tr>
+                <td><span class="code">.label-info</span></td>
+                <td><span class="label label-info">label 2</span></td>
+                <td><span class="code">.chip-info</span></td>
+                <td><span class="chip chip-info">2</span></td>
+              </tr>
+              <tr>
+                <td><span class="code">.label-success</span></td>
+                <td><span class="label label-success">label 3</span></td>
+                <td><span class="code">.chip-success</span></td>
+                <td><span class="chip chip-success">3</span></td>
+              </tr>
+              <tr>
+                <td><span class="code">.label-warning</span></td>
+                <td><span class="label label-warning">label 4</span></td>
+                <td><span class="code">.chip-warning</span></td>
+                <td><span class="chip chip-warning">4</span></td>
+              </tr>
+              <tr>
+                <td><span class="code">.label-error</span></td>
+                <td><span class="label label-error">label 5</span></td>
+                <td><span class="code">.chip-error</span></td>
+                <td><span class="chip chip-error">5</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="gridBox gridStyle5">
+      <div class="widgetPanel">
+        <h3 id="" alt="Messages">Highlights in paragraphs</h3>
+        <p class="specification">To highlight just a word or a sentence in a paragraph, here is a list of classes that you can use on inline elements like <span class="code">span</span> tags.</p>
+        <div class="gridBox gridStyle12">
+          <table class="dataTable">
+            <tbody>
+              <tr>
+                <td><span class="code">.success</span></td>
+                <td><span class="success">Document unlocked</span></td>
+              </tr>
+              <tr>
+                <td><span class="code">.avert</span></td>
+                <td><span class="avert">Draft state</span></td>
+              </tr>
+              <tr>
+                <td><span class="code">.warning</span></td>
+                <td><span class="warning">Document locked</span></td>
+              </tr>
+              <tr>
+                <td><span class="code">.error</span></td>
+                <td><span class="error">Document document</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="clear" />
+  </div>
+
+  <div class="gridRow">
+    <div class="gridBox gridStyle7">
+      <div class="widgetPanel">
+        <h3 id="" alt="Messages">Feedback in pages</h3>
+        <p class="specification">Feedback messages showing a global status are displayed in the top right corner of the window.
+        We use the <a href="http://www.richardhsu.me/jquery.ambiance/" target="_blank" alt="jquery ambiance">jquery.ambiance library</a>. Use the <span class="code">.ambiance</span> class and add a secondary class for the type of your message.</p>
+           <table class="dataTable">
+             <tbody>
+               <tr>
+                 <td><span class="code">.infoFeedback</span></td>
+                 <td><div class="ambiance infoFeedback">
+                   <a class="ambienz-close" href="#_" onclick="return false;">×</a>
+                   <div class="ambiance-title">Your workspace is created</div>
+                   </div>
+                 </td>
+               </tr>
+               <tr>
+                 <td><span class="code">.successFeedback</span></td>
+                 <td><div class="ambiance successFeedback">
+                   <a class="ambienz-close" href="#_" onclick="return false;">×</a>
+                   <div class="ambiance-title">Your task is achieved</div>
+                 </div>
+                 </td>
+               </tr>
+               <tr>
+                 <td><span class="code">.warningFeedback</span></td>
+                 <td><div class="ambiance warningFeedback">
+                   <a class="ambienz-close" href="#_" onclick="return false;">×</a>
+                   <div class="ambiance-title">The task will expired today</div>
+                 </div>
+                 </td>
+               </tr>
+               <tr>
+                 <td><span class="code">.errorFeedback</span></td>
+                 <td><div class="ambiance errorFeedback">
+                   <a class="ambienz-close" href="#_" onclick="return false;">×</a>
+                   <div class="ambiance-title">Invalid password</div>
+                 </div>
+                 </td>
+               </tr>
+               <tr>
+                 <td><span class="code">.neutralFeedback</span></td>
+                 <td><div class="ambiance neutralFeedback">
+                   <a class="ambienz-close" href="#_" onclick="return false;">×</a>
+                   <div class="ambiance-title">A draft of this document has been saved.</div>
+                   <a class="button smallButton" href="#" onclick="return false;">Use draft</a><a href="#" onclick="return false;">Discard draft</a>
+                   </div>
+                 </td>
+               </tr>
+             </tbody>
+           </table>
+      </div>
+    </div>
+    <div class="gridBox gridStyle5">
+      <div class="widgetPanel">
+        <h3 id="" alt="Messages">Feedback in forms</h3>
+        <p class="specification">Feedback in forms will guide the user to fill a form. These messages are displayed once the form is validated.</p>
+         <div class="gridBox gridStyle12">
+           <table class="dataTable">
+             <tbody>
+               <tr>
+                 <td><span class="code">.infoMessage</span></td>
+                 <td><div class="infoMessage">This field requires this.
+                 </div></td>
+               </tr>
+               <tr>
+                 <td><span class="code">.successMessage</span></td>
+                 <td><div class="successMessage">
+                   Password validated.
+                 </div></td>
+               </tr>
+               <tr>
+                 <td><span class="code">.warningMessage</span></td>
+                 <td><div class="warningMessage">
+                  This field expects a date.
+                 </div></td>
+               </tr>
+               <tr>
+                 <td><span class="code">.errorMessage</span></td>
+                 <td><div class="errorMessage">
+                   This field is required.
+                 </div></td>
+               </tr>
+             </tbody>
+           </table>
+       </div>
+      </div>
+     </div>
+    <div class="clear" />
+  </div>
+
+   <div class="gridRow">
+     <div class="gridBox gridStyle6">
+       <div class="widgetPanel">
+       <h3 id="" alt="Messages">Status messages</h3>
+       <p class="specification">To display a feedback or status message, use status messages. They are helpful to tell users what and most of all to explain what is happening next. Define your message with a <span class="code">.processMessage</span> div class, and add a secondary class to get the corresponding type of message.
+       </p>
+       <div class="gridBox gridStyle12">
+         <table class="dataTable">
+           <tbody>
+             <tr>
+               <td><span class="code">.completeInfo</span></td>
+               <td><div class="processMessage completeInfo">You process is launched.</div></td>
+             </tr>
+             <tr>
+               <td><span class="code">.completeSuccess</span></td>
+               <td><div class="processMessage completeSuccess">Your process is complete.</div></td>
+             </tr>
+             <tr>
+               <td><span class="code">.completeError</span></td>
+               <td><div class="processMessage completeError">Your process contains an error.</div></td>
+             </tr>
+             <tr>
+               <td><span class="code">.completeWarning</span></td>
+               <td><div class="processMessage completeWarning">Your process has a warning state.</div></td>
+             </tr>
+             <tr>
+               <td><span class="code">.running</span></td>
+               <td><div class="processMessage running">Your process is running.</div></td>
+             </tr>
+             <tr>
+               <td><span class="code">.scheduled</span></td>
+               <td><div class="processMessage scheduled">Your process is scheduled.</div></td>
+             </tr>
+           </tbody>
+         </table>
+       </div>
+       </div>
+       </div>
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3 alt="Messages">Specification, details and help messages</h3>
+        <p class="specification">At last, some complementary classes are available to add a detail, make a field more explicit, or help users understand a specific action.</p>
+        <div class="gridBox gridStyle12">
+          <table class="dataTable">
+            <tbody>
+              <tr>
+                <td><span class="code">.detail</span></td>
+                <td><div class="detail">A detail under a field in a form</div></td>
+              </tr>
+              <tr>
+                <td><span class="code">.emptyResult</span></td>
+                <td><div class="quote">There is no document like this here.</div></td>
+              </tr>
+              <tr>
+                <td><span class="code">.specification</span></td>
+                <td><div class="specification">A specification paragraph, the default opening paragraph class</div></td>
+              </tr>
+              <tr>
+                <td><span class="code">.widgetHelpLabel</span></td>
+                <td><div class="widgetHelpLabel"><span class="widgetLabel tipsyShow tipsyGravityS " original-title="Hi, I'm a tooltip">Roll over this sentence!</span></div></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tips">A <span class="code">.tips</span> class to use in a foldable box or a gadget</div>
+          <div class="dropArea">A <span class="code">.dropArea</span> div to show users where to drop documents</div>
+        </div>
+      </div>
+    </div>
+    <div class="clear" />
+  </div>
+
+  <script>
+    jQuery(document).ready(function() {
+      jQuery("div.widgetHelpLabel[title]").tooltip({relative: true, position: 'bottom center'});
+    });
+  </script>
+
+</c:if>
+
