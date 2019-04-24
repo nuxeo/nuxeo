@@ -1,0 +1,136 @@
+// Custom CSS for the Nuxeo Styles guide
+
+// Visible Grid
+.demoGrid {
+  background-color: $shade-light-20;
+}
+
+.mainWrapper {
+  background-color: #fff;
+  border: 1px solid $shade-light-50;
+  box-shadow: -3px 0 0 rgba(0, 0, 0, .05);
+  min-height: 600px;
+  padding: 2% 10% 8%;
+}
+
+.vertical .smallIcon {
+    height: 12px;
+    margin-bottom: -0.1em;
+    margin-right: 0.3em;
+    width: 12px;
+}
+
+.widgetPanel .column {
+  // keep inheritance of the other values of .column
+  border: none;
+  width: auto;
+}
+
+// Grids Layout section: explain the grid layout model
+.gridVisible {
+  background-color: #fef6ff;
+  border: 1px solid #f5b3ff;
+  border-radius: 3px;
+  padding: 1em;
+}
+
+.gridVisible .code {
+  display: inline-block;
+  margin: -7px 0 5px;
+}
+
+.gridVisible .gridVisible {
+  background-color: #f6fff8;
+  border-color: #b8dfbf;
+}
+
+.gridVisible .gridVisible .gridVisible {
+  background-color: #fff8f3;
+  border-color: #ddc1b1;
+}
+
+.gridRow.gridVisible,
+.gridBox.gridVisible {
+  margin: 0 0 .5em;
+}
+
+// Messages section: remove the behavior of ambiance messages
+.gridBox .ambiance {
+  float: none;
+}
+
+.gridBox a.ambienz-close {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  float: right;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 14px;
+  margin-left: 5px;
+  padding-left: .5em;
+  position: relative;
+  right: 0;
+  top: -2px;
+}
+
+// Dialogs section: show popups
+.genericPopUp {
+  display: block;
+  left: auto;
+  position: inherit;
+  width: auto;
+}
+
+.genericPopUp .popUpContent {
+  height: 180px;
+}
+
+// space in tabs
+.mainWrapper .tabsBar {
+  margin: 0;
+}
+
+.pageNavigationControls input[type="image"] {
+  margin-right: -.3em;
+}
+
+// action link on right
+.gridBox .foldableBox h3 {
+  display: block;
+}
+
+// Reduce icons in icons tab
+.bubbleBox.displayIB.textAlignC > img {
+  max-height: 14px;
+}
+
+h2 {
+  color: #00adff;
+  border-bottom: 1px solid $shade-light-50;
+  font-size: 1.4em;
+  margin: 0 0 1em;
+}
+
+.gridBox h3,
+.gridBox h4 {
+  margin-top: 1.7em;
+}
+
+.bubbleBox h3 {
+  margin: .5em 0 1em;
+}
+
+a.bubbleBox {
+  color: $font-color;
+}
+
+.code {
+  background-color: #fff;
+  border: 1px solid #cde;
+  border-radius: 3px;
+  color: #1358ae;
+  font-family: monospace,sans-serif;
+  padding: .1em;
+  white-space: nowrap;
+}
