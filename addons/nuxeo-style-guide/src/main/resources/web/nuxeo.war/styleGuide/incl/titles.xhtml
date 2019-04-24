@@ -1,0 +1,139 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h2 id="" alt="Titles">Titles</h2>
+  <p class="specification">Each page, modal pop-up, or widget must contain a title to structure the page.
+   It is important to help users quickly identify where they are, and to introduce the subject of the page.</p>
+
+  <div class="gridContainer">
+    <div class="gridRow">
+      <div class="gridBox gridStyle4">
+        <div class="widgetPanel">
+          <h1>h1 title</h1>
+          <p class="specification">The <span class="code">h1</span> title is displayed on each page of the document management view.
+           Try to always provide one.</p>
+          <h2>h2 title</h2>
+          <p class="specification">As an alternative to <span class="code">h1</span>, since the platform is not necessarily parsed by Google engines, the <span class="code">h2</span> title can be used as main title, with a border.</p>
+        </div>
+      </div>
+      <div class="gridBox gridStyle4">
+        <div class="widgetPanel">
+          <h3>h3 title</h3>
+          <p class="specification">The default <span class="code">h3</span> title is used as a subtitle, structuring the content with its neutral bottom border.</p>
+          <h3 class="summaryTitle">h3.summaryTitle</h3>
+          <p class="specification">This <span class="code">h3.summaryTitle</span> is commonly used in all the widgets on the Summary view of a document, or in your custom tab designed in Studio.</p>
+        </div>
+      </div>
+      <div class="gridBox gridStyle4">
+        <div class="widgetPanel">
+          <h4>h4 title</h4>
+          <p class="specification">A small title with a bottom border, designed to be used to structure small paragraphs.</p>
+          <h5>h5 title</h5>
+          <p class="specification">An equivalent to a <span class="code">h4</span> title, without a border, to structure content included under a <span class="code">h4</span> title.</p>
+          <h6>h6 title</h6>
+          <p class="specification">The smallest title you can use before a paragraph, or in boxes like <span class="code">.foldableBox</span> or <span class="code">.bubbleBox</span>.</p>
+        </div>
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="gridRow">
+      <div class="gridBox gridStyle12">
+        <h3>Titles with actions</h3>
+        <p class="specification">
+          Each <span class="code">h1</span> title of a page can be displayed with a set of actions or links on the same line.
+           There are three ways to display actions on the same line as the main title.
+        </p>
+        <div class="bubbleBox">
+          <div class="globalActionBar contextActions">
+            <h1>Page title with Back link</h1>
+            <p class="action_bar directoryBack">
+              <a onclick="return false;" href="#" class="button"><img src="/nuxeo/icons/arrow_left.gif" />Back to the list</a>
+            </p>
+            <div class="clear"></div>
+          </div>
+          <p class="specification">The <span class="code">h1</span> title and the <span class="code">.action_bar .directoryBack</span> action class are included in a <span class="code">.globalActionBar</span> div class.
+           A <span class="code">.clear</span> div class is used is used before closing the <span class="code">.globalActionBar</span> div class to stop the floating behavior of blocks.</p>
+        </div>
+        <div class="bubbleBox">
+          <form class="titleBlock">
+            <h1>Page title with actions and menu</h1>
+          </form>
+          <div class="globalActions contextActions" id="nxw_documentActionsUpperButtons_panel">
+          <div class="widgetPanel actionsWidgetPanel">
+            <span class="horizontalAction">
+              <form class="displayI subWidgetForm doubleClickShielded" id="nxw_addToCollectionAction_form">
+                <a class="button" onclick="return false;" href="#"><img class="smallIcon tipsyShow tipsyGravitySE " title="Add to collection" alt="Add to collection" src="/nuxeo/icons/add_to_collection.png" /></a>
+              </form>
+            </span>
+            <span class="horizontalAction">
+              <form class="displayI subWidgetForm doubleClickShielded" id="nxw_addToFavoritesAction_form">
+                <a class="button" onclick="return false;" href="#"><img class="smallIcon tipsyShow tipsyGravitySE " title="Favorite" alt="Favorite" src="/nuxeo/icons/pin.png" /></a>
+              </form>
+            </span>
+            <span class="horizontalAction">
+              <form class="displayI subWidgetForm doubleClickShielded" id="nxw_documentLock_form">
+                <a class="button" onclick="return false;" href="#"><img class="smallIcon tipsyShow tipsyGravitySE " title="Lock" alt="Lock" src="/nuxeo/icons/contextual_menu/unlocked.png" /></a>
+              </form>
+            </span>
+            <span class="horizontalAction">
+              <form class="displayI subWidgetForm doubleClickShielded" id="nxw_permalinkAction_form">
+                <a class="button" onclick="return false;" href="#"><img class="smallIcon tipsyShow tipsyGravitySE " title="Link" alt="Link" src="/nuxeo/icons/contextual_menu/share.png" /></a>
+              </form>
+            </span>
+            <ul id="nxw_dropDownMenu" class="actionList">
+              <li class="dropDownMenu button dropdown">
+                Plus
+                <ul class="actionSubList">
+                  <li>
+                    <form class="subWidgetForm doubleClickShielded" id="nxw_downloadAction_form">
+                      <a class="button" onclick="return false;" href="#"><img class="smallIcon" title="Télécharger" alt="Download" src="/nuxeo/icons/contextual_menu/download.png" /> <span class="actionLabel ">Download</span></a>
+                    </form>
+                  </li>
+                  <li>
+                    <form class="subWidgetForm doubleClickShielded" id="nxw_subscribesAllDocNotifications_form">
+                      <a class="button" onclick="return false;" href="#"><img class="smallIcon" title="Follow" alt="Suivez ce document" src="/nuxeo/icons/contextual_menu/subscribe.png" /> <span class="actionLabel ">Follow</span></a>
+                    </form>
+                  </li>
+                  <li>
+                    <form class="subWidgetForm doubleClickShielded" id="nxw_exportView_form">
+                      <a class="button" onclick="return false;" href="#" ><img class="smallIcon" title="Export" alt="Options d'export" src="/nuxeo/icons/export.png" /> <span class="actionLabel ">Export</span></a>
+                    </form>
+                  </li>
+                  <li>
+                    <form class="subWidgetForm doubleClickShielded" id="nxw_print_form">
+                      <a class="button" onclick="return false;" href="#"><img class="smallIcon" title="Print" alt="Imprimer" src="/nuxeo/icons/printer.gif" /> <span class="actionLabel ">Print</span></a>
+                    </form>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            <script>
+              jQuery(document).ready(function() {
+                jQuery("#nxw_dropDownMenu").dropdown();
+              });
+            </script>
+          </div>
+          </div>
+          <div class="clear"></div>
+          <p class="specification">
+            For now, here is how Studio is generating the actions: in a div without class, the <span class="code">h1</span> is included in a <span class="code">.titleBlock</span> form class.
+             Then, a <span class="code">.globalActions</span> div class contains another <span class="code">.globalActions</span> div class,  which contains a <span class="code">.contextActions</span> div class.
+             In the <span class="code">.contextActions</span> div class, each action is a <span class="code">.widgetPanel .actionsWidgetPanel</span> div class, and the dropdown menu is a <span class="code">.actionList</span> ul class.
+             A <span class="code">.clear</span> div class is used after the form closing tag to stop the floating behavior of blocks.</p>
+        </div>
+    </div>
+    <div class="clear"></div>
+    </div>
+  </div>
+
+</c:if>
+
