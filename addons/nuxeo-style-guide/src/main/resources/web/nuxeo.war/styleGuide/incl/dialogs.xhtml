@@ -1,0 +1,116 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h2 id="" alt="Dialogs">Dialogs</h2>
+  <p class="specification"> There are two modal windows available in the platform.
+   Modal windows are important for user interactions: use it when you need to grab the user attention for an action.
+   By gathering the information and action in a modal window, the user will focus only on this task.</p>
+
+  <div class="gridContainer">
+    <div class="gridRow">
+      <div class="gridBox gridStyle6">
+        <div class="widgetPanel">
+          <h3>Fancybox window</h3>
+          <p class="specification">We use the <a href="http://fancybox.net/" target="_blank">http://fancybox.net/</a> modal pop-up by default.
+           To keep FancyBox pop-ups consistent, keep the following structure:
+           a <span class="code">h3</span> for the title, a <span class="code">div.content</span> for the main part,
+           and then a <span class="code">p.buttonsGadget</span> at the end to display the buttons.
+          </p>
+          <div id="fancybox-wrap" style="height: auto; display: block; position: relative">
+            <div id="fancybox-outer">
+              <div id="fancybox-bg-n" class="fancybox-bg"></div>
+              <div id="fancybox-bg-ne" class="fancybox-bg"></div>
+              <div id="fancybox-bg-e" class="fancybox-bg"></div>
+              <div id="fancybox-bg-se" class="fancybox-bg"></div>
+              <div id="fancybox-bg-s" class="fancybox-bg"></div>
+              <div id="fancybox-bg-sw" class="fancybox-bg"></div>
+              <div id="fancybox-bg-w" class="fancybox-bg"></div>
+              <div id="fancybox-bg-nw" class="fancybox-bg"></div>
+              <div id="fancybox-content" style="border-width: 0px; width: 100%;; height: auto;">
+                <div style="width:auto;height:auto;overflow: auto;position:relative;">
+                  <div id="#">
+                    <h3>Click on an item to select it</h3>
+                    <div id="#" class="content">
+                      <p class="specification">An introduction paragraph to users if something needs to be explained.</p>
+                      <div id="#">
+                        <table class="dataTable">
+                          <tr>
+                            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/word.png" /></td>
+                            <td><a href="#" onclick="return false;">My document</a></td>
+                          </tr>
+                          <tr>
+                            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/folder.gif" /></td>
+                            <td><a href="#" onclick="return false;">My folder</a></td>
+                          </tr>
+                          <tr>
+                            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/text.png" /></td>
+                            <td><a href="#" onclick="return false;">My text file</a></td>
+                          </tr>
+                        </table>
+                      </div>
+                    </div>
+                    <p class="buttonsGadget">
+                      <input id="#" type="submit" name="#" value="Filter" class="button" onclick="return false;" />
+                      <input class="button" id="#" name="#" onclick="return false;" value="Close" disabled="disabled" type="button" />
+                    </p>
+                  </div>
+                </div>
+            </div>
+            <a id="fancybox-close" style="display: inline;"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>Generic pop-up</h3>
+        <p class="specification">If you can't use a FancyBox window, you can use the <span class="code">.genericPopUp</span> window div class.
+         But you have to keep the layout consistent: always provide a <span class="code">h3</span> title as often as possible,
+         a description in a <span class="code">.popUpContent</span> div class, and actions in a <span class="code">.buttonsGadget</span> with a Close button.</p>
+        <div class="genericPopUp">
+          <div class="closePopUpHeader">
+            <span class="popUpTitle">Click on an item to select it</span>
+            <span onclick="return false;" class="closePopUp">Close</span>
+            <div class="clear"></div>
+          </div>
+          <div class="popUpContent">
+            <p class="specification">An introduction paragraph to users if something needs to be explained.</p>
+            <div id="#">
+              <table class="dataTable">
+                <tr>
+                  <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/word.png" /></td>
+                  <td><a href="#" onclick="return false;">My document</a></td>
+                </tr>
+                <tr>
+                  <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/folder.gif" /></td>
+                  <td><a href="#" onclick="return false;">My folder</a></td>
+                </tr>
+                <tr>
+                  <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/text.png" /></td>
+                  <td><a href="#" onclick="return false;">My text file</a></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <p class="buttonsGadget">
+            <input type="submit" onclick="return false;" class="button" value="Filter" name="#" id="#" />
+            <input type="button" disabled="disabled" value="Close" onclick="return false;" name="#" id="#" class="button" />
+          </p>
+        </div>
+        </div>
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div>
+
+</c:if>
+
