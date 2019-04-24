@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.styleguide.auth.contrib">
+
+  <documentation>
+    Make sure the demo page is available to all users, without needing any
+    authentication.
+  </documentation>
+
+  <!-- declare urls as valid startup pages to avoid redirection -->
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>styleGuide/</pattern>
+      </patterns>
+    </startURLPattern>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="specificChains">
+
+    <specificAuthenticationChain name="styleGuide">
+
+      <urlPatterns>
+        <url>(.*)/styleGuide/.*</url>
+      </urlPatterns>
+      <!-- no authentication needed for this pattern -->
+      <replacementChain></replacementChain>
+
+    </specificAuthenticationChain>
+
+  </extension>
+
+</component>
