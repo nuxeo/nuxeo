@@ -1,0 +1,237 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h2 id="" alt="Navigation">Navigation</h2>
+  
+  <p class="specification">In any application or website, navigation is the one of the key elements for a great experience. Everyone hates to be lost. Everyone hates to not be able to come back to the right page. A list of navigation patterns is here to help you design your navigation experience, using the suitable class in each situation.</p>
+  <div class="gridRow">
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>Main tabs</h3>
+        <p class="specification">The main tabs are styled by the <span class="code">.tabsbar</span> div class. In this div, a <span class="code">ul</span> list is displayed with tab items in <span class="code">li</span>. The <span class="code">li.selected</span> class handles the selected behavior.</p>
+        <div class="tabsBar">
+          <form action="#" method="post" name="#" id="#">
+            <ul id="j_id201:j_id202">
+              <li class="selected">
+                <a href="#" onclick="return false;">Summary</a>
+              </li>
+              <li class="">
+                <a href="#" onclick="return false;">Edit</a>
+              </li>
+              <li class="">
+                <a href="#" onclick="return false;">Manage</a>
+              </li>
+            </ul>
+          </form>
+        </div>
+        <div class="tabsBar">
+          <form>
+            <ul>
+              <li class="selected">
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/hash.png" title="Icons" class="smallIcon" />
+                </a>
+              </li>
+              <li>
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/titles.png" title="Titles" class="smallIcon" />
+                </a>
+              </li>
+              <li>
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/boxes.png" title="Boxes" class="smallIcon" />
+                </a>
+              </li>
+              <li>
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/tab.png" title="Help" class="smallIcon" />
+                </a>
+              </li>
+              <li>
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/happy.png" title="Feedback" class="smallIcon" />
+                </a>
+              </li>
+            </ul>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>Sub tabs</h3>
+        <p class="specification">You may need a second level of navigation under a main tab. In addition to the initial <span class="code">.tabsbar</span> class, add a <span class="code">.subtabsBar</span> class and you will get the subtab style</p>
+        <p class="specification">Depending on your need and the place available, you can use links or icons in links.</p>
+        <div class="tabsBar subtabsBar">
+          <form action="#" method="post" name="#" id="#">
+            <ul id="j_id201:j_id202">
+              <li class="selected">
+                <a href="#" onclick="return false;">Access rights</a>
+              </li>
+              <li class="">
+                <a href="#" onclick="return false;">Trash</a>
+              </li>
+            </ul>
+          </form>
+        </div>
+        <div class="tabsBar subtabsBar">
+          <form>
+            <ul>
+              <li class="selected">
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/hash.png" title="Icons" class="smallIcon" />
+                </a>
+              </li>
+              <li>
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/titles.png" title="Titles" class="smallIcon" />
+                </a>
+              </li>
+              <li>
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/boxes.png" title="Boxes" class="smallIcon" />
+                </a>
+              </li>
+              <li>
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/tab.png" title="Help" class="smallIcon" />
+                </a>
+              </li>
+              <li>
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/happy.png" title="Feedback" class="smallIcon" />
+                </a>
+              </li>
+            </ul>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>Modular tabs</h3>
+        <p class="specification">Categorize secondary content by using modular tabs. Made for small width containers, modular tabs inherit their style from the <span class="code">.tabsbar</span> class, and the additional <span class="code">.modularTabs</span>  class adds some specificities.</p>
+        <div class="tabsBar modularTabs">
+          <form action="#" method="post" name="#" id="#">
+            <ul id="j_id201:j_id202">
+              <li>
+                <a href="#" onclick="return false;">Worklist</a>
+              </li>
+              <li class="selected">
+                <a href="#" onclick="return false;">Clipboard</a>
+              </li>
+            </ul>
+          </form>
+        </div>
+        <div class="tabsBar modularTabs">
+          <form>
+            <ul>
+              <li class="selected">
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/hash.png" title="Icons" class="smallIcon" />
+                </a>
+              </li>
+              <li>
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/titles.png" title="Titles" class="smallIcon" />
+                </a>
+              </li>
+              <li>
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/boxes.png" title="Boxes" class="smallIcon" />
+                </a>
+              </li>
+              <li>
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/tab.png" title="Help" class="smallIcon" />
+                </a>
+              </li>
+              <li>
+                <a href="#" onclick="return false;">
+                  <img src="/nuxeo/icons/happy.png" title="Feedback" class="smallIcon" />
+                </a>
+              </li>
+            </ul>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>Back navigation</h3>
+        <p class="specification">If you need to add a Back button which depends on a filter or search result, display it on top of your page, in the same line as the title. In a <span class="code">.globalActionBar</span>, add your <span class="code">.h1</span> and your <span class="code">.action_bar .directoryBack</span> p, with your <span class="code">.button</span> link class in the paragraph.</p>
+        <p class="specification">For more details on actions with titles, check the <a href="/nuxeo/styleGuide/Titles">Titles</a> section.</p>
+        <div class="globalActionBar">
+          <h1>My title with Back link</h1>
+          <p class="action_bar directoryBack">
+            <a href="#" class="button" onclick="return false;">
+              <img src="/nuxeo/icons/arrow_left.gif" />Back to the list
+            </a>
+          </p>
+          <div class="clear" />
+        </div>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>Breadcrumb</h3>
+        <p class="specification">The breadcrumb is useful when users need to navigate in a multi-level tree. Add it on top of your page, usually below the header, to be visible on each page. In a <span class="code">.breadcrumb</span> div class that styles the position, a <span class="code">.breadcrumbs</span>  div class will style the links.</p>
+        <p class="specification">Add a <span class="code">.grayBox</span> secondary class to display it in a box.</p>
+        <div class="breadcrumb">
+          <div class="breadcrumbs">
+            <form id="breadcrumbForm">
+              <a id="#" href="#" onclick="return false">
+                <img src="/nuxeo/icons/UpFolder_icon.gif" />
+              </a>
+              &gt; 
+              <a href="#" onclick="return false">Intranet</a>
+              &gt; 
+              <a href="#" onclick="return false">Workspace</a>
+              &gt; 
+              <a href="#" onclick="return false">Developer Team</a>
+            </form>
+          </div>
+          <div class="clear" />
+        </div>
+        <div class="breadcrumb grayBox">
+          <div class="breadcrumbs">
+            <form id="breadcrumbForm">
+              <a id="#" href="#" onclick="return false">
+                <img src="/nuxeo/icons/UpFolder_icon.gif" />
+              </a>
+              &gt; <a href="#" onclick="return false">Intranet</a>
+              &gt; <a href="#" onclick="return false">Workspace</a>
+              &gt; <a href="#" onclick="return false">Developer Team</a>
+            </form>
+          </div>
+          <div class="clear" />
+        </div>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>Page navigation</h3>
+        <p class="specification">The page navigation controls are available in content views, to paginate your results when there is a lot of items. In a <span class="code">.pageNavigationControls</span> div class, list your icons and display the pages numbers in a <span class="code">span.currentPageStatus</span> class.</p>
+        <div class="pageNavigationControls">
+          <input type="image" src="/nuxeo/icons/navigation_first.png" disabled="disabled" alt="Première page" onclick="return false;" />
+          <input type="image" src="/nuxeo/icons/navigation_previous.png" disabled="disabled" alt="Page précédente" onclick="return false;" />
+          <span class="currentPageStatus">1/2</span>
+          <input type="image" src="/nuxeo/icons/navigation_next.png" alt="Page suivante" onclick="return false;" />
+          <input type="image" src="/nuxeo/icons/navigation_last.png" alt="Dernière page" onclick="return false;" />
+        </div>
+      </div>
+    </div>
+    <div class="clear" />
+  </div>
+
+</c:if>
+
