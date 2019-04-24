@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.styleguide.theme">
+
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="styleGuide/default" charset="utf-8">
+      <links>
+        <icon name="icon">/icons/favicon.png</icon>
+        <icon name="shortcut icon">/icons/favicon.ico</icon>
+      </links>
+      <defaultFlavor>default</defaultFlavor>
+      <flavors>
+        <flavor>default</flavor>
+        <flavor>rainbow</flavor>
+      </flavors>
+      <resources>
+        <bundle>nuxeo_includes</bundle>
+        <bundle>nuxeo_base</bundle>
+        <resource>style_guide.css</resource>
+      </resources>
+    </themePage>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+
+    <resource name="style_guide.css">
+      <path>themes/css/style_guide.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+
+  </extension>
+
+</component>
