@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+
+  </install>
+
+  <extension target="faces-config#NAVIGATION">
+    <navigation-case>
+      <from-outcome>style_guide</from-outcome>
+      <to-view-id>/styleGuide/style_guide.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </extension>
+
+</fragment>
