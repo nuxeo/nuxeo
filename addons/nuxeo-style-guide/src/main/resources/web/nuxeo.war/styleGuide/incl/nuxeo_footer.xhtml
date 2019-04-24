@@ -1,0 +1,47 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <ui:decorate template="/incl/nuxeo_footer_template.xhtml">
+    <ui:define name="prefooter" />
+    <ui:define name="footer">
+
+      <div class="footerDefaultLinks">
+        <div class="nuxLinks">
+          <nxu:set var="actions"
+            value="#{styleGuideActions.getActions('FOOTER')}" cache="true">
+            <c:forEach var="action" items="#{actions}" varStatus="status">
+              <ui:decorate template="/incl/action/generic_action_template.xhtml" />
+              <c:if test="#{not status.last}">
+                <h:outputText value=" | " />
+              </c:if>
+            </c:forEach>
+          </nxu:set>
+        </div>
+
+        <div class="copyrights">
+          <h:outputFormat value="#{messages['label.login.copyright']}">
+            <f:param value="#{copyrightCurrentYear}" />
+          </h:outputFormat>
+        </div>
+
+        <div class="clear"></div>
+
+      </div>
+
+    </ui:define>
+  </ui:decorate>
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-81135-9']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</div>
