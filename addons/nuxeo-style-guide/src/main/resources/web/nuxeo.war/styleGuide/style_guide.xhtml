@@ -1,0 +1,63 @@
+<ui:composition template="/pages/basic_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  <ui:param name="pageName" value="styleGuide/default" />
+  <ui:param name="pageFlavor" value="default" />
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - Style Guide" />
+  </ui:define>
+
+  <ui:define name="basic body">
+
+    <header class="nxHeader">
+      <div style="width:20%; float:left;">
+        <div class="logo">
+          <a href="#{baseURL}styleGuide/">
+            <img width="114" height="20"
+              src="#{baseURL}img/nuxeo_logo.png"
+              title="Style Guide"
+              alt="Style Guide" />
+          </a>
+        </div>
+      </div>
+      <div class="content" style="width:70%; float:right;">
+        <ui:include src="/styleGuide/incl/nuxeo_header.xhtml" />
+      </div>
+      <div class="includes displayNone">
+        <ui:include src="/incl/includes.xhtml" />
+      </div>
+    </header>
+
+    <section class="nxMainContainer">
+      <div class="gridContainer">
+        <div class="gridRow demoGrid">
+
+          <div class="gridBox verticalTabsColumn gridStyle2">
+            <ui:include src="./incl/sections.xhtml" />
+          </div>
+
+          <div class="gridBox verticalTabsContent gridStyle10">
+            <div class="mainWrapper">
+              <c:if test="#{styleGuideActions.currentPage != null}">
+                <ui:include src="#{styleGuideActions.currentPage.link}" />
+              </c:if>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <footer class="nxFooter">
+      <div class="content">
+        <ui:include src="/styleGuide/incl/nuxeo_footer.xhtml" />
+      </div>
+    </footer>
+
+  </ui:define>
+
+</ui:composition>
