@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.styleguide.theme">
+
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="styleGuide/default" charset="utf-8">
+      <defaultFlavor>default</defaultFlavor>
+      <flavors>
+        <flavor>default</flavor>
+        <flavor>rainbow</flavor>
+      </flavors>
+      <resources>
+        <bundle>nuxeo_includes</bundle>
+        <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_sassCss</bundle>
+        <resource>style_guide.scss</resource>
+      </resources>
+    </themePage>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+
+    <resource name="style_guide.scss" type="css">
+      <path>themes/sass/style_guide.scss</path>
+      <processors>
+        <processor>sassCss</processor>
+      </processors>
+    </resource>
+
+  </extension>
+
+</component>
