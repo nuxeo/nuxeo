@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.styleguide.service">
+
+  <service>
+    <provide interface="org.nuxeo.ecm.styleguide.service.StyleGuideService" />
+  </service>
+  <implementation class="org.nuxeo.ecm.styleguide.service.StyleGuideServiceImpl" />
+
+  <extension-point name="icons">
+    <object class="org.nuxeo.ecm.styleguide.service.descriptors.IconDescriptor" />
+  </extension-point>
+
+</component>
