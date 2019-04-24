@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.styleguide.actions.contrib">
+
+  <documentation>
+    Define tabs to display in left menu
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="Introduction" link="/styleGuide/incl/introduction.xhtml" order="0"
+      label="Introduction" icon="/icons/dot.png">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
+    <action id="Recommendations" link="/styleGuide/incl/recommendations.xhtml" order="10"
+      label="Recommendations" icon="/icons/good.png">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
+    <action id="Grid" link="/styleGuide/incl/grid_layout.xhtml" order="20"
+      label="Grid Layout" icon="/icons/grid.png">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
+    <action id="Tables" link="/styleGuide/incl/tables.xhtml" order="30"
+      label="Tables" icon="/icons/tables.png">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
+    <action id="Boxes" link="/styleGuide/incl/boxes.xhtml" order="90"
+      label="Boxes" icon="/icons/boxes.png">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
+    <action id="Messages" link="/styleGuide/incl/messages.xhtml" order="40"
+      label="Messages" icon="/icons/messages.png">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
+    <action id="Titles" link="/styleGuide/incl/titles.xhtml" order="50"
+      label="Titles" icon="/icons/titles.png">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
+    <action id="Dialogs" link="/styleGuide/incl/dialogs.xhtml" order="60"
+      label="Dialogs" icon="/icons/dialogs.png">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
+    <action id="Buttons" link="/styleGuide/incl/buttons.xhtml" order="70"
+      label="Buttons" icon="/icons/buttons.png">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
+    <action id="Navigation" link="/styleGuide/incl/navigation.xhtml" order="80"
+      label="Navigation" icon="/icons/navigation.png">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
+    <action id="Helpers" link="/styleGuide/incl/helpers.xhtml" order="90"
+      label="Helpers" icon="/icons/helpers.png">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
+    <action id="Icons" link="/styleGuide/incl/icons.xhtml" order="100"
+      label="Icons" icon="/icons/hash.png">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
+  </extension>
+
+</component>

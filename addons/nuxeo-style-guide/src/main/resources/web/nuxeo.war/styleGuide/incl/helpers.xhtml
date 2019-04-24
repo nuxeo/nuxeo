@@ -1,0 +1,110 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h2 id="" alt="Helpers">Helpers</h2>
+  <p class="specification"> Helpers classes are a set of secondary classes to use in very specific cases. Usually default classes are made to fit a large range of interface design. But sometimes your class requires a particular behavior. That is why you can complete your container's class attribute by adding a helper class, instead of writing a new class with only one or two different rules.</p>
+
+  <div class="gridRow">
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>Words helper classes</h3>
+        <p class="specification">Several classes are already available to change words behaviour. Some of them have already been described in the <a href="/nuxeo/styleGuide/Messages">Messages</a> and <a href="/nuxeo/styleGuide/Tables">Tables</a> sections.</p>
+        <ul class="visibleList">
+          <li><span class="code">.bold</span> : if you need to get a bold font-weight,</li>
+          <li><span class="code">.nobold</span> : if you need to stop a bold font-weight inheritance,</li>
+          <li><span class="code">.nowrap</span> : if you need to force a word or a sentence to not be broken by a carriage return. Useful for tags for example, as you need them to be identified as one block so you don't want them to appear on two lines.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>Paragraphs helper classes</h3>
+        <p class="specification">Sometimes the text needs to be aligned in a particular way. Here is the set of classes to modify the default behavior.</p>
+        <ul class="visibleList">
+          <li><span class="code">.textAlignR</span> : aligns your paragraph to the right,</li>
+          <li><span class="code">.textAlignL</span> : aligns it to the left,</li>
+          <li><span class="code">.textAlignC</span> : aligns it to the center.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="gridRow">
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>Positions helper classes</h3>
+        <p class="specification">Containers may be <a href="http://en.wikipedia.org/wiki/Block-level_element#Block_elements" target="_blank">block-level elements</a> or <a href="http://en.wikipedia.org/wiki/Inline_element#Inline_elements" target="_blank">inline elements</a>, depending of their role.</p>
+        <ul class="visibleList">
+          <li><span class="code">.displayB</span> : switches the behavior by a <span class="code">display:block;</span>,</li>
+          <li><span class="code">.displayI</span> : switches it to <span class="code">display:inline;</span>,</li>
+          <li><span class="code">.displayIB</span> : switches it to <span class="code">display:inline-block;</span>.</li>
+          <li><span class="code">.displayN</span> : doesn't display your element with a <span class="code">display:none;</span> style.</li>
+        </ul>
+        <p class="specification">You may also want an element to float on the right, or the left side of your layout, or stop a floating behavior.</p>
+        <ul class="visibleList">
+          <li><span class="code">.floatR</span> : floats to the right,</li>
+          <li><span class="code">.floatL</span> : floats to the left,</li>
+          <li><span class="code">.clear</span> : clears the floating behavior with a <span class="code">clear:both;</span> style.</li>
+        </ul>
+        <p class="specification">Don't forget that each element has a behavior for a reason. Changing its behavior can be useful, but you always have to use it with precaution, as an isolated case, the exception that proves the rule.</p>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>Widths helper classes</h3>
+        <p class="specification">You can force the width of elements if you want to make them take all the width of their container, or on the contrary constrain them to take less place than expected.</p>
+        <p class="specification">To force a full width:</p>
+        <ul class="visibleList">
+          <li><span class="code">.fullWidth</span> : adds a <span class="code">width:100%;</span> to your element,</li>
+          <li><span class="code">.fullMaxWidth</span> : forces the full width only if the content is larger than its container with a <span class="code">max-width:100%;</span> style,</li>
+          <li><span class="code">.autoWidth</span> : resets the width inheritance by adding a <span class="code">width:auto;</span>.</li>
+        </ul>
+        <p class="specification">To constrain a container, you can still use the percent classes, that will add a width in percentage to your element. </p>
+        <p class="specification">
+	        <span class="code">.tenPercent</span>
+	        <span class="code">.twentyPercent</span>
+	        <span class="code">.thirtyPercent</span>
+	        <span class="code">.fortyPercent</span>
+	        <span class="code">.fiftyPercent</span>
+	        <span class="code">.sixtyPercent</span>
+	        <span class="code">.seventyPercent</span>
+	        <span class="code">.eightyPercent</span>
+	        <span class="code">.ninetyPercent</span>
+	      </p>
+      </div>
+    </div>
+  </div>
+  <div class="gridRow">
+    <div class="gridBox gridStyle12">
+      <div class="widgetPanel">
+        <h3>Visibility, display and overflow helper classes</h3>
+        <p class="specification"> For a contextual menu or another element associated with JavaScript, you may want to hide something by default. There are four available classes:</p>
+        <ul class="visibleList">
+          <li><span class="code">.displayB</span> : switches the behavior by a <span class="code">display:block;</span>,</li>
+          <li><span class="code">.displayN</span> : doesn't display your element with a <span class="code">display:none;</span> style,</li>
+          <li><span class="code">.visibilityH</span> : hides your element with the <span class="code">visibility:hidden;</span> style,</li>
+          <li><span class="code">.visibilityV</span> : doesn't display your element with a <span class="code">visibility:visible;</span> style.</li>
+        </ul>
+        <p class="specification">You can also control the overflow of an element by using these classes:</p>
+        <ul class="visibleList">
+          <li><span class="code">.overflowV</span> : adds an <span class="code">overflow:visible;</span>, </li>
+          <li><span class="code">.overflowH</span> : adds an <span class="code">overflow:hidden;</span>,</li>
+          <li><span class="code">.overflowS</span> : adds an <span class="code">overflow:scroll;</span>,</li>
+          <li><span class="code">.overflowA</span> : resets the inheritance by an <span class="code">overflow:auto;</span>.</li>
+        </ul>
+        <p class="specification">The <span class="code">overflow:scroll;</span> can also limited to an horizontal or vertical behavior only, by using the <span class="code">overflow-x:scroll;</span> or <span class="code">overflow-y:scroll;</span> styles. In this case, use the <span class="code">overflowXS</span> and <span class="code">overflowYS</span> helpers classes.</p>
+      </div>
+    </div>
+    <div class="clear" />
+  </div>
+
+</c:if>
+
