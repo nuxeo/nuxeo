@@ -1,0 +1,136 @@
+/* --
+Custom CSS for the Nuxeo Styles guide
+-- */
+
+/* Header */
+.nxHeader .logo {
+  padding: .6em 0 .6em 1.5em;
+  text-align: left }
+
+/* Style Guide app: style containers and vertical tabs */
+.demoGrid {
+  background-color: "neutral.lighter (__FLAVOR__ background)" }
+
+  .demoGrid .gridStyle2:first-child {
+    position: relative;
+    z-index: 100 }
+
+.mainWrapper {
+  background-color: #fff;
+  box-shadow: -3px 0 0 rgba(0, 0, 0, 0.05);
+  min-height: 600px;
+  padding: 2% 10% 8% }
+
+.verticalTabs {
+  font-weight: bold;
+  margin: 0;
+  padding: 2em 0 }
+
+  .verticalTabs li {
+    margin: 0 0 .2em;
+    padding: 0 }
+
+  .verticalTabs li a {
+    display: block;
+    padding: .7em 0 .7em .8em;
+    text-decoration: none;
+    transition: none }
+
+  .verticalTabs li img {
+    margin: 0 0 -3px;
+    opacity: .4 }
+
+  .verticalTabs li.selected,
+  .verticalTabs li:hover {
+    background-color: "color.major.strong (__FLAVOR__ background)";
+    border-radius: 0 2em 2em 0;
+    margin: 0 -1em .2em 0;
+    transition: margin 0.1s ease 0.1s }
+  .verticalTabs li:hover img,
+  .verticalTabs li.selected img {
+    opacity: 1 }
+
+  .verticalTabs li:hover {
+    background-color: "color.major.strong (__FLAVOR__ background)" }
+
+  .verticalTabs li:hover a,
+  .verticalTabs li.selected a {
+    color: #000;
+    margin-left: .4em }
+
+  .verticalTabs li.selected a {
+    color: #fff }
+
+.widgetPanel .column {
+  /* keep inheritance of the other values of .column */
+  border: none;
+  width: auto }
+
+/* Grids Layout section: explain the grid layout model */
+.gridVisible {
+  background-color: #fef6ff;
+  border: 1px solid #f5b3ff;
+  border-radius: 3px;
+  padding: 1em }
+
+.gridVisible .code {
+  display: inline-block;
+  margin: -7px 0 5px }
+
+.gridVisible .gridVisible { background-color: #f6fff8; border-color: #b8dfbf }
+.gridVisible .gridVisible .gridVisible { background-color: #fff8f3; border-color: #ddc1b1 }
+
+.gridRow.gridVisible,
+.gridBox.gridVisible { margin: 0 0 .5em }
+
+/* Messages section: remove the behavior of ambiance messages */
+.gridBox .ambiance {
+  float: none }
+.gridBox a.ambienz-close {
+  color: inherit;
+  padding-left: 0.5em;
+  text-decoration: none;
+  display: block;
+  float: right;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 14px;
+  margin-left: 5px;
+  position: relative;
+  right: 0;
+  top: -2px }
+
+/* Dialogs section: show popups  */
+.genericPopUp { display: block;
+  left: auto;
+  position: inherit;
+  width: auto }
+.genericPopUp .popUpContent { height: 180px }
+
+/* space in tabs */
+.mainWrapper .tabsBar { margin: 0 }
+.pageNavigationControls input[type="image"] {margin-right: -0.3em }
+
+/* action link on right */
+.gridBox .foldableBox h3 { display: block }
+
+/* Reduce icons in icons tab */
+.bubbleBox.displayIB.textAlignC > img {
+  max-height: 14px }
+
+/* Missing styles in the platform for sure */
+h2 {
+  border-bottom: 1px solid;
+  border-color: "color.major.strong (__FLAVOR__ border)";
+  font-size: 1.4em;
+  margin: 0 0 1em }
+
+.code {
+  background-color: #fff;
+  border: 1px solid #cde;
+  border-radius: 3px;
+  color: #1358ae;
+  font-family: monospace,sans-serif;
+  padding: .1em;
+  white-space: nowrap }
