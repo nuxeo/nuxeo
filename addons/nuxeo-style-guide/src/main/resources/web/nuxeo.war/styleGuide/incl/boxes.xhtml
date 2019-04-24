@@ -1,0 +1,195 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h2 alt="Boxes">Boxes</h2>
+  <p class="specification">Sometimes your content needs to be gathered in a box: listings, small forms, options, filters. The platform contains two types of boxes: foldable boxes with options, and bubble boxes. For each  box you add, chose a title, define your content, select a box type and think about where you want to display the box: your box's container will handle the global width of your box.</p>
+
+  <div class="gridRow">
+    <h3>Bubble boxes</h3>
+    <p class="specification">
+    A <span class="code">.bubbleBox</span> div class contains a <span class="code">.bubbleHeader</span> div class with a <span class="code">h3</span> title. The <span class="code">.bubbleHeader</span> div is followed by a <span class="code">.boxBody</span> div class for the box content. The content can be plain text, tables, forms, etc ... Here are several possibilities to display the <span class="code">.bubbleBox</span>:</p>
+    <ul class="visibleList">
+      <li><span class="bold">Simple box</span>: a <span class="code">.bubbleBox</span> div class, that automatically defines the borders and margins,</li>
+      <li><span class="bold">Box with button</span>: add a <span class="code">.button</span> input class before the <span class="code">h3</span>  in the <span class="code">.bubbleHeader</span>.</li>
+    </ul>
+    <div class="gridBox gridStyle6">
+      <div>
+        <div class="bubbleBox">
+          <div class="bubbleHeader">
+            <h3>Simple box</h3>
+          </div>
+          <div class="boxBody">
+            <p class="specification">Just a title and some content in a paragraph.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+      <div>
+        <div class="bubbleBox">
+          <div class="bubbleHeader">
+            <input class="button" value="X" type="button" />
+            <h3>Box with button</h3>
+          </div>
+          <div class="boxBody">
+            <table class="dataTable">
+              <tr>
+                <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/word.png" /></td>
+                <td><a href="#" onclick="return false;">My document</a></td>
+              </tr>
+              <tr>
+                <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/folder.gif" /></td>
+                <td><a href="#" onclick="return false;">My folder</a></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gridRow">
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+      <h3>Gray boxes</h3>
+      <p class="specification">
+      A <span class="code">.grayBox</span> div class displays the content in a gray container with a border and a 100% width behavior.</p>
+      <div class="grayBox">
+        <p>Hello, I'm in a gray box.</p>
+        <p>But I'm feeling blue.</p>
+      </div>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+    <div class="widgetPanel">
+      <h3>Simple boxes</h3>
+      <p class="specification">
+      A <span class="code">.simpleBox</span> div is a specific case of the <span class="code">.grayBox</span> container:  in addition to the background color and border the width is fixed to 350px. The text have an ellipsis behavior if needed.</p>
+      <div class="simpleBox">
+        <p>Just a title and some content in a paragraph.</p>
+        <a onclick="return toggleBox(this)" href="#">averyveryveryveryverylonglonglonglongtitleforalinkdontyouthink</a>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <div class="gridRow">
+    <h3>HTML text block</h3>
+    <p class="specification">
+    A <span class="code">.textBlock</span> div displays the text as a note, in accordance with default HTML formatting. The width will depend of the block's container.</p>
+    <div class="gridBox gridStyle12">
+      <div class="textBlock">
+        <p>Hooray ! A text block !</p>
+        <ol>
+          <li>I can write lists</li>
+        </ol>
+        <ul>
+          <li>All types of lists,</li>
+          <ul>
+            <li>even nested ones \o/</li>
+          </ul>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="gridRow">
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>Default foldable boxes</h3>
+        <p class="specification">
+        A <span class="code">.foldableBox</span> div class contains a <span class="code">.unfolded</span> or <span class="code">.folded</span> <span class="code">h3</span> title class with a link class <span class="code">.foldableHeaderLink</span> in it to display the foldable icon. A <span class="code">.boxBody</span> div class is used for the content.
+        </p>
+        <div class="foldableBox">
+          <h3 class="unfolded">
+            <a class="foldableHeaderLink" onclick="return toggleBox(this)" href="#nologo"><span class="code">.unfolded</span> h3 title</a>
+          </h3>
+          <div class="boxBody">The foldable box content is in a <span class="code">.boxBody</span> div. The h3 title class automatically switches from <span class="code">.folded</span> to <span class="code">.unfolded</span> and vice versa.</div>
+        </div>
+        <div class="foldableBox">
+          <h3 class="folded">
+            <a  class="foldableHeaderLink" onclick="return toggleBox(this)" href="#nologo">A box folded by default</a>
+          </h3>
+          <div class="boxBody" style="display:none;">Some awesome content</div>
+        </div>
+        <div class="foldableBox">
+          <h3 class="unfolded">
+            <a  class="foldableHeaderLink" onclick="return false" href="#nologo">Foldable box with button</a>
+            <img src="/nuxeo/icons/help.png" title="Write in the title of your helper a text that helps" class="layoutHelpLabel" />
+            <a onclick="return false" href="#" class="button smallButton action">Enable</a>
+          </h3>
+          <div class="boxBody">
+            <p class="specification">You can include a tooltip in the title by using a <span class="code">.layoutHelpLabel</span> img class. Write the content of your helper in the title of your <span class="code">img</span> tag.</p>
+            <p class="specification">You can also add an action, by adding the <span class="code">.button .smallButton .action</span> link classes.</p>
+            <p class="specification">For more details on buttons, check the <a href="/nuxeo/styleGuide/Buttons">Buttons</a> section.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>Custom foldable boxes</h3>
+        <div class="foldableBox">
+          <h3 class="foldedDisabled"><span class="code">.foldedDisabled</span> h3 title</h3>
+          <div class="boxBody">If you want to use the foldable box style only, without the foldable behavior, remove the link from the <span class="code">.h3</span> and add a <span class="code">.foldedDisabled</span> class to it.</div>
+        </div>
+        <div class="foldableLightBox">
+          <div class="unfolded">
+            <a  class="foldableHeaderLink" onclick="return toggleBox(this)" href="#nologo"><span class="code">.unfolded</span> foldable box div title class</a>
+          </div>
+          <div class="boxBody">
+            <p class="specification">
+            A light foldableBox can also be an option for a light interface: use the <span class="code">.foldableLightBox</span> class for the container instead of the <span class="code">.foldableBox</span> class, then keep the same layout as the default foldable box.</p>
+            <table class="dataTableLine">
+              <tbody>
+                <tr class="dataRowEven">
+                  <td class="labelColumn">
+                    <span class="widgetLabel">City</span>
+                  </td>
+                  <td class="fieldColumn">
+                    <span>Paris</span>
+                  </td>
+                </tr>
+                <tr class="dataRowOdd">
+                  <td class="labelColumn">
+                    <span class="widgetLabel">Country</span>
+                  </td>
+                  <td class="fieldColumn">
+                    <span>France</span>
+                  </td>
+                </tr>
+                <tr class="dataRowEven">
+                  <td class="labelColumn">
+                    <span class="widgetLabel">Continent</span>
+                  </td>
+                  <td class="fieldColumn">
+                    <span>Europe</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="clear" />
+
+  <script>
+    jQuery(document).ready(function() {
+      jQuery("img.layoutHelpLabel[title]").tooltip({relative: true, position: 'bottom center'});
+    });
+  </script>
+
+</c:if>
+
