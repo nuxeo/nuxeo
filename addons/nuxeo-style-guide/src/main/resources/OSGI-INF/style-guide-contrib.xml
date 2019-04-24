@@ -1,0 +1,1457 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.styleguide.contrib">
+
+  <extension target="org.nuxeo.ecm.styleguide.service" point="icons">
+
+    <!-- Contribution example -->
+    <!--icon path="/icons/my_icon.png">
+      <label>My icon</label>
+      <description>
+        <p>Used in this case</p>
+      </description>
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon-->
+
+    <!-- Don't display these icons -->
+    <icon path="/icons/index.jsp" enabled="false" />
+    <icon path="/icons/icon_spacer.gif" enabled="false" />
+    <icon path="/icons/icones-metanav.png" enabled="false" />
+    <icon path="/icons/favicon.png" enabled="false" />
+
+    <!-- Don't display Home tab icons -->
+    <icon path="/icons/dashboard.png" enabled="false" />
+    <icon path="/icons/preferences.png" enabled="false" />
+    <icon path="/icons/users_groups.png" enabled="false" />
+    <icon path="/icons/profile.png" enabled="false" />
+    <icon path="/icons/notifications.png" enabled="false" />
+    <icon path="/icons/authorized_apps.png" enabled="false" />
+
+    <!-- Document types -->
+    <icon path="/icons/o.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/quicktime.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/odp.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/ott.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/xlt.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/vcal.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/wikipage.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/doc.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/text.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/vcard.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/docx.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/word.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/avi.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/f.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/font.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/iso.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/xml.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/pl.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/calendar.gif">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/mime.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/otg.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/odt.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/wav.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/txt.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/new_type.gif">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/stw.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/page_white_text.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/video.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/wdp.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/java.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/page_text.gif">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/website.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/zip.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/wikipage_100.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/xlsx.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/visio.gif">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/sxi.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/csv.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/view_doc.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/blogpage.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/cpp.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/ods.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/pptx.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/graffle.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/odg.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/blogpage_100.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/route_100.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/gf.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/log.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/sxw.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/h.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/dot.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/rpm.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/xls.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/audio_100.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/mpp.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/pub.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/ots.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/sti.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/exe.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/tgz.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/image_100.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/webpage.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/note_100.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/attachment.gif">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/webpage_100.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/tar.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/c.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/mail.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/html.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/mail.gif">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/midi.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/picture.gif">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/unknown.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/info.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/broken_file.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/image.gif">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/ppt.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/pk.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/mail_100.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/stc.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/otp.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/man.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/email.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/core.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/message.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/rapport-commentaire.gif">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/forum_thread.gif">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/application.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/sh.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/sxc.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/py.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/template_100.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/audio.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/domain.gif">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/note.gif">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/dvi.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/file_100.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/fork.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/deb.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/pdf.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/file.gif">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/blogpost.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/ps.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+     <icon path="/icons/page_white_world.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/ps.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/tex.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+
+    <!-- Folder types -->
+    <icon path="/icons/folder_template.gif">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/folder_template_open.gif">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/folder_template_100.gif">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+        <icon path="/icons/mailfolder_100.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/folder_100.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/forum.gif">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/forum_100.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/blogsite_100.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/folder_open.gif">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/picturebook_100.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/big_picturebook.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+        <icon path="/icons/web_folder.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/website_100.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/wiki_folder.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/wikisite_100.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/ordered_folder.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/ordered_folder_open.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/ordered_folder_100.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/blog_folder.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/conditional_folder_100.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+        <icon path="/icons/mail_folder.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/folder.gif">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/workspace.gif">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/workspace_open.gif">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/workspace_100.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/picturebook.gif">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/dashboard.gif">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+
+    <!-- Actions -->
+    <icon path="/icons/action_paste_all.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_clipboard_copy.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_delete.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_delete_mini.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_delete_mini_over.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_clipboard_remove.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_add.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_plus.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_tag_delete.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/like.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/mini_remove.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/toggle_plus.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/toggle_minus.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/delete.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/start_workflow.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/page_rotateright.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/page_rotateleft.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/mini_add.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/refresh.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/logout.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/new_model.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/unlike.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/update.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/add.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/printer.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/external.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/annotation-icon-SeeAlso.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/icone_download.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/download.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/checked.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/export.png">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/checkbox_true.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_export_zip.gif">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+    <icon path="/icons/task.pngs">
+      <categories>
+        <category>Actions</category>
+      </categories>
+    </icon>
+
+    <!-- Document edition  -->
+    <icon path="/icons/modify.png">
+      <categories>
+        <category>Document edition</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_mass_edit.gif">
+      <categories>
+        <category>Document edition</category>
+      </categories>
+    </icon>
+    <icon path="/icons/attachment.png">
+      <categories>
+        <category>Document edition</category>
+      </categories>
+    </icon>
+    <icon path="/icons/rename.png">
+      <categories>
+        <category>Document edition</category>
+      </categories>
+    </icon>
+    <icon path="/icons/modify.png">
+      <categories>
+        <category>Document edition</category>
+      </categories>
+    </icon>
+    <icon path="/icons/application_form_edit.png">
+      <categories>
+        <category>Document edition</category>
+      </categories>
+    </icon>
+    <icon path="/icons/modify.png">
+      <categories>
+        <category>Document edition</category>
+      </categories>
+    </icon>
+        <icon path="/icons/action_add_file.gif">
+      <categories>
+        <category>Document edition</category>
+      </categories>
+    </icon>
+
+    <!-- Navigation and arrows -->
+    <icon path="/icons/action_page_fastforward.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_page_next.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_page_previous.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_page_rewind.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/arrow.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/arrow_down.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/fold.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/arrow_left.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/unfolded.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/arrow_up.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/back.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/blue_arrow_tool.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/control_end_blue.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/control_fastforward_blue.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/control_pause_blue.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/control_play_blue.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/control_repeat_blue.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/control_repeat_disabled.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/control_rewind_blue.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/control_start_blue.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/control_stop_blue.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/dropdown.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/export_generic.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/go_down.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/go_up.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/inactive_go_down.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/inactive_go_up.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_all_left.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_all_left_black.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_all_right.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_all_right_black.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_down.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_down_black.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_end.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_end_black.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_left.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_left_black.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_right.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_right_black.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_top.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_top_black.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_up.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/move_up_black.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/page_first.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/page_first_disable.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/page_last.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/page_last_disable.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/page_next.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/page_next_disable.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/page_previous.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/page_previous_disable.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/routing_move_down.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/routing_move_up.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/sort_down.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/sort_up.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/sort_selected_down.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/sort_selected_up.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/start_workflow.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/user_menu.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/UpFolder_icon.gif">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+    <icon path="/icons/world_link.png">
+      <categories>
+        <category>Navigation and arrows</category>
+      </categories>
+    </icon>
+
+    <!-- Users and groups -->
+    <icon path="/icons/action_add_user.png">
+      <categories>
+        <category>Users and groups</category>
+      </categories>
+    </icon>
+    <icon path="/icons/action_add_group.png">
+      <categories>
+        <category>Users and groups</category>
+      </categories>
+    </icon>
+    <icon path="/icons/directories.gif">
+      <categories>
+        <category>Users and groups</category>
+      </categories>
+    </icon>
+    <icon path="/icons/group.png">
+      <categories>
+        <category>Users and groups</category>
+      </categories>
+    </icon>
+    <icon path="/icons/missing_avatar.png">
+      <categories>
+        <category>Users and groups</category>
+      </categories>
+    </icon>
+    <icon path="/icons/profile_mini.png">
+      <categories>
+        <category>Users and groups</category>
+      </categories>
+    </icon>
+    <icon path="/icons/user.png">
+      <categories>
+        <category>Users and groups</category>
+      </categories>
+    </icon>
+    <icon path="/icons/user_go.png">
+      <categories>
+        <category>Users and groups</category>
+      </categories>
+    </icon>
+
+    <!-- Comments and annotations -->
+    <icon path="/icons/a-moi.gif">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+    <icon path="/icons/afficher-filtre.gif">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+    <icon path="/icons/ajouter-commentaire.gif">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+    <icon path="/icons/annotation-icon-Advice.png">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+    <icon path="/icons/annotation-icon-Comment.png">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+    <icon path="/icons/annotation-icon-Comment-create.png">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+    <icon path="/icons/annotation-icon-Comment-list.png">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+    <icon path="/icons/comment.gif">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+    <icon path="/icons/comment.png">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+    <icon path="/icons/forum_post.gif">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+    <icon path="/icons/quote.png">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+    <icon path="/icons/rapport-commentaire.gif">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+    <icon path="/icons/reply.png">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+    <icon path="/icons/tous.gif">
+      <categories>
+        <category>Comments and annotations</category>
+      </categories>
+    </icon>
+
+    <!-- Search and help -->
+    <icon path="/icons/advanced_search.gif">
+      <categories>
+        <category>Search and help</category>
+      </categories>
+    </icon>
+    <icon path="/icons/annotation-icon-hide.png">
+      <categories>
+        <category>Search and help</category>
+      </categories>
+    </icon>
+    <icon path="/icons/annotation-icon-show.png">
+      <categories>
+        <category>Search and help</category>
+      </categories>
+    </icon>
+    <icon path="/icons/search.png">
+      <categories>
+        <category>Search and help</category>
+      </categories>
+    </icon>
+    <icon path="/icons/search.gif">
+      <categories>
+        <category>Search and help</category>
+      </categories>
+    </icon>
+    <icon path="/icons/search_100.png">
+      <categories>
+        <category>Search and help</category>
+      </categories>
+    </icon>
+    <icon path="/icons/annotation-icon-Question.png">
+      <categories>
+        <category>Search and help</category>
+      </categories>
+    </icon>
+    <icon path="/icons/info.gif">
+      <categories>
+        <category>Search and help</category>
+      </categories>
+    </icon>
+    <icon path="/icons/help.png">
+      <categories>
+        <category>Search and help</category>
+      </categories>
+    </icon>
+    <icon path="/icons/tip.gif">
+      <categories>
+        <category>Search and help</category>
+      </categories>
+    </icon>
+    <icon path="/icons/warning.gif">
+      <categories>
+        <category>Search and help</category>
+      </categories>
+    </icon>
+
+    <!-- Routing and workflow -->
+    <icon path="/icons/fork.png">
+      <categories>
+        <category>Routing and workflow</category>
+      </categories>
+    </icon>
+    <icon path="/icons/fork_100.png">
+      <categories>
+        <category>Routing and workflow</category>
+      </categories>
+    </icon>
+    <icon path="/icons/route.png">
+      <categories>
+        <category>Routing and workflow</category>
+      </categories>
+    </icon>
+    <icon path="/icons/route_100.png">
+      <categories>
+        <category>Routing and workflow</category>
+      </categories>
+    </icon>
+    <icon path="/icons/route_parallel.png">
+      <categories>
+        <category>Routing and workflow</category>
+      </categories>
+    </icon>
+    <icon path="/icons/route_serial_vertical.png">
+      <categories>
+        <category>Routing and workflow</category>
+      </categories>
+    </icon>
+    <icon path="/icons/route_serial_horizontal.png">
+      <categories>
+        <category>Routing and workflow</category>
+      </categories>
+    </icon>
+    <icon path="/icons/step.png">
+      <categories>
+        <category>Routing and workflow</category>
+      </categories>
+    </icon>
+    <icon path="/icons/step_100.png">
+      <categories>
+        <category>Routing and workflow</category>
+      </categories>
+    </icon>
+    <icon path="/icons/task.png">
+      <categories>
+        <category>Routing and workflow</category>
+      </categories>
+    </icon>
+
+    <!-- Routing and workflow -->
+    <icon path="/icons/fork.png">
+      <categories>
+        <category>Routing and workflow</category>
+      </categories>
+    </icon>
+
+  </extension>
+</component>
