@@ -1,0 +1,304 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h2 id="" alt="Tables">Tables</h2>
+  <p class="specification">Tables are commonly used in the platform to display tabular data: in content views, widgets, even in gadgets in your dashboard. Tables are also used to display forms, but are not visible in this case. Here is a list of the available CSS classes, with their characteristics.</p>
+
+  <div class="gridRow">
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>.dataTable</h3>
+        <p class="specification">A recent addition, since you may need some tables in your widgets. 100% width, with a border all around, and designed to list a lot of data in a small space.</p>
+        <p class="specification">Example of a table with a header.</p>
+        <table class="dataTable">
+          <thead>
+            <th>Class</th>
+            <th>Use</th>
+          </thead>
+          <tbody>
+          <tr>
+            <td><span class="code">.dataTable</span></td>
+            <td>Simple small table</td>
+          </tr>
+          </tbody>
+        </table>
+        <p class="specification">Example of a table without a header.</p>
+        <table class="dataTable">
+          <tr>
+            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/word.png" /></td>
+            <td><a href="#" onclick="return false;">My document</a></td>
+          </tr>
+          <tr>
+            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/folder.gif" /></td>
+            <td><a href="#" onclick="return false;">My folder</a></td>
+          </tr>
+          <tr>
+            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/text.png" /></td>
+            <td><a href="#" onclick="return false;">My text file</a></td>
+          </tr>
+        </table>
+        <p class="specification">Add the secondary class <span class="code">.smallTable</span> to reduce the size of the table.</p>
+        <table class="dataTable smallTable">
+          <tr>
+            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/word.png" /></td>
+            <td><a href="#" onclick="return false;">My document</a></td>
+          </tr>
+          <tr>
+            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/folder.gif" /></td>
+            <td><a href="#" onclick="return false;">My folder</a></td>
+          </tr>
+          <tr>
+            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/text.png" /></td>
+            <td><a href="#" onclick="return false;">My text file</a></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <h3>.dataTableLine</h3>
+        <p class="specification">Like the <span class="code">.dataTable</span>, this class is made for small boxes, to list many elements while keeping it easy to read. No vertical borders, 100% width, and bold characters in header cells.</p>
+        <p class="specification">Example of a table with a header.</p>
+        <table class="dataTableLine">
+          <thead>
+            <th>Class</th>
+            <th>Use</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="code">.dataTableLine</span></td>
+              <td>To display a listing</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="specification">Example of a table without a header.</p>
+        <table class="dataTableLine">
+          <tr>
+            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/word.png" /></td>
+            <td><a href="#" onclick="return false;">My document</a></td>
+          </tr>
+          <tr>
+            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/folder.gif" /></td>
+            <td><a href="#" onclick="return false;">My folder</a></td>
+          </tr>
+          <tr>
+            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/text.png" /></td>
+            <td><a href="#" onclick="return false;">My text file</a></td>
+          </tr>
+        </table>
+        <p class="specification">Add the secondary class <span class="code">.smallTable</span> to reduce the size of the table.</p>
+        <table class="dataTableLine smallTable">
+          <tr>
+            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/word.png" /></td>
+            <td><a href="#" onclick="return false;">My document</a></td>
+          </tr>
+          <tr>
+            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/folder.gif" /></td>
+            <td><a href="#" onclick="return false;">My folder</a></td>
+          </tr>
+          <tr>
+            <td class="iconColumn"><img class="smallIcon" title="File" alt="File" src="/nuxeo/icons/text.png" /></td>
+            <td><a href="#" onclick="return false;">My text file</a></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="clear" />
+  </div>
+
+  <div class="gridRow">
+    <div class="gridBox gridStyle12">
+      <h3>Invisible tables</h3>
+      <p class="specification">Invisible tables are generally used in forms to structure the content, align labels and fields, without needing to be seen. A <span class="code">.labelColumn</span> is used for the label cells, a <span class="code">.fieldColumn</span> for fields.</p>
+      <ul class="visibleList">
+      <li><span class="code">.dataInput</span> is used for forms that constitute the main body of a page: a lot of space between fields,</li>
+      <li><span class="code">.dataTableNoBorder</span> is used for the edition of specific information, in a small space: space between rows is reduced.</li>
+      </ul>
+    </div>
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <table class="dataInput">
+          <tbody>
+            <tr>
+              <td class="labelColumn">
+                <span class="widgetLabel">Table class</span>
+              </td>
+              <td class="fieldColumn">
+                <span class="code">.dataInput</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="labelColumn">
+                <span class="widgetLabel required">Checkbox</span>
+              </td>
+              <td class="fieldColumn">
+                <input type="checkbox" name="#" id="#" onclick="return false;" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
+        <table class="dataTableNoBorder">
+          <tbody>
+            <tr>
+              <td class="labelColumn">
+                <span class="widgetLabel">Table class</span>
+              </td>
+              <td class="fieldColumn">
+                <span class="code">.dataTableNoBorder</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="labelColumn">
+                <span class="widgetLabel required">Select a value</span>
+              </td>
+              <td class="fieldColumn">
+                <select id="#" name="#">
+                  <option value="cartman">Eric Cartman</option>
+                  <option value="broflovski">Kyle Broflovski</option>
+                  <option value="marsh">Stan Marsh</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="clear" />
+  </div>
+  <div class="gridRow">
+    <div class="gridBox gridStyle12">
+      <h3>Design a table</h3>
+      <p class="specification">A list of class is available to help you design your tables. Wether you want small columns for icons or checkboxes, or tables with fixed column width, you can constrain your tables for a great display in your layout.
+       You can design your table by using specific class names, related to the content, or by using width classes, no matter what kind of content it will display.</p>
+      <h4>Content classes</h4>
+      <p class="specification">The content classes are a set of classes, named from their role, to make your cells have the right behavior.</p>
+      <p class="specification"> Note that the <span class="code">.labelColumn</span>  class has different behaviors in forms and tables: in forms, content is right-aligned, while it is aligned on the left in data tables.</p>
+    </div>
+    <div class="gridBox gridStyle8">
+      <div class="widgetPanel">
+        <table class="dataList">
+            <thead>
+              <th class="iconColumn"><input type="checkbox" title="Select all / deselect all" onclick="return false" name="#" id="#" /></th>
+              <th class="iconColumn"></th>
+              <th>Title</th>
+              <th class="boldColumn">State</th>
+              <th class="focusColumn">Focus</th>
+            </thead>
+            <tbody>
+              <tr class="dataRowOdd">
+              <td colspan="3"><span class="code">.iconColumn</span> for the 2 first small columns </td>
+              <td class="boldColumn"><span class="code">.boldColumn</span></td>
+              <td class="focusColumn"><span class="code">.focusColumn</span></td>
+            </tr>
+            <tr class="dataRowEven">
+              <td><input type="checkbox" title="Select all / deselect all" onclick="return false" name="#" id="#" /></td>
+              <td><img class="smallIcon" title="Note" alt="Note" src="/nuxeo/icons/note.gif" /></td>
+              <td><a href="" title=""><span title="File" id="#">Features list</span></a></td>
+              <td class="boldColumn">Project</td>
+              <td class="focusColumn">Focus</td>
+            </tr>
+            <tr class="dataRowOdd">
+              <td><input type="checkbox" title="Select all / deselect all" onclick="return false" name="#" id="#" /></td>
+              <td><img class="smallIcon" title="Note" alt="Note" src="/nuxeo/icons/pdf.png" /></td>
+              <td><a href="" title=""><span title="File" id="#">Nuxeo_Features.pdf</span></a></td>
+              <td class="boldColumn">Project</td>
+              <td class="focusColumn">Focus column</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="gridBox gridStyle4">
+      <div class="widgetPanel">
+        <table class="dataTable">
+          <thead>
+            <th class="labelColumn">Label</th>
+            <th class="fieldColumn">Field</th>
+          </thead>
+          <tbody>
+            <tr class="dataRowEven">
+              <td class="labelColumn"><span class="code">.labelColumn</span></td>
+              <td class="fieldColumn"><span class="code">.fieldColumn</span></td>
+            </tr>
+            <tr class="dataRowOdd">
+              <td class="labelColumn">City</td>
+              <td class="fieldColumn">Paris</td>
+            </tr>
+            <tr class="dataRowEven">
+              <td class="labelColumn">Country</td>
+              <td class="fieldColumn">France</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="clear" />
+  </div>
+  <div class="gridRow">
+    <div class="gridBox gridStyle12">
+      <h4>Width classes</h4>
+      <p class="specification">The width classes are a set of classes with a width in percent, to make your cells have a specific distribution.</p>
+      <div class="widgetPanel">
+        <table class="dataTable">
+          <tbody>
+            <tr>
+              <td class="tenPercent"><span class="code">.tenPercent</span></td>
+              <td class="ninetyPercent"><span class="code">.ninetyPercent</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="dataTable">
+          <tbody>
+            <tr>
+              <td class="twentyPercent"><span class="code">.twentyPercent</span></td>
+              <td class="eightyPercent"><span class="code">.eightyPercent</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="dataTable">
+          <tbody>
+            <tr>
+              <td class="thirtyPercent"><span class="code">.thirtyPercent</span></td>
+              <td class="seventyPercent"><span class="code">.seventyPercent</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="dataTable">
+          <tbody>
+            <tr>
+              <td class="tenPercent"><span class="code">.tenPercent</span></td>
+              <td class="sixtyPercent"><span class="code">.sixtyPercent</span></td>
+              <td class="fortyPercent"><span class="code">.fortyPercent</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="dataTable">
+          <tbody>
+            <tr>
+              <td class="tenPercent"><span class="code">.tenPercent</span></td>
+              <td class="fiftyPercent"><span class="code">.fiftyPercent</span></td>
+              <td class="twentyPercent"><span class="code">.twentyPercent</span></td>
+              <td class="twentyPercent"><span class="code">.twentyPercent</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="clear" />
+  </div>
+
+</c:if>
+
