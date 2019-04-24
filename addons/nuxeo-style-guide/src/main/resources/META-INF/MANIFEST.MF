@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Style Guide
+Bundle-SymbolicName: org.nuxeo.styleguide;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/theme-contrib.xml,
+ OSGI-INF/auth-contrib.xml,
+ OSGI-INF/url-contrib.xml,
+ OSGI-INF/actions-contrib.xml,
+ OSGI-INF/style-guide-framework.xml,
+ OSGI-INF/style-guide-contrib.xml
