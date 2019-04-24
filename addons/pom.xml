@@ -21,7 +21,6 @@
   <properties>
     <nuxeo.addons.version>11.1-SNAPSHOT</nuxeo.addons.version>
     <nuxeo.opencmis.version>11.1-SNAPSHOT</nuxeo.opencmis.version>
-    <nuxeo.businessdays.version>11.1-SNAPSHOT</nuxeo.businessdays.version>
     <nuxeo.shell.version>11.1-SNAPSHOT</nuxeo.shell.version>
     <nuxeo.webembedded.version>11.1-SNAPSHOT</nuxeo.webembedded.version>
     <nuxeo.fsconnectors.version>11.1-SNAPSHOT</nuxeo.fsconnectors.version>
@@ -31,29 +30,22 @@
     <nuxeo.audio.version>11.1-SNAPSHOT</nuxeo.audio.version>
     <nuxeo.video.version>11.1-SNAPSHOT</nuxeo.video.version>
     <nuxeo.replication.version>11.1-SNAPSHOT</nuxeo.replication.version>
-    <nuxeo.activity.version>11.1-SNAPSHOT</nuxeo.activity.version>
     <nuxeo.suggestbox.version>11.1-SNAPSHOT</nuxeo.suggestbox.version>
     <nuxeo.dam.version>11.1-SNAPSHOT</nuxeo.dam.version>
     <nuxeo.quota.version>11.1-SNAPSHOT</nuxeo.quota.version>
     <nuxeo.binary.metadata.version>11.1-SNAPSHOT</nuxeo.binary.metadata.version>
     <nuxeo.web.mobile.version>11.1-SNAPSHOT</nuxeo.web.mobile.version>
     <nuxeo.user.registration.version>11.1-SNAPSHOT</nuxeo.user.registration.version>
-    <nuxeo.rating.version>11.1-SNAPSHOT</nuxeo.rating.version>
-    <nuxeo.agenda.version>11.1-SNAPSHOT</nuxeo.agenda.version>
     <nuxeo.templates.version>11.1-SNAPSHOT</nuxeo.templates.version>
     <nuxeo.csv.version>11.1-SNAPSHOT</nuxeo.csv.version>
     <nuxeo.drive.version>11.1-SNAPSHOT</nuxeo.drive.version>
-    <nuxeo.resources.compat.version>11.1-SNAPSHOT</nuxeo.resources.compat.version>
     <nuxeo.dmk.version>11.1-SNAPSHOT</nuxeo.dmk.version>
     <nuxeo.style.guide.version>11.1-SNAPSHOT</nuxeo.style.guide.version>
     <nuxeo.easyshare.version>11.1-SNAPSHOT</nuxeo.easyshare.version>
-    <nuxeo.logs.viewer.version>11.1-SNAPSHOT</nuxeo.logs.viewer.version>
     <nuxeo.spreadsheet.version>11.1-SNAPSHOT</nuxeo.spreadsheet.version>
     <nuxeo.datadog.reporter.version>11.1-SNAPSHOT</nuxeo.datadog.reporter.version>
-    <nuxeo.review.workflows.dashboards.version>11.1-SNAPSHOT</nuxeo.review.workflows.dashboards.version>
     <nuxeo.playground.version>11.1-SNAPSHOT</nuxeo.playground.version>
     <nuxeo.fsexporter.version>11.1-SNAPSHOT</nuxeo.fsexporter.version>
-    <nuxeo.javaagent.version>11.1-SNAPSHOT</nuxeo.javaagent.version>
     <nuxeo.pdfutils.version>11.1-SNAPSHOT</nuxeo.pdfutils.version>
     <nuxeo.threed.version>11.1-SNAPSHOT</nuxeo.threed.version>
     <nuxeo.mongodb.ext.version>11.1-SNAPSHOT</nuxeo.mongodb.ext.version>
@@ -71,9 +63,6 @@
     <module>nuxeo-platform-lang-ext</module>
     <module>nuxeo-platform-lang-ext-incomplete</module>
     <module>nuxeo-chemistry</module>
-    <module>nuxeo-business-days-management</module>
-    <module>nuxeo-core-binarymanager-sql</module>
-    <module>nuxeo-http-client</module>
     <module>nuxeo-platform-document-routing</module>
     <module>nuxeo-platform-error-web</module>
     <module>nuxeo-platform-forms-layout-demo</module>
@@ -84,12 +73,10 @@
     <module>nuxeo-filesystem-connectors</module>
     <module>nuxeo-platform-shibboleth-groups-web</module>
     <module>nuxeo-apidoc-server</module>
-    <module>nuxeo-activity</module>
     <module>nuxeo-platform-suggestbox</module>
     <module>nuxeo-dam</module>
     <module>nuxeo-quota</module>
     <module>nuxeo-signature</module>
-    <module>nuxeo-rating</module>
     <module>nuxeo-multi-tenant</module>
     <module>nuxeo-core-binarymanager-cloud</module>
     <module>nuxeo-diff</module>
@@ -98,23 +85,18 @@
     <module>nuxeo-csv</module>
     <module>nuxeo-tree-snapshot</module>
     <module>nuxeo-drive-server</module>
-    <module>nuxeo-resources-compat</module>
     <module>nuxeo-dmk-adaptor</module>
     <module>nuxeo-style-guide</module>
-    <module>nuxeo-javaagent</module>
-    <module>nuxeo-session-inspector</module>
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-easyshare</module>
     <module>nuxeo-duoweb-authentication</module>
     <module>nuxeo-sample-project</module>
-    <module>nuxeo-logs-viewer</module>
     <module>nuxeo-platform-spreadsheet</module>
     <module>nuxeo-binary-metadata</module>
     <module>nuxeo-segment.io-connector</module>
     <module>nuxeo-liveconnect</module>
     <module>nuxeo-media-publishing</module>
     <module>nuxeo-datadog-reporter</module>
-    <module>nuxeo-review-workflows-dashboards</module>
     <module>nuxeo-shibboleth-invitation</module>
     <module>nuxeo-fsexporter</module>
     <module>nuxeo-showcase-content-sample</module>
@@ -122,7 +104,6 @@
     <module>nuxeo-connect-tools</module>
     <module>nuxeo-platform-pdf-utils</module>
     <module>nuxeo-platform-3d</module>
-    <module>nuxeo-agenda</module>
     <module>nuxeo-target-platforms</module>
     <module>nuxeo-api-playground</module>
     <module>nuxeo-jsf-to-web-ui</module>
@@ -161,18 +142,6 @@
         <artifactId>nuxeo-opencmis-tests</artifactId>
         <version>${nuxeo.opencmis.version}</version>
         <scope>test</scope>
-      </dependency>
-
-      <!-- Business Days Management -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-business-days-management-api</artifactId>
-        <version>${nuxeo.businessdays.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-business-days-management-core</artifactId>
-        <version>${nuxeo.businessdays.version}</version>
       </dependency>
 
       <dependency>
@@ -362,13 +331,6 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
-      <!-- Activity -->
-      <dependency>
-        <groupId>org.nuxeo.activity</groupId>
-        <artifactId>nuxeo-activity</artifactId>
-        <version>${nuxeo.activity.version}</version>
-      </dependency>
-
       <!-- Suggest Box -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -450,35 +412,6 @@
         <artifactId>nuxeo-platform-signature-core-dependencies</artifactId>
         <type>pom</type>
         <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Rating -->
-      <dependency>
-        <groupId>org.nuxeo.rating</groupId>
-        <artifactId>nuxeo-rating-api</artifactId>
-        <version>${nuxeo.rating.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.rating</groupId>
-        <artifactId>nuxeo-rating-core</artifactId>
-        <version>${nuxeo.rating.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.rating</groupId>
-        <artifactId>nuxeo-rating-web</artifactId>
-        <version>${nuxeo.rating.version}</version>
-      </dependency>
-
-      <!-- Agenda -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-agenda-core</artifactId>
-        <version>${nuxeo.agenda.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-agenda-jsf</artifactId>
-        <version>${nuxeo.agenda.version}</version>
       </dependency>
 
       <!-- Multi Tenant Management -->
@@ -680,13 +613,6 @@
         <version>${nuxeo.drive.version}</version>
       </dependency>
 
-      <!-- Nuxeo Resources Compat -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform.resources</groupId>
-        <artifactId>nuxeo-resources-compat</artifactId>
-        <version>${nuxeo.resources.compat.version}</version>
-      </dependency>
-
       <!-- DMK -->
       <dependency>
         <groupId>org.nuxeo</groupId>
@@ -699,23 +625,6 @@
         <groupId>org.nuxeo.style</groupId>
         <artifactId>nuxeo-style-guide</artifactId>
         <version>${nuxeo.style.guide.version}</version>
-      </dependency>
-
-      <!-- JSF perfs debugging helpers -->
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-javaagent-main</artifactId>
-        <version>${nuxeo.javaagent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-javaagent-bridge</artifactId>
-        <version>${nuxeo.javaagent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-session-inspector</artifactId>
-        <version>${nuxeo.javaagent.version}</version>
       </dependency>
 
       <!-- Easyshare -->
@@ -742,13 +651,6 @@
         <groupId>org.nuxeo.duoweb.authentication</groupId>
         <artifactId>nuxeo-duoweb-authentication</artifactId>
         <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Logs Viewer -->
-      <dependency>
-        <groupId>org.nuxeo.logs.viewer</groupId>
-        <artifactId>nuxeo-logs-viewer</artifactId>
-        <version>${nuxeo.logs.viewer.version}</version>
       </dependency>
 
       <!-- Spreadsheet -->
@@ -893,13 +795,6 @@
         <groupId>org.nuxeo.datadog</groupId>
         <artifactId>nuxeo-datadog-reporter</artifactId>
         <version>${nuxeo.datadog.reporter.version}</version>
-      </dependency>
-
-      <!-- Review Workflows Dashboards -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.review.workflows.dashboards</groupId>
-        <artifactId>nuxeo-review-workflows-dashboards</artifactId>
-        <version>${nuxeo.review.workflows.dashboards.version}</version>
       </dependency>
 
       <!-- Nuxeo API Playground -->

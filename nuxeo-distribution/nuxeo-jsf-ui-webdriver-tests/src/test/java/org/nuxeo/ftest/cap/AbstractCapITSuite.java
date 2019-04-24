@@ -31,7 +31,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ ITSearchTabTest.class, ITArchivedVersionsTest.class, ITCollectionsTest.class,
         ITContextualActionsTest.class, ITCopyPasteTest.class, ITDefaultWorkflowTest.class, ITDnDImportTest.class,
-        ITDocumentRelationTest.class, ITFileUploadTest.class, ITLoginLogoutTest.class, ITLogsViewerTest.class,
+        ITDocumentRelationTest.class, ITFileUploadTest.class, ITLoginLogoutTest.class,
         ITModifyWorkspaceDescriptionTest.class, ITNoteDocumentTest.class, ITRichfileUploadTest.class,
         ITRSSAtomExportTest.class, ITSafeEditTest.class, ITSuggestBoxTest.class, ITSelect2Test.class,
         ITSelectAndFilterTest.class, ITTaggingTest.class, ITUsersTest.class, ITVocabularyTest.class,
