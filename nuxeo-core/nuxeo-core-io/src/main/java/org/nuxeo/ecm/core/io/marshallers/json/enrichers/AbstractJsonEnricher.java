@@ -46,7 +46,7 @@ public abstract class AbstractJsonEnricher<EntityType> extends AbstractJsonWrite
     }
 
     @Override
-    public final boolean accept(Class<?> clazz, Type genericType, MediaType mediatype) {
+    public boolean accept(Class<?> clazz, Type genericType, MediaType mediatype) {
         return name.equals(ctx.<String> getParameter(ENTITY_ENRICHER_NAME));
     }
 

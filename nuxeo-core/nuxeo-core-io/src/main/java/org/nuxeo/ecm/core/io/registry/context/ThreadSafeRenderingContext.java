@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.APIVersion;
 import org.nuxeo.ecm.core.io.registry.reflect.Instantiations;
 
 /**
@@ -145,4 +146,8 @@ public final class ThreadSafeRenderingContext implements RenderingContext {
         ctx.get().addParameterListValues(name, values);
     }
 
+    @Override
+    public APIVersion getAPIVersion() {
+        return ctx.get().getAPIVersion();
+    }
 }
