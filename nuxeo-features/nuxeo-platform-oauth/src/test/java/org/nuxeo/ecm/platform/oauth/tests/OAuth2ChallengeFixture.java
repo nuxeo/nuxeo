@@ -86,6 +86,7 @@ import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.jaxrs.test.JerseyClientHelper;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
@@ -124,6 +125,9 @@ public class OAuth2ChallengeFixture {
 
     @Inject
     protected JWTService jwtService;
+
+    @Inject
+    protected HotDeployer hotDeployer;
 
     protected Client authenticatedClient;
 
@@ -668,6 +672,16 @@ public class OAuth2ChallengeFixture {
             String json = cr.getEntity(String.class);
             Map<String, Serializable> token = new ObjectMapper().readValue(json, Map.class);
             assertNotNull(token.get("access_token"));
+        }
+
+        // Test with null secret
+        hotDeployer.undeploy("org.nuxeo.ecm.jwt.tests:OSGI-INF/test-jwt-config.xml");
+        try (CloseableClientResponse cr = responseFromTokenWith(params)) {
+            assertEquals(400, cr.getStatus());
+            String json = cr.getEntity(String.class);
+            Map<String, Serializable> error = new ObjectMapper().readValue(json, Map.class);
+            assertEquals(INVALID_CLIENT, error.get(ERROR_PARAM));
+            assertEquals("Secret not configured or invalid token", error.get(ERROR_DESCRIPTION_PARAM));
         }
     }
 
