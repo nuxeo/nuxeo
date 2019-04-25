@@ -48,6 +48,7 @@ nuxeo.vcs.ddlmode=execute
 nuxeo.vcs.idtype=varchar
 nuxeo.vcs.fulltext.analyzer.language=english
 nuxeo.vcs.optimizations.acl.enabled=true
+nuxeo.vcs.optimizations.acl.maxsize=0
 nuxeo.vcs.optimizations.path.enabled=true
 
 # Enable reliable change tokens in VCS/DBS

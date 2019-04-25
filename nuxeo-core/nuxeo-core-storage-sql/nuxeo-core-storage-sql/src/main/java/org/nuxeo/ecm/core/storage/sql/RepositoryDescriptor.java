@@ -44,6 +44,8 @@ public class RepositoryDescriptor {
 
     private static final Log log = LogFactory.getLog(RepositoryDescriptor.class);
 
+    /** @deprecated since 11.1, was PostgreSQL-specific */
+    @Deprecated
     public static final int DEFAULT_READ_ACL_MAX_SIZE = 4096;
 
     public static final int DEFAULT_PATH_OPTIM_VERSION = 2;
@@ -393,7 +395,7 @@ public class RepositoryDescriptor {
     private Integer readAclMaxSize;
 
     public int getReadAclMaxSize() {
-        return readAclMaxSize == null ? DEFAULT_READ_ACL_MAX_SIZE : readAclMaxSize.intValue();
+        return readAclMaxSize == null ? 0 : readAclMaxSize.intValue();
     }
 
     @XNode("usersSeparator@key")

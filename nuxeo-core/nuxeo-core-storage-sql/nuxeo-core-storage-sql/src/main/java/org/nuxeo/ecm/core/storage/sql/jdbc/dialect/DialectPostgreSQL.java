@@ -1202,7 +1202,8 @@ public class DialectPostgreSQL extends Dialect {
         properties.put("readPermissions", String.join(", ", permsList));
         properties.put("usersSeparator", getUsersSeparator());
         properties.put("everyone", SecurityConstants.EVERYONE);
-        properties.put("readAclMaxSize", Integer.toString(readAclMaxSize));
+        String readAclMaxSizeStr = Integer.toString(readAclMaxSize <= 0 ? 4096 : readAclMaxSize);
+        properties.put("readAclMaxSize", readAclMaxSizeStr);
         properties.put("unlogged", unloggedKeyword);
         return properties;
     }
