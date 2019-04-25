@@ -337,6 +337,9 @@ public class NuxeoOAuth2Servlet extends HttpServlet {
             String jwtToken = tokenRequest.getAssertion();
             Map<String, Object> claims = Framework.getService(JWTService.class).verifyToken(jwtToken);
             OAuth2Error error = null;
+            if (claims == null) {
+                error = OAuth2Error.invalidClient("Secret not configured or invalid token");
+            }
 
             String clientId = tokenRequest.getClientId();
             String clientSecret = tokenRequest.getClientSecret();
