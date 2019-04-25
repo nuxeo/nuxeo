@@ -628,6 +628,9 @@ public class DialectSQLServer extends Dialect {
         }
         properties.put("lockEscalationDisabled", Boolean.valueOf(supportsLockEscalationDisable()));
         properties.put("md5HashString", getMd5HashString());
+        String readAclMaxSizeStr = readAclMaxSize <= 0 ? "4000"
+                : readAclMaxSize > 4000 ? "MAX" : Integer.toString(readAclMaxSize);
+        properties.put("readAclMaxSize", readAclMaxSizeStr);
         properties.put("reseedAclrModified", azure ? "" : "DBCC CHECKIDENT('aclr_modified', RESEED, 0);");
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("fulltextSearchEnabled", Boolean.valueOf(!fulltextSearchDisabled));
