@@ -19,10 +19,12 @@
  */
 package org.nuxeo.directory.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -30,6 +32,8 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.query.sql.model.Predicates;
+import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
@@ -47,13 +51,15 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.directory.tests:intIdDirectory-contrib.xml")
 public class TestIntIdField {
 
+    protected static final String INT_ID_DIRECTORY = "testIdDirectory";
+
     @Inject
     protected DirectoryService directoryService;
 
     @SuppressWarnings("boxing")
     @Test
-    public void testIntIdDirectory() throws Exception {
-        try (Session session = directoryService.open("testIdDirectory")) {
+    public void testIntIdDirectory() {
+        try (Session session = directoryService.open(INT_ID_DIRECTORY)) {
             Map<String, Object> map = new HashMap<>();
             map.put("id", 1);
             map.put("label", "toto");
@@ -68,6 +74,26 @@ public class TestIntIdField {
             assertNotNull(session.getEntry("1"));
             assertNotNull(session.getEntry("2"));
             assertNull(session.getEntry("3"));
+        }
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    public void testQueryBuilderOnIntId() {
+        try (Session session = directoryService.open(INT_ID_DIRECTORY)) {
+            String key = "label";
+            String value = "toto";
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", 1);
+            map.put(key, value);
+            session.createEntry(map);
+
+            QueryBuilder queryBuilder = new QueryBuilder().predicate(Predicates.eq(key, value));
+            List<String> ids = session.queryIds(queryBuilder);
+            assertEquals(1, ids.size());
+            assertEquals("1", ids.get(0));
         }
     }
 
