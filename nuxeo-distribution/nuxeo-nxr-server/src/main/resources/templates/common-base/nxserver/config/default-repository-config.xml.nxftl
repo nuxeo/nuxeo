@@ -22,7 +22,7 @@
       <clusterInvalidatorClass>org.nuxeo.ecm.core.storage.sql.VCSPubSubInvalidator</clusterInvalidatorClass>
       <noDDL>${nuxeo.vcs.noddl}</noDDL>
       <ddlMode>${nuxeo.vcs.ddlmode}</ddlMode>
-      <aclOptimizations enabled="${nuxeo.vcs.optimizations.acl.enabled}"/>
+      <aclOptimizations enabled="${nuxeo.vcs.optimizations.acl.enabled}" readAclMaxSize="${nuxeo.vcs.optimizations.acl.maxsize}"/>
       <pathOptimizations enabled="${nuxeo.vcs.optimizations.path.enabled}"/>
       <idType>${nuxeo.vcs.idtype}</idType>
       <changeTokenEnabled>${nuxeo.changetoken.enabled}</changeTokenEnabled>

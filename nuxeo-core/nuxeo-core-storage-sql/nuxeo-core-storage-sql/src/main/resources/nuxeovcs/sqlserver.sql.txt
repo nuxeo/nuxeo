@@ -16,6 +16,7 @@
 #     SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', @string)), 3, 32)
 #   for SQL Server 2008/2012/Azure:
 #     SUBSTRING(CONVERT(VARCHAR(34), HashBytes('MD5', @string), 1), 3, 32)
+# ${readAclMaxSize} the ACLR users max size, usually 4000 or MAX
 # ${reseedAclrModified}
 #   when not Azure: DBCC CHECKIDENT('aclr_modified', RESEED, 0);
 # ${fulltextCatalog} configured catalog
@@ -120,11 +121,11 @@ END;
 
 
 #PROC: dbo.NX_ACCESS_ALLOWED
-CREATE FUNCTION NX_ACCESS_ALLOWED(@id ${idType}, @users NVARCHAR(4000), @perms NVARCHAR(4000))
+CREATE FUNCTION NX_ACCESS_ALLOWED(@id ${idType}, @users NVARCHAR(${readAclMaxSize}), @perms NVARCHAR(${readAclMaxSize}))
 RETURNS TINYINT AS
 BEGIN
-  DECLARE @allusers NVARCHAR(4000);
-  DECLARE @allperms NVARCHAR(4000);
+  DECLARE @allusers NVARCHAR(${readAclMaxSize});
+  DECLARE @allperms NVARCHAR(${readAclMaxSize});
   DECLARE @first TINYINT;
   DECLARE @curid ${idType};
   DECLARE @newid ${idType};
@@ -595,7 +596,7 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr' AND TABLE_CATA
 #IF: create_table_aclr
 CREATE TABLE aclr (
   acl_id CHAR(32) NOT NULL,
-  acl NVARCHAR(4000)
+  acl NVARCHAR(${readAclMaxSize})
 )
 
 #IF: create_table_aclr
@@ -621,7 +622,7 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr_user' AND TABLE
 #IF: create_table_aclr_user
 CREATE TABLE aclr_user (
   user_id CHAR(32) NOT NULL,
-  principals NVARCHAR(4000),
+  principals NVARCHAR(${readAclMaxSize}),
   CONSTRAINT user_id_unique UNIQUE(user_id)
 )
 
@@ -786,12 +787,12 @@ INSERT INTO aclr_permission ${readPermissions};
 
 #PROC: dbo.nx_get_local_read_acl
 CREATE FUNCTION nx_get_local_read_acl(@id ${idType})
-RETURNS NVARCHAR(4000) AS
+RETURNS NVARCHAR(${readAclMaxSize}) AS
 -- Compute the read acl for hierarchy id using a local acl
 BEGIN
   DECLARE @curid ${idType};
   DECLARE @op NVARCHAR(250);
-  DECLARE @read_acl NVARCHAR(4000);
+  DECLARE @read_acl NVARCHAR(${readAclMaxSize});
   DECLARE @cur CURSOR;
   SET @curid = @id;
   SET @cur = CURSOR FAST_FORWARD FOR
@@ -824,13 +825,13 @@ END;
 
 #PROC: dbo.nx_get_read_acl
 CREATE FUNCTION nx_get_read_acl(@id ${idType})
-RETURNS NVARCHAR(4000) AS
+RETURNS NVARCHAR(${readAclMaxSize}) AS
 -- Compute the merged read acl for a doc id
 BEGIN
   DECLARE @curid ${idType};
   DECLARE @newid ${idType};
-  DECLARE @read_acl NVARCHAR(4000);
-  DECLARE @ret NVARCHAR(4000);
+  DECLARE @read_acl NVARCHAR(${readAclMaxSize});
+  DECLARE @ret NVARCHAR(${readAclMaxSize});
   DECLARE @first TINYINT;
   DECLARE @pos INT;
   SET @curid = @id;
@@ -859,7 +860,7 @@ END;
 
 
 #PROC: dbo.nx_md5
-CREATE FUNCTION nx_md5(@string NVARCHAR(4000))
+CREATE FUNCTION nx_md5(@string NVARCHAR(${readAclMaxSize}))
 RETURNS CHAR(32) AS
 BEGIN
   DECLARE @hash CHAR(32);
@@ -871,10 +872,10 @@ END;
 #IF: aclOptimizationsEnabled
 #PROC: dbo.nx_get_read_permissions
 CREATE FUNCTION nx_get_read_permissions()
-RETURNS NVARCHAR(4000) AS
+RETURNS NVARCHAR(${readAclMaxSize}) AS
 BEGIN
   -- build the list of read permissions
-  DECLARE @ret NVARCHAR(4000);
+  DECLARE @ret NVARCHAR(${readAclMaxSize});
   SET @ret = N'';
   DECLARE @cur CURSOR;
   SET @cur = CURSOR FAST_FORWARD FOR
@@ -905,11 +906,11 @@ END;
 
 #IF: aclOptimizationsEnabled
 #PROC: dbo.nx_list_read_acls_for
-CREATE FUNCTION nx_list_read_acls_for(@users NVARCHAR(4000))
+CREATE FUNCTION nx_list_read_acls_for(@users NVARCHAR(${readAclMaxSize}))
 RETURNS @output TABLE (acl_id CHAR(32)) AS
   -- List matching read acl ids for a list of user/groups
 BEGIN
-  DECLARE @permissions NVARCHAR(4000);
+  DECLARE @permissions NVARCHAR(${readAclMaxSize});
   SET @permissions = dbo.nx_get_read_permissions();
   INSERT INTO @output (acl_id)
     SELECT acl_id FROM hierarchy_read_acl r
@@ -983,7 +984,7 @@ CREATE TRIGGER nx_trig_aclr_modified ON [aclr]
 AFTER INSERT AS
 BEGIN
   SET NOCOUNT ON;
-  DECLARE @permissions NVARCHAR(4000);
+  DECLARE @permissions NVARCHAR(${readAclMaxSize});
   SET @permissions = dbo.nx_get_read_permissions();
   SET XACT_ABORT OFF; -- needed in trigger to avoid doomed transactions
   BEGIN TRY
@@ -1047,7 +1048,7 @@ ALTER TABLE [hierarchy_read_acl] DISABLE TRIGGER nx_trig_hier_read_acl_mod
 
 #IF: aclOptimizationsEnabled
 #PROC: dbo.nx_prepare_user_read_acls
-CREATE PROCEDURE nx_prepare_user_read_acls @users NVARCHAR(4000) AS
+CREATE PROCEDURE nx_prepare_user_read_acls @users NVARCHAR(${readAclMaxSize}) AS
   -- prepare the read aclr for the user
 BEGIN
   SET NOCOUNT ON;
