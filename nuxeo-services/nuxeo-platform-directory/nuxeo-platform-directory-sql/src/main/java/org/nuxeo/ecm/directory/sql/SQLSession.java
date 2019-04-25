@@ -881,7 +881,7 @@ public class SQLSession extends BaseSession {
                 }
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        String id = (String) idColumn.getFromResultSet(rs, 1);
+                        String id = String.valueOf(idColumn.getFromResultSet(rs, 1));
                         ids.add(id);
                     }
                 }
