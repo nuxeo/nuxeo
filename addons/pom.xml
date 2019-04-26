@@ -104,7 +104,6 @@
     <module>nuxeo-platform-pdf-utils</module>
     <module>nuxeo-platform-3d</module>
     <module>nuxeo-target-platforms</module>
-    <module>nuxeo-api-playground</module>
     <module>nuxeo-jsf-to-web-ui</module>
     <module>nuxeo-audit-storage-directory</module>
     <module>nuxeo-adobe-connector</module>
@@ -787,13 +786,6 @@
         <groupId>org.nuxeo.datadog</groupId>
         <artifactId>nuxeo-datadog-reporter</artifactId>
         <version>${nuxeo.datadog.reporter.version}</version>
-      </dependency>
-
-      <!-- Nuxeo API Playground -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-api-playground</artifactId>
-        <version>${nuxeo.playground.version}</version>
       </dependency>
 
       <!-- Nuxeo Showcase Sample -->
