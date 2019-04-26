@@ -19,12 +19,14 @@
 package org.nuxeo.launcher.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,6 +39,9 @@ public class BackingServiceConfiguratorTest extends AbstractConfigurationTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+
+        // NXP-23518, assume instead of ConditionalIgnoreRule to not import nuxeo-runtime-test that brings too much deps
+        assumeFalse(SystemUtils.IS_OS_WINDOWS);
 
         FakeCheck.reset();
         FakeCheck.setReady(true);
