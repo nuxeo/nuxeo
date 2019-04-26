@@ -51,6 +51,8 @@ public interface GraphNode {
 
     String PROP_TITLE = "dc:title";
 
+    String PROP_FORK = "rnode:fork";
+
     String PROP_START = "rnode:start";
 
     String PROP_STOP = "rnode:stop";
@@ -628,6 +630,13 @@ public interface GraphNode {
      * @param state the node state
      */
     void setState(State state);
+
+    /**
+     * Checks if this is a fork node.
+     *
+     * @since 11.1
+     */
+    boolean isFork();
 
     /**
      * Checks if this is the start node.
