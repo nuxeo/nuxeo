@@ -24,11 +24,6 @@ def zipfilter = getBinding().hasVariable("ZIPFILTER")?ZIPFILTER:'nuxeo-server-to
 currentBuild.setDescription("Branch: $BRANCH -> $PARENT_BRANCH, DB: $DBPROFILE, VERSION: $DBVERSION")
 
 node('SLAVE') {
-    tool name: 'ant-1.9'
-    tool name: 'maven-3'
-    jdk = tool name: 'java-11-openjdk'
-    env.JAVA_HOME = "${jdk}"
-
     timestamps {
         def sha = stage('clone') {
             checkout(
@@ -88,12 +83,16 @@ def emitVerifyClosure(String nodelabel, String sha, String zipfile, String name,
         node(nodelabel) {
             stage(name) {
                 ws("${WORKSPACE}-${name}") {
+                    def jdk = tool name: 'java-11-openjdk'
+
+                    def timeoutHours = params.NX_TIMEOUT_HOURS ?: '3'
+
                     unstash 'ws'
                     def mvnopts = zipfile != "" ? "-Dzip.file=${WORKSPACE}/${zipfile}" : ""
-                    timeout(time: 2, unit: 'HOURS') {
+                    timeout(time: Integer.parseInt(timeoutHours), unit: 'HOURS') {
                         withBuildStatus("${DBPROFILE}-${DBVERSION}/ftest/${name}", 'https://github.com/nuxeo/nuxeo', sha, RUN_DISPLAY_URL) {
                             withDockerCompose("${JOB_NAME}-${BUILD_NUMBER}-${name}", "integration/Jenkinsfiles/docker-compose-${DBPROFILE}-${DBVERSION}.yml",
-                                "mvn ${mvnopts} -B -V -f ${WORKSPACE}/nuxeo-distribution/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} clean verify", post)
+                                "JAVA_HOME=${jdk} mvn ${mvnopts} -B -V -f ${WORKSPACE}/nuxeo-distribution/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} clean verify", post)
                         }
                     }
                 }
