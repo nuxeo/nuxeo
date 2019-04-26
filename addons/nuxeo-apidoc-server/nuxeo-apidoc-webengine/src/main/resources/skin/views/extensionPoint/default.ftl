@@ -81,7 +81,7 @@
           ${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}
           </a>
           &nbsp;
-          <a class="components" href="${Root.path}/${distId}/viewComponent/${contrib.component.id}/override/?extensionId=${contrib.id}">
+          <a class="components" href="${Root.path}/${distId}/viewComponent/${contrib.component.id}/override/?extensionId=${contrib.extensionPoint}"">
           Contribute
           </a>
         </div>
