@@ -20,7 +20,7 @@
 
 currentBuild.setDescription("Branch: $BRANCH -> $PARENT_BRANCH, DB: $DBPROFILE, VERSION: $DBVERSION")
 
-node('SLAVE&&STATIC') {
+node('SLAVE&&STATIC') { // use a static slave in order to share the workspace between docker compose
     def jdk = tool name: 'java-11-openjdk'
 
     def timeoutHours = params.NX_TIMEOUT_HOURS ?: '3'
