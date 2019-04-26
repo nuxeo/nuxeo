@@ -21,12 +21,9 @@
 currentBuild.setDescription("Branch: $BRANCH -> $PARENT_BRANCH, DB: $DBPROFILE, VERSION: $DBVERSION")
 
 node('SLAVE&&STATIC') {
-    tool name: 'ant-1.9'
-    tool name: 'maven-3'
-    jdk = tool name: 'java-11-openjdk'
-    env.JAVA_HOME = "${jdk}"
+    def jdk = tool name: 'java-11-openjdk'
 
-    def timeoutHours = params.NX_TIMEOUT_HOURS == null ? '3' : params.NX_TIMEOUT_HOURS
+    def timeoutHours = params.NX_TIMEOUT_HOURS ?: '3'
 
     timeout(time: Integer.parseInt(timeoutHours), unit: 'HOURS') {
         timestamps {
@@ -55,7 +52,7 @@ node('SLAVE&&STATIC') {
                 stage('tests') {
                     withBuildStatus("$DBPROFILE-$DBVERSION/utest", 'https://github.com/nuxeo/nuxeo', sha, RUN_DISPLAY_URL) {
                         withDockerCompose("$JOB_NAME-$BUILD_NUMBER", "integration/Jenkinsfiles/docker-compose-$DBPROFILE-${DBVERSION}.yml",
-                            "mvn -B -V -f $WORKSPACE/pom.xml install -Pqa,addons,customdb,$DBPROFILE,${DBPROFILE}${DBVERSION} -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT") {
+                            "JAVA_HOME=${jdk} mvn -B -V -f $WORKSPACE/pom.xml install -Pqa,addons,customdb,$DBPROFILE,${DBPROFILE}${DBVERSION} -Dmaven.test.failure.ignore=true -Dnuxeo.tests.random.mode=STRICT") {
                             archiveArtifacts '**/target/failsafe-reports/*, **/target/*.png, **/target/**/*.log, **/target/**/log/*'
                             junit '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
                             warningsPublisher()
