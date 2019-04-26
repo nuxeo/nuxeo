@@ -18,12 +18,11 @@
  *     jcarsique
  */
 
-def nodelabel = getBinding().hasVariable("NODELABEL")?NODELABEL:'SLAVE&&STATIC'
 def zipfilter = getBinding().hasVariable("ZIPFILTER")?ZIPFILTER:'nuxeo-server-tomcat-*.zip'
 
 currentBuild.setDescription("Branch: $BRANCH -> $PARENT_BRANCH, DB: $DBPROFILE, VERSION: $DBVERSION")
 
-node('SLAVE') {
+node('SLAVE&&STATIC') { // use a static slave in order to share the workspace between docker compose
     timestamps {
         def sha = stage('clone') {
             checkout(
@@ -56,12 +55,12 @@ integration/.*'''],
         stash('ws')
         try {
             parallel (
-                'cmis' : emitVerifyClosure(nodelabel, sha, zipfile, 'cmis', 'nuxeo-server-cmis-tests') {
+                'cmis' : emitVerifyClosure(sha, zipfile, 'cmis', 'nuxeo-server-cmis-tests') {
                     archiveArtifacts 'nuxeo-distribution/nuxeo-server-cmis-tests/target/**/*.log, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/log/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*'
                     failOnServerError('nuxeo-distribution/nuxeo-server-cmis-tests/target/tomcat/log/server.log')
                     warningsPublisher()
                 },
-                'webdriver' : emitVerifyClosure(nodelabel, sha, zipfile, 'webdriver', 'nuxeo-jsf-ui-webdriver-tests') {
+                'webdriver' : emitVerifyClosure(sha, zipfile, 'webdriver', 'nuxeo-jsf-ui-webdriver-tests') {
                     archiveArtifacts 'nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/failsafe-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.png, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/*.json, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/*.log, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/log/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*, nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/results/*/*'
                     junit '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
                     failOnServerError('nuxeo-distribution/nuxeo-jsf-ui-webdriver-tests/target/tomcat/log/server.log')
@@ -75,25 +74,25 @@ integration/.*'''],
 }
 
 /**
- * Emit the closure which will be evaluated in the parallel step for
- * verifying.
- **/
-def emitVerifyClosure(String nodelabel, String sha, String zipfile, String name, String dir, Closure post) {
+ * Emit the closure which will be evaluated in the parallel step for verifying.
+ * <p>
+ * We don't use a new agent here because docker compose will start a new jenkins slave and this allow us to share
+ * the workspace between agent controlling pipeline (and doing checkout) and the docker composes.
+ */
+def emitVerifyClosure(String sha, String zipfile, String name, String dir, Closure post) {
     return {
-        node(nodelabel) {
-            stage(name) {
-                ws("${WORKSPACE}-${name}") {
-                    def jdk = tool name: 'java-11-openjdk'
+        stage(name) {
+            ws("${WORKSPACE}-${name}") {
+                def jdk = tool name: 'java-11-openjdk'
 
-                    def timeoutHours = params.NX_TIMEOUT_HOURS ?: '3'
+                def timeoutHours = params.NX_TIMEOUT_HOURS ?: '3'
 
-                    unstash 'ws'
-                    def mvnopts = zipfile != "" ? "-Dzip.file=${WORKSPACE}/${zipfile}" : ""
-                    timeout(time: Integer.parseInt(timeoutHours), unit: 'HOURS') {
-                        withBuildStatus("${DBPROFILE}-${DBVERSION}/ftest/${name}", 'https://github.com/nuxeo/nuxeo', sha, RUN_DISPLAY_URL) {
-                            withDockerCompose("${JOB_NAME}-${BUILD_NUMBER}-${name}", "integration/Jenkinsfiles/docker-compose-${DBPROFILE}-${DBVERSION}.yml",
-                                "JAVA_HOME=${jdk} mvn ${mvnopts} -B -V -f ${WORKSPACE}/nuxeo-distribution/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} clean verify", post)
-                        }
+                unstash 'ws'
+                def mvnopts = zipfile != "" ? "-Dzip.file=${WORKSPACE}/${zipfile}" : ""
+                timeout(time: Integer.parseInt(timeoutHours), unit: 'HOURS') {
+                    withBuildStatus("${DBPROFILE}-${DBVERSION}/ftest/${name}", 'https://github.com/nuxeo/nuxeo', sha, RUN_DISPLAY_URL) {
+                        withDockerCompose("${JOB_NAME}-${BUILD_NUMBER}-${name}", "integration/Jenkinsfiles/docker-compose-${DBPROFILE}-${DBVERSION}.yml",
+                            "JAVA_HOME=${jdk} mvn ${mvnopts} -B -V -f ${WORKSPACE}/nuxeo-distribution/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} clean verify", post)
                     }
                 }
             }
