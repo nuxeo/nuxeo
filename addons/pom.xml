@@ -90,7 +90,6 @@
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-easyshare</module>
     <module>nuxeo-duoweb-authentication</module>
-    <module>nuxeo-sample-project</module>
     <module>nuxeo-platform-spreadsheet</module>
     <module>nuxeo-binary-metadata</module>
     <module>nuxeo-segment.io-connector</module>
@@ -473,13 +472,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-diff-test</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Sample project -->
-      <dependency>
-        <groupId>org.nuxeo.sample</groupId>
-        <artifactId>nuxeo-sample-project</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
