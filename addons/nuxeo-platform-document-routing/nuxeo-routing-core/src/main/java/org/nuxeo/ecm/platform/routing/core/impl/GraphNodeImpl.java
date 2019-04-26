@@ -176,6 +176,11 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     @Override
+    public boolean isFork() {
+        return getBoolean(PROP_FORK);
+    }
+
+    @Override
     public boolean isStart() {
         return getBoolean(PROP_START);
     }

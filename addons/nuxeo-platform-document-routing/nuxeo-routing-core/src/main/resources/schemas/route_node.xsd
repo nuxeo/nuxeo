@@ -10,6 +10,7 @@
   <xs:element name="inputChain" type="xs:string" />
   <xs:element name="outputChain" type="xs:string" />
   <xs:element name="transitions" type="node:transitions" />
+  <xs:element name="fork" type="xs:boolean" />
   <xs:element name="start" type="xs:boolean" />
   <xs:element name="stop" type="xs:boolean" />
   <xs:element name="merge" type="xs:string" /> <!-- (null)/one/all -->

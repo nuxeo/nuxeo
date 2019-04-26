@@ -33,6 +33,8 @@ public class NodeView {
 
     public int y;
 
+    public boolean isForkNode;
+
     public boolean isStartNode;
 
     public boolean isEndNode;
@@ -52,6 +54,7 @@ public class NodeView {
     public NodeView(GraphNode node, Locale locale) {
         this.x = Integer.parseInt((String) node.getDocument().getPropertyValue(GraphNode.PROP_NODE_X_COORDINATE));
         this.y = Integer.parseInt((String) node.getDocument().getPropertyValue(GraphNode.PROP_NODE_Y_COORDINATE));
+        this.isForkNode = node.isFork();
         this.isStartNode = node.isStart();
         this.isEndNode = node.isStop();
         this.id = node.getId();
@@ -85,6 +88,13 @@ public class NodeView {
 
     public boolean isEndNode() {
         return isEndNode;
+    }
+
+    /**
+     * @since 11.1
+     */
+    public boolean isForkNode() {
+        return isForkNode;
     }
 
     public boolean isStartNode() {
