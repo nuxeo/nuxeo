@@ -98,7 +98,6 @@
     <module>nuxeo-datadog-reporter</module>
     <module>nuxeo-shibboleth-invitation</module>
     <module>nuxeo-fsexporter</module>
-    <module>nuxeo-showcase-content-sample</module>
     <module>nuxeo-platform-smart-search</module>
     <module>nuxeo-connect-tools</module>
     <module>nuxeo-platform-pdf-utils</module>
@@ -786,13 +785,6 @@
         <groupId>org.nuxeo.datadog</groupId>
         <artifactId>nuxeo-datadog-reporter</artifactId>
         <version>${nuxeo.datadog.reporter.version}</version>
-      </dependency>
-
-      <!-- Nuxeo Showcase Sample -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-showcase-content-importer</artifactId>
-        <version>${nuxeo.addons.version}</version>
       </dependency>
 
       <!-- Connect Tools -->
