@@ -94,7 +94,6 @@
     <module>nuxeo-binary-metadata</module>
     <module>nuxeo-segment.io-connector</module>
     <module>nuxeo-liveconnect</module>
-    <module>nuxeo-media-publishing</module>
     <module>nuxeo-datadog-reporter</module>
     <module>nuxeo-shibboleth-invitation</module>
     <module>nuxeo-fsexporter</module>
@@ -734,38 +733,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.liveconnect</groupId>
         <artifactId>nuxeo-liveconnect-onedrive-jsf</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Media Publishing -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.media.publishing</groupId>
-        <artifactId>nuxeo-media-publishing-core</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.media.publishing</groupId>
-        <artifactId>nuxeo-media-publishing-jsf</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.media.publishing</groupId>
-        <artifactId>nuxeo-media-publishing-wistia-core</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.media.publishing</groupId>
-        <artifactId>nuxeo-media-publishing-wistia-jsf</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.media.publishing</groupId>
-        <artifactId>nuxeo-media-publishing-youtube-core</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.media.publishing</groupId>
-        <artifactId>nuxeo-media-publishing-youtube-jsf</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
