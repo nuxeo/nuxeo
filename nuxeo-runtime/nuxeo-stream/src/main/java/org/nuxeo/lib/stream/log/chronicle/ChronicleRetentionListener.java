@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NavigableSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 
 import net.openhft.chronicle.queue.impl.StoreFileListener;
@@ -38,7 +38,8 @@ import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
  * @since 9.3
  */
 public class ChronicleRetentionListener implements StoreFileListener {
-    private static final Log log = LogFactory.getLog(ChronicleRetentionListener.class);
+
+    private static final Logger log = LogManager.getLogger(ChronicleRetentionListener.class);
 
     protected final ChronicleRetentionDuration retention;
 
@@ -59,9 +60,8 @@ public class ChronicleRetentionListener implements StoreFileListener {
         if (queue == null || retention.disable()) {
             return;
         }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Acquire Chronicle file: %s, cycle: %s", file, cycle));
-        }
+        log.debug("Acquire Chronicle file: {}, cycle: {}", file, cycle);
+
     }
 
     public synchronized void purge() {
@@ -88,15 +88,14 @@ public class ChronicleRetentionListener implements StoreFileListener {
         if (file == null || !file.exists()) {
             return;
         }
-        log.info(String.format("Deleting Chronicle file: %s according to retention: %s", file.getAbsolutePath(),
-                retention));
+        log.info("Deleting Chronicle file: {} according to retention: {}", file::getAbsolutePath, () -> retention);
         try {
             Files.delete(file.toPath());
             queue.refreshDirectlyListing();
             log.debug(file + " deleted");
             queue.release(store);
         } catch (IOException | SecurityException e) {
-            log.warn(String.format("Unable to delete Chronicle file: %s, %s", file.getAbsolutePath(), e.getMessage()));
+            log.warn("Unable to delete Chronicle file: {}, {}", file::getAbsolutePath, e::getMessage);
         }
     }
 
@@ -116,9 +115,7 @@ public class ChronicleRetentionListener implements StoreFileListener {
         if (queue == null || queue.isClosed() || retention.disable()) {
             return;
         }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Release Chronicle file: %s, cycle: %d", file, cycle));
-        }
+        log.debug("Release Chronicle file: {}, cycle: {}", file, cycle);
         if (checkPurge()) {
             purge();
         }
@@ -129,9 +126,7 @@ public class ChronicleRetentionListener implements StoreFileListener {
         if (System.currentTimeMillis() - purgedStamp >= retention.getRollCycle().length()) {
             return true;
         }
-        if (log.isDebugEnabled()) {
-            log.debug("Skipping purge already done in within cycle duration: " + purgedStamp);
-        }
+        log.debug("Skipping purge already done in within cycle duration: {}", purgedStamp);
         return false;
     }
 
