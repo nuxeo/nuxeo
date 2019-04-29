@@ -111,7 +111,7 @@ You can report issues on [answers.nuxeo.com](http://answers.nuxeo.com).
 Most of the source code in the Nuxeo Platform is copyright Nuxeo and
 contributors, and licensed under the Apache License, Version 2.0.
 
-See the [/LICENSE](/LICENSE) file and the documentation page [Licenses](http://doc.nuxeo.com/x/gIK7) for details.
+See the [LICENSE](LICENSE) file and the documentation page [Licenses](http://doc.nuxeo.com/x/gIK7) for details.
 
 # About Nuxeo
 
