@@ -103,14 +103,19 @@ public abstract class BaseOverflowRecordFilter implements RecordFilter {
         }
         EnumSet<Record.Flag> flags = EnumSet.copyOf(record.flags);
         flags.add(Record.Flag.EXTERNAL_VALUE);
-        storeValue(record.key, record.data);
+        storeValue(getUniqRecordKey(record), record.data);
         return new Record(record.key, null, record.watermark, flags);
+    }
+
+    protected String getUniqRecordKey(Record record) {
+        // this is needed to support different records using an identical key
+        return String.format("%s:%d", record.key, record.watermark);
     }
 
     @Override
     public Record afterRead(Record record, LogOffset offset) {
         if (record.flags.contains(Record.Flag.EXTERNAL_VALUE) && (record.data == null || record.data.length == 0)) {
-            byte[] value = fetchValue(record.key);
+            byte[] value = fetchValue(getUniqRecordKey(record));
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Record: %s retrieve value of size: %d", record.key,
                         record.data == null ? 0 : record.data.length));
