@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -181,10 +181,10 @@ public class TestAvroMapper {
         assertEquals(reference.getPathAsString(), mapped.getPathAsString());
         assertEquals(reference.getRepositoryName(), mapped.getRepositoryName());
         assertEquals(reference.getCurrentLifeCycleState(), mapped.getCurrentLifeCycleState());
-        assertTrue(reference.isCheckedOut() == mapped.isCheckedOut());
-        assertTrue(reference.isTrashed() == mapped.isTrashed());
-        assertTrue(reference.isVersion() == mapped.isVersion());
-        assertTrue(reference.isProxy() == mapped.isProxy());
+        assertEquals(reference.isCheckedOut(), mapped.isCheckedOut());
+        assertEquals(reference.isTrashed(), mapped.isTrashed());
+        assertEquals(reference.isVersion(), mapped.isVersion());
+        assertEquals(reference.isProxy(), mapped.isProxy());
         assertEquals(reference.getFacets(), mapped.getFacets());
         // properties not tested yet
         // document has to be associated to an open session
