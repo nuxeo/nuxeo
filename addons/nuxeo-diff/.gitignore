@@ -1,9 +1,0 @@
-target
-bin
-.project
-.classpath
-.settings
-build.xml
-build.properties
-deploy.sh
-TODO*

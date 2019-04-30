@@ -1,38 +1,35 @@
+# system/backups
 *~
-*_
-addons
-addons-core
-*~bak
-*-bak
 *.bak
-bin
-build.properties
-.checkstyle
-chromedriver.log
-.classpath
-*cpJar*
-dependency-tree.log
 .DS_Store
-*.gpd.*
+*.orig
+*.rej
+
+# ide
+bin
+.classpath
+.metadata
+.project
+.settings/
+.checkstyle
+.mylar
 .idea
 *.iml
 *.ipr
 *.iws
-*.log
-.metadata
-.mylar
-*.orig
-.pmd
-.project
-*.pyc
+*.ids
 .pydevproject
-*.rej
-.settings
-target
-marketplace
-nuxeo-webengine/nuxeo-webengine-gwt/war/
-nashorn_code_cache/
-bower_components
-node_modules
-.java-version
 
+# build artifacts
+target/
+bower_components/
+node_modules/
+package-lock.json
+nashorn_code_cache/
+chromedriver.log
+*.log
+*.pyc
+
+# nuxeo build process
+addons/nuxeo-shell/
+marketplace/
