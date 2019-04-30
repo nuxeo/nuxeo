@@ -543,5 +543,10 @@ public abstract class AbstractWorkManagerTest {
         service.schedule(fatWork);
         assertTrue(service.awaitCompletion(getDurationMillis() * 200, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 2, 0);
+        // different work same id
+        FatWork fatWorkBis = new FatWork("fatty", 3_000_000);
+        service.schedule(fatWorkBis);
+        assertTrue(service.awaitCompletion(getDurationMillis() * 200, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 3, 0);
     }
 }
