@@ -208,21 +208,6 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
     }
 
-    @Test
-    public void testUserInfoHTMLInjection() {
-        String htmlInjection = "><a href=http://attacker.com>Link";
-        String escaped = "&gt;&lt;a href=http://attacker.com&gt;Link";
-        DocumentModel registrationDoc = session.createDocumentModel(configuration.getRequestDocType());
-        registrationDoc.setPropertyValue("userinfo:login", htmlInjection);
-        registrationDoc.setPropertyValue("userinfo:firstName", htmlInjection);
-        registrationDoc.setPropertyValue("userinfo:lastName", htmlInjection);
-        Map<String, Serializable> userInfo = ((UserInvitationComponent) userRegistrationService).getUserInfo(
-                registrationDoc, configuration);
-        assertEquals(escaped, userInfo.get("login"));
-        assertEquals(escaped, userInfo.get("firstName"));
-        assertEquals(escaped, userInfo.get("lastName"));
-    }
-
     private DocumentModel buildSampleUserInfo() {
         DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
         userInfo.setPropertyValue("userinfo:login", "jolivier");
