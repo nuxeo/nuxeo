@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,12 +43,15 @@ public interface SchemaManager extends TypeProvider {
 
     Schema getSchemaFromPrefix(String schemaPrefix);
 
+    /**
+     * @deprecated since 11.1, seems unused
+     */
+    @Deprecated(since = "11.1")
     Schema getSchemaFromURI(String schemaURI);
 
     /**
      * Returns the names of all document types that have given facet.
      *
-     * @param facet
      * @return null or the names as a guaranteed non-empty set.
      */
     Set<String> getDocumentTypeNamesForFacet(String facet);
@@ -56,7 +59,6 @@ public interface SchemaManager extends TypeProvider {
     /**
      * Return the names of all document types extending the given one, which is included.
      *
-     * @param docType
      * @return null or the set of names.
      */
     Set<String> getDocumentTypeNamesExtending(String docType);

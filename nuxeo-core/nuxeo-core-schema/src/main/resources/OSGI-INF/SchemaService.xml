@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-
-<component name="org.nuxeo.ecm.core.schema.TypeService"
-  version="1.0.0">
+<component name="org.nuxeo.ecm.core.schema.TypeService" version="1.0.0">
   <documentation>
     Manage document types and schemas.
     Allows registrering new types defined using XSD schemas
@@ -11,8 +9,8 @@
   <require>org.nuxeo.ecm.core.schema.ObjectResolverService</require>
 
   <service>
-    <provide
-      interface="org.nuxeo.ecm.core.schema.SchemaManager"/>
+    <provide interface="org.nuxeo.ecm.core.schema.SchemaManager" />
+    <provide interface="org.nuxeo.ecm.core.schema.TypeProvider" />
   </service>
 
   <implementation class="org.nuxeo.ecm.core.schema.TypeService" />
@@ -21,7 +19,7 @@
 
     <documentation>
       Type manager configuration.
-      <p/>
+      <p />
       This contains default prefetch options and clearComplexPropertyBeforeSet options. For example:
       <code>
         <configuration>
@@ -34,23 +32,23 @@
       Note that setting allowVersionWriteForDublinCore to true is DEPRECATED since 10.3.
     </documentation>
 
-    <object
-      class="org.nuxeo.ecm.core.schema.TypeConfiguration" />
+    <object class="org.nuxeo.ecm.core.schema.TypeConfiguration" />
+
   </extension-point>
 
   <extension-point name="doctype">
 
     <documentation>
       Extension Point to register new document types and facets.
-      <p/>
+      <p />
       Document types may implement several schemas and extends other
       document types. You can compare document types with java
       classes and schemas with java interfaces. Document types may
       also contains several facets that define a behavior.
-      <p/>
+      <p />
       The prefetch element defines what fields are synchronously
       indexed, and are made available in search results listings.
-      <p/>
+      <p />
       A doctype XML extension may contain several 'doctype' elements.
       A doctype element may look like this:
 
@@ -69,7 +67,7 @@
       Document types may also specify subtypes, which are sets of other
       document types that can be created inside the this document type
       being defined.
-      <p/>
+      <p />
       This configuration only applies in the UI and will not affect
       documents created through APIs (e.g. REST, Java)
       This can be achieved as follows:
@@ -84,7 +82,7 @@
 
       When extending a doctype, forbidden subtypes can also be specified
       to prevent a specific type from being created.
-      <p/>
+      <p />
       This configuration only applies in the UI and will not affect
       documents created through APIs (e.g. REST, Java)
 
@@ -103,7 +101,7 @@
       They can have zero or more schemas:
 
       <code>
-        <facet name="MyFacet" perDocumentQuery="false"/>
+        <facet name="MyFacet" perDocumentQuery="false" />
         <facet name="MyFacetWithData">
           <schema name="myschema" />
           <schema name="otherschema" />
@@ -123,21 +121,19 @@
       </code>
     </documentation>
 
-    <object
-      class="org.nuxeo.ecm.core.schema.DocumentTypeDescriptor" />
-    <object
-      class="org.nuxeo.ecm.core.schema.FacetDescriptor" />
-    <object
-      class="org.nuxeo.ecm.core.schema.ProxiesDescriptor" />
+    <object class="org.nuxeo.ecm.core.schema.DocumentTypeDescriptor" />
+    <object class="org.nuxeo.ecm.core.schema.FacetDescriptor" />
+    <object class="org.nuxeo.ecm.core.schema.ProxiesDescriptor" />
+
   </extension-point>
 
   <extension-point name="schema">
 
     <documentation>
       Extension Point to register new schemas.
-      <p/>
+      <p />
       Schemas are defined using XSD files.
-      The schema extension XML may containg  several 'schema' objects as
+      The schema extension XML may containg several 'schema' objects as
       the following ones:
       <code>
         <schema name="common" src="schema/common.xsd" />
@@ -147,18 +143,18 @@
       the path to that schema (relative to the bundle root) and the <i>prefix</i> is used as
       a prefix (short name) of the schema namespace.
       The schema namespace is the targetNamespace defined inside the XSD file
-      <p/>
+      <p />
       Note that multiple schemas can share the same target namespace and prefix
-      <p/>
+      <p />
       You can also create a Nuxeo Schema from a sub part of the XSD schema.
       For that you can use the xsdRootElement attribute to indicate the complex type to use.
       <code>
-        <schema name="employeeSchema" src="schema/testExtension.xsd" xsdRootElement="employee"/>
+        <schema name="employeeSchema" src="schema/testExtension.xsd" xsdRootElement="employee" />
       </code>
     </documentation>
 
-    <object
-      class="org.nuxeo.ecm.core.schema.SchemaBindingDescriptor" />
+    <object class="org.nuxeo.ecm.core.schema.SchemaBindingDescriptor" />
+
   </extension-point>
 
   <extension-point name="deprecation">
@@ -177,7 +173,8 @@
       <ul>
         <li>deprecated: property still exists in schema definition, but it'll be removed in next version</li>
         <li>removed: property has been removed from schema definition, relax platform behavior. This will avoid Nuxeo
-          property not found exceptions for remaining use of the property</li>
+          property not found exceptions for remaining use of the property
+        </li>
       </ul>
       The fallback attribute is optional, its value has to be a xpath referencing an existing property in the same
       schema than removed/deprecated property.
