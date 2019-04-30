@@ -554,5 +554,11 @@ public class WorkManagerTest {
         service.schedule(fatWork);
         assertTrue(service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 2, 0);
+
+        // different work same id
+        FatWork fatWorkBis = new FatWork("fatty", 3_000_000);
+        service.schedule(fatWorkBis);
+        assertTrue(service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 3, 0);
     }
 }
