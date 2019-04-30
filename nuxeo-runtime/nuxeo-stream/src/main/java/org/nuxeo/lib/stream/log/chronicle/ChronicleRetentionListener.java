@@ -79,8 +79,12 @@ public class ChronicleRetentionListener implements StoreFileListener {
     }
 
     protected void dropCycle(Integer cycle) {
-        File file = getFileForCycle(cycle);
-        if (!file.exists()) {
+        WireStore store = queue.storeForCycle(cycle, queue.epoch(), false);
+        if (store == null) {
+            return;
+        }
+        File file = store.file();
+        if (file == null || !file.exists()) {
             return;
         }
         log.info(String.format("Deleting Chronicle file: %s according to retention: %s", file.getAbsolutePath(),
@@ -88,6 +92,7 @@ public class ChronicleRetentionListener implements StoreFileListener {
         try {
             Files.delete(file.toPath());
             log.debug(file + " deleted");
+            queue.release(store);
         } catch (IOException | SecurityException e) {
             log.warn(String.format("Unable to delete Chronicle file: %s, %s", file.getAbsolutePath(), e.getMessage()));
         }
@@ -102,11 +107,6 @@ public class ChronicleRetentionListener implements StoreFileListener {
         } catch (ParseException e) {
             throw new RuntimeException("Fail to list cycles for queue: " + queue, e);
         }
-    }
-
-    protected File getFileForCycle(int cycle) {
-        WireStore store = queue.storeForCycle(cycle, queue.epoch(), false);
-        return (store != null) ? store.file() : null;
     }
 
     @Override
