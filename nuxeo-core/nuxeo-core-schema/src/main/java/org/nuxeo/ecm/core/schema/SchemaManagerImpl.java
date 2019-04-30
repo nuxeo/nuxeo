@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.schema.types.AnyType;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.TypeException;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.xml.sax.SAXException;
 
 /**
@@ -60,7 +61,7 @@ import org.xml.sax.SAXException;
  */
 public class SchemaManagerImpl implements SchemaManager {
 
-    private static final Log log = LogFactory.getLog(SchemaManagerImpl.class);
+    private static final Logger log = LogManager.getLogger(SchemaManagerImpl.class);
 
     /**
      * Whether there have been changes to the registered schemas, facets or document types that require recomputation of
@@ -94,13 +95,12 @@ public class SchemaManagerImpl implements SchemaManager {
     protected boolean clearComplexPropertyBeforeSet;
 
     /**
-     * Effective allowVersionWriteForDublinCore flag. */
+     * Effective allowVersionWriteForDublinCore flag.
+     */
     protected boolean allowVersionWriteForDublinCore;
 
     /** Effective schemas. */
     protected Map<String, Schema> schemas = new HashMap<>();
-
-    protected final Map<String, Schema> uriToSchema = new HashMap<>();
 
     protected final Map<String, Schema> prefixToSchema = new HashMap<>();
 
@@ -147,7 +147,9 @@ public class SchemaManagerImpl implements SchemaManager {
     public SchemaManagerImpl() {
         recomputeCallbacks = new ArrayList<>();
         schemaDir = new File(Environment.getDefault().getTemp(), SCHEMAS_DIR_NAME);
-        schemaDir.mkdirs();
+        if (!schemaDir.mkdirs() && !schemaDir.exists()) {
+            throw new RuntimeServiceException("Unable to create schemas directory");
+        }
         clearSchemaDir();
         registerBuiltinTypes();
     }
@@ -156,7 +158,7 @@ public class SchemaManagerImpl implements SchemaManager {
         try {
             org.apache.commons.io.FileUtils.cleanDirectory(schemaDir);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeServiceException(e);
         }
     }
 
@@ -189,13 +191,13 @@ public class SchemaManagerImpl implements SchemaManager {
         allConfigurations.add(config);
         dirty = true;
         if (StringUtils.isNotBlank(config.prefetchInfo)) {
-            log.info("Registered global prefetch: " + config.prefetchInfo);
+            log.info("Registered global prefetch: {}", config.prefetchInfo);
         }
         if (config.clearComplexPropertyBeforeSet != null) {
-            log.info("Registered clearComplexPropertyBeforeSet: " + config.clearComplexPropertyBeforeSet);
+            log.info("Registered clearComplexPropertyBeforeSet: {}", config.clearComplexPropertyBeforeSet);
         }
         if (config.allowVersionWriteForDublinCore != null) {
-            log.info("Registered allowVersionWriteForDublinCore: " + config.allowVersionWriteForDublinCore);
+            log.info("Registered allowVersionWriteForDublinCore: {}", config.allowVersionWriteForDublinCore);
         }
     }
 
@@ -203,31 +205,31 @@ public class SchemaManagerImpl implements SchemaManager {
         if (allConfigurations.remove(config)) {
             dirty = true;
             if (StringUtils.isNotBlank(config.prefetchInfo)) {
-                log.info("Unregistered global prefetch: " + config.prefetchInfo);
+                log.info("Unregistered global prefetch: {}", config.prefetchInfo);
             }
             if (config.clearComplexPropertyBeforeSet != null) {
-                log.info("Unregistered clearComplexPropertyBeforeSet: " + config.clearComplexPropertyBeforeSet);
+                log.info("Unregistered clearComplexPropertyBeforeSet: {}", config.clearComplexPropertyBeforeSet);
             }
             if (config.allowVersionWriteForDublinCore != null) {
-                log.info("Unregistered allowVersionWriteForDublinCore: " + config.allowVersionWriteForDublinCore);
+                log.info("Unregistered allowVersionWriteForDublinCore: {}", config.allowVersionWriteForDublinCore);
             }
         } else {
-            log.error("Unregistering unknown configuration: " + config);
+            log.error("Unregistering unknown configuration: {}", config);
         }
     }
 
     public synchronized void registerSchema(SchemaBindingDescriptor sd) {
         allSchemas.add(sd);
         dirty = true;
-        log.info("Registered schema: " + sd.name);
+        log.info("Registered schema: {}", sd.name);
     }
 
     public synchronized void unregisterSchema(SchemaBindingDescriptor sd) {
         if (allSchemas.remove(sd)) {
             dirty = true;
-            log.info("Unregistered schema: " + sd.name);
+            log.info("Unregistered schema: {}", sd.name);
         } else {
-            log.error("Unregistering unknown schema: " + sd.name);
+            log.error("Unregistering unknown schema: {}", sd.name);
         }
     }
 
@@ -235,30 +237,30 @@ public class SchemaManagerImpl implements SchemaManager {
         allFacets.removeIf(f -> f.getName().equals(fd.getName()));
         allFacets.add(fd);
         dirty = true;
-        log.info("Registered facet: " + fd.name);
+        log.info("Registered facet: {}", fd.name);
     }
 
     public synchronized void unregisterFacet(FacetDescriptor fd) {
         if (allFacets.remove(fd)) {
             dirty = true;
-            log.info("Unregistered facet: " + fd.name);
+            log.info("Unregistered facet: {}", fd.name);
         } else {
-            log.error("Unregistering unknown facet: " + fd.name);
+            log.error("Unregistering unknown facet: {}", fd.name);
         }
     }
 
     public synchronized void registerDocumentType(DocumentTypeDescriptor dtd) {
         allDocumentTypes.add(dtd);
         dirty = true;
-        log.info("Registered document type: " + dtd.name);
+        log.info("Registered document type: {}", dtd.name);
     }
 
     public synchronized void unregisterDocumentType(DocumentTypeDescriptor dtd) {
         if (allDocumentTypes.remove(dtd)) {
             dirty = true;
-            log.info("Unregistered document type: " + dtd.name);
+            log.info("Unregistered document type: {}", dtd.name);
         } else {
-            log.error("Unregistering unknown document type: " + dtd.name);
+            log.error("Unregistering unknown document type: {}", dtd.name);
         }
     }
 
@@ -287,15 +289,15 @@ public class SchemaManagerImpl implements SchemaManager {
     public synchronized void registerProxies(ProxiesDescriptor pd) {
         allProxies.add(pd);
         dirty = true;
-        log.info("Registered proxies descriptor for schemas: " + pd.getSchemas());
+        log.info("Registered proxies descriptor for schemas: {}", pd::getSchemas);
     }
 
     public synchronized void unregisterProxies(ProxiesDescriptor pd) {
         if (allProxies.remove(pd)) {
             dirty = true;
-            log.info("Unregistered proxies descriptor for schemas: " + pd.getSchemas());
+            log.info("Unregistered proxies descriptor for schemas: {}", pd::getSchemas);
         } else {
-            log.error("Unregistering unknown proxies descriptor for schemas: " + pd.getSchemas());
+            log.error("Unregistering unknown proxies descriptor for schemas: {}", pd::getSchemas);
         }
     }
 
@@ -358,7 +360,6 @@ public class SchemaManagerImpl implements SchemaManager {
 
     protected void recomputeSchemas() {
         schemas.clear();
-        uriToSchema.clear();
         prefixToSchema.clear();
         RuntimeException errors = new RuntimeException("Cannot load schemas");
         // on reload, don't take confuse already-copied schemas with those contributed
@@ -369,12 +370,12 @@ public class SchemaManagerImpl implements SchemaManager {
             String name = sd.name;
             if (resolvedSchemas.containsKey(name)) {
                 if (!sd.override) {
-                    log.warn("Schema " + name + " is redefined but will not be overridden");
+                    log.warn("Schema {} is redefined but will not be overridden", name);
                     continue;
                 }
-                log.debug("Reregistering schema: " + name + " from " + sd.file);
+                log.debug("Re-registering schema: {} from {}", name, sd.file);
             } else {
-                log.debug("Registering schema: " + name + " from " + sd.file);
+                log.debug("Registering schema: {} from {}", name, sd.file);
             }
             resolvedSchemas.put(name, sd);
         }
@@ -399,7 +400,7 @@ public class SchemaManagerImpl implements SchemaManager {
 
     protected void copySchema(SchemaBindingDescriptor sd) throws IOException {
         if (sd.src == null || sd.src.length() == 0) {
-            // log.error("INLINE Schemas ARE NOT YET IMPLEMENTED!");
+            // INLINE Schemas ARE NOT YET IMPLEMENTED!
             return;
         }
         URL url = sd.context.getLocalResource(sd.src);
@@ -408,7 +409,7 @@ public class SchemaManagerImpl implements SchemaManager {
             url = sd.context.getResource(sd.src);
         }
         if (url == null) {
-            log.error("XSD Schema not found: " + sd.src);
+            log.error("XSD Schema not found: {}", sd.src);
             return;
         }
         try (InputStream in = url.openStream()) {
@@ -419,20 +420,19 @@ public class SchemaManagerImpl implements SchemaManager {
 
     protected void loadSchema(SchemaBindingDescriptor sd) throws IOException, SAXException, TypeException {
         if (sd.file == null) {
-            // log.error("INLINE Schemas ARE NOT YET IMPLEMENTED!");
+            // INLINE Schemas ARE NOT YET IMPLEMENTED!
             return;
         }
         // loadSchema calls this.registerSchema
         XSDLoader schemaLoader = new XSDLoader(this, sd);
         schemaLoader.loadSchema(sd.name, sd.prefix, sd.file, sd.xsdRootElement, sd.isVersionWritable);
-        log.info("Registered schema: " + sd.name + " from " + sd.file);
+        log.info("Registered schema: {} from {}", sd.name, sd.file);
     }
 
     // called from XSDLoader
     protected void registerSchema(Schema schema) {
         schemas.put(schema.getName(), schema);
         Namespace ns = schema.getNamespace();
-        uriToSchema.put(ns.uri, schema);
         if (!StringUtils.isBlank(ns.prefix)) {
             prefixToSchema.put(ns.prefix, schema);
         }
@@ -456,10 +456,18 @@ public class SchemaManagerImpl implements SchemaManager {
         return prefixToSchema.get(schemaPrefix);
     }
 
+    /**
+     * @deprecated since 11.1, seems unused
+     */
     @Override
+    @Deprecated(since = "11.1")
     public Schema getSchemaFromURI(String schemaURI) {
         checkDirty();
-        return uriToSchema.get(schemaURI);
+        return schemas.values()
+                      .stream()
+                      .filter(schema -> schema.getNamespace().uri.equals(schemaURI))
+                      .findFirst()
+                      .orElse(null);
     }
 
     /*
@@ -488,7 +496,7 @@ public class SchemaManagerImpl implements SchemaManager {
         for (String schemaName : schemaNames) {
             Schema schema = schemas.get(schemaName);
             if (schema == null) {
-                log.error("Facet: " + name + " uses unknown schema: " + schemaName);
+                log.error("Facet: {} uses unknown schema: {}", name, schemaName);
                 continue;
             }
             facetSchemas.add(schema);
@@ -564,12 +572,12 @@ public class SchemaManagerImpl implements SchemaManager {
             return docType;
         }
         if (stack.contains(name)) {
-            log.error("Document type: " + name + " used in parent inheritance loop: " + stack);
+            log.error("Document type: {} used in parent inheritance loop: {}", name, stack);
             return null;
         }
         DocumentTypeDescriptor dtd = dtds.get(name);
         if (dtd == null) {
-            log.error("Document type: " + name + " does not exist, used as parent by type: " + stack);
+            log.error("Document type: {} does not exist, used as parent by type: {}", name, stack);
             return null;
         }
 
@@ -598,9 +606,8 @@ public class SchemaManagerImpl implements SchemaManager {
 
     protected DocumentType recomputeDocumentType(String name, DocumentTypeDescriptor dtd, DocumentType parent) {
         // find the facets and schemas names
-        Set<String> facetNames = new HashSet<>();
+        Set<String> facetNames = new HashSet<>(Arrays.asList(dtd.facets));
         Set<String> schemaNames = SchemaDescriptor.getSchemaNames(dtd.schemas);
-        facetNames.addAll(Arrays.asList(dtd.facets));
         Set<String> subtypes = new HashSet<>(Arrays.asList(dtd.subtypes));
         Set<String> forbidden = new HashSet<>(Arrays.asList(dtd.forbiddenSubtypes));
 
@@ -614,9 +621,9 @@ public class SchemaManagerImpl implements SchemaManager {
         for (String facetName : facetNames) {
             CompositeType ct = facets.get(facetName);
             if (ct == null) {
-                log.warn("Undeclared facet: " + facetName + " used in document type: " + name);
+                log.warn("Undeclared facet: {} used in document type: {}", facetName, name);
                 // register it with no schemas
-                ct = registerFacet(facetName, Collections.<String> emptySet());
+                ct = registerFacet(facetName, Collections.emptySet());
             }
             schemaNames.addAll(Arrays.asList(ct.getSchemaNames()));
         }
@@ -626,7 +633,7 @@ public class SchemaManagerImpl implements SchemaManager {
         for (String schemaName : schemaNames) {
             Schema schema = schemas.get(schemaName);
             if (schema == null) {
-                log.error("Document type: " + name + " uses unknown schema: " + schemaName);
+                log.error("Document type: {} uses unknown schema: {}", name, schemaName);
                 continue;
             }
             docTypeSchemas.add(schema);
@@ -702,7 +709,7 @@ public class SchemaManagerImpl implements SchemaManager {
         Set<String> nameSet = new HashSet<>();
         for (ProxiesDescriptor pd : allProxies) {
             if (!pd.getType().equals("*")) {
-                log.error("Proxy descriptor for specific type not supported: " + pd);
+                log.error("Proxy descriptor for specific type not supported: {}", pd);
             }
             for (String schemaName : pd.getSchemas()) {
                 if (nameSet.contains(schemaName)) {
@@ -710,7 +717,7 @@ public class SchemaManagerImpl implements SchemaManager {
                 }
                 Schema schema = schemas.get(schemaName);
                 if (schema == null) {
-                    log.error("Proxy schema uses unknown schema: " + schemaName);
+                    log.error("Proxy schema uses unknown schema: {}", schemaName);
                     continue;
                 }
                 list.add(schema);
@@ -817,8 +824,7 @@ public class SchemaManagerImpl implements SchemaManager {
         Type itemType = listType.getFieldType();
         if (itemType.isComplexType() && subName != null) {
             ComplexType complexType = (ComplexType) itemType;
-            Field subField = complexType.getField(subName);
-            return subField;
+            return complexType.getField(subName);
         }
         if (fallbackOnSubElement) {
             return listType.getField();
@@ -865,9 +871,9 @@ public class SchemaManagerImpl implements SchemaManager {
     public synchronized void registerPropertyDeprecation(PropertyDeprecationDescriptor descriptor) {
         Map<String, Map<String, String>> properties = descriptor.isDeprecated() ? deprecatedProperties
                 : removedProperties;
-        properties.computeIfAbsent(descriptor.getSchema(), key -> new HashMap<>()).put(descriptor.getName(),
-                descriptor.getFallback());
-        log.info("Registered property deprecation: " + descriptor);
+        properties.computeIfAbsent(descriptor.getSchema(), key -> new HashMap<>())
+                  .put(descriptor.getName(), descriptor.getFallback());
+        log.info("Registered property deprecation: {}", descriptor);
     }
 
     /**
@@ -885,9 +891,9 @@ public class SchemaManagerImpl implements SchemaManager {
             }
         }
         if (removed) {
-            log.info("Unregistered property deprecation: " + descriptor);
+            log.info("Unregistered property deprecation: {}", descriptor);
         } else {
-            log.error("Unregistering unknown property deprecation: " + descriptor);
+            log.error("Unregistering unknown property deprecation: {}", descriptor);
 
         }
     }

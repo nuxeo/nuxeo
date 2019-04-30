@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.diff.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ecm.diff.test.DocumentDiffRepositoryInit.LEFT_DOC_PATH;
+import static org.nuxeo.ecm.diff.test.DocumentDiffRepositoryInit.RIGHT_DOC_PATH;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -35,7 +37,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.io.DocumentXMLExporter;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.diff.DiffTestCase;
@@ -75,9 +76,6 @@ public class TestDocumentDiff extends DiffTestCase {
     @Inject
     protected DocumentDiffService docDiffService;
 
-    @Inject
-    protected DocumentXMLExporter docXMLExporter;
-
     protected DateFormat dateFormatter;
 
     @Before
@@ -93,8 +91,8 @@ public class TestDocumentDiff extends DiffTestCase {
     public void testDocDiff() {
 
         // Get left and right docs
-        DocumentModel leftDoc = session.getDocument(new PathRef(DocumentDiffRepositoryInit.getLeftDocPath()));
-        DocumentModel rightDoc = session.getDocument(new PathRef(DocumentDiffRepositoryInit.getRightDocPath()));
+        DocumentModel leftDoc = session.getDocument(new PathRef(LEFT_DOC_PATH));
+        DocumentModel rightDoc = session.getDocument(new PathRef(RIGHT_DOC_PATH));
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
@@ -111,27 +109,27 @@ public class TestDocumentDiff extends DiffTestCase {
         // description => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("description"), PropertyType.STRING, "description", null);
         // created => different
-        String expectedLeftCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
-                Calendar.DECEMBER, 29, 11, 24, 25).getTime());
-        String expectedRightCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
-                Calendar.DECEMBER, 29, 11, 24, 50).getTime());
+        String expectedLeftCreated = dateFormatter.format(
+                DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 25).getTime());
+        String expectedRightCreated = dateFormatter.format(
+                DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 50).getTime());
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"), PropertyType.DATE, expectedLeftCreated,
                 expectedRightCreated);
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
-        String expectedLeftModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
-                Calendar.DECEMBER, 29, 11, 24, 25).getTime());
-        String expectedRightModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
-                Calendar.DECEMBER, 30, 12, 05, 2).getTime());
+        String expectedLeftModified = dateFormatter.format(
+                DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 25).getTime());
+        String expectedRightModified = dateFormatter.format(
+                DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 30, 12, 05, 2).getTime());
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("modified"), PropertyType.DATE, expectedLeftModified,
                 expectedRightModified);
         // lastContributor => same once trimmed
         checkIdenticalField(schemaDiff.getFieldDiff("lastContributor"));
         // contributors => different (update) / same / different (add)
         ListPropertyDiff expectedListFieldDiff = new ListPropertyDiff(PropertyType.SCALAR_LIST);
-        expectedListFieldDiff.putDiff(0, new SimplePropertyDiff(PropertyType.STRING, "Administrator",
-                "anotherAdministrator"));
+        expectedListFieldDiff.putDiff(0,
+                new SimplePropertyDiff(PropertyType.STRING, "Administrator", "anotherAdministrator"));
         expectedListFieldDiff.putDiff(2, new SimplePropertyDiff(PropertyType.STRING, null, "jack"));
         checkListFieldDiff(schemaDiff.getFieldDiff("contributors"), expectedListFieldDiff);
         // subjects => same / different (remove)
@@ -165,22 +163,25 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
         ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item1ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(DifferenceType.differentFilename,
-                new ContentProperty(null, null, "second_attachement.txt", null), new ContentProperty(null, null,
-                        "the_file_name_is_different.txt", null)));
+        item1ExpectedComplexFieldDiff.putDiff("file",
+                new ContentPropertyDiff(DifferenceType.differentFilename,
+                        new ContentProperty(null, null, "second_attachement.txt", null),
+                        new ContentProperty(null, null, "the_file_name_is_different.txt", null)));
 
         ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         leftBlob = (Blob) leftDoc.getPropertyValue("files:files/2/file");
         rightBlob = (Blob) rightDoc.getPropertyValue("files:files/2/file");
-        item2ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(DifferenceType.differentDigest,
-                new ContentProperty(null, null, null, getDigest(leftBlob)), new ContentProperty(null, null, null,
-                        getDigest(rightBlob))));
+        item2ExpectedComplexFieldDiff.putDiff("file",
+                new ContentPropertyDiff(DifferenceType.differentDigest,
+                        new ContentProperty(null, null, null, getDigest(leftBlob)),
+                        new ContentProperty(null, null, null, getDigest(rightBlob))));
 
         ComplexPropertyDiff item3ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         leftBlob = (Blob) leftDoc.getPropertyValue("files:files/3/file");
-        item3ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(DifferenceType.different,
-                new ContentProperty("UTF-8", "text/plain", "fourth_attachement.txt", getDigest(leftBlob)),
-                new ContentProperty()));
+        item3ExpectedComplexFieldDiff.putDiff("file",
+                new ContentPropertyDiff(DifferenceType.different,
+                        new ContentProperty("UTF-8", "text/plain", "fourth_attachement.txt", getDigest(leftBlob)),
+                        new ContentProperty()));
 
         expectedListFieldDiff.putDiff(1, item1ExpectedComplexFieldDiff);
         expectedListFieldDiff.putDiff(2, item2ExpectedComplexFieldDiff);
@@ -206,9 +207,7 @@ public class TestDocumentDiff extends DiffTestCase {
         // date => same
         checkIdenticalField(schemaDiff.getFieldDiff("date"));
         // htmlText => different
-        checkSimpleFieldDiff(
-                schemaDiff.getFieldDiff("htmlText"),
-                PropertyType.STRING,
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("htmlText"), PropertyType.STRING,
                 "&lt;p&gt;html text with &lt;strong&gt;&lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;",
                 "&lt;p&gt;html  text modified with &lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
         // multivalued => different (remove) * 4
@@ -227,15 +226,13 @@ public class TestDocumentDiff extends DiffTestCase {
         // complex => same / different (update) / different (remove) / different
         // (add)
         ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff();
-        expectedComplexFieldDiff.putDiff(
-                "booleanItem",
-                new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.TRUE),
-                        String.valueOf(Boolean.FALSE)));
+        expectedComplexFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(PropertyType.BOOLEAN,
+                String.valueOf(Boolean.TRUE), String.valueOf(Boolean.FALSE)));
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, "10", null));
-        String expectedRightDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
-                Calendar.DECEMBER, 29, 23, 0, 0).getTime());
-        expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE, null,
-                expectedRightDateItem));
+        String expectedRightDateItem = dateFormatter.format(
+                DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 29, 23, 0, 0).getTime());
+        expectedComplexFieldDiff.putDiff("dateItem",
+                new SimplePropertyDiff(PropertyType.DATE, null, expectedRightDateItem));
         checkComplexFieldDiff(schemaDiff.getFieldDiff("complex"), expectedComplexFieldDiff);
 
         // complexList =>
@@ -245,19 +242,17 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
         item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item1ExpectedComplexFieldDiff.putDiff(
-                "booleanItem",
-                new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.TRUE),
-                        String.valueOf(Boolean.FALSE)));
+        item1ExpectedComplexFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(PropertyType.BOOLEAN,
+                String.valueOf(Boolean.TRUE), String.valueOf(Boolean.FALSE)));
         item1ExpectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, "12", null));
-        expectedRightDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
-                Calendar.DECEMBER, 30, 23, 0, 0).getTime());
-        item1ExpectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE, null,
-                expectedRightDateItem));
+        expectedRightDateItem = dateFormatter.format(
+                DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 30, 23, 0, 0).getTime());
+        item1ExpectedComplexFieldDiff.putDiff("dateItem",
+                new SimplePropertyDiff(PropertyType.DATE, null, expectedRightDateItem));
 
         item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item2ExpectedComplexFieldDiff.putDiff("stringItem", new SimplePropertyDiff(PropertyType.STRING, null,
-                "second element of a complex list"));
+        item2ExpectedComplexFieldDiff.putDiff("stringItem",
+                new SimplePropertyDiff(PropertyType.STRING, null, "second element of a complex list"));
         item2ExpectedComplexFieldDiff.putDiff("booleanItem",
                 new SimplePropertyDiff(PropertyType.BOOLEAN, null, String.valueOf(Boolean.FALSE)));
         item2ExpectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, null, "20"));
@@ -280,8 +275,8 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
         item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item1ExpectedComplexFieldDiff.putDiff("stringItem", new SimplePropertyDiff(PropertyType.STRING, "second item",
-                "second item is different"));
+        item1ExpectedComplexFieldDiff.putDiff("stringItem",
+                new SimplePropertyDiff(PropertyType.STRING, "second item", "second item is different"));
         ListPropertyDiff expectedNestedListDiff = new ListPropertyDiff(PropertyType.SCALAR_LIST);
         expectedNestedListDiff.putDiff(1, new SimplePropertyDiff(PropertyType.STRING, "Thursday", "Friday"));
         expectedNestedListDiff.putDiff(2, new SimplePropertyDiff(PropertyType.STRING, null, "Saturday"));
@@ -290,8 +285,8 @@ public class TestDocumentDiff extends DiffTestCase {
         item1ExpectedComplexFieldDiff.putDiff("stringListItem", expectedNestedListDiff);
 
         item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item2ExpectedComplexFieldDiff.putDiff("stringItem", new SimplePropertyDiff(PropertyType.STRING, null,
-                "third item"));
+        item2ExpectedComplexFieldDiff.putDiff("stringItem",
+                new SimplePropertyDiff(PropertyType.STRING, null, "third item"));
         item2ExpectedComplexFieldDiff.putDiff("stringListItem", new ListPropertyDiff(PropertyType.SCALAR_LIST));
 
         expectedListFieldDiff.putDiff(1, item1ExpectedComplexFieldDiff);
@@ -308,8 +303,8 @@ public class TestDocumentDiff extends DiffTestCase {
     public void testInverseDocDiff() {
 
         // Get left and right docs
-        DocumentModel leftDoc = session.getDocument(new PathRef(DocumentDiffRepositoryInit.getRightDocPath()));
-        DocumentModel rightDoc = session.getDocument(new PathRef(DocumentDiffRepositoryInit.getLeftDocPath()));
+        DocumentModel leftDoc = session.getDocument(new PathRef(RIGHT_DOC_PATH));
+        DocumentModel rightDoc = session.getDocument(new PathRef(LEFT_DOC_PATH));
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
@@ -326,19 +321,19 @@ public class TestDocumentDiff extends DiffTestCase {
         // description => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("description"), PropertyType.STRING, null, "description");
         // created => different
-        String expectedLeftCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
-                Calendar.DECEMBER, 29, 11, 24, 50).getTime());
-        String expectedRightCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
-                Calendar.DECEMBER, 29, 11, 24, 25).getTime());
+        String expectedLeftCreated = dateFormatter.format(
+                DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 50).getTime());
+        String expectedRightCreated = dateFormatter.format(
+                DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 25).getTime());
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"), PropertyType.DATE, expectedLeftCreated,
                 expectedRightCreated);
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
-        String expectedLeftModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
-                Calendar.DECEMBER, 30, 12, 05, 2).getTime());
-        String expectedRightModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
-                Calendar.DECEMBER, 29, 11, 24, 25).getTime());
+        String expectedLeftModified = dateFormatter.format(
+                DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 30, 12, 05, 2).getTime());
+        String expectedRightModified = dateFormatter.format(
+                DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 25).getTime());
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("modified"), PropertyType.DATE, expectedLeftModified,
                 expectedRightModified);
 
@@ -346,8 +341,8 @@ public class TestDocumentDiff extends DiffTestCase {
         checkIdenticalField(schemaDiff.getFieldDiff("lastContributor"));
         // contributors => different (update) / same / different (remove)
         ListPropertyDiff expectedListFieldDiff = new ListPropertyDiff(PropertyType.SCALAR_LIST);
-        expectedListFieldDiff.putDiff(0, new SimplePropertyDiff(PropertyType.STRING, "anotherAdministrator",
-                "Administrator"));
+        expectedListFieldDiff.putDiff(0,
+                new SimplePropertyDiff(PropertyType.STRING, "anotherAdministrator", "Administrator"));
         expectedListFieldDiff.putDiff(2, new SimplePropertyDiff(PropertyType.STRING, "jack", null));
         checkListFieldDiff(schemaDiff.getFieldDiff("contributors"), expectedListFieldDiff);
         // subjects => same / different (add)
@@ -381,22 +376,24 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
         ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item1ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(DifferenceType.differentFilename,
-                new ContentProperty(null, null, "the_file_name_is_different.txt", null), new ContentProperty(null,
-                        null, "second_attachement.txt", null)));
+        item1ExpectedComplexFieldDiff.putDiff("file",
+                new ContentPropertyDiff(DifferenceType.differentFilename,
+                        new ContentProperty(null, null, "the_file_name_is_different.txt", null),
+                        new ContentProperty(null, null, "second_attachement.txt", null)));
 
         ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         leftBlob = (Blob) leftDoc.getPropertyValue("files:files/2/file");
         rightBlob = (Blob) rightDoc.getPropertyValue("files:files/2/file");
-        item2ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(DifferenceType.differentDigest,
-                new ContentProperty(null, null, null, getDigest(leftBlob)), new ContentProperty(null, null, null,
-                        getDigest(rightBlob))));
+        item2ExpectedComplexFieldDiff.putDiff("file",
+                new ContentPropertyDiff(DifferenceType.differentDigest,
+                        new ContentProperty(null, null, null, getDigest(leftBlob)),
+                        new ContentProperty(null, null, null, getDigest(rightBlob))));
 
         ComplexPropertyDiff item3ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         rightBlob = (Blob) rightDoc.getPropertyValue("files:files/3/file");
-        item3ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(DifferenceType.different,
-                new ContentProperty(), new ContentProperty("UTF-8", "text/plain", "fourth_attachement.txt",
-                        getDigest(rightBlob))));
+        item3ExpectedComplexFieldDiff.putDiff("file",
+                new ContentPropertyDiff(DifferenceType.different, new ContentProperty(),
+                        new ContentProperty("UTF-8", "text/plain", "fourth_attachement.txt", getDigest(rightBlob))));
 
         expectedListFieldDiff.putDiff(1, item1ExpectedComplexFieldDiff);
         expectedListFieldDiff.putDiff(2, item2ExpectedComplexFieldDiff);
@@ -422,9 +419,7 @@ public class TestDocumentDiff extends DiffTestCase {
         // date => same
         checkIdenticalField(schemaDiff.getFieldDiff("date"));
         // htmlText => different
-        checkSimpleFieldDiff(
-                schemaDiff.getFieldDiff("htmlText"),
-                PropertyType.STRING,
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("htmlText"), PropertyType.STRING,
                 "&lt;p&gt;html  text modified with &lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;",
                 "&lt;p&gt;html text with &lt;strong&gt;&lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;");
         // multivalued => different (add) * 4
@@ -443,15 +438,13 @@ public class TestDocumentDiff extends DiffTestCase {
         // complex => same / different (update) / different (add) / different
         // (remove)
         ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff();
-        expectedComplexFieldDiff.putDiff(
-                "booleanItem",
-                new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.FALSE),
-                        String.valueOf(Boolean.TRUE)));
+        expectedComplexFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(PropertyType.BOOLEAN,
+                String.valueOf(Boolean.FALSE), String.valueOf(Boolean.TRUE)));
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, null, "10"));
-        String expectedLeftDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
-                Calendar.DECEMBER, 29, 23, 0, 0).getTime());
-        expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE, expectedLeftDateItem,
-                null));
+        String expectedLeftDateItem = dateFormatter.format(
+                DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 29, 23, 0, 0).getTime());
+        expectedComplexFieldDiff.putDiff("dateItem",
+                new SimplePropertyDiff(PropertyType.DATE, expectedLeftDateItem, null));
         checkComplexFieldDiff(schemaDiff.getFieldDiff("complex"), expectedComplexFieldDiff);
 
         // complexList =>
@@ -461,19 +454,17 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
         item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item1ExpectedComplexFieldDiff.putDiff(
-                "booleanItem",
-                new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.FALSE),
-                        String.valueOf(Boolean.TRUE)));
+        item1ExpectedComplexFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(PropertyType.BOOLEAN,
+                String.valueOf(Boolean.FALSE), String.valueOf(Boolean.TRUE)));
         item1ExpectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, null, "12"));
-        expectedLeftDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
-                Calendar.DECEMBER, 30, 23, 0, 0).getTime());
-        item1ExpectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE,
-                expectedLeftDateItem, null));
+        expectedLeftDateItem = dateFormatter.format(
+                DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 30, 23, 0, 0).getTime());
+        item1ExpectedComplexFieldDiff.putDiff("dateItem",
+                new SimplePropertyDiff(PropertyType.DATE, expectedLeftDateItem, null));
 
         item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item2ExpectedComplexFieldDiff.putDiff("stringItem", new SimplePropertyDiff(PropertyType.STRING,
-                "second element of a complex list", null));
+        item2ExpectedComplexFieldDiff.putDiff("stringItem",
+                new SimplePropertyDiff(PropertyType.STRING, "second element of a complex list", null));
         item2ExpectedComplexFieldDiff.putDiff("booleanItem",
                 new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.FALSE), null));
         item2ExpectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, "20", null));
@@ -496,8 +487,8 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
         item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item1ExpectedComplexFieldDiff.putDiff("stringItem", new SimplePropertyDiff(PropertyType.STRING,
-                "second item is different", "second item"));
+        item1ExpectedComplexFieldDiff.putDiff("stringItem",
+                new SimplePropertyDiff(PropertyType.STRING, "second item is different", "second item"));
         ListPropertyDiff expectedNestedListDiff = new ListPropertyDiff(PropertyType.SCALAR_LIST);
         expectedNestedListDiff.putDiff(1, new SimplePropertyDiff(PropertyType.STRING, "Friday", "Thursday"));
         expectedNestedListDiff.putDiff(2, new SimplePropertyDiff(PropertyType.STRING, "Saturday", null));
@@ -506,8 +497,8 @@ public class TestDocumentDiff extends DiffTestCase {
         item1ExpectedComplexFieldDiff.putDiff("stringListItem", expectedNestedListDiff);
 
         item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item2ExpectedComplexFieldDiff.putDiff("stringItem", new SimplePropertyDiff(PropertyType.STRING, "third item",
-                null));
+        item2ExpectedComplexFieldDiff.putDiff("stringItem",
+                new SimplePropertyDiff(PropertyType.STRING, "third item", null));
         item2ExpectedComplexFieldDiff.putDiff("stringListItem", new ListPropertyDiff(PropertyType.SCALAR_LIST));
 
         expectedListFieldDiff.putDiff(1, item1ExpectedComplexFieldDiff);

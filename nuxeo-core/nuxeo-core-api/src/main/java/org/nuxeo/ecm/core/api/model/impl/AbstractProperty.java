@@ -66,7 +66,7 @@ public abstract class AbstractProperty implements Property {
 
     protected int flags;
 
-    protected Boolean isDeprecated;
+    protected Boolean deprecated;
 
     protected Property deprecatedFallback;
 
@@ -347,26 +347,26 @@ public abstract class AbstractProperty implements Property {
     }
 
     protected boolean isDeprecated() {
-        if (isDeprecated == null) {
-            boolean deprecated = false;
+        if (deprecated == null) {
+            boolean localDeprecated = false;
             // compute the deprecated state
             // first check if this property is a child of a deprecated property
             if (parent instanceof AbstractProperty) {
                 AbstractProperty absParent = (AbstractProperty) parent;
-                deprecated = absParent.isDeprecated();
+                localDeprecated = absParent.isDeprecated();
                 Property parentDeprecatedFallback = absParent.deprecatedFallback;
-                if (deprecated && parentDeprecatedFallback != null) {
+                if (localDeprecated && parentDeprecatedFallback != null) {
                     deprecatedFallback = parentDeprecatedFallback.resolvePath(getName());
                 }
             }
-            if (!deprecated) {
+            if (!localDeprecated) {
                 // check if this property is deprecated
                 String name = getXPath();
                 String schema = getSchema().getName();
                 SchemaManager schemaManager = Framework.getService(SchemaManager.class);
                 PropertyDeprecationHandler deprecatedProperties = schemaManager.getDeprecatedProperties();
-                deprecated = deprecatedProperties.isMarked(schema, name);
-                if (deprecated) {
+                localDeprecated = deprecatedProperties.isMarked(schema, name);
+                if (localDeprecated) {
                     // get the possible fallback
                     String fallback = deprecatedProperties.getFallback(schema, name);
                     if (fallback != null) {
@@ -374,9 +374,9 @@ public abstract class AbstractProperty implements Property {
                     }
                 }
             }
-            isDeprecated = Boolean.valueOf(deprecated);
+            deprecated = Boolean.valueOf(localDeprecated);
         }
-        return isDeprecated.booleanValue();
+        return deprecated.booleanValue();
     }
 
     @Override
