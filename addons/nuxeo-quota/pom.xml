@@ -12,10 +12,6 @@
   <version>11.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <properties>
-    <nuxeo.quota.version>11.1-SNAPSHOT</nuxeo.quota.version>
-  </properties>
-
   <modules>
     <module>nuxeo-quota-core</module>
     <module>nuxeo-quota-web</module>

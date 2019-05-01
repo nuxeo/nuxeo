@@ -21,32 +21,6 @@
     <module>nuxeo-importer-stream</module>
   </modules>
 
-  <properties>
-    <nuxeo.importer.version>11.1-SNAPSHOT</nuxeo.importer.version>
-  </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-importer-xml-parser</artifactId>
-        <version>${nuxeo.importer.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-importer-scan</artifactId>
-        <version>${nuxeo.importer.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-importer-core</artifactId>
-        <version>${nuxeo.importer.version}</version>
-      </dependency>
-
-    </dependencies>
-  </dependencyManagement>
-  
-
   <repositories>
     <repository>
       <id>public</id>

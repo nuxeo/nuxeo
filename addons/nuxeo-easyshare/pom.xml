@@ -17,25 +17,6 @@
     <module>nuxeo-easyshare-jsf</module>
   </modules>
 
-  <properties>
-    <nuxeo.easyshare.version>11.1-SNAPSHOT</nuxeo.easyshare.version>
-  </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm</groupId>
-        <artifactId>nuxeo-easyshare-core</artifactId>
-        <version>${nuxeo.easyshare.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm</groupId>
-        <artifactId>nuxeo-easyshare-jsf</artifactId>
-        <version>${nuxeo.easyshare.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <repositories>
     <repository>
       <id>public</id>

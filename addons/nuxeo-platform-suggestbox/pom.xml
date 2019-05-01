@@ -15,16 +15,6 @@
     <module>nuxeo-platform-suggestbox-jsf</module>
   </modules>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-suggestbox-core</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <repositories>
     <repository>
       <id>public</id>

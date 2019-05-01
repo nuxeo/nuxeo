@@ -17,25 +17,6 @@
     <module>nuxeo-csv-jsf</module>
   </modules>
 
-  <properties>
-    <nuxeo.importer.csv.version>11.1-SNAPSHOT</nuxeo.importer.csv.version>
-  </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.csv</groupId>
-        <artifactId>nuxeo-csv-core</artifactId>
-        <version>${nuxeo.importer.csv.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.csv</groupId>
-        <artifactId>nuxeo-csv-jsf</artifactId>
-        <version>${nuxeo.importer.csv.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <repositories>
     <repository>
       <id>public</id>
