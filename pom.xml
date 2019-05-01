@@ -79,6 +79,7 @@
     <ant.assembly.version>2.1.1</ant.assembly.version>
     <nuxeo.ftest.version>1.8.8-SNAPSHOT</nuxeo.ftest.version>
     <nuxeo.java.client.version>3.2.0</nuxeo.java.client.version>
+    <nuxeo.shell.version>10.10</nuxeo.shell.version>
 
     <jsf.version>2.2.6</jsf.version>
     <nxjsf.version>2.2.6-NX01</nxjsf.version>
@@ -1760,6 +1761,34 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-user-profile-jsf</artifactId>
         <version>${nuxeo.features.version}</version>
+      </dependency>
+
+      <!-- Nuxeo Shell -->
+      <dependency>
+        <groupId>org.nuxeo.shell</groupId>
+        <artifactId>nuxeo-shell</artifactId>
+        <version>${nuxeo.shell.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.shell</groupId>
+        <artifactId>nuxeo-shell</artifactId>
+        <version>${nuxeo.shell.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.shell</groupId>
+        <artifactId>nuxeo-shell-core</artifactId>
+        <version>${nuxeo.shell.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.shell</groupId>
+        <artifactId>nuxeo-shell-automation</artifactId>
+        <version>${nuxeo.shell.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.shell</groupId>
+        <artifactId>nuxeo-shell-equinox</artifactId>
+        <version>${nuxeo.shell.version}</version>
       </dependency>
 
       <!-- Third parties -->

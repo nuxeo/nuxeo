@@ -21,7 +21,6 @@
   <properties>
     <nuxeo.addons.version>11.1-SNAPSHOT</nuxeo.addons.version>
     <nuxeo.opencmis.version>11.1-SNAPSHOT</nuxeo.opencmis.version>
-    <nuxeo.shell.version>11.1-SNAPSHOT</nuxeo.shell.version>
     <nuxeo.webembedded.version>11.1-SNAPSHOT</nuxeo.webembedded.version>
     <nuxeo.fsconnectors.version>11.1-SNAPSHOT</nuxeo.fsconnectors.version>
     <nuxeo.importer.version>11.1-SNAPSHOT</nuxeo.importer.version>
@@ -69,7 +68,6 @@
     <module>nuxeo-platform-audio</module>
     <module>nuxeo-platform-video</module>
     <module>nuxeo-platform-user-registration</module>
-    <module>nuxeo-shell</module>
     <module>nuxeo-filesystem-connectors</module>
     <module>nuxeo-platform-shibboleth-groups-web</module>
     <module>nuxeo-apidoc-server</module>
@@ -144,34 +142,6 @@
         <groupId>org.nuxeo.shibboleth.invitation</groupId>
         <artifactId>nuxeo-shibboleth-invitation</artifactId>
         <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Nuxeo Shell -->
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell</artifactId>
-        <version>${nuxeo.shell.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell</artifactId>
-        <version>${nuxeo.shell.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-automation</artifactId>
-        <version>${nuxeo.shell.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-core</artifactId>
-        <version>${nuxeo.shell.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.shell</groupId>
-        <artifactId>nuxeo-shell-equinox</artifactId>
-        <version>${nuxeo.shell.version}</version>
       </dependency>
 
       <!-- User Registration -->
