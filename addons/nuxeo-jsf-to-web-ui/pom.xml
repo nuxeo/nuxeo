@@ -25,27 +25,4 @@
     </dependency>
   </dependencies>
 
-  <repositories>
-    <repository>
-      <id>public</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <scm>
-    <connection>scm:git:git://github.com/nuxeo/nuxeo-jsf-to-web-ui.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-jsf-to-web-ui.git</developerConnection>
-    <url>https://github.com/nuxeo/nuxeo-jsf-to-web-ui.git</url>
-  </scm>
-
 </project>
