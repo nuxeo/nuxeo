@@ -19,16 +19,8 @@
 
 package org.nuxeo.ecm.csv.core;
 
-import org.apache.commons.lang.StringUtils;
-import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.query.sql.NXQL;
+import static org.nuxeo.ecm.core.api.CoreSession.IMPORT_LIFECYCLE_STATE;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,7 +30,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME;
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -61,11 +62,9 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
             Map<String, Serializable> values) {
         values = prepareValues(values);
         DocumentModel doc = session.createDocumentModel(parentPath, name, type);
-        if (values.containsKey(NXQL.ECM_LIFECYCLESTATE)) {
-            doc.putContextData(INITIAL_LIFECYCLE_STATE_OPTION_NAME, values.get(NXQL.ECM_LIFECYCLESTATE));
-            values.remove(NXQL.ECM_LIFECYCLESTATE);
-        }
+
         if (importerOptions.importMode.equals(ImportMode.IMPORT)) {
+            setLifeCycleState(values, doc, IMPORT_LIFECYCLE_STATE);
             if (values.containsKey(NXQL.ECM_UUID)) {
                 ((DocumentModelImpl) doc).setId((String) values.get(NXQL.ECM_UUID));
                 values.remove(NXQL.ECM_UUID);
@@ -77,6 +76,7 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
             }
             session.importDocuments(Collections.singletonList(doc));
         } else {
+            setLifeCycleState(values, doc, INITIAL_LIFECYCLE_STATE_OPTION_NAME);
             if (values.containsKey(NXQL.ECM_UUID)) {
                 throw new NuxeoException("CSV file contains UUID. Import using Import Mode to avoid overwriting.");
             }
@@ -84,6 +84,13 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
                 doc.setPropertyValue(entry.getKey(), entry.getValue());
             }
             session.createDocument(doc);
+        }
+    }
+
+    protected void setLifeCycleState(Map<String, Serializable> values, DocumentModel doc, String lifeCyclePropertyName) {
+        if (values.containsKey(NXQL.ECM_LIFECYCLESTATE)) {
+            doc.putContextData(lifeCyclePropertyName, values.get(NXQL.ECM_LIFECYCLESTATE));
+            values.remove(NXQL.ECM_LIFECYCLESTATE);
         }
     }
 
