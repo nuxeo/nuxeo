@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.csv.core;
 
+import static org.nuxeo.ecm.core.api.CoreSession.IMPORT_LIFECYCLE_STATE;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME;
 
 import java.io.Serializable;
@@ -61,11 +62,9 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
             Map<String, Serializable> values) {
         values = prepareValues(values);
         DocumentModel doc = session.createDocumentModel(parentPath, name, type);
-        if (values.containsKey(NXQL.ECM_LIFECYCLESTATE)) {
-            doc.putContextData(INITIAL_LIFECYCLE_STATE_OPTION_NAME, values.get(NXQL.ECM_LIFECYCLESTATE));
-            values.remove(NXQL.ECM_LIFECYCLESTATE);
-        }
+
         if (importerOptions.importMode.equals(ImportMode.IMPORT)) {
+            setLifeCycleState(values, doc, IMPORT_LIFECYCLE_STATE);
             if (values.containsKey(NXQL.ECM_UUID)) {
                 ((DocumentModelImpl) doc).setId((String) values.get(NXQL.ECM_UUID));
                 values.remove(NXQL.ECM_UUID);
@@ -77,6 +76,7 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
             }
             session.importDocuments(Collections.singletonList(doc));
         } else {
+            setLifeCycleState(values, doc, INITIAL_LIFECYCLE_STATE_OPTION_NAME);
             if (values.containsKey(NXQL.ECM_UUID)) {
                 throw new NuxeoException("CSV file contains UUID. Import using Import Mode to avoid overwriting.");
             }
@@ -84,6 +84,13 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
                 doc.setPropertyValue(entry.getKey(), entry.getValue());
             }
             session.createDocument(doc);
+        }
+    }
+
+    protected void setLifeCycleState(Map<String, Serializable> values, DocumentModel doc, String lifeCyclePropertyName) {
+        if (values.containsKey(NXQL.ECM_LIFECYCLESTATE)) {
+            doc.putContextData(lifeCyclePropertyName, values.get(NXQL.ECM_LIFECYCLESTATE));
+            values.remove(NXQL.ECM_LIFECYCLESTATE);
         }
     }
 
