@@ -224,7 +224,8 @@ public class CSVImporterWork extends TransientStoreWork {
         openUserSession();
         CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader()
                                                .withEscape(options.getEscapeCharacter())
-                                               .withCommentMarker(options.getCommentMarker());
+                                               .withCommentMarker(options.getCommentMarker())
+                                               .withIgnoreSurroundingSpaces();
         try (Reader in = newReader(getBlob()); CSVParser parser = csvFormat.parse(in)) {
             doImport(parser);
         } catch (IOException e) {
