@@ -7538,8 +7538,7 @@
         <enabled>true</enabled>
       </releases>
       <snapshots>
-        <updatePolicy>always</updatePolicy>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
       </snapshots>
     </repository>
   </repositories>
