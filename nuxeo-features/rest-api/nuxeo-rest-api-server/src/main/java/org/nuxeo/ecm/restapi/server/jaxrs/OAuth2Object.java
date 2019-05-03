@@ -368,7 +368,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     public Response updateClientToken(@PathParam("clientId") String clientId, @PathParam("nxuser") String nxuser,
             @Context HttpServletRequest request, NuxeoOAuth2Token token) {
         checkPermission(nxuser);
-        OAuth2Client client = Framework.getService(OAuth2ClientService.class).getClient(clientId);
+        OAuth2Client client = getClient(clientId);
         return Response.ok(updateToken(client, nxuser, token)).build();
     }
 
@@ -382,7 +382,7 @@ public class OAuth2Object extends AbstractResource<ResourceTypeImpl> {
     public Response deleteClientToken(@PathParam("clientId") String clientId, @PathParam("nxuser") String nxuser,
             @Context HttpServletRequest request) {
         checkPermission(nxuser);
-        OAuth2Client client = Framework.getService(OAuth2ClientService.class).getClient(clientId);
+        OAuth2Client client = getClient(clientId);
         deleteToken(getTokenDoc(client, nxuser));
         return Response.noContent().build();
     }
