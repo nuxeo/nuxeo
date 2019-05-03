@@ -2,7 +2,6 @@
 <%@ page language="java"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%
-  String selectedLanguage = "en";
   // Read Seam locale cookie
   String localeCookieName = "org.jboss.seam.core.Locale";
   Cookie localeCookie = null;
@@ -15,6 +14,7 @@
       }
     }
   }
+  String selectedLanguage = "";
   if (localeCookie != null) {
     selectedLanguage = localeCookie.getValue();
   }
@@ -74,7 +74,7 @@
   <script>
     var nuxeo = nuxeo || {};
     nuxeo.spreadsheet = {
-      language: '<%= selectedLanguage %>',
+      language: '<%= selectedLanguage %>' || navigator.language || 'en',
       labels: {
         "saving": "<fmt:message bundle="${messages}" key="message.spreadsheet.saving" />",
         "failedSave": "<fmt:message bundle="${messages}" key="message.spreadsheet.failedSave" />",
