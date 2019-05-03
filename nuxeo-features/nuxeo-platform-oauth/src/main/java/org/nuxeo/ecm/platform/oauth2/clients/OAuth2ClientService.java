@@ -34,13 +34,44 @@ public interface OAuth2ClientService {
 
     String OAUTH2CLIENT_SCHEMA = "oauth2Client";
 
+    /**
+     * Checks if an oAuth2 client with the given client id exists.
+     * <p>
+     * Done as a privileged user.
+     *
+     * @param clientId the client id of the oAuth2 client whose existence to check
+     * @return {@code true} if an oAuth2 client with the given client id exists, {@code false} otherwise
+     */
     boolean hasClient(String clientId);
 
+    /**
+     * Checks if the oAuth2 client with the given client id is valid regarding the given client secret.
+     * <p>
+     * Done as a privileged user.
+     *
+     * @param clientId the client id of the oAuth2 client to validate
+     * @param clientSecret the client secret used for validation
+     * @return {@code true} if the oAuth2 client with the given client id is valid regarding the given client secret,
+     *         {@code false} otherwise
+     */
     boolean isValidClient(String clientId, String clientSecret);
 
+    /**
+     * Gets the oAuth2 client with the given client id.
+     * <p>
+     * Done as a privileged user.
+     *
+     * @param clientId the client id of the oAuth2 client to get
+     * @return the oAuth2 client with the given client id if it exists, {@code null} otherwise
+     */
     OAuth2Client getClient(String clientId);
 
     /**
+     * Gets all the oAuth2 clients.
+     * <p>
+     * Done as a privileged user.
+     *
+     * @return the oAuth2 clients
      * @since 10.2
      */
     List<OAuth2Client> getClients();
