@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     bstefanescu
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.runtime.test.runner;
 
@@ -37,10 +38,10 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.test.TargetResourceLocator;
 import org.nuxeo.runtime.test.runner.FeaturesLoader.Direction;
 
-import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -74,7 +75,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         locator = new TargetResourceLocator(classToRun);
         try {
             loader.loadFeatures(getTargetTestClass());
-        } catch (Throwable t) {
+        } catch (Throwable t) { // NOSONAR
             throw new InitializationError(Collections.singletonList(t));
         }
     }
@@ -90,6 +91,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return underTest;
     }
 
+    /**
+     * @deprecated since 11.1, seems unused
+     */
+    @Deprecated(since = "11.1")
     public Path getTargetTestBasepath() {
         return locator.getBasepath();
     }
@@ -151,31 +156,31 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         }
     }
 
-    protected void beforeRun() throws Exception {
+    protected void beforeRun() {
         loader.apply(Direction.FORWARD, holder -> holder.feature.beforeRun(FeaturesRunner.this));
     }
 
-    protected void beforeMethodRun(final FrameworkMethod method, final Object test) throws Exception {
+    protected void beforeMethodRun(final FrameworkMethod method, final Object test) {
         loader.apply(Direction.FORWARD, holder -> holder.feature.beforeMethodRun(FeaturesRunner.this, method, test));
     }
 
-    protected void afterMethodRun(final FrameworkMethod method, final Object test) throws Exception {
+    protected void afterMethodRun(final FrameworkMethod method, final Object test) {
         loader.apply(Direction.FORWARD, holder -> holder.feature.afterMethodRun(FeaturesRunner.this, method, test));
     }
 
-    protected void afterRun() throws Exception {
+    protected void afterRun() {
         loader.apply(Direction.BACKWARD, holder -> holder.feature.afterRun(FeaturesRunner.this));
     }
 
-    protected void start() throws Exception {
+    protected void start() {
         loader.apply(Direction.FORWARD, holder -> holder.feature.start(FeaturesRunner.this));
     }
 
-    protected void stop() throws Exception {
+    protected void stop() {
         loader.apply(Direction.BACKWARD, holder -> holder.feature.stop(FeaturesRunner.this));
     }
 
-    protected void beforeSetup() throws Exception {
+    protected void beforeSetup() {
         loader.apply(Direction.FORWARD, holder -> holder.feature.beforeSetup(FeaturesRunner.this));
         injector.injectMembers(underTest);
     }
@@ -189,15 +194,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected Injector onInjector(final RunNotifier aNotifier) {
-        return Guice.createInjector(Stage.DEVELOPMENT, new Module() {
-
-            @Override
-            public void configure(Binder aBinder) {
-                aBinder.bind(FeaturesRunner.class).toInstance(FeaturesRunner.this);
-                aBinder.bind(RunNotifier.class).toInstance(aNotifier);
-                aBinder.bind(TargetResourceLocator.class).toInstance(locator);
-            }
-
+        return Guice.createInjector(Stage.DEVELOPMENT, (Module) aBinder -> {
+            aBinder.bind(FeaturesRunner.class).toInstance(FeaturesRunner.this);
+            aBinder.bind(RunNotifier.class).toInstance(aNotifier);
+            aBinder.bind(TargetResourceLocator.class).toInstance(locator);
         });
     }
 
@@ -411,18 +411,13 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             return new Statement() {
 
                 @Override
+                @SuppressWarnings("unchecked")
                 public void evaluate() throws Throwable {
-                    injector = injector.createChildInjector(new Module() {
-
-                        @SuppressWarnings({ "unchecked", "rawtypes" })
-                        @Override
-                        public void configure(Binder binder) {
-                            for (Object each : rules) {
-                                binder.bind((Class) each.getClass()).annotatedWith(Names.named(name)).toInstance(each);
-                                binder.requestInjection(each);
-                            }
+                    injector = injector.createChildInjector((Module) binder -> {
+                        for (Object each : rules) {
+                            binder.bind((Class) each.getClass()).annotatedWith(Names.named(name)).toInstance(each);
+                            binder.requestInjection(each);
                         }
-
                     });
 
                     try {
@@ -505,7 +500,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             try {
                 return aRuleType.cast(aMethod.invokeExplosively(aTarget, someParms));
             } catch (Throwable cause) {
-                throw new RuntimeException("Errors in rules factory " + aMethod, cause);
+                throw new RuntimeServiceException("Errors in rules factory " + aMethod, cause);
             }
         }
 
