@@ -27,6 +27,7 @@ import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.server.impl.CallContextImpl;
 import org.apache.chemistry.opencmis.server.shared.TempStoreOutputStreamFactory;
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactory;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactoryManager;
@@ -55,13 +56,13 @@ public class CmisFeatureSessionLocal extends CmisFeatureSession {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         String repositoryName = runner.getFeature(CoreFeature.class).getRepositoryName();
         setUpCmisSession(repositoryName);
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         tearDownCmisSession();
     }
 

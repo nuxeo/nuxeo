@@ -21,6 +21,7 @@
 package org.nuxeo.ecm.core.cache;
 
 import org.junit.Assert;
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -53,13 +54,13 @@ public class CacheFeature implements RunnerFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
         Cache cache = Framework.getService(CacheService.class).getCache(DEFAULT_TEST_CACHE_NAME);
         ((CacheManagement) cache).putLocal(KEY, VAL);
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) {
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
         clearCache(DEFAULT_TEST_CACHE_NAME);
     }
 

@@ -70,12 +70,12 @@ public class MDCFeature implements RunnerFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
         ThreadContext.put(F_STATE, "beforeSetup");
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) {
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
         ThreadContext.put(F_STATE, "afterTeardown");
     }
 

@@ -40,6 +40,7 @@ import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
+import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.nuxeo.runtime.test.Failures;
 import org.nuxeo.runtime.test.runner.RandomBug.RepeatRule;
@@ -266,7 +267,7 @@ public class RandomBugTest {
         public int repeated;
 
         @Override
-        public void beforeSetup(FeaturesRunner runner) throws Exception {
+        public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
             repeated++;
             log.trace(runner.toString() + " " + repeated);
         }
