@@ -57,10 +57,10 @@ public abstract class CmisFeatureSession extends CmisFeatureConfiguration {
         runner.getFeature(RuntimeFeature.class).registerHandler(new ActionHandler() {
             @Override
             public void exec(String action, String... args) throws Exception {
-                afterTeardown(runner);
+                afterTeardown(runner, null, null);
                 Thread.sleep(1000); // otherwise sometimes fails to set up again
                 next.exec(action, args);
-                beforeSetup(runner);
+                beforeSetup(runner, null, null);
             }
 
         });

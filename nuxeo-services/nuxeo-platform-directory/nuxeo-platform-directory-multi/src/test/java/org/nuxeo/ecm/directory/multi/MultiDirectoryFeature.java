@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.directory.multi;
 
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.local.LoginStack;
@@ -48,13 +49,13 @@ public class MultiDirectoryFeature implements RunnerFeature {
     protected LoginStack loginStack;
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
         loginStack = ClientLoginModule.getThreadLocalLogin();
         loginStack.push(new SystemPrincipal(null), null, null);
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) {
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
         loginStack.pop();
     }
 }

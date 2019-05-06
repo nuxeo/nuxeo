@@ -89,12 +89,12 @@ public class SimpleFeature implements RunnerFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
 
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
 
     }
 

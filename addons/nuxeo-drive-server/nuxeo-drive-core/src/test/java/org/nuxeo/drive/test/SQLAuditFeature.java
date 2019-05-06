@@ -18,6 +18,7 @@
  */
 package org.nuxeo.drive.test;
 
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
@@ -33,7 +34,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class SQLAuditFeature extends AuditFeature {
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         cleanUpAuditLog();
     }
 
