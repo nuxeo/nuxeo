@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -50,7 +51,7 @@ public class FakeSmtpMailServerFeature implements RunnerFeature {
     public static SimpleSmtpServer server;
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         SERVER_PORT = findFreePort();
 
         server = SimpleSmtpServer.start(SERVER_PORT);
@@ -80,7 +81,7 @@ public class FakeSmtpMailServerFeature implements RunnerFeature {
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) {
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
         if (server != null) {
             server.stop();
         }

@@ -20,6 +20,7 @@
  */
 package org.nuxeo.ecm.automation.test;
 
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
@@ -111,12 +112,12 @@ public class AutomationFeature implements RunnerFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
         AutomationScope.INSTANCE.enter();
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) {
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
         AutomationScope.INSTANCE.exit();
         if (context != null) {
             context.close();

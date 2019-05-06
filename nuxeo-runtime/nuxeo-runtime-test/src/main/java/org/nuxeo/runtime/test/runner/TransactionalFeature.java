@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.runtime.management.jvm.ThreadDeadlocksDetector;
 import org.nuxeo.runtime.test.runner.HotDeployer.ActionHandler;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -135,12 +136,12 @@ public class TransactionalFeature implements RunnerFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
         startTransactionBefore();
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) {
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
         commitOrRollbackTransactionAfter();
     }
 

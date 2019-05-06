@@ -97,14 +97,36 @@ public interface RunnerFeature {
 
     /**
      * Before entering in the @Before methods
+     *
+     * @deprecated since 11.1, use {@link #beforeSetup(FeaturesRunner, FrameworkMethod, Object)} instead
      */
+    @Deprecated
     default void beforeSetup(FeaturesRunner runner) throws Exception {
+    }
+
+    /**
+     * Before entering in the @Before methods
+     */
+    @SuppressWarnings("deprecation")
+    default void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+        beforeSetup(runner); // forward calls for backward compatibility
+    }
+
+    /**
+     * After the call of the @After methods
+     *
+     * @deprecated since 11.1, use {@link #afterTeardown(FeaturesRunner, FrameworkMethod, Object)} instead
+     */
+    @Deprecated
+    default void afterTeardown(FeaturesRunner runner) throws Exception {
     }
 
     /**
      * After the call of the @After methods
      */
-    default void afterTeardown(FeaturesRunner runner) throws Exception {
+    @SuppressWarnings("deprecation")
+    default void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+        afterTeardown(runner); // forward calls for backward compatibility
     }
 
     /**

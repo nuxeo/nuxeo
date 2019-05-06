@@ -180,13 +180,13 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         loader.apply(Direction.BACKWARD, holder -> holder.feature.stop(FeaturesRunner.this));
     }
 
-    protected void beforeSetup() {
-        loader.apply(Direction.FORWARD, holder -> holder.feature.beforeSetup(FeaturesRunner.this));
+    protected void beforeSetup(final FrameworkMethod method, final Object test) {
+        loader.apply(Direction.FORWARD, holder -> holder.feature.beforeSetup(FeaturesRunner.this, method, test));
         injector.injectMembers(underTest);
     }
 
-    protected void afterTeardown() {
-        loader.apply(Direction.BACKWARD, holder -> holder.feature.afterTeardown(FeaturesRunner.this));
+    protected void afterTeardown(final FrameworkMethod method, final Object test) {
+        loader.apply(Direction.BACKWARD, holder -> holder.feature.afterTeardown(FeaturesRunner.this, method, test));
     }
 
     public Injector getInjector() {
@@ -265,40 +265,45 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return factory.build();
     }
 
-    protected class BeforeMethodRunStatement extends Statement {
-
-        protected final Statement next;
+    protected abstract class MethodStatement extends Statement {
 
         protected final FrameworkMethod method;
 
         protected final Object target;
 
-        protected BeforeMethodRunStatement(FrameworkMethod aMethod, Object aTarget, Statement aStatement) {
-            method = aMethod;
-            target = aTarget;
-            next = aStatement;
+        protected final Statement statement;
+
+        public MethodStatement(FrameworkMethod method, Object target, Statement statement) {
+            this.method = method;
+            this.target = target;
+            this.statement = statement;
+        }
+    }
+
+    protected class BeforeMethodRunStatement extends MethodStatement {
+
+        protected BeforeMethodRunStatement(FrameworkMethod method, Object target, Statement statement) {
+            super(method, target, statement);
         }
 
         @Override
         public void evaluate() throws Throwable {
             beforeMethodRun(method, target);
-            next.evaluate();
+            statement.evaluate();
         }
 
     }
 
-    protected class BeforeSetupStatement extends Statement {
+    protected class BeforeSetupStatement extends MethodStatement {
 
-        protected final Statement next;
-
-        protected BeforeSetupStatement(Statement aStatement) {
-            next = aStatement;
+        protected BeforeSetupStatement(FrameworkMethod method, Object target, Statement statement) {
+            super(method, target, statement);
         }
 
         @Override
         public void evaluate() throws Throwable {
-            beforeSetup();
-            next.evaluate();
+            beforeSetup(method, target);
+            statement.evaluate();
         }
 
     }
@@ -308,28 +313,20 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         Statement actual = statement;
         actual = new BeforeMethodRunStatement(method, target, actual);
         actual = super.withBefores(method, target, actual);
-        actual = new BeforeSetupStatement(actual);
+        actual = new BeforeSetupStatement(method, target, actual);
         return actual;
     }
 
-    protected class AfterMethodRunStatement extends Statement {
+    protected class AfterMethodRunStatement extends MethodStatement {
 
-        protected final Statement previous;
-
-        protected final FrameworkMethod method;
-
-        protected final Object target;
-
-        protected AfterMethodRunStatement(FrameworkMethod aMethod, Object aTarget, Statement aStatement) {
-            method = aMethod;
-            target = aTarget;
-            previous = aStatement;
+        protected AfterMethodRunStatement(FrameworkMethod method, Object target, Statement statement) {
+            super(method, target, statement);
         }
 
         @Override
         public void evaluate() throws Throwable {
             try {
-                previous.evaluate();
+                statement.evaluate();
             } finally {
                 afterMethodRun(method, target);
             }
@@ -337,20 +334,18 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     }
 
-    protected class AfterTeardownStatement extends Statement {
+    protected class AfterTeardownStatement extends MethodStatement {
 
-        protected final Statement previous;
-
-        protected AfterTeardownStatement(Statement aStatement) {
-            previous = aStatement;
+        protected AfterTeardownStatement(FrameworkMethod method, Object target, Statement statement) {
+            super(method, target, statement);
         }
 
         @Override
         public void evaluate() throws Throwable {
             try {
-                previous.evaluate();
+                statement.evaluate();
             } finally {
-                afterTeardown();
+                afterTeardown(method, target);
             }
         }
 
@@ -361,7 +356,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         Statement actual = statement;
         actual = new AfterMethodRunStatement(method, target, actual);
         actual = super.withAfters(method, target, actual);
-        actual = new AfterTeardownStatement(actual);
+        actual = new AfterTeardownStatement(method, target, actual);
         return actual;
     }
 

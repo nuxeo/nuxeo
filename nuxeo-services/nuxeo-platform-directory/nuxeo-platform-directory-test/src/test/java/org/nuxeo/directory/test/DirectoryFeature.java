@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
@@ -103,7 +104,7 @@ public class DirectoryFeature implements RunnerFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
         if (granularity != Granularity.METHOD) {
             return;
         }
@@ -140,7 +141,7 @@ public class DirectoryFeature implements RunnerFeature {
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) {
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
         if (granularity != Granularity.METHOD) {
             return;
         }
