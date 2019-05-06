@@ -34,21 +34,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 /**
  * Test class for tag service based on facet
  *
  * @since 9.3
  */
+@Features(LogCaptureFeature.class)
 public class TestFacetedTagService extends AbstractTestTagService {
+
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     @Override
     protected void createTags() {
@@ -72,15 +86,24 @@ public class TestFacetedTagService extends AbstractTestTagService {
     }
 
     @Test
-    public void testTagOnDocumentWithMissingFacet() {
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
+    public void testGetTagOnDocumentWithMissingFacet() {
+        DocumentModel relation = session.createDocumentModel("/", "foo", "Relation");
+        relation = session.createDocument(relation);
+        session.save();
+        tagService.getTags(session, relation.getId());
+        assertTrue(logCaptureResult.getCaughtEventMessages().isEmpty());
+    }
 
+    @Test
+    public void testSetTagOnDocumentWithMissingFacet() {
         DocumentModel relation = session.createDocumentModel("/", "foo", "Relation");
         relation = session.createDocument(relation);
         session.save();
 
+        exceptionRule.expect(NuxeoException.class);
+        exceptionRule.expectMessage("of type Relation doesn't have the NXTag facet");
         tagService.tag(session, relation.getId(), "tag");
-
-        assertEquals(0, tagService.getTags(session, relation.getId()).size());
     }
 
     @Test

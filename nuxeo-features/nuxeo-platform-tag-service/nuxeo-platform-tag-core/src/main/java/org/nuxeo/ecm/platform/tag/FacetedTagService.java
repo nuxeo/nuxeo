@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 
 /**
@@ -216,26 +215,21 @@ public class FacetedTagService extends AbstractTagService {
 
     @SuppressWarnings("unchecked")
     protected List<Map<String, Serializable>> getTags(DocumentModel docModel) {
-        try {
+        if (docModel.hasFacet(TAG_FACET)) {
             return (List<Map<String, Serializable>>) docModel.getPropertyValue(TAG_LIST);
-        } catch (PropertyNotFoundException e) {
-            log.warn(
-                    "Getting tags on {} failed since {} is missing on {} document type. This operation will be ignored.",
-                    docModel::getPathAsString, () -> TAG_FACET, docModel::getType);
+        } else {
             return new ArrayList<>();
         }
     }
 
     protected void setTags(DocumentModel docModel, List<Map<String, Serializable>> tags) {
-        try {
-            if (docModel.isVersion()) {
-                docModel.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
-            }
-            docModel.setPropertyValue(TAG_LIST, (Serializable) tags);
-        } catch (PropertyNotFoundException e) {
-            log.warn(
-                    "Setting tags on {} failed since {} is missing on {} document type. This operation will be ignored.",
-                    docModel::getPathAsString, () -> TAG_FACET, docModel::getType);
+        if (!docModel.hasFacet(TAG_FACET)) {
+            throw new NuxeoException(String.format("Document %s of type %s doesn't have the %s facet", docModel,
+                    docModel.getType(), TAG_FACET));
         }
+        if (docModel.isVersion()) {
+            docModel.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+        }
+        docModel.setPropertyValue(TAG_LIST, (Serializable) tags);
     }
 }
