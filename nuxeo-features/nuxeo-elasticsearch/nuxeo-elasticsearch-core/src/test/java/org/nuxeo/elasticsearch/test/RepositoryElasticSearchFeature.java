@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
-// TODO: "org.nuxeo.ecm.core.management" is missing but creates test failures
-@Deploy("org.nuxeo.runtime.jtajca")
 @Deploy("org.nuxeo.ecm.automation.server")
 @Deploy("org.nuxeo.ecm.automation.io")
 @Deploy("org.nuxeo.ecm.platform.forms.layout.export")

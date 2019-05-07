@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ public class TestServiceWithCore extends PublisherTestCase {
     }
 
     @Test
-    public void testCorePublishing() throws Exception {
+    public void testCorePublishing() {
 
         // check service config
         PublisherService service = Framework.getService(PublisherService.class);
@@ -141,15 +141,15 @@ public class TestServiceWithCore extends PublisherTestCase {
         assertEquals(Populate.self.doc2Publish.getRef().toString(), publishedDocVersion.getSourceId());
 
         // check tree features about proxy detection
-        List<PublishedDocument> detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(
-                publishedDocVersion));
-        assertTrue(detectedProxies.size() == 1);
+        List<PublishedDocument> detectedProxies = tree.getExistingPublishedDocument(
+                new DocumentLocationImpl(publishedDocVersion));
+        assertEquals(1, detectedProxies.size());
 
         detectedProxies = tree.getPublishedDocumentInNode(nodes.get(0));
-        assertTrue(detectedProxies.size() == 0);
+        assertEquals(0, detectedProxies.size());
 
         detectedProxies = tree.getPublishedDocumentInNode(subnodes.get(0));
-        assertTrue(detectedProxies.size() == 1);
+        assertEquals(1, detectedProxies.size());
         assertEquals(publishedDocVersion.getRef(), detectedProxies.get(0).getSourceDocumentRef());
 
         // check publishing 2
@@ -167,14 +167,14 @@ public class TestServiceWithCore extends PublisherTestCase {
 
         // check tree features about proxy detection
         detectedProxies = tree.getExistingPublishedDocument(new DocumentLocationImpl(publishedDocVersion));
-        assertTrue(detectedProxies.size() == 2);
+        assertEquals(2, detectedProxies.size());
 
         detectedProxies = tree.getPublishedDocumentInNode(nodes.get(0));
-        assertTrue(detectedProxies.size() == 1);
+        assertEquals(1, detectedProxies.size());
         assertEquals(publishedDocVersion2.getRef(), detectedProxies.get(0).getSourceDocumentRef());
 
         detectedProxies = tree.getPublishedDocumentInNode(subnodes.get(0));
-        assertTrue(detectedProxies.size() == 1);
+        assertEquals(1, detectedProxies.size());
 
     }
 
@@ -182,7 +182,7 @@ public class TestServiceWithCore extends PublisherTestCase {
     PublisherService service;
 
     @Test
-    public void testWrapToPublicationNode() throws Exception {
+    public void testWrapToPublicationNode() {
 
         PublicationTree tree = service.getPublicationTree(service.getAvailablePublicationTree().get(0), session, null);
 
@@ -201,7 +201,7 @@ public class TestServiceWithCore extends PublisherTestCase {
     }
 
     @Test
-    public void testWithRootSections() throws Exception {
+    public void testWithRootSections() {
 
         RootSectionsManager rootSectionsManager = new RootSectionsManager(session);
 
@@ -246,7 +246,7 @@ public class TestServiceWithCore extends PublisherTestCase {
         assertEquals(tree.getPath(), node.getParent().getPath());
     }
 
-    protected void publishDocAndReopenSession() throws Exception {
+    protected void publishDocAndReopenSession() {
         RootSectionsManager rootSectionsManager = new RootSectionsManager(session);
         DocumentModel section = session.getDocument(new PathRef("/default-domain/sections/section1"));
         DocumentModel workspace = session.getDocument(new PathRef("/default-domain/workspaces/ws1"));
@@ -260,7 +260,7 @@ public class TestServiceWithCore extends PublisherTestCase {
     }
 
     @Test
-    public void testUnpublish() throws Exception {
+    public void testUnpublish() {
         publishDocAndReopenSession();
 
         PathRef sectionRef = new PathRef("/default-domain/sections/section1");

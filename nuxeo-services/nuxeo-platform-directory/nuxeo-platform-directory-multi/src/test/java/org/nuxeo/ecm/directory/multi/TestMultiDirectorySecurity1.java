@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,14 +170,13 @@ public class TestMultiDirectorySecurity1 {
             dir3.createEntry(e);
         }
 
-
         // the multi directory
         multiDir = (MultiDirectory) directoryService.getDirectory("multi");
         dir = multiDir.getSession();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (dir != null) {
             dir.close();
         }

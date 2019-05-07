@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@
  */
 package org.nuxeo.ecm.platform.auth.saml;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.startsWith;
@@ -88,8 +90,6 @@ import org.opensaml.xml.util.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.google.common.collect.ImmutableMap;
-
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, DirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
@@ -112,9 +112,7 @@ public class SAMLAuthenticatorTest {
 
         String metadata = getClass().getResource("/idp-meta.xml").toURI().getPath();
 
-        Map<String, String> params = new ImmutableMap.Builder<String, String>() //
-                                                                                .put("metadata", metadata)
-                                                                                .build();
+        Map<String, String> params = Map.of("metadata", metadata);
 
         samlAuth.initPlugin(params);
 
@@ -139,7 +137,7 @@ public class SAMLAuthenticatorTest {
     }
 
     @Test
-    public void testAuthRequest() throws Exception {
+    public void testAuthRequest() {
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
@@ -179,7 +177,7 @@ public class SAMLAuthenticatorTest {
 
         final List<Cookie> cookies = captor.getAllValues();
 
-        assertTrue(!cookies.isEmpty());
+        assertFalse(cookies.isEmpty());
 
         String redirectUri = (String) req.getSession(true).getAttribute(NXAuthConstants.START_PAGE_SAVE_KEY);
         assertEquals("/relay", redirectUri);
@@ -196,14 +194,14 @@ public class SAMLAuthenticatorTest {
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
-        Cookie[] cookies = new Cookie[] { new Cookie(SAMLAuthenticationProvider.SAML_SESSION_KEY,
-                "sessionId|user@dummy|format") };
+        Cookie[] cookies = new Cookie[] {
+                new Cookie(SAMLAuthenticationProvider.SAML_SESSION_KEY, "sessionId|user@dummy|format") };
         when(req.getCookies()).thenReturn(cookies);
         String logoutURL = samlAuth.getSLOUrl(req, resp);
 
         assertTrue(logoutURL.startsWith("http://dummy/SLORedirect"));
 
-        List<NameValuePair> params = URLEncodedUtils.parse(new URI(logoutURL), "UTF-8");
+        List<NameValuePair> params = URLEncodedUtils.parse(new URI(logoutURL), UTF_8);
         assertEquals(HTTPRedirectBinding.SAML_REQUEST, params.get(0).getName());
         String samlRequest = params.get(0).getValue();
         SAMLObject message = decodeMessage(samlRequest);
@@ -222,8 +220,7 @@ public class SAMLAuthenticatorTest {
     }
 
     protected HttpServletRequest getMockRequest(String messageFile, String method, String url, String contentType,
-            String relayState)
-            throws Exception {
+            String relayState) throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpSession session = new MockHttpSession();
         when(request.getSession(anyBoolean())).thenReturn(session);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.multi.tenant;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -35,8 +39,6 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import junit.framework.Assert;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
@@ -65,10 +67,10 @@ public class TestUserWorkspaceWithMultiTenant {
     protected UserWorkspaceService userWorkspaceService;
 
     @Test
-    public void testUserWorkspace() throws Exception {
+    public void testUserWorkspace() {
 
         DocumentModel defaultDomain = session.getChild(session.getRootDocument().getRef(), "default-domain");
-        Assert.assertNotNull(defaultDomain);
+        assertNotNull(defaultDomain);
 
         // ensure the multi-tenant is activated
         multiTenantService.enableTenantIsolation(session);
@@ -86,27 +88,27 @@ public class TestUserWorkspaceWithMultiTenant {
 
         DocumentModel marioWS = userWorkspaceService.getUserPersonalWorkspace(mario, session.getRootDocument());
         DocumentModel yoshiWS = userWorkspaceService.getUserPersonalWorkspace(yoshi, session.getRootDocument());
-        Assert.assertNotNull(marioWS);
-        Assert.assertNotNull(yoshiWS);
+        assertNotNull(marioWS);
+        assertNotNull(yoshiWS);
 
-        Assert.assertTrue(marioWS.getPathAsString().contains(domain1.getPathAsString()));
-        Assert.assertTrue(yoshiWS.getPathAsString().contains(domain2.getPathAsString()));
+        assertTrue(marioWS.getPathAsString().contains(domain1.getPathAsString()));
+        assertTrue(yoshiWS.getPathAsString().contains(domain2.getPathAsString()));
 
         DocumentModel marioWS2 = userWorkspaceService.getUserPersonalWorkspace(mario.getName(),
                 session.getRootDocument());
         DocumentModel yoshiWS2 = userWorkspaceService.getUserPersonalWorkspace(yoshi.getName(),
                 session.getRootDocument());
-        Assert.assertNotNull(marioWS2);
-        Assert.assertNotNull(yoshiWS2);
+        assertNotNull(marioWS2);
+        assertNotNull(yoshiWS2);
 
-        Assert.assertEquals(marioWS.getId(), marioWS2.getId());
-        Assert.assertEquals(yoshiWS.getId(), yoshiWS2.getId());
+        assertEquals(marioWS.getId(), marioWS2.getId());
+        assertEquals(yoshiWS.getId(), yoshiWS2.getId());
 
         // check admin WS
         DocumentModel adminWS = userWorkspaceService.getCurrentUserPersonalWorkspace(session,
                 session.getRootDocument());
-        Assert.assertNotNull(adminWS);
-        Assert.assertTrue(adminWS.getPathAsString().contains(defaultDomain.getPathAsString()));
+        assertNotNull(adminWS);
+        assertTrue(adminWS.getPathAsString().contains(defaultDomain.getPathAsString()));
 
         // check ACLs
         ACP acp = marioWS.getACP();

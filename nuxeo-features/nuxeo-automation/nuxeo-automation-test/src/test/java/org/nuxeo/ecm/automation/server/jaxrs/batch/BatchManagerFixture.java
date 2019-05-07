@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,7 +141,7 @@ public class BatchManagerFixture {
 
         // Check transient store
         // Batch entry
-        Batch batch = ((BatchManagerComponent) bm).getBatch(batchId);
+        Batch batch = bm.getBatch(batchId);
         assertNotNull(batch);
         assertEquals(batchId, batch.getKey());
         assertEquals(blob1, batch.getBlob("0"));
@@ -199,7 +199,7 @@ public class BatchManagerFixture {
         // Check transient store
 
         // Batch entry
-        Batch batch = ((BatchManagerComponent) bm).getBatch(batchId);
+        Batch batch = bm.getBatch(batchId);
         assertNotNull(batch);
         assertEquals(batchId, batch.getKey());
         assertEquals(blob, batch.getBlob("0"));
@@ -366,7 +366,7 @@ public class BatchManagerFixture {
         for (String batchId : batchIds) {
             bm.clean(batchId);
         }
-        assertEquals(tsm.getStorageSize(), 0);
+        assertEquals(0, tsm.getStorageSize());
     }
 
     @Test
@@ -417,7 +417,7 @@ public class BatchManagerFixture {
 
         // Clean batch
         bm.clean(batchId);
-        assertEquals(tsm.getStorageSize(), 0);
+        assertEquals(0, tsm.getStorageSize());
     }
 
     @Test
@@ -466,6 +466,6 @@ public class BatchManagerFixture {
 
         // Clean batch
         bm.clean(batchId);
-        assertEquals(tsm.getStorageSize(), 0);
+        assertEquals(0, tsm.getStorageSize());
     }
 }

@@ -41,19 +41,18 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.AclAuditWork;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.IResultPublisher;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.query.api", "nuxeo-groups-rights-audit" })
-@LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("nuxeo-groups-rights-audit")
+@Deploy("nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml")
+@Deploy("nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml")
 public class TestAclProcessingWork extends AbstractAclLayoutTest {
 
     private static class ResultAuditPublisher implements IResultPublisher {
@@ -75,21 +74,18 @@ public class TestAclProcessingWork extends AbstractAclLayoutTest {
         }
     }
 
-    @Inject
-    CoreSession session;
-
-    @Inject
-    UserManager userManager;
-
-    @Inject
-    EventService eventService;
-
-    @Inject
-    WorkManager workManager;
-
     private final static Log log = LogFactory.getLog(TestAclProcessingWork.class);
 
     protected static File testFile = new File(folder + TestAclProcessingWork.class.getSimpleName() + ".xls");
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected WorkManager workManager;
 
     @Test
     public void testWork() throws Exception {

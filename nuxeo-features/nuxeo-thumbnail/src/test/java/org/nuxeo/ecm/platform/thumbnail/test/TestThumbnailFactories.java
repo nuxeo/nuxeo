@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ public class TestThumbnailFactories {
     protected static Blob defaultThumbnail = Blobs.createBlob("default");
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     @Test
     public void testThumbnailFactoryContribution() throws IOException {

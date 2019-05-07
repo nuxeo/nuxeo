@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -57,8 +55,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.platform.versioning.api")
 @RepositoryConfig(init = Populate.class)
 public class TestPublicationRelations extends PublisherTestCase {
-
-    private static final Log log = LogFactory.getLog(TestPublicationRelations.class);
 
     public static class Populate implements RepositoryInit {
 
@@ -105,10 +101,10 @@ public class TestPublicationRelations extends PublisherTestCase {
     }
 
     @Inject
-    PublisherService service;
+    protected PublisherService service;
 
     @Test
-    public void testPublicationRelation() throws Exception {
+    public void testPublicationRelation() {
 
         PublicationTree tree = service.getPublicationTree(service.getAvailablePublicationTree().get(0), session, null);
         assertNotNull(tree);

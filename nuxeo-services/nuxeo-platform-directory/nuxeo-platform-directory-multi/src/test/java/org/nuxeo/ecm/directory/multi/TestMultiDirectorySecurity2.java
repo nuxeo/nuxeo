@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,7 +82,7 @@ public class TestMultiDirectorySecurity2 {
         PermissionDescriptor perm = new PermissionDescriptor();
         perm.name = "Write";
         perm.groups = new String[] { EVERYONE_GROUP };
-        PermissionDescriptor[] permissions = new PermissionDescriptor[] {  perm };
+        PermissionDescriptor[] permissions = new PermissionDescriptor[] { perm };
 
         // dir 1
         desc1 = new MemoryDirectoryDescriptor();
@@ -160,7 +160,7 @@ public class TestMultiDirectorySecurity2 {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         directoryService = Framework.getService(DirectoryService.class);
         directoryService.unregisterDirectoryDescriptor(desc1);
         directoryService.unregisterDirectoryDescriptor(desc2);
