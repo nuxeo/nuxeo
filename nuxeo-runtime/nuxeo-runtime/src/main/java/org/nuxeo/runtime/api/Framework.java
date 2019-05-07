@@ -39,6 +39,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
+import org.nuxeo.common.function.ThrowableRunnable;
+import org.nuxeo.common.function.ThrowableSupplier;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceException;
@@ -252,20 +254,10 @@ public final class Framework {
      *
      * @param runnable what to run
      * @since 8.4
+     * @since 11.1 this method now takes a {@link ThrowableRunnable}
      */
-    public static void doPrivileged(Runnable runnable) {
-        try {
-            LoginContext loginContext = login();
-            try {
-                runnable.run();
-            } finally {
-                if (loginContext != null) { // may be null in tests
-                    loginContext.logout();
-                }
-            }
-        } catch (LoginException e) {
-            throw new RuntimeServiceException(e);
-        }
+    public static <E extends Throwable> void doPrivileged(ThrowableRunnable<E> runnable) throws E {
+        loginAndDo(Framework::login, runnable.toThrowableSupplier());
     }
 
     /**
@@ -274,10 +266,22 @@ public final class Framework {
      * @param supplier what to call
      * @return the supplier's result
      * @since 8.4
+     * @since 11.1 this method now takes a {@link ThrowableSupplier}
      */
-    public static <T> T doPrivileged(Supplier<T> supplier) {
+    public static <T, E extends Throwable> T doPrivileged(ThrowableSupplier<T, E> supplier) throws E {
+        return loginAndDo(Framework::login, supplier);
+    }
+
+    /**
+     * Logs in the Nuxeo platform using the given {@link ThrowableSupplier authSupplier}, then gets the given
+     * {@link ThrowableSupplier supplier} before logging out.
+     *
+     * @since 11.1
+     */
+    protected static <T, E extends Throwable> T loginAndDo(ThrowableSupplier<LoginContext, LoginException> authSupplier,
+            ThrowableSupplier<T, E> supplier) throws E {
         try {
-            LoginContext loginContext = login();
+            LoginContext loginContext = authSupplier.get();
             try {
                 return supplier.get();
             } finally {
