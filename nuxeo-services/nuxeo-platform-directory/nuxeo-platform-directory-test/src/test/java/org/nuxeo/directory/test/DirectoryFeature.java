@@ -30,9 +30,6 @@ import java.util.stream.Collectors;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.SystemPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
-import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -60,7 +57,6 @@ import com.google.inject.name.Names;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.directory.api")
 @Deploy("org.nuxeo.ecm.directory")
-@Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.directory.types.contrib")
 @Deploy("org.nuxeo.ecm.directory.sql")
 @Deploy("org.nuxeo.directory.mongodb")
@@ -77,8 +73,6 @@ public class DirectoryFeature implements RunnerFeature {
     protected Granularity granularity;
 
     protected Map<String, Map<String, Map<String, Object>>> allDirectoryData;
-
-    protected LoginStack loginStack;
 
     @Override
     public void beforeRun(FeaturesRunner runner) {
@@ -112,10 +106,7 @@ public class DirectoryFeature implements RunnerFeature {
         allDirectoryData = new HashMap<>();
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
 
-        loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.push(new SystemPrincipal(null), null, null);
-
-        try {
+        TransactionHelper.runInTransaction(() -> Framework.doPrivileged(() -> {
             for (Directory dir : directoryService.getDirectories()) {
                 // Do not save multi-directories as subdirectories will be saved
                 if (dir.isReadOnly() || dir instanceof MultiDirectory) {
@@ -132,14 +123,7 @@ public class DirectoryFeature implements RunnerFeature {
                     allDirectoryData.put(dir.getName(), data);
                 }
             }
-            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                TransactionHelper.commitOrRollbackTransaction();
-                TransactionHelper.startTransaction();
-            }
-        } catch (Exception e) {
-            loginStack.pop();
-            throw e;
-        }
+        }));
     }
 
     @Override
@@ -153,7 +137,7 @@ public class DirectoryFeature implements RunnerFeature {
         }
 
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        try {
+        TransactionHelper.runInTransaction(() -> Framework.doPrivileged(() -> {
             // clear all directories
             boolean isAllClear;
             do {
@@ -194,9 +178,7 @@ public class DirectoryFeature implements RunnerFeature {
                     }
                 }
             }
-        } finally {
-            loginStack.pop();
-        }
+        }));
         allDirectoryData = null;
     }
 

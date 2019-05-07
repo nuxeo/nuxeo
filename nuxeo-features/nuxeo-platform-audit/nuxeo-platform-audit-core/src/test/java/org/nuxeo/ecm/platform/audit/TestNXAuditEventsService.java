@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.audit.TestNXAuditEventsService.MyInit.YOUPS_PATH;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 
@@ -77,14 +78,9 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.ecm.platform.audit:test-audit-contrib.xml")
 public class TestNXAuditEventsService {
 
-    protected static MyInit repo;
-
     public static class MyInit extends DefaultRepositoryInit {
-        {
-            repo = this;
-        }
 
-        protected DocumentModel source;
+        public static final String YOUPS_PATH = "/youps";
 
         @Override
         public void populate(CoreSession session) {
@@ -93,7 +89,6 @@ public class TestNXAuditEventsService {
             DocumentModel model = session.createDocumentModel(rootDocument.getPathAsString(), "youps", "File");
             model.setProperty("dublincore", "title", "huum");
             session.createDocument(model);
-            source = session.getDocument(new PathRef("/youps"));
         }
     }
 
@@ -132,7 +127,9 @@ public class TestNXAuditEventsService {
 
     @Test
     public void testLogDocumentMessageWithoutCategory() {
-        EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), repo.source);
+        DocumentModel source = session.getDocument(new PathRef(YOUPS_PATH));
+
+        EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), source);
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
         event.setInline(false);
         event.setImmediate(true);
@@ -140,7 +137,7 @@ public class TestNXAuditEventsService {
         waitForAsyncCompletion();
 
         List<LogEntry> entries = serviceUnderTest.queryLogs(
-                new AuditQueryBuilder().predicate(Predicates.eq(LOG_DOC_UUID, repo.source.getId())).defaultOrder());
+                new AuditQueryBuilder().predicate(Predicates.eq(LOG_DOC_UUID, source.getId())).defaultOrder());
         assertEquals(2, entries.size());
 
         // entries are not ordered => skip creation log
@@ -162,7 +159,9 @@ public class TestNXAuditEventsService {
 
     @Test
     public void testLogDocumentMessageWithCategory() {
-        EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), repo.source);
+        DocumentModel source = session.getDocument(new PathRef(YOUPS_PATH));
+
+        EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), source);
         ctx.setProperty("category", "myCategory");
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
         event.setInline(false);
@@ -170,8 +169,7 @@ public class TestNXAuditEventsService {
         eventService.fireEvent(event);
         waitForAsyncCompletion();
 
-        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source.getId(),
-                repo.source.getRepositoryName());
+        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(source.getId(), source.getRepositoryName());
         assertEquals(2, entries.size());
 
         // entries are not ordered => skip creation log
@@ -355,7 +353,9 @@ public class TestNXAuditEventsService {
     }
 
     protected void createLogEntry(String eventId) {
-        EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), repo.source);
+        DocumentModel source = session.getDocument(new PathRef(YOUPS_PATH));
+        
+        EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), source);
         Event event = ctx.newEvent(eventId);
         event.setInline(false);
         event.setImmediate(true);

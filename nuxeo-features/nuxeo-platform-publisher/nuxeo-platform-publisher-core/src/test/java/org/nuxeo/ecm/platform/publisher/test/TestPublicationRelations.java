@@ -58,13 +58,8 @@ public class TestPublicationRelations extends PublisherTestCase {
 
     public static class Populate implements RepositoryInit {
 
-        protected static Populate self;
-
-        protected DocumentModel doc2Publish;
-
         @Override
         public void populate(CoreSession session) {
-            self = this;
             DocumentModel wsRoot = session.getDocument(new PathRef("/default-domain/workspaces"));
 
             DocumentModel ws = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
@@ -85,14 +80,14 @@ public class TestPublicationRelations extends PublisherTestCase {
             section11.setProperty("dublincore", "title", "section11");
             section11 = session.createDocument(section11);
 
-            Populate.self.doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file", "File");
-            Populate.self.doc2Publish.setProperty("dublincore", "title", "MyDoc");
+            DocumentModel doc2Publish = session.createDocumentModel(ws.getPathAsString(), "file", "File");
+            doc2Publish.setProperty("dublincore", "title", "MyDoc");
 
             Blob blob = Blobs.createBlob("SomeDummyContent");
             blob.setFilename("dummyBlob.txt");
-            Populate.self.doc2Publish.setProperty("file", "content", blob);
+            doc2Publish.setProperty("file", "content", blob);
 
-            Populate.self.doc2Publish = session.createDocument(Populate.self.doc2Publish);
+            session.createDocument(doc2Publish);
 
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
@@ -109,9 +104,10 @@ public class TestPublicationRelations extends PublisherTestCase {
         PublicationTree tree = service.getPublicationTree(service.getAvailablePublicationTree().get(0), session, null);
         assertNotNull(tree);
 
+        DocumentModel doc2Publish = session.getDocument(new PathRef("/default-domain/workspaces/ws1/file"));
         List<PublicationNode> nodes = tree.getChildrenNodes();
         PublicationNode targetNode = nodes.get(0);
-        PublishedDocument pubDoc = tree.publish(Populate.self.doc2Publish, targetNode);
+        PublishedDocument pubDoc = tree.publish(doc2Publish, targetNode);
         assertTrue(pubDoc instanceof SimpleCorePublishedDocument);
 
         DocumentModel proxy = ((SimpleCorePublishedDocument) pubDoc).getProxy();

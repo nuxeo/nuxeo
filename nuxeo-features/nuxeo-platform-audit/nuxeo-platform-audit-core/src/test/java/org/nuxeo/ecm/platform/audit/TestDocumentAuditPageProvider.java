@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -69,11 +70,9 @@ public class TestDocumentAuditPageProvider {
             init = this;
         }
 
-        protected DocumentModel doc;
+        protected String docId;
 
-        protected DocumentModel proxy;
-
-        protected List<DocumentModel> versions;
+        protected String proxyId;
 
         protected static void sleep(long millis) {
             try {
@@ -90,7 +89,7 @@ public class TestDocumentAuditPageProvider {
             DocumentModel section = session.createDocumentModel("/", "section", "Folder");
             section = session.createDocument(section);
 
-            doc = session.createDocumentModel("/", "doc", "File");
+            DocumentModel doc = session.createDocumentModel("/", "doc", "File");
             doc.setPropertyValue("dc:title", "TestDoc");
 
             // create the doc
@@ -121,7 +120,7 @@ public class TestDocumentAuditPageProvider {
                 sleep(10);
             }
 
-            proxy = session.publishDocument(doc, section);
+            DocumentModel proxy = session.publishDocument(doc, section);
             session.save();
             sleep(10);
 
@@ -134,9 +133,12 @@ public class TestDocumentAuditPageProvider {
                 sleep(10);
             }
 
-            versions = session.getVersions(doc.getRef());
+            List<DocumentModel> versions = session.getVersions(doc.getRef());
             assertEquals(2, versions.size());
 
+            // save ids to latter use
+            docId = doc.getId();
+            proxyId = proxy.getId();
         }
 
     }
@@ -144,6 +146,9 @@ public class TestDocumentAuditPageProvider {
     @SuppressWarnings("unchecked")
     @Test
     public void testDocumentHistoryPageProvider() {
+        DocumentModel doc = session.getDocument(new IdRef(init.docId));
+        DocumentModel proxy = session.getDocument(new IdRef(init.proxyId));
+        List<DocumentModel> versions = session.getVersions(doc.getRef());
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
@@ -152,7 +157,7 @@ public class TestDocumentAuditPageProvider {
         assertNotNull(ppdef);
 
         PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(20), Long.valueOf(0),
-                new HashMap<>(), init.doc);
+                new HashMap<>(), doc);
 
         DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
         searchDoc.setPathInfo("/", "auditsearch");
@@ -171,7 +176,7 @@ public class TestDocumentAuditPageProvider {
 
         // Get Proxy history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(20), Long.valueOf(0), new HashMap<>(),
-                init.proxy);
+                proxy);
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
@@ -185,7 +190,7 @@ public class TestDocumentAuditPageProvider {
 
         // Get version 1 history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(20), Long.valueOf(0), new HashMap<>(),
-                init.versions.get(0));
+                versions.get(0));
         pp.setSearchDocumentModel(searchDoc);
         entries = (List<LogEntry>) pp.getCurrentPage();
 
@@ -201,7 +206,7 @@ public class TestDocumentAuditPageProvider {
 
         // get version 2 history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(20), Long.valueOf(0), new HashMap<>(),
-                init.versions.get(1));
+                versions.get(1));
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
@@ -220,8 +225,9 @@ public class TestDocumentAuditPageProvider {
     @Test
     @Ignore("NXP-21530")
     public void testDocumentHistoryReader() {
+        List<DocumentModel> versions = session.getVersions(new IdRef(init.docId));
 
-        List<LogEntry> entries = history.getDocumentHistory(init.versions.get(1), 0, 20);
+        List<LogEntry> entries = history.getDocumentHistory(versions.get(1), 0, 20);
         assertNotNull(entries);
         // creation + 5x2 updates + checkin/update + checkin + created
         int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1 + 1;

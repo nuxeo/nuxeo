@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.as.test">
+  <!-- Override DummyLoginFeature configuration -->
+  <require>org.nuxeo.ecm.core.api.local.dummy.login.as</require>
+
+  <extension target="org.nuxeo.runtime.LoginAsComponent" point="implementation">
+    <implementation class="org.nuxeo.ecm.platform.login.test.DummyLoginAs" />
+  </extension>
+
+</component>

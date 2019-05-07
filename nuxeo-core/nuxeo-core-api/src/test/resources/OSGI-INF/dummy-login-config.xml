@@ -1,18 +1,14 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.dummy.bulk.login">
-
-  <extension target="org.nuxeo.runtime.LoginAsComponent" point="implementation">
-    <implementation class="org.nuxeo.ecm.core.bulk.DummyLoginAs" />
-  </extension>
+<component name="org.nuxeo.ecm.core.api.local.dummy.login">
 
   <extension target="org.nuxeo.runtime.LoginComponent" point="domains">
-    <domain name="nuxeo-client-login">
+    <domain name="nuxeo-system-login">
       <login-module code="org.nuxeo.ecm.core.api.local.ClientLoginModule" flag="required">
         <option name="password-stacking">true</option>
         <option name="multi-threaded">true</option>
       </login-module>
     </domain>
-    <domain name="nuxeo-ecm-web">
+    <domain name="nuxeo-client-login">
       <login-module code="org.nuxeo.ecm.core.api.local.ClientLoginModule" flag="required">
         <option name="password-stacking">true</option>
         <option name="multi-threaded">true</option>

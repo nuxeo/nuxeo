@@ -32,21 +32,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.directory.DirectorySecurityException;
 import org.nuxeo.ecm.directory.PermissionDescriptor;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
 import org.nuxeo.ecm.directory.memory.MemoryDirectoryDescriptor;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -69,9 +67,6 @@ public class TestMultiDirectorySecurity1 {
 
     MultiDirectorySession dir;
 
-    @Inject
-    ClientLoginFeature dummyLogin;
-
     protected MemoryDirectoryDescriptor desc1;
 
     protected MemoryDirectoryDescriptor desc2;
@@ -84,6 +79,11 @@ public class TestMultiDirectorySecurity1 {
 
     @Before
     public void setUp() throws Exception {
+        // as WithUser logs in the desired user before @Before and logs out after @After we need more permissions
+        Framework.doPrivileged(this::setUpWithPrivileged);
+    }
+
+    public void setUpWithPrivileged() {
         // mem dir factory
         directoryService = Framework.getService(DirectoryService.class);
 
@@ -187,29 +187,22 @@ public class TestMultiDirectorySecurity1 {
     }
 
     @Test
-    public void superUserHasWritePermissionOnSubDirectory() throws Exception {
-        dummyLogin.login(SUPER_USER);
+    @WithUser(SUPER_USER)
+    public void superUserHasWritePermissionOnSubDirectory() {
         assertTrue(multiDir.getSession().hasPermission("Write"));
-        dummyLogin.logout();
     }
 
     @Test
-    public void readerCanGetEntry() throws Exception {
-        // Given a reader user
-        dummyLogin.login(READER_USER);
-
+    @WithUser(READER_USER)
+    public void readerCanGetEntry() {
         DocumentModel entry;
         entry = dir.getEntry("1");
         assertNotNull(entry);
-
-        dummyLogin.logout();
     }
 
     @Test
-    public void readerCantCreateEntry() throws Exception {
-        // Given a reader user
-        dummyLogin.login(READER_USER);
-
+    @WithUser(READER_USER)
+    public void readerCantCreateEntry() {
         Map<String, Object> map = new HashMap<>();
         map.put("uid", "5");
         map.put("thefoo", "foo5");
@@ -223,15 +216,11 @@ public class TestMultiDirectorySecurity1 {
 
         DocumentModel entry = dir.getEntry("5");
         assertNull(entry);
-
-        dummyLogin.logout();
     }
 
     @Test
-    public void superUserCanCreate() throws Exception {
-        // Given a super user
-        dummyLogin.login(SUPER_USER);
-
+    @WithUser(SUPER_USER)
+    public void superUserCanCreate() {
         Map<String, Object> map = new HashMap<>();
         map.put("uid", "5");
         map.put("thefoo", "foo5");
@@ -241,15 +230,11 @@ public class TestMultiDirectorySecurity1 {
 
         entry = dir.getEntry("5");
         assertNotNull(entry);
-
-        dummyLogin.logout();
     }
 
     @Test
-    public void superUserCanUpdateEntry() throws Exception {
-        // Given a super user
-        dummyLogin.login(SUPER_USER);
-
+    @WithUser(SUPER_USER)
+    public void superUserCanUpdateEntry() {
         // multi-subdirs update
         DocumentModel e = dir.getEntry("1");
         assertEquals("foo1", e.getProperty("schema3", "thefoo"));
@@ -260,15 +245,11 @@ public class TestMultiDirectorySecurity1 {
         e = dir.getEntry("1");
         assertEquals("fffooo1", e.getProperty("schema3", "thefoo"));
         assertEquals("babar1", e.getProperty("schema3", "thebar"));
-
-        dummyLogin.logout();
     }
 
     @Test
-    public void readerUserCantUpdateEntry() throws Exception {
-        // Given a reader user
-        dummyLogin.login(READER_USER);
-
+    @WithUser(READER_USER)
+    public void readerUserCantUpdateEntry() {
         // multi-subdirs update
         DocumentModel e = dir.getEntry("1");
         assertEquals("foo1", e.getProperty("schema3", "thefoo"));
@@ -285,28 +266,20 @@ public class TestMultiDirectorySecurity1 {
         e = dir.getEntry("1");
         assertEquals("foo1", e.getProperty("schema3", "thefoo"));
         assertEquals("bar1", e.getProperty("schema3", "thebar"));
-
-        dummyLogin.logout();
     }
 
     @Test
-    public void superUserCanDeleteEntry() throws Exception {
-        // Given a super user
-        dummyLogin.login(SUPER_USER);
-
+    @WithUser(SUPER_USER)
+    public void superUserCanDeleteEntry() {
         dir.deleteEntry("1");
         assertNull(dir.getEntry("1"));
         dir.deleteEntry("3");
         assertNull(dir.getEntry("3"));
-
-        dummyLogin.logout();
     }
 
     @Test
-    public void readerUserCantDeleteEntry() throws Exception {
-        // Given a reader user
-        dummyLogin.login(READER_USER);
-
+    @WithUser(READER_USER)
+    public void readerUserCantDeleteEntry() {
         try {
             dir.deleteEntry("1");
             fail("Should not be able to delete entry");
@@ -314,15 +287,11 @@ public class TestMultiDirectorySecurity1 {
             // ok
         }
         assertNotNull(dir.getEntry("1"));
-
-        dummyLogin.logout();
     }
 
     @Test
-    public void superUserCanQuery() throws Exception {
-        // Given a super user
-        dummyLogin.login(SUPER_USER);
-
+    @WithUser(SUPER_USER)
+    public void superUserCanQuery() {
         Map<String, Serializable> filter = new HashMap<>();
         DocumentModelList entries;
 
@@ -330,7 +299,5 @@ public class TestMultiDirectorySecurity1 {
         entries = dir.query(filter);
         assertNotNull(entries);
         assertEquals(4, entries.size());
-
-        dummyLogin.logout();
     }
 }
