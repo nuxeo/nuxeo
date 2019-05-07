@@ -23,33 +23,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import javax.inject.Inject;
-
-import org.junit.After;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
+import org.nuxeo.ecm.core.api.local.WithUser;
 
+@WithUser(CoreDirectoryFeature.USER1_NAME)
 public class TestCoreDirectoryUser extends TestCoreDirectory {
-
-    @Inject
-    ClientLoginFeature login;
-
-    @Override
-    public void setUp() throws Exception {
-        login.login(CoreDirectoryFeature.USER1_NAME);
-        dirSession = coreDir.getSession();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        try {
-            dirSession.close();
-        } finally {
-            login.logout();
-        }
-    }
 
     @Test
     public void testGetEntry() {

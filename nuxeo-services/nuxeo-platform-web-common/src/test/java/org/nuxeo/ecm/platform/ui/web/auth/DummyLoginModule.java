@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallback;
  *
  * @since 10.2
  */
-public class DummyLoginModule implements LoginModule {
+public class  DummyLoginModule implements LoginModule {
 
     protected Subject subject;
 

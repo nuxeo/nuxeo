@@ -32,11 +32,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.directory.DirectoryDeleteConstraintException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
-import org.nuxeo.ecm.platform.login.test.DummyNuxeoLoginModule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -49,10 +49,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml")
 @Deploy("org.nuxeo.ecm.directory.tests:test-directories-bundle.xml")
 @Deploy("org.nuxeo.ecm.directory.tests:test-directory-delete-contrib.xml")
+@WithUser("Administrator")
 public class TestDirectoryDeleteConstraints {
-
-    @Inject
-    protected ClientLoginFeature dummyLogin;
 
     protected Session continentSession;
 
@@ -62,13 +60,10 @@ public class TestDirectoryDeleteConstraints {
     protected DirectoryService directoryService;
 
     @Test
-    public void testDeleteEntryWithConstraints() throws Exception {
+    public void testDeleteEntryWithConstraints() {
 
         continentSession = directoryService.getDirectory("continent").getSession();
         countrySession = directoryService.getDirectory("country").getSession();
-
-        // Given the admin user
-        dummyLogin.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
 
         // I can delete entry
         DocumentModel entry = continentSession.getEntry("europe");
@@ -85,8 +80,6 @@ public class TestDirectoryDeleteConstraints {
             }
             continentSession.deleteEntry("europe");
         }
-
-        dummyLogin.logout();
 
         continentSession.close();
         countrySession.close();
