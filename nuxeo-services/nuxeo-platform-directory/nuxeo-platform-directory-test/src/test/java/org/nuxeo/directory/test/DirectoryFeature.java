@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,8 +125,10 @@ public class DirectoryFeature implements RunnerFeature {
                     session.setReadAllColumns(true); // needs to fetch the password too
                     List<DocumentModel> entries = session.query(Collections.emptyMap(), Collections.emptySet(),
                             Collections.emptyMap(), true); // fetch references
-                    Map<String, Map<String, Object>> data = entries.stream().collect(
-                            Collectors.toMap(DocumentModel::getId, entry -> entry.getProperties(dir.getSchema())));
+                    Map<String, Map<String, Object>> data = entries.stream()
+                                                                   .collect(Collectors.toMap(DocumentModel::getId,
+                                                                           entry -> entry.getProperties(
+                                                                                   dir.getSchema())));
                     allDirectoryData.put(dir.getName(), data);
                 }
             }
@@ -199,8 +201,9 @@ public class DirectoryFeature implements RunnerFeature {
     }
 
     protected void bindDirectory(Binder binder, final String name) {
-        binder.bind(Directory.class).annotatedWith(Names.named(name)).toProvider(
-                () -> Framework.getService(DirectoryService.class).getDirectory(name));
+        binder.bind(Directory.class)
+              .annotatedWith(Names.named(name))
+              .toProvider(() -> Framework.getService(DirectoryService.class).getDirectory(name));
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,9 @@
 
 package org.nuxeo.ecm.platform.groups.audit.service.rendering.tests;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -40,9 +41,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Test excel export of groups
@@ -50,9 +48,11 @@ import static org.junit.Assert.assertEquals;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.query.api", "nuxeo-groups-rights-audit", "org.nuxeo.ecm.platform.web.common" })
-@LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
+@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy("nuxeo-groups-rights-audit")
+@Deploy("org.nuxeo.ecm.platform.web.common")
+@Deploy("nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml")
+@Deploy("nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml")
 public class TestAclLayoutSimple extends AbstractAclLayoutTest {
     @Inject
     CoreSession session;
@@ -67,8 +67,7 @@ public class TestAclLayoutSimple extends AbstractAclLayoutTest {
         // groups
         DocumentModel g1 = makeGroup(userManager, "test_g1");
         DocumentModel g2 = makeGroup(userManager, "test_g2");
-        List<String> g2Groups = Arrays.asList("test_g1");
-        g2.setProperty("group", "subGroups", g2Groups);
+        g2.setProperty("group", "subGroups", List.of("test_g1"));
         DocumentModel u1 = makeUser(userManager, "test_u1");
 
         // Set user properties
@@ -77,7 +76,7 @@ public class TestAclLayoutSimple extends AbstractAclLayoutTest {
         u1.setProperty("user", "lastName", "_u1");
         u1.setProperty("user", "email", "test@u1");
         // Set user/subgroup/group bindings
-        u1.setProperty("user", "groups", Arrays.asList("test_g1"));
+        u1.setProperty("user", "groups", List.of("test_g1"));
         userManager.createGroup(g1);
         userManager.createUser(u1);
         userManager.createGroup(g2);

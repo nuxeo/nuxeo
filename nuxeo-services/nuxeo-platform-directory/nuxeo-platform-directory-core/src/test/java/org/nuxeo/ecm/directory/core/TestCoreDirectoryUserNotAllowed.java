@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public class TestCoreDirectoryUserNotAllowed {
     }
 
     @Test
-    public void testGetEntry() throws Exception {
+    public void testGetEntry() {
         DocumentModel entry;
         entry = dirNotAllowedSession.getEntry(CoreDirectoryInit.DOC_ID_USER2);
         assertNull(entry);

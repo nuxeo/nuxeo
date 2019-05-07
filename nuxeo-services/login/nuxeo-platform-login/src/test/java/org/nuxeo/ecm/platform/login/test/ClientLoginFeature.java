@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,15 +32,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
- * That feature should not be installed in conjunction with the
- * org.nuxeo.ecm.platform.web.common bundle which provide the real client login
- * infrastucture.
- *
+ * That feature should not be installed in conjunction with the org.nuxeo.ecm.platform.web.common bundle which provide
+ * the real client login infrastucture.
  *
  * @since 8.3
  */
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.directory.types.contrib")
 @Deploy("org.nuxeo.ecm.platform.login")
 @Deploy("org.nuxeo.ecm.platform.login:dummy-client-login-config.xml")

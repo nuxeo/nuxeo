@@ -34,7 +34,6 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -161,7 +160,7 @@ public final class Framework {
         try {
             url = rs.toURI().toURL();
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeServiceException(e);
         }
         SharedResourceLoader loader = new SharedResourceLoader(new URL[] { url }, Framework.class.getClassLoader());
         // add back existing urls unless they should be removed, and add new
@@ -265,7 +264,7 @@ public final class Framework {
                 }
             }
         } catch (LoginException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeServiceException(e);
         }
     }
 
@@ -287,7 +286,7 @@ public final class Framework {
                 }
             }
         } catch (LoginException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeServiceException(e);
         }
     }
 

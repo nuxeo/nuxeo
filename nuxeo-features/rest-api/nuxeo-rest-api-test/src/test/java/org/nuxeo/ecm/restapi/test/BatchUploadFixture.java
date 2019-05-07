@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ public class BatchUploadFixture extends BaseTest {
         String batchId = initializeDeprecatedNewBatch();
 
         // Upload a file not in multipart
-        String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", "UTF-8");
+        String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", UTF_8);
         String mimeType = "text/plain";
         String data1 = "Contenu accentué du premier fichier";
         String fileSize1 = String.valueOf(getUTF8Bytes(data1).length);
@@ -331,7 +331,7 @@ public class BatchUploadFixture extends BaseTest {
         }
 
         // Upload file
-        String fileName = URLEncoder.encode("Fichier accentué.txt", "UTF-8");
+        String fileName = URLEncoder.encode("Fichier accentué.txt", UTF_8);
         String mimeType = "text/plain";
         String data = "Contenu accentué";
         String fileSize = String.valueOf(getUTF8Bytes(data).length);
@@ -437,7 +437,7 @@ public class BatchUploadFixture extends BaseTest {
         String batchId = initializeDeprecatedNewBatch();
 
         // Upload chunks in desorder
-        String fileName = URLEncoder.encode("Fichier accentué.txt", "UTF-8");
+        String fileName = URLEncoder.encode("Fichier accentué.txt", UTF_8);
         String mimeType = "text/plain";
         String fileContent = "Contenu accentué composé de 3 chunks";
         String fileSize = String.valueOf(getUTF8Bytes(fileContent).length);
@@ -615,7 +615,7 @@ public class BatchUploadFixture extends BaseTest {
         }
 
         // Upload chunks in desorder
-        String fileName = URLEncoder.encode("Fichier accentué.txt", "UTF-8");
+        String fileName = URLEncoder.encode("Fichier accentué.txt", UTF_8);
         String mimeType = "text/plain";
         String fileContent = "Contenu accentué composé de 2 chunks";
         String fileSize = String.valueOf(getUTF8Bytes(fileContent).length);
@@ -715,7 +715,7 @@ public class BatchUploadFixture extends BaseTest {
         }
 
         // Upload file
-        String fileName = URLEncoder.encode("file.pdf", "UTF-8");
+        String fileName = URLEncoder.encode("file.pdf", UTF_8);
         String badMimeType = "pdf";
         String data = "Empty and wrong pdf data";
         String fileSize = String.valueOf(getUTF8Bytes(data).length);
@@ -876,8 +876,8 @@ public class BatchUploadFixture extends BaseTest {
         String fileName, data, fileSize = null, mimeType = "text/plain";
         Map<String, String> headers = new HashMap<>();
         for (int i = 0; i < numfiles; i++) {
-            fileName = URLEncoder.encode("Test File " + Integer.toString(i + 1) + ".txt", "UTF-8");
-            data = "Test Content " + Integer.toString(i + 1);
+            fileName = URLEncoder.encode("Test File " + (i + 1) + ".txt", UTF_8);
+            data = "Test Content " + (i + 1);
             if (fileSize == null) {
                 fileSize = String.valueOf(getUTF8Bytes(data).length);
                 headers.put("Content-Type", "text/plain");
@@ -886,8 +886,8 @@ public class BatchUploadFixture extends BaseTest {
                 headers.put("X-File-Type", mimeType);
             }
             headers.put("X-File-Name", fileName);
-            try (CloseableClientResponse response = getResponse(RequestType.POST,
-                    "upload/" + batchId + "/" + Integer.toString(i), data, headers)) {
+            try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/" + i, data,
+                    headers)) {
                 assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
             }
         }
@@ -899,7 +899,7 @@ public class BatchUploadFixture extends BaseTest {
             assertEquals(numfiles, nodes.size());
             for (int i = 0; i < numfiles; i++) {
                 JsonNode node = nodes.get(i);
-                assertEquals("Test File " + Integer.toString(i + 1) + ".txt", node.get("name").asText());
+                assertEquals("Test File " + (i + 1) + ".txt", node.get("name").asText());
                 assertEquals(fileSize, node.get("size").asText());
                 assertEquals("normal", node.get("uploadType").asText());
             }
@@ -955,7 +955,7 @@ public class BatchUploadFixture extends BaseTest {
         String batchId = initializeDeprecatedNewBatch();
 
         // Upload an empty file not in multipart
-        String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", "UTF-8");
+        String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", UTF_8);
         Map<String, String> headers = new HashMap<>();
         headers.put("X-File-Name", fileName1);
         headers.put("X-File-Size", "0");
@@ -1047,7 +1047,7 @@ public class BatchUploadFixture extends BaseTest {
         String batchId = initializeNewBatch();
 
         // Upload a file not in multipart
-        String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", "UTF-8");
+        String fileName1 = URLEncoder.encode("Fichier accentué 1.txt", UTF_8);
         String mimeType = "text/plain";
         String data1 = "Contenu accentué du premier fichier";
         String fileSize1 = String.valueOf(getUTF8Bytes(data1).length);
@@ -1069,7 +1069,7 @@ public class BatchUploadFixture extends BaseTest {
         }
 
         // Upload a file not in multipart
-        String fileName2 = URLEncoder.encode("Fichier accentué 2.txt", "UTF-8");
+        String fileName2 = URLEncoder.encode("Fichier accentué 2.txt", UTF_8);
         headers = new HashMap<>();
         headers.put("Content-Type", "text/plain");
         headers.put("X-Upload-Type", "normal");
@@ -1119,7 +1119,7 @@ public class BatchUploadFixture extends BaseTest {
         String batchId = initializeDeprecatedNewBatch();
 
         // Upload a file not in multipart
-        String fileName1 = URLEncoder.encode("File.txt", "UTF-8");
+        String fileName1 = URLEncoder.encode("File.txt", UTF_8);
         String mimeType = "text/plain";
         String data1 = "Content";
         String fileSize1 = String.valueOf(getUTF8Bytes(data1).length);
@@ -1175,7 +1175,7 @@ public class BatchUploadFixture extends BaseTest {
             String batchId = initializeDeprecatedNewBatch();
 
             // Upload a file not in multipart
-            String fileName1 = URLEncoder.encode("File.txt", "UTF-8");
+            String fileName1 = URLEncoder.encode("File.txt", UTF_8);
             String mimeType = "text/plain";
             Map<String, String> headers = new HashMap<>();
             headers.put("Content-Type", "text/plain");
