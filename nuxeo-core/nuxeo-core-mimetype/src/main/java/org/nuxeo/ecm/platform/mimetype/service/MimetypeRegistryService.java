@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -179,14 +179,11 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
 
     @Override
     public List<String> getExtensionsFromMimetypeName(String mimetypeName) {
-        List<String> extensions = new ArrayList<>();
-        for (String key : mimetypeByNormalisedRegistry.keySet()) {
-            MimetypeEntry mimetypeEntry = mimetypeByNormalisedRegistry.get(key);
-            if (mimetypeEntry.getMimetypes().contains(mimetypeName)) {
-                extensions.addAll(mimetypeEntry.getExtensions());
-            }
-        }
-        return extensions;
+        return mimetypeByNormalisedRegistry.entrySet()
+                                           .stream()
+                                           .filter(e -> e.getValue().getMimetypes().contains(mimetypeName))
+                                           .flatMap(e -> e.getValue().getExtensions().stream())
+                                           .collect(Collectors.toList());
     }
 
     @Override
@@ -195,7 +192,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     @Override
-    public String getMimetypeFromFile(File file) throws MimetypeNotFoundException, MimetypeDetectionException {
+    public String getMimetypeFromFile(File file) {
         if (file.length() > MAX_SIZE_FOR_SCAN) {
             String exceptionMessage = "Not able to determine mime type from filename and file is too big for binary scan.";
             if (file.getAbsolutePath() == null) {
@@ -238,7 +235,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
                 }
                 for (int i = 0; i < n; i++) {
                     if (bytes[i] == 0) {
-                        mimeType = "application/octet-stream";
+                        mimeType = DEFAULT_MIMETYPE;
                         break;
                     }
                 }
@@ -255,7 +252,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     @Override
-    public String getMimetypeFromExtension(String extension) throws MimetypeNotFoundException {
+    public String getMimetypeFromExtension(String extension) {
         String lowerCaseExtension = extension.toLowerCase();
         ExtensionDescriptor extensionDescriptor = extensionRegistry.get(lowerCaseExtension);
         if (extensionDescriptor == null) {
@@ -278,7 +275,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     @Override
-    public String getMimetypeFromFilename(String filename) throws MimetypeNotFoundException {
+    public String getMimetypeFromFilename(String filename) {
         if (filename == null) {
             throw new MimetypeNotFoundException("filename is null");
         }
@@ -298,7 +295,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     @Override
-    public String getMimetypeFromBlob(Blob blob) throws MimetypeNotFoundException, MimetypeDetectionException {
+    public String getMimetypeFromBlob(Blob blob) {
         File file;
         try {
             file = Framework.createTempFile("NXMimetypeBean", ".bin");
@@ -315,12 +312,12 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
 
     @Override
     public MimetypeEntry getMimetypeEntryByMimeType(String mimetype) {
-        MimetypeEntry mtype = mimetypeByNormalisedRegistry.get("application/octet-stream");
+        MimetypeEntry mtype = mimetypeByNormalisedRegistry.get(DEFAULT_MIMETYPE);
         if (mimetype != null) {
-            for (String key : mimetypeByNormalisedRegistry.keySet()) {
-                MimetypeEntry entry = mimetypeByNormalisedRegistry.get(key);
-                if (mimetype.equals(entry.getNormalized()) || entry.getMimetypes().contains(mimetype)) {
-                    mtype = entry;
+            for (Map.Entry<String, MimetypeEntry> entry : mimetypeByNormalisedRegistry.entrySet()) {
+                if (mimetype.equals(entry.getValue().getNormalized())
+                        || entry.getValue().getMimetypes().contains(mimetype)) {
+                    mtype = entry.getValue();
                     break;
                 }
             }
@@ -329,7 +326,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     @Override
-    public String getMimetypeFromBlobWithDefault(Blob blob, String defaultMimetype) throws MimetypeDetectionException {
+    public String getMimetypeFromBlobWithDefault(Blob blob, String defaultMimetype) {
         try {
             return getMimetypeFromBlob(blob);
         } catch (MimetypeNotFoundException e) {
@@ -338,8 +335,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     @Override
-    public String getMimetypeFromFilenameAndBlobWithDefault(String filename, Blob blob, String defaultMimetype)
-            throws MimetypeDetectionException {
+    public String getMimetypeFromFilenameAndBlobWithDefault(String filename, Blob blob, String defaultMimetype) {
         try {
             return getMimetypeFromFilename(filename);
         } catch (MimetypeNotFoundException e) {
@@ -350,8 +346,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     @Override
-    public String getMimetypeFromFilenameWithBlobMimetypeFallback(String filename, Blob blob, String defaultMimetype)
-            throws MimetypeDetectionException {
+    public String getMimetypeFromFilenameWithBlobMimetypeFallback(String filename, Blob blob, String defaultMimetype) {
         try {
             return getMimetypeFromFilename(filename);
         } catch (MimetypeNotFoundException e) {
@@ -369,8 +364,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     @Override
-    public Blob updateMimetype(Blob blob, String filename, Boolean withBlobMimetypeFallback)
-            throws MimetypeDetectionException {
+    public Blob updateMimetype(Blob blob, String filename, Boolean withBlobMimetypeFallback) {
         if (filename == null) {
             filename = blob.getFilename();
         } else if (blob.getFilename() == null) {
@@ -385,12 +379,12 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     }
 
     @Override
-    public Blob updateMimetype(Blob blob, String filename) throws MimetypeDetectionException {
+    public Blob updateMimetype(Blob blob, String filename) {
         return updateMimetype(blob, filename, false);
     }
 
     @Override
-    public Blob updateMimetype(Blob blob) throws MimetypeDetectionException {
+    public Blob updateMimetype(Blob blob) {
         return updateMimetype(blob, null);
     }
 

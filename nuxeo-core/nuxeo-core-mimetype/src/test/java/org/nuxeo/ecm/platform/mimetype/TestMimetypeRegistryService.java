@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -50,8 +48,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-/*
- * Test the Nuxeo component. No deployment here (true unit test).
+/**
+ * Allows the tests of {@link MimetypeRegistryService} behaviour.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
@@ -60,7 +58,11 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @Deploy("org.nuxeo.ecm.core.mimetype")
 public class TestMimetypeRegistryService {
 
-    public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
+    /**
+     * @deprecated since 11.1. Use {@link MimetypeRegistry#DEFAULT_MIMETYPE} instead.
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
+    public static final String APPLICATION_OCTET_STREAM = MimetypeRegistry.DEFAULT_MIMETYPE;
 
     @Inject
     private MimetypeRegistry mimetypeRegistry;
@@ -68,25 +70,13 @@ public class TestMimetypeRegistryService {
     protected MimetypeRegistryService mimetypeRegistryService;
 
     private static MimetypeEntryImpl getMimetypeSample() {
-        String normalizedMimetype = "application/msword";
-
-        List<String> mimetypes = new ArrayList<>();
-        mimetypes.add("application/msword");
-        // fake
-        mimetypes.add("app/whatever-word");
-
-        List<String> extensions = new ArrayList<>();
-        extensions.add("doc");
-        extensions.add("xml");
-
-        String iconPath = "icons/doc.png";
-
-        boolean binary = true;
-        boolean onlineEditable = true;
-        boolean oleSupported = true;
-
-        return new MimetypeEntryImpl(normalizedMimetype, mimetypes, extensions, iconPath, binary, onlineEditable,
-                oleSupported);
+        return new MimetypeEntryImpl("application/msword", //
+                List.of("application/msword", "app/whatever-word"), //
+                List.of("doc", "xml"), //
+                "icons/doc.png", //
+                true, //
+                true, //
+                true);
     }
 
     @Before
@@ -154,13 +144,11 @@ public class TestMimetypeRegistryService {
 
     @Test
     public void testGetMimetypeFromFilnameAndBlobWithDefault() throws Exception {
-
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistryService.registerMimetype(mimetypeEntry);
 
-        MimetypeEntry docbook = new MimetypeEntryImpl("application/docbook+xml",
-                Arrays.asList("application/docbook+xml"), Arrays.asList("xml", "doc.xml", "docb"), "", false, false,
-                false);
+        MimetypeEntry docbook = new MimetypeEntryImpl("application/docbook+xml", List.of("application/docbook+xml"),
+                List.of("xml", "doc.xml", "docb"), "", false, false, false);
         mimetypeRegistryService.registerMimetype(docbook);
 
         ExtensionDescriptor ed = new ExtensionDescriptor("xml");
@@ -214,7 +202,6 @@ public class TestMimetypeRegistryService {
 
     @Test
     public void testGetMimetypeFromFilenameWithBlobMimetypeFallback() throws Exception {
-
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistryService.registerMimetype(mimetypeEntry);
 
@@ -254,7 +241,6 @@ public class TestMimetypeRegistryService {
 
     @Test
     public void testGetMimetypeEntryByMimetype() {
-
         MimetypeEntry mimetypeEntry = getMimetypeSample();
         mimetypeRegistryService.registerMimetype(mimetypeEntry);
 
@@ -268,5 +254,4 @@ public class TestMimetypeRegistryService {
         assertNotNull(entry);
         assertEquals("application/msword", entry.getNormalized());
     }
-
 }

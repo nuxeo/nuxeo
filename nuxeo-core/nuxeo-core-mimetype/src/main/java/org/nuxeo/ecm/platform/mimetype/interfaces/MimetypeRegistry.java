@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public interface MimetypeRegistry {
      * @throws MimetypeNotFoundException if mimetype sniffing failed to identify a registered mime type
      * @throws MimetypeDetectionException if unexpected problem prevent the detection to work as expected
      */
-    String getMimetypeFromBlob(Blob blob) throws MimetypeNotFoundException, MimetypeDetectionException;
+    String getMimetypeFromBlob(Blob blob);
 
     /**
      * Finds the mimetype of a Blob content and returns provided default if not possible.
@@ -57,7 +57,7 @@ public interface MimetypeRegistry {
      * @return the string mimetype
      * @throws MimetypeDetectionException
      */
-    String getMimetypeFromBlobWithDefault(Blob blob, String defaultMimetype) throws MimetypeDetectionException;
+    String getMimetypeFromBlobWithDefault(Blob blob, String defaultMimetype);
 
     /**
      * Returns the mime type from a given filename.
@@ -71,7 +71,7 @@ public interface MimetypeRegistry {
      * @throws MimetypeNotFoundException if mimetype sniffing failed
      * @throws MimetypeDetectionException if unexpected problem prevent the detection to work as expected
      */
-    String getMimetypeFromFile(File file) throws MimetypeNotFoundException, MimetypeDetectionException;
+    String getMimetypeFromFile(File file);
 
     /**
      * Returns the extension for given mimetype.
@@ -106,8 +106,7 @@ public interface MimetypeRegistry {
      * @return the string mimetype
      * @throws MimetypeDetectionException
      */
-    String getMimetypeFromFilenameAndBlobWithDefault(String filename, Blob blob, String defaultMimetype)
-            throws MimetypeDetectionException;
+    String getMimetypeFromFilenameAndBlobWithDefault(String filename, Blob blob, String defaultMimetype);
 
     /**
      * Finds the mimetype of some content according to its filename or binary mime type or binary content.
@@ -119,8 +118,7 @@ public interface MimetypeRegistry {
      * @throws MimetypeDetectionException
      * @since 8.4
      */
-    String getMimetypeFromFilenameWithBlobMimetypeFallback(String filename, Blob blob, String defaultMimetype)
-            throws MimetypeDetectionException;
+    String getMimetypeFromFilenameWithBlobMimetypeFallback(String filename, Blob blob, String defaultMimetype);
 
     /**
      * Update the mimetype field of a Blob based on the provided filename with fallback to binary. If the embedded
@@ -133,7 +131,7 @@ public interface MimetypeRegistry {
      * @throws MimetypeDetectionException
      * @since 8.4
      */
-    Blob updateMimetype(Blob blob, String filename, Boolean withBlobMimetypeFallback) throws MimetypeDetectionException;
+    Blob updateMimetype(Blob blob, String filename, Boolean withBlobMimetypeFallback);
 
     /**
      * Update the mimetype field of a Blob based on the provided filename with fallback to binary sniffing. If the
@@ -144,7 +142,7 @@ public interface MimetypeRegistry {
      * @return updated blob (persisted if necessary)
      * @throws MimetypeDetectionException
      */
-    Blob updateMimetype(Blob blob, String filename) throws MimetypeDetectionException;
+    Blob updateMimetype(Blob blob, String filename);
 
     /**
      * Update the mimetype field of a Blob based on the embedded filename with fallback to binary sniffing. This method
@@ -155,13 +153,14 @@ public interface MimetypeRegistry {
      * @return updated blob (persisted if necessary)
      * @throws MimetypeDetectionException
      */
-    Blob updateMimetype(Blob blob) throws MimetypeDetectionException;
+    Blob updateMimetype(Blob blob);
 
     /**
      * Returns the mime type from a given extension.
-     *
+     * 
+     * @throws MimetypeNotFoundException
      * @since 7.3
      */
-    String getMimetypeFromExtension(String extension) throws MimetypeNotFoundException;
+    String getMimetypeFromExtension(String extension);
 
 }
