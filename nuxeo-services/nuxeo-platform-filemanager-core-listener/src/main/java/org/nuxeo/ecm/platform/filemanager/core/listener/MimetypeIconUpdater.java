@@ -63,8 +63,16 @@ public class MimetypeIconUpdater implements EventListener {
 
     public final BlobsExtractor blobExtractor = new BlobsExtractor();
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link MimetypeRegistry} instead.
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
     MimetypeRegistry mimetypeService;
 
+    /**
+     * @deprecated since 11.1. Use {@link Framework#getService(Class)} with {@link MimetypeRegistry} instead.
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
     public MimetypeRegistry getMimetypeRegistry() {
         if (mimetypeService == null) {
             mimetypeService = Framework.getService(MimetypeRegistry.class);
@@ -92,15 +100,17 @@ public class MimetypeIconUpdater implements EventListener {
                 setDefaultIcon(doc);
 
                 // update mimetypes of blobs in the document
+
+                MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
                 for (Property prop : blobExtractor.getBlobsProperties(doc)) {
                     if (prop.isDirty()) {
-                        updateBlobProperty(doc, getMimetypeRegistry(), prop);
+                        updateBlobProperty(doc, mimetypeRegistry, prop);
                     }
                 }
 
                 // update the document icon and size according to the main blob
                 if (doc.hasSchema(MAIN_BLOB_SCHEMA) && doc.getProperty(MAIN_BLOB_FIELD).isDirty()) {
-                    updateIconAndSizeFields(doc, getMimetypeRegistry(),
+                    updateIconAndSizeFields(doc, mimetypeRegistry,
                             doc.getProperty(MAIN_BLOB_FIELD).getValue(Blob.class));
                 }
             } catch (PropertyException e) {
