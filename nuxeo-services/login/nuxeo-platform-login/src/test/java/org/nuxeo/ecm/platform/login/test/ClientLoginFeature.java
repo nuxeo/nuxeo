@@ -30,10 +30,14 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
- * That feature should not be installed in conjunction with the org.nuxeo.ecm.platform.web.common bundle which provide
- * the real client login infrastucture.
+ * That feature should not be installed in conjunction with the
+ * org.nuxeo.ecm.platform.web.common bundle which provide the real client login
+ * infrastucture.
+ *
  *
  * @since 8.3
  */
@@ -54,6 +58,14 @@ public class ClientLoginFeature implements RunnerFeature {
         if (logContext != null) {
             logContext.logout();
             logContext = null;
+        }
+    }
+
+    @Override
+    public void start(FeaturesRunner runner) throws Exception {
+        RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
+        if (harness.getContext().getRuntime().getBundle("org.nuxeo.ecm.platform.web.common") == null) {
+            harness.deployContrib("org.nuxeo.ecm.platform.login.test", "dummy-client-login-as-config.xml");
         }
     }
 

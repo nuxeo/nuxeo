@@ -37,12 +37,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
@@ -53,14 +53,11 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
-import org.nuxeo.ecm.platform.login.test.DummyNuxeoLoginModule;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-
-import com.google.inject.Inject;
 
 /**
  * @author Florent Guillaume
@@ -71,6 +68,7 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.directory")
 @Deploy("org.nuxeo.ecm.directory.core.tests:test-schema.xml")
+@WithUser("Administrator")
 public class TestMemoryDirectory {
 
     protected MemoryDirectory memDir;
@@ -79,15 +77,10 @@ public class TestMemoryDirectory {
 
     protected DocumentModel entry;
 
-    @Inject
-    protected ClientLoginFeature loginFeature;
-
     static final String SCHEMA_NAME = "myschema";
 
     @Before
-    public void before() throws Exception {
-
-        loginFeature.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
+    public void before() {
 
         MemoryDirectoryDescriptor descr = new MemoryDirectoryDescriptor();
         descr.name = "mydir";
@@ -105,11 +98,6 @@ public class TestMemoryDirectory {
         e1.put("int", 3);
         e1.put("x", "XYZ"); // shouldn't be put in storage
         entry = dir.createEntry(e1);
-    }
-
-    @After
-    public void after() throws Exception {
-        loginFeature.logout();
     }
 
     @Test
@@ -430,7 +418,6 @@ public class TestMemoryDirectory {
     @Test
     public void testGetProjection() {
         List<String> list;
-        Map<String, Serializable> filter = new HashMap<>();
         Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         e2.put("pw", "guess");
@@ -439,35 +426,28 @@ public class TestMemoryDirectory {
         dir.createEntry(e2);
 
         // empty filter
-        list = dir.getProjection(filter, "a");
+        list = dir.getProjection(Map.of(), "a");
         assertEquals(2, list.size());
 
         // XXX test projection on unknown column
 
         // simple query
-        filter.put("a", "AAA");
-        list = dir.getProjection(filter, "b");
+        list = dir.getProjection(Map.of("a", "AAA"), "b");
         assertEquals(1, list.size());
         assertEquals("BCD", list.get(0));
 
         // add unknown field
-        filter.put("bobo", "bibi");
-        list = dir.getProjection(filter, "a");
+        list = dir.getProjection(Map.of("a", "AAA", "bobo", "bibi"), "a");
         assertEquals(1, list.size());
         assertEquals("AAA", list.get(0));
 
         // two criteria
-        filter.clear();
-        filter.put("a", "AAA");
-        filter.put("b", "BCD");
-        list = dir.getProjection(filter, "a");
+        list = dir.getProjection(Map.of("a", "AAA", "b", "BCD"), "a");
         assertEquals(1, list.size());
         assertEquals("AAA", list.get(0));
 
         // query not matching although each criterion matches one entry
-        filter.put("a", "AAA");
-        filter.put("pw", "guess");
-        list = dir.getProjection(filter, "a");
+        list = dir.getProjection(Map.of("a", "AAA", "b", "BCD", "pw", "guess"), "a");
         assertEquals(0, list.size());
     }
 

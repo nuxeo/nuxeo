@@ -40,10 +40,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -61,9 +61,6 @@ public class TestExternalLDAPSessionSecurity {
     public static final String READER_USER = "readerUser";
 
     public static final String SUPER_USER = "superUser";
-
-    @Inject
-    ClientLoginFeature dummyLogin;
 
     @Inject
     DirectoryService dirService;
@@ -104,40 +101,36 @@ public class TestExternalLDAPSessionSecurity {
     }
 
     @Test
-    public void readerUserCanGetEntry() throws Exception {
-        dummyLogin.login(READER_USER);
+    @WithUser(READER_USER)
+    public void readerUserCanGetEntry() {
         DocumentModel entry = userDirSession.getEntry("Administrator");
         assertNotNull(entry);
         assertEquals("Administrator", entry.getId());
-        dummyLogin.logout();
     }
 
     @Test
-    public void readerUserCantDeleteEntry() throws Exception {
-        dummyLogin.login(READER_USER);
+    @WithUser(READER_USER)
+    public void readerUserCantDeleteEntry() {
         DocumentModel entry = userDirSession.getEntry("user1");
         assertNotNull(entry);
         userDirSession.deleteEntry("user1");
         entry = userDirSession.getEntry("user1");
         assertNotNull(entry);
-        dummyLogin.logout();
     }
 
     @Test
-    public void superUserCanDeleteEntry() throws Exception {
-        dummyLogin.login(SUPER_USER);
+    @WithUser(SUPER_USER)
+    public void superUserCanDeleteEntry() {
         DocumentModel entry = userDirSession.getEntry("user1");
         assertNotNull(entry);
         userDirSession.deleteEntry("user1");
         entry = userDirSession.getEntry("user1");
         Assert.assertNull(entry);
-        dummyLogin.logout();
     }
 
     @Test
-    public void superUserCanCreateEntry() throws Exception {
-        dummyLogin.login(SUPER_USER);
-
+    @WithUser(SUPER_USER)
+    public void superUserCanCreateEntry() {
         Map<String, Object> map = new HashMap<>();
         map.put("username", "user0");
         map.put("password", "pass0");
@@ -151,32 +144,26 @@ public class TestExternalLDAPSessionSecurity {
 
         dm = userDirSession.getEntry("user0");
         assertNotNull(dm);
-
-        dummyLogin.logout();
-
     }
 
     @Test
-    public void unauthorizedUserCantGetEntry() throws Exception {
-        dummyLogin.login("unauthorizedUser");
+    @WithUser("unauthorizedUser")
+    public void unauthorizedUserCantGetEntry() {
         DocumentModel entry = userDirSession.getEntry("Administrator");
         Assert.assertNull(entry);
-        dummyLogin.logout();
     }
 
     @Test
-    public void everyoneGroupCanGetEntry() throws Exception {
-        dummyLogin.login("anEveryoneUser");
+    @WithUser("anEveryoneUser")
+    public void everyoneGroupCanGetEntry() {
         DocumentModel entry = groupDirSession.getEntry("members");
         assertNotNull(entry);
         assertEquals("members", entry.getId());
-        dummyLogin.logout();
     }
 
     @Test
-    public void everyoneCanUpdateEntry() throws Exception {
-        dummyLogin.login("anEveryoneUser");
-
+    @WithUser("anEveryoneUser")
+    public void everyoneCanUpdateEntry() {
         DocumentModel entry = groupDirSession.getEntry("members");
         assertNotNull(entry);
 
@@ -191,7 +178,6 @@ public class TestExternalLDAPSessionSecurity {
 
         entry = groupDirSession.getEntry("members");
         assertEquals("AWonderfulGroup", entry.getProperty(GROUP_SCHEMANAME, "description"));
-        dummyLogin.logout();
     }
 
 }

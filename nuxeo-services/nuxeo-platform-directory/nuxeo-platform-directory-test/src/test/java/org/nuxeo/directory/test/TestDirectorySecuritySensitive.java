@@ -28,17 +28,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.security.auth.login.LoginException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
-import org.nuxeo.ecm.platform.login.test.DummyNuxeoLoginModule;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -54,14 +54,11 @@ public class TestDirectorySecuritySensitive {
     protected static final String SOME_USER = "someUser";
 
     @Inject
-    protected ClientLoginFeature dummyLogin;
-
-    @Inject
     protected DirectoryService directoryService;
 
     @Test
-    public void administratorsCanDoEverything() throws LoginException {
-        dummyLogin.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
+    @WithUser("Administrator")
+    public void administratorsCanDoEverything() {
         try (Session session = getSession("sensitive")) {
             // Read
             DocumentModelList entries = session.query(Collections.emptyMap());
@@ -81,63 +78,52 @@ public class TestDirectorySecuritySensitive {
             session.deleteEntry("newEntry");
             assertEquals(3, session.query(Collections.emptyMap()).size());
             assertNull(session.getEntry("newEntry"));
-        } finally {
-            dummyLogin.logout();
         }
     }
 
     @Test
-    public void nobodyCanRead() throws LoginException {
-        dummyLogin.login(SOME_USER);
+    @WithUser(SOME_USER)
+    public void nobodyCanRead() {
         try (Session session = getSession("sensitive")) {
             DocumentModelList entries = session.query(Collections.emptyMap());
             assertTrue(entries.isEmpty());
             assertNull(session.getEntry("sensitive1"));
-        } finally {
-            dummyLogin.logout();
         }
     }
 
     @Test(expected = DirectoryException.class)
-    public void nobodyCanCreateEntry() throws LoginException {
-        dummyLogin.login(SOME_USER);
+    @WithUser(SOME_USER)
+    public void nobodyCanCreateEntry() {
         try (Session session = getSession("sensitive")) {
             Map<String, Object> rawEntry = new HashMap<>();
             rawEntry.put("id", "newEntry");
             rawEntry.put("label", "new.entry.label");
             session.createEntry(rawEntry);
-        } finally {
-            dummyLogin.logout();
         }
     }
 
     @Test(expected = DirectoryException.class)
-    public void nobodyCanUpdateEntry() throws LoginException {
+    @WithUser(SOME_USER)
+    public void nobodyCanUpdateEntry() {
         // First get an entry as an administrator
-        DocumentModel entry;
-        dummyLogin.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
-        try (Session session = getSession("sensitive")) {
-            entry = session.getEntry("sensitive1");
-            assertNotNull(entry);
-        } finally {
-            dummyLogin.logout();
-        }
-        dummyLogin.login(SOME_USER);
+        DocumentModel entry = Framework.doPrivileged(() -> {
+            try (Session session = getSession("sensitive")) {
+                DocumentModel doc = session.getEntry("sensitive1");
+                assertNotNull(doc);
+                return doc;
+            }
+        });
         try (Session session = getSession("sensitive")) {
             entry.setPropertyValue("vocabulary:label", "label.directories.sensitive.sensitive1.updated");
             session.updateEntry(entry);
-        } finally {
-            dummyLogin.logout();
         }
     }
 
     @Test(expected = DirectoryException.class)
-    public void nobodyCanDeleteEntry() throws LoginException {
-        dummyLogin.login(SOME_USER);
+    @WithUser(SOME_USER)
+    public void nobodyCanDeleteEntry() {
         try (Session session = getSession("sensitive")) {
             session.deleteEntry("sensitive1");
-        } finally {
-            dummyLogin.logout();
         }
     }
 

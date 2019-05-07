@@ -30,14 +30,12 @@ import static org.nuxeo.ecm.core.api.Blobs.createBlob;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
@@ -45,11 +43,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.io.download.DownloadService;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.RequestContext;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -78,23 +77,10 @@ public class TestComplexTypeJSONDecoder {
     protected CoreSession session;
 
     @Inject
-    protected ClientLoginFeature loginFeature;
-
-    @Inject
     protected UserManager userManager;
 
     @Inject
     protected DownloadService downloadService;
-
-    @Before
-    public void setUp() throws Exception {
-        loginFeature.login("Administrator");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        loginFeature.logout();
-    }
 
     @Test
     public void testDecodeManagedBlob() throws Exception {
@@ -121,63 +107,58 @@ public class TestComplexTypeJSONDecoder {
     }
 
     @Test
+    @WithUser("dummyName")
     public void testDecodeManagedBlobWithUnauthorizedAccess() throws Exception {
         String json = "{\"providerId\":\"testBlobProvider\", \"key\":\"testKey\"}";
-        loginFeature.login("dummyName");
         try {
             ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
             fail("The blob should not have been fetched");
         } catch (NuxeoException e) {
             assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatusCode());
-        } finally {
-            loginFeature.logout();
         }
     }
 
     @Test
-    public void testDecodeManagedBlobWithAuthorizedUsers() throws Exception {
-        String testUser1 = "testUser1";
-        String testUser2 = "testUser2";
-        String testUser3 = "testUser3";
-        String testUser4 = "testUser4";
-        String testGroup = "testGroup";
-
-        createUser(testUser1);
-        createUser(testUser2);
-        createUser(testUser3);
-        createUser(testUser4);
-        createGroup(testGroup);
-
-        NuxeoPrincipal principal = userManager.getPrincipal(testUser3);
-        principal.setGroups(Collections.singletonList(testGroup));
-        userManager.updateUser(principal.getModel());
-
+    @Deploy("org.nuxeo.ecm.automation.core:test-blobprovider-authorized-users-property.xml")
+    @WithUser("testUser1")
+    public void testDecodeManagedBlobWithAuthorizedUserFromPropertyUser1() throws Exception {
         String json = "{\"providerId\":\"testBlobProviderWithAuthorizedUsers\", \"key\":\"testKey\"}";
-        loginFeature.login(testUser1);
-        Blob blob;
+        Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+        assertNotNull(blob);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.core:test-blobprovider-authorized-users-property.xml")
+    @WithUser("testUser2")
+    public void testDecodeManagedBlobWithAuthorizedUserFromPropertyUser2() throws Exception {
+        String json = "{\"providerId\":\"testBlobProviderWithAuthorizedUsers\", \"key\":\"testKey\"}";
+        Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+        assertNotNull(blob);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.core:test-blobprovider-authorized-users-property.xml")
+    @WithUser("testUser3")
+    public void testDecodeManagedBlobWithAuthorizedUserFromPropertyGroup() throws Exception {
+        // add testUser3 to testGroup group
+        NuxeoPrincipalImpl user3 = (NuxeoPrincipalImpl) ClientLoginModule.getCurrentPrincipal();
+        user3.setVirtualGroups(List.of("testGroup"), true);
+        // test
+        String json = "{\"providerId\":\"testBlobProviderWithAuthorizedUsers\", \"key\":\"testKey\"}";
+        Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+        assertNotNull(blob);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.core:test-blobprovider-authorized-users-property.xml")
+    @WithUser("testUser4")
+    public void testDecodeManagedBlobWithUnauthorizedUserFromProperty() throws Exception {
         try {
-            blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
+            String json = "{\"providerId\":\"testBlobProviderWithAuthorizedUsers\", \"key\":\"testKey\"}";
+            Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
             assertNotNull(blob);
-
-            loginFeature.logout();
-            loginFeature.login(testUser2);
-            blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
-            assertNotNull(blob);
-
-            loginFeature.logout();
-            loginFeature.login(testUser3);
-            blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
-            assertNotNull(blob);
-
-            loginFeature.logout();
-            loginFeature.login(testUser4);
-            ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));
-
         } catch (NuxeoException e) {
             assertEquals(HttpServletResponse.SC_UNAUTHORIZED, e.getStatusCode());
-
-        } finally {
-            loginFeature.logout();
         }
     }
 

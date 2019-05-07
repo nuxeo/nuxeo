@@ -27,9 +27,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -38,30 +38,23 @@ import com.google.inject.name.Named;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreDirectoryFeature.class)
+@WithUser(CoreDirectoryFeature.USER2_NAME)
 public class TestCoreDirectoryUserRestricted {
 
     @Inject
     @Named(value = CoreDirectoryFeature.CORE_DIRECTORY_NAME)
     protected Directory coreDir;
 
-    @Inject
-    ClientLoginFeature login;
-
     protected Session dirRestrictedSession = null;
 
     @Before
     public void setUp() throws Exception {
-        login.login(CoreDirectoryFeature.USER2_NAME);
         dirRestrictedSession = coreDir.getSession();
     }
 
     @After
-    public void tearDown() throws Exception {
-        try {
-            dirRestrictedSession.close();
-        } finally {
-            login.logout();
-        }
+    public void tearDown() {
+        dirRestrictedSession.close();
     }
 
     @Test

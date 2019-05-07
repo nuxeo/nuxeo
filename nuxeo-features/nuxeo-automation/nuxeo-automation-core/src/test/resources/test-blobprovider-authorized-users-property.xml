@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.blob.provider.user.from.property.test" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="testBlobProviderWithAuthorizedUsers">
+      <class>org.nuxeo.ecm.core.DummyBlobProvider</class>
+      <property name="createFromKey.users">testUser1,testUser2</property>
+      <property name="createFromKey.groups">testGroup</property>
+    </blobprovider>
+  </extension>
+
+</component>

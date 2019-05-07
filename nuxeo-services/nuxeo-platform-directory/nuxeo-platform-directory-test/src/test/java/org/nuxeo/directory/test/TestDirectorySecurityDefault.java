@@ -35,11 +35,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.directory.DirectorySecurityException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
-import org.nuxeo.ecm.platform.login.test.DummyNuxeoLoginModule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -56,18 +56,14 @@ public class TestDirectorySecurityDefault {
     @Inject
     protected DirectoryService directoryService;
 
-    @Inject
-    protected ClientLoginFeature dummyLogin;
-
     public Session getSession() {
         return directoryService.open(DirectoryFeature.USER_DIRECTORY_NAME);
     }
 
     // Default admin tests
     @Test
-    public void adminCanCreateEntry() throws Exception {
-        // Given the admin user
-        dummyLogin.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
+    @WithUser("Administrator")
+    public void adminCanCreateEntry() {
         try (Session session = getSession()) {
             Map<String, Object> map = new HashMap<>();
             map.put("username", "user_0");
@@ -80,16 +76,12 @@ public class TestDirectorySecurityDefault {
             // I have created an entry
             entry = session.getEntry(entry.getId());
             Assert.assertNotNull(entry);
-
-        } finally {
-            dummyLogin.logout();
         }
     }
 
     @Test
-    public void adminCanDeleteEntry() throws Exception {
-        // Given the admin user
-        dummyLogin.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
+    @WithUser("Administrator")
+    public void adminCanDeleteEntry() {
         try (Session session = getSession()) {
             // I can delete entry
             DocumentModel entry = session.getEntry("user_1");
@@ -97,15 +89,13 @@ public class TestDirectorySecurityDefault {
             session.deleteEntry("user_1");
             entry = session.getEntry("user_1");
             Assert.assertNull(entry);
-        } finally {
-            dummyLogin.logout();
         }
     }
 
     // Everyone tests
     @Test
-    public void everyoneCantCreateEntry() throws Exception {
-        dummyLogin.login("aUser");
+    @WithUser("aUser")
+    public void everyoneCantCreateEntry() {
         try (Session session = getSession()) {
             // Given a user
 
@@ -120,28 +110,24 @@ public class TestDirectorySecurityDefault {
 
         } catch (DirectorySecurityException e) {
             // ok
-        } finally {
-            dummyLogin.logout();
         }
     }
 
     @Test
-    public void everyoneCanGetEntry() throws Exception {
-        dummyLogin.login("aUser");
+    @WithUser("aUser")
+    public void everyoneCanGetEntry() {
         try (Session session = getSession()) {
             // Given a user
 
             // When I call get entry
             DocumentModel entry = session.getEntry("user_3");
             Assert.assertNotNull(entry);
-        } finally {
-            dummyLogin.logout();
         }
     }
 
     @Test
-    public void everyoneCantDeleteEntry() throws Exception {
-        dummyLogin.login("aUser");
+    @WithUser("aUser")
+    public void everyoneCantDeleteEntry() {
         try (Session session = getSession()) {
 
             // When I call delete entry
@@ -155,14 +141,12 @@ public class TestDirectorySecurityDefault {
 
         } catch (DirectorySecurityException e) {
             // ok
-        } finally {
-            dummyLogin.logout();
         }
     }
 
     @Test
-    public void everyoneCanSearch() throws Exception {
-        dummyLogin.login("aUser");
+    @WithUser("aUser")
+    public void everyoneCanSearch() {
         try (Session session = getSession()) {
 
             // When I query entry
@@ -171,9 +155,6 @@ public class TestDirectorySecurityDefault {
             DocumentModelList results = session.query(map);
             Assert.assertNotNull(results);
             Assert.assertEquals(1, results.size());
-
-        } finally {
-            dummyLogin.logout();
         }
     }
 

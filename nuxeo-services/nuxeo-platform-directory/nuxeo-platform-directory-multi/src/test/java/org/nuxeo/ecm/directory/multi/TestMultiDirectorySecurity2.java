@@ -27,19 +27,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.directory.PermissionDescriptor;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
 import org.nuxeo.ecm.directory.memory.MemoryDirectoryDescriptor;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -60,9 +58,6 @@ public class TestMultiDirectorySecurity2 {
 
     MultiDirectorySession dirGroup;
 
-    @Inject
-    ClientLoginFeature dummyLogin;
-
     protected MemoryDirectoryDescriptor desc1;
 
     protected MemoryDirectoryDescriptor desc2;
@@ -73,6 +68,11 @@ public class TestMultiDirectorySecurity2 {
 
     @Before
     public void setUp() throws Exception {
+        // as WithUser logs in the desired user before @Before and logs out after @After we need more permissions
+        Framework.doPrivileged(this::setUpWithPrivileged);
+    }
+
+    public void setUpWithPrivileged() {
         // mem dir factory
         directoryService = Framework.getService(DirectoryService.class);
 
@@ -168,11 +168,8 @@ public class TestMultiDirectorySecurity2 {
     }
 
     @Test
-    public void everyoneUserCanCreateAndGet() throws Exception {
-        // Given a user in the everyone group
-        // (default in dummy login any user is member of everyone)
-        dummyLogin.login("anEveryoneUser");
-
+    @WithUser("anEveryoneUser")
+    public void everyoneUserCanCreateAndGet() {
         Map<String, Object> map = new HashMap<>();
         map.put("uid", "5");
         map.put("thefoo", "foo5");
@@ -185,8 +182,6 @@ public class TestMultiDirectorySecurity2 {
         // I can create and then get entry
         entry = dirGroup.getEntry("5");
         assertNotNull(entry);
-
-        dummyLogin.logout();
     }
 
 }
