@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2008-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -129,8 +129,7 @@ public class MimetypeIconUpdater implements EventListener {
         }
     }
 
-    private void updateIconAndSizeFields(DocumentModel doc, MimetypeRegistry mimetypeService, Blob blob)
-            throws PropertyException {
+    private void updateIconAndSizeFields(DocumentModel doc, MimetypeRegistry mimetypeService, Blob blob) {
         // update the icon field of the document
         if (blob != null && !doc.isFolder()) {
             MimetypeEntry mimetypeEntry = mimetypeService.getMimetypeEntryByMimeType(blob.getMimeType());
@@ -151,8 +150,8 @@ public class MimetypeIconUpdater implements EventListener {
     }
 
     /**
-     * Compute the main icon of a Nuxeo document based on the mimetype of the main attached blob with of fallback on the
-     * document type generic icon.
+     * Compute the main icon of a Nuxeo document based on the mime type of the main attached blob with of fallback on
+     * the document type generic icon.
      */
     public void updateIconField(MimetypeEntry mimetypeEntry, DocumentModel doc) {
         String iconPath = null;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,11 +61,9 @@ public class TestMimetypeIconUpdater {
 
     /**
      * Testing a mime type and icon update (only done on file:content)
-     *
-     * @throws Exception
      */
     @Test
-    public void testMimeTypeUpdater() throws Exception {
+    public void testMimeTypeUpdater() {
         DocumentModel file = createFileDocument(false);
         Blob blob = (Blob) file.getProperty("file", "content");
         assertNotNull(blob);
@@ -85,13 +83,11 @@ public class TestMimetypeIconUpdater {
     }
 
     /**
-     * Testing mime type update with a schema without prefix. https://jira.nuxeo.org/browse/NXP-3972 <a
-     * href="https://jira.nuxeo.org/browse/NXP-3972">NXP-3972</a>
-     *
-     * @throws Exception
+     * Testing mime type update with a schema without prefix. https://jira.nuxeo.org/browse/NXP-3972
+     * <a href="https://jira.nuxeo.org/browse/NXP-3972">NXP-3972</a>
      */
     @Test
-    public void testMimeTypeUpdaterWithoutPrefix() throws Exception {
+    public void testMimeTypeUpdaterWithoutPrefix() {
         DocumentModel doc = createWithoutPrefixBlobDocument(false);
         Blob blob = (Blob) doc.getProperty("wihtoutpref", "blob");
         assertNotNull(blob);
@@ -101,13 +97,11 @@ public class TestMimetypeIconUpdater {
     }
 
     /**
-     * Testing mime type update with a schema with prefix. https://jira.nuxeo.org/browse/NXP-3972 <a
-     * href="https://jira.nuxeo.org/browse/NXP-3972">NXP-3972</a>
-     *
-     * @throws Exception
+     * Testing mime type update with a schema with prefix. https://jira.nuxeo.org/browse/NXP-3972
+     * <a href="https://jira.nuxeo.org/browse/NXP-3972">NXP-3972</a>
      */
     @Test
-    public void testMimeTypeUpdaterWithPrefix() throws Exception {
+    public void testMimeTypeUpdaterWithPrefix() {
         DocumentModel doc = createWithPrefixBlobDocument(false);
         Blob blob = (Blob) doc.getProperty("simpleblob", "blob");
         assertNotNull(blob);
@@ -117,7 +111,7 @@ public class TestMimetypeIconUpdater {
     }
 
     @Test
-    public void testMimeTypeUpdaterFolderish() throws Exception {
+    public void testMimeTypeUpdaterFolderish() {
         // Workspace is folderish and contains the file schema
         DocumentModel doc = createWorkspace();
         Blob blob = (Blob) doc.getProperty("file", "content");
