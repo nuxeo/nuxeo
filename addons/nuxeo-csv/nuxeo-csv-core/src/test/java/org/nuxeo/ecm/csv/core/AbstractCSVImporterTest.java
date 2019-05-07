@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 @Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-directories-contrib.xml")
 @Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-types-contrib.xml")
 @Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-ui-types-contrib.xml")
-public class AbstractCSVImporterTest {
+public abstract class AbstractCSVImporterTest {
 
     @Inject
     protected CoreSession session;

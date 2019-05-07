@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -86,7 +87,7 @@ public class TestUserWorkspace {
     protected UserWorkspaceServiceImplComponent userWorkspaceService;
 
     @Test
-    public void testRestrictedAccess() throws Exception {
+    public void testRestrictedAccess() {
         try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
             assertNotNull(uw);
@@ -103,7 +104,7 @@ public class TestUserWorkspace {
     }
 
     @Test
-    public void testMultiDomains() throws Exception {
+    public void testMultiDomains() {
         ACE ace = new ACE("Everyone", "Read", true);
         ACL acl = new ACLImpl();
         acl.add(ace);
@@ -167,7 +168,7 @@ public class TestUserWorkspace {
             try {
                 // Assert that it throws
                 uwm.getCurrentUserPersonalWorkspace("user1", context);
-                assertTrue("user2 is not allow to read user1 workspace", false);
+                fail("user2 is not allow to read user1 workspace");
             } catch (DocumentSecurityException e) {
                 // Nothing to do
             }
@@ -188,7 +189,7 @@ public class TestUserWorkspace {
 
         assertNotNull(uw);
         // Check the document name was mapped
-        assertEquals(uw.getPath().lastSegment(), "AC~2fDC");
+        assertEquals("AC~2fDC", uw.getPath().lastSegment());
     }
 
     @Test
@@ -338,11 +339,11 @@ public class TestUserWorkspace {
      */
     @Test
     public void testCannotRetrieveUserWorkspaceWithoutDomains() {
-        List<DocumentRef> refs = session.getChildren(session.getRootDocument().getRef())
-                                        .stream()
-                                        .map(DocumentModel::getRef)
-                                        .collect(Collectors.toList());
-        session.removeDocuments(refs.toArray(new DocumentRef[refs.size()]));
+        DocumentRef[] refs = session.getChildren(session.getRootDocument().getRef())
+                                    .stream()
+                                    .map(DocumentModel::getRef)
+                                    .toArray(DocumentRef[]::new);
+        session.removeDocuments(refs);
         session.save();
         try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
@@ -359,9 +360,7 @@ public class TestUserWorkspace {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
             assertNotNull(uw);
         }
-        List<DocumentModel> docs = session.getChildren(session.getRootDocument().getRef())
-                                          .stream()
-                                          .collect(Collectors.toList());
+        List<DocumentModel> docs = new ArrayList<>(session.getChildren(session.getRootDocument().getRef()));
         TrashService trashService = Framework.getService(TrashService.class);
         trashService.trashDocuments(docs);
         coreFeature.waitForAsyncCompletion();

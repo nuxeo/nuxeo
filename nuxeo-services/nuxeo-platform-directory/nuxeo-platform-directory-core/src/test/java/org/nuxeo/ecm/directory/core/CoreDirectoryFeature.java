@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
  */
 package org.nuxeo.ecm.directory.core;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -48,15 +48,15 @@ public class CoreDirectoryFeature implements RunnerFeature {
 
     public static final String CORE_DIRECTORY_NAME = "userCoreDirectory";
 
-    public static String USER1_NAME = "user_1";
+    public final static String USER1_NAME = "user_1";
 
-    public static String USER2_NAME = "user_2";
+    public final static String USER2_NAME = "user_2";
 
-    public static String USER3_NAME = "user_3";
+    public final static String USER3_NAME = "user_3";
+
+    private static final Logger log = LogManager.getLogger(CoreDirectoryFeature.class);
 
     protected CoreSession coreSession;
-
-    protected static final Log log = LogFactory.getLog(CoreDirectoryFeature.class);
 
     @Override
     public void configure(final FeaturesRunner runner, Binder binder) {
@@ -64,7 +64,8 @@ public class CoreDirectoryFeature implements RunnerFeature {
     }
 
     protected void bindDirectory(Binder binder, final String name) {
-        binder.bind(Directory.class).annotatedWith(Names.named(name)).toProvider(new Provider<Directory>() {
+        binder.bind(Directory.class).annotatedWith(Names.named(name)).toProvider(new Provider<>() {
+
             Directory dir;
 
             @Override
@@ -73,7 +74,7 @@ public class CoreDirectoryFeature implements RunnerFeature {
                     DirectoryService directoryService = Framework.getService(DirectoryService.class);
                     dir = directoryService.getDirectory(name);
                     if (dir == null) {
-                        log.error("Unable to find Directory " + name);
+                        log.error("Unable to find directory: {}", name);
                     }
                 }
                 return dir;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,18 +66,18 @@ import com.google.inject.Inject;
  * @author Florent Guillaume
  */
 @RunWith(FeaturesRunner.class)
-@Features({RuntimeFeature.class, ClientLoginFeature.class})
+@Features({ RuntimeFeature.class, ClientLoginFeature.class })
 @Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.directory")
 @Deploy("org.nuxeo.ecm.directory.core.tests:test-schema.xml")
 public class TestMemoryDirectory {
 
-    MemoryDirectory memDir;
+    protected MemoryDirectory memDir;
 
-    MemoryDirectorySession dir;
+    protected MemoryDirectorySession dir;
 
-    DocumentModel entry;
+    protected DocumentModel entry;
 
     @Inject
     protected ClientLoginFeature loginFeature;
@@ -113,7 +113,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testSchemaIntrospection() throws Exception {
+    public void testSchemaIntrospection() {
         MemoryDirectoryDescriptor descr = new MemoryDirectoryDescriptor();
         descr.name = "adir";
         descr.schemaName = SCHEMA_NAME;
@@ -124,7 +124,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreate() {
         // created in setUp
         assertEquals("1", entry.getProperty(SCHEMA_NAME, "i"));
         assertNull(entry.getProperty(SCHEMA_NAME, "pw"));
@@ -139,11 +139,12 @@ public class TestMemoryDirectory {
             entry = dir.createEntry(e2);
             fail("Should raise an error, entry already exists");
         } catch (DirectoryException e) {
+            assertEquals("Entry with id 1 already exists in directory mydir", e.getMessage());
         }
     }
 
     @Test
-    public void testCreateFromModel() throws Exception {
+    public void testCreateFromModel() {
         entry = BaseSession.createEntryModel(null, SCHEMA_NAME, null, null);
         entry.setProperty(SCHEMA_NAME, "i", "yo");
 
@@ -157,31 +158,32 @@ public class TestMemoryDirectory {
             entry = dir.createEntry(entry);
             fail("Should raise an error, entry already exists");
         } catch (DirectoryException e) {
+            assertEquals("Entry with id 1 already exists in directory mydir", e.getMessage());
         }
     }
 
     @Test
-    public void testHasEntry() throws Exception {
+    public void testHasEntry() {
         assertTrue(dir.hasEntry("1"));
         assertFalse(dir.hasEntry("foo"));
     }
 
     @Test
-    public void testAuthenticate() throws Exception {
+    public void testAuthenticate() {
         assertTrue(dir.authenticate("1", "secr"));
         assertFalse(dir.authenticate("1", "haha"));
         assertFalse(dir.authenticate("2", "any"));
     }
 
     @Test
-    public void testGetEntry() throws Exception {
+    public void testGetEntry() {
         DocumentModel entry = dir.getEntry("1");
         assertEquals("AAA", entry.getProperty(SCHEMA_NAME, "a"));
         assertNull(dir.getEntry("no-such-entry"));
     }
 
     @Test
-    public void testGetEntries() throws Exception {
+    public void testGetEntries() {
         Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         entry = dir.createEntry(e2);
@@ -192,7 +194,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testUpdateEntry() throws Exception {
+    public void testUpdateEntry() {
         DocumentModel e = dir.getEntry("1");
         assertEquals("BCD", e.getProperty(SCHEMA_NAME, "b"));
         e.setProperty(SCHEMA_NAME, "b", "babar");
@@ -212,7 +214,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testDeleteEntry() throws Exception {
+    public void testDeleteEntry() {
         DocumentModelList l = dir.getEntries();
         assertEquals(1, l.size());
         dir.deleteEntry("1");
@@ -221,7 +223,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testQuery() throws Exception {
+    public void testQuery() {
         Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         e2.put("pw", "guess");
@@ -288,7 +290,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testQueryFts() throws Exception {
+    public void testQueryFts() {
         Map<String, Serializable> filter = new HashMap<>();
         Set<String> fulltext = new HashSet<>();
 
@@ -328,7 +330,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testQueryWithBuilder() throws Exception {
+    public void testQueryWithBuilder() {
         Map<String, Object> map;
         map = new HashMap<>();
         map.put("i", "2");
@@ -426,7 +428,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testGetProjection() throws Exception {
+    public void testGetProjection() {
         List<String> list;
         Map<String, Serializable> filter = new HashMap<>();
         Map<String, Object> e2 = new HashMap<>();
@@ -479,7 +481,7 @@ public class TestMemoryDirectory {
 
     // actually tests AbstractDirectory.orderEntry
     @Test
-    public void testOrderBy() throws Exception {
+    public void testOrderBy() {
         Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         e2.put("pw", "guess");
@@ -619,13 +621,13 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testServiceUnregistration() throws Exception {
+    public void testServiceUnregistration() {
         MemoryDirectoryDescriptor descr = new MemoryDirectoryDescriptor();
         descr.name = "mydir";
         descr.schemaName = SCHEMA_NAME;
         descr.idField = "i";
         descr.passwordField = "pw";
-        descr.schemaSet = new HashSet<>(Arrays.asList("i"));
+        descr.schemaSet = Set.of("i");
 
         DirectoryService service = Framework.getService(DirectoryService.class);
         service.registerDirectoryDescriptor(descr);

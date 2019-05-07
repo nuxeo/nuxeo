@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -230,7 +230,8 @@ public class TestDublinCoreStorage {
     @Test
     public void testLastContributorForSystemSession() {
         // use a system session with no originating user name
-        try (CloseableCoreSession session2 = CoreInstance.openCoreSessionSystem(session.getRepositoryName(), (String) null)) {
+        try (CloseableCoreSession session2 = CoreInstance.openCoreSessionSystem(session.getRepositoryName(),
+                (String) null)) {
             DocumentModel file = session2.createDocumentModel("/", "file", "File");
             file = session2.createDocument(file);
             // check we haven't inserted a null in last contributors
@@ -344,7 +345,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testCreatorForUnrestrictedSessionCreatedDoc() throws Exception {
+    public void testCreatorForUnrestrictedSessionCreatedDoc() {
         try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), "Jacky")) {
             CreateDocumentUnrestricted runner = new CreateDocumentUnrestricted(session2);
             runner.runUnrestricted();
@@ -377,7 +378,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testCopyDocument() throws Exception {
+    public void testCopyDocument() {
         DocumentModel file = session.createDocument(session.createDocumentModel("/", "file-007", "File"));
         storageConfiguration.maybeSleepToNextSecond();
         DocumentModel copy = session.copy(file.getRef(), file.getParentRef(), "file-008");
@@ -390,7 +391,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testCopyDocumentWithResetCoreMetadata() throws Exception {
+    public void testCopyDocumentWithResetCoreMetadata() {
         DocumentModel file = session.createDocument(session.createDocumentModel("/", "file-007", "File"));
         storageConfiguration.maybeSleepToNextSecond();
         DocumentModel copy = session.copy(file.getRef(), file.getParentRef(), "file-008", CopyOption.RESET_CREATOR);
@@ -418,7 +419,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testListenerRunsAtCreationBeforeVersioning() throws Exception {
+    public void testListenerRunsAtCreationBeforeVersioning() {
         // (Note is configured by default with auto-versioning)
         DocumentModel note = session.createDocumentModel("/", "note", "Note");
         note = session.createDocument(note);

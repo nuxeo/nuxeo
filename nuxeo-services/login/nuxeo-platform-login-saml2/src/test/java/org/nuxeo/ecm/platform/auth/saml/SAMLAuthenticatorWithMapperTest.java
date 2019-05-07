@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2018 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.platform.auth.saml;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -59,9 +61,6 @@ import org.opensaml.xml.parse.XMLParserException;
 import org.opensaml.xml.util.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import java.util.HashMap;
-
-import com.google.common.collect.ImmutableMap;
 
 @RunWith(FeaturesRunner.class)
 @Features({ UserMapperFeature.class, DirectoryFeature.class })
@@ -77,29 +76,24 @@ public class SAMLAuthenticatorWithMapperTest {
 
     private SAMLAuthenticationProvider samlAuth;
 
-    private void initAuthProvider(Map<String, String> params) throws URISyntaxException {
-    	String metadata = getClass().getResource("/idp-meta.xml").toURI().getPath();
-    	Map<String, String> newParams = new ImmutableMap.Builder<String, String>()
-    	        .put("metadata", metadata)
-    	        .putAll(params == null ? new HashMap<String, String>() : params)
-    	        .build();
+    protected void initAuthProvider(boolean disableUserResolver) throws URISyntaxException {
+        String metadata = getClass().getResource("/idp-meta.xml").toURI().getPath();
+        Map<String, String> params = new HashMap<>();
+        params.put("metadata", metadata);
+        if (disableUserResolver) {
+            params.put("userResolverCreateIfNeeded", "false");
+            params.put("userResolverUpdate", "false");
+        }
+        params = Collections.unmodifiableMap(params);
 
-    	samlAuth = new SAMLAuthenticationProvider();
-    	samlAuth.initPlugin(newParams);
-    }
-
-    private Map<String, String> getParamMap(boolean createIfNeeded, boolean update) {
-    	Map<String, String> resultMap = new HashMap<>();
-    	resultMap.put("userResolverCreateIfNeeded", Boolean.valueOf(createIfNeeded).toString());
-    	resultMap.put("userResolverUpdate", Boolean.valueOf(update).toString());
-
-    	return resultMap;
+        samlAuth = new SAMLAuthenticationProvider();
+        samlAuth.initPlugin(params);
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml")
     public void testRetrieveIdentityDefaultSettings() throws Exception {
-        initAuthProvider(null);
+        initAuthProvider(false);
 
         HttpServletRequest req = getMockRequest("/saml-response.xml", "POST", "http://localhost:8080/login",
                 "text/html");
@@ -115,14 +109,14 @@ public class SAMLAuthenticatorWithMapperTest {
     @Test(expected = NullPointerException.class)
     @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml")
     public void testUserDoesNotExistAndNoCreation() throws Exception {
-        initAuthProvider(getParamMap(false, false));
+        initAuthProvider(true);
 
         HttpServletRequest req = getMockRequest("/saml-response.xml", "POST", "http://localhost:8080/login",
                 "text/html");
         HttpServletResponse resp = mock(HttpServletResponse.class);
 
         UserIdentificationInfo info = samlAuth.handleRetrieveIdentity(req, resp);
-        assertEquals("user@dummy",info.getUserName());
+        assertEquals("user@dummy", info.getUserName());
 
         NuxeoPrincipal principal = userManager.getPrincipal("user@dummy");
         assertEquals("user@dummy", principal.getEmail());
@@ -131,7 +125,7 @@ public class SAMLAuthenticatorWithMapperTest {
     @Test
     @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-readonly-contribs.xml")
     public void testUserExistsAndNoCreation() throws Exception {
-        initAuthProvider(getParamMap(false, false));
+        initAuthProvider(true);
 
         DocumentModel user = userManager.getUserModel("user");
         if (user == null) {
@@ -146,7 +140,7 @@ public class SAMLAuthenticatorWithMapperTest {
         HttpServletResponse resp = mock(HttpServletResponse.class);
 
         UserIdentificationInfo info = samlAuth.handleRetrieveIdentity(req, resp);
-        assertEquals("user@dummy",info.getUserName());
+        assertEquals("user@dummy", info.getUserName());
 
         NuxeoPrincipal principal = userManager.getPrincipal("user@dummy");
         assertEquals("user@dummy", principal.getEmail());

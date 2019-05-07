@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@ public class SuggestionServiceTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         directoryService.unregisterDirectoryDescriptor(userDesc);
         directoryService.unregisterDirectoryDescriptor(groupDesc);
     }
@@ -199,8 +199,9 @@ public class SuggestionServiceTest {
         // build a suggestion context
         NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
-        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
-                messages);
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US)
+                                                                             .withSession(session)
+                                                                             .withMessages(messages);
 
         // perform some test lookups to check the deployment of extension points
         List<Suggestion> suggestions = suggestionService.suggest("superuni", context);
@@ -227,8 +228,9 @@ public class SuggestionServiceTest {
         // build a suggestion context
         NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
-        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
-                messages);
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US)
+                                                                             .withSession(session)
+                                                                             .withMessages(messages);
 
         // 2009 matches a date and no title
         List<Suggestion> suggestions = suggestionService.suggest("2009", context);
@@ -276,8 +278,9 @@ public class SuggestionServiceTest {
         // build a suggestion context
         NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
-        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
-                messages);
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US)
+                                                                             .withSession(session)
+                                                                             .withMessages(messages);
 
         // count user suggestions only
         int count = 0;
@@ -299,8 +302,9 @@ public class SuggestionServiceTest {
         // build a suggestion context
         NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
-        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
-                messages);
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US)
+                                                                             .withSession(session)
+                                                                             .withMessages(messages);
 
         // perform some test lookups to check the deployment of extension points
         List<Suggestion> suggestions = suggestionService.suggest("marl", context);
@@ -376,8 +380,9 @@ public class SuggestionServiceTest {
         // build a suggestion context
         NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
-        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
-                messages);
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US)
+                                                                             .withSession(session)
+                                                                             .withMessages(messages);
 
         // smoke test to perform suggestion against suggesters registered by
         // default
@@ -389,7 +394,7 @@ public class SuggestionServiceTest {
     }
 
     @Test
-    public void testSpecialCharacterHandlingInInterpolation() throws SuggestionException {
+    public void testSpecialCharacterHandlingInInterpolation() {
         // check the escaping of regexp replacement special chars
         String interpolated = I18nHelper.interpolate("A {1} interpolated message {0}", "\\", "$");
         assertEquals("A $ interpolated message \\", interpolated);

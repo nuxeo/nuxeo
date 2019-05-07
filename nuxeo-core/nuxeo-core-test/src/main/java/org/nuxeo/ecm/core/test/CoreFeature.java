@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,10 +104,10 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.el")
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Features({ RuntimeFeature.class,
-        TransactionalFeature.class,
-        RuntimeStreamFeature.class,
-        WorkManagerFeature.class,
+@Features({ RuntimeFeature.class, //
+        TransactionalFeature.class, //
+        RuntimeStreamFeature.class, //
+        WorkManagerFeature.class, //
         CoreBulkFeature.class })
 public class CoreFeature implements RunnerFeature {
 
@@ -208,7 +208,7 @@ public class CoreFeature implements RunnerFeature {
 
         List<CoreSessionRegistrationInfo> leakedInfos = Framework.getService(CoreSessionService.class)
                                                                  .getCoreSessionRegistrationInfos();
-        if (leakedInfos.size() == 0) {
+        if (leakedInfos.isEmpty()) {
             return;
         }
         AssertionError leakedErrors = new AssertionError(String.format("leaked %d sessions", leakedInfos.size()));

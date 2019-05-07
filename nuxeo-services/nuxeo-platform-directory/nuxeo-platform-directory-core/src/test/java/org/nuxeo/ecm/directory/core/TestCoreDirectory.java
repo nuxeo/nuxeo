@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -45,28 +47,14 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.login.LoginService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreDirectoryFeature.class)
 public class TestCoreDirectory {
-
-    @Inject
-    @Named(value = CoreDirectoryFeature.CORE_DIRECTORY_NAME)
-    protected Directory coreDir;
-
-    @Inject
-    protected LoginService loginService;
-
-    @Inject
-    protected CoreFeature coreFeature;
 
     protected final static String SCHEMA_NAME = "schema1";
 
@@ -86,14 +74,18 @@ public class TestCoreDirectory {
 
     protected final static String FOO_FIELD = PREFIX_SCHEMA + ":" + "foo";
 
-    protected Session dirSession = null;
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
+    @Named(CoreDirectoryFeature.CORE_DIRECTORY_NAME)
+    protected Directory coreDir;
+
+    protected Session dirSession;
 
     @Before
     public void setUp() throws Exception {
-        // be sure we don't retrieve a leaked security context
-        Framework.login();
         dirSession = coreDir.getSession();
-
     }
 
     @After
@@ -102,7 +94,7 @@ public class TestCoreDirectory {
     }
 
     @Test
-    public void testCreateEntry() throws Exception {
+    public void testCreateEntry() {
         Map<String, Object> e;
 
         e = new HashMap<>();
@@ -117,7 +109,7 @@ public class TestCoreDirectory {
 
     @Test
     @Ignore
-    public void testUpdateEntry() throws Exception {
+    public void testUpdateEntry() {
         // TODO either fix mapping or remove mapping to fix this test
         // TODO test with different user's right
 
@@ -133,37 +125,35 @@ public class TestCoreDirectory {
         dirSession.updateEntry(docModel);
 
         docModel = dirSession.getEntry(CoreDirectoryInit.DOC_ID_USER1);
-        Assert.assertEquals("foo3", docModel.getPropertyValue(FOO_FIELD));
+        assertEquals("foo3", docModel.getPropertyValue(FOO_FIELD));
     }
 
     @Test
-    public void testAuthenticate() throws Exception {
-        Assert.assertTrue(dirSession.authenticate(CoreDirectoryInit.DOC_ID_USER1, CoreDirectoryInit.DOC_PWD_USER1));
-        Assert.assertFalse(dirSession.authenticate(CoreDirectoryInit.DOC_ID_USER1, "bad-pwd"));
-        Assert.assertFalse(dirSession.authenticate("bad-id", "haha"));
-        Assert.assertTrue(
-                dirSession.authenticate(CoreDirectoryInit.DOC_ID_USERSHA1, CoreDirectoryInit.DOC_PWD_USERSHA1));
-        Assert.assertFalse(
-                dirSession.authenticate(CoreDirectoryInit.DOC_ID_USERSHA1, CoreDirectoryInit.DOC_PWD_BADPWDSHA1));
+    public void testAuthenticate() {
+        assertTrue(dirSession.authenticate(CoreDirectoryInit.DOC_ID_USER1, CoreDirectoryInit.DOC_PWD_USER1));
+        assertFalse(dirSession.authenticate(CoreDirectoryInit.DOC_ID_USER1, "bad-pwd"));
+        assertFalse(dirSession.authenticate("bad-id", "haha"));
+        assertTrue(dirSession.authenticate(CoreDirectoryInit.DOC_ID_USERSHA1, CoreDirectoryInit.DOC_PWD_USERSHA1));
+        assertFalse(dirSession.authenticate(CoreDirectoryInit.DOC_ID_USERSHA1, CoreDirectoryInit.DOC_PWD_BADPWDSHA1));
         // null password (avoid NPE)
-        Assert.assertFalse(dirSession.authenticate(CoreDirectoryInit.DOC_ID_USERSHA1, null));
+        assertFalse(dirSession.authenticate(CoreDirectoryInit.DOC_ID_USERSHA1, null));
     }
 
     @Test
-    public void testDeleteEntry() throws Exception {
+    public void testDeleteEntry() {
         dirSession.deleteEntry("no-such-entry");
         dirSession.deleteEntry("1");
         assertNull(dirSession.getEntry("1"));
     }
 
     @Test
-    public void testHasEntry() throws Exception {
+    public void testHasEntry() {
         assertTrue(dirSession.hasEntry(CoreDirectoryInit.DOC_ID_USER1));
         assertFalse(dirSession.hasEntry("bad-id"));
     }
 
     @Test
-    public void testQuery() throws Exception {
+    public void testQuery() {
 
     }
 
@@ -175,7 +165,7 @@ public class TestCoreDirectory {
 
     @Test
     @Ignore
-    public void testCreateFromModel() throws Exception {
+    public void testCreateFromModel() {
         DocumentModel entry = BaseSession.createEntryModel(null, SCHEMA_NAME, null, null);
         String id = "newId";
         entry.setPropertyValue(UID_FIELD, id);

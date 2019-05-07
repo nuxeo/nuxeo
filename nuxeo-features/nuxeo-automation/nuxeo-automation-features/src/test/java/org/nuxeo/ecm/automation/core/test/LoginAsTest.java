@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,19 +52,19 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.login")
 public class LoginAsTest {
 
+    @Inject
+    protected AutomationService service;
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected UserManager mgr;
+
     protected DocumentModel src;
 
-    @Inject
-    AutomationService service;
-
-    @Inject
-    CoreSession session;
-
-    @Inject
-    UserManager mgr;
-
     @Before
-    public void initRepo() throws Exception {
+    public void initRepo() {
         session.removeChildren(session.getRootDocument().getRef());
         session.save();
 
@@ -80,7 +80,7 @@ public class LoginAsTest {
         ArrayList<String> groups = new ArrayList<>();
         groups.add("administrators");
         userModel.setProperty("user", "groups", groups);
-        userModel = mgr.createUser(userModel);
+        mgr.createUser(userModel);
     }
 
     // ------ Tests comes here --------
