@@ -39,7 +39,8 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Listener responsible for computing the mimetype of a new or edited blob and the common:icon field if necessary.
+ * Listener responsible for computing the mimetype of a new or edited blob and the {@code common:icon} field if
+ * necessary.
  * <p>
  * The logic of this event listener is divided into static public methods to make it easy to override this event
  * listener with a custom implementation.
@@ -110,8 +111,8 @@ public class MimetypeIconUpdater implements EventListener {
     }
 
     /**
-     * Update the mimetype of a blob along with the icon and size fields of the document if the blob is the main blob of
-     * the document.
+     * Updates the mimetype of a blob along with the icon and size fields of the document if the blob is the main blob
+     * of the document.
      */
     public void updateBlobProperty(DocumentModel doc, MimetypeRegistry mimetypeService, Property dirtyProperty) {
         String fieldPath = dirtyProperty.getXPath();
@@ -150,7 +151,7 @@ public class MimetypeIconUpdater implements EventListener {
     }
 
     /**
-     * Compute the main icon of a Nuxeo document based on the mime type of the main attached blob with of fallback on
+     * Computes the main icon of a Nuxeo document based on the mime type of the main attached blob with of fallback on
      * the document type generic icon.
      */
     public void updateIconField(MimetypeEntry mimetypeEntry, DocumentModel doc) {
