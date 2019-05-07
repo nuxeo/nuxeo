@@ -42,6 +42,8 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.function.ThrowableConsumer;
+import org.nuxeo.common.function.ThrowableFunction;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
@@ -376,34 +378,7 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
         return null;
     }
 
-    /** A {@link java.util.function.Consumer Consumer} that can throw {@link SQLException}. */
-    @FunctionalInterface
-    protected interface SQLConsumer<T> {
-
-        /**
-         * Performs this operation on the given argument.
-         *
-         * @param t the input argument
-         * @throws SQLException
-         */
-        void accept(T t) throws SQLException;
-    }
-
-    /** A {@link java.util.function.Function Function} that can throw {@link SQLException}. */
-    @FunctionalInterface
-    protected interface SQLFunction<T, R> {
-
-        /**
-         * Applies this function to the given argument.
-         *
-         * @param t the function argument
-         * @return the function result
-         * @throws SQLException
-         */
-        R apply(T t) throws SQLException;
-    }
-
-    protected void runWithConnection(SQLConsumer<Connection> consumer) {
+    protected void runWithConnection(ThrowableConsumer<Connection, SQLException> consumer) {
         TransactionHelper.runWithoutTransaction(() -> {
             try (Connection connection = getConnection()) {
                 consumer.accept(connection);
@@ -413,7 +388,7 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
         });
     }
 
-    protected <R> R runWithConnection(SQLFunction<Connection, R> function) {
+    protected <R> R runWithConnection(ThrowableFunction<Connection, R, SQLException> function) {
         return TransactionHelper.runWithoutTransaction(() -> {
             try (Connection connection = getConnection()) {
                 return function.apply(connection);
