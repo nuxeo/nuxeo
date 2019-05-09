@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.filemanager.core.listener;
 
+import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.DEFAULT_MIMETYPE;
+
 import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
@@ -58,7 +60,11 @@ public class MimetypeIconUpdater implements EventListener {
 
     public static final String MAIN_BLOB_SCHEMA = "file";
 
-    protected static final String OCTET_STREAM_MT = "application/octet-stream";
+    /**
+     * @deprecated since 11.1. Use {@link MimetypeRegistry#DEFAULT_MIMETYPE} instead.
+     */
+    @Deprecated
+    protected static final String OCTET_STREAM_MT = DEFAULT_MIMETYPE;
 
     public final BlobsExtractor blobExtractor = new BlobsExtractor();
 
@@ -120,11 +126,16 @@ public class MimetypeIconUpdater implements EventListener {
         }
 
         Blob blob = dirtyProperty.getValue(Blob.class);
-        if (blob != null && (blob.getMimeType() == null || blob.getMimeType().startsWith(OCTET_STREAM_MT))) {
-            // update the mimetype (if not set) using the the mimetype registry
-            // service
+        if (blob == null) {
+            return;
+        }
+        if (blob.getMimeType() == null || blob.getMimeType().startsWith(DEFAULT_MIMETYPE)) {
+            // update the mime type (if not set) using the mimetype registry service
             blob = mimetypeService.updateMimetype(blob);
             doc.setPropertyValue(fieldPath, (Serializable) blob);
+        } else if (!mimetypeService.isMimeTypeNormalized(blob.getMimeType())) {
+            //normalize the mime type if not yet normalized
+            mimetypeService.getNormalizedMimeType(blob.getMimeType()).ifPresent(blob::setMimeType);
         }
     }
 

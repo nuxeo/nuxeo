@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.mimetype.interfaces;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
@@ -163,5 +164,28 @@ public interface MimetypeRegistry {
      * @since 7.3
      */
     String getMimetypeFromExtension(String extension) throws MimetypeNotFoundException;
+
+    /**
+     * Retrieves the normalized mime type for the given {@code mimeType}.
+     *
+     * @param mimeType the mime for which we are looking for the normalized one
+     * @return an {@code Optional} with a present value if the normalized mime type can be found, otherwise an
+     *         empty {@code Optional}
+     * @since 11.1
+     */
+    default Optional<String> getNormalizedMimeType(String mimeType) {
+        return Optional.empty();
+    }
+
+    /**
+     * Checks if the given {@code mimeType} is a normalized one.
+     *
+     * @param mimeType the mime type to check
+     * @return {@code true} if {@code mimeType} is normalized, {@code false} otherwise
+     * @since 11.1
+     */
+    default boolean isMimeTypeNormalized(String mimeType) {
+        return false;
+    }
 
 }

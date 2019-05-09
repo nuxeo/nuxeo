@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -92,6 +94,10 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
         extensionRegistry = new HashMap<>();
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link #isMimeTypeNormalized(String)} instead.
+     */
+    @Deprecated
     protected boolean isMimetypeEntry(String mimetypeName) {
         return mimetypeByNormalisedRegistry.containsKey(mimetypeName);
     }
@@ -322,17 +328,8 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
 
     @Override
     public MimetypeEntry getMimetypeEntryByMimeType(String mimetype) {
-        MimetypeEntry mtype = mimetypeByNormalisedRegistry.get("application/octet-stream");
-        if (mimetype != null) {
-            for (String key : mimetypeByNormalisedRegistry.keySet()) {
-                MimetypeEntry entry = mimetypeByNormalisedRegistry.get(key);
-                if (mimetype.equals(entry.getNormalized()) || entry.getMimetypes().contains(mimetype)) {
-                    mtype = entry;
-                    break;
-                }
-            }
-        }
-        return mtype;
+        String normalized = getNormalizedMimeType(mimetype).orElse(DEFAULT_MIMETYPE);
+        return mimetypeByNormalisedRegistry.get(normalized);
     }
 
     @Override
@@ -365,7 +362,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
             // failed to detect mimetype on extension:
             // fallback to the blob defined mimetype
             String mimeTypeName = blob.getMimeType();
-            if (isMimetypeEntry(mimeTypeName)) {
+            if (isMimeTypeNormalized(mimeTypeName)) {
                 return mimeTypeName;
             } else {
                 // failed to detect mimetype on blob:
@@ -401,4 +398,21 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
         return updateMimetype(blob, null);
     }
 
+    @Override
+    public Optional<String> getNormalizedMimeType(String mimeType) {
+        if (mimeType == null) {
+            return Optional.empty();
+        }
+
+        Set<Map.Entry<String, MimetypeEntry>> entries = mimetypeByNormalisedRegistry.entrySet();
+        return entries.stream()
+                      .filter(e -> e.getKey().equals(mimeType) || e.getValue().getMimetypes().contains(mimeType))
+                      .findAny()
+                      .map(Map.Entry::getKey);
+    }
+
+    @Override
+    public boolean isMimeTypeNormalized(String mimeType) {
+        return mimetypeByNormalisedRegistry.containsKey(mimeType);
+    }
 }
