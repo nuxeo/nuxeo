@@ -37,10 +37,15 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
  */
 public class LockSecurityPolicy extends AbstractSecurityPolicy {
 
+    protected static final ThreadLocal<Boolean> IGNORE_POLICY = new ThreadLocal<>();
+
     @Override
     public Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
+        if (isIgnorePolicy()) {
+            return access;
+        }
         // policy only applies on WRITE
         if (resolvedPermissions == null || !Arrays.asList(resolvedPermissions).contains(SecurityConstants.WRITE)) {
             return access;
@@ -71,4 +76,26 @@ public class LockSecurityPolicy extends AbstractSecurityPolicy {
         return SQLQuery.Transformer.IDENTITY;
     }
 
+    /**
+     * @since 11.1
+     */
+    public static void setIgnorePolicy(boolean ignore) {
+        if (ignore) {
+            IGNORE_POLICY.set(Boolean.TRUE);
+        } else {
+            IGNORE_POLICY.remove();
+        }
+    }
+
+    /**
+     * @since 11.1
+     */
+    public static boolean isIgnorePolicy() {
+        Boolean ignore = IGNORE_POLICY.get();
+        if (ignore == null) {
+            // don't leave an allocated null in the thead-local map
+            IGNORE_POLICY.remove();
+        }
+        return Boolean.TRUE.equals(ignore);
+    }
 }

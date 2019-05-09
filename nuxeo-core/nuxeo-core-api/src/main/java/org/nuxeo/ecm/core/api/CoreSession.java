@@ -1268,7 +1268,7 @@ public interface CoreSession {
      *
      * @param docRef the document reference
      * @return the lock info that was set
-     * @throws LockException if the document is already locked
+     * @throws LockException if the document is already locked by another user
      * @since 5.4.2
      */
     Lock setLock(DocumentRef docRef) throws LockException;

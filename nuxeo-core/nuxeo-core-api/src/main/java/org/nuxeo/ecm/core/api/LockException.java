@@ -43,4 +43,31 @@ public class LockException extends NuxeoException {
         super(cause);
     }
 
+    /**
+     * @since 11.1
+     */
+    public LockException(int statusCode) {
+        super(statusCode);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public LockException(String message, int statusCode) {
+        super(message, statusCode);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public LockException(String message, Throwable cause, int statusCode) {
+        super(message, cause, statusCode);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public LockException(Throwable cause, int statusCode) {
+        super(cause, statusCode);
+    }
 }

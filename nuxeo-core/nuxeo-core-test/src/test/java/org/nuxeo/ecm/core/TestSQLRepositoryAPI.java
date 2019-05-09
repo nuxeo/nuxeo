@@ -4347,7 +4347,7 @@ public class TestSQLRepositoryAPI {
         DocumentRef docRef = doc.getRef();
         ACP acp = new ACPImpl();
         ACL acl = new ACLImpl();
-        acl.add(new ACE("pete", "WriteProperties"));
+        acl.add(new ACE("pete", "ReadWrite"));
         acp.addACL(acl);
         session.setACP(docRef, acp, true);
         session.save();
@@ -4364,16 +4364,21 @@ public class TestSQLRepositoryAPI {
         assertNotNull(lock);
         assertEquals("Administrator", lock.getOwner());
 
-        // nobody can re-lock without unlock, even Administrator
-        try {
-            session.setLock(docRef);
-            fail();
-        } catch (LockException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("Document already locked"));
-        }
+        // a user can call setLock again on their own lock without error
+        Lock relock = session.setLock(docRef);
+        assertEquals(lock, relock);
 
-        // cannot remove lock as pete
         try (CloseableCoreSession peteSession = openSessionAs("pete")) {
+            // cannot relock as pete
+            // try to relock as pete
+            try {
+                peteSession.getDocument(docRef).setLock();
+                fail();
+            } catch (LockException e) {
+                assertEquals(409, e.getStatusCode());
+            }
+
+            // cannot remove lock as pete
             // try to remove lock as pete
             try {
                 peteSession.removeLock(docRef);
