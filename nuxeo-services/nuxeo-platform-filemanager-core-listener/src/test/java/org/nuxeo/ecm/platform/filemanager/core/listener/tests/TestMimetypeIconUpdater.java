@@ -21,9 +21,12 @@
 
 package org.nuxeo.ecm.platform.filemanager.core.listener.tests;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.PDF_EXTENSION;
+import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.PDF_MIMETYPE;
 
 import javax.inject.Inject;
 
@@ -56,6 +59,16 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.filemanager.core.listener.test:OSGI-INF/core-type-contrib.xml")
 public class TestMimetypeIconUpdater {
 
+    /**
+     * @since 11.1
+     */
+    public static final String PSD_MIME_TYPE = "application/photoshop";
+
+    /**
+     * @since 11.1
+     */
+    public static final String PSD_EXTENSION = "psd";
+
     @Inject
     protected CoreSession coreSession;
 
@@ -66,12 +79,12 @@ public class TestMimetypeIconUpdater {
      */
     @Test
     public void testMimeTypeUpdater() throws Exception {
-        DocumentModel file = createFileDocument(false);
+        DocumentModel file = createDocument("File", PDF_EXTENSION, null);
         Blob blob = (Blob) file.getProperty("file", "content");
         assertNotNull(blob);
         String mt = blob.getMimeType();
         assertNotNull(mt);
-        assertEquals("application/pdf", mt);
+        assertEquals(PDF_MIMETYPE, mt);
 
         String icon = (String) file.getProperty("common", "icon");
         assertNotNull(icon);
@@ -92,12 +105,12 @@ public class TestMimetypeIconUpdater {
      */
     @Test
     public void testMimeTypeUpdaterWithoutPrefix() throws Exception {
-        DocumentModel doc = createWithoutPrefixBlobDocument(false);
+        DocumentModel doc = createDocument("WithoutPrefixDocument", PDF_EXTENSION, null);
         Blob blob = (Blob) doc.getProperty("wihtoutpref", "blob");
         assertNotNull(blob);
         String mt = blob.getMimeType();
         assertNotNull(mt);
-        assertEquals("application/pdf", mt);
+        assertEquals(PDF_MIMETYPE, mt);
     }
 
     /**
@@ -108,23 +121,23 @@ public class TestMimetypeIconUpdater {
      */
     @Test
     public void testMimeTypeUpdaterWithPrefix() throws Exception {
-        DocumentModel doc = createWithPrefixBlobDocument(false);
+        DocumentModel doc = createDocument("SimpleBlobDocument", PDF_EXTENSION, null);
         Blob blob = (Blob) doc.getProperty("simpleblob", "blob");
         assertNotNull(blob);
         String mt = blob.getMimeType();
         assertNotNull(mt);
-        assertEquals("application/pdf", mt);
+        assertEquals(PDF_MIMETYPE, mt);
     }
 
     @Test
     public void testMimeTypeUpdaterFolderish() throws Exception {
         // Workspace is folderish and contains the file schema
-        DocumentModel doc = createWorkspace();
+        DocumentModel doc = createDocument("Workspace", PDF_EXTENSION, null);
         Blob blob = (Blob) doc.getProperty("file", "content");
         assertNotNull(blob);
         String mt = blob.getMimeType();
         assertNotNull(mt);
-        assertEquals("application/pdf", mt);
+        assertEquals(PDF_MIMETYPE, mt);
 
         String icon = (String) doc.getProperty("common", "icon");
         assertNull(icon); // default icon, not overridden by mime type
@@ -132,94 +145,90 @@ public class TestMimetypeIconUpdater {
 
     @Test
     public void testEmptyMimeTypeWithCharset() throws Exception {
-        DocumentModel doc = createWithCharsetAndEmptyMimeTypeBlobDocument();
+        DocumentModel doc = createDocument("File", PDF_EXTENSION, "application/octet-stream; charset=UTF-8");
         Blob blob = (Blob) doc.getProperty("file", "content");
         assertNotNull(blob);
         assertEquals("application/pdf", blob.getMimeType());
     }
 
-    protected DocumentModel createWithoutPrefixBlobDocument(boolean setMimeType) {
-        DocumentModel withoutPrefixBlobDoc = coreSession.createDocumentModel("/", "testFile", "WithoutPrefixDocument");
-        withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
+    /**
+     * Ensure that the document blob mime type is normalized if possible, even if the current blob have a mime type.
+     *
+     * @since 11.1
+     */
+    @Test
+    public void shouldNormalizeMimeTypedIfPossible() {
+        DocumentModel documentModel = createDocument("File", PSD_EXTENSION, "image/photoshop");
+        Blob blob = (Blob) documentModel.getProperty("file", "content");
+        assertNotNull(blob);
+        String mt = blob.getMimeType();
+        assertNotNull(mt);
+        assertEquals(PSD_MIME_TYPE, mt);
 
-        Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, "test.pdf");
-        if (setMimeType) {
-            blob.setMimeType("application/pdf");
-        }
-        withoutPrefixBlobDoc.setProperty("wihtoutpref", "blob", blob);
+        blob.setMimeType("zz-winassoc-psd");
+        documentModel.setProperty("file", "content", blob);
+        coreSession.saveDocument(documentModel);
 
-        withoutPrefixBlobDoc = coreSession.createDocument(withoutPrefixBlobDoc);
-
-        coreSession.saveDocument(withoutPrefixBlobDoc);
-        coreSession.save();
-
-        return withoutPrefixBlobDoc;
+        blob = (Blob) documentModel.getProperty("file", "content");
+        assertEquals(PSD_MIME_TYPE, blob.getMimeType());
     }
 
-    protected DocumentModel createWithPrefixBlobDocument(boolean setMimeType) {
-        DocumentModel withoutPrefixBlobDoc = coreSession.createDocumentModel("/", "testFile", "SimpleBlobDocument");
-        withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
-
-        Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, "test.pdf");
-        if (setMimeType) {
-            blob.setMimeType("application/pdf");
-        }
-        withoutPrefixBlobDoc.setProperty("simpleblob", "blob", blob);
-
-        withoutPrefixBlobDoc = coreSession.createDocument(withoutPrefixBlobDoc);
-
-        coreSession.saveDocument(withoutPrefixBlobDoc);
-        coreSession.save();
-
-        return withoutPrefixBlobDoc;
+    /**
+     * Ensure that if we are not able to normalize the document blob mime type (i.e mime type is unknown in Nuxeo), we should keep
+     * the original one.
+     *
+     * @since 11.1
+     */
+    @Test
+    public void shouldKeepTheOriginalMimeTypeIfWeCannotNormalize() {
+        DocumentModel documentModel = createDocument("File", PSD_EXTENSION, "application/unknown");
+        Blob blob = (Blob) documentModel.getProperty("file", "content");
+        assertEquals("application/unknown", blob.getMimeType());
     }
 
-    protected DocumentModel createFileDocument(boolean setMimeType) {
-        DocumentModel fileDoc = coreSession.createDocumentModel("/", "testFile", "File");
-        fileDoc.setProperty("dublincore", "title", "TestFile");
+    /**
+     * Creates a document model for a given {@code documentType}, {@code extension} and {@code mimeType}.
+     *
+     * @param documentType the document type to create, cannot be {@code null}
+     * @param extension the file extension to set, cannot be {@code null}
+     * @param mimeType the mime type to set, can be {@code null}
+     * @return the document model
+     * @throws NullPointerException if {@code documentType} or {@code extension} is {@code null}
+     * @since 11.1
+     */
+    protected DocumentModel createDocument(String documentType, String extension, String mimeType) {
+        DocumentModel documentModel = coreSession.createDocumentModel("/", "testFile", requireNonNull(documentType));
+        documentModel.setProperty("dublincore", "title", "TestFile");
+        Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, String.format("test.%s", requireNonNull(extension)));
+        blob.setMimeType(mimeType);
 
-        Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, "test.pdf");
-        if (setMimeType) {
-            blob.setMimeType("application/pdf");
+        switch (documentType) {
+        case "File":
+        case "Workspace":
+            documentModel.setProperty("file", "content", blob);
+            break;
+        case "SimpleBlobDocument":
+            documentModel.setProperty("simpleblob", "blob", blob);
+            break;
+        case "WithoutPrefixDocument":
+            documentModel.setProperty("wihtoutpref", "blob", blob);
+            break;
+        default:
+            throw new IllegalArgumentException(
+                    String.format("Undefined behaviour for document type '%s'", documentType));
+
         }
-        fileDoc.setProperty("file", "content", blob);
 
-        fileDoc = coreSession.createDocument(fileDoc);
-
-        coreSession.saveDocument(fileDoc);
+        documentModel = coreSession.createDocument(documentModel);
+        coreSession.saveDocument(documentModel);
         coreSession.save();
 
-        return fileDoc;
-    }
-
-    protected DocumentModel createWithCharsetAndEmptyMimeTypeBlobDocument() {
-        DocumentModel blobDoc = coreSession.createDocumentModel("/", "testFile", "File");
-        blobDoc.setProperty("dublincore", "title", "TestFile");
-
-        Blob blob = Blobs.createBlob("SOMEDUMMYDATA", "application/octet-stream; charset=UTF-8", null, "test.pdf");
-        blobDoc.setProperty("file", "content", blob);
-
-        blobDoc = coreSession.createDocument(blobDoc);
-        coreSession.save();
-
-        return blobDoc;
+        return documentModel;
     }
 
     protected DocumentModel removeMainBlob(DocumentModel doc) {
         doc.setPropertyValue("file:content", null);
         doc = coreSession.saveDocument(doc);
-        coreSession.save();
-        return doc;
-    }
-
-    protected DocumentModel createWorkspace() {
-        DocumentModel doc = coreSession.createDocumentModel("/", "testWorkspace", "Workspace");
-        doc.setProperty("dublincore", "title", "TestWorkspace");
-        Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, "test.pdf");
-        // blob.setMimeType("application/pdf");
-        doc.setProperty("file", "content", blob);
-        doc = coreSession.createDocument(doc);
-        coreSession.saveDocument(doc);
         coreSession.save();
         return doc;
     }

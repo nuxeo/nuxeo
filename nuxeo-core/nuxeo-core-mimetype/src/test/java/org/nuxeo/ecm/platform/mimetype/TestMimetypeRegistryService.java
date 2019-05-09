@@ -22,10 +22,12 @@
 package org.nuxeo.ecm.platform.mimetype;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.DEFAULT_MIMETYPE;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -140,10 +142,12 @@ public class TestMimetypeRegistryService {
     public void testGetMimetypeFromBigBlob() {
         Blob fakeBigBlob = new AbstractBlob() {
             private static final long serialVersionUID = 1L;
+
             @Override
             public long getLength() {
                 return MimetypeRegistryService.MAX_SIZE_FOR_SCAN + 1;
             }
+
             @Override
             public InputStream getStream() {
                 fail();
@@ -228,13 +232,13 @@ public class TestMimetypeRegistryService {
         // test temporary file, extension .tmp
         Blob blob = Blobs.createBlob("", "foo/bar");
         mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("myfile.TMP", blob, "default/mimetype");
-        assertEquals(APPLICATION_OCTET_STREAM, mimetype);
+        assertEquals(DEFAULT_MIMETYPE, mimetype);
 
         // test MS Office temporary file, starting with tilde-dollar (~$)
         blob = Blobs.createBlob("", "foo/bar");
         mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("~$sample-docx.docx", blob,
                 "default/mimetype");
-        assertEquals(APPLICATION_OCTET_STREAM, mimetype);
+        assertEquals(DEFAULT_MIMETYPE, mimetype);
     }
 
     @Test
@@ -268,13 +272,13 @@ public class TestMimetypeRegistryService {
         blob = Blobs.createBlob("", "foo/bar");
         mimetype = mimetypeRegistry.getMimetypeFromFilenameWithBlobMimetypeFallback("myfile.tmp", blob,
                 "default/mimetype");
-        assertEquals(APPLICATION_OCTET_STREAM, mimetype);
+        assertEquals(DEFAULT_MIMETYPE, mimetype);
 
         // test MS Office temporary file, starting with tilde-dollar (~$)
         blob = Blobs.createBlob("", "foo/bar");
         mimetype = mimetypeRegistry.getMimetypeFromFilenameWithBlobMimetypeFallback("~$sample-docx.docx", blob,
                 "default/mimetype");
-        assertEquals(APPLICATION_OCTET_STREAM, mimetype);
+        assertEquals(DEFAULT_MIMETYPE, mimetype);
     }
 
     @Test
@@ -294,4 +298,52 @@ public class TestMimetypeRegistryService {
         assertEquals("application/msword", entry.getNormalized());
     }
 
+    @Test
+    public void iCanRetrieveNormalizedMimetype() {
+        verifyNormalizedMimetype("application/zip", "application/zip");
+        verifyNormalizedMimetype("application/zip", "application/x-zip-compressed");
+
+        verifyNormalizedMimetype("text/plain", "text/plain");
+        verifyNormalizedMimetype("text/x-rst", "text/x-rst");
+        verifyNormalizedMimetype("text/x-rst", "text/restructured");
+
+        verifyNormalizedMimetype("text/python-source", "text/python-source");
+        verifyNormalizedMimetype("text/python-source", "text/x-python");
+
+        verifyNormalizedMimetype("application/vnd.ms-excel", "application/vnd.ms-excel");
+
+        verifyNormalizedMimetype("application/pdf", "application/pdf");
+
+        verifyNormalizedMimetype("application/vnd.sun.xml.writer.template", "application/vnd.sun.xml.writer.template");
+
+        verifyNormalizedMimetype("application/photoshop", "application/photoshop");
+        verifyNormalizedMimetype("application/photoshop", "image/photoshop");
+        verifyNormalizedMimetype("application/photoshop", "image/vnd.adobe.photoshop");
+        verifyNormalizedMimetype("application/photoshop", "application/psd");
+        verifyNormalizedMimetype("application/photoshop", "image/x-psd");
+
+    }
+
+    @Test
+    public void iCannotRetrieveNormalizedMimeType() {
+        assertFalse(mimetypeRegistryService.getNormalizedMimeType("application/unExisting").isPresent());
+        assertFalse(mimetypeRegistryService.getNormalizedMimeType("application/photoshob").isPresent());
+    }
+
+    @Test
+    public void iCanCheckIfMimeTypeIsNormalized() {
+        assertTrue(mimetypeRegistryService.isMimeTypeNormalized("application/zip"));
+        assertTrue(mimetypeRegistryService.isMimeTypeNormalized("application/photoshop"));
+        assertTrue(mimetypeRegistryService.isMimeTypeNormalized("text/plain"));
+        assertFalse(mimetypeRegistryService.isMimeTypeNormalized("application/x-photoshop"));
+        assertFalse(mimetypeRegistryService.isMimeTypeNormalized("image/photoshop"));
+    }
+
+    protected void verifyNormalizedMimetype(String expectedNormalizedMimetype, String mimetype) {
+        String normalizedMimetype = mimetypeRegistryService.getNormalizedMimeType(mimetype)
+                                                           .orElseThrow(() -> new AssertionError(String.format(
+                                                                   "'%s' should have a normalized mime type",
+                                                                   mimetype)));
+        assertEquals(expectedNormalizedMimetype, normalizedMimetype);
+    }
 }
