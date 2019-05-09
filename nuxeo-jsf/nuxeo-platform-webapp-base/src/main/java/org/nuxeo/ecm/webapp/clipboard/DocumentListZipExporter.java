@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.webapp.clipboard;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,6 +31,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -226,12 +229,13 @@ public class DocumentListZipExporter {
         }
     }
 
-    private String formatFileName(String filename, String count) {
-        StringBuilder sb = new StringBuilder();
-        CharSequence name = filename.subSequence(0, filename.lastIndexOf("."));
-        CharSequence extension = filename.subSequence(filename.lastIndexOf("."), filename.length());
-        sb.append(name).append(count).append(extension);
-        return sb.toString();
+    protected String formatFileName(String filename, String count) {
+        requireNonNull(filename);
+        String extension = FilenameUtils.getExtension(filename);
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(extension)) {
+            extension = FilenameUtils.EXTENSION_SEPARATOR_STR + extension;
+        }
+        return String.format("%s%s%s", FilenameUtils.getBaseName(filename), count, extension);
     }
 
     protected String escapeEntryPath(String path) {

@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.webapp.clipboard;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
@@ -122,5 +123,14 @@ public class ZipUtilsTest {
             assertNotNull(zipFile.getEntry("blob2.raw"));
             assertNotNull(zipFile.getEntry("blob1.raw"));
         }
+    }
+
+    @Test
+    public void testFormatFilename() {
+        DocumentListZipExporter zipExporter = new DocumentListZipExporter();
+        assertEquals("test1.doc", zipExporter.formatFileName("test.doc", "1"));
+
+        // check filename without extension
+        assertEquals("test1", zipExporter.formatFileName("test", "1"));
     }
 }
