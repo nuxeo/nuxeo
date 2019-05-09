@@ -667,8 +667,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (lifecycleStateInfo instanceof String) {
             initialLifecycleState = (String) lifecycleStateInfo;
         }
-        notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options, null, null, false, true); // no lifecycle
-                                                                                                     // yet
+        notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options, null, null, false, true); // no lifecycle yet
 
         // document validation
         if (getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
@@ -1414,8 +1413,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 DocumentModel sourceDocModel = readModel(sourceDoc);
                 if (sourceDocModel != null) {
                     options.put("comment", versionLabel); // to be used by
-                                                          // audit
-                    // service
+                    // audit service
                     notifyEvent(DocumentEventTypes.VERSION_REMOVED, sourceDocModel, options, null, null, false, false);
                     options.remove("comment");
                 }
