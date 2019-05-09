@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webapp.clipboard;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,7 +61,7 @@ public class ZipUtilsTest {
         blob.setFilename("éèà");
         file.setPropertyValue("file:content", (Serializable) blob);
         file.setPropertyValue("dc:title", "éèà");
-        file = session.createDocument(file);
+        session.createDocument(file);
         return parent;
     }
 
@@ -88,7 +89,7 @@ public class ZipUtilsTest {
     }
 
     @Test
-    public void testExportSimpleFile() throws Exception {
+    public void testExportSimpleFile() throws IOException {
         DocumentModel folder = createTestFolder();
         List<DocumentModel> documents = new ArrayList<>();
         documents.add(folder);
@@ -98,8 +99,9 @@ public class ZipUtilsTest {
         assertNotNull(blob);
         try (ZipFile zipFile = new ZipFile(blob.getFile())) {
             assertNotNull(zipFile.getEntry("Parent/éèà"));
-            Framework.getProperties().setProperty(DocumentListZipExporter.ZIP_ENTRY_ENCODING_PROPERTY,
-                    DocumentListZipExporter.ZIP_ENTRY_ENCODING_OPTIONS.ascii.name());
+            Framework.getProperties()
+                     .setProperty(DocumentListZipExporter.ZIP_ENTRY_ENCODING_PROPERTY,
+                             DocumentListZipExporter.ZIP_ENTRY_ENCODING_OPTIONS.ASCII.name());
             blob = zipExporter.exportWorklistAsZip(documents, session, true);
             assertNotNull(blob);
         }
@@ -109,7 +111,7 @@ public class ZipUtilsTest {
     }
 
     @Test
-    public void testExportAllBlobs() throws Exception {
+    public void testExportAllBlobs() throws IOException {
         DocumentModel heavyFile = createHeavyFile();
         List<DocumentModel> documents = new ArrayList<>();
         documents.add(heavyFile);

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.clipboard;
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,7 +44,7 @@ public class DocumentListZipExporter {
     public static final String ZIP_ENTRY_ENCODING_PROPERTY = "zip.entry.encoding";
 
     public enum ZIP_ENTRY_ENCODING_OPTIONS {
-        ascii
+        ASCII
     }
 
     private static final int BUFFER = 2048;
@@ -85,7 +86,7 @@ public class DocumentListZipExporter {
                 addSummaryToZip(out, data, blobList);
             }
         } catch (IOException cause) {
-            blob.getFile().delete();
+            Files.delete(blob.getFile().toPath());
             throw cause;
         }
 
@@ -93,8 +94,7 @@ public class DocumentListZipExporter {
     }
 
     private void addFolderToZip(String path, ZipOutputStream out, DocumentModel doc, byte[] data,
-            CoreSession documentManager, StringBuilder blobList, boolean exportAllBlobs) throws
-            IOException {
+            CoreSession documentManager, StringBuilder blobList, boolean exportAllBlobs) throws IOException {
 
         String title = doc.getTitle();
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
@@ -166,7 +166,7 @@ public class DocumentListZipExporter {
             }
         }
 
-        if (blobs.size() > 0) { // add document info
+        if (!blobs.isEmpty()) { // add document info
             SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
             if (path.length() > 0) {
                 blobList.append(path).append('/');
@@ -236,7 +236,7 @@ public class DocumentListZipExporter {
 
     protected String escapeEntryPath(String path) {
         String zipEntryEncoding = Framework.getProperty(ZIP_ENTRY_ENCODING_PROPERTY);
-        if (zipEntryEncoding != null && zipEntryEncoding.equals(ZIP_ENTRY_ENCODING_OPTIONS.ascii.toString())) {
+        if (zipEntryEncoding != null && zipEntryEncoding.equals(ZIP_ENTRY_ENCODING_OPTIONS.ASCII.toString())) {
             return StringUtils.toAscii(path, true);
         }
         return path;
