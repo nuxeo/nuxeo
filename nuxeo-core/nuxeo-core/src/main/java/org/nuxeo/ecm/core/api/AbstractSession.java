@@ -20,6 +20,7 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.CHANGED_ACL_NAME;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.NEW_ACE;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.OLD_ACE;
@@ -96,6 +97,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.security.LockSecurityPolicy;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -2182,17 +2184,29 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docRef);
         // TODO: add a new permission named LOCK and use it instead of
         // WRITE_PROPERTIES
-        checkPermission(doc, WRITE_PROPERTIES);
+
+        // ignore the lock policy that would always deny a write on a locked document, because we want to have a
+        // specific LockException when the document is already locked by another user
+        try {
+            LockSecurityPolicy.setIgnorePolicy(true);
+            checkPermission(doc, WRITE_PROPERTIES);
+        } finally {
+            LockSecurityPolicy.setIgnorePolicy(false);
+        }
         Lock lock = new Lock(getPrincipal().getName(), new GregorianCalendar());
         Lock oldLock = doc.setLock(lock);
-        if (oldLock != null) {
-            throw new LockException("Document already locked by " + oldLock.getOwner() + ": " + docRef);
+        if (oldLock == null) {
+            // not previously locked
+            DocumentModel docModel = readModel(doc);
+            Map<String, Serializable> options = new HashMap<>();
+            options.put("lock", lock);
+            notifyEvent(DocumentEventTypes.DOCUMENT_LOCKED, docModel, options, null, null, true, false);
+            return lock;
         }
-        DocumentModel docModel = readModel(doc);
-        Map<String, Serializable> options = new HashMap<>();
-        options.put("lock", lock);
-        notifyEvent(DocumentEventTypes.DOCUMENT_LOCKED, docModel, options, null, null, true, false);
-        return lock;
+        if (getPrincipal().getName().equals(oldLock.getOwner())) {
+            return oldLock;
+        }
+        throw new LockException("Document already locked by " + oldLock.getOwner() + ": " + docRef, SC_CONFLICT);
     }
 
     @Override
