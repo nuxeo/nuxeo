@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import java.util.Locale;
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -38,13 +41,16 @@ public class CheckInDocument {
 
     public static final String ID = "Document.CheckIn";
 
+    public static final Map<String, VersioningOption> options = Map.of("none", VersioningOption.NONE, "minor",
+            VersioningOption.MINOR, "major", VersioningOption.MAJOR);
+
     @Context
     protected OperationContext ctx;
 
     @Context
     protected CoreSession session;
 
-    @Param(name = "version", required = true, values = { "minor", "major" }, order = 0)
+    @Param(name = "version", required = true, values = { "none", "minor", "major" }, order = 0)
     protected String version;
 
     @Param(name = "comment", required = false, order = 1)
@@ -54,7 +60,7 @@ public class CheckInDocument {
     protected String versionVarName;
 
     protected VersioningOption getVersioningOption() {
-        return "major".equalsIgnoreCase(version) ? VersioningOption.MAJOR : VersioningOption.MINOR;
+        return options.getOrDefault(version.toLowerCase(Locale.ENGLISH), VersioningOption.MINOR);
     }
 
     @OperationMethod(collector = DocumentModelCollector.class)
