@@ -30,6 +30,9 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -647,6 +650,38 @@ public class CoreOperationsTest {
             assertEquals("MyDoc3", doc.getTitle());
             DocumentRef ver = (DocumentRef) ctx.get("ver");
             assertNotNull(ver);
+        }
+    }
+
+    @Test
+    public void testCheckInVersionNone() throws Exception {
+        testCheckInVersion("none", "0.0");
+    }
+
+    @Test
+    public void testCheckInVersionMinor() throws Exception {
+        testCheckInVersion("minor", "0.1");
+    }
+
+    @Test
+    public void testCheckInVersionMajor() throws Exception {
+        testCheckInVersion("major", "1.0");
+    }
+
+    @Test
+    public void testCheckInVersionUnknown() throws Exception {
+        testCheckInVersion("anything_not_in_CheckInDocument.options", "0.1");
+    }
+
+    protected void testCheckInVersion(String versioningOption, String expectedVersion) throws Exception {
+        DocumentModel docVersion = session.createDocumentModel("/src", "versionMe", "File");
+        docVersion.setPropertyValue("dc:title", "VersionDoc");
+        docVersion = session.createDocument(docVersion);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(docVersion);
+            DocumentModel doc = (DocumentModel) service.run(ctx, CheckInDocument.ID,
+                    Map.of("version", versioningOption));
+            assertEquals(expectedVersion, doc.getVersionLabel());
         }
     }
 
