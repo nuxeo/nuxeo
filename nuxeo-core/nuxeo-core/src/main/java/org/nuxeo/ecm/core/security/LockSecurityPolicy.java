@@ -43,11 +43,12 @@ public class LockSecurityPolicy extends AbstractSecurityPolicy {
     public Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
-        if (isIgnorePolicy()) {
-            return access;
-        }
         // policy only applies on WRITE
         if (resolvedPermissions == null || !Arrays.asList(resolvedPermissions).contains(SecurityConstants.WRITE)) {
+            return access;
+        }
+        // Checked separately to be tested only if needed for performance concerns
+        if (isIgnorePolicy()) {
             return access;
         }
         // check the lock
