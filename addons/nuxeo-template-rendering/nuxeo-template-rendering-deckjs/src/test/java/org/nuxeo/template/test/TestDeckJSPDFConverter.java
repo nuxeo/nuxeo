@@ -50,8 +50,6 @@ import org.nuxeo.template.deckjs.DeckJSConverterConstants;
 @Deploy("org.nuxeo.template.manager")
 @Deploy("org.nuxeo.template.manager.jaxrs")
 @Deploy("org.nuxeo.template.deckjs")
-@Deploy("org.nuxeo.template.manager.samples")
-@Deploy("studio.extensions.template-module-demo")
 @Deploy("org.nuxeo.ecm.platform.convert")
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 public class TestDeckJSPDFConverter {

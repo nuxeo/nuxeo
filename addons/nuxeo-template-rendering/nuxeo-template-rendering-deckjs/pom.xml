@@ -13,11 +13,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.template.rendering</groupId>
-      <artifactId>nuxeo-template-rendering-samples</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
     </dependency>

@@ -46,6 +46,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
     </dependency>
     <dependency>
+      <groupId>com.sun.faces</groupId>
+      <artifactId>jsf-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
     </dependency>

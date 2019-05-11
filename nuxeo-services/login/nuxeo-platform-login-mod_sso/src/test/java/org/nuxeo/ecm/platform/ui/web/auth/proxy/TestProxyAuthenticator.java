@@ -24,16 +24,16 @@ package org.nuxeo.ecm.platform.ui.web.auth.proxy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jboss.seam.mock.MockHttpServletRequest;
-import org.jboss.seam.mock.MockHttpServletResponse;
-import org.jboss.seam.mock.MockHttpSession;
-import org.jboss.seam.mock.MockServletContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
@@ -64,15 +64,11 @@ public class TestProxyAuthenticator {
 
         String username = "test";
 
-        MockServletContext context = new MockServletContext();
-        MockHttpSession session = new MockHttpSession(context);
-        MockHttpServletRequest httpRequest = new MockHttpServletRequest(session, null, null, null, "GET");
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getHeader(eq("remote_user"))).thenReturn(username);
 
-        httpRequest.getHeaders().put("remote_user", new String[] { username });
-
-        HttpServletResponse httpResponse = new MockHttpServletResponse();
-
-        UserIdentificationInfo identity = proxyAuth.handleRetrieveIdentity(httpRequest, httpResponse);
+        UserIdentificationInfo identity = proxyAuth.handleRetrieveIdentity(request, response);
 
         assertNotNull(identity);
         assertEquals(username, identity.getUserName());
@@ -94,15 +90,11 @@ public class TestProxyAuthenticator {
         String username = "test";
         String usernameAndUnwantedPart = username + "@EXAMPLE.COM";
 
-        MockServletContext context = new MockServletContext();
-        MockHttpSession session = new MockHttpSession(context);
-        MockHttpServletRequest httpRequest = new MockHttpServletRequest(session, null, null, null, "GET");
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getHeader(eq("remote_user"))).thenReturn(usernameAndUnwantedPart);
 
-        httpRequest.getHeaders().put("remote_user", new String[] { usernameAndUnwantedPart });
-
-        HttpServletResponse httpResponse = new MockHttpServletResponse();
-
-        UserIdentificationInfo identity = proxyAuth.handleRetrieveIdentity(httpRequest, httpResponse);
+        UserIdentificationInfo identity = proxyAuth.handleRetrieveIdentity(request, response);
 
         assertNotNull(identity);
         assertEquals(username, identity.getUserName());

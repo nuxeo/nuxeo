@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
-import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoExceptionHandler;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
@@ -108,20 +107,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
     }
 
     protected String getURLToReach(HttpServletRequest request) {
-        DocumentView docView = (DocumentView) request.getAttribute(URLPolicyService.DOCUMENT_VIEW_REQUEST_KEY);
-
-        if (docView != null) {
-            String urlToReach = getURLPolicyService().getUrlFromDocumentView(docView, "");
-
-            if (urlToReach != null) {
-                return urlToReach;
-            }
-        }
         return request.getRequestURL().toString() + "?" + request.getQueryString();
-    }
-
-    protected URLPolicyService getURLPolicyService() {
-        return Framework.getService(URLPolicyService.class);
     }
 
 }
