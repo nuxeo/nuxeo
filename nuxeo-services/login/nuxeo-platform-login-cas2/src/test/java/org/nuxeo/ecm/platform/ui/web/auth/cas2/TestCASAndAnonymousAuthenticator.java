@@ -25,6 +25,8 @@ package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 
 import java.security.Principal;
 
@@ -83,8 +85,7 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
      */
     protected void doAuthenticationToCasServer(String username) throws ServletException {
         String casTicket = username;
-
-        request.setParameter(TICKET_KEY, new String[] { casTicket, });
+        when(request.getParameter(eq(TICKET_KEY))).thenReturn(casTicket);
     }
 
 }

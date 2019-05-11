@@ -69,8 +69,6 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")
 @Deploy("org.nuxeo.ecm.platform.webapp.types")
-@Deploy("org.nuxeo.ecm.platform.contentview.jsf")
-@Deploy("org.nuxeo.search.ui")
 @Deploy("org.nuxeo.ecm.platform.search.core")
 @Deploy("org.nuxeo.ecm.platform.restapi.server.search")
 @Deploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")

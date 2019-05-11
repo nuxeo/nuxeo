@@ -18,14 +18,24 @@
  */
 package org.nuxeo.ecm.platform.publisher.test;
 
+import javax.inject.Inject;
+
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
+@Features(PlatformFeature.class)
+@Deploy("org.nuxeo.ecm.relations.api")
+@Deploy("org.nuxeo.ecm.relations")
 @Deploy("org.nuxeo.ecm.platform.publisher.core.contrib")
 @Deploy("org.nuxeo.ecm.platform.publisher.core")
-public abstract class PublisherTestCase extends AbstractRepositoryTestCase {
+public abstract class PublisherTestCase {
+
+    @Inject
+    protected CoreSession session;
 
 }

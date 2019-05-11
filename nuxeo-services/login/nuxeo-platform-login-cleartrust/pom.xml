@@ -13,8 +13,7 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ui-web</artifactId>
-      <scope>provided</scope>
+      <artifactId>nuxeo-platform-web-common</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
