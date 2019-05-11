@@ -41,7 +41,6 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.xml.sax.SAXException;
@@ -195,7 +194,7 @@ public class Cas2Authenticator
             appURL = NUXEO_SERVER_PATTERN_KEY;
         }
         if (appURL.contains(NUXEO_SERVER_PATTERN_KEY)) {
-            String nxurl = BaseURL.getBaseURL(httpRequest);
+            String nxurl = VirtualHostHelper.getBaseURL(httpRequest);
             return appURL.replace(NUXEO_SERVER_PATTERN_KEY, nxurl);
         } else {
             return appURL;

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <fragment version="1">
- 
+
   <require>org.nuxeo.ecm.platform.lang</require>
   <require>org.nuxeo.ecm.webapp.core</require>
 
@@ -28,11 +28,11 @@
     <append from="nxdeputy.tmp/l10n/messages_en_US.properties"
       to="nuxeo.war/WEB-INF/classes/messages_en_US.properties"
       addNewLine="true" />
-      
+
    <append from="nxdeputy.tmp/l10n/messages_fr_FR.properties"
       to="nuxeo.war/WEB-INF/classes/messages_fr_FR.properties"
       addNewLine="true" />
-      
+
    <append from="nxdeputy.tmp/l10n/messages_fr_FR.properties"
       to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
       addNewLine="true" />
@@ -74,4 +74,3 @@
   </extension>
 
 </fragment>
-

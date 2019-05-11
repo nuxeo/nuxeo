@@ -97,14 +97,8 @@
     </copy>
   </target>
 
-  <target name="sample-installAfterRestart-files">
-    <echo file="${tomcat}/nxserver/data/installAfterRestart-CAP.log">init
-install nuxeo-jsf-ui
-    </echo>
-  </target>
-
   <target name="build-nuxeo-server"
-          depends="sample-installAfterRestart-files,copy-packages-xml"
+          depends="copy-packages-xml"
           description="Build Tomcat distribution with Nuxeo Server">
     <echo level="info">Building Nuxeo Server...</echo>
     <delete dir="${distribution.dir}" failonerror="false" />
@@ -253,10 +247,6 @@ org.nuxeo.distribution.package=zip</echo>
     <unzip dest="${sdk.dir}/tools">
       <artifact:file key="org.nuxeo:nuxeo-ecm::zip:tools" />
     </unzip>
-
-    <copy todir="${distribution.sdk.dir}/nxserver/bundles">
-      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-seam-debug" />
-    </copy>
 
     <zip destfile="${distribution.sdk.zip}" basedir="${outdir}"
          includes="${maven.project.artifactId}-${maven.project.version}-sdk/**" />
