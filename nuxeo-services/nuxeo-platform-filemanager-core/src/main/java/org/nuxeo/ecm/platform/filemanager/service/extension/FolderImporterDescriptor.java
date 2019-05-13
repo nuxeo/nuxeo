@@ -58,11 +58,10 @@ public class FolderImporterDescriptor implements Descriptor {
     /**
      * @since 11.1
      */
-    public FolderImporter newInstance(FileManagerService fileManagerService) {
+    public FolderImporter newInstance() {
         try {
             FolderImporter folderImporter = klass.getDeclaredConstructor().newInstance();
             folderImporter.setName(name);
-            folderImporter.setFileManagerService(fileManagerService);
             return folderImporter;
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);

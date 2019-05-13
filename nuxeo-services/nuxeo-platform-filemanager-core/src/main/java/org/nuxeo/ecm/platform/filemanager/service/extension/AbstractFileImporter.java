@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.Type;
@@ -81,6 +82,10 @@ public abstract class AbstractFileImporter implements FileImporter {
      */
     @Deprecated
     protected transient FileManagerService fileManagerService;
+
+    protected AbstractFileImporter() {
+        this.fileManagerService = (FileManagerService) Framework.getService(FileManager.class);
+    }
 
     @Override
     public List<String> getFilters() {
