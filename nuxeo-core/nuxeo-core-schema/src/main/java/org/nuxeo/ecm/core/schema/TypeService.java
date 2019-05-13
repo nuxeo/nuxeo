@@ -44,11 +44,13 @@ public class TypeService extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
+        super.activate(context);
         schemaManager = new SchemaManagerImpl();
     }
 
     @Override
     public void deactivate(ComponentContext context) {
+        super.deactivate(context);
         schemaManager = null;
     }
 
@@ -65,10 +67,15 @@ public class TypeService extends DefaultComponent {
             }
             break;
         case XP_SCHEMA:
-            // use the context of the bundle contributing the extension to load schemas
-            SchemaBindingDescriptor sbd = (SchemaBindingDescriptor) contribution;
-            sbd.context = component.getContext();
-            schemaManager.registerSchema(sbd);
+            if (contribution instanceof SchemaBindingDescriptor) {
+                // use the context of the bundle contributing the extension to load schemas
+                SchemaBindingDescriptor sbd = (SchemaBindingDescriptor) contribution;
+                sbd.context = component.getContext();
+                schemaManager.registerSchema(sbd);
+            } else if (contribution instanceof PropertyDescriptor) {
+                xp = computeSchemaExtensionPoint(contribution.getClass());
+                super.registerContribution(contribution, xp, component);
+            }
             break;
         case XP_CONFIGURATION:
             schemaManager.registerConfiguration((TypeConfiguration) contribution);
@@ -94,7 +101,12 @@ public class TypeService extends DefaultComponent {
             }
             break;
         case XP_SCHEMA:
-            schemaManager.unregisterSchema((SchemaBindingDescriptor) contribution);
+            if (contribution instanceof SchemaBindingDescriptor) {
+                schemaManager.unregisterSchema((SchemaBindingDescriptor) contribution);
+            } else if (contribution instanceof PropertyDescriptor) {
+                xp = computeSchemaExtensionPoint(contribution.getClass());
+                super.unregisterContribution(contribution, xp, component);
+            }
             break;
         case XP_CONFIGURATION:
             schemaManager.unregisterConfiguration((TypeConfiguration) contribution);
@@ -107,10 +119,16 @@ public class TypeService extends DefaultComponent {
         }
     }
 
+    protected String computeSchemaExtensionPoint(Class<?> klass) {
+        return String.format("%s-%s", XP_SCHEMA, klass.getSimpleName());
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
-        if (SchemaManager.class.isAssignableFrom(adapter) || TypeProvider.class.isAssignableFrom(adapter)) {
+        if (SchemaManager.class.isAssignableFrom(adapter)
+                || PropertyCharacteristicHandler.class.isAssignableFrom(adapter)
+                || TypeProvider.class.isAssignableFrom(adapter)) {
             return (T) schemaManager;
         }
         return null;
@@ -118,7 +136,13 @@ public class TypeService extends DefaultComponent {
 
     @Override
     public void start(ComponentContext context) {
+        schemaManager.registerSecuredProperty(getDescriptors(computeSchemaExtensionPoint(PropertyDescriptor.class)));
         schemaManager.flushPendingsRegistration();
+    }
+
+    @Override
+    public void stop(ComponentContext context) {
+        schemaManager.clearSecuredProperty();
     }
 
     @Override
