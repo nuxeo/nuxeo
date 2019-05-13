@@ -1742,6 +1742,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-content</artifactId>
+        <version>${nuxeo.addons.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-diff-pictures</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>

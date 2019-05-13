@@ -11,4 +11,5 @@ Nuxeo-Component: OSGI-INF/diff-actions-contrib.xml,
  OSGI-INF/diff-display-service.xml,
  OSGI-INF/diff-display-contrib.xml,
  OSGI-INF/diff-widgets-contrib.xml,
- OSGI-INF/diff-theme-contrib.xml
+ OSGI-INF/diff-theme-contrib.xml,
+ OSGI-INF/content-diff-restAPI-contrib.xml

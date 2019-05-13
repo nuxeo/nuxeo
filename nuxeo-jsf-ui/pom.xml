@@ -36,6 +36,7 @@
     <module>nuxeo-csv-jsf</module>
     <module>nuxeo-dam-jsf</module>
     <module>nuxeo-diff-jsf</module>
+    <module>nuxeo-diff-pictures</module>
     <module>nuxeo-drive-jsf</module>
     <module>nuxeo-easyshare-jsf</module>
     <module>nuxeo-elasticsearch-web</module>
@@ -236,6 +237,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-diff-jsf</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-pictures</artifactId>
         <version>${nuxeo.version}</version>
       </dependency>
       <dependency>
