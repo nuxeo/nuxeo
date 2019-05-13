@@ -22,6 +22,9 @@
 }
 */
 
+input {
+  margin-left: 1.5em;
+}
  [class^="icon-"]:before, [class*=" icon-"]:before {
   font-family: "nuxeo-user-registration";
   font-style: normal;
