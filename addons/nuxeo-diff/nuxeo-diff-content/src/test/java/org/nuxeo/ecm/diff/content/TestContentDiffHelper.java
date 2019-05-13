@@ -46,29 +46,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.platform.ui:OSGI-INF/urlservice-framework.xml")
-@Deploy("org.nuxeo.ecm.platform.ui:OSGI-INF/urlservice-contrib.xml")
-@Deploy("org.nuxeo.ecm.platform.url.core")
 @Deploy("org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-framework.xml")
 @Deploy("org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-contrib.xml")
 public class TestContentDiffHelper {
 
     @Inject
     protected CoreSession session;
-
-    /**
-     * Tests {@link ContentDiffHelper#getContentDiffFancyBoxURL(DocumentModel, String, String, String)} .
-     */
-    @Test
-    public void testGetContentDiffFancyBoxURL() {
-        DocumentModel doc = createDoc(session, "testDoc", "File", "Test doc");
-        String fancyBoxURL = ContentDiffHelper.getContentDiffFancyBoxURL(doc, "my.property.label", "file:content",
-                ContentDiffConversionType.html.name());
-        StringBuilder sb = new StringBuilder("/nuxeo/nxdoc/test/");
-        sb.append(doc.getId());
-        sb.append("/content_diff_fancybox?label=my.property.label&xPath=file%3Acontent&conversionType=html");
-        assertEquals(sb.toString(), fancyBoxURL);
-    }
 
     /**
      * Tests

@@ -23,7 +23,9 @@ import static org.jboss.seam.ScopeType.PAGE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -33,11 +35,14 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.international.LocaleSelector;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
@@ -46,6 +51,11 @@ import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.service.DiffDisplayService;
 import org.nuxeo.ecm.diff.service.DocumentDiffService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
+import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.url.DocumentViewImpl;
+import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.versioning.VersionedActions;
 import org.nuxeo.runtime.api.Framework;
@@ -377,8 +387,38 @@ public class DiffActionsBean implements Serializable {
             log.error("Cannot get content diff fancybox URL with a null propertyXPath.");
             return null;
         }
-        return ContentDiffHelper.getContentDiffFancyBoxURL(navigationContext.getCurrentDocument(), propertyLabel,
-                propertyXPath, conversionType);
+        return getContentDiffFancyBoxURL(navigationContext.getCurrentDocument(), propertyLabel, propertyXPath,
+                conversionType);
+    }
+
+    /**
+     * Gets the content diff fancy box URL.
+     *
+     * @param currentDoc the current doc
+     * @param propertyLabel the property label
+     * @param propertyXPath the property xpath
+     * @param conversionType the conversion type
+     * @return the content diff fancy box URL
+     */
+    public static String getContentDiffFancyBoxURL(DocumentModel currentDoc, String propertyLabel, String propertyXPath,
+            String conversionType) {
+        DocumentLocation docLocation = new DocumentLocationImpl(currentDoc.getRepositoryName(), currentDoc.getRef());
+        DocumentView docView = new DocumentViewImpl(docLocation, ContentDiffHelper.CONTENT_DIFF_FANCYBOX_VIEW);
+        docView.setPatternName("id");
+        URLPolicyService urlPolicyService = Framework.getService(URLPolicyService.class);
+        String docUrl = urlPolicyService.getUrlFromDocumentView(docView, VirtualHostHelper.getContextPathProperty());
+        if (docUrl == null) {
+            throw new NuxeoException(
+                    "Cannot get URL from document view, probably because of a missing urlPattern contribution.");
+        }
+        Map<String, String> requestParams = new LinkedHashMap<>();
+        requestParams.put(ContentDiffHelper.LABEL_URL_PARAM_NAME, propertyLabel);
+        requestParams.put(ContentDiffHelper.XPATH_URL_PARAM_NAME, propertyXPath);
+        if (!StringUtils.isEmpty(conversionType)) {
+            requestParams.put(ContentDiffHelper.CONVERSION_TYPE_URL_PARAM_NAME, conversionType);
+        }
+        docUrl = URIUtils.addParametersToURIQuery(docUrl, requestParams);
+        return RestHelper.addCurrentConversationParameters(docUrl);
     }
 
     /**
