@@ -21,12 +21,13 @@ package org.nuxeo.ecm.diff.content;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
+import java.io.InputStream;
 
 import javax.inject.Inject;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Before;
@@ -38,6 +39,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.ui.web.restAPI.AbstractRestletTest;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -46,6 +48,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = ContentDiffRepositoryInit.class)
 @Deploy("org.nuxeo.ecm.platform.convert:OSGI-INF/convert-service-contrib.xml")
 @Deploy("org.nuxeo.diff.content")
+@Deploy("org.nuxeo.diff.jsf")
 public class TestContentDiffRestlet extends AbstractRestletTest {
 
     protected static final String ENDPOINT = "/contentDiff";
@@ -78,8 +81,11 @@ public class TestContentDiffRestlet extends AbstractRestletTest {
     }
 
     protected void checkContentDiff(String expectedPath, String actual) throws Exception {
-        File file = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext(expectedPath);
-        String expected = FileUtils.readFileToString(file, UTF_8);
+        String expected;
+        try (InputStream in = Framework.getResourceLoader().getResourceAsStream(expectedPath)) {
+            assertNotNull(expectedPath, in);
+            expected = IOUtils.toString(in, UTF_8);
+        }
         if (SystemUtils.IS_OS_WINDOWS) {
             // make tests pass under Windows
             expected = expected.trim();

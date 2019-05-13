@@ -21,27 +21,16 @@ package org.nuxeo.ecm.diff.content;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentStringBlobHolder;
-import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManager;
 import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
-import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
-import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
-import org.nuxeo.ecm.platform.url.DocumentViewImpl;
-import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -67,36 +56,6 @@ public final class ContentDiffHelper {
      * Final class constructor.
      */
     private ContentDiffHelper() {
-    }
-
-    /**
-     * Gets the content diff fancy box URL.
-     *
-     * @param currentDoc the current doc
-     * @param propertyLabel the property label
-     * @param propertyXPath the property xpath
-     * @param conversionType the conversion type
-     * @return the content diff fancy box URL
-     */
-    public static String getContentDiffFancyBoxURL(DocumentModel currentDoc, String propertyLabel, String propertyXPath,
-            String conversionType) {
-        DocumentLocation docLocation = new DocumentLocationImpl(currentDoc.getRepositoryName(), currentDoc.getRef());
-        DocumentView docView = new DocumentViewImpl(docLocation, CONTENT_DIFF_FANCYBOX_VIEW);
-        docView.setPatternName("id");
-        URLPolicyService urlPolicyService = Framework.getService(URLPolicyService.class);
-        String docUrl = urlPolicyService.getUrlFromDocumentView(docView, VirtualHostHelper.getContextPathProperty());
-        if (docUrl == null) {
-            throw new NuxeoException(
-                    "Cannot get URL from document view, probably because of a missing urlPattern contribution.");
-        }
-        Map<String, String> requestParams = new LinkedHashMap<>();
-        requestParams.put(LABEL_URL_PARAM_NAME, propertyLabel);
-        requestParams.put(XPATH_URL_PARAM_NAME, propertyXPath);
-        if (!StringUtils.isEmpty(conversionType)) {
-            requestParams.put(CONVERSION_TYPE_URL_PARAM_NAME, conversionType);
-        }
-        docUrl = URIUtils.addParametersToURIQuery(docUrl, requestParams);
-        return RestHelper.addCurrentConversationParameters(docUrl);
     }
 
     /**
