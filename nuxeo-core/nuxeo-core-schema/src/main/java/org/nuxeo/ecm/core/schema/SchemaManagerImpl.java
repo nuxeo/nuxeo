@@ -20,7 +20,7 @@
 
 package org.nuxeo.ecm.core.schema;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.io.File;
 import java.io.IOException;

@@ -242,13 +242,7 @@ public class CommentManagerImpl implements CommentManager {
                     throw new NuxeoException(parent.getPathAsString() + " is not folderish");
                 }
             } else {
-                DocumentModel dm = mySession.createDocumentModel(pathStr, name, "HiddenFolder");
-                dm.setProperty("dublincore", "title", name);
-                dm.setProperty("dublincore", "description", "");
-                dm.setProperty("dublincore", "created", Calendar.getInstance());
-                dm = mySession.createDocument(dm);
-                setFolderPermissions(dm);
-                parent = dm;
+                parent = createHiddenFolder(mySession, pathStr, name);
             }
         }
 
@@ -265,6 +259,16 @@ public class CommentManagerImpl implements CommentManager {
         log.debug("created comment with id=" + commentDocModel.getId());
 
         return commentDocModel;
+    }
+
+    protected DocumentModel createHiddenFolder(CoreSession session, String parentPath, String name) {
+        DocumentModel dm = session.createDocumentModel(parentPath, name, "HiddenFolder");
+        dm.setProperty("dublincore", "title", name);
+        dm.setProperty("dublincore", "description", "");
+        Framework.doPrivileged(() -> dm.setProperty("dublincore", "created", Calendar.getInstance()));
+        DocumentModel parent = session.createDocument(dm); // change variable name to be effectively final
+        setFolderPermissions(parent);
+        return parent;
     }
 
     private static void notifyEvent(CoreSession session, DocumentModel docModel, String eventType,

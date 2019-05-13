@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.webengine.model.ModuleResource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -189,6 +190,8 @@ public class WebException extends WebApplicationException {
             return HttpServletResponse.SC_NOT_FOUND;
         } else if (cause instanceof WebSecurityException) {
             return HttpServletResponse.SC_UNAUTHORIZED;
+        } else if (cause instanceof ReadOnlyPropertyException) {
+            return HttpServletResponse.SC_BAD_REQUEST;
         }
         Throwable parent = cause.getCause();
         if (parent == cause) {
