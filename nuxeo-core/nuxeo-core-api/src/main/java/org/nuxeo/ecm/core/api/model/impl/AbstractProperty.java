@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
@@ -56,6 +57,11 @@ public abstract class AbstractProperty implements Property {
      * Whether or not this property is read only.
      */
     public static final int IS_READONLY = 32;
+
+    /**
+     * Whether or not this property is secured from edition.
+     */
+    public static final int IS_SECURED = 64;
 
     public final Property parent;
 
@@ -381,6 +387,13 @@ public abstract class AbstractProperty implements Property {
         return isDeprecated.booleanValue();
     }
 
+    /**
+     * Returns whether or not current user can edit this property.
+     */
+    protected boolean isSecured() {
+        return areFlagsSet(IS_SECURED) && !ClientLoginModule.isCurrentAdministrator();
+    }
+
     @Override
     public <T> T getValue(Class<T> type) throws PropertyException {
         return convertTo(getValue(), type);
@@ -388,9 +401,10 @@ public abstract class AbstractProperty implements Property {
 
     @Override
     public void setValue(Object value) throws PropertyException {
-        // 1. check the read only flag
-        if (isReadOnly()) {
-            throw new ReadOnlyPropertyException(getXPath());
+        // 1. check the read only flag or security flag
+        if (isReadOnly() || isSecured()) {
+            throw new ReadOnlyPropertyException(
+                    String.format("Cannot set the value of property: %s since it is readonly", getXPath()));
         }
         // 1. normalize the value
         Serializable normalizedValue = normalize(value);
