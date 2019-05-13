@@ -331,7 +331,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
             Object value = getElementData(xdoc, element, field.getType());
             data.put(name, value);
         }
-        doc.setProperties(schemaName, data);
+        Framework.doPrivileged(() -> doc.setProperties(schemaName, data));
     }
 
     protected static Class getFieldClass(Type fieldType) {

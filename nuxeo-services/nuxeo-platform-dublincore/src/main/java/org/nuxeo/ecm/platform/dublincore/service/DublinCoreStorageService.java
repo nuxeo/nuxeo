@@ -51,12 +51,12 @@ public class DublinCoreStorageService extends DefaultComponent {
     public static final String ID = "DublinCoreStorageService";
 
     public void setCreationDate(DocumentModel doc, Calendar creationDate, Event event) {
-        doc.setProperty("dublincore", "created", creationDate);
+        Framework.doPrivileged(() -> doc.setProperty("dublincore", "created", creationDate));
         addContributor(doc, event);
     }
 
     public void setModificationDate(DocumentModel doc, Calendar modificationDate, Event event) {
-        doc.setProperty("dublincore", "modified", modificationDate);
+        Framework.doPrivileged(() -> doc.setProperty("dublincore", "modified", modificationDate));
         if (doc.getProperty("dublincore", "created") == null) {
             setCreationDate(doc, modificationDate, event);
         }
@@ -78,6 +78,7 @@ public class DublinCoreStorageService extends DefaultComponent {
                 principalName = originatingUser;
             }
         }
+        String username = principalName; // effectively final
 
         String[] contributorsArray = (String[]) doc.getProperty("dublincore", "contributors");
 
@@ -92,7 +93,7 @@ public class DublinCoreStorageService extends DefaultComponent {
             SchemaManager schemaMgr = Framework.getLocalService(SchemaManager.class);
             if (schemaMgr.getSchema("dublincore").getField("creator") != null) {
                 // First time only => creator
-                doc.setProperty("dublincore", "creator", principalName);
+                Framework.doPrivileged(() -> doc.setProperty("dublincore", "creator", username));
             }
         }
 
@@ -100,10 +101,10 @@ public class DublinCoreStorageService extends DefaultComponent {
             contributorsList.add(principalName);
             String[] contributorListIn = new String[contributorsList.size()];
             contributorsList.toArray(contributorListIn);
-            doc.setProperty("dublincore", "contributors", contributorListIn);
+            Framework.doPrivileged(() -> doc.setProperty("dublincore", "contributors", contributorListIn));
         }
 
-        doc.setProperty("dublincore", "lastContributor", principalName);
+        Framework.doPrivileged(() -> doc.setProperty("dublincore", "lastContributor", username));
     }
 
     public void setIssuedDate(DocumentModel doc, Calendar issuedDate) {

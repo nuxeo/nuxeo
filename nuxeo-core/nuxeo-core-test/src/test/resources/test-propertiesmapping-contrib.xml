@@ -7,7 +7,7 @@
     <mapping name="testMapping">
       <property path="dc:title">dc:title</property>
       <property path="dc:source">dc:source</property>
-      <property path="dc:contributors">dc:contributors</property>
+      <property path="dc:subjects">dc:subjects</property>
       <property path="dc:created">dc:modified</property>
       <property path="mp:comments">mp:comments</property>
     </mapping>
