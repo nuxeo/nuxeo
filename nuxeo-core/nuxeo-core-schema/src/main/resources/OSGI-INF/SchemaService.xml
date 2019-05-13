@@ -11,8 +11,9 @@
   <require>org.nuxeo.ecm.core.schema.ObjectResolverService</require>
 
   <service>
-    <provide
-      interface="org.nuxeo.ecm.core.schema.SchemaManager"/>
+    <provide interface="org.nuxeo.ecm.core.schema.SchemaManager" />
+    <provide interface="org.nuxeo.ecm.core.schema.TypeProvider" />
+    <provide interface="org.nuxeo.ecm.core.schema.PropertyCharacteristicHandler" />
   </service>
 
   <implementation class="org.nuxeo.ecm.core.schema.TypeService" />
@@ -145,10 +146,22 @@
       <code>
         <schema name="employeeSchema" src="schema/testExtension.xsd" xsdRootElement="employee"/>
       </code>
+
+      Extension Point is also used to register additional property information such as:
+      <ul>
+        <li>secured: only administrators can edit it</li>
+      </ul>
+      XML extensions may contain any number of 'property' elements of the form:
+      <code>
+        <property schema="dublincore" name="creator" secured="true" />
+      </code>
+
+      Properties declared as secured can only be edited by administrators.
     </documentation>
 
-    <object
-      class="org.nuxeo.ecm.core.schema.SchemaBindingDescriptor" />
+    <object class="org.nuxeo.ecm.core.schema.SchemaBindingDescriptor" />
+    <object class="org.nuxeo.ecm.core.schema.PropertyDescriptor" />
+
   </extension-point>
 
   <extension target="org.nuxeo.runtime.EventService" point="listeners">
