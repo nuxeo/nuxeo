@@ -56,7 +56,6 @@ public class DummyClientLoginModule implements LoginModule {
         this.subject = subject;
         this.callbackHandler = callbackHandler;
         this.sharedState = sharedState;
-
     }
 
     @Override

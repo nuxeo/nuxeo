@@ -16,23 +16,22 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-package org.nuxeo.ecm.core.api.local;
-
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.login.LoginAs;
+package org.nuxeo.ecm.core.schema;
 
 /**
- * Dummy {@link LoginAs} implementation which logs the given user into the application.
+ * Handler used to provide property's characteristics.
  *
  * @since 11.1
  */
-public class DummyLoginAs implements LoginAs {
+public interface PropertyCharacteristicHandler {
 
-    @Override
-    public LoginContext loginAs(String username) throws LoginException {
-        return Framework.login(username, username);
-    }
+    /**
+     * Checks if the property represented by the given {@code schema} and {@code path} is secured.
+     * 
+     * @param schema the schema name
+     * @param path the property path to test
+     * @return whether or not the given property is secured (ie: only administrators can edit it)
+     */
+    boolean isSecured(String schema, String path);
+
 }

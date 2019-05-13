@@ -98,6 +98,14 @@ public class ClientLoginModule implements LoginModule {
         return null;
     }
 
+    /**
+     * @since 11.1
+     */
+    public static boolean isCurrentAdministrator() {
+        NuxeoPrincipal principal = getCurrentPrincipal();
+        return principal != null && principal.isAdministrator();
+    }
+
     private Subject subject;
 
     private Map<String, ?> sharedState;
