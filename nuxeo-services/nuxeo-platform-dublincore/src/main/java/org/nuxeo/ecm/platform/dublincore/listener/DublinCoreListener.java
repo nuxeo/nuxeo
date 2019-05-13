@@ -138,9 +138,11 @@ public class DublinCoreListener implements EventListener {
             service.addContributor(doc, event);
         } else if (eventId.equals(DOCUMENT_CREATED_BY_COPY)
                 && (resetCreatorProperty || Boolean.TRUE.equals(resetCreator))) {
-            doc.setPropertyValue(DUBLINCORE_CREATOR_PROPERTY, null);
-            doc.setPropertyValue(DUBLINCORE_CONTRIBUTORS_PROPERTY, null);
-            doc.setPropertyValue(DUBLINCORE_LAST_CONTRIBUTOR_PROPERTY, null);
+            Framework.doPrivileged(() -> {
+                doc.setPropertyValue(DUBLINCORE_CREATOR_PROPERTY, null);
+                doc.setPropertyValue(DUBLINCORE_CONTRIBUTORS_PROPERTY, null);
+                doc.setPropertyValue(DUBLINCORE_LAST_CONTRIBUTOR_PROPERTY, null);
+            });
             service.setCreationDate(doc, cEventDate);
             service.setModificationDate(doc, cEventDate);
             service.addContributor(doc, event);
