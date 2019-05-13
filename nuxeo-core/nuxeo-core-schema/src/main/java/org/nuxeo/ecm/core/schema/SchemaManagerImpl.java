@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.core.schema;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -143,6 +146,9 @@ public class SchemaManagerImpl implements SchemaManager {
 
     /** @since 9.2 */
     protected Map<String, Map<String, String>> removedProperties = new HashMap<>();
+
+    /** @since 11.1 */
+    protected Set<String> securedProperties = new HashSet<>();
 
     public SchemaManagerImpl() {
         recomputeCallbacks = new ArrayList<>();
@@ -340,7 +346,7 @@ public class SchemaManagerImpl implements SchemaManager {
         clearComplexPropertyBeforeSet = CLEAR_COMPLEX_PROP_BEFORE_SET_DEFAULT;
         allowVersionWriteForDublinCore = false; // default in the absence of any XML config
         for (TypeConfiguration tc : allConfigurations) {
-            if (StringUtils.isNotBlank(tc.prefetchInfo)) {
+            if (isNotBlank(tc.prefetchInfo)) {
                 prefetchInfo = new PrefetchInfo(tc.prefetchInfo);
             }
             if (tc.clearComplexPropertyBeforeSet != null) {
@@ -918,4 +924,48 @@ public class SchemaManagerImpl implements SchemaManager {
         return allowVersionWriteForDublinCore;
     }
 
+    /*
+     * ===== Property API =====
+     */
+
+    /**
+     * @since 11.1
+     */
+    protected synchronized void registerSecuredProperty(List<PropertyDescriptor> descriptors) {
+        securedProperties = descriptors.stream()
+                                       .filter(PropertyDescriptor::isSecured)
+                                       .map(descriptor -> computePropertyKey(descriptor.schema, descriptor.name))
+                                       .collect(Collectors.toSet());
+    }
+
+    /**
+     * @since 11.1
+     */
+    protected synchronized void clearSecuredProperty() {
+        securedProperties.clear();
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public boolean isSecured(String schema, String path) {
+        for (String key = computePropertyKey(schema, cleanPath(path)); //
+             StringUtils.isNotBlank(key); key = key.substring(0, Math.max(key.lastIndexOf('/'), 0))) {
+            if (securedProperties.contains(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected String computePropertyKey(String schema, String path) {
+        return schema + ':' + path;
+    }
+
+    protected String cleanPath(String path) {
+        // remove prefix if exist, then
+        // remove index from path - we're only interested in sth/index/sth because we can't add info on sth/* property
+        return path.substring(path.lastIndexOf(':') + 1).replaceAll("/-?\\d+/", "/*/");
+    }
 }
