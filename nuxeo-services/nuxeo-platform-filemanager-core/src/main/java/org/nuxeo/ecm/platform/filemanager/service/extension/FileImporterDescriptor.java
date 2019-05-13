@@ -147,7 +147,7 @@ public class FileImporterDescriptor implements Descriptor, Serializable {
     /**
      * @since 11.1
      */
-    public FileImporter newInstance(FileManagerService fileManagerService) {
+    public FileImporter newInstance() {
         try {
             FileImporter fileImporter = klass.getDeclaredConstructor().newInstance();
             fileImporter.setName(name);
@@ -155,7 +155,6 @@ public class FileImporterDescriptor implements Descriptor, Serializable {
             fileImporter.setDocType(docType);
             fileImporter.setFilters(filters);
             fileImporter.setOrder(order);
-            fileImporter.setFileManagerService(fileManagerService);
             return fileImporter;
         } catch (ReflectiveOperationException e) {
             throw new NuxeoException(e);

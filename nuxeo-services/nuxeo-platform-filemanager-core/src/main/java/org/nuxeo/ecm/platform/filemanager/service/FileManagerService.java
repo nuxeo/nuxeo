@@ -162,7 +162,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         String xp = computePluginsExtensionPoint(FileImporterDescriptor.class);
         fileImporters = getDescriptors(xp).stream()
                                           .map(FileImporterDescriptor.class::cast)
-                                          .map(descriptor -> descriptor.newInstance(this))
+                                          .map(FileImporterDescriptor::newInstance)
                                           .collect(Collectors.toMap(FileImporter::getName, Function.identity()));
     }
 
@@ -170,7 +170,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         String xp = computePluginsExtensionPoint(FolderImporterDescriptor.class);
         folderImporters = getDescriptors(xp).stream()
                                             .map(FolderImporterDescriptor.class::cast)
-                                            .map(descriptor -> descriptor.newInstance(this))
+                                            .map(FolderImporterDescriptor::newInstance)
                                             .collect(Collectors.toList());
     }
 

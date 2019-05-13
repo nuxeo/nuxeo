@@ -23,8 +23,10 @@ package org.nuxeo.ecm.platform.filemanager.service.extension;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.runtime.api.Framework;
 
 // Not used but please keep, it will be needed once the
 // FileManagerService#createDefaultFolder method is extracted to a plugin.
@@ -34,14 +36,23 @@ public abstract class AbstractFolderImporter implements FolderImporter {
 
     // to be used by plugin implementation to gain access to standard file
     // creation utility methods without having to lookup the service
+    /**
+     * @deprecated since 11.1, use {@link Framework#getService(Class)} instead if needed
+     */
+    @Deprecated(since = "11.1")
     protected FileManagerService fileManagerService;
+
+    protected AbstractFolderImporter() {
+        this.fileManagerService = (FileManagerService) Framework.getService(FileManager.class);
+    }
 
     @Override
     public DocumentModel create(CoreSession documentManager, String fullname, String path, boolean overwrite,
             TypeManager typeManager) {
         // sample implementation to override in a custom FolderImporter
         // implementation
-        return fileManagerService.defaultCreateFolder(documentManager, fullname, path, overwrite);
+        return ((FileManagerService) Framework.getService(FileManager.class)).defaultCreateFolder(documentManager,
+                fullname, path, overwrite);
     }
 
     @Override

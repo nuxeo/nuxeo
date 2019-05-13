@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.runtime.api.Framework;
 
 // Not used but please keep, it will be needed once the
 // FileManagerService#createDefaultFolder method is extracted to a plugin.
@@ -39,6 +40,10 @@ public interface FolderImporter {
 
     void setName(String name);
 
+    /**
+     * @deprecated since 11.1, use {@link Framework#getService(Class)} instead if needed
+     */
+    @Deprecated(since = "11.1")
     void setFileManagerService(FileManagerService fileManagerService);
 
 }
