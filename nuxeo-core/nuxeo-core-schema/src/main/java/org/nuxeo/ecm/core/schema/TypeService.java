@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.schema;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * The TypeService is the component dealing with registration of schemas and document types (and facets and prefetch
@@ -41,13 +42,23 @@ public class TypeService extends DefaultComponent {
 
     private SchemaManagerImpl schemaManager;
 
+    protected SimpleContributionRegistry<PropertyDescriptor> propertyDescriptors = new SimpleContributionRegistry<PropertyDescriptor>() {
+
+        @Override
+        public String getContributionId(PropertyDescriptor contrib) {
+            return contrib.getId();
+        }
+    };
+
     @Override
     public void activate(ComponentContext context) {
+        super.activate(context);
         schemaManager = new SchemaManagerImpl();
     }
 
     @Override
     public void deactivate(ComponentContext context) {
+        super.deactivate(context);
         schemaManager = null;
     }
 
@@ -69,11 +80,15 @@ public class TypeService extends DefaultComponent {
             break;
         case XP_SCHEMA:
             for (Object contrib : contribs) {
-                // use the context of the bundle contributing the extension
-                // to load schemas
-                SchemaBindingDescriptor sbd = (SchemaBindingDescriptor) contrib;
-                sbd.context = extension.getContext();
-                schemaManager.registerSchema(sbd);
+                if (contrib instanceof SchemaBindingDescriptor) {
+                    // use the context of the bundle contributing the extension
+                    // to load schemas
+                    SchemaBindingDescriptor sbd = (SchemaBindingDescriptor) contrib;
+                    sbd.context = extension.getContext();
+                    schemaManager.registerSchema(sbd);
+                } else if (contrib instanceof PropertyDescriptor) {
+                    propertyDescriptors.addContribution((PropertyDescriptor) contrib);
+                }
             }
             break;
         case XP_CONFIGURATION:
@@ -107,7 +122,11 @@ public class TypeService extends DefaultComponent {
             break;
         case XP_SCHEMA:
             for (Object contrib : contribs) {
-                schemaManager.unregisterSchema((SchemaBindingDescriptor) contrib);
+                if (contrib instanceof SchemaBindingDescriptor) {
+                    schemaManager.unregisterSchema((SchemaBindingDescriptor) contrib);
+                } else if (contrib instanceof PropertyDescriptor) {
+                    propertyDescriptors.removeContribution((PropertyDescriptor) contrib);
+                }
             }
             break;
         case XP_CONFIGURATION:
@@ -126,9 +145,9 @@ public class TypeService extends DefaultComponent {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
-        if (SchemaManager.class.isAssignableFrom(adapter)) {
-            return (T) schemaManager;
-        } else if (TypeProvider.class.isAssignableFrom(adapter)) {
+        if (SchemaManager.class.isAssignableFrom(adapter)
+                || PropertyCharacteristicHandler.class.isAssignableFrom(adapter)
+                || TypeProvider.class.isAssignableFrom(adapter)) {
             return (T) schemaManager;
         }
         return null;
@@ -136,7 +155,13 @@ public class TypeService extends DefaultComponent {
 
     @Override
     public void start(ComponentContext context) {
+        schemaManager.registerSecuredProperty(propertyDescriptors.toMap().values());
         schemaManager.flushPendingsRegistration();
+    }
+
+    @Override
+    public void stop(ComponentContext context) {
+        schemaManager.clearSecuredProperty();
     }
 
     @Override

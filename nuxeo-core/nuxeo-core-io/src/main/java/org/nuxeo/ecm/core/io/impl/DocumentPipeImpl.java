@@ -22,6 +22,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentTransformer;
@@ -29,6 +33,7 @@ import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.DocumentWriter;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.transformers.PropertyDeprecationRemover;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -97,9 +102,22 @@ public class DocumentPipeImpl implements DocumentPipe {
             throw new IllegalArgumentException("Pipe writer cannot be null");
         }
 
-        List<DocumentTranslationMap> maps = new ArrayList<>();
-        readAndWriteDocs(maps);
-        return DocumentTranslationMapImpl.merge(maps);
+        // do with privilege to be able to set secure properties
+        // copy the Framework#doPrivileged method to not change the IOException stack trace
+        try {
+            LoginContext loginContext = Framework.login();
+            try {
+                List<DocumentTranslationMap> maps = new ArrayList<>();
+                readAndWriteDocs(maps);
+                return DocumentTranslationMapImpl.merge(maps);
+            } finally {
+                if (loginContext != null) { // may be null in tests
+                    loginContext.logout();
+                }
+            }
+        } catch (LoginException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     protected void handleBatchEnd() {
