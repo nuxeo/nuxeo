@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.runtime.RuntimeServiceException;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.avro.AvroMapper;
 import org.nuxeo.runtime.avro.AvroService;
 
@@ -61,7 +62,8 @@ public class DocumentModelMapper extends AvroMapper<DocumentModel, GenericRecord
                 data.put(service.decodeName(field.name()),
                         service.fromAvro(field.schema(), Property.class, schemaRecord.get(field.name())));
             }
-            doc.setProperties(service.decodeName(schemaField.name()), data);
+            // set properties with privilege to be able to set secure properties
+            Framework.doPrivileged(() -> doc.setProperties(service.decodeName(schemaField.name()), data));
         }
         return doc;
     }

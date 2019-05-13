@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -56,7 +57,7 @@ public class DublinCoreStorageServiceImpl extends DefaultComponent implements Du
 
     @Override
     public void setCreationDate(DocumentModel doc, Calendar creationDate) {
-        doc.setPropertyValue(DUBLINCORE_CREATED_DATE_PROPERTY, creationDate);
+        Framework.doPrivileged(() -> doc.setPropertyValue(DUBLINCORE_CREATED_DATE_PROPERTY, creationDate));
     }
 
     @Override
@@ -71,10 +72,12 @@ public class DublinCoreStorageServiceImpl extends DefaultComponent implements Du
 
     @Override
     public void setModificationDate(DocumentModel doc, Calendar modificationDate) {
-        doc.setPropertyValue(DUBLINCORE_MODIFIED_DATE_PROPERTY, modificationDate);
-        if (doc.getPropertyValue(DUBLINCORE_CREATED_DATE_PROPERTY) == null) {
-            setCreationDate(doc, modificationDate);
-        }
+        Framework.doPrivileged(() -> {
+            doc.setPropertyValue(DUBLINCORE_MODIFIED_DATE_PROPERTY, modificationDate);
+            if (doc.getPropertyValue(DUBLINCORE_CREATED_DATE_PROPERTY) == null) {
+                setCreationDate(doc, modificationDate);
+            }
+        });
     }
 
     @Override
@@ -86,24 +89,24 @@ public class DublinCoreStorageServiceImpl extends DefaultComponent implements Du
     public void addContributor(DocumentModel doc, Event event) {
         NuxeoPrincipal principal = Objects.requireNonNull(event.getContext().getPrincipal());
 
-        String principalName = principal.getName();
-        if (principal instanceof SystemPrincipal) {
-            principalName = ((SystemPrincipal) principal).getActingUser();
-            if (SYSTEM_USERNAME.equals(principalName) && !ABOUT_TO_CREATE.equals(event.getName())) {
-                return;
-            }
-        }
-
-        if (doc.getPropertyValue(DUBLINCORE_CREATOR_PROPERTY) == null) {
-            doc.setPropertyValue(DUBLINCORE_CREATOR_PROPERTY, principalName);
+        String principalName = principal.getActingUser();
+        if (principal instanceof SystemPrincipal && SYSTEM_USERNAME.equals(principalName)
+                && !ABOUT_TO_CREATE.equals(event.getName())) {
+            return;
         }
 
         List<String> contributorsList = getSanitizedExistingContributors(doc);
         if (!contributorsList.contains(principalName)) {
             contributorsList.add(principalName);
         }
-        doc.setPropertyValue(DUBLINCORE_CONTRIBUTORS_PROPERTY, (Serializable) contributorsList);
-        doc.setPropertyValue(DUBLINCORE_LAST_CONTRIBUTOR_PROPERTY, principalName);
+
+        Framework.doPrivileged(() -> {
+            if (doc.getPropertyValue(DUBLINCORE_CREATOR_PROPERTY) == null) {
+                doc.setPropertyValue(DUBLINCORE_CREATOR_PROPERTY, principalName);
+            }
+            doc.setPropertyValue(DUBLINCORE_CONTRIBUTORS_PROPERTY, (Serializable) contributorsList);
+            doc.setPropertyValue(DUBLINCORE_LAST_CONTRIBUTOR_PROPERTY, principalName);
+        });
     }
 
     /**

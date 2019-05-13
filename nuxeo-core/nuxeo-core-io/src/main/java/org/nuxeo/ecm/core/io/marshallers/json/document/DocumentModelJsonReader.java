@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.Reader;
@@ -200,7 +201,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
             } else {
                 dstDataModel.setData(fieldName, decodeBlob(data));
             }
-        } catch (PropertyNotFoundException e) {
+        } catch (PropertyNotFoundException | ReadOnlyPropertyException e) {
             log.trace("Can't apply value: {} to src: {}", data, srcDataModel, e);
         }
     }
