@@ -32,7 +32,7 @@ object NuxeoBulk {
       .post(Constants.API_SEARCH + "/bulk/setProperties")
       .basicAuth("${adminId}", "${adminPassword}")
       .headers(Headers.base)
-      .header("content-type", "application/json")
+//      .header("content-type", "application/json")
       .queryParam("query", query)
       .body(StringBody( """{"""" + property + """":"""" + value + """"}""")
       )
