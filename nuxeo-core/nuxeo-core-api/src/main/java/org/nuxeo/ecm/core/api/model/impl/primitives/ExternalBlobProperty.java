@@ -146,8 +146,9 @@ public class ExternalBlobProperty extends MapProperty {
             super.setValue(value);
             return;
         }
-        if (isReadOnly()) {
-            throw new ReadOnlyPropertyException(getXPath());
+        if (isReadOnly() || isSecured()) {
+            throw new ReadOnlyPropertyException(
+                    String.format("Cannot set the value of property: %s since it is readonly", getXPath()));
         }
         if (value == null) {
             remove();

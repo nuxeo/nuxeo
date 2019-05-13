@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.api.test.secured-type">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="common" src="schemas/common.xsd" />
+    <schema name="secured" src="schemas/secured.xsd" />
+    <property schema="secured" name="scalar" secured="true" />
+    <property schema="secured" name="complex" secured="true" />
+    <property schema="secured" name="list" secured="true" />
+    <property schema="secured" name="array" secured="true" />
+    <property schema="secured" name="unsecureComplex/scalar1" secured="true" />
+    <property schema="secured" name="unsecureList/*/scalar1" secured="true" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="Secured" extends="Document">
+      <schema name="common" />
+      <schema name="secured" />
+    </doctype>
+  </extension>
+
+</component>
