@@ -9,7 +9,8 @@ Nuxeo-Component: OSGI-INF/imaging-layouts-contrib.xml,
  OSGI-INF/imaging-codec-contrib.xml,
  OSGI-INF/actions-contrib.xml,
  OSGI-INF/imaging-urlservice-contrib.xml,
- OSGI-INF/theme-contrib.xml
+ OSGI-INF/theme-contrib.xml,
+ OSGI-INF/restAPI-contrib.xml
 Eclipse-LazyStart: true
 Require-Bundle: org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.webapp.base,
