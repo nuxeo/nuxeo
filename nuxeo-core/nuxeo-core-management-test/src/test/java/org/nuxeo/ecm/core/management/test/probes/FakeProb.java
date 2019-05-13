@@ -18,9 +18,9 @@
  */
 package org.nuxeo.ecm.core.management.test.probes;
 
-import org.nuxeo.ecm.core.management.api.Probe;
-import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.api.Probe;
+import org.nuxeo.runtime.management.api.ProbeStatus;
 
 /**
  * Fake probe, able to fail with exception to check for accurate status bubble up to the service.

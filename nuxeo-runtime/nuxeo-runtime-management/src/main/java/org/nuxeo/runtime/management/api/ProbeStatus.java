@@ -16,7 +16,7 @@
  * Contributors:
  *     mcedica
  */
-package org.nuxeo.ecm.core.management.api;
+package org.nuxeo.runtime.management.api;
 
 import java.util.HashMap;
 import java.util.Map;

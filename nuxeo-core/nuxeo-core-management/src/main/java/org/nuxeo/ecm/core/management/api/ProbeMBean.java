@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.management.api;
 
 import java.util.Date;
 
+import org.nuxeo.runtime.management.api.ProbeStatus;
+
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */

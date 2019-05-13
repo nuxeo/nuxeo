@@ -23,9 +23,9 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
-import org.nuxeo.ecm.core.management.api.Probe;
-import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.api.Probe;
+import org.nuxeo.runtime.management.api.ProbeStatus;
 
 /**
  * Retrieves the administrative status of the server.

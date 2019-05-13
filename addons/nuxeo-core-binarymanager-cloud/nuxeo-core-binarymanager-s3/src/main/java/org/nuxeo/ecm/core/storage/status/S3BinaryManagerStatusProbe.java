@@ -23,10 +23,10 @@ import java.util.Map;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
-import org.nuxeo.ecm.core.management.api.Probe;
-import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.ecm.core.storage.sql.S3BinaryManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.api.Probe;
+import org.nuxeo.runtime.management.api.ProbeStatus;
 
 /**
  * Probe to check the status of the S3BinaryManager. Returns success if Nuxeo can access the bucket, failure otherwise

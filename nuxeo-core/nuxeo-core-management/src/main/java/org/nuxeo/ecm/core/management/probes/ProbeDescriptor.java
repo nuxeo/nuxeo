@@ -20,7 +20,7 @@ package org.nuxeo.ecm.core.management.probes;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.management.api.Probe;
+import org.nuxeo.runtime.management.api.Probe;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)

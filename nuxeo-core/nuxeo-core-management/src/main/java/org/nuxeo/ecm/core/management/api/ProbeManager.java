@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import org.nuxeo.ecm.core.management.probes.HealthCheckProbesDescriptor;
 import org.nuxeo.ecm.core.management.statuses.HealthCheckResult;
+import org.nuxeo.runtime.management.api.Probe;
 
 public interface ProbeManager extends ProbeRunnerMBean {
 

@@ -23,7 +23,7 @@ import java.util.Date;
 
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeMBean;
-import org.nuxeo.ecm.core.management.api.ProbeStatus;
+import org.nuxeo.runtime.management.api.ProbeStatus;
 
 public class ProbeInfoImpl implements ProbeMBean, ProbeInfo, Serializable {
 

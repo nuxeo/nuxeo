@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.management.api;
 import java.util.Date;
 
 import org.nuxeo.ecm.core.management.probes.ProbeDescriptor;
+import org.nuxeo.runtime.management.api.ProbeStatus;
 
 public interface ProbeInfo {
 

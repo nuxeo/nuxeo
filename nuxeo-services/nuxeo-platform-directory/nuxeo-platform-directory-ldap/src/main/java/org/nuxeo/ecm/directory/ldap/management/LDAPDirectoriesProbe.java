@@ -26,8 +26,6 @@ import java.util.Properties;
 
 import javax.naming.Context;
 
-import org.nuxeo.ecm.core.management.api.Probe;
-import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -36,6 +34,8 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.ldap.LDAPDirectory;
 import org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.api.Probe;
+import org.nuxeo.runtime.management.api.ProbeStatus;
 
 public class LDAPDirectoriesProbe implements Probe {
 
