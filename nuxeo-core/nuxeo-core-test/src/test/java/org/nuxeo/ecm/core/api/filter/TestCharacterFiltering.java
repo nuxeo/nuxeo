@@ -60,12 +60,12 @@ public class TestCharacterFiltering {
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc.setPropertyValue("dc:title", "My\u000cTitle");
         doc.setPropertyValue("dc:description", "My\u200b\tDescription");
-        doc.setPropertyValue("dc:creator", "John Doe");
+        doc.setPropertyValue("dc:source", "John Doe");
 
         doc = session.createDocument(doc);
         assertEquals("MyTitle", doc.getProperty("dc:title").getValue());
         assertEquals("MyDescription", doc.getProperty("dc:description").getValue());
-        assertEquals("John Doe", doc.getProperty("dc:creator").getValue());
+        assertEquals("John Doe", doc.getProperty("dc:source").getValue());
 
         doc.setPropertyValue("dc:source", "The\0Source");
         doc = session.saveDocument(doc);

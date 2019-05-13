@@ -56,12 +56,12 @@ public class DublinCoreStorageService extends DefaultComponent {
     public static final String ID = "DublinCoreStorageService";
 
     public void setCreationDate(DocumentModel doc, Calendar creationDate, Event event) {
-        doc.setProperty("dublincore", "created", creationDate);
+        Framework.doPrivileged(() -> doc.setProperty("dublincore", "created", creationDate));
         addContributor(doc, event);
     }
 
     public void setModificationDate(DocumentModel doc, Calendar modificationDate, Event event) {
-        doc.setProperty("dublincore", "modified", modificationDate);
+        Framework.doPrivileged(() -> doc.setProperty("dublincore", "modified", modificationDate));
         if (doc.getProperty("dublincore", "created") == null) {
             setCreationDate(doc, modificationDate, event);
         }
@@ -90,17 +90,20 @@ public class DublinCoreStorageService extends DefaultComponent {
             }
         }
 
-        if (doc.getProperty("dublincore", "creator") == null) {
-            // First time only => creator
-            doc.setProperty("dublincore", "creator", principalName);
-        }
-
         List<String> contributors = getSanitizedExistingContributors(doc);
         if (!contributors.contains(principalName)) {
             contributors.add(principalName);
         }
-        doc.setProperty("dublincore", "contributors", contributors);
-        doc.setProperty("dublincore", "lastContributor", principalName);
+
+        String username = principalName; // effectively final
+        Framework.doPrivileged(() -> {
+            if (doc.getProperty("dublincore", "creator") == null) {
+                // First time only => creator
+                doc.setProperty("dublincore", "creator", username);
+            }
+            doc.setProperty("dublincore", "contributors", contributors);
+            doc.setProperty("dublincore", "lastContributor", username);
+        });
     }
 
     public void setIssuedDate(DocumentModel doc, Calendar issuedDate) {
