@@ -30,16 +30,43 @@ public class PropertyException extends NuxeoException {
         super();
     }
 
+    /**
+     * @since 11.1
+     */
+    public PropertyException(int statusCode) {
+        super(statusCode);
+    }
+
     public PropertyException(String message) {
         super(message);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public PropertyException(String message, int statusCode) {
+        super(message, statusCode);
     }
 
     public PropertyException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * @since 11.1
+     */
+    public PropertyException(String message, Throwable cause, int statusCode) {
+        super(message, cause, statusCode);
+    }
+
     public PropertyException(Throwable cause) {
         super(cause);
     }
 
+    /**
+     * @since 11.
+     */
+    public PropertyException(Throwable cause, int statusCode) {
+        super(cause, statusCode);
+    }
 }

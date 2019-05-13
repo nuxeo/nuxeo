@@ -31,6 +31,11 @@
     <schema name="collectionMember" src="schema/collectionMember.xsd"
       prefix="collectionMember" isVersionWritable="true"/>
 
+    <property schema="dublincore" name="created" secured="true" />
+    <property schema="dublincore" name="modified" secured="true" />
+    <property schema="dublincore" name="creator" secured="true" />
+    <property schema="dublincore" name="contributors" secured="true" />
+    <property schema="dublincore" name="lastContributor" secured="true" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
