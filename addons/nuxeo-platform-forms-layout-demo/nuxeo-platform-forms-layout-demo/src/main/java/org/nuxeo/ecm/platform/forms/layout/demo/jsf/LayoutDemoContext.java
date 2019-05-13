@@ -58,6 +58,7 @@ import org.nuxeo.ecm.platform.query.api.PageSelections;
 import org.nuxeo.ecm.platform.query.core.AggregateBase;
 import org.nuxeo.ecm.platform.query.core.AggregateDescriptor;
 import org.nuxeo.ecm.platform.query.core.BucketTerm;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component providing information contextual to a session on the application.
@@ -292,20 +293,22 @@ public class LayoutDemoContext implements Serializable {
         created.set(Calendar.YEAR, 2000 + index);
         created.set(Calendar.MONTH, 2 + index);
         created.set(Calendar.DATE, 2 + index);
-        doc.setPropertyValue("dc:created", created);
         Calendar modified = Calendar.getInstance();
         modified.set(Calendar.YEAR, 2011);
         modified.set(Calendar.MONTH, 3);
         modified.set(Calendar.DATE, 16);
-        if (index <= 1) {
-            doc.setPropertyValue("dc:modified", modified);
-            doc.setPropertyValue("dc:creator", "Administrator");
-            doc.setPropertyValue("dc:lastContributor", "Administrator");
-        } else {
-            doc.setPropertyValue("dc:modified", created);
-            doc.setPropertyValue("dc:creator", "Administrator");
-            doc.setPropertyValue("dc:lastContributor", "Administrator");
-        }
+        Framework.doPrivileged(() -> {
+            doc.setPropertyValue("dc:created", created);
+            if (index <= 1) {
+                doc.setPropertyValue("dc:modified", modified);
+                doc.setPropertyValue("dc:creator", "Administrator");
+                doc.setPropertyValue("dc:lastContributor", "Administrator");
+            } else {
+                doc.setPropertyValue("dc:modified", created);
+                doc.setPropertyValue("dc:creator", "Administrator");
+                doc.setPropertyValue("dc:lastContributor", "Administrator");
+            }
+        });
         doc.setPropertyValue("uid:major_version", new Integer(1));
         doc.setPropertyValue("uid:minor_version", new Integer(index));
         if (index <= 1) {
