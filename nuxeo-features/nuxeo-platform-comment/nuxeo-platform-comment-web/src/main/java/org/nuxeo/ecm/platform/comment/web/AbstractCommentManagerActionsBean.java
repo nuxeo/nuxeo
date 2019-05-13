@@ -129,22 +129,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
         return principalIsAdmin;
     }
 
-    protected DocumentModel initializeComment(DocumentModel comment) {
-        if (comment != null) {
-            if (comment.getProperty("dublincore", "contributors") == null) {
-                String[] contributors = new String[1];
-                contributors[0] = getPrincipalName();
-                comment.setProperty("dublincore", "contributors", contributors);
-            }
-            if (comment.getProperty("dublincore", "created") == null) {
-                comment.setProperty("dublincore", "created", Calendar.getInstance());
-            }
-        }
-        return comment;
-    }
-
     public DocumentModel addComment(DocumentModel comment, DocumentModel docToComment) {
-        comment = initializeComment(comment);
         UIComment parentComment = null;
         if (savedReplyCommentId != null) {
             parentComment = commentMap.get(savedReplyCommentId);

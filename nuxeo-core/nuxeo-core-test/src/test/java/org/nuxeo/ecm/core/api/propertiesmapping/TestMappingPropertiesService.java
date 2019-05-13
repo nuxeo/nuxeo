@@ -63,10 +63,10 @@ public class TestMappingPropertiesService {
         DocumentModel doc2 = createDocument("/", "doc2", "MappingDoc");
         doc1.setPropertyValue("dc:title", "testTitle");
         doc1.setPropertyValue("dc:source", "testSource");
-        List<String> contributors = new ArrayList<>();
-        contributors.add("contrib1");
-        contributors.add("contrib2");
-        doc1.setPropertyValue("dc:contributors", contributors.toArray(new String[1]));
+        List<String> subjects = new ArrayList<>();
+        subjects.add("subject1");
+        subjects.add("subject2");
+        doc1.setPropertyValue("dc:subjects", subjects.toArray(new String[0]));
         List<Map<String, Serializable>> comments = new ArrayList<>();
         Map<String, Serializable> comment = new HashMap<>();
         comment.put("author", "testAuthor");
@@ -82,9 +82,9 @@ public class TestMappingPropertiesService {
         assertEquals("testTitle", doc2.getTitle());
         assertEquals("testSource", doc2.getPropertyValue("dc:source"));
 
-        String[] contrib = (String[]) doc2.getPropertyValue("dc:contributors");
-        assertEquals("contrib1", contrib[0]);
-        assertEquals("contrib2", contrib[1]);
+        String[] contrib = (String[]) doc2.getPropertyValue("dc:subjects");
+        assertEquals("subject1", contrib[0]);
+        assertEquals("subject2", contrib[1]);
         List<Map<String, Serializable>> cmnts = (List<Map<String, Serializable>>) doc2.getPropertyValue("mp:comments");
         assertEquals(1, cmnts.size());
         assertEquals("testAuthor", cmnts.get(0).get("author"));

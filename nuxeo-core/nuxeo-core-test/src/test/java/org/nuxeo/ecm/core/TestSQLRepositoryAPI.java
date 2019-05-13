@@ -280,7 +280,7 @@ public class TestSQLRepositoryAPI {
         // simple list as array
         child.setProperty("dublincore", "subjects", new String[] { "a", "b" });
         // simple list as List
-        child.setProperty("dublincore", "contributors", new ArrayList<>(Arrays.asList("c", "d")));
+        child.setProperty("testList", "simplelist", new ArrayList<>(Arrays.asList("c", "d")));
         // simple list as non-serializable array
         child.setProperty("testList", "strings", new Object[] { "e", "f" });
         // complex list as List
@@ -302,9 +302,9 @@ public class TestSQLRepositoryAPI {
         Object subjects = child.getProperty("dublincore", "subjects");
         assertTrue(subjects instanceof String[]);
         assertEquals(Arrays.asList("a", "b"), Arrays.asList((String[]) subjects));
-        Object contributors = child.getProperty("dublincore", "contributors");
-        assertTrue(contributors instanceof String[]);
-        assertEquals(Arrays.asList("c", "d"), Arrays.asList((String[]) contributors));
+        Object simples = child.getProperty("testList", "simplelist");
+        assertTrue(simples instanceof String[]);
+        assertEquals(Arrays.asList("c", "d"), Arrays.asList((String[]) simples));
         Object strings = child.getProperty("testList", "strings");
         assertTrue(strings.getClass().isArray());
         // Objet[] has been normalized to String[] when re-read from database

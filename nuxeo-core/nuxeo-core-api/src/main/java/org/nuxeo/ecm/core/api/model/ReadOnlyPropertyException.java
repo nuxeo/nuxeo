@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.core.api.model;
 
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+
 import org.nuxeo.ecm.core.api.PropertyException;
 
 /**
@@ -29,19 +31,19 @@ public class ReadOnlyPropertyException extends PropertyException {
     private static final long serialVersionUID = 1L;
 
     public ReadOnlyPropertyException() {
-        super();
+        super(SC_BAD_REQUEST);
     }
 
     public ReadOnlyPropertyException(String message) {
-        super(message);
+        super(message, SC_BAD_REQUEST);
     }
 
     public ReadOnlyPropertyException(String message, Throwable cause) {
-        super(message, cause);
+        super(message, cause, SC_BAD_REQUEST);
     }
 
     public ReadOnlyPropertyException(Throwable cause) {
-        super(cause);
+        super(cause, SC_BAD_REQUEST);
     }
 
 }
