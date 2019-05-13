@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.core.storage.sql.management;
 
-import org.nuxeo.ecm.core.management.api.Probe;
-import org.nuxeo.ecm.core.management.api.ProbeStatus;
+import org.nuxeo.runtime.management.api.Probe;
+import org.nuxeo.runtime.management.api.ProbeStatus;
 
 /**
  * Simple probes that returns the number of active session

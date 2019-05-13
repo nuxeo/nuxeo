@@ -22,10 +22,10 @@ import java.util.List;
 
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.management.api.Probe;
-import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.api.Probe;
+import org.nuxeo.runtime.management.api.ProbeStatus;
 
 /**
  * Probe to check the status of the ES cluster. Returns success if the cluster is GREEN or YELLOW, Failure otherwise

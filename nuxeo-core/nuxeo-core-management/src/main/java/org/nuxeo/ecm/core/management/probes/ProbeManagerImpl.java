@@ -32,13 +32,13 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.management.api.Probe;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
-import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.ecm.core.management.statuses.HealthCheckResult;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ManagementRuntimeException;
+import org.nuxeo.runtime.management.api.Probe;
+import org.nuxeo.runtime.management.api.ProbeStatus;
 
 public class ProbeManagerImpl implements ProbeManager {
 

@@ -21,10 +21,10 @@ package org.nuxeo.ecm.platform.management.statuses;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.api.ProbeStatus;
 
-public class QueryRepositoryProbe implements org.nuxeo.ecm.core.management.api.Probe {
+public class QueryRepositoryProbe implements org.nuxeo.runtime.management.api.Probe {
 
     protected static final String queryString = "SELECT * FROM Document";
 

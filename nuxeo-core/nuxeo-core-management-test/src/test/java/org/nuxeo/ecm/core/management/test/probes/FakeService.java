@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.management.test.probes;
 
-import org.nuxeo.ecm.core.management.api.ProbeStatus;
+import org.nuxeo.runtime.management.api.ProbeStatus;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 

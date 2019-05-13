@@ -16,8 +16,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.core.management.api;
-
+package org.nuxeo.runtime.management.api;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)

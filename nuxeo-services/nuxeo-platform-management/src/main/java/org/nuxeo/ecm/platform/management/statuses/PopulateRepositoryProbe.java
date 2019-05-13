@@ -21,9 +21,9 @@ package org.nuxeo.ecm.platform.management.statuses;
 import java.util.Calendar;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.management.api.Probe;
-import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreSessionRunner;
+import org.nuxeo.runtime.management.api.Probe;
+import org.nuxeo.runtime.management.api.ProbeStatus;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
