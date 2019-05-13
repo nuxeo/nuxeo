@@ -8,7 +8,6 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateless
 Nuxeo-Component: OSGI-INF/pictures-tiles-framework.xml,
  OSGI-INF/pictures-tiles-contrib.xml,
- OSGI-INF/pictures-tiles-adapter-contrib.xml,
- OSGI-INF/restAPI-contrib.xml
+ OSGI-INF/pictures-tiles-adapter-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.platform.commandline.executor

@@ -20,9 +20,9 @@ package org.nuxeo.ecm.platform.pictures.tiles.service.test;
 
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -36,7 +36,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -45,6 +44,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.ui.web.restAPI.AbstractRestletTest;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -55,6 +55,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.picture.api")
 @Deploy("org.nuxeo.ecm.platform.picture.core")
+@Deploy("org.nuxeo.ecm.platform.picture.jsf")
 @Deploy("org.nuxeo.ecm.platform.pictures.tiles")
 public class TestPictureTilesRestlet extends AbstractRestletTest {
 
@@ -74,8 +75,12 @@ public class TestPictureTilesRestlet extends AbstractRestletTest {
     public void before() throws Exception {
         doc = session.createDocumentModel("/", "doc", "File");
         doc.setPropertyValue("dc:modified", Calendar.getInstance());
-        File file = FileUtils.getResourceFileFromContext("test.jpg");
-        Blob image = Blobs.createBlob(file);
+        Blob image;
+        try (InputStream in = Framework.getResourceLoader().getResourceAsStream("test.jpg")) {
+            assertNotNull(in);
+            image = Blobs.createBlob(in);
+            image.setFilename("test.jpg");
+        }
         doc.setPropertyValue("file:content", (Serializable) image);
         doc = session.createDocument(doc);
         repositoryName = doc.getRepositoryName();
