@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
@@ -240,7 +241,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
                     } else {
                         dataModel.setData(fieldName, decodeBlob(data));
                     }
-                } catch (PropertyNotFoundException e) {
+                } catch (PropertyNotFoundException | ReadOnlyPropertyException e) {
                     continue;
                 }
             }

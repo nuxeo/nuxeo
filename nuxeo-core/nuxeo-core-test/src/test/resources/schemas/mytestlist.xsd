@@ -11,6 +11,14 @@
       <xs:list itemType="xs:string"/>
   </xs:simpleType>
 
+  <xs:simpleType name="simplelist">
+    <xs:list>
+      <xs:simpleType>
+        <xs:restriction base="xs:string" />
+      </xs:simpleType>
+    </xs:list>
+  </xs:simpleType>
+
   <xs:complexType name="complexlist">
     <xs:sequence>
       <xs:element name="item" type="nxs:listElem" minOccurs="0" maxOccurs="unbounded"/>
@@ -41,5 +49,6 @@
   <xs:element name="participants" type="nxs:theList"/>
   <xs:element name="attachments" type="nxs:attachments"/>
   <xs:element name="strings" type="nxs:list"/>
+  <xs:element name="simplelist" type="nxs:simplelist"/>
 
 </xs:schema>

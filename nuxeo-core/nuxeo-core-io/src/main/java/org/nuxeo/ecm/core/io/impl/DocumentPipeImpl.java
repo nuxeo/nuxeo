@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.DocumentWriter;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.transformers.PropertyDeprecationRemover;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -98,7 +99,8 @@ public class DocumentPipeImpl implements DocumentPipe {
         }
 
         List<DocumentTranslationMap> maps = new ArrayList<>();
-        readAndWriteDocs(maps);
+        // do with privilege to be able to set secure properties
+        Framework.doPrivileged(() -> readAndWriteDocs(maps));
         return DocumentTranslationMapImpl.merge(maps);
     }
 
