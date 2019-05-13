@@ -24,6 +24,7 @@ import java.security.Principal;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
@@ -114,7 +115,12 @@ public abstract class UnrestrictedSessionRunner {
         isUnrestricted = true;
         try {
             if (sessionIsAlreadyUnrestricted) {
-                run();
+                if (ClientLoginModule.isCurrentAdministrator()) {
+                    run();
+                } else {
+                    // should be removed when login and session will be synchronized / NXP-27399
+                    Framework.doPrivileged(this::run);
+                }
                 return;
             }
 

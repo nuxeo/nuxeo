@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.core.api.local;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
+
 import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +34,7 @@ import javax.security.auth.spi.LoginModule;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
@@ -96,6 +99,17 @@ public class ClientLoginModule implements LoginModule {
             }
         }
         return null;
+    }
+
+    /**
+     * @since 11.1
+     */
+    public static boolean isCurrentAdministrator() {
+        NuxeoPrincipal principal = getCurrentPrincipal();
+        boolean isAdministrator = principal != null && principal.isAdministrator();
+        boolean isAdministratorInTests = principal == null // for low level tests
+                || ADMINISTRATOR.equals(principal.getName()); // for test which logs in an Administrator
+        return isAdministrator || (Framework.isTestModeSet() && isAdministratorInTests);
     }
 
     private Subject subject;

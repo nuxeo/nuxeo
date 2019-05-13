@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 /**
  * The Schema Manager manages core document types, schemas, facets and field types.
  */
-public interface SchemaManager extends TypeProvider {
+public interface SchemaManager extends TypeProvider, PropertyCharacteristicHandler {
 
     /**
      * Returns the field with given xpath, or null if not found.

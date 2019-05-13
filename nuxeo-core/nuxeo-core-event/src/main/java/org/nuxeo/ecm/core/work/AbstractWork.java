@@ -278,6 +278,12 @@ public abstract class AbstractWork implements Work {
      * @since 8.1
      */
     public void openSystemSession() {
+        try {
+            loginContext = Framework.loginAs(originatingUsername);
+        } catch (LoginException e) {
+            throw new NuxeoException(e);
+        }
+
         session = CoreInstance.openCoreSessionSystem(repositoryName, originatingUsername);
     }
 
@@ -325,6 +331,15 @@ public abstract class AbstractWork implements Work {
         if (session != null) {
             session.close();
             session = null;
+        }
+
+        try {
+            // loginContext may be null in tests
+            if (loginContext != null) {
+                loginContext.logout();
+            }
+        } catch (LoginException le) {
+            throw new NuxeoException(le);
         }
     }
 
@@ -499,15 +514,6 @@ public abstract class AbstractWork implements Work {
             }
         }
         closeSession();
-
-        try {
-            // loginContext may be null in tests
-            if (loginContext != null) {
-                loginContext.logout();
-            }
-        } catch (LoginException le) {
-            throw new NuxeoException(le);
-        }
     }
 
     @Override
