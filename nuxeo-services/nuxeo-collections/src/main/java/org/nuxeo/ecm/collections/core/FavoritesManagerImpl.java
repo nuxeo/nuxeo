@@ -34,7 +34,7 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
     @Override
     public void addToFavorites(DocumentModel document, CoreSession session) {
         final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
-        collectionManager.addToCollection(getFavorites(document, session), document, session);
+        collectionManager.addToCollection(getFavorites(session), document, session);
     }
 
     @Override
@@ -57,13 +57,13 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
     @Override
     public boolean isFavorite(DocumentModel document, CoreSession session) {
         final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
-        return collectionManager.isInCollection(getFavorites(document, session), document, session);
+        return collectionManager.isInCollection(getFavorites(session), document, session);
     }
 
     @Override
     public void removeFromFavorites(DocumentModel document, CoreSession session) {
         final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
-        collectionManager.removeFromCollection(getFavorites(document, session), document, session);
+        collectionManager.removeFromCollection(getFavorites(session), document, session);
     }
 
 }

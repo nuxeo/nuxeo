@@ -64,7 +64,7 @@ public class GetDocumentsFromFavoritesOperation {
     @OperationMethod
     public DocumentModelList run(DocumentModel context) throws OperationException {
 
-        DocumentModel favorites = favoritesManager.getFavorites(context, session);
+        DocumentModel favorites = favoritesManager.getFavorites(session);
 
         Map<String, Object> vars = new HashMap<>();
         vars.put("searchTerm", favorites.getId());

@@ -93,7 +93,7 @@ public class FavoritesActionBean {
         FavoritesManager favoritesManager = Framework.getService(FavoritesManager.class);
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
-        return favoritesManager.getFavorites(navigationContext.getCurrentDomain(), session);
+        return favoritesManager.getFavorites(session);
     }
 
     public void removeCurrentDocumentFromFavorites() {
