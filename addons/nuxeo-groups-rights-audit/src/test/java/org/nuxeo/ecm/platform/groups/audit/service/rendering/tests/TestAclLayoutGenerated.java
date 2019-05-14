@@ -49,12 +49,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("nuxeo-groups-rights-audit")
 public class TestAclLayoutGenerated extends AbstractAclLayoutTest {
 
-    @Inject
-    protected CoreSession session;
-
     private final static Log log = LogFactory.getLog(TestAclLayoutGenerated.class);
 
     protected static File testFile = new File(folder + TestAclLayoutGenerated.class.getSimpleName() + ".xls");
+
+    @Inject
+    protected CoreSession session;
 
     @Test
     public void testExcelExportReport() throws Exception {

@@ -31,7 +31,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+
+import com.google.inject.Binder;
 
 /**
  * Feature allowing to mock the {@link LoginComponent} in order to test services which need a security context.
@@ -43,6 +44,8 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
  * </ul>
  * The feature will look for {@link WithUser} annotation on the test method, then on the class method, and use its value
  * to log in the given user.
+ * <p>
+ * You can then get the logged in principal with help of {@link #getPrincipal()} or by using injection.
  * <p>
  * By default the feature will log in as Administrator, like the {@link org.nuxeo.ecm.core.test.CoreFeature} does.
  *
@@ -64,38 +67,24 @@ public class DummyLoginFeature implements RunnerFeature {
     }
 
     @Override
-    public void start(FeaturesRunner runner) throws Exception {
-        RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
-        if (harness.getContext().getRuntime().getBundle("org.nuxeo.ecm.platform.web.common") == null) {
-            harness.deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/dummy-login-as-config.xml");
-        }
-    }
-
-    @Override
     public void beforeRun(FeaturesRunner runner) throws LoginException {
         login(runner.getConfig(WithUser.class));
     }
 
     @Override
+    public void configure(FeaturesRunner runner, Binder binder) {
+        binder.bind(NuxeoPrincipal.class).toProvider(ClientLoginModule::getCurrentPrincipal);
+    }
+
+    @Override
     public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) throws LoginException {
-        // check if we need to log in with a different user
-        WithUser classWithUser = runner.getConfig(WithUser.class);
-        WithUser methodWithUser = runner.getConfig(method, WithUser.class);
-        if (!methodWithUser.value().equals(classWithUser.value())) {
-            logout();
-            login(methodWithUser);
-        }
+        logout(); // logout the class login
+        login(runner.getConfig(method, WithUser.class));
     }
 
     @Override
     public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) throws LoginException {
-        // check if we have logged in with a different user
-        WithUser classWithUser = runner.getConfig(WithUser.class);
-        WithUser methodWithUser = runner.getConfig(method, WithUser.class);
-        if (!methodWithUser.value().equals(classWithUser.value())) {
-            logout();
-            login(classWithUser);
-        }
+        logout();
     }
 
     @Override

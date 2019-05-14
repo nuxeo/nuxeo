@@ -55,7 +55,6 @@ import org.nuxeo.usermapper.test.UserMapperFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class, UserMapperFeature.class })
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.platform.login.keycloak.test:OSGI-INF/keycloak-descriptor-bundle.xml")
 public class TestKeycloakAuthenticationPlugin {
 

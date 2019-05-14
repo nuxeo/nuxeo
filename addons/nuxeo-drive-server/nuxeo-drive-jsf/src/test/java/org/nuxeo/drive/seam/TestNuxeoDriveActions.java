@@ -58,7 +58,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ KeyValueBlobTransientStoreFeature.class, PlatformFeature.class })
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.automation.server:OSGI-INF/auth-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.login.token")
 public class TestNuxeoDriveActions {

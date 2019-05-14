@@ -35,9 +35,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * Test on the {@link DummyNuxeoLoginModule}
  *
  * @since 6.0
+ * @deprecated since 11.1, no replacement
  */
 @RunWith(FeaturesRunner.class)
 @Features(ClientLoginFeature.class)
+@Deprecated(since = "11.1")
 public class TestDummyLogInClientModule {
 
     @Inject

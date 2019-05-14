@@ -18,15 +18,10 @@
  */
 package org.nuxeo.ecm.core.api.local;
 
-import java.security.Principal;
-import java.util.Set;
-
-import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginAs;
 
 /**
@@ -39,18 +34,6 @@ public class DummyLoginAs implements LoginAs {
     @Override
     @SuppressWarnings("deprecation")
     public LoginContext loginAs(String username) throws LoginException {
-        // do a dummy anonymous/administrator control based on username
-        boolean isAnonymous = SecurityConstants.ANONYMOUS.equals(username);
-        boolean isAdministrator = SecurityConstants.ADMINISTRATOR.equals(username);
-        Principal principal = new UserPrincipal(username, null, isAnonymous, isAdministrator);
-        // push it to the login stack and create context
-        Subject subject = new Subject(false, Set.of(principal), Set.of(), Set.of());
-        ClientLoginModule.getThreadLocalLogin().push(principal, null, subject);
-        return new LoginContext("nuxeo-client-login", subject) {
-            @Override
-            public void logout() {
-                ClientLoginModule.getThreadLocalLogin().pop();
-            }
-        };
+        return Framework.login(username, username);
     }
 }

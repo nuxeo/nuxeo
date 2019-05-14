@@ -62,6 +62,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
@@ -75,16 +76,13 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 5.6
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
+@Features({ PlatformFeature.class, NuxeoLoginFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.multi.tenant")
-@Deploy("org.nuxeo.ecm.platform.login")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.default.config")
-@Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml")
 @Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml")
 public class TestMultiTenantService {
 
