@@ -38,7 +38,6 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.features")
 @Deploy("org.nuxeo.ecm.automation.scripting")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.automation.scripting:automation-scripting-contrib.xml")
 @Deploy("org.nuxeo.ecm.automation.scripting:core-types-contrib.xml")
 public class AutomationScriptingFeature implements RunnerFeature {

@@ -18,6 +18,7 @@
  */
 package org.nuxeo.wopi;
 
+import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -26,8 +27,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 /**
  * @since 10.3
  */
-@Features(PlatformFeature.class)
-@Deploy("org.nuxeo.ecm.platform.web.common")
+@Features({ PlatformFeature.class, NuxeoLoginFeature.class })
 @Deploy("org.nuxeo.wopi")
 public class WOPIFeature implements RunnerFeature {
 }

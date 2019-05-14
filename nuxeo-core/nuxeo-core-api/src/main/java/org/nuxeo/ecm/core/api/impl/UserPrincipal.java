@@ -177,7 +177,7 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
 
     @Override
     public boolean isMemberOf(String group) {
-        return false;
+        return groups.contains(group);
     }
 
     @Override

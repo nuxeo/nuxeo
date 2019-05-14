@@ -20,9 +20,9 @@
 package org.nuxeo.elasticsearch.test;
 
 import org.junit.runners.model.FrameworkMethod;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -38,11 +38,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.platform.forms.layout.export")
 @Deploy("org.nuxeo.ecm.webengine.core")
 @Deploy("org.nuxeo.ecm.webengine.jaxrs")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.elasticsearch.core")
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.core.management")
-@Features({ CoreFeature.class, LogFeature.class })
+@Features({ NuxeoLoginFeature.class, LogFeature.class })
 @Deploy("org.nuxeo.elasticsearch.core.test:elastic-search-core-management-tests-component.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class RepositoryElasticSearchFeature implements RunnerFeature {
