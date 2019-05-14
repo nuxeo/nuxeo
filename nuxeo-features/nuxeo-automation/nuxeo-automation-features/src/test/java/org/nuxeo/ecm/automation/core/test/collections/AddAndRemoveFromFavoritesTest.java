@@ -67,7 +67,7 @@ public class AddAndRemoveFromFavoritesTest extends CollectionOperationsTestCase 
         DocumentModelList listDocResult = (DocumentModelList) service.run(ctx, chain);
 
         // Test the result of the add operation
-        DocumentModel favorites = favoritesManager.getFavorites(listDocResult.get(0), session);
+        DocumentModel favorites = favoritesManager.getFavorites(session);
         Collection favoritesAdapter = favorites.getAdapter(Collection.class);
         assertEquals(listDocs.size(), favoritesAdapter.getCollectedDocumentIds().size());
         assertEquals(listDocs.size(), listDocResult.size());
@@ -87,7 +87,7 @@ public class AddAndRemoveFromFavoritesTest extends CollectionOperationsTestCase 
         listDocResult = (DocumentModelList) service.run(ctx, chain);
 
         // Test the result of the remove operation
-        favorites = favoritesManager.getFavorites(listDocResult.get(0), session);
+        favorites = favoritesManager.getFavorites(session);
         favoritesAdapter = favorites.getAdapter(Collection.class);
         assertEquals(0, favoritesAdapter.getCollectedDocumentIds().size());
         assertEquals(listDocs.size(), listDocResult.size());
