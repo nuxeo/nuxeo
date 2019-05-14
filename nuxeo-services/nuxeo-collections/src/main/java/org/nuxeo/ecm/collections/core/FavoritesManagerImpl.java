@@ -23,6 +23,7 @@ import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.api.FavoritesManager;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -33,8 +34,12 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
 
     @Override
     public void addToFavorites(DocumentModel document, CoreSession session) {
+        DocumentModel favorites = getFavorites(session);
+        if (favorites == null) {
+            throw new DocumentNotFoundException("No user favorites found");
+        }
         final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
-        collectionManager.addToCollection(getFavorites(session), document, session);
+        collectionManager.addToCollection(favorites, document, session);
     }
 
     @Override
@@ -63,8 +68,12 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
 
     @Override
     public void removeFromFavorites(DocumentModel document, CoreSession session) {
+        DocumentModel favorites = getFavorites(session);
+        if (favorites == null) {
+            throw new DocumentNotFoundException("No user favorites found");
+        }
         final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
-        collectionManager.removeFromCollection(getFavorites(session), document, session);
+        collectionManager.removeFromCollection(favorites, document, session);
     }
 
 }

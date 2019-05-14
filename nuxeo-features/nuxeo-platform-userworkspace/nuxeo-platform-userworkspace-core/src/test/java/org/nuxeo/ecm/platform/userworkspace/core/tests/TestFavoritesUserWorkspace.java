@@ -74,5 +74,19 @@ public class TestFavoritesUserWorkspace {
         // no user favorites, always false
         assertFalse(favoritesManager.isFavorite(testFile, session));
         assertFalse(favoritesManager.isFavorite(testWorkspace, session));
+
+        try {
+            favoritesManager.addToFavorites(testFile, session);
+            fail("Should have raised DocumentNotFoundException");
+        } catch (DocumentNotFoundException e) {
+            assertEquals("No user favorites found", e.getMessage());
+        }
+
+        try {
+            favoritesManager.removeFromFavorites(testFile, session);
+            fail("Should have raised DocumentNotFoundException");
+        } catch (DocumentNotFoundException e) {
+            assertEquals("No user favorites found", e.getMessage());
+        }
     }
 }
