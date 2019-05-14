@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -49,7 +50,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 5.6
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
+@Features({ NuxeoLoginFeature.class, PlatformFeature.class })
 @RepositoryConfig
 @Deploy("org.nuxeo.ecm.multi.tenant")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")

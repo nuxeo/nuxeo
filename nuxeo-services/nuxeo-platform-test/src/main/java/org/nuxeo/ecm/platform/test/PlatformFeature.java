@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.test;
 
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
@@ -32,7 +31,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.platform.content.template")
 @Deploy("org.nuxeo.ecm.platform.dublincore")
 @Deploy("org.nuxeo.ecm.platform.query.api")
-@Features({ CoreFeature.class, ClientLoginFeature.class, DirectoryFeature.class, UserManagerFeature.class })
+@Features({ CoreFeature.class, DirectoryFeature.class, UserManagerFeature.class })
 public class PlatformFeature implements RunnerFeature {
 
 }

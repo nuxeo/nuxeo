@@ -3,6 +3,10 @@
   <!-- Override DummyLoginFeature configuration -->
   <require>org.nuxeo.ecm.core.api.local.dummy.login</require>
 
+  <extension target="org.nuxeo.runtime.LoginAsComponent" point="implementation">
+    <implementation class="org.nuxeo.ecm.platform.login.test.DummyLoginAs" />
+  </extension>
+
   <extension target="org.nuxeo.runtime.LoginComponent" point="domains">
     <domain name="nuxeo-system-login">
       <login-module code="org.nuxeo.runtime.api.login.SystemLoginModule" flag="required" />

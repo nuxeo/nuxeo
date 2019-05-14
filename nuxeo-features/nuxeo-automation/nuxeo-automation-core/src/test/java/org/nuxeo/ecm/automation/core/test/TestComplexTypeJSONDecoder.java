@@ -43,12 +43,11 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.RequestContext;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -72,6 +71,9 @@ public class TestComplexTypeJSONDecoder {
     protected static final String OBJECT_BLOB_JSON = "{ \"data\": \"%s\" }";
 
     protected static final String BASE_URL = "http://localhost:8080/nuxeo/";
+
+    @Inject
+    protected NuxeoPrincipal principal;
 
     @Inject
     protected CoreSession session;
@@ -141,8 +143,7 @@ public class TestComplexTypeJSONDecoder {
     @WithUser("testUser3")
     public void testDecodeManagedBlobWithAuthorizedUserFromPropertyGroup() throws Exception {
         // add testUser3 to testGroup group
-        NuxeoPrincipalImpl user3 = (NuxeoPrincipalImpl) ClientLoginModule.getCurrentPrincipal();
-        user3.setVirtualGroups(List.of("testGroup"), true);
+        principal.setGroups(List.of("testGroup"));
         // test
         String json = "{\"providerId\":\"testBlobProviderWithAuthorizedUsers\", \"key\":\"testKey\"}";
         Blob blob = ComplexTypeJSONDecoder.getBlobFromJSON((ObjectNode) OBJECT_MAPPER.readTree(json));

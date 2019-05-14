@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.importer.base.GenericThreadedImportTask;
 import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -47,7 +46,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 10.10
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, ClientLoginFeature.class })
+@Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.importer.core.test:test-document-resolver-contrib.xml" })
 public class TestGenericThreadedImportTask {

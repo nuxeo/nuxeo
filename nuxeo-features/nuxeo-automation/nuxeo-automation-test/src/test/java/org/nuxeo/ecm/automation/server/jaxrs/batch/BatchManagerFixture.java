@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreProvider;
+import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -58,9 +59,8 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
  * @since 7.10
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, TransientStoreFeature.class })
+@Features({ CoreFeature.class, TransientStoreFeature.class, NuxeoLoginFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.webengine.core")
 @Deploy("org.nuxeo.ecm.automation.io")
 @Deploy("org.nuxeo.ecm.automation.server")

@@ -35,6 +35,7 @@ import org.nuxeo.ecm.automation.core.operations.login.LoginAs;
 import org.nuxeo.ecm.automation.core.operations.login.Logout;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -45,11 +46,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
+@Features({ PlatformFeature.class, NuxeoLoginFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.features")
-@Deploy("org.nuxeo.ecm.platform.web.common")
-@Deploy("org.nuxeo.ecm.platform.login")
 public class LoginAsTest {
 
     @Inject
