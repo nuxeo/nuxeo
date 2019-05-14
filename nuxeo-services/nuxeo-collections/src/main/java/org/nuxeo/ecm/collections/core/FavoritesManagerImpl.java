@@ -57,7 +57,8 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
     @Override
     public boolean isFavorite(DocumentModel document, CoreSession session) {
         final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
-        return collectionManager.isInCollection(getFavorites(document, session), document, session);
+        DocumentModel favorites = getFavorites(document, session);
+        return favorites != null && collectionManager.isInCollection(favorites, document, session);
     }
 
     @Override
