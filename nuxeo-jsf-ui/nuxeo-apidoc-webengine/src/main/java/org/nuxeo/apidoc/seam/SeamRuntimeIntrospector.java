@@ -46,6 +46,7 @@ public class SeamRuntimeIntrospector {
         return names;
     }
 
+    // called by reflection from org.nuxeo.apidoc.introspection.RuntimeSnapshot#initSeamComponents
     public static List<SeamComponentInfo> listNuxeoComponents(HttpServletRequest request) {
 
         ServletLifecycle.beginRequest(request);
