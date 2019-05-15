@@ -61,7 +61,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 @Deploy("org.nuxeo.ecm.platform.forms.layout.core")
 @Deploy("org.nuxeo.ecm.platform.forms.layout.export")
 @Deploy("org.nuxeo.ecm.platform.forms.layout.client:OSGI-INF/layouts-framework.xml")
-@Deploy("org.nuxeo.ecm.platform.forms.layout.export.tests:OSGI-INF/layouts-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.forms.layout.client.tests:OSGI-INF/layouts-test-contrib.xml")
 public class TestLayoutExport {
 
     @Inject
