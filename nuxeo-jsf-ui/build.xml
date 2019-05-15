@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<project name="Nuxeo EP" default="install" basedir=".">
+  <property environment="env" />
+  <property file="build.properties" />
+  <property name="mvn.opts" value="" />
+  <property name="branch" value="" />
+
+  <property name="tomcat.dir" value="/opt/tomcat" />
+  <property name="tomcat.nuxeo.ear" value="${tomcat.dir}/nxserver" />
+  <property name="tomcat.bundles.dir" value="${tomcat.nuxeo.ear}/bundles" />
+  <property name="tomcat.nuxeo.war.dir"
+            value="${tomcat.dir}/nxserver/nuxeo.war" />
+  <property name="tomcat.seam.hotdeploy.dir"
+            value="${tomcat.nuxeo.war.dir}/WEB-INF/dev" />
+
+  <condition property="osfamily-unix">
+    <os family="unix" />
+  </condition>
+  <condition property="osfamily-windows">
+    <os family="windows" />
+  </condition>
+
+  <target name="clone" description="Launch the clone.py command">
+    <exec executable="python" failonerror="true">
+      <env key="PATH" path="${env.PATH}" />
+      <arg value="clone.py" />
+      <arg value="${branch}" />
+    </exec>
+  </target>
+
+  <target name="clean"
+          depends="clean-unix,clean-windows"
+          description="Delete target directories" />
+  <target name="clean-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="clean" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="clean-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="clean" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="install"
+          depends="clean,install-unix,install-windows"
+          description="Run mvn install" />
+  <target name="install-unix" if="osfamily-unix">
+    <exec executable="env" />
+    <exec executable="mvn" failonerror="true">
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="install-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="test"
+          depends="test-unix,test-windows"
+          description="Run tests" />
+  <target name="test-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="test" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="test-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="test" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="idea"
+          depends="idea-unix,idea-windows"
+          description="Generate IntelliJ IDEA files" />
+  <target name="idea-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="idea:idea" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="idea-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="idea:idea" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="eclipse"
+          depends="eclipse-unix,eclipse-windows"
+          description="Generate Eclipse files" />
+  <target name="eclipse-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="eclipse:clean" />
+      <arg value="eclipse:eclipse" />
+      <arg value="${mvn.opts}" />
+    </exec>
+    <exec executable="fixeclipse" failonerror="true" />
+  </target>
+  <target name="eclipse-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="eclipse:clean" />
+      <arg value="eclipse:eclipse" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="web-tomcat"
+          description="Deploy Web components to the live Tomcat server">
+    <copy todir="${tomcat.nuxeo.war.dir}">
+      <fileset dir="${basedir}/src/main/resources/web/nuxeo.war" />
+    </copy>
+  </target>
+
+  <target name="deploy" depends="install" description="Deploy Nuxeo">
+    <echo>
+      WARNING: this ant task is here for developers who find it handy: use to
+      your own risk, and refer to nuxeo-distribution scripts for better
+      deployment strategies
+    </echo>
+    <ant target="package" dir="nuxeo-distribution" />
+    <ant target="copy" dir="nuxeo-distribution" />
+  </target>
+
+</project>
