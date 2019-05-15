@@ -18,6 +18,7 @@
  */
 package org.nuxeo.apidoc.introspection;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,7 +43,6 @@ import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
-import org.nuxeo.apidoc.seam.SeamRuntimeIntrospector;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
@@ -466,11 +466,20 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public void initSeamComponents(HttpServletRequest request) {
         if (seamInitialized) {
             return;
         }
-        seamComponents = SeamRuntimeIntrospector.listNuxeoComponents(request);
+        // use reflection to call SeamRuntimeIntrospector, if available
+        try {
+            // SeamRuntimeIntrospector.listNuxeoComponents(request);
+            Class<?> klass = Class.forName("org.nuxeo.apidoc.seam.SeamRuntimeIntrospector");
+            Method method = klass.getDeclaredMethod("listNuxeoComponents", HttpServletRequest.class);
+            seamComponents = (List<SeamComponentInfo>) method.invoke(null, request);
+        } catch (ReflectiveOperationException e) {
+            // ignore, no Seam
+        }
         for (SeamComponentInfo seamComp : seamComponents) {
             ((SeamComponentInfoImpl) seamComp).setVersion(getVersion());
         }
