@@ -23,11 +23,13 @@ import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.collections.api.FavoritesManager;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -53,14 +55,21 @@ public class FavoritesAddRemoveTest {
 
     protected CoreSession userSession;
 
-    @Test
-    public void addRemoveToFavoritesTest() {
-        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+    protected DocumentModel testWorkspace;
+
+    protected DocumentModel testFile;
+
+    @Before
+    public void setup() {
+        testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
                 "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
-        DocumentModel testFile = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
+        testFile = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
         testFile = session.createDocument(testFile);
+    }
 
+    @Test
+    public void addRemoveToFavoritesTest() {
         favoritesManager.addToFavorites(testFile, session);
         assertTrue(favoritesManager.isFavorite(testFile, session));
 
@@ -68,4 +77,16 @@ public class FavoritesAddRemoveTest {
         assertFalse(favoritesManager.isFavorite(testFile, session));
     }
 
+    @Test
+    public void testFavoritesWithoutDomain() {
+        favoritesManager.addToFavorites(testFile, session);
+        assertTrue(favoritesManager.isFavorite(testFile, session));
+
+        // remove the only domain
+        session.removeDocument(new PathRef("/default-domain"));
+
+        // no user favorites, always false
+        assertFalse(favoritesManager.isFavorite(testFile, session));
+        assertFalse(favoritesManager.isFavorite(testWorkspace, session));
+    }
 }
