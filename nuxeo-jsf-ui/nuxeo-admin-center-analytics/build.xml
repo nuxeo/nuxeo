@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="Nuxeo Administration Center Analytics" default="build" basedir=".">
 
-  <import file="../../../build.xml" />
+  <import file="../build.xml" />
   <property file="build.properties" />
 
   <!-- set executable names based on OS family -->
