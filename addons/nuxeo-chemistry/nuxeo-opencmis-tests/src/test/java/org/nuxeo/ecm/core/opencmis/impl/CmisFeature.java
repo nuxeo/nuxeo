@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.opencmis.impl;
 import org.junit.AssumptionViolatedException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
+import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -29,12 +30,8 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 /**
  * Feature for CMIS tests.
  */
-@Features({ CoreFeature.class, AuditFeature.class })
-@Deploy("org.nuxeo.ecm.directory")
-@Deploy("org.nuxeo.ecm.directory.sql")
-@Deploy("org.nuxeo.ecm.core.query")
+@Features({ CoreFeature.class, NuxeoLoginFeature.class, AuditFeature.class })
 @Deploy("org.nuxeo.ecm.platform.query.api")
-@Deploy("org.nuxeo.ecm.core.io")
 // deployed for fulltext indexing
 @Deploy("org.nuxeo.ecm.platform.convert")
 // MyDocType
@@ -56,10 +53,6 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.core.opencmis.bindings")
 // QueryMaker registration
 @Deploy("org.nuxeo.ecm.core.opencmis.impl")
-// these deployments needed for NuxeoAuthenticationFilter.loginAs
-@Deploy("org.nuxeo.ecm.directory.types.contrib")
-@Deploy("org.nuxeo.ecm.platform.login")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/validation-contrib.xml")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/disable-thumbnail-listener.xml")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/disable-filemanager-icon-listener.xml")

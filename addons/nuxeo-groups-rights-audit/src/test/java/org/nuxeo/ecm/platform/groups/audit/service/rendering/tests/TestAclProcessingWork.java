@@ -49,10 +49,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("nuxeo-groups-rights-audit")
-@Deploy("nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml")
-@Deploy("nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml")
 public class TestAclProcessingWork extends AbstractAclLayoutTest {
 
     private static class ResultAuditPublisher implements IResultPublisher {

@@ -31,11 +31,8 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.platform.api")
 @Deploy("org.nuxeo.ecm.platform.content.template")
 @Deploy("org.nuxeo.ecm.platform.dublincore")
-@Deploy("org.nuxeo.ecm.platform.usermanager.api")
-@Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.platform.query.api")
-@Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml")
-@Features({ CoreFeature.class, ClientLoginFeature.class, DirectoryFeature.class })
+@Features({ CoreFeature.class, ClientLoginFeature.class, DirectoryFeature.class, UserManagerFeature.class })
 public class PlatformFeature implements RunnerFeature {
 
 }
