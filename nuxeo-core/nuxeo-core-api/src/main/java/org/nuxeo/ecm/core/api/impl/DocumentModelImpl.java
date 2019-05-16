@@ -67,7 +67,6 @@ import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.schema.PropertyDeprecationHandler;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.TypeProvider;
@@ -1257,9 +1256,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             // no property found, maybe it's a removed property
             // search for the first matching removed property
             // as removed schema is not yet support we can rely on docSchemas
-            PropertyDeprecationHandler removedProperties = schemaManager.getRemovedProperties();
             for (String schemaName : docSchemas) {
-                if (removedProperties.isMarked(schemaName, prop)) {
+                if (schemaManager.isRemoved(schemaName, prop)) {
                     if (returnName != null) {
                         returnName[0] = prop;
                     }

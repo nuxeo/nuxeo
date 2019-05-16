@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.core.schema;
 
 import org.nuxeo.runtime.RuntimeServiceException;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -81,7 +83,14 @@ public class TypeService extends DefaultComponent {
             schemaManager.registerConfiguration((TypeConfiguration) contribution);
             break;
         case XP_DEPRECATION:
-            schemaManager.registerPropertyDeprecation((PropertyDeprecationDescriptor) contribution);
+            xp = computeSchemaExtensionPoint(PropertyDescriptor.class);
+            PropertyDescriptor contrib = ((PropertyDeprecationDescriptor) contribution).toPropertyDescriptor();
+            super.registerContribution(contrib, xp, component);
+            String message = String.format(
+                    "Deprecation contribution on component: %s should now be contributed to extension point: %s ",
+                    component.getName(), XP_SCHEMA);
+            DeprecationLogger.log(message, "11.1");
+            Framework.getRuntime().getMessageHandler().addWarning(message);
             break;
         default:
             throw new RuntimeServiceException("Unknown extension point: " + xp);
@@ -112,7 +121,9 @@ public class TypeService extends DefaultComponent {
             schemaManager.unregisterConfiguration((TypeConfiguration) contribution);
             break;
         case XP_DEPRECATION:
-            schemaManager.unregisterPropertyDeprecation((PropertyDeprecationDescriptor) contribution);
+            xp = computeSchemaExtensionPoint(PropertyDescriptor.class);
+            PropertyDescriptor contrib = ((PropertyDeprecationDescriptor) contribution).toPropertyDescriptor();
+            super.unregisterContribution(contrib, xp, component);
             break;
         default:
             throw new RuntimeServiceException("Unknown extension point: " + xp);
@@ -136,13 +147,14 @@ public class TypeService extends DefaultComponent {
 
     @Override
     public void start(ComponentContext context) {
-        schemaManager.registerSecuredProperty(getDescriptors(computeSchemaExtensionPoint(PropertyDescriptor.class)));
+        schemaManager.registerPropertyCharacteristics(
+                getDescriptors(computeSchemaExtensionPoint(PropertyDescriptor.class)));
         schemaManager.flushPendingsRegistration();
     }
 
     @Override
     public void stop(ComponentContext context) {
-        schemaManager.clearSecuredProperty();
+        schemaManager.clearPropertyCharacteristics();
     }
 
     @Override

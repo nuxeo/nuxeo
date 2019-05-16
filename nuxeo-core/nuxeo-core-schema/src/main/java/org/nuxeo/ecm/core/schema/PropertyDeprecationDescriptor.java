@@ -18,13 +18,18 @@
  */
 package org.nuxeo.ecm.core.schema;
 
+import static org.nuxeo.ecm.core.schema.PropertyDescriptor.DEPRECATED;
+import static org.nuxeo.ecm.core.schema.PropertyDescriptor.REMOVED;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @since 9.2
+ * @deprecated since 11.1, use {@link PropertyDescriptor} instead
  */
 @XObject("property")
+@Deprecated(since = "11.1")
 public class PropertyDeprecationDescriptor {
 
     @XNode("@schema")
@@ -65,6 +70,15 @@ public class PropertyDeprecationDescriptor {
         }
         builder.append("deprecated=").append(deprecated).append(")");
         return builder.toString();
+    }
+
+    protected PropertyDescriptor toPropertyDescriptor() {
+        var descriptor = new PropertyDescriptor();
+        descriptor.schema = schema;
+        descriptor.name = name;
+        descriptor.fallback = fallback;
+        descriptor.deprecation = deprecated ? DEPRECATED : REMOVED;
+        return descriptor;
     }
 
 }

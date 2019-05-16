@@ -27,14 +27,19 @@ import org.nuxeo.runtime.model.Descriptor;
  * Descriptor representing a Nuxeo Property.
  * <p>
  * It maps the xml below:
+ * 
  * <pre>
- * {@code <property schema="SCHEMA" name="NAME" secured="true" />}
+ * {@code <property schema="SCHEMA" name="NAME" secured="true" deprecation="deprecated|removed" fallback="NAME" />}
  * </pre>
  *
  * @since 11.1
  */
 @XObject("property")
 public class PropertyDescriptor implements Descriptor {
+
+    public static final String DEPRECATED = "deprecated";
+
+    public static final String REMOVED = "removed";
 
     @XNode("@schema")
     protected String schema;
@@ -44,6 +49,12 @@ public class PropertyDescriptor implements Descriptor {
 
     @XNode("@secured")
     public Boolean secured;
+
+    @XNode("@deprecation")
+    protected String deprecation;
+
+    @XNode("@fallback")
+    protected String fallback;
 
     @XNode("@remove")
     public boolean remove;
@@ -65,6 +76,25 @@ public class PropertyDescriptor implements Descriptor {
         return Boolean.TRUE.equals(secured);
     }
 
+    /**
+     * @return {@link #DEPRECATED deprecated}, {@link #REMOVED removed} or null
+     */
+    public String getDeprecation() {
+        return deprecation;
+    }
+
+    public boolean isDeprecated() {
+        return DEPRECATED.equalsIgnoreCase(deprecation);
+    }
+
+    public boolean isRemoved() {
+        return REMOVED.equalsIgnoreCase(deprecation);
+    }
+
+    public String getFallback() {
+        return fallback;
+    }
+
     @Override
     public Descriptor merge(Descriptor o) {
         PropertyDescriptor other = (PropertyDescriptor) o;
@@ -72,6 +102,8 @@ public class PropertyDescriptor implements Descriptor {
         merged.schema = schema;
         merged.name = name;
         merged.secured = other.secured != null ? other.secured : secured;
+        merged.deprecation = other.deprecation != null ? other.deprecation : deprecation;
+        merged.fallback = other.fallback != null ? other.fallback : fallback;
         return merged;
     }
 

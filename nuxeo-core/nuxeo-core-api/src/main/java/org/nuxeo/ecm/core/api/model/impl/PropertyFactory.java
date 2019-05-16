@@ -19,7 +19,10 @@
  */
 package org.nuxeo.ecm.core.api.model.impl;
 
+import static org.nuxeo.ecm.core.api.model.impl.AbstractProperty.IS_DEPRECATED;
 import static org.nuxeo.ecm.core.api.model.impl.AbstractProperty.IS_SECURED;
+
+import java.util.stream.IntStream;
 
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BinaryProperty;
@@ -34,7 +37,6 @@ import org.nuxeo.ecm.core.schema.PropertyCharacteristicHandler;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
-import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
@@ -56,26 +58,7 @@ public class PropertyFactory {
     }
 
     public static Property createProperty(Property parent, Field field, int flags) {
-        // check if property to create is a secured one
-        if (parent instanceof AbstractProperty) { // should always be the case
-            if (((AbstractProperty) parent).areFlagsSet(IS_SECURED)) {
-                flags |= IS_SECURED;
-            } else if ((flags & IS_SECURED) == 0) {
-                Schema schema = parent.getSchema();
-                StringBuilder xpath = new StringBuilder();
-                if (parent.getParent() != null) {
-                    xpath.append(parent.getXPath()).append('/');
-                }
-                xpath.append(field.getName().getLocalName());
-
-                PropertyCharacteristicHandler propertyHandler = Framework.getService(
-                        PropertyCharacteristicHandler.class);
-                if (propertyHandler.isSecured(schema.getName(), xpath.toString())) {
-                    flags |= IS_SECURED;
-                }
-            }
-        }
-
+        flags = computePropertyFlags(parent, field, flags);
         Type type = field.getType();
         if (type instanceof SimpleTypeImpl) {
             // type with constraint
@@ -113,6 +96,36 @@ public class PropertyFactory {
         } else {
             throw new IllegalArgumentException("Unsupported field type: " + field.getType().getName());
         }
+    }
+
+    protected static int computePropertyFlags(Property parent, Field field, int flags) {
+        // check if property to create has flags to inherit from parent or configuration
+        if (parent instanceof AbstractProperty) { // should always be the case
+            // compute inherit flags from parent
+            flags |= IntStream.of(IS_SECURED, IS_DEPRECATED)
+                              .filter(((AbstractProperty) parent)::areFlagsSet)
+                              .reduce(0, (f1, f2) -> f1 | f2);
+            // if parent is not secured or deprecated, compute characteristics for current property
+            if ((flags & IS_SECURED) == 0 || (flags & IS_DEPRECATED) == 0) {
+                String schemaName = parent.getSchema().getName();
+                StringBuilder xpathBuilder = new StringBuilder();
+                if (parent.getParent() != null) {
+                    xpathBuilder.append(parent.getXPath()).append('/');
+                }
+                xpathBuilder.append(field.getName().getLocalName());
+                String xpath = xpathBuilder.toString();
+
+                PropertyCharacteristicHandler propertyHandler = Framework.getService(
+                        PropertyCharacteristicHandler.class);
+                if ((flags & IS_SECURED) == 0 && propertyHandler.isSecured(schemaName, xpath)) {
+                    flags |= IS_SECURED;
+                }
+                if ((flags & IS_DEPRECATED) == 0 && propertyHandler.isDeprecated(schemaName, xpath)) {
+                    flags |= IS_DEPRECATED;
+                }
+            }
+        }
+        return flags;
     }
 
 }
