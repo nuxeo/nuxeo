@@ -30,7 +30,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.logging.Log;
@@ -60,7 +63,12 @@ public class RedisPubSubProvider extends AbstractPubSubProvider {
     /** Maximum delay to wait for a channel subscription on startup. */
     public static final long TIMEOUT_SUBSCRIBE_SECONDS = 5;
 
-    protected String namespace;
+    protected static final String THREAD_NAME = "Nuxeo-PubSub-Redis";
+
+    protected static final AtomicInteger THREAD_NUMBER = new AtomicInteger();
+
+    protected static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool(
+            r -> new Thread(r, THREAD_NAME + "-" + THREAD_NUMBER.incrementAndGet()));
 
     protected Dispatcher dispatcher;
 
@@ -72,7 +80,7 @@ public class RedisPubSubProvider extends AbstractPubSubProvider {
         log.debug("Initializing");
         namespace = Framework.getService(RedisAdmin.class).namespace();
         dispatcher = new Dispatcher(namespace + "*");
-        thread = new Thread(dispatcher::run, "Nuxeo-PubSub-Redis");
+        thread = new Thread(dispatcher::run, THREAD_NAME);
         thread.setUncaughtExceptionHandler((t, e) -> log.error("Uncaught error on thread " + t.getName(), e));
         thread.setPriority(Thread.NORM_PRIORITY);
         thread.setDaemon(true);
@@ -167,7 +175,11 @@ public class RedisPubSubProvider extends AbstractPubSubProvider {
                 log.trace("Message received from channel: " + channel + " (" + message.length + " bytes)");
             }
             String topic = channel.substring(namespace.length());
-            localPublish(topic, message);
+            // localPublish needs to be called in a different thread,
+            // so that if a subscriber calls Redis it doesn't reuse our current Redis connection
+            // which can only be used for subscribe/unsubscribe/ping commands.
+            final byte[] finalMessage = message;
+            THREAD_POOL.execute(() -> localPublish(topic, finalMessage));
         }
 
         public void onPMessage(String pattern, String channel, byte[] message) {
