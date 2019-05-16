@@ -116,32 +116,6 @@ public class TestPreviewAdapter {
     }
 
     @Test
-    public void testFilesOfficePreviewer() throws IOException {
-        DocumentModel document = session.createDocumentModel("CustomDoc");
-        Blob officeBlob = new FileBlob(FileUtils.getResourceFileFromContext("hello.docx"));
-        String mimeType = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("hello.docx", officeBlob, null);
-        officeBlob.setMimeType(mimeType);
-        document.setPropertyValue("files:files",
-                (Serializable) Collections.singletonList(Collections.singletonMap("file", officeBlob)));
-
-        HtmlPreviewAdapter adapter = document.getAdapter(HtmlPreviewAdapter.class);
-        List<Blob> previewBlobs = adapter.getFilePreviewBlobs();
-        // check that we have the same result passing the xpath explicitly
-        assertEquals(previewBlobs, adapter.getFilePreviewBlobs("files:files/0/file"));
-        // check preview blobs
-        assertEquals(2, previewBlobs.size());
-        assertEquals("text/html", previewBlobs.get(0).getMimeType());
-        Blob pdfBlob = previewBlobs.get(1);
-        assertEquals("application/pdf", pdfBlob.getMimeType());
-        // fix filename set to "pdf" by the PDFPreviewer to ensure blob equality
-        pdfBlob.setFilename("hello.pdf");
-        Blob expectedBlob = Framework.getService(ConversionService.class)
-                                     .convert("any2pdf", new SimpleBlobHolder(officeBlob), null)
-                                     .getBlob();
-        assertEquals(expectedBlob, pdfBlob);
-    }
-
-    @Test
     public void testFolderishDocument() throws Exception {
         DocumentModel document = session.createDocumentModel("File");
         document.addFacet("Folderish");
