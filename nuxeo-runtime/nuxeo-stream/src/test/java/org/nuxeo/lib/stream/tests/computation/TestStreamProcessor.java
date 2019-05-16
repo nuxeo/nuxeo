@@ -46,6 +46,7 @@ import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.Watermark;
+import org.nuxeo.lib.stream.computation.log.ComputationRunnerTerminated;
 import org.nuxeo.lib.stream.computation.log.LogStreamManager;
 import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogAppender;
@@ -598,6 +599,8 @@ public abstract class TestStreamProcessor {
             assertEquals(lag.toString(), 3, lag.lag());
         }
 
+        assertTrue(ComputationRunnerTerminated.hasBlockedStream());
+        
         // Policy with retries, abort on failure
         policy = new ComputationPolicyBuilder().batchPolicy(batchCapacity, batchThreshold)
                                                .retryPolicy(new RetryPolicy().withMaxRetries(

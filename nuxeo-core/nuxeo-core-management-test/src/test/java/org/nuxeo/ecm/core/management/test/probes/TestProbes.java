@@ -56,6 +56,14 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.ecm.core.management.test")
 public class TestProbes {
 
+    private static final String TEST_PROBE_OK_RESULT_AS_JSON = "{\"testProbeStatus\":\"ok\"}";
+
+    private static final String TEST_PROBE_FAILED_RESULT_AS_JSON = "{\"testProbeStatus\":\"failed\"}";
+
+    private static final String ALL_PROBES_OK_RESULT_AS_JSON = "{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"ok\",\"streamStatus\":\"ok\"}";
+
+    private static final String ALL_PROBES_FAILED_RESULT_AS_JSON = "{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"failed\",\"streamStatus\":\"ok\"}";
+
     @Inject
     CoreSession session;
 
@@ -70,8 +78,9 @@ public class TestProbes {
     @Before
     public void removeCacheOnProbes() {
         // remove effects linked to cache for these tests
-        Framework.getProperties().setProperty(ProbeManagerImpl.DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY,
-                String.valueOf(TEST_INTERVAL_SECONDS));
+        Framework.getProperties()
+                 .setProperty(ProbeManagerImpl.DEFAULT_HEALTH_CHECK_INTERVAL_SECONDS_PROPERTY,
+                         String.valueOf(TEST_INTERVAL_SECONDS));
         // reset fake service status
         fs.setSuccess();
     }
@@ -112,11 +121,10 @@ public class TestProbes {
     @Test
     public void testHealthCheck() throws IOException {
         Collection<ProbeInfo> healthCheckProbes = pm.getHealthCheckProbes();
-        assertEquals(3, healthCheckProbes.size());
+        assertEquals(4, healthCheckProbes.size());
         HealthCheckResult result = pm.getOrRunHealthChecks();
         assertTrue(result.isHealthy());
-        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"ok\"}",
-                result.toJson());
+        assertEquals(ALL_PROBES_OK_RESULT_AS_JSON, result.toJson());
     }
 
     /**
@@ -130,24 +138,21 @@ public class TestProbes {
         assertTrue(fs.getStatus().isSuccess());
         HealthCheckResult result = pm.getOrRunHealthChecks();
         assertTrue(result.isHealthy());
-        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"ok\"}",
-                result.toJson());
+        assertEquals(ALL_PROBES_OK_RESULT_AS_JSON, result.toJson());
 
         // make test probe return a failure status instead
         fs.setFailure();
         assertTrue(fs.getStatus().isFailure());
         result = pm.getOrRunHealthChecks();
         assertFalse(result.isHealthy());
-        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"failed\"}",
-                result.toJson());
+        assertEquals(ALL_PROBES_FAILED_RESULT_AS_JSON, result.toJson());
 
         // make test probe status back to ok
         fs.setSuccess();
         assertTrue(fs.getStatus().isSuccess());
         result = pm.getOrRunHealthChecks();
         assertTrue(result.isHealthy());
-        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"ok\"}",
-                result.toJson());
+        assertEquals(ALL_PROBES_OK_RESULT_AS_JSON, result.toJson());
 
         // make test probe throw an exception instead
         fs.setThrowException();
@@ -159,16 +164,14 @@ public class TestProbes {
         }
         result = pm.getOrRunHealthChecks();
         assertFalse(result.isHealthy());
-        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"failed\"}",
-                result.toJson());
+        assertEquals(ALL_PROBES_FAILED_RESULT_AS_JSON, result.toJson());
 
         // make test probe status back to ok
         fs.setSuccess();
         assertTrue(fs.getStatus().isSuccess());
         result = pm.getOrRunHealthChecks();
         assertTrue(result.isHealthy());
-        assertEquals("{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"ok\"}",
-                result.toJson());
+        assertEquals(ALL_PROBES_OK_RESULT_AS_JSON, result.toJson());
     }
 
     @Test
@@ -196,7 +199,7 @@ public class TestProbes {
         ProbeInfo probeInfo = pm.getProbeInfo("testProbeStatus");
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
-        assertEquals("{\"testProbeStatus\":\"ok\"}", result.toJson());
+        assertEquals(TEST_PROBE_OK_RESULT_AS_JSON, result.toJson());
 
         // make test probe throw an exception instead
         fs.setThrowException();
@@ -210,7 +213,7 @@ public class TestProbes {
         probeInfo = pm.getProbeInfo("testProbeStatus");
         assertFalse(result.isHealthy());
         assertFalse(probeInfo.getStatus().isSuccess());
-        assertEquals("{\"testProbeStatus\":\"failed\"}", result.toJson());
+        assertEquals(TEST_PROBE_FAILED_RESULT_AS_JSON, result.toJson());
 
         // make test probe return a failure status instead
         fs.setFailure();
@@ -219,7 +222,7 @@ public class TestProbes {
         probeInfo = pm.getProbeInfo("testProbeStatus");
         assertFalse(result.isHealthy());
         assertFalse(probeInfo.getStatus().isSuccess());
-        assertEquals("{\"testProbeStatus\":\"failed\"}", result.toJson());
+        assertEquals(TEST_PROBE_FAILED_RESULT_AS_JSON, result.toJson());
 
         // make test probe status back to ok
         fs.setSuccess();
@@ -228,7 +231,7 @@ public class TestProbes {
         probeInfo = pm.getProbeInfo("testProbeStatus");
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
-        assertEquals("{\"testProbeStatus\":\"ok\"}", result.toJson());
+        assertEquals(TEST_PROBE_OK_RESULT_AS_JSON, result.toJson());
     }
 
     @Test
