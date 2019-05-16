@@ -26,7 +26,9 @@ import java.util.Set;
  * Handler used to test if a specific property is marked as deprecated/removed and to get its fallback.
  *
  * @since 9.2
+ * @deprecated since 11.1, use {@link PropertyCharacteristicHandler} service instead
  */
+@Deprecated(since = "11.1")
 public class PropertyDeprecationHandler {
 
     /**

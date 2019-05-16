@@ -82,13 +82,17 @@ public interface SchemaManager extends TypeProvider, PropertyCharacteristicHandl
     /**
      * @return the deprecated properties handler
      * @since 9.2
+     * @deprecated since 11.1, use {@link PropertyCharacteristicHandler} methods instead
      */
+    @Deprecated(since = "11.1")
     PropertyDeprecationHandler getDeprecatedProperties();
 
     /**
      * @return the removed properties handler
      * @since 9.2
+     * @deprecated since 11.1, use {@link PropertyCharacteristicHandler} methods instead
      */
+    @Deprecated(since = "11.1")
     PropertyDeprecationHandler getRemovedProperties();
 
     /**
