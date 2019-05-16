@@ -46,8 +46,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.notification.core")
 @Deploy("org.nuxeo.ecm.platform.notification.api")
 @Deploy("org.nuxeo.ecm.platform.placeful.api")
-@Deploy("nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml")
-@Deploy("nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml")
 @Ignore
 // wrong content and no smtp mock, not an unit test at all
 public class TrialSendViaGmail {
