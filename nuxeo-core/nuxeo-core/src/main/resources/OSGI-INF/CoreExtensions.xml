@@ -36,6 +36,10 @@
     <property schema="dublincore" name="creator" secured="true" />
     <property schema="dublincore" name="contributors" secured="true" />
     <property schema="dublincore" name="lastContributor" secured="true" />
+    <!-- Removed since 9.1 -->
+    <property schema="common" name="size" deprecation="removed" />
+    <property schema="file" name="filename" deprecation="removed" fallback="content/name" />
+    <property schema="files" name="files/*/filename" deprecation="removed" fallback="files/*/file/name" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
@@ -238,14 +242,6 @@
       </subtypes>
     </doctype>
 
-  </extension>
-
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="deprecation">
-    <documentation>The deprecated core properties</documentation>
-    <!-- Removed since 9.1 -->
-    <property schema="common" name="size" />
-    <property schema="file" name="filename" fallback="content/name" />
-    <property schema="files" name="files/*/filename" fallback="files/*/file/name" />
   </extension>
 
    <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"

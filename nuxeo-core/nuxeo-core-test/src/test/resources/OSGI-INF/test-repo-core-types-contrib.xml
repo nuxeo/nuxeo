@@ -13,6 +13,8 @@
     <schema name="info" src="schemas/info.xsd" prefix="info" />
     <schema name="complex" src="schemas/complex.xsd" prefix="cpx" />
     <schema name="complexList" src="schemas/complexlist.xsd" prefix="cpxl" />
+    <property schema="test-properties" name="removedProperty" deprecation="removed"
+              fallback="removedPropertyFallback" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
@@ -80,10 +82,6 @@
     <proxies>
       <schema name="info"/>
     </proxies>
-  </extension>
-
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="deprecation">
-    <property schema="test-properties" name="removedProperty" fallback="removedPropertyFallback" />
   </extension>
 
 </component>

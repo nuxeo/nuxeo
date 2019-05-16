@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.core.schema;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.io.File;
@@ -35,8 +37,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -142,14 +148,26 @@ public class SchemaManagerImpl implements SchemaManager {
 
     protected List<Runnable> recomputeCallbacks;
 
-    /** @since 9.2 */
+    /**
+     * @since 9.2
+     * @deprecated since 11.1, use {@link #propertyCharacteristics} instead
+     */
+    @Deprecated(since = "11.1")
     protected Map<String, Map<String, String>> deprecatedProperties = new HashMap<>();
 
-    /** @since 9.2 */
+    /**
+     * @since 9.2
+     * @deprecated since 11.1, use {@link #propertyCharacteristics} instead
+     */
+    @Deprecated(since = "11.1")
     protected Map<String, Map<String, String>> removedProperties = new HashMap<>();
 
-    /** @since 11.1 */
-    protected Set<String> securedProperties = Set.of();
+    /**
+     * Map holding property characteristics with: schema -> path -> characteristic.
+     *
+     * @since 11.1
+     */
+    protected Map<String, Map<String, PropertyDescriptor>> propertyCharacteristics = Map.of();
 
     public SchemaManagerImpl() {
         recomputeCallbacks = new ArrayList<>();
@@ -874,49 +892,20 @@ public class SchemaManagerImpl implements SchemaManager {
 
     /**
      * @since 9.2
-     */
-    public synchronized void registerPropertyDeprecation(PropertyDeprecationDescriptor descriptor) {
-        Map<String, Map<String, String>> properties = descriptor.isDeprecated() ? deprecatedProperties
-                : removedProperties;
-        properties.computeIfAbsent(descriptor.getSchema(), key -> new HashMap<>())
-                  .put(descriptor.getName(), descriptor.getFallback());
-        log.info("Registered property deprecation: {}", descriptor);
-    }
-
-    /**
-     * @since 9.2
-     */
-    public synchronized void unregisterPropertyDeprecation(PropertyDeprecationDescriptor descriptor) {
-        Map<String, Map<String, String>> properties = descriptor.isDeprecated() ? deprecatedProperties
-                : removedProperties;
-        boolean removed = false;
-        Map<String, String> schemaProperties = properties.get(descriptor.getSchema());
-        if (schemaProperties != null) {
-            removed = schemaProperties.remove(descriptor.getName(), descriptor.getFallback());
-            if (schemaProperties.isEmpty()) {
-                properties.remove(descriptor.getSchema());
-            }
-        }
-        if (removed) {
-            log.info("Unregistered property deprecation: {}", descriptor);
-        } else {
-            log.error("Unregistering unknown property deprecation: {}", descriptor);
-
-        }
-    }
-
-    /**
-     * @since 9.2
+     * @deprecated since 11.1, use {@link PropertyCharacteristicHandler} methods instead
      */
     @Override
+    @Deprecated(since = "11.1")
     public PropertyDeprecationHandler getDeprecatedProperties() {
         return new PropertyDeprecationHandler(deprecatedProperties);
     }
 
     /**
      * @since 9.2
+     * @deprecated since 11.1, use {@link PropertyCharacteristicHandler} methods instead
      */
     @Override
+    @Deprecated(since = "11.1")
     public PropertyDeprecationHandler getRemovedProperties() {
         return new PropertyDeprecationHandler(removedProperties);
     }
@@ -938,18 +927,33 @@ public class SchemaManagerImpl implements SchemaManager {
     /**
      * @since 11.1
      */
-    protected synchronized void registerSecuredProperty(List<PropertyDescriptor> descriptors) {
-        securedProperties = descriptors.stream()
-                                       .filter(PropertyDescriptor::isSecured)
-                                       .map(descriptor -> computePropertyKey(descriptor.schema, descriptor.name))
-                                       .collect(Collectors.toSet());
+    protected synchronized void registerPropertyCharacteristics(List<PropertyDescriptor> descriptors) {
+        propertyCharacteristics = descriptors.stream()
+                                             .collect(groupingBy(PropertyDescriptor::getSchema,
+                                                     toMap(PropertyDescriptor::getName, Function.identity())));
+        deprecatedProperties = descriptors.stream()
+                                          .filter(PropertyDescriptor::isDeprecated)
+                                          .collect(groupingBy(PropertyDescriptor::getSchema, Collector.of(HashMap::new,
+                                                  (m, d) -> m.put(d.name, d.fallback), (m1, m2) -> {
+                                                      m1.putAll(m2);
+                                                      return m1;
+                                                  })));
+        removedProperties = descriptors.stream()
+                                       .filter(PropertyDescriptor::isRemoved)
+                                       .collect(groupingBy(PropertyDescriptor::getSchema, Collector.of(HashMap::new,
+                                               (m, d) -> m.put(d.name, d.fallback), (m1, m2) -> {
+                                                   m1.putAll(m2);
+                                                   return m1;
+                                               })));
     }
 
     /**
      * @since 11.1
      */
-    protected synchronized void clearSecuredProperty() {
-        securedProperties.clear();
+    protected synchronized void clearPropertyCharacteristics() {
+        propertyCharacteristics.clear();
+        deprecatedProperties.clear();
+        removedProperties.clear();
     }
 
     /**
@@ -957,12 +961,53 @@ public class SchemaManagerImpl implements SchemaManager {
      */
     @Override
     public boolean isSecured(String schema, String path) {
-        return Stream.iterate(computePropertyKey(schema, cleanPath(path)), StringUtils::isNotBlank,
-                key -> key.substring(0, Math.max(key.lastIndexOf('/'), 0))).anyMatch(securedProperties::contains);
+        return checkPropertyCharacteristic(schema, path, PropertyDescriptor::isSecured);
     }
 
-    protected String computePropertyKey(String schema, String path) {
-        return schema + ':' + path;
+    @Override
+    public boolean isDeprecated(String schema, String path) {
+        return checkPropertyCharacteristic(schema, path, PropertyDescriptor::isDeprecated);
+    }
+
+    @Override
+    public boolean isRemoved(String schema, String path) {
+        return checkPropertyCharacteristic(schema, path, PropertyDescriptor::isRemoved);
+    }
+
+    @Override
+    public Set<String> getDeprecatedProperties(String schema) {
+        return getPropertyCharacteristics(schema, PropertyDescriptor::isDeprecated, PropertyDescriptor::getName);
+    }
+
+    @Override
+    public Set<String> getRemovedProperties(String schema) {
+        return getPropertyCharacteristics(schema, PropertyDescriptor::isRemoved, PropertyDescriptor::getName);
+    }
+
+    protected <R> Set<R> getPropertyCharacteristics(String schema, Predicate<PropertyDescriptor> predicate,
+            Function<PropertyDescriptor, R> function) {
+        return propertyCharacteristics.getOrDefault(schema, Map.of())
+                                      .values()
+                                      .stream()
+                                      .filter(predicate)
+                                      .map(function)
+                                      .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Optional<String> getFallback(String schema, String path) {
+        return Optional.ofNullable(propertyCharacteristics.get(schema))
+                       .map(props -> props.get(cleanPath(path)))
+                       .map(PropertyDescriptor::getFallback);
+    }
+
+    protected boolean checkPropertyCharacteristic(String schema, String path, Predicate<PropertyDescriptor> predicate) {
+        Map<String, PropertyDescriptor> properties = propertyCharacteristics.getOrDefault(schema, Map.of());
+        // iterate on path to check if a parent matches the given predicate
+        return !properties.isEmpty()
+                && Stream.iterate(cleanPath(path), StringUtils::isNotBlank,
+                        key -> key.substring(0, Math.max(key.lastIndexOf('/'), 0)))
+                         .anyMatch(p -> properties.containsKey(p) && predicate.test(properties.get(p)));
     }
 
     protected String cleanPath(String path) {

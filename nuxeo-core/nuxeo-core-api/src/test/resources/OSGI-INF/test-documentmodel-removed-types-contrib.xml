@@ -6,6 +6,15 @@
     <schema name="common" src="schemas/common.xsd" />
     <schema name="file" src="schemas/file.xsd" />
     <schema name="removed" src="schemas/removed.xsd" />
+    <property schema="removed" name="scalar" deprecation="removed" />
+    <property schema="removed" name="complexRem" deprecation="removed" />
+    <property schema="removed" name="complex/scalar" deprecation="removed" />
+    <property schema="removed" name="scalar2scalar" fallback="scalarfallback" deprecation="removed" />
+    <property schema="removed" name="scalar2complex" fallback="complexfallback/scalar" deprecation="removed" />
+    <property schema="removed" name="complex2complex" fallback="complexfallback" deprecation="removed" />
+    <property schema="removed" name="list/*/renamed" fallback="list/*/scalar" deprecation="removed" />
+    <property schema="removed" name="blobnameRem" fallback="blobfallback/name" deprecation="removed" />
+    <property schema="file" name="filename" fallback="content/name" deprecation="removed" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
@@ -14,18 +23,6 @@
       <schema name="file" />
       <schema name="removed" />
     </doctype>
-  </extension>
-
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="deprecation">
-    <property schema="removed" name="scalar" />
-    <property schema="removed" name="complexRem" />
-    <property schema="removed" name="complex/scalar" />
-    <property schema="removed" name="scalar2scalar" fallback="scalarfallback" />
-    <property schema="removed" name="scalar2complex" fallback="complexfallback/scalar" />
-    <property schema="removed" name="complex2complex" fallback="complexfallback" />
-    <property schema="removed" name="list/*/renamed" fallback="list/*/scalar" />
-    <property schema="removed" name="blobnameRem" fallback="blobfallback/name" />
-    <property schema="file" name="filename" fallback="content/name" />
   </extension>
 
 </component>
