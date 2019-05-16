@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.io.impl.transformers;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -53,8 +52,7 @@ public class PropertyDeprecationRemover implements DocumentTransformer {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public boolean transform(ExportedDocument xdoc) throws IOException {
+    public boolean transform(ExportedDocument xdoc) {
         Element root = xdoc.getDocument().getRootElement();
         for (Element schema : root.elements("schema")) {
             String schemaName = schema.attributeValue("name");
@@ -100,7 +98,8 @@ public class PropertyDeprecationRemover implements DocumentTransformer {
             }
         } else {
             // removed property is in a list
-            List<Element> elementsToRemove = (List<Element>) (List<?>) schema.selectNodes(schemaPrefix + propertyToRemove);
+            List<Element> elementsToRemove = (List<Element>) (List<?>) schema.selectNodes(
+                    schemaPrefix + propertyToRemove);
             // compute number of times we need to get parent - here we only handle one list level (the last one)
             // we assume that fallback of a list of complex is inside the same complex property
             int count = StringUtils.countMatches(propertyToRemove.substring(starIndex), "/");
