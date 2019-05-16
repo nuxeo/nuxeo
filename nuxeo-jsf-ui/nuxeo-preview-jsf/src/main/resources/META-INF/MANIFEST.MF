@@ -6,4 +6,8 @@ Bundle-Version: 1.0.0
 Bundle-Category: web,stateless
 Nuxeo-Component: OSGI-INF/seamremotingjsbuilder-contrib.xml,
  OSGI-INF/widgets-contrib.xml,
- OSGI-INF/restAPI-contrib.xml
+ OSGI-INF/restAPI-contrib.xml,
+ OSGI-INF/actions-contrib.xml,
+ OSGI-INF/auth-contrib.xml,
+ OSGI-INF/preview-adapter-contrib.xml,
+ OSGI-INF/docview-codec-contrib.xml
