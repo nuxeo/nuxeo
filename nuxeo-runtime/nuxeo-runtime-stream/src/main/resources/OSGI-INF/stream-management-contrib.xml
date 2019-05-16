@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.stream.service.managment.contrib">
+
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="probes">
+    <probe name="streamStatus" class="org.nuxeo.runtime.stream.StreamProbe">
+      <label>Stream probe</label>
+    </probe>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="healthCheck">
+    <probe name="streamStatus" enabled="true" />
+  </extension>
+
+</component>

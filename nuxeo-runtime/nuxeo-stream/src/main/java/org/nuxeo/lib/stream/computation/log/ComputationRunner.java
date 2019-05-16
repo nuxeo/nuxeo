@@ -96,6 +96,8 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected String threadName;
 
+    protected List<LogPartition> defaultAssignment;
+
     @SuppressWarnings("unchecked")
     public ComputationRunner(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
             List<LogPartition> defaultAssignment, LogStreamManager streamManager, ComputationPolicy policy) {
@@ -113,6 +115,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             this.tailer = streamManager.createTailer(metadata.name(), defaultAssignment);
             assignmentLatch.countDown();
         }
+        this.defaultAssignment = defaultAssignment;
     }
 
     public void stop() {
@@ -322,6 +325,12 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             log.error(String.format("Terminate computation: %s due to previous failure", metadata.name()));
             context.cancelAskForCheckpoint();
             context.askForTermination();
+            ComputationRunnerTerminated.registerTerminated( //
+                    metadata.name(), //
+                    defaultAssignment, //
+                    context.getLastOffset(), //
+                    policy.getRetryPolicy(), //
+                    System.currentTimeMillis());
         }
     }
 
