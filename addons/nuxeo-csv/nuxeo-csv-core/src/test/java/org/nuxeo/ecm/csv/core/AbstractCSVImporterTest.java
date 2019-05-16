@@ -32,22 +32,18 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.test.UserManagerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
-@Features({ CoreFeature.class, DirectoryFeature.class, TransientStoreFeature.class })
-@Deploy("org.nuxeo.ecm.platform.login")
-@Deploy("org.nuxeo.ecm.platform.web.common")
-@Deploy("org.nuxeo.ecm.platform.usermanager.api")
-@Deploy("org.nuxeo.ecm.platform.usermanager:OSGI-INF/UserService.xml")
+@Features({ CoreFeature.class, DirectoryFeature.class, UserManagerFeature.class, TransientStoreFeature.class })
 @Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.types.api")
 @Deploy("org.nuxeo.ecm.platform.types.core")
 @Deploy("org.nuxeo.ecm.platform.dublincore")
 @Deploy("org.nuxeo.ecm.csv.core")
-@Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml")
 @Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-directories-contrib.xml")
 @Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-types-contrib.xml")
 @Deploy("org.nuxeo.ecm.csv.core:OSGI-INF/test-ui-types-contrib.xml")

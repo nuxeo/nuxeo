@@ -48,11 +48,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("nuxeo-groups-rights-audit")
-@Deploy("org.nuxeo.ecm.platform.web.common")
-@Deploy("nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml")
-@Deploy("nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml")
 public class TestAclLayoutSimple extends AbstractAclLayoutTest {
     @Inject
     CoreSession session;
