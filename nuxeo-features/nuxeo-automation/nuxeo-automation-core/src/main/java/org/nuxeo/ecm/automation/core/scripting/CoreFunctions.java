@@ -44,4 +44,14 @@ public class CoreFunctions implements ContextHelper {
         return StringEscapeUtils.escapeHtml4(obj.toString());
     }
 
+    /**
+     * This method is similar to {@link #calendar(Calendar)} but takes a {@link Date} argument.
+     *
+     * @param inputDate the date to wrap
+     * @return a {@link DateWrapper}
+     * @since 11.1
+     */
+    public DateWrapper calendar(Date inputDate) {
+        return new DateWrapper(inputDate);
+    }
 }
