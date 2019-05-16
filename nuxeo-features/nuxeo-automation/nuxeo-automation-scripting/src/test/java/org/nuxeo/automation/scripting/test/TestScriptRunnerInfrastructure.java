@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,7 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.scripting.DateWrapper;
 import org.nuxeo.ecm.automation.core.scripting.MvelExpression;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.automation.core.util.BlobList;
@@ -569,6 +571,19 @@ public class TestScriptRunnerInfrastructure {
             BlobList blobs = (BlobList) ctx.pop(Constants.O_BLOBS);
             assertNotNull(blobs);
             assertEquals(2, blobs.size());
+        }
+    }
+
+    /*
+     * NXP-26847
+     */
+    @Test
+    public void testFnCalendarOperation() throws OperationException {
+        try (OperationContext ctx = new OperationContext(session)) {
+            Date now = new Date();
+            ctx.setInput(now);
+            DateWrapper result = (DateWrapper) automationService.run(ctx, "Scripting.TestFnCalendar");
+            assertEquals(now, result.getDate());
         }
     }
 

@@ -678,6 +678,17 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestFnCalendar">
+      <inputType>Date</inputType>
+      <outputType>DateWrapper</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+            return Fn.calendar(input);
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"

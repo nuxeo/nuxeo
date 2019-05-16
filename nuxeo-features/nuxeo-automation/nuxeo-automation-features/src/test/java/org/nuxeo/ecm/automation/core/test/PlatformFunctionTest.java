@@ -24,6 +24,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -151,4 +152,13 @@ public class PlatformFunctionTest {
         assertEquals(Long.valueOf("3"), Long.valueOf(pf.getNextId("testin")));
     }
 
+    /*
+     * NXP-26847
+     */
+    @Test
+    public void testCalendar() {
+        Date now = new Date();
+        Date processed = pf.calendar(now).getDate();
+        assertEquals(now, processed);
+    }
 }
