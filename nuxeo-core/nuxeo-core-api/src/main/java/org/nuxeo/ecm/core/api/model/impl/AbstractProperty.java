@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.api.model.impl;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,6 +64,13 @@ public abstract class AbstractProperty implements Property {
      */
     public static final int IS_SECURED = 64;
 
+    /**
+     * Whether or not this property is deprecated.
+     *
+     * @since 11.1
+     */
+    public static final int IS_DEPRECATED = 128;
+
     public final Property parent;
 
     /**
@@ -71,10 +79,6 @@ public abstract class AbstractProperty implements Property {
     public boolean forceDirty = false;
 
     protected int flags;
-
-    protected Boolean isDeprecated;
-
-    protected Property deprecatedFallback;
 
     protected AbstractProperty(Property parent) {
         this.parent = parent;
@@ -355,36 +359,26 @@ public abstract class AbstractProperty implements Property {
     }
 
     protected boolean isDeprecated() {
-        if (isDeprecated == null) {
-            boolean deprecated = false;
-            // compute the deprecated state
-            // first check if this property is a child of a deprecated property
-            if (parent instanceof AbstractProperty) {
-                AbstractProperty absParent = (AbstractProperty) parent;
-                deprecated = absParent.isDeprecated();
-                Property parentDeprecatedFallback = absParent.deprecatedFallback;
-                if (deprecated && parentDeprecatedFallback != null) {
-                    deprecatedFallback = parentDeprecatedFallback.resolvePath(getName());
-                }
-            }
-            if (!deprecated) {
-                // check if this property is deprecated
-                String name = getXPath();
-                String schema = getSchema().getName();
-                SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-                PropertyDeprecationHandler deprecatedProperties = schemaManager.getDeprecatedProperties();
-                deprecated = deprecatedProperties.isMarked(schema, name);
-                if (deprecated) {
-                    // get the possible fallback
-                    String fallback = deprecatedProperties.getFallback(schema, name);
-                    if (fallback != null) {
-                        deprecatedFallback = resolvePath('/' + fallback);
-                    }
-                }
-            }
-            isDeprecated = Boolean.valueOf(deprecated);
+        return areFlagsSet(IS_DEPRECATED);
+    }
+
+    /**
+     * Returns the {@link Property} fallback to use if the current property is deprecated.
+     *
+     * @return the fallback as {@link Property} if exist
+     */
+    protected Optional<Property> getDeprecatedFallback() {
+        if (parent instanceof AbstractProperty && ((AbstractProperty) parent).isDeprecated()) {
+            return ((AbstractProperty) parent).getDeprecatedFallback().map(p -> p.resolvePath(getName()));
         }
-        return isDeprecated.booleanValue();
+        if (isDeprecated()) {
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            PropertyDeprecationHandler deprecatedProperties = schemaManager.getDeprecatedProperties();
+            String name = getXPath();
+            String schema = getSchema().getName();
+            return Optional.ofNullable(deprecatedProperties.getFallback(schema, name)).map(f -> resolvePath('/' + f));
+        }
+        return Optional.empty();
     }
 
     /**
@@ -437,16 +431,17 @@ public abstract class AbstractProperty implements Property {
     protected void setValueDeprecation(Object value, boolean setFallback) throws PropertyException {
         if (isDeprecated()) {
             // First check if we need to set the fallback value
-            if (setFallback && deprecatedFallback != null) {
-                deprecatedFallback.setValue(value);
+            Optional<Property> deprecatedFallback = getDeprecatedFallback();
+            if (setFallback) {
+                deprecatedFallback.ifPresent(p -> p.setValue(value));
             }
             // Second check if we need to log deprecation message
             if (log.isWarnEnabled()) {
                 StringBuilder msg = newDeprecatedMessage();
                 msg.append("Set value to deprecated property");
-                if (deprecatedFallback != null) {
-                    msg.append(" and to fallback property '").append(deprecatedFallback.getXPath()).append("'");
-                }
+                deprecatedFallback.ifPresent(
+                        p -> msg.append(" and to fallback property '").append(p.getXPath()).append("'"));
+
                 if (log.isTraceEnabled()) {
                     log.warn(msg, new NuxeoException("debug stack trace"));
                 } else {
@@ -489,14 +484,15 @@ public abstract class AbstractProperty implements Property {
      */
     protected Serializable getValueDeprecation() {
         if (isDeprecated()) {
+            Optional<Property> deprecatedFallback = getDeprecatedFallback();
             // Check if we need to log deprecation message
             if (log.isWarnEnabled()) {
                 StringBuilder msg = newDeprecatedMessage();
-                if (deprecatedFallback == null) {
-                    msg.append("Return value from deprecated property");
-                } else {
-                    msg.append("Return value from '").append(deprecatedFallback.getXPath()).append(
+                if (deprecatedFallback.isPresent()) {
+                    msg.append("Return value from '").append(deprecatedFallback.get().getXPath()).append(
                             "' if not null, from deprecated property otherwise");
+                } else {
+                    msg.append("Return value from deprecated property");
                 }
                 if (log.isTraceEnabled()) {
                     log.warn(msg, new NuxeoException());
@@ -504,9 +500,7 @@ public abstract class AbstractProperty implements Property {
                     log.warn(msg);
                 }
             }
-            if (deprecatedFallback != null) {
-                return deprecatedFallback.getValue();
-            }
+            return deprecatedFallback.map(Property::getValue).orElse(null);
         }
         return null;
     }
