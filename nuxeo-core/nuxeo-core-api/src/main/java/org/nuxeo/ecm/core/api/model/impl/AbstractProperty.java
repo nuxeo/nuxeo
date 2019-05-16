@@ -49,7 +49,7 @@ public abstract class AbstractProperty implements Property {
 
     private static final Log log = LogFactory.getLog(AbstractProperty.class);
 
-    protected final static Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
+    protected static final Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
             + "\\[(-?\\d+)\\]" // index in brackets - could be -1 if element is new to list
     );
 
