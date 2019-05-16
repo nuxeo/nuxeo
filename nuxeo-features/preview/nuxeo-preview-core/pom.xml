@@ -68,11 +68,6 @@
       <artifactId>icu4j</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jboss.seam</groupId>
-      <artifactId>jboss-seam</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-dublincore</artifactId>
       <scope>test</scope>
@@ -85,28 +80,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>bower-install</id>
-            <phase>process-resources</phase>
-            <configuration>
-              <target>
-                <ant antfile="${basedir}/build.xml" dir="${basedir}" target="build"></ant>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

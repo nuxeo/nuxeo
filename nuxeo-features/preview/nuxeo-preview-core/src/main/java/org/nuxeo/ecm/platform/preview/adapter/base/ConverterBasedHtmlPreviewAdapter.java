@@ -34,11 +34,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.ecm.platform.preview.adapter.ImagePreviewer;
-import org.nuxeo.ecm.platform.preview.adapter.MarkdownPreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.MimeTypePreviewer;
-import org.nuxeo.ecm.platform.preview.adapter.OfficePreviewer;
-import org.nuxeo.ecm.platform.preview.adapter.PdfPreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.PlainImagePreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManager;
 import org.nuxeo.ecm.platform.preview.api.NothingToPreviewException;
@@ -61,6 +57,38 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
      */
     @Deprecated
     public static final String OLD_PREVIEW_PROPERTY = "nuxeo.old.jsf.preview";
+
+    // class in nuxeo-preview-jsf
+    /**
+     * @since 11.1
+     * @deprecated since 11.1
+     */
+    @Deprecated
+    private static final String IMAGE_PREVIEWER_CLASS_NAME = "org.nuxeo.ecm.platform.preview.adapter.ImagePreviewer";
+
+    // class in nuxeo-preview-jsf
+    /**
+     * @since 11.1
+     * @deprecated since 11.1
+     */
+    @Deprecated
+    private static final String OFFICE_PREVIEWER_CLASS_NAME = "org.nuxeo.ecm.platform.preview.adapter.OfficePreviewer";
+
+    // class in nuxeo-preview-jsf
+    /**
+     * @since 11.1
+     * @deprecated since 11.1
+     */
+    @Deprecated
+    private static final String PDF_PREVIEWER_CLASS_NAME = "org.nuxeo.ecm.platform.preview.adapter.PdfPreviewer";
+
+    // class in nuxeo-preview-jsf
+    /**
+     * @since 11.1
+     * @deprecated since 11.1
+     */
+    @Deprecated
+    private static final String MARKDOWN_PREVIEWER_CLASS_NAME = "org.nuxeo.ecm.platform.preview.adapter.MarkdownPreviewer";
 
     /**
      * @since 10.3
@@ -205,13 +233,15 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         // - replace ImagePreviewer with PlainImagePreviewer
         // - do nothing for "office" previewers if the text annotations are enabled to trigger the old preview behavior,
         // otherwise keep the current preview behavior
-        if (mtPreviewer instanceof ImagePreviewer) {
+        String previewerClassName = mtPreviewer.getClass().getName();
+        if (IMAGE_PREVIEWER_CLASS_NAME.equals(previewerClassName)) {
             return new PlainImagePreviewer().getPreview(blob2Preview, adaptedDoc);
         }
 
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        if (cs.isBooleanTrue(TEXT_ANNOTATIONS_PROPERTY) && (mtPreviewer instanceof PdfPreviewer
-                || mtPreviewer instanceof MarkdownPreviewer || mtPreviewer instanceof OfficePreviewer)) {
+        if (cs.isBooleanTrue(TEXT_ANNOTATIONS_PROPERTY) && (PDF_PREVIEWER_CLASS_NAME.equals(previewerClassName)
+                || MARKDOWN_PREVIEWER_CLASS_NAME.equals(previewerClassName)
+                || OFFICE_PREVIEWER_CLASS_NAME.equals(previewerClassName))) {
             return null;
         }
         return mtPreviewer.getPreview(blob2Preview, adaptedDoc);

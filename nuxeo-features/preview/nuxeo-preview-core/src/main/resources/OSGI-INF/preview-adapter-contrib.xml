@@ -16,15 +16,6 @@
 
     <extension target="org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManagerComponent"
     point="MimeTypePreviewer">
-      <previewer class="org.nuxeo.ecm.platform.preview.adapter.ImagePreviewer">
-        <pattern>image.*</pattern>
-      </previewer>
-      <previewer class="org.nuxeo.ecm.platform.preview.adapter.PdfPreviewer">
-        <pattern>application/pdf</pattern>
-      </previewer>
-      <previewer class="org.nuxeo.ecm.platform.preview.adapter.VideoPreviewer">
-        <pattern>video.*</pattern>
-      </previewer>
       <previewer class="org.nuxeo.ecm.platform.preview.adapter.HtmlPreviewer">
         <pattern>text/html</pattern>
       </previewer>
@@ -33,39 +24,6 @@
       </previewer>
       <previewer class="org.nuxeo.ecm.platform.preview.adapter.PlainTextPreviewer">
         <pattern>text/partial</pattern>
-      </previewer>
-      <previewer class="org.nuxeo.ecm.platform.preview.adapter.MarkdownPreviewer">
-        <pattern>text/x-web-markdown</pattern>
-      </previewer>
-      <previewer class="org.nuxeo.ecm.platform.preview.adapter.OfficePreviewer">
-        <!-- Microsoft office documents -->
-        <pattern>application/msword</pattern>
-        <pattern>application/vnd.ms-powerpoint</pattern>
-        <pattern>application/vnd.ms-excel</pattern>
-        <!-- Microsoft office 2007 documents -->
-        <pattern>application/vnd.openxmlformats-officedocument.wordprocessingml.document</pattern>
-        <pattern>application/vnd.openxmlformats-officedocument.presentationml.presentation</pattern>
-        <pattern>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</pattern>
-        <!-- OpenOffice.org 1.x documents -->
-        <pattern>application/vnd.sun.xml.writer</pattern>
-        <pattern>application/vnd.sun.xml.writer.template</pattern>
-        <pattern>application/vnd.sun.xml.impress</pattern>
-        <pattern>application/vnd.sun.xml.impress.template</pattern>
-        <pattern>application/vnd.sun.xml.calc</pattern>
-        <pattern>application/vnd.sun.xml.calc.template</pattern>
-        <pattern>application/vnd.sun.xml.draw</pattern>
-        <pattern>application/vnd.sun.xml.draw.template</pattern>
-        <!-- OpenOffice.org 2.x documents -->
-        <pattern>application/vnd.oasis.opendocument.spreadsheet</pattern>
-        <pattern>application/vnd.oasis.opendocument.spreadsheet-template</pattern>
-        <pattern>application/vnd.oasis.opendocument.text</pattern>
-        <pattern>application/vnd.oasis.opendocument.text-template</pattern>
-        <pattern>application/vnd.oasis.opendocument.presentation</pattern>
-        <pattern>application/vnd.oasis.opendocument.presentation-template</pattern>
-        <pattern>application/vnd.oasis.opendocument.graphics</pattern>
-        <pattern>application/vnd.oasis.opendocument.graphics-template</pattern>
-        <!-- WordPerfect -->
-        <pattern>application/wordperfect</pattern>
       </previewer>
     </extension>
 </component>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="nuxeo preview core" default="preview" basedir=".">
 
-  <import file="../../../build.xml" />
+  <import file="../build.xml" />
   <property file="build.properties" />
 
   <!-- set executable names based on OS family -->

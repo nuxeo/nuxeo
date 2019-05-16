@@ -7,7 +7,8 @@ Bundle-Category: web,stateless
 Bundle-Name: Nuxeo Picture Video JSF
 Nuxeo-Component: OSGI-INF/layouts-contrib.xml,
  OSGI-INF/actions-contrib.xml,
- OSGI-INF/theme-contrib.xml
+ OSGI-INF/theme-contrib.xml,
+ OSGI-INF/preview-adapter-contrib.xml
 Bundle-ManifestVersion: 1
 Bundle-SymbolicName: org.nuxeo.ecm.platform.video.jsf;singleton:=true
 Nuxeo-Require: org.nuxeo.ecm.platform.video.core
