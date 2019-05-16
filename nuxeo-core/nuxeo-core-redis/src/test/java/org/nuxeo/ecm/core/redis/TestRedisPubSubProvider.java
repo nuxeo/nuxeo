@@ -63,6 +63,9 @@ public class TestRedisPubSubProvider {
     @Inject
     public RedisFeature redisFeature;
 
+    @Inject
+    public RedisExecutor redisExecutor;
+
     protected List<String> messages = new CopyOnWriteArrayList<>();
 
     protected volatile CountDownLatch messageReceivedLatch;
@@ -105,6 +108,29 @@ public class TestRedisPubSubProvider {
         }
 
         messages.add(topic + "=" + msg);
+        messageReceivedLatch.countDown();
+    }
+
+    @Test
+    public void testSubscriberCallingBackIntoRedis() throws Exception {
+        messageReceivedLatch = new CountDownLatch(1);
+        BiConsumer<String, byte[]> subscriber = this::subscriberCallingBackIntoRedis;
+        pubSubService.registerSubscriber("testtopic", subscriber);
+        pubSubService.publish("testtopic", "foo".getBytes());
+        if (!messageReceivedLatch.await(5, TimeUnit.SECONDS)) {
+            fail("message not received in 5s (check console for errors)");
+        }
+        assertEquals(Arrays.asList("testtopic=foo"), messages);
+    }
+
+    protected void subscriberCallingBackIntoRedis(String topic, byte[] message) {
+        String msg = new String(message);
+        messages.add(topic + "=" + msg);
+        // call back into Redis while in the subscriber
+        redisExecutor.execute(jedis -> {
+            return jedis.get("foobar");
+        });
+        // mark things as ok
         messageReceivedLatch.countDown();
     }
 
