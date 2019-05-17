@@ -227,11 +227,18 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         return sizeStr == null ? 0 : Long.parseLong(sizeStr);
     }
 
+    /** @deprecated since 11.1 */
+    @Deprecated
     protected void addStorageSize(long delta) {
+        KeyValueStore kvs = getKeyValueStore();
+        addStorageSize(delta, kvs);
+    }
+
+    protected void addStorageSize(long delta, KeyValueStore kvs) {
         atomicUpdate(STORAGE_SIZE, size -> {
             long s = size == null ? 0 : Long.parseLong(size);
             return String.valueOf(s + delta);
-        }, 0);
+        }, 0, kvs);
     }
 
     /**
@@ -317,8 +324,14 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         }
     }
 
+    /** @deprecated since 11.1 */
+    @Deprecated
     public void atomicUpdate(String key, Function<String, String> updateFunction, long ttl) {
         KeyValueStore kvs = getKeyValueStore();
+        atomicUpdate(key, updateFunction, ttl, kvs);
+    }
+
+    protected void atomicUpdate(String key, Function<String, String> updateFunction, long ttl, KeyValueStore kvs) {
         for (;;) {
             String oldValue = kvs.getString(key);
             String newValue = updateFunction.apply(oldValue);
@@ -334,8 +347,14 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         return kvs.getString(key + DOT_COMPLETED) != null;
     }
 
+    /** @deprecated since 11.1 */
+    @Deprecated
     protected void markEntryExists(String key) {
         KeyValueStore kvs = getKeyValueStore();
+        markEntryExists(key, kvs);
+    }
+
+    protected void markEntryExists(String key, KeyValueStore kvs) {
         kvs.compareAndSet(key + DOT_COMPLETED, null, "false", ttl);
     }
 
@@ -361,8 +380,8 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
                 parameters.add(parameter);
             }
             return toJson(parameters);
-        }, ttl);
-        markEntryExists(key);
+        }, ttl, kvs);
+        markEntryExists(key, kvs);
     }
 
     @Override
@@ -413,8 +432,14 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         return map;
     }
 
+    /** @deprecated since 11.1 */
+    @Deprecated
     protected void removeParameters(String key) {
         KeyValueStore kvs = getKeyValueStore();
+        removeParameters(key, kvs);
+    }
+
+    protected void removeParameters(String key, KeyValueStore kvs) {
         String json = kvs.getString(key + DOT_PARAMINFO);
         List<String> parameters = jsonToList(json);
         if (parameters != null) {
@@ -438,9 +463,9 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         }
 
         // remove previous blobs
-        removeBlobs(key);
-
         KeyValueStore kvs = getKeyValueStore();
+        removeBlobs(key, kvs);
+
         BlobProvider bp = getBlobProvider();
         long totalSize = 0;
         int i = 0;
@@ -471,12 +496,18 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         blobInfoMap.put(COUNT, String.valueOf(blobs.size()));
         blobInfoMap.put(SIZE, String.valueOf(totalSize));
         kvs.put(key + DOT_BLOBINFO, toJson(blobInfoMap), ttl);
-        addStorageSize(totalSize);
-        markEntryExists(key);
+        addStorageSize(totalSize, kvs);
+        markEntryExists(key, kvs);
     }
 
+    /** @deprecated since 11.1 */
+    @Deprecated
     protected void removeBlobs(String key) {
         KeyValueStore kvs = getKeyValueStore();
+        removeBlobs(key, kvs);
+    }
+
+    protected void removeBlobs(String key, KeyValueStore kvs) {
         String json = kvs.getString(key + DOT_BLOBINFO);
         Map<String, String> map = jsonToMap(json);
         if (map == null) {
@@ -493,7 +524,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         }
         kvs.put(key + DOT_BLOBINFO, (String) null);
         // fix storage size
-        addStorageSize(-size);
+        addStorageSize(-size, kvs);
     }
 
     @Override
@@ -611,8 +642,14 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
         kvs.put(key + DOT_COMPLETED, String.valueOf(completed), ttl);
     }
 
+    /** @deprecated since 11.1 */
+    @Deprecated
     protected void removeCompleted(String key) {
         KeyValueStore kvs = getKeyValueStore();
+        removeCompleted(key, kvs);
+    }
+
+    protected void removeCompleted(String key, KeyValueStore kvs) {
         kvs.put(key + DOT_COMPLETED, (String) null);
     }
 
@@ -657,9 +694,10 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
 
     @Override
     public void remove(String key) {
-        removeBlobs(key);
-        removeParameters(key);
-        removeCompleted(key);
+        KeyValueStore kvs = getKeyValueStore();
+        removeBlobs(key, kvs);
+        removeParameters(key, kvs);
+        removeCompleted(key, kvs);
     }
 
 }
