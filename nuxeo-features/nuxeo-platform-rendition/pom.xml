@@ -14,7 +14,6 @@
     <module>nuxeo-platform-rendition-api</module>
     <module>nuxeo-platform-rendition-core</module>
     <module>nuxeo-platform-rendition-publisher</module>
-    <module>nuxeo-platform-rendition-web</module>
   </modules>
 
 </project>

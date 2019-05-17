@@ -16,16 +16,10 @@
   <modules>
     <module>nuxeo-liveconnect-core</module>
     <module>nuxeo-liveconnect-core-dependencies</module>
-    <module>nuxeo-liveconnect-jsf</module>
-    <module>nuxeo-liveconnect-jsf-dependencies</module>
     <module>nuxeo-liveconnect-google-drive-core</module>
-    <module>nuxeo-liveconnect-google-drive-jsf</module>
     <module>nuxeo-liveconnect-dropbox-core</module>
-    <module>nuxeo-liveconnect-dropbox-jsf</module>
     <module>nuxeo-liveconnect-box-core</module>
-    <module>nuxeo-liveconnect-box-jsf</module>
     <module>nuxeo-liveconnect-onedrive-core</module>
-    <module>nuxeo-liveconnect-onedrive-jsf</module>
   </modules>
 
 </project>

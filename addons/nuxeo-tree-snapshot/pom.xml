@@ -14,7 +14,6 @@
 
   <modules>
     <module>nuxeo-tree-snapshot-core</module>
-    <module>nuxeo-tree-snapshot-jsf</module>
   </modules>
 
   <build>

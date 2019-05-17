@@ -17,7 +17,6 @@
     <module>nuxeo-diff-core</module>
     <module>nuxeo-diff-content</module>
     <module>nuxeo-diff-pictures</module>
-    <module>nuxeo-diff-jsf</module>
     <module>nuxeo-diff-test</module>
   </modules>
 

@@ -13,7 +13,6 @@
 
   <modules>
     <module>nuxeo-platform-user-registration-core</module>
-    <module>nuxeo-platform-user-registration-web</module>
   </modules>
 
 </project>

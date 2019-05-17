@@ -15,7 +15,6 @@
   <modules>
     <module>nuxeo-automation-core</module>
     <module>nuxeo-automation-features</module>
-    <module>nuxeo-automation-jsf</module>
     <module>nuxeo-automation-server</module>
     <module>nuxeo-automation-client</module>
     <module>nuxeo-automation-test</module>

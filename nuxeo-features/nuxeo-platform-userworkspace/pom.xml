@@ -18,7 +18,6 @@
     <module>nuxeo-platform-userworkspace-api</module>
     <module>nuxeo-platform-userworkspace-core</module>
     <module>nuxeo-platform-userworkspace-types</module>
-    <module>nuxeo-platform-userworkspace-web</module>
   </modules>
 
 </project>

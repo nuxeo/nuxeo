@@ -2,14 +2,18 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo.template.rendering</groupId>
-    <artifactId>nuxeo-template-rendering-parent</artifactId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-jsf-ui</artifactId>
     <version>11.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-samples</artifactId>
   <name>Template Rendering Samples package</name>
+
+  <properties>
+    <template.rendering.studio.version>10.10.0</template.rendering.studio.version>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -59,4 +63,15 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>nuxeo-studio</groupId>
+        <artifactId>template-module-demo</artifactId>
+        <version>${template.rendering.studio.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 </project>

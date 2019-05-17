@@ -13,26 +13,6 @@
   <name>Nuxeo forms layout demo parent</name>
 
   <modules>
-    <module>nuxeo-platform-forms-layout-demo</module>
   </modules>
-
-  <profiles>
-    <profile>
-      <!-- Activate to unzip a Nuxeo and run IT tests against it -->
-      <id>itest</id>
-      <modules>
-        <module>ftest/webdriver</module>
-        <module>ftest/webdriver/pom-list-widget.xml</module>
-      </modules>
-    </profile>
-    <profile>
-      <!-- Additional profile to select these tests to be run during test&push -->
-      <id>itestplatform</id>
-      <modules>
-        <module>ftest/webdriver</module>
-        <module>ftest/webdriver/pom-list-widget.xml</module>
-      </modules>
-    </profile>
-  </profiles>
 
 </project>

@@ -24,16 +24,11 @@
     <module>nuxeo-launcher</module>
     <module>nuxeo-test-dependencies</module>
     <module>nuxeo-nxr-server</module>
-    <module>nuxeo-nxr-jsf-ui</module>
-    <module>nuxeo-marketplace-jsf-ui</module>
     <module>nuxeo-server-tomcat</module>
     <!-- Functional Tests -->
     <module>nuxeo-server-tests</module>
     <module>nuxeo-server-hotreload-tests</module>
     <module>nuxeo-war-tests</module>
-    <module>nuxeo-jsf-ui-hotreload-tests</module>
-    <module>nuxeo-jsf-ui-webdriver-tests</module>
-    <module>nuxeo-jsf-ui-gatling-tests</module>
   </modules>
 
   <profiles>
@@ -77,24 +72,6 @@
         <artifactId>nuxeo-nxr-server</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-nxr-jsf-ui</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-nxr-jsf-ui</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-marketplace-jsf-ui</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -154,19 +131,6 @@
         <artifactId>nuxeo-distribution-tests</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>pom</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-jsf-ui-webdriver-tests</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-jsf-ui-gatling-tests</artifactId>
-        <version>${nuxeo.distribution.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>

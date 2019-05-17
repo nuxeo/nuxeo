@@ -13,7 +13,6 @@
   <modules>
     <module>nuxeo-platform-io-api</module>
     <module>nuxeo-platform-io-core</module>
-    <module>nuxeo-platform-io-client</module>
   </modules>
 
 </project>

@@ -2,11 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo.dam</groupId>
-    <artifactId>nuxeo-dam-parent</artifactId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-jsf-ui</artifactId>
     <version>11.1-SNAPSHOT</version>
   </parent>
 
+  <groupId>org.nuxeo.dam</groupId>
   <artifactId>nuxeo-dam-jsf</artifactId>
   <name>Nuxeo DAM JSF</name>
   <description>Nuxeo DAM JSF</description>

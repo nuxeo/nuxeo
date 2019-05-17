@@ -13,8 +13,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>nuxeo-user-dashboard</module>
-    <module>nuxeo-user-dashboard-jsf</module>
   </modules>
 
 </project>
