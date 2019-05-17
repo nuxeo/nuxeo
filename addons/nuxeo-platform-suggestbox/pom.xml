@@ -12,7 +12,6 @@
 
   <modules>
     <module>nuxeo-platform-suggestbox-core</module>
-    <module>nuxeo-platform-suggestbox-jsf</module>
   </modules>
 
 </project>

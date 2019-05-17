@@ -16,7 +16,6 @@
   <modules>
     <module>nuxeo-platform-tag-api</module>
     <module>nuxeo-platform-tag-core</module>
-    <module>nuxeo-platform-tag-web</module>
   </modules>
 
 </project>

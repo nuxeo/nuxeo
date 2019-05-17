@@ -12,6 +12,5 @@
 
   <modules>
     <module>nuxeo-preview-core</module>
-    <module>nuxeo-preview-jsf</module>
   </modules>
 </project>

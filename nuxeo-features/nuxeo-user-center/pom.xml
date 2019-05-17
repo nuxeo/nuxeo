@@ -13,12 +13,7 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>nuxeo-user-center</module>
-    <module>nuxeo-user-dashboard</module>
-    <module>nuxeo-user-notification</module>
-    <module>nuxeo-user-oauth</module>
     <module>nuxeo-user-profile</module>
-    <module>nuxeo-user-profile-jsf</module>
   </modules>
 
 </project>

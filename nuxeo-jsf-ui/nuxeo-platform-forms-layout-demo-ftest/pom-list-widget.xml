@@ -2,14 +2,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo.ecm.distribution</groupId>
-    <artifactId>nuxeo-distribution</artifactId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-jsf-ui</artifactId>
     <version>11.1-SNAPSHOT</version>
-    <relativePath>../../../../nuxeo-distribution/pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-forms-layout-demo-webdriver-tests-list-widget-compat</artifactId>
+  <artifactId>nuxeo-platform-forms-layout-demo-ftest-list-widget-compat</artifactId>
   <name>Layout Demo Functional Tests with Webdriver on compat list widget</name>
 
   <dependencies>

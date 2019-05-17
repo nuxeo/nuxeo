@@ -16,7 +16,6 @@
     <module>nuxeo-platform-publisher-core</module>
     <module>nuxeo-platform-publisher-core-contrib</module>
     <module>nuxeo-platform-publisher-task</module>
-    <module>nuxeo-platform-publisher-web</module>
   </modules>
 
 </project>

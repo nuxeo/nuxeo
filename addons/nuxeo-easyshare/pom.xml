@@ -14,7 +14,6 @@
 
   <modules>
     <module>nuxeo-easyshare-core</module>
-    <module>nuxeo-easyshare-jsf</module>
   </modules>
 
 </project>

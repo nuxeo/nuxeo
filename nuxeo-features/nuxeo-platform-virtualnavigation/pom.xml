@@ -15,7 +15,6 @@
   </description>
 
   <modules>
-    <module>nuxeo-platform-virtualnavigation-web</module>
     <module>nuxeo-platform-virtualnavigation-core-contrib</module>
   </modules>
 

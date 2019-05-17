@@ -13,7 +13,6 @@
   <description>Parent project for the Nuxeo Search</description>
 
   <modules>
-    <module>nuxeo-search-ui</module>
     <module>nuxeo-search-core</module>
     <module>nuxeo-search-rest-api</module>
   </modules>

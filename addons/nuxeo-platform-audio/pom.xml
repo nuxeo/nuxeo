@@ -14,7 +14,6 @@
 
   <modules>
     <module>nuxeo-platform-audio-core</module>
-    <module>nuxeo-platform-audio-jsf</module>
   </modules>
 
 </project>
