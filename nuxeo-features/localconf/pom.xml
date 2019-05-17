@@ -13,7 +13,6 @@
 
   <modules>
     <module>nuxeo-localconf-simple</module>
-    <module>nuxeo-localconf-web</module>
   </modules>
 
 </project>

@@ -17,7 +17,6 @@
     <module>nuxeo-platform-imaging-api</module>
     <module>nuxeo-platform-imaging-core</module>
     <module>nuxeo-platform-imaging-convert</module>
-    <module>nuxeo-platform-imaging-jsf</module>
   </modules>
 
 </project>

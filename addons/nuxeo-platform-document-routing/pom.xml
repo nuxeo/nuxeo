@@ -15,11 +15,7 @@
   <modules>
     <module>nuxeo-routing-api</module>
     <module>nuxeo-routing-core</module>
-    <module>nuxeo-routing-web</module>
-    <module>nuxeo-routing-dm</module>
-    <module>nuxeo-routing-dashboard</module>
     <module>nuxeo-routing-default</module>
-    <module>nuxeo-routing-default-jsf</module>
     <module>nuxeo-routing-test</module>
     <module>nuxeo-routing-rest-api</module>
   </modules>

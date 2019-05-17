@@ -16,9 +16,5 @@
     <module>nuxeo-connect-update</module>
     <module>nuxeo-connect-client-wrapper</module>
     <module>nuxeo-admin-center-core</module>
-    <module>nuxeo-admin-center-monitoring</module>
-    <module>nuxeo-admin-center-oauth</module>
-    <module>nuxeo-admin-center-analytics</module>
-    <module>nuxeo-admin-center-jsf</module>
   </modules>
 </project>

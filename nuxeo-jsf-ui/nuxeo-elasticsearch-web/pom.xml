@@ -1,10 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.nuxeo.elasticsearch</groupId>
-    <artifactId>nuxeo-elasticsearch-parent</artifactId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-jsf-ui</artifactId>
     <version>11.1-SNAPSHOT</version>
   </parent>
+  <groupId>org.nuxeo.elasticsearch</groupId>
   <artifactId>nuxeo-elasticsearch-web</artifactId>
   <name>Elasticsearch WebApp integration</name>
   <dependencies>

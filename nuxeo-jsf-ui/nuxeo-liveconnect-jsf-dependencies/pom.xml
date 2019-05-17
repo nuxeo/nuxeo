@@ -2,11 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo.ecm.liveconnect</groupId>
-    <artifactId>nuxeo-liveconnect-parent</artifactId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-jsf-ui</artifactId>
     <version>11.1-SNAPSHOT</version>
   </parent>
 
+  <groupId>org.nuxeo.ecm.liveconnect</groupId>
   <artifactId>nuxeo-liveconnect-jsf-dependencies</artifactId>
   <name>Nuxeo Live Connect JSF Dependencies</name>
   <packaging>pom</packaging>

@@ -16,7 +16,6 @@
     <module>nuxeo-platform-login-cleartrust</module>
     <module>nuxeo-platform-login-default</module>
     <module>nuxeo-platform-login-deputy</module>
-    <module>nuxeo-platform-login-deputy-jsf</module>
     <module>nuxeo-platform-login-digest</module>
     <module>nuxeo-platform-login-kerberos</module>
     <module>nuxeo-platform-login-keycloak</module>
@@ -26,9 +25,7 @@
     <module>nuxeo-platform-login-portal-sso</module>
     <module>nuxeo-platform-login-saml2</module>
     <module>nuxeo-platform-login-shibboleth</module>
-    <module>nuxeo-platform-login-shibboleth-jsf</module>
     <module>nuxeo-platform-login-token</module>
-    <module>nuxeo-platform-login-token-jsf</module>
     <module>nuxeo-platform-login-token-rest</module>
     <module>nuxeo-platform-login-jwt</module>
   </modules>

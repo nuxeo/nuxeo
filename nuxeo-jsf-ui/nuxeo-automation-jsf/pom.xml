@@ -1,10 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>nuxeo-automation-parent</artifactId>
-    <groupId>org.nuxeo.ecm.automation</groupId>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-jsf-ui</artifactId>
     <version>11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
+  <groupId>org.nuxeo.ecm.automation</groupId>
   <artifactId>nuxeo-automation-jsf</artifactId>
   <name>Nuxeo Automation JSF</name>
   <description>Nuxeo JSF Automation provides operations to work with Nuxeo EP web interface</description>

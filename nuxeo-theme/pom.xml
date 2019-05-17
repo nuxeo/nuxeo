@@ -19,7 +19,6 @@
 
   <modules>
     <module>nuxeo-theme-styling</module>
-    <module>nuxeo-theme-migration</module>
   </modules>
 
   <organization>

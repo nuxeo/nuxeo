@@ -20,7 +20,6 @@
     <module>nuxeo-platform-task-test</module>
     <module>nuxeo-platform-task-core</module>
     <module>nuxeo-platform-task-automation</module>
-    <module>nuxeo-platform-task-web</module>
   </modules>
 
 </project>

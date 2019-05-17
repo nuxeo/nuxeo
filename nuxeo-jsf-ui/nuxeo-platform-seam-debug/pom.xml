@@ -3,10 +3,11 @@
 
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-jsf-parent</artifactId>
+    <artifactId>nuxeo-jsf-ui</artifactId>
     <version>11.1-SNAPSHOT</version>
   </parent>
 
+  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-seam-debug</artifactId>
   <name>Nuxeo Seam Debug Framework</name>
 

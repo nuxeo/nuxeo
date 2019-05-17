@@ -16,7 +16,6 @@
   <modules>
     <module>nuxeo-apidoc-core</module>
     <module>nuxeo-apidoc-repo</module>
-    <module>nuxeo-apidoc-webengine</module>
   </modules>
 
 </project>

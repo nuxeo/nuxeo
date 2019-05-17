@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-features-parent</artifactId>
+    <artifactId>nuxeo-jsf-ui</artifactId>
     <version>11.1-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-platform-ui-select2</artifactId>
@@ -74,6 +74,17 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-test</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

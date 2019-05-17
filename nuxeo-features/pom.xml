@@ -22,8 +22,6 @@
     <module>nuxeo-platform-relations</module>
     <module>nuxeo-platform-io</module>
     <module>nuxeo-platform-tag-service</module>
-    <module>annot</module>
-    <module>nuxeo-platform-imaging-tiling</module>
     <module>nuxeo-platform-lang</module>
     <module>nuxeo-platform-mail</module>
     <module>nuxeo-platform-notification</module>
@@ -34,12 +32,9 @@
     <module>nuxeo-automation</module>
     <module>nuxeo-features-test</module>
     <module>nuxeo-admin-center</module>
-    <module>nuxeo-platform-forms-layout-io-plugins</module>
     <module>nuxeo-platform-forms-layout-export</module>
     <module>localconf</module>
-    <module>nuxeo-platform-directory-web</module>
     <module>nuxeo-platform-userpreferences</module>
-    <module>nuxeo-platform-ui-select2</module>
     <module>nuxeo-thumbnail</module>
     <module>nuxeo-platform-oauth</module>
     <module>nuxeo-platform-oauth1</module>

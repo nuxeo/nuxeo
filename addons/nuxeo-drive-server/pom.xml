@@ -15,7 +15,6 @@
   </description>
 
   <modules>
-    <module>nuxeo-drive-jsf</module>
     <module>nuxeo-drive-core</module>
     <module>nuxeo-drive-operations</module>
     <module>nuxeo-drive-elasticsearch</module>

@@ -17,7 +17,6 @@
     <module>nuxeo-platform-relations-default-config</module>
     <module>nuxeo-platform-relations-io</module>
     <module>nuxeo-platform-relations-jena-plugin</module>
-    <module>nuxeo-platform-relations-web</module>
   </modules>
 
 </project>
