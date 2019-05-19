@@ -403,4 +403,60 @@ public class TestKeyValueBlobTransientStore {
         }
     }
 
+    @Test
+    public void testPutBlobsGetBlobsConcurrency() throws Exception {
+        String key = "mykey";
+        Runnable put = () -> {
+            ts.putBlobs(key, Collections.singletonList(new StringBlob("foo")));
+        };
+        Runnable get = () -> {
+            List<Blob> blobs = ts.getBlobs(key);
+            assertNotNull(blobs);
+            assertEquals(1, blobs.size());
+        };
+
+        // check once that it's ok without concurrency
+        put.run();
+        get.run();
+
+        // define threads to run things concurrently in a loop
+        Runnable putLoop = () -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    put.run();
+                } catch (RuntimeException e) {
+                    if (!(e.getCause() instanceof InterruptedException)) {
+                        throw e;
+                    }
+                }
+            }
+        };
+        Thread putThread = new Thread(putLoop, "putLoop");
+        MutableObject<AssertionError> exc = new MutableObject<>();
+        Runnable getLoop = () -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    get.run();
+                } catch (AssertionError e) {
+                    exc.setValue(e);
+                    putThread.interrupt();
+                    throw e;
+                }
+            }
+        };
+        Thread getThread = new Thread(getLoop, "getLoop");
+
+        // start things concurrently
+        putThread.start();
+        getThread.start();
+        Thread.sleep(1000); // keep threads looping for 1s
+        putThread.interrupt();
+        getThread.interrupt();
+        putThread.join();
+        getThread.join();
+        if (exc.getValue() != null) {
+            throw exc.getValue();
+        }
+    }
+
 }
