@@ -32,6 +32,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -80,6 +82,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *   entryKey.param.bar: value for param bar
  *   etc.
  *
+ *   entryKey.bloblock:  "true" if there is a blob read/write in progress, null otherwise
  *   entryKey.blobinfo:  {"count": number of blobs,
  *                        "size": storage size of the blobs}
  *   entryKey.blob.0:    {"key": key in blob provider for first blob,
@@ -111,6 +114,9 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
 
     public static final String FORMAT_JAVA = "java";
 
+    /** @since 11.1 */
+    public static final String DOT_BLOBLOCK = SEP + "bloblock";
+
     public static final String DOT_BLOBINFO = SEP + "blobinfo";
 
     public static final String COUNT = "count";
@@ -136,6 +142,15 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
     public static final String CONFIG_BLOB_PROVIDER = "blobProvider";
 
     protected String name;
+
+    /** @since 11.1 */
+    protected static final int BLOB_LOCK_TTL = 60; // don't keep any lock longer than 60s
+
+    /** @since 11.1 */
+    protected static final long LOCK_ACQUIRE_TIME_NANOS = TimeUnit.SECONDS.toNanos(5);
+
+    /** @since 11.1 */
+    protected static final long LOCK_EXPONENTIAL_BACKOFF_AFTER_NANOS = TimeUnit.MILLISECONDS.toNanos(100);
 
     protected String keyValueStoreName;
 
@@ -431,13 +446,11 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
             }
         }
 
-        // remove previous blobs
-        KeyValueStore kvs = getKeyValueStore();
-        removeBlobs(key, kvs);
-
+        // first, outside the lock
+        // store the blobs, and compute the total size and the blob maps
         BlobProvider bp = getBlobProvider();
         long totalSize = 0;
-        int i = 0;
+        List<String> blobMapJsons = new ArrayList<>();
         for (Blob blob : blobs) {
             long size = blob.getLength();
             if (size >= 0) {
@@ -450,7 +463,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
             } catch (IOException e) {
                 throw new NuxeoException(e);
             }
-            // write blob data
+            // compute blob data
             Map<String, String> blobMap = new HashMap<>();
             blobMap.put(KEY, blobKey);
             blobMap.put(MIMETYPE, blob.getMimeType());
@@ -458,15 +471,33 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
             blobMap.put(FILENAME, blob.getFilename());
             blobMap.put(LENGTH, String.valueOf(size));
             blobMap.put(DIGEST, blob.getDigest());
-            kvs.put(key + DOT_BLOB_DOT + i, toJson(blobMap), ttl);
-            i++;
+            String blobMapJson = toJson(blobMap);
+            blobMapJsons.add(blobMapJson);
         }
         Map<String, String> blobInfoMap = new HashMap<>();
         blobInfoMap.put(COUNT, String.valueOf(blobs.size()));
         blobInfoMap.put(SIZE, String.valueOf(totalSize));
-        kvs.put(key + DOT_BLOBINFO, toJson(blobInfoMap), ttl);
-        addStorageSize(totalSize, kvs);
-        markEntryExists(key, kvs);
+        String blobInfoMapJson = toJson(blobInfoMap);
+
+        // acquire a lock while writing
+        KeyValueStore kvs = getKeyValueStore();
+        acquireBlobLockOrThrow(key, kvs);
+        try {
+            // remove previous blobs
+            removeBlobs(key, kvs);
+            // write new blobs maps
+            int i = 0;
+            for (String blobMapJson : blobMapJsons) {
+                kvs.put(key + DOT_BLOB_DOT + i, blobMapJson, ttl);
+                i++;
+            }
+            // write blob info
+            kvs.put(key + DOT_BLOBINFO, blobInfoMapJson, ttl);
+            addStorageSize(totalSize, kvs);
+            markEntryExists(key, kvs);
+        } finally {
+            releaseBlobLock(key, kvs);
+        }
     }
 
     /** @deprecated since 11.1 */
@@ -500,24 +531,39 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
     public List<Blob> getBlobs(String key) {
         KeyValueStore kvs = getKeyValueStore();
         BlobProvider bp = getBlobProvider();
-        String info = kvs.getString(key + DOT_BLOBINFO);
-        if (info == null) {
-            // if the entry doesn't exist at all return null, otherwise empty
-            if (kvs.getString(key + DOT_COMPLETED) == null) {
-                return null;
-            } else {
+        List<String> blobMapJsons = new ArrayList<>();
+
+        // try to acquire a lock but still proceed without the lock (best effort)
+        boolean lockAcquired = tryAcquireBlobLock(key, kvs);
+        try {
+            String info = kvs.getString(key + DOT_BLOBINFO);
+            if (info == null) {
+                // if the entry doesn't exist at all return null, otherwise empty
+                if (kvs.getString(key + DOT_COMPLETED) == null) {
+                    return null;
+                } else {
+                    return Collections.emptyList();
+                }
+            }
+            Map<String, String> blobInfoMap = jsonToMap(info);
+            String countStr = blobInfoMap.get(COUNT);
+            if (countStr == null) {
                 return Collections.emptyList();
             }
+            int count = Integer.parseInt(countStr);
+            for (int i = 0; i < count; i++) {
+                String blobMapJson = kvs.getString(key + DOT_BLOB_DOT + i);
+                blobMapJsons.add(blobMapJson);
+            }
+        } finally {
+            if (lockAcquired) {
+                releaseBlobLock(key, kvs);
+            }
         }
-        Map<String, String> blobInfoMap = jsonToMap(info);
-        String countStr = blobInfoMap.get(COUNT);
-        if (countStr == null) {
-            return Collections.emptyList();
-        }
-        int count = Integer.parseInt(countStr);
+
+        // compute blobs from read blob maps
         List<Blob> blobs = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            String blobMapJson = kvs.getString(key + DOT_BLOB_DOT + i);
+        for (String blobMapJson : blobMapJsons) {
             if (blobMapJson == null) {
                 // corrupted entry, bail out
                 break;
@@ -584,6 +630,46 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
             blobKeys.add(blobKey);
         }
         return blobKeys;
+    }
+
+    protected void acquireBlobLockOrThrow(String key, KeyValueStore kvs) {
+        if (tryAcquireBlobLock(key, kvs)) {
+            return;
+        }
+        throw new NuxeoException("Failed to acquire blob lock for: " + key);
+    }
+
+    protected boolean tryAcquireBlobLock(String key, KeyValueStore kvs) {
+        return acquireLock(() -> tryAcquireOnceBlobLock(key, kvs));
+    }
+
+    protected boolean tryAcquireOnceBlobLock(String key, KeyValueStore kvs) {
+        return kvs.compareAndSet(key + DOT_BLOBLOCK, null, "true", BLOB_LOCK_TTL);
+    }
+
+    protected void releaseBlobLock(String key, KeyValueStore kvs) {
+        kvs.put(key + DOT_BLOBLOCK, (String) null);
+    }
+
+    protected boolean acquireLock(BooleanSupplier tryAcquireOnce) {
+        long start = System.nanoTime();
+        long sleep = 1; // ms
+        long elapsed;
+        while ((elapsed = System.nanoTime() - start) < LOCK_ACQUIRE_TIME_NANOS) {
+            if (tryAcquireOnce.getAsBoolean()) {
+                return true;
+            }
+            try {
+                Thread.sleep(sleep);
+                if (elapsed > LOCK_EXPONENTIAL_BACKOFF_AFTER_NANOS) {
+                    sleep *= 2;
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
+        }
+        return false;
     }
 
     @Override
