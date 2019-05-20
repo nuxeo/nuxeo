@@ -125,10 +125,11 @@
 
     </converter>
 
-    <converter name="any2pdf"
-               class="org.nuxeo.ecm.platform.convert.plugins.LibreOfficeConverter">
+    <converter name="any2pdf" class="org.nuxeo.ecm.platform.convert.plugins.LibreOfficeConverter"
+               bypassIfSameMimeType="true">
       <destinationMimeType>application/pdf</destinationMimeType>
 
+      <sourceMimeType>application/pdf</sourceMimeType>
       <sourceMimeType>text/xml</sourceMimeType>
       <sourceMimeType>text/html</sourceMimeType>
       <sourceMimeType>text/plain</sourceMimeType>

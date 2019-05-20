@@ -324,6 +324,11 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
                     blobHolder);
         }
 
+        // Check if conversion is unwanted
+        if (desc.isBypassIfSameMimeType() && desc.getDestinationMimeType().equals(mimeType)) {
+            return blobHolder;
+        }
+
         String cacheKey = CacheKeyGenerator.computeKey(converterName, blobHolder, parameters);
 
         BlobHolder result = ConversionCacheHolder.getFromCache(cacheKey);
