@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.tests.bypass.override.converter">
+
+  <require>org.nuxeo.ecm.core.convert.tests.bypass.converter</require>
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl" point="converter">
+
+    <converter name="testBypassTrue" class="org.nuxeo.ecm.core.convert.tests.DummyConverter"
+               bypassIfSameMimeType="false">
+      <destinationMimeType>application/pdf</destinationMimeType>
+      <sourceMimeType>application/pdf</sourceMimeType>
+    </converter>
+
+    <converter name="testBypassFalse" class="org.nuxeo.ecm.core.convert.tests.DummyConverter"
+               bypassIfSameMimeType="true">
+      <destinationMimeType>application/pdf</destinationMimeType>
+      <sourceMimeType>application/pdf</sourceMimeType>
+    </converter>
+
+    <converter name="testBypassDefault" class="org.nuxeo.ecm.core.convert.tests.DummyConverter"
+               bypassIfSameMimeType="true">
+      <destinationMimeType>application/pdf</destinationMimeType>
+      <sourceMimeType>application/pdf</sourceMimeType>
+    </converter>
+
+  </extension>
+
+</component>

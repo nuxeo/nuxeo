@@ -65,6 +65,9 @@ public class ConverterDescriptor implements Serializable {
     @XNode("@type")
     protected String converterType = CUSTOM_CONVERTER_TYPE;
 
+    @XNode("@bypassIfSameMimeType")
+    protected Boolean bypassIfSameMimeType;
+
     protected boolean wrappedTransformer = false;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
@@ -75,6 +78,15 @@ public class ConverterDescriptor implements Serializable {
 
     @XNodeList(value = "conversionSteps/subconverter", type = ArrayList.class, componentType = String.class)
     protected List<String> subConverters = new ArrayList<>();
+
+    /**
+     * Returns whether the conversion should be bypassed if the input blob mime type equals the converter destination mime type.
+     *
+     * @since 11.1
+     */
+    public boolean isBypassIfSameMimeType() {
+        return Boolean.TRUE.equals(bypassIfSameMimeType);
+    }
 
     public String getConverterName() {
         return converterName;
@@ -159,6 +171,9 @@ public class ConverterDescriptor implements Serializable {
         }
         if (other.steps != null && !other.steps.isEmpty()) {
             steps = other.steps;
+        }
+        if (other.bypassIfSameMimeType != null) {
+            bypassIfSameMimeType = other.bypassIfSameMimeType;
         }
 
         return this;
