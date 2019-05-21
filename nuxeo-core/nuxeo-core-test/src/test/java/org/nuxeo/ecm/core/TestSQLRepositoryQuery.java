@@ -63,6 +63,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -2510,16 +2511,12 @@ public class TestSQLRepositoryQuery {
         return cal.getTime();
     }
 
-    protected static String formatTimestamp(Date date) {
-        return new SimpleDateFormat("'TIMESTAMP' ''yyyy-MM-dd HH:mm:ss.SSS''").format(date);
-    }
-
     @Test
     public void testEqualsTimeWithMilliseconds() {
         Date currentDate = setupDocTest();
         String testQuery = String.format(
-                "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified = %s" + " AND ecm:isProxy = 0",
-                formatTimestamp(currentDate));
+                "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified = TIMESTAMP '%s'" + " AND ecm:isProxy = 0",
+                DateUtils.formatISODateTime(currentDate));
         DocumentModelList docs = session.query(testQuery);
         assertEquals(1, docs.size());
     }
@@ -2530,8 +2527,8 @@ public class TestSQLRepositoryQuery {
         // add a second to be sure that the document is found
         currentDate = addSecond(currentDate);
         String testQuery = String.format(
-                "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified < %s" + " AND ecm:isProxy = 0",
-                formatTimestamp(currentDate));
+                "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified < TIMESTAMP '%s'" + " AND ecm:isProxy = 0",
+                DateUtils.formatISODateTime(currentDate));
         DocumentModelList docs = session.query(testQuery);
         assertEquals(1, docs.size());
     }
