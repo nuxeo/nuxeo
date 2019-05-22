@@ -18,8 +18,6 @@
  */
 package org.nuxeo.drive.service;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,6 +28,7 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.impl.FileSystemItemChangeImpl;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -96,9 +95,9 @@ public class MockChangeFinder implements FileSystemChangeFinder {
     }
 
     protected String getDateClause(long lastSuccessfulSyncDate, long syncDate) {
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return String.format("dc:modified >= TIMESTAMP '%s' and dc:modified < TIMESTAMP '%s'",
-                sdf.format(new Date(lastSuccessfulSyncDate)), sdf.format(new Date(syncDate)));
+                DateUtils.formatISODateTime(new Date(lastSuccessfulSyncDate)),
+                DateUtils.formatISODateTime(new Date(syncDate)));
     }
 
     protected List<FileSystemItemChange> getDocumentChanges(CoreSession session, String query, int limit) {
