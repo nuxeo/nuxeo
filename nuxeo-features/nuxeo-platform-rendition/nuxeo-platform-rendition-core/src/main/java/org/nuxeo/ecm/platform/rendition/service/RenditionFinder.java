@@ -22,10 +22,10 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PRO
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_VARIANT_PROPERTY;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
+import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -98,9 +98,9 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
             Calendar sourceLastModified = (Calendar) source.getPropertyValue(modificationDatePropertyName);
             if (sourceLastModified != null) {
                 query.append(RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY);
-                query.append(" >= ");
-                query.append(formatTimestamp(sourceLastModified));
-                query.append(" AND ");
+                query.append(" >= TIMESTAMP '");
+                query.append(DateUtils.formatISODateTime(sourceLastModified));
+                query.append("' AND ");
             }
         }
         query.append(RENDITION_SOURCE_ID_PROPERTY);
@@ -121,10 +121,6 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
 
     protected String getSourceDocumentModificationDatePropertyName() {
         return renditionDefinition.getSourceDocumentModificationDatePropertyName();
-    }
-
-    protected static String formatTimestamp(Calendar cal) {
-        return new SimpleDateFormat("'TIMESTAMP' ''yyyy-MM-dd HH:mm:ss.SSS''").format(cal.getTime());
     }
 
 }
