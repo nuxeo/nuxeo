@@ -327,8 +327,9 @@ public class LDAPFilterBuilder {
                     }
                     filter.append('*');
                     break;
-                case '_':
-                    throw new QueryParseException("Cannot use _ wildcard in LIKE for LDAP directory");
+                case '_': // interpret it as an escaped _, not a wildcard
+                    param.append(c);
+                    break;
                 case '\\':
                     escapeNext = true;
                     break;

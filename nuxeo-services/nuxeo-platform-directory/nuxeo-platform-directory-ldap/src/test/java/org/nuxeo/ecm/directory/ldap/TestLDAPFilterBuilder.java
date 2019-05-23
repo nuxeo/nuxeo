@@ -128,4 +128,37 @@ public class TestLDAPFilterBuilder extends LDAPDirectoryTestCase {
         }
     }
 
+    // more test for LIKE pattern translations
+    @Test
+    public void testQueryBuilderLike() throws Exception {
+        try (Session session = getSession()) {
+            QueryBuilder queryBuilder = //
+                    new QueryBuilder().predicate(Predicates.like("firstName", "foobar"))
+                                      .and(Predicates.like("firstName", "foo%bar"))
+                                      .and(Predicates.like("firstName", "foo_bar"))
+                                      .and(Predicates.like("firstName", "foo\\%bar"))
+                                      .and(Predicates.like("firstName", "foo\\_bar"))
+                                      .and(Predicates.like("firstName", "foo\\\\bar"));
+            LDAPFilterBuilder builder = new LDAPFilterBuilder(getDirectory());
+            builder.walk(queryBuilder.predicate());
+            assertEquals("(&" //
+                    + "(givenName={0})" //
+                    + "(givenName={1}*{2})" //
+                    + "(givenName={3})" //
+                    + "(givenName={4})" //
+                    + "(givenName={5})" //
+                    + "(givenName={6})" //
+                    + ")", //
+                    builder.filter.toString());
+            assertEqualsNormalized(Arrays.asList( //
+                    "foobar", //
+                    "foo", "bar", //
+                    "foo_bar", // bare underscore is not interpreted as a wildcard
+                    "foo%bar",
+                    "foo_bar",
+                    "foo\\bar"
+            ), builder.params.stream().collect(toList()));
+        }
+    }
+
 }
