@@ -67,6 +67,7 @@ public class TestZip2HtmlConverter extends BaseConverterTest {
         String content = blobs.get(0).getString();
         assertTrue(content, content.contains("<li><a href=\"hello.xml\">hello.xml</a></li>"));
         assertTrue(content, content.contains("<li><a href=\"hello.txt\">hello.txt</a></li>"));
+        assertEquals("text/html", blobs.get(0).getMimeType());
 
         for (int i = 1; i < blobs.size(); i++) {
             File file = blobs.get(i).getFile();
