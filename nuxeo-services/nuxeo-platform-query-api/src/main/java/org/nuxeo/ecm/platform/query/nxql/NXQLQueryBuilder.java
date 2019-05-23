@@ -387,14 +387,15 @@ public class NXQLQueryBuilder {
 
         if (operator.equals("=") || operator.equals("!=") || operator.equals("<") || operator.equals(">")
                 || operator.equals("<=") || operator.equals(">=") || operator.equals("<>") || operator.equals("LIKE")
-                || operator.equals("ILIKE")) {
+                || operator.equals("ILIKE") || operator.equals("NOT LIKE") || operator.equals("NOT ILIKE")) {
             // Unary predicate
             String value = getStringValue(model, values[0]);
             if (value == null) {
                 // value not provided: ignore predicate
                 return "";
             }
-            if (escaper != null && (operator.equals("LIKE") || operator.equals("ILIKE"))) {
+            if (escaper != null && (operator.equals("LIKE") || operator.equals("ILIKE")
+                    || operator.equals("NOT LIKE") || operator.equals("NOT ILIKE"))) {
                 value = escaper.escape(value);
             }
             return serializeUnary(parameter, operator, value);

@@ -186,6 +186,14 @@
       </pattern>
       <maxPageSize>1000</maxPageSize>
     </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="DUMMY_NOT_LIKE_PP">
+      <whereClause docType="AdvancedSearch">
+        <predicate parameter="size" operator="NOT LIKE">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+      </whereClause>
+    </coreQueryPageProvider>
   </extension>
 
 </component>
