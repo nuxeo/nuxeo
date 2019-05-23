@@ -156,7 +156,7 @@
     <aws.version>1.11.516</aws.version>
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
-    <jackson.version>2.9.8</jackson.version>
+    <jackson.version>2.9.9</jackson.version>
     <bouncycastle.version>1.60</bouncycastle.version>
     <avro.version>1.8.2</avro.version>
     <xz.version>1.8</xz.version>
