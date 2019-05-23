@@ -20,7 +20,7 @@
 
       @since 11.1
     </documentation>
-    <property name="nuxeo.usermanager.search.escape.compat">false</property>
+    <property name="nuxeo.usermanager.search.escape.compat">true</property>
   </extension>
 
 </component>

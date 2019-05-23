@@ -1414,7 +1414,7 @@ public class TestUserManager extends UserManagerTestCase {
 
     @Test
     public void testGetQueryForPatternDefault() throws Exception {
-        doTestGetQueryForPattern(false);
+        doTestGetQueryForPattern(true);
     }
 
     protected void doTestGetQueryForPattern(boolean compat) throws Exception {
