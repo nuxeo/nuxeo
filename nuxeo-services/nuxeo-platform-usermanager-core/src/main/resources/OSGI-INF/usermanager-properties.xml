@@ -11,4 +11,16 @@
     <property name="nuxeo.usermanager.check.password">true</property>
   </extension>
 
+ <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Controls whether the UserManager.searchUsers(pattern) and UserManager.searchGroups(pattern)
+      APIs interpret the pattern as a generic string with arbitrary characters
+      that will be matched exactly (depending on the directory substring match style)
+      (non-compat mode), or as a LIKE pattern where % and _ are interpreted as LIKE escapes (compat mode).
+
+      @since 11.1
+    </documentation>
+    <property name="nuxeo.usermanager.search.escape.compat">false</property>
+  </extension>
+
 </component>
