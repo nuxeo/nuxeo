@@ -171,6 +171,6 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
             page.append("</a></li>");
         }
         page.append("</ul></body></html>");
-        return Blobs.createBlob(page.toString());
+        return Blobs.createBlob(page.toString(), "text/html");
     }
 }
