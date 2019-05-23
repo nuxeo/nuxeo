@@ -1400,4 +1400,48 @@ public class TestUserManager extends UserManagerTestCase {
         }
     }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-search-escape-compat-true.xml")
+    public void testGetQueryForPatternCompatTrue() throws Exception {
+        doTestGetQueryForPattern(true);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-search-escape-compat-false.xml")
+    public void testGetQueryForPatternCompatFalse() throws Exception {
+        doTestGetQueryForPattern(false);
+    }
+
+    @Test
+    public void testGetQueryForPatternDefault() throws Exception {
+        doTestGetQueryForPattern(false);
+    }
+
+    protected void doTestGetQueryForPattern(boolean compat) throws Exception {
+        String query;
+
+        // basic query, directory configured for "subinitial" substring match type
+        query = getQueryForPattern("foo");
+        assertEquals("OR(firstName ILIKE 'foo%', lastName ILIKE 'foo%', username ILIKE 'foo%')",
+                query);
+
+        // query containing wildcards that should be escaped (except if compat)
+        query = getQueryForPattern("a_b%c");
+        if (!compat) {
+            // note: this is a debug string, escapes are not really equivalent to the generated NXQL
+            assertEquals("OR(firstName ILIKE 'a\\_b\\%c%', lastName ILIKE 'a\\_b\\%c%', username ILIKE 'a\\_b\\%c%')",
+                    query);
+        } else {
+            // compat: we don't escape special characters
+            assertEquals("OR(firstName ILIKE 'a_b%c%', lastName ILIKE 'a_b%c%', username ILIKE 'a_b%c%')", query);
+        }
+    }
+
+    protected String getQueryForPattern(String pattern) {
+        UserManagerImpl um = (UserManagerImpl) userManager;
+        QueryBuilder queryBuilder = um.getQueryForPattern(pattern, um.getUserDirectoryName(), um.userSearchFields,
+                um.getUserOrderBy());
+        return queryBuilder.predicate().toString();
+    }
+
 }

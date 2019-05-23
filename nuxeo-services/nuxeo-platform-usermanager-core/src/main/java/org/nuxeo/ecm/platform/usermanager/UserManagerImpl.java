@@ -95,6 +95,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     private static final String VALIDATE_PASSWORD_PARAM = "nuxeo.usermanager.check.password";
 
+    /** @since 11.1 */
+    protected static final String SEARCH_ESCAPE_COMPAT_PARAM = "nuxeo.usermanager.search.escape.compat";
+
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(UserManagerImpl.class);
@@ -956,6 +959,16 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         if (!StringUtils.isBlank(pattern)) {
             // build query
             pattern = pattern.trim().toLowerCase();
+            String likePattern;
+            if (!useSearchEscapeCompat()) {
+                // replace characters that are meaningful in a LIKE pattern
+                likePattern = pattern.replace("\\", "\\\\");
+                likePattern = likePattern.replace("%", "\\%");
+                likePattern = likePattern.replace("_", "\\_");
+            } else {
+                // compat: don't do any escaping
+                likePattern = pattern;
+            }
             List<Predicate> predicates = new ArrayList<>();
             for (Entry<String, MatchType> fieldEntry : searchFields.entrySet()) {
                 String key = fieldEntry.getKey();
@@ -966,13 +979,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
                     String value;
                     switch (substringMatchType) {
                     case subany:
-                        value = '%' + pattern + '%';
+                        value = '%' + likePattern + '%';
                         break;
                     case subinitial:
-                        value = pattern + '%';
+                        value = likePattern + '%';
                         break;
                     case subfinal:
-                        value = '%' + pattern;
+                        value = '%' + likePattern;
                         break;
                     default:
                         throw new IllegalStateException(substringMatchType.toString());
@@ -1391,6 +1404,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     private boolean mustCheckPasswordValidity() {
         return Framework.getService(ConfigurationService.class).isBooleanTrue(VALIDATE_PASSWORD_PARAM);
+    }
+
+    protected boolean useSearchEscapeCompat() {
+        return Framework.getService(ConfigurationService.class).isBooleanTrue(SEARCH_ESCAPE_COMPAT_PARAM);
     }
 
     @Override
