@@ -91,6 +91,9 @@ public class LogStreamManager implements StreamManager {
     @Override
     public LogOffset append(String stream, Record record) {
         RecordFilterChain filter = filters.get(stream);
+        if (filter == null) {
+            throw new IllegalArgumentException("Unknown stream: " + stream);
+        }
         record = filter.beforeAppend(record);
         if (record == null) {
             return new LogOffsetImpl(stream, 0, 0);

@@ -41,6 +41,10 @@ import net.jodah.failsafe.RetryPolicy;
 @XObject("streamProcessor")
 public class StreamProcessorDescriptor implements Descriptor {
 
+    // @since 11.1
+    @XNode("@enabled")
+    protected boolean isEnabled = true;
+
     @XObject(value = "computation")
     public static class ComputationDescriptor implements Descriptor {
 
@@ -236,6 +240,16 @@ public class StreamProcessorDescriptor implements Descriptor {
             }
         }
         return defaultPolicy;
+    }
+
+    // @since 11.1
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    // @since 11.1
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
     @Override

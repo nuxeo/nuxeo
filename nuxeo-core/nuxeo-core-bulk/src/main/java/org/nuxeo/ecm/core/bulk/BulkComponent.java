@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -50,9 +53,14 @@ public class BulkComponent extends DefaultComponent {
     @Override
     public void start(ComponentContext context) {
         super.start(context);
-        bulkAdminService = new BulkAdminServiceImpl(getDescriptors(XP_ACTIONS));
+        bulkAdminService = new BulkAdminServiceImpl(getEnabledDescriptors());
         bulkService = new BulkServiceImpl();
         new ComponentListener().install();
+    }
+
+    protected List<BulkActionDescriptor> getEnabledDescriptors() {
+        List<BulkActionDescriptor> descriptors = getDescriptors(XP_ACTIONS);
+        return descriptors.stream().filter(BulkActionDescriptor::isEnabled).collect(Collectors.toList());
     }
 
     protected class ComponentListener implements ComponentManager.Listener {

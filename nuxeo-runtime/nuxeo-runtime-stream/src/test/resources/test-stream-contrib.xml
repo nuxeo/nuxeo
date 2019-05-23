@@ -27,6 +27,12 @@
       <option name="retention">4d</option>
     </logConfig>
 
+    <logConfig name="customDisabled" type="chronicle" enabled="false">
+      <option name="directory">disabled</option>
+      <option name="basePath">/tmp</option>
+      <option name="retention">4d</option>
+    </logConfig>
+
   </extension>
 
   <extension point="streamProcessor" target="org.nuxeo.runtime.stream.service">
@@ -49,6 +55,11 @@
       </stream>
       <stream name="output" codec="avroJson" />
       <option name="myOption">value</option>
+    </streamProcessor>
+
+    <streamProcessor name="disabledStreamProcessor" class="org.nuxeo.runtime.stream.tests.MyStreamProcessor2"
+      defaultConcurrency="4" defaultPartitions="2" logConfig="default" enabled="false">
+      <stream name="input2" partitions="1" codec="avro" />
     </streamProcessor>
 
   </extension>
