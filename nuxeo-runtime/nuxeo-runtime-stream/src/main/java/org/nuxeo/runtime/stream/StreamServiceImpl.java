@@ -81,8 +81,8 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         // TODO: returns a wrapper that don't expose the LogManager#close
         if (!logManagers.containsKey(name)) {
             LogConfigDescriptor config = getDescriptor(XP_LOG_CONFIG, name);
-            if (config == null) {
-                throw new IllegalArgumentException("Unknown logConfig: " + name);
+            if (config == null || !config.isEnabled()) {
+                throw new IllegalArgumentException("Unknown or disabled logConfig: " + name);
             }
             if ("kafka".equalsIgnoreCase(config.type)) {
                 logManagers.put(name, createKafkaLogManager(config));
@@ -133,7 +133,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     }
 
     protected void createLogIfNotExists(LogConfigDescriptor config) {
-        if (config.logs.isEmpty()) {
+        if (!config.isEnabled() || config.logs.isEmpty()) {
             return;
         }
         LogManager manager = getLogManager(config.getId());
@@ -154,6 +154,10 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     }
 
     protected void initProcessor(StreamProcessorDescriptor descriptor) {
+        if (! descriptor.isEnabled()) {
+            log.info("Processor {} disabled", descriptor.getId());
+            return;
+        }
         if (processors.containsKey(descriptor.getId())) {
             log.error("Processor already initialized: {}", descriptor.getId());
             return;
@@ -200,9 +204,9 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
 
     protected void startComputations() {
         getDescriptors(XP_STREAM_PROCESSOR).forEach(d -> {
-            StreamProcessor manager = processors.get(d.getId());
-            if (manager != null) {
-                manager.start();
+            StreamProcessor processor = processors.get(d.getId());
+            if (processor != null) {
+                processor.start();
             }
         });
     }
