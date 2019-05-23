@@ -71,12 +71,20 @@ public class TestStreamService {
             // expected
         }
 
+        try {
+            service.getLogManager("customDisabled");
+            fail("Expected exception");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+
         @SuppressWarnings("resource") // not ours to close
         LogManager manager3 = service.getLogManager("default");
         assertNotNull(manager3);
 
         manager3.exists("input");
         assertEquals(1, manager3.size("input"));
+
     }
 
     @Test
@@ -128,4 +136,25 @@ public class TestStreamService {
         assertEquals("changedNow", logRecord.message().getKey());
 
     }
+
+    @Test
+    public void testDisabledStreamProcessor() throws Exception {
+        @SuppressWarnings("resource")
+        StreamManager streamManager = service.getStreamManager("default");
+
+        try {
+            streamManager.append("streamThatDoesNotExist", Record.of("key", null));
+            fail("Expected exception");
+        } catch (IllegalArgumentException e) {
+            // expected because stream does not exist
+        }
+
+        try {
+            streamManager.append("input2", Record.of("key", null));
+            fail("Expected exception");
+        } catch (IllegalArgumentException e) {
+            // expected because processor is disabled so its input streams are not initialized
+        }
+    }
+
 }
