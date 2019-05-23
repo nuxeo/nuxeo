@@ -168,7 +168,8 @@
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="auditLogWriter" logConfig="${nuxeo.stream.audit.log.config:=audit}"
                      defaultConcurrency="1" defaultPartitions="1" defaultCodec="${nuxeo.stream.audit.log.codec:=legacy}"
-                     class="org.nuxeo.ecm.platform.audit.impl.StreamAuditWriter">
+                     class="org.nuxeo.ecm.platform.audit.impl.StreamAuditWriter"
+                     enabled="${nuxeo.stream.audit.enabled:=true}">
       <policy name="AuditLogWriter" batchCapacity="${nuxeo.stream.audit.batch.size:=10}"
               batchThreshold="${nuxeo.stream.audit.batch.threshold.ms:=50}ms"
               maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="false" />

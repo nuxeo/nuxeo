@@ -4,12 +4,12 @@
   <require>org.nuxeo.ecm.core.bulk.config</require>
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="index" bucketSize="1000" batchSize="25" />
+    <action name="index" bucketSize="1000" batchSize="25" enabled="${elasticsearch.enabled:=true}" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="reindex" class="org.nuxeo.elasticsearch.bulk.IndexAction" logConfig="bulk"
-      defaultConcurrency="2" defaultPartitions="4">
+      defaultConcurrency="2" defaultPartitions="4" enabled="${elasticsearch.enabled:=true}">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="false" />
       <!-- concurrency to build indexing requests -->
       <computation name="index" concurrency="2" />
