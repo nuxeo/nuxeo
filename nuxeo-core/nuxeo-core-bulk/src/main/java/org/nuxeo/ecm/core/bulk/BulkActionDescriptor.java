@@ -34,6 +34,10 @@ public class BulkActionDescriptor implements Descriptor {
 
     public static final Integer DEFAULT_BATCH_SIZE = 25;
 
+    // @since 11.1
+    @XNode("@enabled")
+    protected boolean isEnabled = true;
+
     @XNode("@name")
     public String name;
 
@@ -75,4 +79,15 @@ public class BulkActionDescriptor implements Descriptor {
             throw new NuxeoException("Cannot create validation class of type " + validationClass.getName(), e);
         }
     }
+
+    // @since 11.1
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    // @since 11.1
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
+
 }

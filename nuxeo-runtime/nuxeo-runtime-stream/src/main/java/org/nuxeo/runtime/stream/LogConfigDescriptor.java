@@ -33,6 +33,10 @@ import org.nuxeo.runtime.model.Descriptor;
 @XObject("logConfig")
 public class LogConfigDescriptor implements Descriptor {
 
+    // @since 11.1
+    @XNode("@enabled")
+    protected boolean isEnabled = true;
+
     @XObject(value = "log")
     public static class LogDescriptor implements Descriptor {
 
@@ -67,4 +71,13 @@ public class LogConfigDescriptor implements Descriptor {
         return name;
     }
 
+    // @since 11.1
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    // @since 11.1
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
 }
