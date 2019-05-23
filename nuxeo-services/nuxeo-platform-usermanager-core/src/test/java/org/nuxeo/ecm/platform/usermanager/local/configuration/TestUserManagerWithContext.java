@@ -115,7 +115,7 @@ public class TestUserManagerWithContext extends UserManagerTestCase {
     @Test
     public void testShouldReturnOnlyUserFromTenantA() throws Exception {
 
-        DocumentModelList users = mtum.searchUsers("%%", null);
+        DocumentModelList users = mtum.searchUsers((String) null, null);
 
         assertEquals(3, users.size()); // including Guest
 
