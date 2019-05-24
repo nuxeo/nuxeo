@@ -33,7 +33,7 @@ object ScnBulkUpdateFolders {
           // TODO: when NXP-25940 is done use random user
           .feed(Feeders.admins)
           .exec(NuxeoBulk.bulkUpdateDocument("SELECT * FROM Document WHERE ecm:path = '" + Constants.GAT_WS_PATH + "/${parentPath}'", "dc:description", "bulk folder")
-            .asJSON.check(jsonPath("$.commandId").saveAs("commandId")))
+          .check(jsonPath("$.commandId").saveAs("commandId")))
           .exec(NuxeoBulk.waitForAction("${commandId}"))
           .pause(pause)
       }
