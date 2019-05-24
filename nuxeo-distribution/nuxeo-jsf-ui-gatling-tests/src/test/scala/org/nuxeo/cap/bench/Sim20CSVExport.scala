@@ -27,7 +27,8 @@ object ScnBulkCsvExport {
   def get = () => {
     scenario("BulkCsvExport")
       .feed(Feeders.admins)
-      .exec(NuxeoBulk.bulkCsvExport("SELECT * FROM File WHERE ecm:isVersion = 0 AND ecm:isTrashed = 0").asJSON.check(jsonPath("$.commandId").saveAs("commandId")))
+      .exec(NuxeoBulk.bulkCsvExport("SELECT * FROM File WHERE ecm:isVersion = 0 AND ecm:isTrashed = 0")
+        .check(jsonPath("$.commandId").saveAs("commandId")))
       .exec(NuxeoBulk.waitForAction("${commandId}"))
   }
 
