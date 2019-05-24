@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,10 @@ import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.EXECUT
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues.graph;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,8 +46,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(WorkflowFeature.class)
-@Ignore
-public class AbstractGraphRouteTest {
+public abstract class AbstractGraphRouteTest {
 
     // a doc, associated to the route
     protected DocumentModel doc;
@@ -64,12 +60,11 @@ public class AbstractGraphRouteTest {
         DocumentModel route = session.createDocumentModel("/", name, DOCUMENT_ROUTE_DOCUMENT_TYPE);
         route.setPropertyValue(EXECUTION_TYPE_PROPERTY_NAME, graph.name());
         route.setPropertyValue("dc:title", name);
-        route.setPropertyValue(ATTACHED_DOCUMENTS_PROPERTY_NAME, (Serializable) Collections.singletonList(doc.getId()));
+        route.setPropertyValue(ATTACHED_DOCUMENTS_PROPERTY_NAME, (Serializable) List.of(doc.getId()));
         return session.createDocument(route);
     }
 
-    protected DocumentModel createNode(DocumentModel route, String name, CoreSession session) throws
-            PropertyException {
+    protected DocumentModel createNode(DocumentModel route, String name, CoreSession session) throws PropertyException {
         DocumentModel node = session.createDocumentModel(route.getPathAsString(), name, TYPE_ROUTE_NODE);
         node.setPropertyValue(GraphNode.PROP_NODE_ID, name);
         return session.createDocument(node);
@@ -83,8 +78,7 @@ public class AbstractGraphRouteTest {
         return m;
     }
 
-    protected Map<String, Serializable> transition(String name, String target, String condition, String chainId)
-            {
+    protected Map<String, Serializable> transition(String name, String target, String condition, String chainId) {
         Map<String, Serializable> m = transition(name, target, condition);
         m.put(GraphNode.PROP_TRANS_CHAIN, chainId);
         return m;
@@ -95,7 +89,7 @@ public class AbstractGraphRouteTest {
     }
 
     protected void setTransitions(DocumentModel node, Map<String, Serializable>... transitions) {
-        node.setPropertyValue(GraphNode.PROP_TRANSITIONS, (Serializable) Arrays.asList(transitions));
+        node.setPropertyValue(GraphNode.PROP_TRANSITIONS, (Serializable) List.of(transitions));
     }
 
     protected Map<String, Serializable> button(String name, String label, String filter, Boolean validate) {
@@ -108,15 +102,14 @@ public class AbstractGraphRouteTest {
     }
 
     protected void setButtons(DocumentModel node, Map<String, Serializable>... buttons) {
-        node.setPropertyValue(GraphNode.PROP_TASK_BUTTONS, (Serializable) Arrays.asList(buttons));
+        node.setPropertyValue(GraphNode.PROP_TASK_BUTTONS, (Serializable) List.of(buttons));
     }
 
     protected DocumentRoute instantiateAndRun(CoreSession session) {
         return instantiateAndRun(session, null);
     }
 
-    protected DocumentRoute instantiateAndRun(CoreSession session, Map<String, Serializable> map)
-            {
+    protected DocumentRoute instantiateAndRun(CoreSession session, Map<String, Serializable> map) {
         DocumentRoutingService routing = Framework.getService(DocumentRoutingService.class);
         // route model
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
@@ -126,17 +119,15 @@ public class AbstractGraphRouteTest {
         }
         session.save();
         // create instance and start
-        String id = routing.createNewInstance(route.getDocument().getName(), Collections.singletonList(doc.getId()),
-                map, session, true);
+        String id = routing.createNewInstance(route.getDocument().getName(), List.of(doc.getId()), map, session, true);
         return session.getDocument(new IdRef(id)).getAdapter(DocumentRoute.class);
     }
 
-    protected DocumentRoute instantiateAndRun(CoreSession session, List<String> docIds, Map<String, Serializable> map)
-            {
+    protected DocumentRoute instantiateAndRun(CoreSession session, List<String> docIds, Map<String, Serializable> map) {
         DocumentRoute route = validate(routeDoc, session);
         // create instance and start
-        String id = Framework.getService(DocumentRoutingService.class).createNewInstance(
-                route.getDocument().getName(), docIds, map, session, true);
+        String id = Framework.getService(DocumentRoutingService.class)
+                             .createNewInstance(route.getDocument().getName(), docIds, map, session, true);
         return session.getDocument(new IdRef(id)).getAdapter(DocumentRoute.class);
     }
 

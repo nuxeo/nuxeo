@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -108,7 +109,7 @@ import com.google.common.cache.CacheBuilder;
  */
 public class DocumentRoutingServiceImpl extends DefaultComponent implements DocumentRoutingService {
 
-    private static Log log = LogFactory.getLog(DocumentRoutingServiceImpl.class);
+    private static Logger log = LogManager.getLogger(DocumentRoutingServiceImpl.class);
 
     /** Routes in any state (model or not). */
     private static final String AVAILABLE_ROUTES_QUERY = String.format("SELECT * FROM %s",
@@ -121,18 +122,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             DocumentRoutingConstants.DOCUMENT_ROUTE_MODEL_LIFECYCLESTATE);
 
     /** Route models that have been validated. */
-    private static final String ROUTE_MODEL_WITH_ID_QUERY = String.format(
-            "SELECT * FROM %s WHERE ecm:name = %%s AND ecm:currentLifeCycleState = 'validated' AND ecm:isVersion = 0  AND ecm:isProxy = 0 ",
-            DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
-
-    /** Route models that have been validated. */
-    private static final String ROUTE_MODEL_DOC_ID_WITH_ID_QUERY = String.format(
-            "SELECT ecm:uuid FROM %s WHERE ecm:name = %%s AND ecm:currentLifeCycleState = 'validated' AND ecm:isVersion = 0  AND ecm:isProxy = 0 ",
+    private static final String ROUTE_MODEL_DOC_ID_WITH_ID_QUERY = String.format("SELECT ecm:uuid FROM %s WHERE"
+            + " ecm:name = %%s AND ecm:currentLifeCycleState = 'validated' AND ecm:isVersion = 0  AND ecm:isProxy = 0 ",
             DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
 
     private static final String ORDERED_CHILDREN_QUERY = "SELECT * FROM Document WHERE"
-            + " ecm:parentId = '%s' AND ecm:isVersion = 0 AND "
-            + "ecm:isTrashed = 0 ORDER BY ecm:pos";
+            + " ecm:parentId = '%s' AND ecm:isVersion = 0 AND ecm:isTrashed = 0 ORDER BY ecm:pos";
 
     public static final String CHAINS_TO_TYPE_XP = "chainsToType";
 
@@ -174,7 +169,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             try {
                 persister = des.getKlass().getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
+                throw new NuxeoException(e);
             }
         } else if (ROUTE_MODELS_IMPORTER_XP.equals(extensionPoint)) {
             RouteModelResourceType res = (RouteModelResourceType) contribution;
@@ -203,44 +198,28 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public String createNewInstance(final String routeModelId, final List<String> docIds,
-            final Map<String, Serializable> map, CoreSession session, final boolean startInstance) {
-        final String initiator = session.getPrincipal().getName();
-        final String res[] = new String[1];
-        new UnrestrictedSessionRunner(session) {
-
-            protected DocumentRoute route;
-
-            @Override
-            public void run() {
-                String routeDocId = getRouteModelDocIdWithId(session, routeModelId);
-                DocumentModel model = session.getDocument(new IdRef(routeDocId));
-                DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(model, session);
-                route = instance.getAdapter(DocumentRoute.class);
-                route.setAttachedDocuments(docIds);
-                route.save(session);
-                Map<String, Serializable> props = new HashMap<>();
-                props.put(DocumentRoutingConstants.INITIATOR_EVENT_CONTEXT_KEY, initiator);
-                fireEvent(DocumentRoutingConstants.Events.beforeRouteReady.name(), props);
-                route.setReady(session);
-                fireEvent(DocumentRoutingConstants.Events.afterRouteReady.name(), props);
-                route.save(session);
-                if (startInstance) {
-                    fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>());
-                    DocumentRoutingEngineService routingEngine = Framework.getService(
-                            DocumentRoutingEngineService.class);
-                    routingEngine.start(route, map, session);
-                    fireEventAfterWorkflowStarted(route, session);
-                }
-                res[0] = instance.getId();
+            final Map<String, Serializable> map, CoreSession s, final boolean startInstance) {
+        return CoreInstance.doPrivileged(s, session -> {
+            String routeDocId = getRouteModelDocIdWithId(session, routeModelId);
+            DocumentModel model = session.getDocument(new IdRef(routeDocId));
+            DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(model, session);
+            DocumentRoute route = instance.getAdapter(DocumentRoute.class);
+            route.setAttachedDocuments(docIds);
+            route.save(session);
+            Map<String, Serializable> props = new HashMap<>();
+            props.put(DocumentRoutingConstants.INITIATOR_EVENT_CONTEXT_KEY, session.getPrincipal().getActingUser());
+            fireEvent(DocumentRoutingConstants.Events.beforeRouteReady.name(), props, route, session);
+            route.setReady(session);
+            fireEvent(DocumentRoutingConstants.Events.afterRouteReady.name(), props, route, session);
+            route.save(session);
+            if (startInstance) {
+                fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>(), route, session);
+                DocumentRoutingEngineService routingEngine = Framework.getService(DocumentRoutingEngineService.class);
+                routingEngine.start(route, map, session);
+                fireEventAfterWorkflowStarted(route, session);
             }
-
-            protected void fireEvent(String eventName, Map<String, Serializable> eventProperties) {
-                DocumentRoutingServiceImpl.fireEvent(eventName, eventProperties, route, session);
-            }
-
-        }.runUnrestricted();
-
-        return res[0];
+            return instance.getId();
+        });
     }
 
     @Override
@@ -277,23 +256,19 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public void startInstance(final String routeInstanceId, final List<String> docIds,
-            final Map<String, Serializable> map, CoreSession session) {
-        new UnrestrictedSessionRunner(session) {
-            @Override
-            public void run() {
-                DocumentModel instance = session.getDocument(new IdRef(routeInstanceId));
-                DocumentRoute route = instance.getAdapter(DocumentRoute.class);
-                if (docIds != null) {
-                    route.setAttachedDocuments(docIds);
-                    route.save(session);
-                }
-                fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>(), route, session);
-                DocumentRoutingEngineService routingEngine = Framework.getService(DocumentRoutingEngineService.class);
-                routingEngine.start(route, map, session);
-                fireEventAfterWorkflowStarted(route, session);
+            final Map<String, Serializable> map, CoreSession s) {
+        CoreInstance.doPrivileged(s, session -> {
+            DocumentModel instance = session.getDocument(new IdRef(routeInstanceId));
+            DocumentRoute route = instance.getAdapter(DocumentRoute.class);
+            if (docIds != null) {
+                route.setAttachedDocuments(docIds);
+                route.save(session);
             }
-
-        }.runUnrestricted();
+            fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>(), route, session);
+            DocumentRoutingEngineService routingEngine = Framework.getService(DocumentRoutingEngineService.class);
+            routingEngine.start(route, map, session);
+            fireEventAfterWorkflowStarted(route, session);
+        });
     }
 
     protected void fireEventAfterWorkflowStarted(DocumentRoute route, CoreSession session) {
@@ -327,9 +302,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     protected void completeTask(final String routeId, final String nodeId, final Task task,
             final Map<String, Object> data, final String status, CoreSession session) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Completing task %s associated to node %s for workflow instance %s",
-                    task != null ? task.getId() : null, nodeId, routeId));
+        if (task == null) {
+            log.debug("Resuming workflow instance: {} associated to node: {}", routeId, nodeId);
+        } else {
+            log.debug("Completing task: {} associated to node: {} for workflow instance: {}", task.getId(), nodeId,
+                    routeId);
         }
         CompleteTaskRunner runner = new CompleteTaskRunner(routeId, nodeId, task, data, status, session);
         runner.runUnrestricted();
@@ -418,15 +395,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public DocumentRoute unlockDocumentRouteUnrestrictedSession(final DocumentRoute routeModel,
             CoreSession userSession) {
-        new UnrestrictedSessionRunner(userSession) {
-            @Override
-            public void run() {
-                DocumentRoute route = session.getDocument(routeModel.getDocument().getRef())
-                                             .getAdapter(DocumentRoute.class);
-                LockableDocumentRoute lockableRoute = route.getDocument().getAdapter(LockableDocumentRoute.class);
-                lockableRoute.unlockDocument(session);
-            }
-        }.runUnrestricted();
+        CoreInstance.doPrivileged(userSession, session -> {
+            DocumentRoute route = session.getDocument(routeModel.getDocument().getRef())
+                                         .getAdapter(DocumentRoute.class);
+            LockableDocumentRoute lockableRoute = route.getDocument().getAdapter(LockableDocumentRoute.class);
+            lockableRoute.unlockDocument(session);
+        });
         return userSession.getDocument(routeModel.getDocument().getRef()).getAdapter(DocumentRoute.class);
     }
 
@@ -436,14 +410,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         if (!routeModel.getDocument().isLocked()) {
             throw new DocumentRouteNotLockedException();
         }
-        new UnrestrictedSessionRunner(userSession) {
-            @Override
-            public void run() {
-                DocumentRoute route = session.getDocument(routeModel.getDocument().getRef())
-                                             .getAdapter(DocumentRoute.class);
-                route.validate(session);
-            }
-        }.runUnrestricted();
+        CoreInstance.doPrivileged(userSession, session -> {
+            DocumentRoute route = session.getDocument(routeModel.getDocument().getRef())
+                                         .getAdapter(DocumentRoute.class);
+            route.validate(session);
+        });
         return userSession.getDocument(routeModel.getDocument().getRef()).getAdapter(DocumentRoute.class);
     }
 
@@ -606,8 +577,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public DocumentModelList getOrderedRouteElement(String routeElementId, CoreSession session) {
         String query = String.format(ORDERED_CHILDREN_QUERY, routeElementId);
-        DocumentModelList orderedChildren = session.query(query);
-        return orderedChildren;
+        return session.query(query);
     }
 
     @Override
@@ -742,17 +712,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public List<URL> getRouteModelTemplateResources() {
-        List<URL> urls = new ArrayList<>();
-        for (URL url : routeResourcesRegistry.getRouteModelTemplateResources()) {
-            urls.add(url); // test contrib parsing and deployment
-        }
-        return urls;
+        // test contrib parsing and deployment
+        return new ArrayList<>(routeResourcesRegistry.getRouteModelTemplateResources());
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public List<DocumentModel> searchRouteModels(CoreSession session, String searchString) {
-        List<DocumentModel> allRouteModels = new ArrayList<>();
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<>();
         props.put(MAX_RESULTS_PROPERTY, PAGE_SIZE_RESULTS_KEY);
@@ -766,7 +732,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE_PROVIDER_NAME, null, null, 0L, props,
                     searchString + '%');
         }
-        allRouteModels.addAll(pageProvider.getCurrentPage());
+        List<DocumentModel> allRouteModels = new ArrayList<>(pageProvider.getCurrentPage());
         while (pageProvider.isNextPageAvailable()) {
             pageProvider.nextPage();
             allRouteModels.addAll(pageProvider.getCurrentPage());
@@ -846,16 +812,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     @Deprecated
     public void makeRoutingTasks(CoreSession coreSession, final List<Task> tasks) {
-        new UnrestrictedSessionRunner(coreSession) {
-            @Override
-            public void run() {
-                for (Task task : tasks) {
-                    DocumentModel taskDoc = task.getDocument();
-                    taskDoc.addFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME);
-                    session.saveDocument(taskDoc);
-                }
+        CoreInstance.doPrivileged(coreSession, session -> {
+            for (Task task : tasks) {
+                DocumentModel taskDoc = task.getDocument();
+                taskDoc.addFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME);
+                session.saveDocument(taskDoc);
             }
-        }.runUnrestricted();
+        });
     }
 
     @Override
@@ -906,40 +869,34 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public void removePermissionFromTaskAssignees(CoreSession session, final List<DocumentModel> docs, Task task) {
+    public void removePermissionFromTaskAssignees(CoreSession s, final List<DocumentModel> docs, Task task) {
         final String aclName = getRoutingACLName(task);
-        new UnrestrictedSessionRunner(session) {
-            @Override
-            public void run() {
-                for (DocumentModel doc : docs) {
-                    ACP acp = doc.getACP();
-                    acp.removeACL(aclName);
-                    doc.setACP(acp, true);
-                    session.saveDocument(doc);
-                }
+        CoreInstance.doPrivileged(s, session -> {
+            for (DocumentModel doc : docs) {
+                ACP acp = doc.getACP();
+                acp.removeACL(aclName);
+                doc.setACP(acp, true);
+                session.saveDocument(doc);
             }
-        }.runUnrestricted();
+        });
     }
 
     /**
      * @since 7.4
      */
     @Override
-    public void removePermissionsForTaskActors(CoreSession session, final List<DocumentModel> docs, String taskId) {
+    public void removePermissionsForTaskActors(CoreSession s, final List<DocumentModel> docs, String taskId) {
         final String aclRoutingName = getRoutingACLName(taskId);
         final String aclDelegationName = getDelegationACLName(taskId);
-        new UnrestrictedSessionRunner(session) {
-            @Override
-            public void run() {
-                for (DocumentModel doc : docs) {
-                    ACP acp = doc.getACP();
-                    acp.removeACL(aclRoutingName);
-                    acp.removeACL(aclDelegationName);
-                    doc.setACP(acp, true);
-                    session.saveDocument(doc);
-                }
+        CoreInstance.doPrivileged(s, session -> {
+            for (DocumentModel doc : docs) {
+                ACP acp = doc.getACP();
+                acp.removeACL(aclRoutingName);
+                acp.removeACL(aclDelegationName);
+                doc.setACP(acp, true);
+                session.saveDocument(doc);
             }
-        }.runUnrestricted();
+        });
     }
 
     @Override
@@ -1088,43 +1045,37 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public void cancelTask(CoreSession session, final String taskId) throws DocumentRouteException {
-        new UnrestrictedSessionRunner(session) {
-            @Override
-            public void run() {
-                DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
-                Task task = taskDoc.getAdapter(Task.class);
-                if (task == null) {
-                    throw new DocumentRouteException("Invalid taskId: " + taskId);
-                }
-
-                if (!task.isOpened()) {
-                    log.info("Can not cancel task " + taskId + "as is not open");
-                    return;
-                }
-                task.cancel(session);
-
-                // if the task was created by an workflow , update info
-                String routeId = task.getProcessId();
-                if (routeId != null) {
-                    DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
-                    GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
-                    if (routeInstance == null) {
-                        throw new DocumentRouteException("Invalid routeInstanceId: " + routeId);
-                    }
-
-                    DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                    removePermissionsForTaskActors(session, docs, task);
-                    // task is considered processed with the status "null"
-                    // when
-                    // is
-                    // canceled
-                    updateTaskInfo(session, routeInstance, task, null);
-                }
-                session.saveDocument(task.getDocument());
-
+    public void cancelTask(CoreSession s, final String taskId) throws DocumentRouteException {
+        CoreInstance.doPrivileged(s, session -> {
+            DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
+            Task task = taskDoc.getAdapter(Task.class);
+            if (task == null) {
+                throw new DocumentRouteException("Invalid taskId: " + taskId);
             }
-        }.runUnrestricted();
+
+            if (!task.isOpened()) {
+                log.info("Can not cancel task: {} as is not open", taskId);
+                return;
+            }
+            task.cancel(session);
+
+            // if the task was created by an workflow , update info
+            String routeId = task.getProcessId();
+            if (routeId != null) {
+                DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
+                GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
+                if (routeInstance == null) {
+                    throw new DocumentRouteException("Invalid routeInstanceId: " + routeId);
+                }
+
+                DocumentModelList docs = routeInstance.getAttachedDocumentModels();
+                removePermissionsForTaskActors(session, docs, task);
+                // task is considered processed with the status "null" when is canceled
+                updateTaskInfo(session, routeInstance, task, null);
+            }
+            session.saveDocument(task.getDocument());
+
+        });
     }
 
     protected void updateTaskInfo(CoreSession session, GraphRoute graph, Task task, String status) {
@@ -1140,146 +1091,136 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public void reassignTask(CoreSession session, final String taskId, final List<String> actors, final String comment)
+    public void reassignTask(CoreSession s, final String taskId, final List<String> actors, final String comment)
             throws DocumentRouteException {
-        new UnrestrictedSessionRunner(session) {
-
-            @Override
-            public void run() {
-                DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
-                Task task = taskDoc.getAdapter(Task.class);
-                if (task == null) {
-                    throw new DocumentRouteException("Invalid taskId: " + taskId);
-                }
-                if (!task.isOpened()) {
-                    throw new DocumentRouteException("Task  " + taskId + " is not opened, can not reassign it");
-                }
-                String routeId = task.getProcessId();
-                if (routeId != null) {
-                    DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
-                    GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
-                    if (routeInstance == null) {
-                        throw new DocumentRouteException(
-                                "Invalid routeInstanceId: " + routeId + " referenced by the task " + taskId);
-                    }
-                    GraphNode node = routeInstance.getNode(task.getType());
-                    if (node == null) {
-                        throw new DocumentRouteException(
-                                "Invalid node " + routeId + " referenced by the task " + taskId);
-                    }
-                    if (!node.allowTaskReassignment()) {
-                        throw new DocumentRouteException("Task " + taskId + " can not be reassigned. Node "
-                                + node.getId() + " doesn't allow reassignment.");
-                    }
-                    DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                    // remove permissions on the document following the
-                    // workflow for the current assignees
-                    removePermissionFromTaskAssignees(session, docs, task);
-                    Framework.getService(TaskService.class).reassignTask(session, taskId, actors, comment);
-                    // refresh task
-                    task.getDocument().refresh();
-                    // grant permission to the new assignees
-                    grantPermissionToTaskAssignees(session, node.getTaskAssigneesPermission(), docs, task);
-
-                    // Audit task reassignment
-                    Map<String, Serializable> eventProperties = new HashMap<>();
-                    eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
-                            DocumentRoutingConstants.ROUTING_CATEGORY);
-                    eventProperties.put("taskName", task.getName());
-                    eventProperties.put("actors", (Serializable) actors);
-                    eventProperties.put("modelId", routeInstance.getModelId());
-                    eventProperties.put("modelName", routeInstance.getModelName());
-                    eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
-                    eventProperties.put(RoutingAuditHelper.TASK_ACTOR, session.getPrincipal().getActingUser());
-                    eventProperties.put("comment", comment);
-                    // compute duration since workflow started
-                    long timeSinceWfStarted = RoutingAuditHelper.computeDurationSinceWfStarted(task.getProcessId());
-                    if (timeSinceWfStarted >= 0) {
-                        eventProperties.put(RoutingAuditHelper.TIME_SINCE_WF_STARTED, timeSinceWfStarted);
-                    }
-                    // compute duration since task started
-                    long timeSinceTaskStarted = RoutingAuditHelper.computeDurationSinceTaskStarted(task.getId());
-                    if (timeSinceWfStarted >= 0) {
-                        eventProperties.put(RoutingAuditHelper.TIME_SINCE_TASK_STARTED, timeSinceTaskStarted);
-                    }
-                    DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
-                            task.getDocument());
-                    envContext.setProperties(eventProperties);
-                    EventProducer eventProducer = Framework.getService(EventProducer.class);
-                    eventProducer.fireEvent(
-                            envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskReassigned.name()));
-                }
+        CoreInstance.doPrivileged(s, session -> {
+            DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
+            Task task = taskDoc.getAdapter(Task.class);
+            if (task == null) {
+                throw new DocumentRouteException("Invalid taskId: " + taskId);
             }
-        }.runUnrestricted();
+            if (!task.isOpened()) {
+                throw new DocumentRouteException("Task  " + taskId + " is not opened, can not reassign it");
+            }
+            String routeId = task.getProcessId();
+            if (routeId != null) {
+                DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
+                GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
+                if (routeInstance == null) {
+                    throw new DocumentRouteException(
+                            "Invalid routeInstanceId: " + routeId + " referenced by the task " + taskId);
+                }
+                GraphNode node = routeInstance.getNode(task.getType());
+                if (node == null) {
+                    throw new DocumentRouteException("Invalid node " + routeId + " referenced by the task " + taskId);
+                }
+                if (!node.allowTaskReassignment()) {
+                    throw new DocumentRouteException("Task " + taskId + " can not be reassigned. Node " + node.getId()
+                            + " doesn't allow reassignment.");
+                }
+                DocumentModelList docs = routeInstance.getAttachedDocumentModels();
+                // remove permissions on the document following the
+                // workflow for the current assignees
+                removePermissionFromTaskAssignees(session, docs, task);
+                Framework.getService(TaskService.class).reassignTask(session, taskId, actors, comment);
+                // refresh task
+                task.getDocument().refresh();
+                // grant permission to the new assignees
+                grantPermissionToTaskAssignees(session, node.getTaskAssigneesPermission(), docs, task);
+
+                // Audit task reassignment
+                Map<String, Serializable> eventProperties = new HashMap<>();
+                eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
+                        DocumentRoutingConstants.ROUTING_CATEGORY);
+                eventProperties.put("taskName", task.getName());
+                eventProperties.put("actors", (Serializable) actors);
+                eventProperties.put("modelId", routeInstance.getModelId());
+                eventProperties.put("modelName", routeInstance.getModelName());
+                eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
+                eventProperties.put(RoutingAuditHelper.TASK_ACTOR, session.getPrincipal().getActingUser());
+                eventProperties.put("comment", comment);
+                // compute duration since workflow started
+                long timeSinceWfStarted = RoutingAuditHelper.computeDurationSinceWfStarted(task.getProcessId());
+                if (timeSinceWfStarted >= 0) {
+                    eventProperties.put(RoutingAuditHelper.TIME_SINCE_WF_STARTED, timeSinceWfStarted);
+                }
+                // compute duration since task started
+                long timeSinceTaskStarted = RoutingAuditHelper.computeDurationSinceTaskStarted(task.getId());
+                if (timeSinceWfStarted >= 0) {
+                    eventProperties.put(RoutingAuditHelper.TIME_SINCE_TASK_STARTED, timeSinceTaskStarted);
+                }
+                DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
+                        task.getDocument());
+                envContext.setProperties(eventProperties);
+                EventProducer eventProducer = Framework.getService(EventProducer.class);
+                eventProducer.fireEvent(
+                        envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskReassigned.name()));
+            }
+        });
     }
 
     @Override
-    public void delegateTask(CoreSession session, final String taskId, final List<String> delegatedActors,
+    public void delegateTask(CoreSession s, final String taskId, final List<String> delegatedActors,
             final String comment) throws DocumentRouteException {
-        new UnrestrictedSessionRunner(session) {
-
-            @Override
-            public void run() {
-                DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
-                Task task = taskDoc.getAdapter(Task.class);
-                if (task == null) {
-                    throw new DocumentRouteException("Invalid taskId: " + taskId);
-                }
-                String routeId = task.getProcessId();
-                if (routeId != null) {
-                    DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
-                    GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
-                    if (routeInstance == null) {
-                        throw new DocumentRouteException(
-                                "Invalid routeInstanceId: " + routeId + " referenced by the task " + taskId);
-                    }
-                    GraphNode node = routeInstance.getNode(task.getType());
-                    if (node == null) {
-                        throw new DocumentRouteException(
-                                "Invalid node " + routeId + " referenced by the task " + taskId);
-                    }
-                    DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                    Framework.getService(TaskService.class).delegateTask(session, taskId, delegatedActors, comment);
-                    // refresh task
-                    task.getDocument().refresh();
-                    // grant permission to the new assignees
-                    grantPermissionToTaskDelegatedActors(session, node.getTaskAssigneesPermission(), docs, task);
-
-                    // Audit task delegation
-                    Map<String, Serializable> eventProperties = new HashMap<>();
-                    eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
-                            DocumentRoutingConstants.ROUTING_CATEGORY);
-                    eventProperties.put("taskName", task.getName());
-                    eventProperties.put("delegatedActors", (Serializable) delegatedActors);
-                    eventProperties.put("modelId", routeInstance.getModelId());
-                    eventProperties.put("modelName", routeInstance.getModelName());
-                    eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
-                    eventProperties.put(RoutingAuditHelper.TASK_ACTOR, session.getPrincipal().getActingUser());
-                    eventProperties.put("comment", comment);
-
-                    // compute duration since workflow started
-                    long timeSinceWfStarted = RoutingAuditHelper.computeDurationSinceWfStarted(task.getProcessId());
-                    if (timeSinceWfStarted >= 0) {
-                        eventProperties.put(RoutingAuditHelper.TIME_SINCE_WF_STARTED, timeSinceWfStarted);
-                    }
-                    // compute duration since task started
-                    long timeSinceTaskStarted = RoutingAuditHelper.computeDurationSinceTaskStarted(task.getId());
-                    if (timeSinceWfStarted >= 0) {
-                        eventProperties.put(RoutingAuditHelper.TIME_SINCE_TASK_STARTED, timeSinceTaskStarted);
-                    }
-
-                    DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
-                            task.getDocument());
-                    envContext.setProperties(eventProperties);
-                    EventProducer eventProducer = Framework.getService(EventProducer.class);
-                    eventProducer.fireEvent(
-                            envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskDelegated.name()));
-                }
+        CoreInstance.doPrivileged(s, session -> {
+            DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
+            Task task = taskDoc.getAdapter(Task.class);
+            if (task == null) {
+                throw new DocumentRouteException("Invalid taskId: " + taskId);
             }
-        }.runUnrestricted();
+            String routeId = task.getProcessId();
+            if (routeId != null) {
+                DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
+                GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
+                if (routeInstance == null) {
+                    throw new DocumentRouteException(
+                            "Invalid routeInstanceId: " + routeId + " referenced by the task " + taskId);
+                }
+                GraphNode node = routeInstance.getNode(task.getType());
+                if (node == null) {
+                    throw new DocumentRouteException("Invalid node " + routeId + " referenced by the task " + taskId);
+                }
+                DocumentModelList docs = routeInstance.getAttachedDocumentModels();
+                Framework.getService(TaskService.class).delegateTask(session, taskId, delegatedActors, comment);
+                // refresh task
+                task.getDocument().refresh();
+                // grant permission to the new assignees
+                grantPermissionToTaskDelegatedActors(session, node.getTaskAssigneesPermission(), docs, task);
+
+                // Audit task delegation
+                Map<String, Serializable> eventProperties = new HashMap<>();
+                eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
+                        DocumentRoutingConstants.ROUTING_CATEGORY);
+                eventProperties.put("taskName", task.getName());
+                eventProperties.put("delegatedActors", (Serializable) delegatedActors);
+                eventProperties.put("modelId", routeInstance.getModelId());
+                eventProperties.put("modelName", routeInstance.getModelName());
+                eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
+                eventProperties.put(RoutingAuditHelper.TASK_ACTOR, session.getPrincipal().getActingUser());
+                eventProperties.put("comment", comment);
+
+                // compute duration since workflow started
+                long timeSinceWfStarted = RoutingAuditHelper.computeDurationSinceWfStarted(task.getProcessId());
+                if (timeSinceWfStarted >= 0) {
+                    eventProperties.put(RoutingAuditHelper.TIME_SINCE_WF_STARTED, timeSinceWfStarted);
+                }
+                // compute duration since task started
+                long timeSinceTaskStarted = RoutingAuditHelper.computeDurationSinceTaskStarted(task.getId());
+                if (timeSinceWfStarted >= 0) {
+                    eventProperties.put(RoutingAuditHelper.TIME_SINCE_TASK_STARTED, timeSinceTaskStarted);
+                }
+
+                DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
+                        task.getDocument());
+                envContext.setProperties(eventProperties);
+                EventProducer eventProducer = Framework.getService(EventProducer.class);
+                eventProducer.fireEvent(
+                        envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskDelegated.name()));
+            }
+        });
     }
 
-    protected void setAclForActors(CoreSession session, final String aclName, final String permission,
+    protected void setAclForActors(CoreSession s, final String aclName, final String permission,
             final List<DocumentModel> docs, List<String> actors) {
         final List<String> actorIds = new ArrayList<>();
         for (String actor : actors) {
@@ -1291,23 +1232,19 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 actorIds.add(actor);
             }
         }
-        new UnrestrictedSessionRunner(session) {
-            @Override
-            public void run() {
-                for (DocumentModel doc : docs) {
-                    ACP acp = doc.getACP();
-                    acp.removeACL(aclName);
-                    ACL acl = new ACLImpl(aclName);
-                    for (String actorId : actorIds) {
-                        acl.add(ACE.builder(actorId, permission).creator(ACTOR_ACE_CREATOR).build());
-                    }
-                    acp.addACL(0, acl); // add first to get before blocks
-                    doc.setACP(acp, true);
-                    session.saveDocument(doc);
+        CoreInstance.doPrivileged(s, session -> {
+            for (DocumentModel doc : docs) {
+                ACP acp = doc.getACP();
+                acp.removeACL(aclName);
+                ACL acl = new ACLImpl(aclName);
+                for (String actorId : actorIds) {
+                    acl.add(ACE.builder(actorId, permission).creator(ACTOR_ACE_CREATOR).build());
                 }
+                acp.addACL(0, acl); // add first to get before blocks
+                doc.setACP(acp, true);
+                session.saveDocument(doc);
             }
-
-        }.runUnrestricted();
+        });
     }
 
     @Override
@@ -1332,7 +1269,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
      */
     @Override
     public List<Task> getTasks(final DocumentModel document, String actorId, String workflowInstanceId,
-            final String worflowModelName, CoreSession session) {
+            final String worflowModelName, CoreSession s) {
         StringBuilder query = new StringBuilder(
                 String.format("SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s'",
                         TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE));
@@ -1358,38 +1295,33 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             query.append(String.format(" AND nt:targetDocumentsIds = '%s'", document.getId()));
         }
         query.append(String.format(" ORDER BY %s ASC", TaskConstants.TASK_DUE_DATE_PROPERTY_NAME));
-        final DocumentModelList documentModelList = session.query(query.toString());
-        final List<Task> result = new ArrayList<>();
+        final DocumentModelList documentModelList = s.query(query.toString());
 
         // User does not necessary have READ on the workflow instance
-        new UnrestrictedSessionRunner(session) {
+        return CoreInstance.doPrivileged(s, session -> {
+            List<Task> result = new ArrayList<>();
+            for (DocumentModel documentModel : documentModelList) {
+                final Task task = documentModel.getAdapter(Task.class);
+                if (StringUtils.isNotBlank(worflowModelName)) {
 
-            @Override
-            public void run() {
-                for (DocumentModel documentModel : documentModelList) {
-                    final Task task = documentModel.getAdapter(Task.class);
-                    if (StringUtils.isNotBlank(worflowModelName)) {
-
-                        final String processId = task.getProcessId();
-                        if (processId != null && session.exists(new IdRef(processId))) {
-                            final DocumentRoute routeInstance = session.getDocument(new IdRef(processId))
-                                                                       .getAdapter(DocumentRoute.class);
-                            if (routeInstance != null) {
-                                final String routeInstanceName = routeInstance.getName();
-                                if (routeInstanceName != null && (routeInstanceName.equals(worflowModelName)
-                                        || routeInstanceName.matches("^(" + worflowModelName + ")\\.\\d+"))) {
-                                    result.add(task);
-                                }
+                    final String processId = task.getProcessId();
+                    if (processId != null && session.exists(new IdRef(processId))) {
+                        final DocumentRoute routeInstance = session.getDocument(new IdRef(processId))
+                                                                   .getAdapter(DocumentRoute.class);
+                        if (routeInstance != null) {
+                            final String routeInstanceName = routeInstance.getName();
+                            if (routeInstanceName != null && (routeInstanceName.equals(worflowModelName)
+                                    || routeInstanceName.matches("^(" + worflowModelName + ")\\.\\d+"))) {
+                                result.add(task);
                             }
                         }
-                    } else {
-                        result.add(task);
                     }
+                } else {
+                    result.add(task);
                 }
             }
-        }.runUnrestricted();
-
-        return result;
+            return result;
+        });
     }
 
     /**
