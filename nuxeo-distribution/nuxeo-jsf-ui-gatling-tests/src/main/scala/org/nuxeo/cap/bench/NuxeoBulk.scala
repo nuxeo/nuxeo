@@ -31,6 +31,7 @@ object NuxeoBulk {
       .post(Constants.API_SEARCH + "/bulk/setProperties")
       .basicAuth("${adminId}", "${adminPassword}")
       .headers(Headers.base)
+      .header("Accept", "application/json")
       .header("content-type", "application/json")
       .queryParam("query", query)
       .body(StringBody( """{"""" + property + """":"""" + value + """"}""")
@@ -42,6 +43,8 @@ object NuxeoBulk {
       .post(Constants.API_SEARCH + "/bulk/csvExport")
       .basicAuth("${adminId}", "${adminPassword}")
       .headers(Headers.base)
+      .header("Accept", "application/json")
+      .header("content-type", "application/json")
       .queryParam("query", query)
   }
 
@@ -50,6 +53,7 @@ object NuxeoBulk {
       .post(Constants.AUTOMATION_PATH + "/Bulk.WaitForAction")
       .basicAuth("${adminId}", "${adminPassword}")
       .headers(Headers.base)
+      .header("Accept", "application/json")
       .header("content-type", "application/json")
       .body(StringBody( """{"params":{"timeoutSecond": "3600", "commandId": "${commandId}"},"context":{}}"""))
   }
