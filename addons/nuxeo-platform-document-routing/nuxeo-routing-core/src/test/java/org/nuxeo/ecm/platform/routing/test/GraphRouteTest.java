@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,16 @@ package org.nuxeo.ecm.platform.routing.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.WORKFLOW_FORCE_RESUME;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -65,18 +66,12 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class GraphRouteTest extends AbstractGraphRouteTest {
 
-    protected static final String TYPE_ROUTE_NODE = "RouteNode";
-
     @Inject
     protected CoreFeature coreFeature;
-
-    @Inject
-    protected RuntimeHarness harness;
 
     @Inject
     protected CoreSession session;
@@ -95,7 +90,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     protected AutomationService automationService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         assertNotNull(routing);
         routing.invalidateRouteModelsCache();
         doc = session.createDocumentModel("/", "file", "File");
@@ -121,13 +116,12 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         return m;
     }
 
-    protected void setSubRouteVariables(DocumentModel node,
-            @SuppressWarnings("unchecked") Map<String, Serializable>... keyvalues) {
-        node.setPropertyValue(GraphNode.PROP_SUB_ROUTE_VARS, (Serializable) Arrays.asList(keyvalues));
+    protected void setSubRouteVariables(DocumentModel node, Map<String, Serializable>... keyvalues) {
+        node.setPropertyValue(GraphNode.PROP_SUB_ROUTE_VARS, (Serializable) List.of(keyvalues));
     }
 
     @Test
-    public void testExceptionIfNoStartNode() throws Exception {
+    public void testExceptionIfNoStartNode() {
         // route
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1 = session.saveDocument(node1);
@@ -141,7 +135,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @Test
-    public void testExceptionIfNoTrueTransition() throws Exception {
+    public void testExceptionIfNoTrueTransition() {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         node1 = session.saveDocument(node1);
@@ -156,7 +150,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testExceptionIfTransitionIsNotBoolean() throws Exception {
+    public void testExceptionIfTransitionIsNotBoolean() {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(node1, transition("trans1", "node1", "'notaboolean'"));
@@ -171,7 +165,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @Test
-    public void testOneNodeStartStop() throws Exception {
+    public void testOneNodeStartStop() {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
@@ -181,7 +175,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @Test
-    public void testStartWithMap() throws Exception {
+    public void testStartWithMap() {
         routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
@@ -190,7 +184,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1 = session.saveDocument(node1);
         Map<String, Serializable> map = new HashMap<>();
         map.put("stringfield", "ABC");
-        DocumentRoute route = instantiateAndRun(session, Collections.singletonList(doc.getId()), map);
+        DocumentRoute route = instantiateAndRun(session, List.of(doc.getId()), map);
         assertTrue(route.isDone());
         String v = (String) route.getDocument().getPropertyValue("fctroute1:stringfield");
         assertEquals("ABC", v);
@@ -198,7 +192,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testExceptionIfLooping() throws Exception {
+    public void testExceptionIfLooping() {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(node1, transition("trans1", "node1"));
@@ -213,7 +207,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @Test
-    public void testAutomationChains() throws Exception {
+    public void testAutomationChains() {
         assertEquals("file", doc.getTitle());
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
@@ -228,7 +222,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @Test
-    public void testAutomationChainVariableChange() throws Exception {
+    public void testAutomationChainVariableChange() {
         // route model var
         routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
@@ -263,7 +257,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testSimpleTransition() throws Exception {
+    public void testSimpleTransition() {
         assertEquals("file", doc.getTitle());
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
@@ -290,7 +284,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testResume() throws Exception {
+    public void testResume() {
         assertEquals("file", doc.getTitle());
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
@@ -319,7 +313,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCancel() throws Exception {
+    public void testCancel() {
         assertEquals("file", doc.getTitle());
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
@@ -335,7 +329,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node3.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
         node3 = session.saveDocument(node3);
 
-        DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
+        DocumentModelList cancelledTasks = session.query(
+                "Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
         assertEquals(0, cancelledTasks.size());
 
         DocumentRoute route = instantiateAndRun(session);
@@ -366,7 +361,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testForkMergeAll() throws Exception {
+    public void testForkMergeAll() {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(node1, transition("trans1", "node2", "true", "testchain_title1"),
@@ -391,7 +386,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     // a few more nodes before the merge
     @SuppressWarnings("unchecked")
     @Test
-    public void testForkMergeAll2() throws Exception {
+    public void testForkMergeAll2() {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(node1, transition("trans1", "node2"), transition("trans2", "node3"));
@@ -425,7 +420,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     // a few more nodes before the merge
     @SuppressWarnings("unchecked")
     @Test
-    public void testForkMergeAllWithTasks() throws Exception {
+    public void testForkMergeAllWithTasks() {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
 
@@ -539,7 +534,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testForkMergeOne() throws Exception {
+    public void testForkMergeOne() {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(node1, transition("trans12", "node2"), transition("trans13", "node3"));
@@ -579,7 +574,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testForkMergeWithLoopTransition() throws Exception {
+    public void testForkMergeWithLoopTransition() {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(node1, transition("trans1", "node2", "true", "testchain_title1"),
@@ -604,7 +599,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testForkMergeWithTasksAndLoopTransitions() throws Exception {
+    public void testForkMergeWithTasksAndLoopTransitions() {
 
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
@@ -631,9 +626,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         parallelNode2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users2 = { user2.getName() };
         parallelNode2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users2);
-        setTransitions(
-                parallelNode2,
-                transition("transLoop", "parallelNode2", "NodeVariables[\"button\"] ==\"loop\""),
+        setTransitions(parallelNode2, transition("transLoop", "parallelNode2", "NodeVariables[\"button\"] ==\"loop\""),
                 transition("transToMerge", "mergeNode",
                         "NodeVariables[\"tasks\"].getNumberEndedWithStatus(\"toMerge\") ==1"));
         parallelNode2 = session.saveDocument(parallelNode2);
@@ -722,7 +715,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testTwoForkMergeWithLoopTransition() throws Exception {
+    public void testTwoForkMergeWithLoopTransition() {
         DocumentModel fork1 = createNode(routeDoc, "fork1", session);
         fork1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(fork1, transition("trans1", "fork2"), transition("trans2", "task3"));
@@ -804,14 +797,14 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertEquals(State.READY, graph.getNode("task2").getState());
         assertEquals(State.READY, graph.getNode("task3").getState());
 
-        assertTrue(((DocumentRoute) graph).isDone());
+        assertTrue(graph.isDone());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     @Ignore
     // see NXP-10538
-    public void testForkWithLoopFromParallelToFork() throws Exception {
+    public void testForkWithLoopFromParallelToFork() {
 
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
@@ -910,7 +903,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testRouteWithTasks() throws Exception {
+    public void testRouteWithTasks() {
 
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
@@ -921,8 +914,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                node1,
+        setTransitions(node1,
                 transition("trans1", "node2",
                         "NodeVariables[\"button\"] == \"trans1\" && WorkflowFn.timeSinceWorkflowWasStarted()>=0",
                         "testchain_title1"));
@@ -989,7 +981,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testSetVarOnTransitionAndCheckVarWithInputChain() throws Exception {
+    public void testSetVarOnTransitionAndCheckVarWithInputChain() {
 
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
@@ -1000,10 +992,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1,
-                transition("trans1", "node2",
-                        "true",
-                        "test_setGlobalvariable"));
+        setTransitions(node1, transition("trans1", "node2", "true", "test_setGlobalvariable"));
 
         node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
@@ -1041,10 +1030,10 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testEvaluateTaskAssigneesFromVariable() throws Exception {
+    public void testEvaluateTaskAssigneesFromVariable() {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
-        List<String> assignees = Arrays.asList(user1.getName(), user2.getName());
+        List<String> assignees = List.of(user1.getName(), user2.getName());
 
         routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
         routeDoc.addFacet("FacetRoute1");
@@ -1103,7 +1092,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testComputedTaskAssignees() throws Exception {
+    public void testComputedTaskAssignees() {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
 
@@ -1141,7 +1130,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // process task as user1
         try (CloseableCoreSession session1 = openSession(user1)) {
-            routing.endTask(session1, tasks.get(0), new HashMap<String, Object>(), "trans1");
+            routing.endTask(session1, tasks.get(0), new HashMap<>(), "trans1");
         }
 
         // verify that route was done
@@ -1190,7 +1179,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testWorkflowInitiatorAndTaskActor() throws Exception {
+    public void testWorkflowInitiatorAndTaskActor() {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
 
@@ -1250,7 +1239,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testRestartWorkflowOperation() throws Exception {
+    public void testRestartWorkflowOperation() throws OperationException {
         assertEquals("file", doc.getTitle());
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
@@ -1285,8 +1274,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
                     "Select * from DocumentRoute where docri:participatingDocuments/* IN ('%s') and ecm:currentLifeCycleState = 'running'",
                     doc.getId()));
             assertEquals(1, workflows.size());
-            String restartedWorkflowId = workflows.get(0).getId();
-            assertFalse(restartedWorkflowId.equals(route.getDocument().getId()));
+            assertNotEquals(route.getDocument().getId(), workflows.get(0).getId());
 
             chain.add(BulkRestartWorkflow.ID).set("workflowId", routeDoc.getTitle()).set("nodeId", "node2");
             automationService.run(ctx, chain);
@@ -1299,13 +1287,13 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
                     "Select * from DocumentRoute where docri:participatingDocuments/* IN ('%s') and ecm:currentLifeCycleState = 'running'",
                     doc.getId()));
             assertEquals(1, workflows.size());
-            assertFalse(restartedWorkflowId.equals(workflows.get(0).getId()));
+            assertNotEquals(route.getDocument().getId(), workflows.get(0).getId());
         }
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testMergeOneWhenHavinOpenedTasks() throws Exception {
+    public void testMergeOneWhenHavinOpenedTasks() {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(node1, transition("trans12", "node2"), transition("trans13", "node3"));
@@ -1349,7 +1337,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // process one of the tasks
         try (CloseableCoreSession session1 = openSession(user1)) {
-            routing.endTask(session1, tasks.get(0), new HashMap<String, Object>(), null);
+            routing.endTask(session1, tasks.get(0), new HashMap<>(), null);
         }
 
         // verify that route was done
@@ -1359,13 +1347,14 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         tasks = taskService.getAllTaskInstances(route.getDocument().getId(), session);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
-        DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
+        DocumentModelList cancelledTasks = session.query(
+                "Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
         assertEquals(1, cancelledTasks.size());
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testForceResumeOnMerge() throws Exception {
+    public void testForceResumeOnMerge() {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(node1, transition("trans12", "node2"), transition("trans13", "node3"));
@@ -1395,7 +1384,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         DocumentRoute route = instantiateAndRun(session);
         // force resume on normal node, shouldn't change anything
-        Map<String, Object> data = Collections.<String, Object> singletonMap(WORKFLOW_FORCE_RESUME, Boolean.TRUE);
+        Map<String, Object> data = Map.of(WORKFLOW_FORCE_RESUME, Boolean.TRUE);
         routing.resumeInstance(route.getDocument().getId(), "node2", data, null, session);
         session.save();
         assertEquals("done", session.getDocument(route.getDocument().getRef()).getCurrentLifeCycleState());
@@ -1406,9 +1395,9 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         route = instantiateAndRun(session);
         GraphRoute graph = (GraphRoute) route;
         GraphNode nodeMerge = graph.getNode("node5");
-        assertTrue(State.WAITING.equals(nodeMerge.getState()));
+        assertEquals(State.WAITING, nodeMerge.getState());
 
-        data = Collections.<String, Object> singletonMap(WORKFLOW_FORCE_RESUME, Boolean.TRUE);
+        data = Map.of(WORKFLOW_FORCE_RESUME, Boolean.TRUE);
         routing.resumeInstance(route.getDocument().getId(), "node5", data, null, session);
         session.save();
 
@@ -1427,7 +1416,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testRouteWithExclusiveNode() throws Exception {
+    public void testRouteWithExclusiveNode() {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_EXECUTE_ONLY_FIRST_TRANSITION, Boolean.TRUE);
@@ -1478,7 +1467,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testSubRouteNotSuspending() throws Exception {
+    public void testSubRouteNotSuspending() {
 
         // create the sub-route
 
@@ -1512,7 +1501,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @SuppressWarnings("unchecked")
-    public void createRouteAndSuspendingSubRoute() throws Exception {
+    public void createRouteAndSuspendingSubRoute() {
 
         // create the sub-route
 
@@ -1542,7 +1531,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @Test
-    public void testSubRouteSuspending() throws Exception {
+    public void testSubRouteSuspending() {
         createRouteAndSuspendingSubRoute();
 
         // start the main workflow
@@ -1576,7 +1565,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @Test
-    public void testSubRouteCancel() throws Exception {
+    public void testSubRouteCancel() {
         createRouteAndSuspendingSubRoute();
 
         // start the main workflow
@@ -1605,7 +1594,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCancelTasksWhenWorkflowDone() throws Exception {
+    public void testCancelTasksWhenWorkflowDone() {
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
@@ -1642,20 +1631,21 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         List<Task> tasks = taskService.getAllTaskInstances(route.getDocument().getId(), session);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
-        routing.endTask(session, tasks.get(0), new HashMap<String, Object>(), "trans1");
+        routing.endTask(session, tasks.get(0), new HashMap<>(), "trans1");
         route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
         assertTrue(route.isDone());
         session.save();
 
         tasks = taskService.getAllTaskInstances(route.getDocument().getId(), session);
         assertEquals(0, tasks.size());
-        DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
+        DocumentModelList cancelledTasks = session.query(
+                "Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
         assertEquals(2, cancelledTasks.size());
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testRouteWithMultipleTasks() throws Exception {
+    public void testRouteWithMultipleTasks() {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
         NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
@@ -1669,10 +1659,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(
-                node1,
-                transition("trans1", "node2", "NodeVariables[\"tasks\"].getNumberEndedWithStatus(\"trans1\") ==1",
-                        "testchain_title1"));
+        setTransitions(node1, transition("trans1", "node2",
+                "NodeVariables[\"tasks\"].getNumberEndedWithStatus(\"trans1\") ==1", "testchain_title1"));
 
         // task properties
         node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
@@ -1773,7 +1761,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // when the tasks were completed or canceled
         GraphNode graphNode1 = graph.getNode("node1");
         List<GraphNode.TaskInfo> tasksInfo = graphNode1.getTasksInfo();
-        assertEquals(tasksInfo.size(), 3);
+        assertEquals(3, tasksInfo.size());
         int task1Index = 0;
         int task2Index = 1;
         int task3Index = 2;
@@ -1796,14 +1784,14 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         assertEquals("faketrans1", tasksInfo.get(task1Index).getStatus());
         assertEquals("trans1", tasksInfo.get(task2Index).getStatus());
-        assertEquals(null, tasksInfo.get(task3Index).getStatus());
+        assertNull(tasksInfo.get(task3Index).getStatus());
 
         assertEquals("testcomment", tasksInfo.get(task2Index).getComment());
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testTasksReassignment() throws Exception {
+    public void testTasksReassignment() {
 
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
@@ -1897,7 +1885,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testTasksDelegation() throws Exception {
+    public void testTasksDelegation() {
 
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
@@ -1972,7 +1960,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             assertEquals(0, tasks.size());
 
             // check that the user can get the task as a delegate
-            tasks = taskService.getTaskInstances(doc, Arrays.asList(new String[] { "myuser2" }), true, sessionUser2);
+            tasks = taskService.getTaskInstances(doc, List.of("myuser2"), true, sessionUser2);
             assertNotNull(tasks);
             assertEquals(1, tasks.size());
 
@@ -2005,7 +1993,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testWorkflowOnMultipleDocuments() throws Exception {
+    public void testWorkflowOnMultipleDocuments() {
         // a doc, associated to the route
         DocumentModel doc2 = session.createDocumentModel("/", "file", "File");
         doc2.setPropertyValue("dc:title", "file");
