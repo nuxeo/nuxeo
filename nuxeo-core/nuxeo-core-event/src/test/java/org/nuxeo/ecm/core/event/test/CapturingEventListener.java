@@ -26,8 +26,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
@@ -72,6 +74,27 @@ public class CapturingEventListener extends EventListenerDescriptor implements E
 
     public List<Event> getCapturedEvents() {
         return Collections.unmodifiableList(results);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Stream<Event> streamCapturedEvents() {
+        return results.stream();
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Stream<EventContext> streamCapturedEventContexts() {
+        return streamCapturedEvents().map(Event::getContext);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public <C extends EventContext> Stream<C> streamCapturedEventContexts(Class<C> clazz) {
+        return streamCapturedEventContexts().filter(clazz::isInstance).map(clazz::cast);
     }
 
     public Optional<Event> getLastCapturedEvent(String event) {

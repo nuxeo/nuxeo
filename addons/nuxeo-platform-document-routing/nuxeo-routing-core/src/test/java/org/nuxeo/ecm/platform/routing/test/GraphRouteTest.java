@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.WORKFLOW_FORCE_RESUME;
 
 import java.io.Serializable;
@@ -33,6 +34,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -54,6 +56,8 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
@@ -1138,6 +1142,53 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
         assertTrue(route.isDone());
         assertFalse(session.hasPermission(user1, doc.getRef(), "Write"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testTaskAssigneeACLUpdatesDoNotFireDocumentModified() {
+        NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
+        // init the nodes
+        DocumentModel node1 = createNode(routeDoc, "node1", session);
+        node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION, "Write");
+        setTransitions(node1, transition("trans1", "node2", "true"));
+        // add a workflow node assignees expression
+        node1.setPropertyValue("rnode:taskAssigneesExpr", "\"myuser1\"");
+        node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2", session);
+        node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node2 = session.saveDocument(node2);
+
+        session.save();
+
+        // test that updating ACLs doesn't trigger an update of document
+        Predicate<DocumentEventContext> ctxPredicate = ctx -> doc.getId().equals(ctx.getSourceDocument().getId());
+        try (var listener = new CapturingEventListener(DOCUMENT_UPDATED)) {
+            DocumentRoute route = instantiateAndRun(session);
+            // user should have rights to write document
+            assertTrue(session.hasPermission(user1, doc.getRef(), "Write"));
+            assertFalse("Document shouldn't be updated",
+                    listener.streamCapturedEventContexts(DocumentEventContext.class).anyMatch(ctxPredicate));
+            listener.clear();
+
+            // end task to check ACLs removal
+            List<Task> tasks = taskService.getTaskInstances(doc, user1, session);
+            assertEquals(1, tasks.size());
+            routing.endTask(session, tasks.get(0), new HashMap<>(), "trans1");
+            session.save(); // process invalidations
+            route = session.getDocument(route.getDocument().getRef()).getAdapter(DocumentRoute.class);
+            assertTrue(route.isDone());
+            // user should not have rights to write document
+            assertFalse(session.hasPermission(user1, doc.getRef(), "Write"));
+            assertFalse("Document shouldn't be updated",
+                    listener.streamCapturedEventContexts(DocumentEventContext.class).anyMatch(ctxPredicate));
+        }
+
     }
 
     @SuppressWarnings("unchecked")
