@@ -915,7 +915,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     ACP acp = doc.getACP();
                     acp.removeACL(aclName);
                     doc.setACP(acp, true);
-                    session.saveDocument(doc);
                 }
             }
         }.runUnrestricted();
@@ -936,7 +935,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     acp.removeACL(aclRoutingName);
                     acp.removeACL(aclDelegationName);
                     doc.setACP(acp, true);
-                    session.saveDocument(doc);
                 }
             }
         }.runUnrestricted();
@@ -1303,7 +1301,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     }
                     acp.addACL(0, acl); // add first to get before blocks
                     doc.setACP(acp, true);
-                    session.saveDocument(doc);
                 }
             }
 
