@@ -42,7 +42,6 @@
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-easyshare</module>
     <module>nuxeo-duoweb-authentication</module>
-    <module>nuxeo-platform-spreadsheet</module>
     <module>nuxeo-binary-metadata</module>
     <module>nuxeo-segment.io-connector</module>
     <module>nuxeo-liveconnect</module>

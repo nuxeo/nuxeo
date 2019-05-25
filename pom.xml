@@ -2289,23 +2289,6 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
-      <!-- Spreadsheet -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-spreadsheet-core</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-spreadsheet-jsf</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-spreadsheet-web</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
       <!-- Github Segment IO -->
       <dependency>
         <groupId>org.nuxeo</groupId>
