@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<facelet-taglib id="nxr" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facelettaglibrary_2_2.xsd"
+  version="2.2">
+  <description>
+    <![CDATA[
+    <p>Nuxeo Web Resources Taglib</p>
+    <p>
+      Defines helper tags to display CSS and JS imports of resources and/or
+      resource bundles, as well as HTML imports of HTML resources.
+    </p>
+    ]]>
+  </description>
+  <namespace>http://nuxeo.org/nxweb/resources</namespace>
+
+  <tag>
+    <tag-name>resource</tag-name>
+    <component>
+      <component-type>javax.faces.Output</component-type>
+      <renderer-type>org.nuxeo.ecm.web.resources.jsf.Resource</renderer-type>
+      <handler-class>com.sun.faces.facelets.tag.jsf.html.ScriptResourceHandler</handler-class>
+    </component>
+    <description>
+      <![CDATA[
+      <p>
+        Tag handler managing import of JavaScript/CSS/HTML resources declared
+        on the WebResourceManager service.
+      </p>
+      Example:
+      <pre>
+        &lt;nxr:resource name="myresource.js" target="head" /&gt;
+      </pre>
+      Note: if you would like to reference a resource already present on the
+      war directory, you can use the standard JSF tags to reference it (Nuxeo
+      patches the standard tags behaviour to allow doing so):
+      <pre>
+        &lt;h:outputScript src="/path/to/myresource.js" target="head" /&gt;
+        &lt;h:outputStylesheet src="/path/to/myresource.css" target="head" /&gt;
+      </pre>
+      ]]>
+    </description>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the resource as registered on the WebResourceManager service.
+      </description>
+    </attribute>
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The target area for which this resource will be rendered. For
+        example, target="head" would cause the resource to be rendered within
+        the head element. If no value is specified, the script element is
+        rendered at the same point in the view where the tag is located.
+        Currently supported values for this attribute are "head", "body", and
+        "form".
+      </description>
+    </attribute>
+    <attribute>
+      <name>includeTimestamp</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating whether the generated URL will include a timestamp
+        to workaround caching issues when the resource changes server side.
+        Available since 9.1, defaults to true.
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <tag-name>bundle</tag-name>
+    <handler-class>
+      org.nuxeo.ecm.web.resources.jsf.handler.ResourceBundleHandler
+    </handler-class>
+    <description>
+      <![CDATA[
+      <p>
+        Tag handler managing import of resource bundles declared on the
+        WebResourceManager service.
+      </p>
+      <p>
+        This tag will generate multiple HTML tags depending on resource types
+        inside the bundle (JS, CSS, HTML) and will respect dependencies
+        between resources, but will place CSS aggregated resources first, then
+        JavaScript aggregated resources, then HTML imports (not aggregated).
+      </p>
+      <p>
+        It also handles inclusion of XHTML templates, using resource types
+        xhtml and xhtmlfirst: resources with type xhtmlfirst will be included
+        before any other type of resources; resources with type xhtml will be
+        included after.
+      </p>
+      Example:
+      <pre>
+        &lt;nxr:resourceBundle name="myresourceBundle" target="head" /&gt;
+      </pre>
+      ]]>
+    </description>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the resource bundle as registered on the service.
+      </description>
+    </attribute>
+    <attribute>
+      <name>items</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Collection of bundle names, as an alternative to a single name of
+        a page.
+      </description>
+    </attribute>
+    <attribute>
+      <name>type</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The type of resource to select (css, js, etc...). All resources will
+        be taken into account if empty.
+      </description>
+    </attribute>
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The target area for which this resource will be rendered. For
+        example, target="head" would cause the resource to be rendered within
+        the head element. If no value is specified, the script element is
+        rendered at the same point in the view where the tag is located.
+        Currently supported values for this attribute are "head", "body", and
+        "form".
+      </description>
+    </attribute>
+    <attribute>
+      <name>target_js</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Specific target for JavaScript resources (optional, defaults to target
+        attribute value).
+      </description>
+    </attribute>
+    <attribute>
+      <name>target_css</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Specific target for CSS resources (optional, defaults to target
+        attribute value).
+      </description>
+    </attribute>
+    <attribute>
+      <name>target_html</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Specific target for HTML resources (optional, defaults to target
+        attribute value).
+      </description>
+    </attribute>
+    <attribute>
+      <name>includeTimestamp</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating whether the generated URL will include a timestamp
+        to workaround caching issues when the resource changes server side.
+        Available since 9.1, defaults to true.
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <tag-name>page</tag-name>
+    <handler-class>
+      org.nuxeo.ecm.web.resources.jsf.handler.PageResourceHandler
+    </handler-class>
+    <description>
+      <![CDATA[
+      <p>
+        Tag handler managing import of all resource bundles declared on the
+        WebResourceManager service for a page declared on the
+        ThemeStylingService.
+      </p>
+      <p>
+        This tag will generate multiple HTML tags depending on resource types
+        inside the bundles (js, css, hmtl) and will respect dependencies
+        between resources, but will place CSS aggregated resources first, then
+        JavaScript aggregated resources, then HTML imports (not aggregated).
+      </p>
+      <p>
+        It also handles inclusion of XHTML templates, using resource types
+        xhtml and xhtmlfirst: resources with type xhtmlfirst will be included
+        before any other type of resources; resources with type xhtml will be
+        included after.
+      </p>
+      Example:
+      <pre>
+        &lt;nxr:page name="mypage" target="head" /&gt;
+      </pre>
+      ]]>
+    </description>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the page as registered on the ThemeService.
+      </description>
+    </attribute>
+    <attribute>
+      <name>type</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The type of resource to select (css, js, etc...). All resources will
+        be taken into account if empty.
+      </description>
+    </attribute>
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The target area for which this resource will be rendered. For
+        example, target="head" would cause the resource to be rendered within
+        the head element. If no value is specified, the script element is
+        rendered at the same point in the view where the tag is located.
+        Currently supported values for this attribute are "head", "body", and
+        "form".
+      </description>
+    </attribute>
+    <attribute>
+      <name>target_js</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Specific target for JavaScript resources (optional, defaults to target
+        attribute value).
+      </description>
+    </attribute>
+    <attribute>
+      <name>target_css</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Specific target for CSS resources (optional, defaults to target
+        attribute value).
+      </description>
+    </attribute>
+    <attribute>
+      <name>target_html</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Specific target for HTML resources (optional, defaults to target
+        attribute value).
+      </description>
+    </attribute>
+    <attribute>
+      <name>includeTimestamp</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating whether the generated URL will include a timestamp
+        to workaround caching issues when the resource changes server side.
+        Available since 9.1, defaults to true.
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <description>
+      <![CDATA[
+      <p>
+        Tag inserting a target zone for scripts/stylesheets inclusion.
+      </p>
+      <p>
+        This tag will include all resources that have been pushed to the given
+        target, similarly to "head" target. This is useful to push all
+        Javascript declarations to the end of the page body, for instance.
+      </p>
+      Example:
+      <pre>
+        &lt;nxr:insert target="toe" /&gt;
+        [...]
+        &lt;nxr:resource name="myresource.js" target="toe" /&gt;
+      </pre>
+      ]]>
+    </description>
+    <tag-name>insert</tag-name>
+    <component>
+      <component-type>javax.faces.Output</component-type>
+      <renderer-type>org.nuxeo.ecm.web.resources.jsf.ResourceInsert</renderer-type>
+    </component>
+    <attribute>
+      <name>target</name>
+      <required>true</required>
+      <type>java.lang.String</type>
+      <description>
+        The name of the target zone identifier. Should be different from
+        "head", "body" and "form" to avoid rendering the corresponding elements
+        twice on a given page.
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <tag-name>import</tag-name>
+    <component>
+      <component-type>javax.faces.Output</component-type>
+      <renderer-type>org.nuxeo.ecm.web.resources.jsf.Import</renderer-type>
+      <handler-class>com.sun.faces.facelets.tag.jsf.html.ScriptResourceHandler</handler-class>
+    </component>
+    <description>
+      <![CDATA[
+      <p>
+        Tag handler managing HTML import.
+      </p>
+      <p>
+        This tag will generate an "import" link, similarly to the
+        h:outputLink tag behavior that generates a "a" HTML tag, for instance.
+      </p>
+      Example:
+      <pre>
+        &lt;nxr:import name="webc/font-roboto/roboto.html" target="head" /&gt;
+        &lt;nxr:import src="/components/nuxeo-elements/nx-connection.html" target="head" /&gt;
+      </pre>
+      ]]>
+    </description>
+    <attribute>
+      <name>src</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Path to the resource to import, will lookup a local resource
+        if it does not start with a slash.
+      </description>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the resource as registered on the WebResourceManager service.
+      </description>
+    </attribute>
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The target area for which this resource will be rendered. For
+        example, target="head" would cause the resource to be rendered within
+        the head element. If no value is specified, the script element is
+        rendered at the same point in the view where the tag is located.
+        Currently supported values for this attribute are "head", "body", and
+        "form".
+      </description>
+    </attribute>
+    <attribute>
+      <name>includeTimestamp</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating whether the generated URL will include a timestamp
+        to workaround caching issues when the resource changes server side.
+        Available since 9.1, defaults to true.
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <tag-name>importResource</tag-name>
+    <component>
+      <component-type>javax.faces.Output</component-type>
+      <renderer-type>org.nuxeo.ecm.web.resources.jsf.ImportResource</renderer-type>
+      <handler-class>com.sun.faces.facelets.tag.jsf.html.ScriptResourceHandler</handler-class>
+    </component>
+    <description>
+      <![CDATA[
+      <p>
+        Component rendering a HTML import tag given a resource name or path.
+      </p>
+      Example:
+      <pre>
+        &lt;nxr:importResource src="/path/to/myResource.html" target="head" /&gt;
+        or
+        &lt;nxr:importResource name="myResource.html" target="head" /&gt;
+      </pre>
+      ]]>
+    </description>
+    <attribute>
+      <name>src</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Path to the resource to import, will lookup a local resource
+        if it does not start with a slash.
+      </description>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the resource as registered on the service.
+      </description>
+    </attribute>
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The target area for which this resource will be rendered. For
+        example, target="head" would cause the resource to be rendered within
+        the head element. If no value is specified, the script element is
+        rendered at the same point in the view where the tag is located.
+        Currently supported values for this attribute are "head", "body", and
+        "form".
+      </description>
+    </attribute>
+    <attribute>
+      <name>includeTimestamp</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating whether the generated URL will include a timestamp
+        to workaround caching issues when the resource changes server side.
+        Available since 9.1, defaults to true.
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <tag-name>meta</tag-name>
+    <component>
+      <component-type>org.nuxeo.ecm.web.resources.jsf.component.UIMeta</component-type>
+    </component>
+    <description>
+      <![CDATA[
+      <p>
+        Component rendering a HTML meta tag.
+      </p>
+      <p>
+        This tag adapts to HTML4 or 5 syntax, depending on the doc type defined
+        on the current page.
+      </p>
+      Example:
+      <pre>
+        &lt;nxr:meta charset="UTF-8" /&gt;
+      </pre>
+      ]]>
+    </description>
+    <attribute>
+      <name>charset</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The charset value.
+      </description>
+    </attribute>
+    <attribute>
+      <name>content</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The content value. Ignored when using HTML4 (the content attribute
+        will be filled by content type and charset declarations).
+      </description>
+    </attribute>
+    <attribute>
+      <name>httpequiv</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The httpequiv value. Will be ignored when using HTML4 (the httpequiv
+        attribute will be filled by ContentType).
+      </description>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The meta name value.
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <tag-name>favicon</tag-name>
+    <component>
+      <component-type>org.nuxeo.ecm.web.resources.jsf.component.UIFavicon</component-type>
+    </component>
+    <description>
+      <![CDATA[
+      <p>
+        Tag handler displaying a fav icon.
+      </p>
+      <p>
+        This tag will generate an "link" element to display favicons.
+      </p>
+      Example:
+      <pre>
+        &lt;nxr:favicon value="#{fav}" /&gt;
+        &lt;nxr:favicon name="icon" src="/icons/favicon.png" /&gt;
+      </pre>
+      ]]>
+    </description>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <type>org.nuxeo.theme.styling.service.descriptors.IconDescriptor</type>
+      <description>
+        The favicon object, that should be an instance of IconDescriptor.
+        Filling the value attribute is equivalent to filling each of the other
+        attributes value.
+      </description>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The name for this favicon.
+      </description>
+    </attribute>
+    <attribute>
+      <name>src</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The path to the favicon image.
+      </description>
+    </attribute>
+    <attribute>
+      <name>mimetype</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The mimetype of the favicon image (can be deduced from the image extension).
+      </description>
+    </attribute>
+    <attribute>
+      <name>sizes</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The sizes for this favicon (HTML5 attribute).
+      </description>
+    </attribute>
+  </tag>
+
+</facelet-taglib>
