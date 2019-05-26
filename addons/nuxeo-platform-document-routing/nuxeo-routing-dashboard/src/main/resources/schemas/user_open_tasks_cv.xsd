@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/user_open_tasks_cv" targetNamespace="http://www.nuxeo.org/ecm/schemas/user_open_tasks_cv">  
-  <xs:element name="task_processId" type="xs:string"/>
-  <xs:element name="task_name" type="xs:string"/>
-  <xs:element name="task_dueDate_min" type="xs:date"/>
-  <xs:element name="task_dueDate_max" type="xs:date"/>
-</xs:schema>
