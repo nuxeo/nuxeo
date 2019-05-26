@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<facelet-taglib id="nxe" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facelettaglibrary_2_2.xsd"
+  version="2.2">
+  <description>
+    <![CDATA[
+    <p>Nuxeo Seam Excel Taglib Override</p>
+    <p>
+      Defines alternative tags to provide excel export with JSF tags.
+    </p>
+    ]]>
+  </description>
+  <namespace>http://nuxeo.org/nxweb/seam/excel</namespace>
+  <tag>
+    <tag-name>column</tag-name>
+    <component>
+      <component-type>org.nuxeo.ecm.platform.ui.web.component.seam.UIColumn</component-type>
+    </component>
+    <description>
+      <![CDATA[
+      <p>
+        Overrides default column for better introspection of children.
+      </p>
+      <p>
+        If e:column tags are not direct children, the work sheet will not find
+        them. As layout templating adds additional JSF components, the children
+        tree has to be introspected further on, and other children components
+        need to be processed (UIAliasHolder components used in layout rendering
+        for instance).
+      </p>
+      ]]>
+    </description>
+  </tag>
+  <tag>
+    <tag-name>cell</tag-name>
+    <component>
+      <component-type>org.nuxeo.ecm.platform.ui.web.component.seam.UICellExcel</component-type>
+    </component>
+    <description>
+      <![CDATA[
+      <p>
+        Override of Seam cell component to control HTML encoding of accents in
+        excel, and to improve data type guessing when using dates or numbers.
+      </p>
+      ]]>
+    </description>
+  </tag>
+</facelet-taglib>

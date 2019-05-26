@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.directory.api.ui;version="5.3.2.SNAPSHOT
+ ",org.nuxeo.ecm.directory.ui;version="5.3.2.SNAPSHOT",org.nuxeo.ecm.d
+ irectory.ui.ejb;version="5.3.2.SNAPSHOT"
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Category: stateless
+Tool: Bnd-0.0.394
+Bundle-Name: Nuxeo Directory Web
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.3.2.SNAPSHOT
+Bnd-LastModified: 1277886815322
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/directory-ui-framework.xml,
+ OSGI-INF/actions-contrib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.directory.web;singleton:=true
+Import-Package: javax.annotation;version="1.0",
+ javax.ejb,
+ org.apache.commons.logging,
+ org.nuxeo.common.xmap.annotation,
+ org.nuxeo.ecm.core;api=split,
+ org.nuxeo.ecm.core.api;api=split,
+ org.nuxeo.ecm.directory;api=split,
+ org.nuxeo.ecm.directory.api,
+ org.nuxeo.osgi,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.model
+Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
