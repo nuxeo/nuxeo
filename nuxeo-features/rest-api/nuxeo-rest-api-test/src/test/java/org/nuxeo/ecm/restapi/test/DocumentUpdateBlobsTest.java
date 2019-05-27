@@ -28,8 +28,10 @@ import static org.nuxeo.ecm.core.api.Blobs.createBlob;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,6 +58,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -65,12 +68,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RestServerFeature.class)
+@Deploy("org.nuxeo.ecm.platform.restapi.test.test:multiblob-doctype.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class DocumentUpdateBlobsTest extends BaseTest {
 
     protected static final String FILE_CONTENT_PROP = "file:content";
 
     protected static final String FILES_FILES_PROP = "files:files";
+
+    protected static final String MULTIBLOB_BLOBS_PROP = "mb:blobs";
 
     protected static final Map<String, String> HEADERS = Collections.singletonMap("X-NXDocumentProperties", "*");
 
@@ -83,21 +89,34 @@ public class DocumentUpdateBlobsTest extends BaseTest {
 
     protected String file3Id;
 
+    protected String file4Id;
+
+    /**
+     * Creates several documents holding blobs referenced on generic schemas, such as {@code file} / {@code files}, or
+     * often seen schema, such as {@code multiblobs}.
+     * <ul>
+     * <li>file: simple blob type</li>
+     * <li>files: list of simple blob type</li>
+     * <li>multiblobs: list of complex having a simple blob type + a scalar type</li>
+     * </ul>
+     */
     @Before
     public void setup() {
-        DocumentModel doc = createDocument(1, "foo", true, false);
+        DocumentModel doc = createDocument(1, "foo", true, false, false);
         file1Id = doc.getId();
-        doc = createDocument(2, "bar", false, false);
+        doc = createDocument(2, "bar", false, false, false);
         file2Id = doc.getId();
-        doc = createDocument(3, "foobar", true, true);
+        doc = createDocument(3, "foobar", true, true, false);
         file3Id = doc.getId();
+        doc = createDocument(4, "barfoo", false, false, true);
+        file4Id = doc.getId();
         transactionalFeature.nextTransaction();
     }
 
-    protected DocumentModel createDocument(int index, String blobContent, boolean addPermission,
-            boolean addAttachments) {
-        DocumentModel doc = session.createDocumentModel("/folder_2", "file" + index, "File");
-        doc.setPropertyValue("dc:title", "File" + index);
+    protected DocumentModel createDocument(int index, String blobContent, boolean addPermission, boolean addAttachments,
+            boolean addMultiBlobs) {
+        DocumentModel doc = session.createDocumentModel("/folder_2", "file" + index, "MultiBlobDoc");
+        doc.setPropertyValue("dc:title", "MultiBlobDoc" + index);
         Blob blob = createBlob(blobContent);
         doc.setPropertyValue(FILE_CONTENT_PROP, (Serializable) blob);
 
@@ -106,6 +125,16 @@ public class DocumentUpdateBlobsTest extends BaseTest {
                     createBlob("three")).map(b -> Collections.singletonMap("file", (Serializable) b)).collect(
                             Collectors.toList());
             doc.setPropertyValue(FILES_FILES_PROP, (Serializable) attachments);
+        }
+
+        if (addMultiBlobs) {
+            List<Map<String, Serializable>> multiBlobs = Stream.of("four", "five", "six").map(c -> {
+                Map<String, Serializable> map = new HashMap<>();
+                map.put("content", (Serializable) createBlob(c));
+                map.put("filename", c + ".txt");
+                return map;
+            }).collect(Collectors.toList());
+            doc.setPropertyValue(MULTIBLOB_BLOBS_PROP, (Serializable) multiBlobs);
         }
 
         doc = session.createDocument(doc);
@@ -131,6 +160,36 @@ public class DocumentUpdateBlobsTest extends BaseTest {
             // ensure nothing has changed
             transactionalFeature.nextTransaction();
             assertBlobContent(file1Id, "foo");
+        }
+    }
+
+    @Test
+    public void shouldNotRemoveTheBlob() throws IOException {
+        JSONDocumentNode jsonDoc = getJSONDocumentNode(file1Id);
+        assertNotNull(jsonDoc.getPropertyAsJsonNode(FILE_CONTENT_PROP));
+        // PUT the same JSON document, without a file:content property
+        jsonDoc.removePropertyValue(FILE_CONTENT_PROP);
+        try (CloseableClientResponse response = putJSONDocument(file1Id, jsonDoc)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // ensure nothing has changed
+            transactionalFeature.nextTransaction();
+            assertBlobContent(file1Id, "foo");
+        }
+    }
+
+    @Test
+    public void shouldRemoveTheBlob() throws IOException {
+        JSONDocumentNode jsonDoc = getJSONDocumentNode(file1Id);
+        assertNotNull(jsonDoc.getPropertyAsJsonNode(FILE_CONTENT_PROP));
+        // PUT the same JSON document, with a null file:content property
+        jsonDoc.setPropertyValue(FILE_CONTENT_PROP, NullNode.instance);
+        try (CloseableClientResponse response = putJSONDocument(file1Id, jsonDoc)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // ensure blob has been removed
+            transactionalFeature.nextTransaction();
+            assertBlobNull(file1Id);
         }
     }
 
@@ -289,7 +348,7 @@ public class DocumentUpdateBlobsTest extends BaseTest {
         // remove file1 blob
         removeBlob(file1Id);
 
-        // make the first attachment references the blob 'file:content' from file2 that does not exist anymore
+        // make the first attachment references the blob 'file:content' from file1 that does not exist anymore
         jsonFile3 = replaceAttachment(jsonFile3, 2, jsonFile1.getPropertyAsJsonNode(FILE_CONTENT_PROP));
 
         try (CloseableClientResponse response = putJSONDocument(file3Id, jsonFile3)) {
@@ -302,6 +361,95 @@ public class DocumentUpdateBlobsTest extends BaseTest {
             assertAttachmentContent(attachments, 0, "one");
             assertAttachmentContent(attachments, 1, "two");
             assertAttachmentContent(attachments, 2, "three");
+        }
+    }
+
+    @Test
+    public void shouldKeepTheSameBlobWhenUpdatingSiblingInComplex() throws IOException {
+        List<Map<String, Serializable>> multiBlobs = getMultiBlobs(file4Id);
+        assertEquals(3, multiBlobs.size());
+        assertMultiBlob(multiBlobs, 0, "four", "four.txt");
+
+        JSONDocumentNode jsonFile4 = getJSONDocumentNode(file4Id);
+
+        // update the sibling
+        jsonFile4 = replaceMultiBlobs(jsonFile4, 0, on -> on.put("filename", "four-bis.txt"));
+
+        try (CloseableClientResponse response = putJSONDocument(file4Id, jsonFile4)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // ensure nothing has changed
+            transactionalFeature.nextTransaction();
+            multiBlobs = getMultiBlobs(file4Id);
+            assertEquals(3, multiBlobs.size());
+            assertMultiBlob(multiBlobs, 0, "four", "four-bis.txt");
+        }
+    }
+
+    @Test
+    public void shouldRemoveTheBlobWhenAbsentAndUpdatingSiblingInComplex() throws IOException {
+        List<Map<String, Serializable>> multiBlobs = getMultiBlobs(file4Id);
+        assertEquals(3, multiBlobs.size());
+        assertMultiBlob(multiBlobs, 0, "four", "four.txt");
+
+        JSONDocumentNode jsonFile4 = getJSONDocumentNode(file4Id);
+
+        // remove mb:blobs/0/blob property / update the sibling
+        jsonFile4 = replaceMultiBlobs(jsonFile4, 0, on -> on.put("filename", "four-bis.txt").remove("content"));
+
+        try (CloseableClientResponse response = putJSONDocument(file4Id, jsonFile4)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // ensure nothing has changed
+            transactionalFeature.nextTransaction();
+            multiBlobs = getMultiBlobs(file4Id);
+            assertEquals(3, multiBlobs.size());
+            assertMultiBlobNull(multiBlobs, 0, "four-bis.txt");
+        }
+    }
+
+    @Test
+    public void shouldRemoveTheBlobWhenRemovingItInComplex() throws IOException {
+        List<Map<String, Serializable>> multiBlobs = getMultiBlobs(file4Id);
+        assertEquals(3, multiBlobs.size());
+        assertMultiBlob(multiBlobs, 0, "four", "four.txt");
+
+        JSONDocumentNode jsonFile4 = getJSONDocumentNode(file4Id);
+
+        // set a null value for mb:blobs/0/blob property
+        jsonFile4 = replaceMultiBlobs(jsonFile4, 0, on -> on.replace("content", NullNode.instance));
+
+        try (CloseableClientResponse response = putJSONDocument(file4Id, jsonFile4)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // ensure nothing has changed
+            transactionalFeature.nextTransaction();
+            multiBlobs = getMultiBlobs(file4Id);
+            assertEquals(3, multiBlobs.size());
+            assertMultiBlobNull(multiBlobs, 0, "four.txt");
+        }
+    }
+
+    @Test
+    public void shouldRemoveTheBlobWhenRemovingItAndUpdatingSiblingInComplex() throws IOException {
+        List<Map<String, Serializable>> multiBlobs = getMultiBlobs(file4Id);
+        assertEquals(3, multiBlobs.size());
+        assertMultiBlob(multiBlobs, 0, "four", "four.txt");
+
+        JSONDocumentNode jsonFile4 = getJSONDocumentNode(file4Id);
+
+        // set a null value for mb:blobs/0/blob property
+        jsonFile4 = replaceMultiBlobs(jsonFile4, 0,
+                on -> on.put("filename", "four-bis.txt").replace("content", NullNode.instance));
+
+        try (CloseableClientResponse response = putJSONDocument(file4Id, jsonFile4)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // ensure nothing has changed
+            transactionalFeature.nextTransaction();
+            multiBlobs = getMultiBlobs(file4Id);
+            assertEquals(3, multiBlobs.size());
+            assertMultiBlobNull(multiBlobs, 0, "four-bis.txt");
         }
     }
 
@@ -364,6 +512,12 @@ public class DocumentUpdateBlobsTest extends BaseTest {
         return (List<Map<String, Serializable>>) doc.getPropertyValue(FILES_FILES_PROP);
     }
 
+    @SuppressWarnings("unchecked")
+    protected List<Map<String, Serializable>> getMultiBlobs(String docId) {
+        DocumentModel doc = session.getDocument(new IdRef(docId));
+        return (List<Map<String, Serializable>>) doc.getPropertyValue(MULTIBLOB_BLOBS_PROP);
+    }
+
     protected JSONDocumentNode removeAttachment(JSONDocumentNode jsonDoc, int index) {
         JsonNode jsonNode = jsonDoc.getPropertyAsJsonNode(FILES_FILES_PROP);
         jsonNode = removeAttachment(jsonNode, index);
@@ -389,9 +543,31 @@ public class DocumentUpdateBlobsTest extends BaseTest {
         return jsonDoc;
     }
 
+    protected JSONDocumentNode replaceMultiBlobs(JSONDocumentNode jsonDoc, int index, Consumer<ObjectNode> consumer) {
+        JsonNode jsonNode = jsonDoc.getPropertyAsJsonNode(MULTIBLOB_BLOBS_PROP);
+        assertTrue(jsonNode.isArray());
+        ArrayNode arrayNode = (ArrayNode) jsonNode;
+        assertTrue(arrayNode.get(index).isObject());
+        ObjectNode blobNode = (ObjectNode) arrayNode.get(index);
+        consumer.accept(blobNode);
+        jsonDoc.setPropertyValue(FILES_FILES_PROP, arrayNode);
+        return jsonDoc;
+    }
+
     protected void assertAttachmentContent(List<Map<String, Serializable>> attachments, int index,
             String expectedContent) throws IOException {
         assertEquals(expectedContent, ((Blob) attachments.get(index).get("file")).getString());
+    }
+
+    protected void assertMultiBlob(List<Map<String, Serializable>> multiBlobs, int index, String expectedContent,
+            String expectedFilename) throws IOException {
+        assertEquals(expectedContent, ((Blob) multiBlobs.get(index).get("content")).getString());
+        assertEquals(expectedFilename, multiBlobs.get(index).get("filename"));
+    }
+
+    protected void assertMultiBlobNull(List<Map<String, Serializable>> multiBlobs, int index, String expectedFilename) {
+        assertNull(multiBlobs.get(index).get("content"));
+        assertEquals(expectedFilename, multiBlobs.get(index).get("filename"));
     }
 
 }

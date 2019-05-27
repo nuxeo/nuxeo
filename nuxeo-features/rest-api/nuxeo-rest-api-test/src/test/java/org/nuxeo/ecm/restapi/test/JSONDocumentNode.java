@@ -20,6 +20,9 @@ package org.nuxeo.ecm.restapi.test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.Consumer;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,9 +51,7 @@ public class JSONDocumentNode {
      * @since 5.7.2
      */
     public void setPropertyValue(String key, String value) {
-        ObjectNode on = (ObjectNode) node.findValue("properties");
-        on.put(key, value);
-        node.set("properties", on);
+        consumePropertiesNode(on -> on.put(key, value));
 
     }
 
@@ -60,9 +61,7 @@ public class JSONDocumentNode {
      * @since 10.3
      */
     public void setPropertyValue(String key, JsonNode jsonNode) {
-        ObjectNode on = (ObjectNode) node.findValue("properties");
-        on.set(key, jsonNode);
-        node.set("properties", on);
+        consumePropertiesNode(on -> on.set(key, jsonNode));
     }
 
     /**
@@ -71,11 +70,26 @@ public class JSONDocumentNode {
      * @since 5.9.2
      */
     public void setPropertyArray(String key, String... values) {
+        consumePropertiesNode(on -> {
+            ArrayNode array = on.putArray(key);
+            for (String value : values) {
+                array.add(value);
+            }
+        });
+    }
+
+    /**
+     * Removes a property value on the JSON object.
+     *
+     * @since 11.1
+     */
+    public void removePropertyValue(String key) {
+        consumePropertiesNode(on -> on.remove(key));
+    }
+
+    protected void consumePropertiesNode(Consumer<ObjectNode> consumer) {
         ObjectNode on = (ObjectNode) node.findValue("properties");
-        ArrayNode array = on.putArray(key);
-        for (String value : values) {
-            array.add(value);
-        }
+        consumer.accept(on);
         node.set("properties", on);
     }
 
@@ -96,5 +110,10 @@ public class JSONDocumentNode {
      */
     public String asJson() throws IOException {
         return mapper.writeValueAsString(node);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("node", node).toString();
     }
 }
