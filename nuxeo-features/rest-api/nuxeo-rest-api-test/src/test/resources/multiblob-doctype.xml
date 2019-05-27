@@ -12,6 +12,7 @@
 
     <doctype name="MultiBlobDoc" extends="Document">
       <schema name="file" />
+      <schema name="files" />
       <schema name="multiblob" />
       <schema name="dublincore" />
       <schema name="common" />
