@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,11 +70,6 @@ public class BlobProperty extends MapProperty {
     @Override
     public void internalSetValue(Serializable value) throws PropertyException {
         this.value = value;
-    }
-
-    @Override
-    public final Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 
     @Override

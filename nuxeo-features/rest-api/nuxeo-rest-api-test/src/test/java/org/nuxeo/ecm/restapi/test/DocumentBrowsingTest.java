@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,7 +108,8 @@ public class DocumentBrowsingTest extends BaseTest {
 
         // When i do a GET Request
         try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + note.getId())) {
-            // The i get the document as Json
+
+            // Then i get the document as Json
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             assertEntityEqualsDoc(response.getEntityInputStream(), note);
         }
@@ -125,6 +126,7 @@ public class DocumentBrowsingTest extends BaseTest {
 
         // When i call a GET on the children for that doc
         try (CloseableClientResponse response = getResponse(RequestType.GET, "id/" + folder.getId() + "/@children")) {
+
             // Then i get the only document of the folder
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -152,6 +154,7 @@ public class DocumentBrowsingTest extends BaseTest {
         assertNotNull(changeToken);
         jsonDoc.setPropertyValue("dc:title", "New title");
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson())) {
+
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             // Then the document is updated
             fetchInvalidations();
@@ -176,6 +179,7 @@ public class DocumentBrowsingTest extends BaseTest {
                 CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson(),
                         headers)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
             fetchInvalidations();
             note = RestServerInit.getNote(0, session);
             assertEquals("Another title", note.getTitle());
@@ -214,7 +218,7 @@ public class DocumentBrowsingTest extends BaseTest {
     }
 
     @Test
-    public void iCanUpdateAFileDocument() {
+    public void iCanUpdateAFileDocumentWithoutErasingBlob() {
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         Blob blob = new StringBlob("test");
         blob.setFilename("test.txt");
@@ -227,13 +231,21 @@ public class DocumentBrowsingTest extends BaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         }
 
-        String payload = "{  " + "         \"entity-type\": \"document\"," + "         \"name\": \"myFile\","
-                + "         \"type\": \"File\"," + "         \"state\": \"project\","
-                + "         \"title\": \"New title\"," + "         \"properties\": {"
-                + "             \"dc:description\":\"blabla\"," + "             \"dc:title\":\"New title\""
-                + "         }" + "     }";
+        String payload = "{" //
+                + "         \"entity-type\": \"document\"," //
+                + "         \"name\": \"myFile\"," //
+                + "         \"type\": \"File\"," //
+                + "         \"state\": \"project\"," //
+                + "         \"title\": \"New title\"," //
+                + "         \"properties\": {" //
+                + "             \"dc:description\":\"blabla\"," //
+                + "             \"dc:title\":\"New title\"" //
+                + "           }" //
+                + "       }";
 
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(), payload)) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             // Then the document is updated
             fetchInvalidations();
 
@@ -269,6 +281,7 @@ public class DocumentBrowsingTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson(),
                 headers)) {
 
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             // Check if the version of the document has been returned
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals("1.0", node.get("versionLabel").asText());
@@ -290,6 +303,8 @@ public class DocumentBrowsingTest extends BaseTest {
         // When i do a PUT request on the document with modified data
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(),
                 "{\"entity-type\":\"document\",\"properties\":{\"dc:title\":\"Other New title\"}}")) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             // Then the document is updated
             fetchInvalidations();
             note = RestServerInit.getNote(0, session);
@@ -301,7 +316,7 @@ public class DocumentBrowsingTest extends BaseTest {
     public void itCanSetPropertyToNull() {
         DocumentModel note = RestServerInit.getNote(0, session);
         note.setPropertyValue("dc:format", "a value that will be set to null");
-        note.setPropertyValue("dc:language", "a value that that must not be resetted");
+        note.setPropertyValue("dc:language", "a value that must not be reseted");
         session.saveDocument(note);
 
         fetchInvalidations();
@@ -309,11 +324,13 @@ public class DocumentBrowsingTest extends BaseTest {
         // When i do a PUT request on the document with modified data
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(),
                 "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":null}}")) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             // Then the document is updated
             fetchInvalidations();
             note = RestServerInit.getNote(0, session);
             assertNull(note.getPropertyValue("dc:format"));
-            assertEquals("a value that that must not be resetted", note.getPropertyValue("dc:language"));
+            assertEquals("a value that must not be reseted", note.getPropertyValue("dc:language"));
         }
     }
 
@@ -328,6 +345,8 @@ public class DocumentBrowsingTest extends BaseTest {
         // When i do a PUT request on the document with modified data
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(),
                 "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":\"\"}}")) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             // Then the document is updated
             fetchInvalidations();
             note = RestServerInit.getNote(0, session);
@@ -352,6 +371,8 @@ public class DocumentBrowsingTest extends BaseTest {
         headers.put(DocumentModelJsonReaderLegacy.HEADER_DOCUMENT_JSON_LEGACY, Boolean.TRUE.toString());
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(),
                 "{\"entity-type\":\"document\",\"properties\":{\"dc:format\":\"\"}}", headers)) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             // Then the document is updated
             fetchInvalidations();
             note = RestServerInit.getNote(0, session);
@@ -399,7 +420,7 @@ public class DocumentBrowsingTest extends BaseTest {
 
             fetchInvalidations();
             // Then the doc is deleted
-            assertTrue(!session.exists(doc.getRef()));
+            assertFalse(session.exists(doc.getRef()));
         }
     }
 
@@ -414,7 +435,7 @@ public class DocumentBrowsingTest extends BaseTest {
 
             fetchInvalidations();
             // Then the doc is deleted
-            assertTrue(!session.exists(doc.getRef()));
+            assertFalse(session.exists(doc.getRef()));
         }
     }
 
@@ -730,6 +751,7 @@ public class DocumentBrowsingTest extends BaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson())) {
 
             // Then the document is updated
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             fetchInvalidations();
             note = RestServerInit.getNote(0, session);
             assertEquals("New title", note.getTitle());

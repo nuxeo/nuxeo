@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import static org.nuxeo.ecm.core.api.Blobs.createBlob;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -72,7 +71,7 @@ public class DocumentUpdateBlobsTest extends BaseTest {
 
     protected static final String FILES_FILES_PROP = "files:files";
 
-    protected static final Map<String, String> HEADERS = Collections.singletonMap("X-NXDocumentProperties", "*");
+    protected static final Map<String, String> HEADERS = Map.of("X-NXDocumentProperties", "*");
 
     @Inject
     protected TransactionalFeature transactionalFeature;
@@ -103,8 +102,7 @@ public class DocumentUpdateBlobsTest extends BaseTest {
 
         if (addAttachments) {
             List<Map<String, Serializable>> attachments = Stream.of(createBlob("one"), createBlob("two"),
-                    createBlob("three")).map(b -> Collections.singletonMap("file", (Serializable) b)).collect(
-                            Collectors.toList());
+                    createBlob("three")).map(b -> Map.of("file", (Serializable) b)).collect(Collectors.toList());
             doc.setPropertyValue(FILES_FILES_PROP, (Serializable) attachments);
         }
 
