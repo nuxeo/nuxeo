@@ -34,6 +34,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,8 +44,6 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
-import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.Reader;
@@ -78,6 +78,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
+
+    private static final Logger log = LogManager.getLogger(DocumentModelJsonReader.class);
 
     public static final String LEGACY_MODE_READER = "DocumentModelLegacyModeReader";
 
@@ -130,7 +132,6 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
             try (SessionWrapper wrapper = ctx.getSession(null)) {
                 doc = wrapper.getSession().getDocument(new IdRef(uid));
             }
-            avoidBlobUpdate(simpleDoc, doc);
             applyDirtyPropertyValues(simpleDoc, doc);
             String changeToken = getStringField(jn, "changeToken");
             doc.putContextData(CoreSession.CHANGE_TOKEN, changeToken);
@@ -149,45 +150,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
         return doc;
     }
 
-    /**
-     * Avoid the blob updates. It's managed by custom ways.
-     */
-    private static void avoidBlobUpdate(DocumentModel docToClean, DocumentModel docRef) {
-        for (String schema : docToClean.getSchemas()) {
-            for (String field : docToClean.getDataModel(schema).getDirtyFields()) {
-                avoidBlobUpdate(docToClean.getProperty(field), docRef);
-            }
-        }
-    }
-
-    private static void avoidBlobUpdate(Property propToClean, DocumentModel docRef) {
-        if (propToClean instanceof BlobProperty) {
-            // if the blob used to exist
-            if (propToClean.getValue() == null) {
-                try {
-                    Serializable value = docRef.getPropertyValue(propToClean.getXPath());
-                    propToClean.setValue(value);
-                } catch (PropertyNotFoundException e) {
-                    // As the blob property doesn't exist in the document in the first place, ignore the operation
-                }
-            }
-        } else if (propToClean instanceof ComplexProperty) {
-            ComplexProperty complexPropToClean = (ComplexProperty) propToClean;
-            for (Field field : complexPropToClean.getType().getFields()) {
-                Property childPropToClean = complexPropToClean.get(field.getName().getLocalName());
-                avoidBlobUpdate(childPropToClean, docRef);
-            }
-        } else if (propToClean instanceof ListProperty) {
-            ListProperty listPropToClean = (ListProperty) propToClean;
-            for (int i = 0; i < listPropToClean.size(); i++) {
-                Property elPropToClean = listPropToClean.get(i);
-                avoidBlobUpdate(elPropToClean, docRef);
-            }
-        }
-    }
-
     public static void applyPropertyValues(DocumentModel src, DocumentModel dst) {
-        avoidBlobUpdate(src, dst);
         applyPropertyValues(src, dst, true);
         // copy change token
         dst.getContextData().putAll(src.getContextData());
@@ -206,19 +169,10 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
     public static void applyDirtyPropertyValues(DocumentModel src, DocumentModel dst) {
         String[] schemas = src.getSchemas();
         for (String schema : schemas) {
-            DataModelImpl dataModel = (DataModelImpl) dst.getDataModel(schema);
-            DataModelImpl fromDataModel = (DataModelImpl) src.getDataModel(schema);
-            for (String field : fromDataModel.getDirtyFields()) {
-                Serializable data = (Serializable) fromDataModel.getData(field);
-                try {
-                    if (!(dataModel.getDocumentPart().get(field) instanceof BlobProperty)) {
-                        dataModel.setData(field, data);
-                    } else {
-                        dataModel.setData(field, decodeBlob(data));
-                    }
-                } catch (PropertyNotFoundException e) {
-                    continue;
-                }
+            DataModelImpl dstDataModel = (DataModelImpl) dst.getDataModel(schema);
+            DataModelImpl srcDataModel = (DataModelImpl) src.getDataModel(schema);
+            for (String field : srcDataModel.getDirtyFields()) {
+                applyPropertyValue(srcDataModel, dstDataModel, field);
             }
         }
     }
@@ -229,21 +183,25 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
         String[] schemas = type.getSchemaNames();
         for (String schemaName : schemas) {
             Schema schema = service.getSchema(schemaName);
-            DataModelImpl dataModel = (DataModelImpl) dst.getDataModel(schemaName);
-            DataModelImpl fromDataModel = (DataModelImpl) src.getDataModel(schemaName);
+            DataModelImpl dstDataModel = (DataModelImpl) dst.getDataModel(schemaName);
+            DataModelImpl srcDataModel = (DataModelImpl) src.getDataModel(schemaName);
             for (Field field : schema.getFields()) {
                 String fieldName = field.getName().getLocalName();
-                Serializable data = (Serializable) fromDataModel.getData(fieldName);
-                try {
-                    if (!(dataModel.getDocumentPart().get(fieldName) instanceof BlobProperty)) {
-                        dataModel.setData(fieldName, data);
-                    } else {
-                        dataModel.setData(fieldName, decodeBlob(data));
-                    }
-                } catch (PropertyNotFoundException e) {
-                    continue;
-                }
+                applyPropertyValue(srcDataModel, dstDataModel, fieldName);
             }
+        }
+    }
+
+    protected static void applyPropertyValue(DataModelImpl srcDataModel, DataModelImpl dstDataModel, String fieldName) {
+        Serializable data = (Serializable) srcDataModel.getData(fieldName);
+        try {
+            if (!(dstDataModel.getDocumentPart().get(fieldName) instanceof BlobProperty)) {
+                dstDataModel.setData(fieldName, data);
+            } else {
+                dstDataModel.setData(fieldName, decodeBlob(data));
+            }
+        } catch (PropertyNotFoundException e) {
+            log.trace("Can't apply value: {} to src: {}", data, srcDataModel, e);
         }
     }
 
