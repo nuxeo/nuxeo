@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.schema.types.Field;
 
 /**
@@ -121,8 +122,30 @@ public class BlobProperty extends MapProperty {
 
     @Override
     protected boolean isSameValue(Serializable value1, Serializable value2) {
-        // for now, blob property are considered always as dirty when update - see NXP-16322
+        if (value1 == null && value2 == null) {
+            // don't make property dirty if previous and current are null
+            return true;
+        } else if (value1 == value2) {
+            // if previous is the same object than current, it means that we first get the blob, edit it and then set it
+            return false;
+        } else if (value1 instanceof ManagedBlob && value2 instanceof ManagedBlob) {
+            return isSameValue((ManagedBlob) value1, (ManagedBlob) value2);
+        }
+        // for now and remaining cases, blob property are considered as dirty when update - see NXP-16322
         return false;
+    }
+
+    protected boolean isSameValue(ManagedBlob value1, ManagedBlob value2) {
+        return Objects.equals(value1.getKey(), value2.getKey())
+                // we need to check other fields for blob dispatchers
+                && isNullOrSameValue(value1.getMimeType(), value2.getMimeType())
+                && isNullOrSameValue(value1.getEncoding(), value2.getEncoding())
+                && isNullOrSameValue(value1.getFilename(), value2.getFilename())
+                && isNullOrSameValue(value1.getDigest(), value2.getDigest());
+    }
+
+    protected boolean isNullOrSameValue(Serializable value1, Serializable value2) {
+        return value1 == null || value2 == null || value1.equals(value2);
     }
 
     @Override
