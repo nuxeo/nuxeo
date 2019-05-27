@@ -8,8 +8,7 @@
 
   <xs:complexType name="blobs">
     <xs:sequence>
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="item"
-        type="nxs:blob" />
+      <xs:element name="item" type="nxs:blob" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
