@@ -214,12 +214,8 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
             Work work = getRenditionWork(key, doc, definition);
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
-                        "Source document modification date %s is different from the stored one %s, scheduling rendition work with id %s and returning an error/stale rendition.",
+                        "Source document modification date %s is different from the corresponding transient store parameter %s, scheduling rendition work with id %s and returning an error/stale rendition.",
                         sourceDocumentModificationDate, storedSourceDocumentModificationDate, work.getId()));
-            }
-            if (sourceDocumentModificationDate != null) {
-                getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
-                        sourceDocumentModificationDate);
             }
             Framework.getService(WorkManager.class).schedule(work);
             blob.setMimeType(blob.getMimeType() + ";" + LazyRendition.STALE_MARKER);
@@ -241,12 +237,8 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
         Work work = getRenditionWork(key, doc, definition);
         if (log.isDebugEnabled()) {
             log.debug(String.format(
-                    "Source document modification date %s is different from the stored one %s, scheduling rendition work with id %s and returning a stale rendition.",
+                    "Source document modification date %s is different from the corresponding transient store parameter %s, scheduling rendition work with id %s and returning a stale rendition.",
                     sourceDocumentModificationDate, storedSourceDocumentModificationDate, work.getId()));
-        }
-        if (sourceDocumentModificationDate != null) {
-            getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
-                    sourceDocumentModificationDate);
         }
         Framework.getService(WorkManager.class).schedule(work);
         blob.setMimeType(blob.getMimeType() + ";" + LazyRendition.STALE_MARKER);
@@ -275,12 +267,8 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
             }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Source document modification date %s is different from the stored one %s.",
+                log.debug(String.format("Source document modification date %s is different from the corresponding transient store parameter %s.",
                         sourceDocumentModificationDate, storedSourceDocumentModificationDate));
-            }
-            if (sourceDocumentModificationDate != null) {
-                getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
-                        sourceDocumentModificationDate);
             }
             scheduleWork = true;
         }
