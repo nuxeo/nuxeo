@@ -23,7 +23,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.GregorianCalendar;
 import java.util.stream.IntStream;
 
@@ -62,7 +61,11 @@ public class TestDeliverStaleLazyRenditions {
 
     private static Log log = LogFactory.getLog(TestDeliverStaleLazyRenditions.class);
 
-    protected static int STALE_RENDITION_COUNT = 5;
+    protected static final String RENDITION_FILENAME = "testDoc.txt";
+
+    protected static final String LAZY_AUTOMATION = "lazyAutomation";
+
+    protected static final int STALE_RENDITION_COUNT = 5;
 
     @Inject
     protected CoreSession session;
@@ -83,7 +86,7 @@ public class TestDeliverStaleLazyRenditions {
     }
 
     @Test
-    public void testLazyRenditions() throws Exception {
+    public void testLazyRenditions() {
         // never ask to store a rendition
         checkInitialRendition(false);
         checkStaleRenditions(false);
@@ -131,13 +134,13 @@ public class TestDeliverStaleLazyRenditions {
     }
 
     /**
-     * Creates a test document and asks for a "lazyAutomation" rendition, expecting it to be empty.
+     * Creates a test document and asks for a {@link #LAZY_AUTOMATION} rendition, expecting it to be empty.
      * <p>
      * Waits for asynchronous completion then asks again for the same rendition, expecting it to be up-to-date.
      *
      * @param store whether to ask to store the up-to-date rendition
      */
-    protected void checkInitialRendition(boolean store) throws IOException {
+    protected void checkInitialRendition(boolean store) {
         log.debug("Create test document");
         doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:issued", new GregorianCalendar());
@@ -145,7 +148,7 @@ public class TestDeliverStaleLazyRenditions {
         txFeature.nextTransaction();
 
         log.debug("Ask immediately for a lazy rendition, expecting an empty rendition");
-        checkEmptyRendition(doc, "lazyAutomation");
+        checkEmptyRendition(doc, LAZY_AUTOMATION);
 
         log.debug("Wait for async completion");
         waitForAsyncCompletion();
@@ -160,14 +163,14 @@ public class TestDeliverStaleLazyRenditions {
      * @param store whether to ask to store the stale rendition, for test purpose as it will actually never get stored
      */
     protected void checkStaleRenditions(boolean store) {
-        IntStream.rangeClosed(1, STALE_RENDITION_COUNT).forEach((index) -> {
+        IntStream.rangeClosed(1, STALE_RENDITION_COUNT).forEach(index -> {
             log.debug(String.format("Check stale rendition #%d", index));
             checkStaleRendition(store);
         });
     }
 
     /**
-     * Updates the test document and asks for a "lazyAutomation" rendition, expecting it to be stale.
+     * Updates the test document and asks for a {@link #LAZY_AUTOMATION} rendition, expecting it to be stale.
      * <p>
      * Waits for asynchronous completion.
      *
@@ -185,7 +188,7 @@ public class TestDeliverStaleLazyRenditions {
             txFeature.nextTransaction();
 
             log.debug("Ask immediately for a lazy rendition, expecting a stale rendition");
-            checkStaleRendition(doc, "lazyAutomation", store, "testDoc.txt", latestRenditionDigest);
+            checkStaleRendition(doc, LAZY_AUTOMATION, store, RENDITION_FILENAME, latestRenditionDigest);
 
             log.debug("Wait for async completion");
             waitForAsyncCompletion();
@@ -196,14 +199,15 @@ public class TestDeliverStaleLazyRenditions {
     }
 
     /**
-     * Asks for a "lazyAutomation" rendition, expecting it to be up-to-date.
+     * Asks for a {@link #LAZY_AUTOMATION} rendition, expecting it to be up-to-date.
      *
      * @param store whether to ask to store the up-to-date rendition
      */
     protected void checkUpToDateRendition(boolean store) {
         log.debug("Ask for a lazy rendition, should be rendered, expecting an up-to-date rendition");
         // An up-to-date stored rendition, ie. not stale, is necessarily stored if asked to be processed and stored
-        checkRenderedRendition(doc, "lazyAutomation", store, store, false, "testDoc.txt", DummyDocToTxt.getDigest(doc));
+        checkRenderedRendition(doc, LAZY_AUTOMATION, store, store, false, RENDITION_FILENAME,
+                DummyDocToTxt.getDigest(doc));
     }
 
     protected void checkEmptyRendition(DocumentModel doc, String renditionName) {

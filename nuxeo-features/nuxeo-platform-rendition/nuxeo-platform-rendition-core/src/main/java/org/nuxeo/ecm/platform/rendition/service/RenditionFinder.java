@@ -109,7 +109,7 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
         query.append("' ORDER BY dc:modified DESC");
 
         List<DocumentModel> docs = session.query(query.toString());
-        if (docs.size() > 0) {
+        if (!docs.isEmpty()) {
             storedRendition = docs.get(0);
             storedRendition.detach(true);
         }
