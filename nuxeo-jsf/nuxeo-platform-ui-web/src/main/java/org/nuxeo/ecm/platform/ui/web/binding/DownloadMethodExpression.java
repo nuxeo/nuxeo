@@ -29,6 +29,7 @@ import javax.el.MethodInfo;
 import javax.el.ValueExpression;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
@@ -44,9 +45,20 @@ public class DownloadMethodExpression extends MethodExpression implements Serial
 
     private final ValueExpression fileNameExpression;
 
+    private final ValueExpression documentExpression;
+
     public DownloadMethodExpression(ValueExpression blobExpression, ValueExpression fileNameExpression) {
+        this(blobExpression, fileNameExpression, null);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public DownloadMethodExpression(ValueExpression blobExpression, ValueExpression fileNameExpression,
+            ValueExpression documentExpression) {
         this.blobExpression = blobExpression;
         this.fileNameExpression = fileNameExpression;
+        this.documentExpression = documentExpression;
     }
 
     // Expression interface
@@ -102,7 +114,8 @@ public class DownloadMethodExpression extends MethodExpression implements Serial
     public Object invoke(ELContext context, Object[] params) {
         Blob blob = getBlob(context);
         String filename = getFilename(context);
-        ComponentUtils.download(null, null, blob, filename, "el");
+        DocumentModel doc = getDocument(context);
+        ComponentUtils.download(doc, null, blob, filename, "el");
         return null;
     }
 
@@ -119,6 +132,14 @@ public class DownloadMethodExpression extends MethodExpression implements Serial
             return null;
         } else {
             return (Blob) blobExpression.getValue(context);
+        }
+    }
+
+    protected DocumentModel getDocument(ELContext context) {
+        if (documentExpression == null) {
+            return null;
+        } else {
+            return (DocumentModel) documentExpression.getValue(context);
         }
     }
 
