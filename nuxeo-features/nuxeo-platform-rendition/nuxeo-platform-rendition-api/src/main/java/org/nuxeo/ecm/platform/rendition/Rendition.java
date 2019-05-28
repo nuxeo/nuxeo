@@ -73,12 +73,12 @@ public interface Rendition {
     boolean isStored();
 
     /**
-     * Returns rendered Blob
+     * Returns the rendered Blob or {@code null} if none.
      */
     Blob getBlob();
 
     /**
-     * Returns rendered Blobs
+     * Returns the rendered Blobs or {@code null} if none.
      */
     List<Blob> getBlobs();
 
