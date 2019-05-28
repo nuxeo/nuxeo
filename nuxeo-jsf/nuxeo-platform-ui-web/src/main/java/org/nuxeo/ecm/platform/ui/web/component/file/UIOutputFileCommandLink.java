@@ -46,7 +46,7 @@ public class UIOutputFileCommandLink extends HtmlCommandLink {
             UIOutputFile outputFile = (UIOutputFile) parent;
             FacesContext context = FacesContext.getCurrentInstance();
             return new DownloadMethodExpression(outputFile.getBlobExpression(context),
-                    outputFile.getFileNameExpression(context));
+                    outputFile.getFileNameExpression(context), outputFile.getDocumentExpression(context));
         }
         return super.getActionExpression();
     }

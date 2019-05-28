@@ -21,6 +21,7 @@ import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
+import javax.el.ValueReference;
 import javax.faces.FacesException;
 import javax.faces.application.Application;
 import javax.faces.component.NamingContainer;
@@ -32,9 +33,12 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.el.DocumentPropertyContext;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.ecm.platform.ui.web.validator.ValueExpressionAnalyzer;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -292,6 +296,33 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
         } else {
             return getValueExpression("filename");
         }
+    }
+
+    protected ValueExpression getDocumentExpression(FacesContext context) {
+        ValueExpression ve = getValueExpression("value");
+        if (getQueryParent()) {
+            UIComponent parent = getParent();
+            if (parent instanceof UIInputFile) {
+                UIInputFile inputFile = (UIInputFile) parent;
+                if (InputFileChoice.isUploadOrKeepTemp(inputFile.getFileInfoValue().getConvertedChoice())) {
+                    // blob is not persisted on a document, do not associate it to a document
+                    return null;
+                }
+                ve = inputFile.getValueExpression("value");
+            }
+        }
+
+        if (ve != null) {
+            ValueExpressionAnalyzer expressionAnalyzer = new ValueExpressionAnalyzer(ve);
+            ValueReference vref = expressionAnalyzer.getReference(context.getELContext());
+            Object base = vref.getBase();
+            if (base instanceof DocumentPropertyContext) {
+                DocumentPropertyContext dpc = (DocumentPropertyContext) base;
+                ExpressionFactory ef = context.getApplication().getExpressionFactory();
+                return ef.createValueExpression(dpc.getDoc(), DocumentModel.class);
+            }
+        }
+        return null;
     }
 
     protected String getDownloadLinkValue(FacesContext context, Blob blob, String filename) {
