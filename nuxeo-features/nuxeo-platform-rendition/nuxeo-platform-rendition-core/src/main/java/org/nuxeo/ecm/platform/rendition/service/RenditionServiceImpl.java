@@ -209,16 +209,19 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     protected StoredRendition storeRendition(DocumentModel sourceDocument, Rendition rendition,
             RenditionDefinition renditionDefinition) {
         if (!rendition.isCompleted()) {
+            log.debug("Incomplete rendition for source document {}.", sourceDocument);
             return null;
         }
         List<Blob> renderedBlobs = rendition.getBlobs();
         if (CollectionUtils.isEmpty(renderedBlobs)) {
+            log.debug("No rendition blobs for source document {}.", sourceDocument);
             return null;
         }
         Blob renderedBlob = renderedBlobs.get(0);
         String mimeType = renderedBlob.getMimeType();
         if (mimeType != null
                 && (mimeType.contains(LazyRendition.ERROR_MARKER) || mimeType.contains(LazyRendition.STALE_MARKER))) {
+            log.debug("Rendition has MIME type {} for source document {}.", mimeType, sourceDocument);
             return null;
         }
 
@@ -233,6 +236,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             version = session.getDocument(versionRef);
         }
 
+        log.debug("Creating stored rendition for source document {}.", sourceDocument);
         return getStoredRenditionManager().createStoredRendition(sourceDocument, version, renderedBlob,
                 renditionDefinition);
     }
@@ -325,12 +329,18 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         Rendition rendition;
         boolean isVersionable = doc.isVersionable();
         if (!isVersionable || !doc.isCheckedOut()) {
+            log.debug("Document {} is not versionable nor checked out, trying to find a stored rendition.", doc);
             // stored renditions are only done against a non-versionable doc
             // or a versionable doc that is not checkedout
             rendition = getStoredRenditionManager().findStoredRendition(doc, renditionDefinition);
             if (rendition != null) {
+                log.debug("Found and returning a stored rendition for document {}.", doc);
                 return rendition;
+            } else {
+                log.debug("Found no stored rendition for document {}.", doc);
             }
+        } else {
+            log.debug("Document {} is versionable and checked out, not trying to find any stored rendition.", doc);
         }
 
         rendition = new LiveRendition(doc, renditionDefinition);
@@ -338,8 +348,13 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         if (store) {
             StoredRendition storedRendition = storeRendition(doc, rendition, renditionDefinition);
             if (storedRendition != null) {
+                log.debug("Returning new stored rendition for document {}.", doc);
                 return storedRendition;
+            } else {
+                log.debug("No rendition stored for document {}, returning live rendition.", doc);
             }
+        } else {
+            log.debug("Returning live rendition for document {}.", doc);
         }
         return rendition;
     }

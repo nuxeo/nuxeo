@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -56,48 +56,49 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
 
     public static final String CACHE_NAME = "LazyRenditionCache";
 
-    protected static Log log = LogFactory.getLog(AbstractLazyCachableRenditionProvider.class);
+    protected static Logger log = LogManager.getLogger(AbstractLazyCachableRenditionProvider.class);
 
     @Override
     public List<Blob> render(DocumentModel doc, RenditionDefinition definition) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Asking \"%s\" rendition lazy rendering for document %s (id=%s).",
-                    definition.getName(), doc.getPathAsString(), doc.getId()));
-        }
+        log.debug("Asking \"{}\" rendition lazy rendering for document {} (id={}).", definition::getName,
+                doc::getPathAsString, doc::getId);
 
         // Build the rendition key and get the current source document modification date
         String key = buildRenditionKey(doc, definition);
         String sourceDocumentModificationDate = getSourceDocumentModificationDate(doc, definition);
 
         // If rendition is not already in progress schedule it
-        List<Blob> blobs = null;
+        List<Blob> blobs;
         TransientStore ts = getTransientStore();
         if (!ts.exists(key)) {
             blobs = handleNewRendition(key, doc, definition, sourceDocumentModificationDate);
         } else {
-            String storedSourceDocumentModificationDate = (String) ts.getParameter(key,
+            String tsSourceDocumentModificationDate = (String) ts.getParameter(key,
                     SOURCE_DOCUMENT_MODIFICATION_DATE_KEY);
             blobs = ts.getBlobs(key);
             if (ts.isCompleted(key)) {
                 handleCompletedRendition(key, doc, definition, sourceDocumentModificationDate,
-                        storedSourceDocumentModificationDate, blobs);
+                        tsSourceDocumentModificationDate, blobs);
             } else {
                 handleIncompleteRendition(key, doc, definition, sourceDocumentModificationDate,
-                        storedSourceDocumentModificationDate);
+                        tsSourceDocumentModificationDate);
             }
         }
-
-        if (log.isDebugEnabled()) {
-            String blobInfo = null;
-            if (blobs != null) {
-                blobInfo = blobs.stream()
-                                .map(blob -> String.format("{filename=%s, MIME type=%s}", blob.getFilename(),
-                                        blob.getMimeType()))
-                                .collect(Collectors.joining(",", "[", "]"));
-            }
-            log.debug(String.format("Returning blobs: %s.", blobInfo));
-        }
+        final List<Blob> finalBlobs = blobs;
+        log.debug("Returning blobs: {}.", () -> getBlobInfo(finalBlobs));
         return blobs;
+    }
+
+    /**
+     * @since 11.1
+     */
+    protected String getBlobInfo(List<Blob> blobs) {
+        if (blobs == null) {
+            return null;
+        }
+        return blobs.stream()
+                    .map(blob -> String.format("{filename=%s, MIME type=%s}", blob.getFilename(), blob.getMimeType()))
+                    .collect(Collectors.joining(",", "[", "]"));
     }
 
     public String buildRenditionKey(DocumentModel doc, RenditionDefinition def) {
@@ -111,10 +112,7 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
         sb.append(def.getName());
 
         String key = getDigest(sb.toString());
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Built rendition key for document %s (id=%s): %s.", doc.getPathAsString(),
-                    doc.getId(), key));
-        }
+        log.debug("Built rendition key for document {} (id={}): {}.", doc::getPathAsString, doc::getId, () -> key);
         return key;
     }
 
@@ -164,11 +162,10 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
     protected List<Blob> handleNewRendition(String key, DocumentModel doc, RenditionDefinition definition,
             String sourceDocumentModificationDate) {
         Work work = getRenditionWork(key, doc, definition);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "No entry found for key %s in the %s transient store, scheduling rendition work with id %s and storing an empty blob for now.",
-                    key, CACHE_NAME, work.getId()));
-        }
+        log.debug(
+                "No entry found for key {} in the {} transient store, scheduling rendition work with id {} and storing"
+                        + " an empty blob for now.",
+                () -> key, () -> CACHE_NAME, work::getId);
         if (sourceDocumentModificationDate != null) {
             getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
                     sourceDocumentModificationDate);
@@ -182,18 +179,13 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
     }
 
     protected void handleCompletedRendition(String key, DocumentModel doc, RenditionDefinition definition,
-            String sourceDocumentModificationDate, String storedSourceDocumentModificationDate, List<Blob> blobs) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Completed entry found for key %s in the %s transient store.", key, CACHE_NAME));
-        }
+            String sourceDocumentModificationDate, String tsSourceDocumentModificationDate, List<Blob> blobs) {
+        log.debug("Completed entry found for key {} in the {} transient store.", key, CACHE_NAME);
 
         // No or more than one blob
         if (blobs == null || blobs.size() != 1) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "No (or more than one) rendition blob for key %s, releasing entry from the transient store.",
-                        key));
-            }
+            log.debug("No (or more than one) rendition blob for key {}, releasing entry from the transient store.",
+                    key);
             getTransientStore().release(key);
             return;
         }
@@ -202,21 +194,18 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
         Blob blob = blobs.get(0);
         String mimeType = blob.getMimeType();
         if (mimeType != null && mimeType.contains(LazyRendition.ERROR_MARKER)) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Rendition blob is in error for key %s.", key));
-            }
+            log.debug("Rendition blob is in error for key {}.", key);
             // Check if rendition is up-to-date
-            if (Objects.equals(storedSourceDocumentModificationDate, sourceDocumentModificationDate)) {
+            if (Objects.equals(tsSourceDocumentModificationDate, sourceDocumentModificationDate)) {
                 log.debug("Removing entry from the transient store.");
                 getTransientStore().remove(key);
                 return;
             }
             Work work = getRenditionWork(key, doc, definition);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Source document modification date %s is different from the stored one %s, scheduling rendition work with id %s and returning an error/stale rendition.",
-                        sourceDocumentModificationDate, storedSourceDocumentModificationDate, work.getId()));
-            }
+            log.debug(
+                    "Source document modification date {} is different from the corresponding transient store parameter"
+                            + " {}, scheduling rendition work with id {} and returning an error/stale rendition.",
+                    () -> sourceDocumentModificationDate, () -> tsSourceDocumentModificationDate, work::getId);
             if (sourceDocumentModificationDate != null) {
                 getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
                         sourceDocumentModificationDate);
@@ -227,23 +216,19 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
         }
 
         // Check if rendition is up-to-date
-        if (Objects.equals(storedSourceDocumentModificationDate, sourceDocumentModificationDate)) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Rendition blob is up-to-date for key %s, returning it and releasing entry from the transient store.",
-                        key));
-            }
+        if (Objects.equals(tsSourceDocumentModificationDate, sourceDocumentModificationDate)) {
+            log.debug("Rendition blob is up-to-date for key {}, returning it and releasing entry from the transient"
+                    + " store.", key);
             getTransientStore().release(key);
             return;
         }
 
         // Stale rendition
         Work work = getRenditionWork(key, doc, definition);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Source document modification date %s is different from the stored one %s, scheduling rendition work with id %s and returning a stale rendition.",
-                    sourceDocumentModificationDate, storedSourceDocumentModificationDate, work.getId()));
-        }
+        log.debug(
+                "Source document modification date {} is different from the corresponding transient store parameter {},"
+                        + " scheduling rendition work with id {} and returning a stale rendition.",
+                () -> sourceDocumentModificationDate, () -> tsSourceDocumentModificationDate, work::getId);
         if (sourceDocumentModificationDate != null) {
             getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
                     sourceDocumentModificationDate);
@@ -253,31 +238,23 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
     }
 
     protected void handleIncompleteRendition(String key, DocumentModel doc, RenditionDefinition definition,
-            String sourceDocumentModificationDate, String storedSourceDocumentModificationDate) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Incomplete entry found for key %s in the %s transient store.", key, CACHE_NAME));
-        }
+            String sourceDocumentModificationDate, String tsSourceDocumentModificationDate) {
+        log.debug("Incomplete entry found for key {} in the {} transient store.", key, CACHE_NAME);
         WorkManager workManager = Framework.getService(WorkManager.class);
         Work work = getRenditionWork(key, doc, definition);
         String workId = work.getId();
         boolean scheduleWork = false;
-        if (Objects.equals(storedSourceDocumentModificationDate, sourceDocumentModificationDate)) {
+        if (Objects.equals(tsSourceDocumentModificationDate, sourceDocumentModificationDate)) {
             Work.State workState = workManager.getWorkState(workId);
             if (workState == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Found no existing work with id %s.", workId));
-                }
+                log.debug("Found no existing work with id {}.", workId);
                 scheduleWork = true;
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Found an existing work with id %s in sate %s.", workId, workState));
-                }
+                log.debug("Found an existing work with id {} in sate {}.", workId, workState);
             }
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Source document modification date %s is different from the stored one %s.",
-                        sourceDocumentModificationDate, storedSourceDocumentModificationDate));
-            }
+            log.debug("Source document modification date {} is different from the corresponding transient store"
+                    + " parameter {}.", sourceDocumentModificationDate, tsSourceDocumentModificationDate);
             if (sourceDocumentModificationDate != null) {
                 getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
                         sourceDocumentModificationDate);
@@ -285,9 +262,7 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
             scheduleWork = true;
         }
         if (scheduleWork) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Scheduling rendition work with id %s.", workId));
-            }
+            log.debug("Scheduling rendition work with id {}.", workId);
             workManager.schedule(work);
         }
     }
