@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import javax.script.Invocable;
 import javax.script.ScriptContext;
@@ -370,6 +370,18 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         return getRendition(doc, renditionDefinition, store);
     }
 
+    /**
+     * @since 11.1
+     */
+    protected Optional<Rendition> getRenditionSafe(DocumentModel doc, String defaultRenditionName, boolean store) {
+        try {
+            return Optional.of(getRendition(doc, defaultRenditionName, store));
+        } catch (NuxeoException e) {
+            log.error("Unable to use default rendition " + defaultRenditionName, e);
+            return Optional.empty();
+        }
+    }
+
     protected Rendition getRendition(DocumentModel doc, RenditionDefinition renditionDefinition, boolean store) {
 
         Rendition rendition;
@@ -516,9 +528,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
                                                                    });
 
                 if (!renditionRefsToDelete.isEmpty()) {
-                    session.removeDocuments(
-                            renditionRefsToDelete.stream().map(IdRef::new).collect(Collectors.toList()).toArray(
-                                    new DocumentRef[renditionRefsToDelete.size()]));
+                    session.removeDocuments(renditionRefsToDelete.stream().map(IdRef::new).toArray(DocumentRef[]::new));
                 }
 
                 if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
@@ -572,10 +582,9 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
                     } else {
                         String defaultRenditionName = (String) result;
                         if (!StringUtils.isBlank(defaultRenditionName)) {
-                            try {
-                                return getRendition(doc, defaultRenditionName, store);
-                            } catch (NuxeoException e) {
-                                log.error("Unable to use default rendition " + defaultRenditionName, e);
+                            Optional<Rendition> rendition = getRenditionSafe(doc, defaultRenditionName, store);
+                            if (rendition.isPresent()) {
+                                return rendition.get();
                             }
                         }
                     }
