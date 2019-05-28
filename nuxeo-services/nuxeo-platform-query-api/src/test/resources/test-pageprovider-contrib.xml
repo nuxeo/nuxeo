@@ -187,6 +187,14 @@
         </predicate>
       </whereClause>
     </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="DUMMY_NOT_ILIKE_PP">
+      <whereClause docType="AdvancedSearch">
+        <predicate parameter="size" operator="NOT ILIKE">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+      </whereClause>
+    </coreQueryPageProvider>
   </extension>
 
 </component>
