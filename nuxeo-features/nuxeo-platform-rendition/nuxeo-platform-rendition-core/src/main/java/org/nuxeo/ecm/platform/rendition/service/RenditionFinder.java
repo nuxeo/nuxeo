@@ -25,6 +25,8 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_VARIANT_PROPE
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -38,6 +40,8 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class RenditionFinder extends UnrestrictedSessionRunner {
+
+    private static final Logger log = LogManager.getLogger(RenditionFinder.class);
 
     protected final DocumentModel source;
 
@@ -107,8 +111,11 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
         query.append(" = '");
         query.append(renditionSourceId);
         query.append("' ORDER BY dc:modified DESC");
+        String queryStr = query.toString();
 
-        List<DocumentModel> docs = session.query(query.toString());
+        log.debug("Finding stored renditions for document {} with query {}.", source, queryStr);
+        List<DocumentModel> docs = session.query(queryStr);
+        log.debug("Stored renditions found for document {}: {}", source, docs);
         if (!docs.isEmpty()) {
             storedRendition = docs.get(0);
             storedRendition.detach(true);
