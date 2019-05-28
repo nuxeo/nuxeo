@@ -206,10 +206,6 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
                     "Source document modification date {} is different from the corresponding transient store parameter"
                             + " {}, scheduling rendition work with id {} and returning an error/stale rendition.",
                     () -> sourceDocumentModificationDate, () -> tsSourceDocumentModificationDate, work::getId);
-            if (sourceDocumentModificationDate != null) {
-                getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
-                        sourceDocumentModificationDate);
-            }
             Framework.getService(WorkManager.class).schedule(work);
             blob.setMimeType(blob.getMimeType() + ";" + LazyRendition.STALE_MARKER);
             return;
@@ -229,10 +225,6 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
                 "Source document modification date {} is different from the corresponding transient store parameter {},"
                         + " scheduling rendition work with id {} and returning a stale rendition.",
                 () -> sourceDocumentModificationDate, () -> tsSourceDocumentModificationDate, work::getId);
-        if (sourceDocumentModificationDate != null) {
-            getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
-                    sourceDocumentModificationDate);
-        }
         Framework.getService(WorkManager.class).schedule(work);
         blob.setMimeType(blob.getMimeType() + ";" + LazyRendition.STALE_MARKER);
     }
@@ -255,10 +247,6 @@ public abstract class AbstractLazyCachableRenditionProvider extends DefaultAutom
         } else {
             log.debug("Source document modification date {} is different from the corresponding transient store"
                     + " parameter {}.", sourceDocumentModificationDate, tsSourceDocumentModificationDate);
-            if (sourceDocumentModificationDate != null) {
-                getTransientStore().putParameter(key, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
-                        sourceDocumentModificationDate);
-            }
             scheduleWork = true;
         }
         if (scheduleWork) {
