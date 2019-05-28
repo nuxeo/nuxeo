@@ -38,6 +38,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -221,6 +222,9 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             return null;
         }
         List<Blob> renderedBlobs = rendition.getBlobs();
+        if (CollectionUtils.isEmpty(renderedBlobs)) {
+            return null;
+        }
         Blob renderedBlob = renderedBlobs.get(0);
         String mimeType = renderedBlob.getMimeType();
         if (mimeType != null
