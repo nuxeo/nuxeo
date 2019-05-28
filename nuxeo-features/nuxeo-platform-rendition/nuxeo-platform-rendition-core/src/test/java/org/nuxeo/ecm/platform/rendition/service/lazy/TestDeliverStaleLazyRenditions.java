@@ -133,6 +133,28 @@ public class TestDeliverStaleLazyRenditions {
         checkUpToDateRendition(true);
     }
 
+    // NXP-27316
+    @Test
+    public void testOnlyStoreUpToDateRenditions() {
+        // ask for the initial rendition: up-to-date and stored
+        checkInitialRendition(true);
+
+        // ask for some intermediate renditions: stale and not stored
+        checkStaleRenditions(true);
+
+        // ask for an intermediate rendition without waiting for its completion: stale and not stored
+        String latestRenditionDigest = checkStaleRendition(true, false);
+
+        // ask for the latest intermediate rendition: same one as for the previous call
+        checkStaleRendition(doc, LAZY_AUTOMATION, true, RENDITION_FILENAME, latestRenditionDigest);
+
+        // wait for rendition completion
+        waitForAsyncCompletion();
+
+        // ask for the latest rendition: up-to-date and stored
+        checkUpToDateRendition(true);
+    }
+
     /**
      * Creates a test document and asks for a {@link #LAZY_AUTOMATION} rendition, expecting it to be empty.
      * <p>
@@ -170,13 +192,23 @@ public class TestDeliverStaleLazyRenditions {
     }
 
     /**
-     * Updates the test document and asks for a {@link #LAZY_AUTOMATION} rendition, expecting it to be stale.
-     * <p>
-     * Waits for asynchronous completion.
+     * Updates the test document, asks for a {@link #LAZY_AUTOMATION} rendition (expecting it to be stale) and waits for
+     * asynchronous completion.
      *
      * @param store whether to ask to store the stale rendition, for test purpose as it will actually never get stored
+     * @see #checkStaleRendition(boolean, boolean)
      */
     protected void checkStaleRendition(boolean store) {
+        checkStaleRendition(store, true);
+    }
+
+    /**
+     * Updates the test document and asks for a {@link #LAZY_AUTOMATION} rendition, expecting it to be stale.
+     *
+     * @param store whether to ask to store the stale rendition, for test purpose as it will actually never get stored
+     * @param wait whether to wait for asynchronous completion after asking for the rendition
+     */
+    protected String checkStaleRendition(boolean store, boolean wait) {
         try {
             String latestRenditionDigest = DummyDocToTxt.getDigest(doc);
             log.debug(String.format("Saved latest rendition digest: %s", latestRenditionDigest));
@@ -190,8 +222,11 @@ public class TestDeliverStaleLazyRenditions {
             log.debug("Ask immediately for a lazy rendition, expecting a stale rendition");
             checkStaleRendition(doc, LAZY_AUTOMATION, store, RENDITION_FILENAME, latestRenditionDigest);
 
-            log.debug("Wait for async completion");
-            waitForAsyncCompletion();
+            if (wait) {
+                log.debug("Wait for async completion");
+                waitForAsyncCompletion();
+            }
+            return latestRenditionDigest;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new NuxeoException(e);
