@@ -24,6 +24,7 @@ import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,9 +39,11 @@ import org.nuxeo.ecm.platform.oauth2.openid.auth.UserResolver;
 import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
+import org.nuxeo.runtime.api.Framework;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
+import com.google.api.client.auth.oauth2.TokenRequest;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpMediaType;
@@ -69,6 +72,10 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
     /** Global instance of the JSON factory. */
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
+    public static final String PROPERTY_TOKEN_REQUEST_NOSCOPE = "nuxeo.oauth.token.request.noscope";
+
+    public static final String PROPERTY_USERINFO_ACCESSTOKEN_HEADER = "nuxeo.oauth.userinfo.request.accesstoken.header";
+
     private boolean enabled = true;
 
     OAuth2ServiceProvider oauth2Provider;
@@ -89,7 +96,8 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
     public OpenIDConnectProvider(OAuth2ServiceProvider oauth2Provider, String accessTokenKey, String userInfoURL,
             Class<? extends OpenIDUserInfo> openIdUserInfoClass, String icon, boolean enabled,
-            RedirectUriResolver redirectUriResolver, Class<? extends UserResolver> userResolverClass, String userMapper) {
+            RedirectUriResolver redirectUriResolver, Class<? extends UserResolver> userResolverClass,
+            String userMapper) {
         this.oauth2Provider = oauth2Provider;
         this.userInfoURL = userInfoURL;
         this.openIdUserInfoClass = openIdUserInfoClass;
@@ -136,9 +144,9 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
      * @param HttpServletRequest request
      */
     public boolean verifyStateToken(HttpServletRequest request) {
-        return request.getParameter(OpenIDConnectAuthenticator.STATE_URL_PARAM_NAME)
-                      .equals(request.getSession().getAttribute(
-                              OpenIDConnectAuthenticator.STATE_SESSION_ATTRIBUTE + "_" + getName()));
+        return request.getParameter(OpenIDConnectAuthenticator.STATE_URL_PARAM_NAME).equals(
+                request.getSession()
+                       .getAttribute(OpenIDConnectAuthenticator.STATE_SESSION_ATTRIBUTE + "_" + getName()));
     }
 
     public String getAuthenticationUrl(HttpServletRequest req, String requestedUrl) {
@@ -170,7 +178,11 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
             AuthorizationCodeFlow flow = ((NuxeoOAuth2ServiceProvider) oauth2Provider).getAuthorizationCodeFlow();
 
             String redirectUri = getRedirectUri(req);
-            response = flow.newTokenRequest(code).setRedirectUri(redirectUri).executeUnparsed();
+            TokenRequest tokenRequest = flow.newTokenRequest(code).setRedirectUri(redirectUri);
+            if (Framework.isBooleanPropertyTrue(PROPERTY_TOKEN_REQUEST_NOSCOPE)) {
+                tokenRequest.setScopes(null);
+            }
+            response = tokenRequest.executeUnparsed();
         } catch (IOException e) {
             log.error("Error during OAuth2 Authorization", e);
             return null;
@@ -207,14 +219,19 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
     public OpenIDUserInfo getUserInfo(String accessToken) {
         OpenIDUserInfo userInfo = null;
 
-        HttpRequestFactory requestFactory = HTTP_TRANSPORT.createRequestFactory(request -> request.setParser(new JsonObjectParser(
-                JSON_FACTORY)));
+        HttpRequestFactory requestFactory = HTTP_TRANSPORT.createRequestFactory(
+                request -> request.setParser(new JsonObjectParser(JSON_FACTORY)));
 
         GenericUrl url = new GenericUrl(userInfoURL);
-        url.set(accessTokenKey, accessToken);
+        if (Framework.isBooleanPropertyFalse(PROPERTY_USERINFO_ACCESSTOKEN_HEADER)) {
+            url.set(accessTokenKey, accessToken);
+        }
 
         try {
             HttpRequest request = requestFactory.buildGetRequest(url);
+            if (Framework.isBooleanPropertyTrue(PROPERTY_USERINFO_ACCESSTOKEN_HEADER)) {
+                request.getHeaders().put("Authorization", Arrays.asList("Bearer " + accessToken));
+            }
             HttpResponse response = request.execute();
             String body = IOUtils.toString(response.getContent(), "UTF-8");
             log.debug(body);
