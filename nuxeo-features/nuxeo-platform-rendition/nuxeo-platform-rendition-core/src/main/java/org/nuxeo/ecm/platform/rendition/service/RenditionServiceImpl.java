@@ -58,8 +58,6 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.rendition.Constants;
 import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.ecm.platform.rendition.extension.DefaultAutomationRenditionProvider;
-import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.impl.LiveRendition;
 import org.nuxeo.ecm.platform.rendition.impl.StoredRendition;
@@ -88,12 +86,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     public static final String STORED_RENDITION_MANAGERS_EP = "storedRenditionManagers";
 
     private static final Logger log = LogManager.getLogger(RenditionServiceImpl.class);
-
-    /**
-     * @deprecated since 7.3. RenditionDefinitions are store in {@link #renditionDefinitionRegistry}.
-     */
-    @Deprecated
-    protected Map<String, RenditionDefinition> renditionDefinitions;
 
     /**
      * @since 7.3.
@@ -127,7 +119,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     @Override
     public void activate(ComponentContext context) {
-        renditionDefinitions = new HashMap<>();
         renditionDefinitionRegistry = new RenditionDefinitionRegistry();
         renditionDefinitionProviderRegistry = new RenditionDefinitionProviderRegistry();
         super.activate(context);
@@ -135,7 +126,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     @Override
     public void deactivate(ComponentContext context) {
-        renditionDefinitions = null;
         renditionDefinitionRegistry = null;
         renditionDefinitionProviderRegistry = null;
         super.deactivate(context);
@@ -273,52 +263,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         }
     }
 
-    /**
-     * @deprecated since 7.3. RenditionDefinitions are store in {@link #renditionDefinitionRegistry}.
-     */
-    @Deprecated
-    protected void registerRendition(RenditionDefinition renditionDefinition) {
-        String name = renditionDefinition.getName();
-        if (name == null) {
-            log.error("Cannot register rendition without a name");
-            return;
-        }
-        boolean enabled = renditionDefinition.isEnabled();
-        if (renditionDefinitions.containsKey(name)) {
-            log.info("Overriding rendition with name: " + name);
-            if (enabled) {
-                renditionDefinition = mergeRenditions(renditionDefinitions.get(name), renditionDefinition);
-            } else {
-                log.info("Disabled rendition with name " + name);
-                renditionDefinitions.remove(name);
-            }
-        }
-        if (enabled) {
-            log.info("Registering rendition with name: " + name);
-            renditionDefinitions.put(name, renditionDefinition);
-        }
-
-        // setup the Provider
-        setupProvider(renditionDefinition);
-    }
-
-    /**
-     * @deprecated since 7.3. RenditionDefinitions are store in {@link #renditionDefinitionRegistry}.
-     */
-    @Deprecated
-    protected void setupProvider(RenditionDefinition definition) {
-        if (definition.getProviderClass() == null) {
-            definition.setProvider(new DefaultAutomationRenditionProvider());
-        } else {
-            try {
-                RenditionProvider provider = definition.getProviderClass().newInstance();
-                definition.setProvider(provider);
-            } catch (Exception e) {
-                log.error("Unable to create RenditionProvider", e);
-            }
-        }
-    }
-
     protected RenditionDefinition mergeRenditions(RenditionDefinition oldRenditionDefinition,
             RenditionDefinition newRenditionDefinition) {
         String label = newRenditionDefinition.getLabel();
@@ -346,16 +290,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         } else if (DEFAULT_RENDITION_EP.equals(extensionPoint)) {
             defaultRenditionDescriptors.remove(contribution);
         }
-    }
-
-    /**
-     * @deprecated since 7.3. RenditionDefinitions are store in {@link #renditionDefinitionRegistry}.
-     */
-    @Deprecated
-    protected void unregisterRendition(RenditionDefinition renditionDefinition) {
-        String name = renditionDefinition.getName();
-        renditionDefinitions.remove(name);
-        log.info("Unregistering rendition with name: " + name);
     }
 
     @Override
