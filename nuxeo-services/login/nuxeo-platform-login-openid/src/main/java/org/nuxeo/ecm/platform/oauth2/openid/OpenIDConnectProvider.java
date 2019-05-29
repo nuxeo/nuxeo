@@ -96,8 +96,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
     public OpenIDConnectProvider(OAuth2ServiceProvider oauth2Provider, String accessTokenKey, String userInfoURL,
             Class<? extends OpenIDUserInfo> openIdUserInfoClass, String icon, boolean enabled,
-            RedirectUriResolver redirectUriResolver, Class<? extends UserResolver> userResolverClass,
-            String userMapper) {
+            RedirectUriResolver redirectUriResolver, Class<? extends UserResolver> userResolverClass, String userMapper) {
         this.oauth2Provider = oauth2Provider;
         this.userInfoURL = userInfoURL;
         this.openIdUserInfoClass = openIdUserInfoClass;
@@ -144,9 +143,9 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
      * @param HttpServletRequest request
      */
     public boolean verifyStateToken(HttpServletRequest request) {
-        return request.getParameter(OpenIDConnectAuthenticator.STATE_URL_PARAM_NAME).equals(
-                request.getSession()
-                       .getAttribute(OpenIDConnectAuthenticator.STATE_SESSION_ATTRIBUTE + "_" + getName()));
+        return request.getParameter(OpenIDConnectAuthenticator.STATE_URL_PARAM_NAME)
+                      .equals(request.getSession().getAttribute(
+                              OpenIDConnectAuthenticator.STATE_SESSION_ATTRIBUTE + "_" + getName()));
     }
 
     public String getAuthenticationUrl(HttpServletRequest req, String requestedUrl) {
@@ -219,8 +218,8 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
     public OpenIDUserInfo getUserInfo(String accessToken) {
         OpenIDUserInfo userInfo = null;
 
-        HttpRequestFactory requestFactory = HTTP_TRANSPORT.createRequestFactory(
-                request -> request.setParser(new JsonObjectParser(JSON_FACTORY)));
+        HttpRequestFactory requestFactory = HTTP_TRANSPORT.createRequestFactory(request -> request.setParser(new JsonObjectParser(
+                JSON_FACTORY)));
 
         GenericUrl url = new GenericUrl(userInfoURL);
         if (Framework.isBooleanPropertyFalse(PROPERTY_USERINFO_ACCESSTOKEN_HEADER)) {
