@@ -28,7 +28,9 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
+ * @deprecated since 11.1
  */
+@Deprecated
 public class OpenIDProviderFragmentRegistry extends ContributionFragmentRegistry<OpenIDConnectProviderDescriptor> {
 
     protected final Map<String, OpenIDConnectProviderDescriptor> providers = new HashMap<>();
@@ -54,6 +56,7 @@ public class OpenIDProviderFragmentRegistry extends ContributionFragmentRegistry
         copy.accessTokenKey = source.accessTokenKey;
         copy.userInfoClass = source.userInfoClass;
         copy.userMapper = source.userMapper;
+        copy.authenticationMethod = source.authenticationMethod;
         return copy;
     }
 
@@ -119,9 +122,11 @@ public class OpenIDProviderFragmentRegistry extends ContributionFragmentRegistry
         if (src.getUserResolverClass() != OpenIDConnectProviderDescriptor.DEFAULT_USER_RESOLVER_CLASS) {
             dst.userResolverClass = src.userResolverClass;
         }
-
         if (src.userMapper != null && src.userMapper.length() > 0) {
             dst.userMapper = src.userMapper;
+        }
+        if (!src.authenticationMethod.equals(OpenIDConnectProviderDescriptor.DEFAULT_AUTHENTICATION_METHOD)) {
+            dst.authenticationMethod = src.authenticationMethod;
         }
 
         dst.enabled = src.enabled;

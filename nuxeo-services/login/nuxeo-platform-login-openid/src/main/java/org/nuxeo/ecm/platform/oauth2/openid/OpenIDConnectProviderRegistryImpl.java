@@ -48,8 +48,6 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
 
     protected Map<String, OpenIDConnectProvider> providers = new HashMap<>();
 
-    protected OpenIDProviderFragmentRegistry pendingProviders = new OpenIDProviderFragmentRegistry();
-
     protected OAuth2ServiceProviderRegistry getOAuth2ServiceProviderRegistry() {
         return Framework.getService(OAuth2ServiceProviderRegistry.class);
     }
@@ -68,7 +66,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
             log.info("OpenId provider for " + provider.getName() + " will be registred at application startup");
             // delay registration because data sources may not be available
             // at this point
-            pendingProviders.addContribution(provider);
+            register(PROVIDER_EP, provider);
         }
     }
 
@@ -94,7 +92,8 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
     }
 
     protected void registerPendingProviders() {
-        for (OpenIDConnectProviderDescriptor provider : pendingProviders.getContribs()) {
+        List<OpenIDConnectProviderDescriptor> providers = getDescriptors(PROVIDER_EP);
+        for (OpenIDConnectProviderDescriptor provider : providers) {
             registerOpenIdProvider(provider);
         }
     }
@@ -124,7 +123,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
             providers.put(provider.getName(),
                     new OpenIDConnectProvider(oauth2Provider, provider.getAccessTokenKey(), provider.getUserInfoURL(),
                             provider.getUserInfoClass(), provider.getIcon(), provider.isEnabled(), redirectUriResolver,
-                            provider.getUserResolverClass(), provider.getUserMapper()));
+                            provider.getUserResolverClass(), provider.getUserMapper(), provider.getAuthenticationMethod()));
 
             // contribute icon and link to the Login Screen
             LoginScreenHelper.registerSingleProviderLoginScreenConfig(provider.getName(), provider.getIcon(),
@@ -136,7 +135,8 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
                 providers.put(provider.getName(),
                         new OpenIDConnectProvider(null, provider.getAccessTokenKey(), provider.getUserInfoURL(),
                                 provider.getUserInfoClass(), provider.getIcon(), provider.isEnabled(),
-                                redirectUriResolver, provider.getUserResolverClass(), provider.getUserMapper()));
+                                redirectUriResolver, provider.getUserResolverClass(), provider.getUserMapper(),
+                                provider.getAuthenticationMethod()));
             } else {
                 log.error("Can not register OAuth Provider since OAuth Registry is not available");
             }
