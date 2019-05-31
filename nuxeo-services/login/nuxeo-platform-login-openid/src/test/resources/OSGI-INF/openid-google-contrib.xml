@@ -35,7 +35,14 @@
       <clientId>clientID</clientId>
       <clientSecret>superSecret</clientSecret>
     </provider>
+    
+    <provider>
+      <name>MY_NAME</name>
+      <clientId>MY_CLIENT_ID</clientId>
+      <clientSecret>MY_CLIENT_SECRET</clientSecret>             
+      <authenticationMethod>MY_AUTHENTICATION_METHOD</authenticationMethod>
+    </provider>
 
-*  </extension>
+  </extension>
 
 </component>
