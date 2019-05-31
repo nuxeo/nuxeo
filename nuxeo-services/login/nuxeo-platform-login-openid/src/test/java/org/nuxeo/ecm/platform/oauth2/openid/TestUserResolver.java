@@ -65,12 +65,14 @@ public class TestUserResolver {
 
     @Inject
     protected DirectoryService directoryService;
+    
+    @Inject
+    protected OpenIDConnectProviderRegistry registry;
 
     @Test
     public void testEmailBasedUserResolver() {
 
-        OpenIDConnectProvider provider = Framework.getService(OpenIDConnectProviderRegistry.class)
-                                                  .getProvider("provider1");
+        OpenIDConnectProvider provider = registry.getProvider("provider1");
 
         assertTrue(provider.getUserResolver() instanceof EmailBasedUserResolver);
         EmailBasedUserResolver emailResolver = (EmailBasedUserResolver) provider.getUserResolver();
@@ -99,8 +101,7 @@ public class TestUserResolver {
     @Test
     public void testStoredUserBasedInfoResolver() {
 
-        OpenIDConnectProvider provider = Framework.getService(OpenIDConnectProviderRegistry.class)
-                                                  .getProvider("provider2");
+        OpenIDConnectProvider provider = registry.getProvider("provider2");
 
         assertTrue(provider.getUserResolver() instanceof StoredUserInfoResolver);
         StoredUserInfoResolver userInfoResolver = (StoredUserInfoResolver) provider.getUserResolver();
