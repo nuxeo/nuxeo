@@ -24,6 +24,7 @@ import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -85,11 +86,27 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
     private String accessTokenKey;
 
+    protected String authenticationMethod;
+
     private Class<? extends OpenIDUserInfo> openIdUserInfoClass;
+    
+    /**
+     * @deprecated since 11.1, use
+     *             {@link #OpenIDConnectProvider(OAuth2ServiceProvider, String, String, Class, String, boolean, RedirectUriResolver, Class, String, String)}
+     */
+    @Deprecated
+    public OpenIDConnectProvider(OAuth2ServiceProvider oauth2Provider, String accessTokenKey, String userInfoURL,
+            Class<? extends OpenIDUserInfo> openIdUserInfoClass, String icon, boolean enabled,
+            RedirectUriResolver redirectUriResolver, Class<? extends UserResolver> userResolverClass,
+            String userMapper) {
+        this(oauth2Provider, accessTokenKey, userInfoURL, openIdUserInfoClass, icon, enabled, redirectUriResolver,
+                userResolverClass, userMapper, OpenIDConnectProviderDescriptor.DEFAULT_AUTHENTICATION_METHOD);
+    }
 
     public OpenIDConnectProvider(OAuth2ServiceProvider oauth2Provider, String accessTokenKey, String userInfoURL,
             Class<? extends OpenIDUserInfo> openIdUserInfoClass, String icon, boolean enabled,
-            RedirectUriResolver redirectUriResolver, Class<? extends UserResolver> userResolverClass, String userMapper) {
+            RedirectUriResolver redirectUriResolver, Class<? extends UserResolver> userResolverClass, String userMapper,
+            String authenticationMethod) {
         this.oauth2Provider = oauth2Provider;
         this.userInfoURL = userInfoURL;
         this.openIdUserInfoClass = openIdUserInfoClass;
@@ -97,6 +114,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
         this.enabled = enabled;
         this.accessTokenKey = accessTokenKey;
         this.redirectUriResolver = redirectUriResolver;
+        this.authenticationMethod = authenticationMethod;
 
         try {
             if (userResolverClass == null) {
@@ -211,10 +229,15 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
                 JSON_FACTORY)));
 
         GenericUrl url = new GenericUrl(userInfoURL);
-        url.set(accessTokenKey, accessToken);
+        if (OpenIDConnectProviderDescriptor.URL_AUTHENTICATION_METHOD.equals(authenticationMethod)) {
+            url.set(accessTokenKey, accessToken);
+        }
 
         try {
             HttpRequest request = requestFactory.buildGetRequest(url);
+            if (OpenIDConnectProviderDescriptor.BEARER_AUTHENTICATION_METHOD.equals(authenticationMethod)) {
+                request.getHeaders().put("Authorization", Arrays.asList("Bearer " + accessToken));
+            }
             HttpResponse response = request.execute();
             String body = IOUtils.toString(response.getContent(), "UTF-8");
             log.debug(body);

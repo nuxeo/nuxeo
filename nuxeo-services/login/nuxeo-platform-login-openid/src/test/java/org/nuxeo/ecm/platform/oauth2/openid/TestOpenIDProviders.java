@@ -18,40 +18,44 @@
  */
 package org.nuxeo.ecm.platform.oauth2.openid;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
+
+import javax.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.directory.sql")
-@Deploy("org.nuxeo.ecm.directory")
-@Deploy("org.nuxeo.ecm.directory.api")
+@Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.platform.login.openid.test")
 public class TestOpenIDProviders {
+
+    @Inject
+    protected OpenIDConnectProviderRegistry registry;
 
     @Test
     public void verifyServiceRegistration() {
 
-        OpenIDConnectProviderRegistry registry = Framework.getService(OpenIDConnectProviderRegistry.class);
-        Assert.assertNotNull(registry);
+        assertNotNull(registry);
 
         OpenIDConnectProvider provider = registry.getProvider("TestingGoogleOpenIDConnect");
-        Assert.assertNotNull(provider);
+        assertNotNull(provider);
 
-        Assert.assertTrue(OpenIDConnectHelper.getEnabledProviders().size() > 0);
+        assertTrue(OpenIDConnectHelper.getEnabledProviders().size() > 0);
 
         OpenIDConnectProvider provider2 = registry.getProvider("TestingGoogleOpenIDConnect2");
-        Assert.assertNotNull(provider2);
+        assertNotNull(provider2);
 
+        // check provider's authenticationMethod
+        provider = registry.getProvider("MY_NAME");
+        assertNotNull(provider);
+        assertEquals("MY_AUTHENTICATION_METHOD", provider.authenticationMethod);
     }
 
 }

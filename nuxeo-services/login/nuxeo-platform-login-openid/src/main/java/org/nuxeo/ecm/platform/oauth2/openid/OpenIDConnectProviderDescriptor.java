@@ -42,6 +42,21 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
 
     public static final Class<? extends OpenIDUserInfo> DEFAULT_USER_INFO_CLASS = DefaultOpenIDUserInfo.class;
 
+    /**
+     * @since 11.1
+     */
+    public static final String URL_AUTHENTICATION_METHOD = "url";
+
+    /**
+     * @since 11.1
+     */
+    public static final String BEARER_AUTHENTICATION_METHOD = "bearer";
+
+    /**
+     * @since 11.1
+     */
+    public static final String DEFAULT_AUTHENTICATION_METHOD = URL_AUTHENTICATION_METHOD;
+
     @XNode("@enabled")
     protected boolean enabled = true;
 
@@ -89,6 +104,12 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
 
     @XNode("userInfoClass")
     protected Class<? extends OpenIDUserInfo> userInfoClass = DEFAULT_USER_INFO_CLASS;
+
+    /**
+     * @since 11.1
+     */
+    @XNode("authenticationMethod")
+    protected String authenticationMethod = DEFAULT_AUTHENTICATION_METHOD;
 
     public static long getSerialversionuid() {
         return serialVersionUID;
@@ -151,7 +172,7 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
     }
 
     public Class<? extends UserResolver> getUserResolverClass() {
-        if (userResolverClass==null && userMapper==null) {
+        if (userResolverClass == null && userMapper == null) {
             return DEFAULT_USER_RESOLVER_CLASS;
         }
         return userResolverClass;
@@ -165,5 +186,10 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
         return userInfoClass;
     }
 
-
+    /**
+     * @since 11.1
+     */
+    public String getAuthenticationMethod() {
+        return authenticationMethod;
+    }
 }
