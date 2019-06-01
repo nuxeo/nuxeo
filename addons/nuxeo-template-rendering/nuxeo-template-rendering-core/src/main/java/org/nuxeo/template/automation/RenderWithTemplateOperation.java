@@ -20,7 +20,6 @@ package org.nuxeo.template.automation;
 
 import java.util.List;
 
-import org.dom4j.DocumentException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -29,14 +28,14 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.adapters.doc.TemplateBindings;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.serializer.executors.TemplateSerializer;
+import org.nuxeo.template.serializer.service.TemplateSerializerService;
 
 /**
  * Operation to wrapp the rendition process
@@ -66,6 +65,9 @@ public class RenderWithTemplateOperation {
     @Param(name = "templateData", required = false)
     protected String templateData = null;
 
+    @Param(name = "serializer", required = false)
+    protected String serializerName;
+
     @OperationMethod
     public Blob run(DocumentModel targetDocument) {
         TemplateBasedDocument renderable = targetDocument.getAdapter(TemplateBasedDocument.class);
@@ -79,11 +81,9 @@ public class RenderWithTemplateOperation {
         if (renderable != null) {
             if (templateData != null) {
                 List<TemplateInput> params;
-                try {
-                    params = XMLSerializer.readFromXml(templateData);
-                } catch (DocumentException e) {
-                    throw new NuxeoException(e.getMessage(), e);
-                }
+                TemplateSerializer templateSerializer = Framework.getService(TemplateSerializerService.class)
+                                                                 .getSerializer(serializerName);
+                params = templateSerializer.deserialize(templateData);
                 if (params != null) {
                     renderable.saveParams(templateName, params, true);
                 }

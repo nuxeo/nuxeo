@@ -18,20 +18,36 @@
  */
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
-import org.nuxeo.template.XMLSerializer;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.serializer.executors.XMLTemplateSerializer;
+import org.nuxeo.template.serializer.service.TemplateSerializerService;
 
-import junit.framework.TestCase;
+@RunWith(FeaturesRunner.class)
+@Features({ CoreFeature.class })
+@Deploy("org.nuxeo.template.manager:OSGI-INF/serializer-service.xml")
+@Deploy("org.nuxeo.template.manager:OSGI-INF/serializer-service-contribution.xml")
+public class TestXMLSerialization {
 
-public class TestXMLSerialization extends TestCase {
+    @Inject
+    protected TemplateSerializerService templateSerializerService;
 
     @Test
     public void testXMLSerialization() throws Exception {
@@ -66,11 +82,11 @@ public class TestXMLSerialization extends TestCase {
         input6.setType(InputType.Content);
         params.add(input6);
 
-        String xml = XMLSerializer.serialize(params);
+        String xml = templateSerializerService.serializeXML(params);
 
         // System.out.println(xml);
 
-        List<TemplateInput> params2 = XMLSerializer.readFromXml(xml);
+        List<TemplateInput> params2 = templateSerializerService.deserializeXML(xml);
         assertNotNull(params2);
         assertEquals(6, params2.size());
 
@@ -81,7 +97,7 @@ public class TestXMLSerialization extends TestCase {
 
         assertEquals("field2", params2.get(1).getName());
         assertEquals(InputType.DateValue, params2.get(1).getType());
-        SimpleDateFormat dateFormat = new SimpleDateFormat(XMLSerializer.DATE_FORMAT);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(XMLTemplateSerializer.DATE_FORMAT);
         assertEquals("2017-07-14 13:14:15.678", dateFormat.format(params2.get(1).getDateValue()));
 
         assertEquals("field3", params2.get(2).getName());

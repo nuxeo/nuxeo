@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dom4j.DocumentException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -42,7 +41,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.adapters.AbstractTemplateDocument;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessor;
@@ -50,6 +48,7 @@ import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.api.descriptor.OutputFormatDescriptor;
+import org.nuxeo.template.serializer.service.TemplateSerializerService;
 
 /**
  * Default implementation of {@link TemplateBasedDocument} adapter. This adapter mainly expect from the underlying
@@ -354,8 +353,8 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         if (binding != null) {
             String xml = binding.getData();
             try {
-                return XMLSerializer.readFromXml(xml);
-            } catch (DocumentException e) {
+                return Framework.getService(TemplateSerializerService.class).deserializeXML(xml);
+            } catch (NuxeoException e) {
                 log.error("Unable to parse parameters", e);
                 return new ArrayList<>();
             }

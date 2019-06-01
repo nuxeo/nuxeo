@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.template.serializer.service.TemplateSerializerService">
+
+  <implementation class="org.nuxeo.template.serializer.service.TemplateSerializerServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.template.serializer.service.TemplateSerializerService" />
+  </service>
+
+  <extension-point name="serializers">
+    <documentation>Contribute a new Serializer that can be use by the TemplateProcessor.Render operation</documentation>
+    <object class="org.nuxeo.template.serializer.service.SerializerDescriptor" />
+  </extension-point>
+
+</component>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.template.serializer.SerializerService.default.contribution">
+
+  <extension target="org.nuxeo.template.serializer.service.TemplateSerializerService" point="serializers">
+    <serializer name="default" class="org.nuxeo.template.serializer.executors.XMLTemplateSerializer" />
+    <serializer name="xml" class="org.nuxeo.template.serializer.executors.XMLTemplateSerializer" />
+  </extension>
+
+</component>

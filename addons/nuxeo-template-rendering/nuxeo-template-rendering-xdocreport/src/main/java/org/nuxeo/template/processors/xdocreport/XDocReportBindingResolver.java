@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.template.processors.AbstractBindingResolver;
@@ -35,6 +37,8 @@ import freemarker.template.TemplateModelException;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class XDocReportBindingResolver extends AbstractBindingResolver {
+
+    private static final Logger log = LogManager.getLogger(XDocReportBindingResolver.class);
 
     protected final FieldsMetadata metadata;
 

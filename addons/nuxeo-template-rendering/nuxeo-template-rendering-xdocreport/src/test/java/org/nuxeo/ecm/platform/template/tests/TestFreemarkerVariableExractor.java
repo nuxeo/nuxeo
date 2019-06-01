@@ -27,10 +27,11 @@ import java.util.List;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.processors.xdocreport.XDocReportProcessor;
+import org.nuxeo.template.serializer.service.TemplateSerializerService;
 
 public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
 
@@ -61,13 +62,13 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
             assertTrue(found);
         }
 
-        String xmlParams = XMLSerializer.serialize(inputs);
+        String xmlParams = Framework.getService(TemplateSerializerService.class).serializeXML(inputs);
 
         for (TemplateInput input : inputs) {
             assertTrue(xmlParams.contains("name=\"" + input.getName() + "\""));
         }
 
-        List<TemplateInput> inputs2 = XMLSerializer.readFromXml(xmlParams);
+        List<TemplateInput> inputs2 = Framework.getService(TemplateSerializerService.class).deserializeXML(xmlParams);
 
         assertEquals(inputs.size(), inputs2.size());
         for (TemplateInput input : inputs) {
@@ -103,13 +104,13 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
             assertTrue(found);
         }
 
-        String xmlParams = XMLSerializer.serialize(inputs);
+        String xmlParams = Framework.getService(TemplateSerializerService.class).serializeXML(inputs);
 
         for (TemplateInput input : inputs) {
             assertTrue(xmlParams.contains("name=\"" + input.getName() + "\""));
         }
 
-        List<TemplateInput> inputs2 = XMLSerializer.readFromXml(xmlParams);
+        List<TemplateInput> inputs2 = Framework.getService(TemplateSerializerService.class).deserializeXML(xmlParams);
 
         assertEquals(inputs.size(), inputs2.size());
         for (TemplateInput input : inputs) {

@@ -23,8 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.template.XMLSerializer;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.serializer.service.TemplateSerializerService;
 
 public class TemplateBinding {
 
@@ -83,7 +84,7 @@ public class TemplateBinding {
     }
 
     public void setData(List<TemplateInput> params) {
-        String xml = XMLSerializer.serialize(params);
+        String xml = Framework.getService(TemplateSerializerService.class).serializeXML(params);
         setData(xml);
     }
 
