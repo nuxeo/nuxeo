@@ -1,0 +1,448 @@
+package org.nuxeo.template.processors.fm;
+
+import freemarker.template.SimpleScalar;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.schema.types.AnyType;
+import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.mockito.MockitoFeature;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.template.api.ContainerTemplateInput;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+import static org.nuxeo.template.processors.fm.TemplateInputUtils.*;
+
+public class TestFMBindingResolver extends TestFMBindingAbstract {
+
+    @Test
+    public void whenParamIsContentAndSourceHTMLPreviewPropValue_shouldAddHTMLPreviewInContext() throws IOException {
+        definePropertyInDoc(doc, "file:content", new StringBlob("<h1>Hello<h1> wolrd !", "text/html"));
+
+        TemplateInput param = createContentTemplateInput("myHtmlPreview", "htmlPreview");
+        inputParam.add(param);
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertEquals("<h1>Hello<h1> wolrd !", ctx.get("myHtmlPreview"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(1)).handleHtmlField(any(), any());
+    }
+
+    @Test
+    public void whenParamIsContentAndSourceBlobContentPropValue_shouldAddContentInContext() {
+        definePropertyInDoc(doc, "blobContent", new StringBlob("Hello buddies !"));
+
+        TemplateInput param = createContentTemplateInput("myContent", "blobContent");
+        inputParam.add(param);
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("myContent"));
+        assertEquals("Hello buddies !", ctx.get("myContent"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(1)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+    }
+
+    @Test
+    public void whenParamIsContentAndSourceDocPropValueAndValueIsString_shouldAddStringCleaningHTMLIntroduction() {
+        definePropertyInDoc(doc, "my:field", "<html><body>Boring to say hello everytime !</body></html>");
+
+        inputParam.add(createContentTemplateInput("stringFieldInSource", "my:field"));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("stringFieldInSource"));
+        assertEquals("Boring to say hello everytime !", ctx.get("stringFieldInSource"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(1)).handleHtmlField(any(), any());
+    }
+
+    @Test
+    public void whenParamIsPicturePropertyAndSourceDocPropIsBlob_shouldAddNullAsNotManaged() {
+        definePropertyInDoc(doc, "my:field", new StringBlob("This is a picture", "image/png"));
+
+        inputParam.add(createPicturePropertyTemplateProperty("pictureFieldInSource", "my:picture"));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("pictureFieldInSource"));
+        assertNull(ctx.get("pictureFieldInSource"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(1)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+    }
+
+    @Test
+    public void whenParamIsPicturePropertyAndSourceDocPropIsBlobWithoutMimeType_shouldAddNullAsNotManaged() {
+        Blob blob = spy(new StringBlob("This is a picture", null));
+        definePropertyInDoc(doc, "my:picture", blob);
+
+        inputParam.add(createPicturePropertyTemplateProperty("pictureFieldInSource", "my:picture"));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("pictureFieldInSource"));
+        assertNull(ctx.get("pictureFieldInSource"));
+
+        verify(blob, times(1)).setMimeType("image/jpeg");
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(1)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+    }
+
+    @Test
+    public void whenParamIsPicturePropertyAndSourceDocPropIsBlobAndAutoLoop_shouldAddWrappedValue() {
+        definePropertyInDoc(doc, "my:loop", "Value that can be anything (eventually a loop)");
+
+        inputParam.add(createPicturePropertyTemplateProperty("loopInSource", "my:loop", true));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("loopInSource"));
+        assertTrue(ctx.get("loopInSource") instanceof SimpleScalar);
+        assertEquals("Value that can be anything (eventually a loop)", ((SimpleScalar) ctx.get("loopInSource")).getAsString());
+
+        verify(resolver, times(1)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsPicturePropertyAndSourceDocPropIsNull_shouldAddWrappedValue() {
+        definePropertyInDoc(doc, "my:loop", null, AnyType.INSTANCE);
+
+        inputParam.add(createPicturePropertyTemplateProperty("loopInSource", "my:loop", true));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("loopInSource"));
+        assertNull(ctx.get("loopInSource"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(1)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsPicturePropertyAndSourceDocPropNotBlob_shouldAddWrappedValue() {
+        definePropertyInDoc(doc, "my:field", "Should be wrapped");
+
+        inputParam.add(createPicturePropertyTemplateProperty("pictureNotBlob", "my:field"));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("pictureNotBlob"));
+        assertTrue(ctx.get("pictureNotBlob") instanceof SimpleScalar);
+        assertEquals("Should be wrapped", ((SimpleScalar) ctx.get("pictureNotBlob")).getAsString());
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsDocumentPropertyAndSourceDocPropIsBlob_shouldAddWrappedValue() {
+        definePropertyInDoc(doc, "my:field", new StringBlob("Should be wrapped"));
+
+        inputParam.add(createDocumentPropertyTemplateInput("docPropertyBlob", "my:field"));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(0, ctx.size());
+        // Should be that ?? at least or BlobWrapped ?
+//        assertEquals(1, ctx.size());
+//        assertTrue(ctx.containsKey("docPropertyBlob"));
+//        assertEquals("String", ctx.get("docPropertyBlob").getClass().getSimpleName());
+//        assertEquals("", ctx.get("docPropertyBlob"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsDocumentPropertyAndSourceDocPropIsNotBlob_shouldAddNullAsNotManaged() {
+        definePropertyInDoc(doc, "my:field", "Should be wrapped");
+
+        inputParam.add(createDocumentPropertyTemplateInput("docPropertyNotBlob", "my:field"));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("docPropertyNotBlob"));
+        assertTrue(ctx.get("docPropertyNotBlob") instanceof SimpleScalar);
+        assertEquals("Should be wrapped", ((SimpleScalar) ctx.get("docPropertyNotBlob")).getAsString());
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsDocumentPropertyAndSourceDocPropIsBlobAndAutoLoop_shouldAddWrappedValue() {
+        definePropertyInDoc(doc, "my:loop", "Value that can be anything (eventually a loop)");
+
+        inputParam.add(createDocumentPropertyTemplateInput("loopInSource", "my:loop", true));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("loopInSource"));
+        assertTrue(ctx.get("loopInSource") instanceof SimpleScalar);
+        assertEquals("Value that can be anything (eventually a loop)", ((SimpleScalar) ctx.get("loopInSource")).getAsString());
+
+        verify(resolver, times(1)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsDocumentPropertyAndSourceDocPropBooleanNotSet_shouldAddFalseAsDefault() {
+        definePropertyInDoc(doc, "my:field", null, BooleanType.INSTANCE);
+
+        inputParam.add(createDocumentPropertyTemplateInput("defaultBoolean", "my:field"));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("defaultBoolean"));
+        assertEquals(Boolean.FALSE, ctx.get("defaultBoolean"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsDocumentPropertyAndSourceDocPropDateNotSet_shouldAddCurrentDateAsDefault() throws InterruptedException {
+        Date beforeTestExecution = new Date();
+
+        definePropertyInDoc(doc, "my:field", null, DateType.INSTANCE);
+
+        inputParam.add(createDocumentPropertyTemplateInput("defaultDate", "my:field"));
+
+        Thread.sleep(1);
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+        Thread.sleep(1);
+
+        Date afterTestExecution = new Date();
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("defaultDate"));
+        assertTrue(ctx.get("defaultDate") instanceof Date);
+
+        Date actualDate = (Date) ctx.get("defaultDate");
+
+        System.out.println("****** before: " + beforeTestExecution.getTime());
+        System.out.println("****** result: " + actualDate.getTime());
+        System.out.println("****** after: " + afterTestExecution.getTime());
+
+        assertTrue(beforeTestExecution.before(actualDate));
+        assertTrue(afterTestExecution.after(actualDate));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsDocumentPropertyAndSourceDocPropStringNotSet_shouldAddEmptyStringAsDefault() {
+        definePropertyInDoc(doc, "my:field", null, StringType.INSTANCE);
+
+        inputParam.add(createDocumentPropertyTemplateInput("defaultString", "my:field"));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("defaultString"));
+        assertEquals("", ctx.get("defaultString"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsDocumentPropertyAndSourceDocPropBlobNotSet_shouldAddEmptyStringAsDefault() {
+        definePropertyInDoc(doc, "my:field", (Blob) null);
+
+        inputParam.add(createDocumentPropertyTemplateInput("defaultBlob", "my:field"));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("defaultBlob"));
+        assertEquals("", ctx.get("defaultBlob"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsDocumentPropertyAndSourceDocPropUnknownNotSet_shouldAddNOVALUEStringAsDefault() {
+        definePropertyInDoc(doc, "my:field", null, AnyType.INSTANCE);
+
+        inputParam.add(createDocumentPropertyTemplateInput("defaultUnknownType", "my:field"));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("defaultUnknownType"));
+        assertEquals("!NOVALUE!", ctx.get("defaultUnknownType"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsDocumentPropertyAndSourceDocPropNotInType_shouldAddNothing() {
+        when(doc.getProperty("my:fieldThatNotExists")).thenThrow(new PropertyException());
+        when(doc.getPropertyValue("my:fieldThatNotExists")).thenThrow(new PropertyException());
+
+        inputParam.add(createDocumentPropertyTemplateInput("fieldNameNotExistingInType", "my:fieldThatNotExists"));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(0, ctx.size());
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsString_shouldAddStringValue() {
+        when(doc.getProperty(any())).thenThrow(new PropertyException());
+        when(doc.getPropertyValue(any())).thenThrow(new PropertyException());
+
+        inputParam.add(createStringTemplateInput("myString", "stringValue"));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("myString"));
+        assertEquals("stringValue", ctx.get("myString"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsBoolean_shouldAddBooleanValue() {
+        when(doc.getProperty(any())).thenThrow(new PropertyException());
+        when(doc.getPropertyValue(any())).thenThrow(new PropertyException());
+
+        inputParam.add(createBooleanTemplateInput("myTrueValue", Boolean.TRUE));
+        inputParam.add(createBooleanTemplateInput("myFalseValue", Boolean.FALSE));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(2, ctx.size());
+        assertTrue(ctx.containsKey("myTrueValue"));
+        assertTrue(ctx.containsKey("myFalseValue"));
+        assertEquals(true, ctx.get("myTrueValue"));
+        assertEquals(false, ctx.get("myFalseValue"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
+    public void whenParamIsDate_shouldAddDateValue() {
+        when(doc.getProperty(any())).thenThrow(new PropertyException());
+        when(doc.getPropertyValue(any())).thenThrow(new PropertyException());
+
+        Date date = new Date();
+        inputParam.add(createDateTemplateInput("myDateValue", date));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("myDateValue"));
+        assertEquals(date, ctx.get("myDateValue"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(0)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+
+
+
+}
