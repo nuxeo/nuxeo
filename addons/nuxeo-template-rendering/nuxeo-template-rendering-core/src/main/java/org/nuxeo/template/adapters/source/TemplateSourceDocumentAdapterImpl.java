@@ -25,20 +25,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.dom4j.DocumentException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.adapters.AbstractTemplateDocument;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
+import org.nuxeo.template.serializer.service.TemplateSerializerService;
 
 /**
  * Default implementation of {@link TemplateSourceDocument}. It mainly expect from the underlying DocumentModel to have
@@ -99,8 +98,8 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
         String xml = adaptedDoc.getPropertyValue(dataPath).toString();
 
         try {
-            return XMLSerializer.readFromXml(xml);
-        } catch (DocumentException e) {
+            return Framework.getService(TemplateSerializerService.class).deserializeXML(xml);
+        } catch (NuxeoException e) {
             log.error("Unable to parse parameters", e);
             return new ArrayList<>();
         }
@@ -119,7 +118,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
     @Override
     public DocumentModel saveParams(List<TemplateInput> params, boolean save) {
         String dataPath = getTemplateParamsXPath();
-        String xml = XMLSerializer.serialize(params);
+        String xml = Framework.getService(TemplateSerializerService.class).serializeXML(params);
         adaptedDoc.setPropertyValue(dataPath, xml);
         adaptedDoc.putContextData(TemplateSourceDocument.INIT_DONE_FLAG, true);
         if (save) {
