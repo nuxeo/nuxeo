@@ -32,13 +32,14 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.adapters.AbstractTemplateDocument;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
+import org.nuxeo.template.serializer.executors.Serializer;
+import org.nuxeo.template.serializer.service.SerializerService;
 
 /**
  * Default implementation of {@link TemplateSourceDocument}. It mainly expect from the underlying DocumentModel to have
@@ -81,6 +82,15 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
 
     private static final long serialVersionUID = 1L;
 
+    protected Serializer serializer;
+
+    public Serializer getSerializer() {
+        if (serializer == null) {
+            serializer = Framework.getService(SerializerService.class).getSerializer("xml");
+        }
+        return serializer;
+    }
+
     public TemplateSourceDocumentAdapterImpl(DocumentModel doc) {
         this.adaptedDoc = doc;
     }
@@ -99,7 +109,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
         String xml = adaptedDoc.getPropertyValue(dataPath).toString();
 
         try {
-            return XMLSerializer.readFromXml(xml);
+            return getSerializer().doDeserialization(xml);
         } catch (DocumentException e) {
             log.error("Unable to parse parameters", e);
             return new ArrayList<>();
@@ -119,7 +129,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
     @Override
     public DocumentModel saveParams(List<TemplateInput> params, boolean save) {
         String dataPath = getTemplateParamsXPath();
-        String xml = XMLSerializer.serialize(params);
+        String xml = getSerializer().doSerialization(params);
         adaptedDoc.setPropertyValue(dataPath, xml);
         adaptedDoc.putContextData(TemplateSourceDocument.INIT_DONE_FLAG, true);
         if (save) {

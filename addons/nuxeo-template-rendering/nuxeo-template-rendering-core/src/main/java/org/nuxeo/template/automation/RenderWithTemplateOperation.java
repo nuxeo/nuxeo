@@ -25,17 +25,17 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.adapters.doc.TemplateBindings;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.serializer.executors.Serializer;
+import org.nuxeo.template.serializer.service.SerializerService;
 
 import java.util.List;
 
@@ -67,6 +67,18 @@ public class RenderWithTemplateOperation {
     @Param(name = "templateData", required = false)
     protected String templateData = null;
 
+    @Param(name = "serializer", required = false)
+    protected String serializerName;
+
+    protected Serializer serializer;
+
+    public Serializer getSerializer() {
+        if (serializer == null) {
+            serializer = Framework.getService(SerializerService.class).getSerializer(serializerName);
+        }
+        return serializer;
+    }
+
     @OperationMethod
     public Blob run(DocumentModel targetDocument) {
         TemplateBasedDocument renderable = targetDocument.getAdapter(TemplateBasedDocument.class);
@@ -81,7 +93,7 @@ public class RenderWithTemplateOperation {
             if (templateData != null) {
                 List<TemplateInput> params;
                 try {
-                    params = XMLSerializer.readFromXml(templateData);
+                    params = getSerializer().doDeserialization(templateData);
                 } catch (DocumentException e) {
                     throw new NuxeoException(e.getMessage(), e);
                 }

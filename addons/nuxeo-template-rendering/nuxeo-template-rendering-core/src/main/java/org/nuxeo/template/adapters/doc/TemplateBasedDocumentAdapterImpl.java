@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.adapters.AbstractTemplateDocument;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessor;
@@ -50,6 +49,8 @@ import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.api.descriptor.OutputFormatDescriptor;
+import org.nuxeo.template.serializer.executors.Serializer;
+import org.nuxeo.template.serializer.service.SerializerService;
 
 /**
  * Default implementation of {@link TemplateBasedDocument} adapter. This adapter mainly expect from the underlying
@@ -67,6 +68,15 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
     public static final String TEMPLATEBASED_FACET = "TemplateBased";
 
     protected final TemplateBindings bindings;
+
+    protected Serializer serializer;
+
+    public Serializer getSerializer() {
+        if (serializer == null) {
+            serializer = Framework.getService(SerializerService.class).getSerializer("xml");
+        }
+        return serializer;
+    }
 
     public TemplateBasedDocumentAdapterImpl(DocumentModel doc) {
         adaptedDoc = doc;
@@ -354,7 +364,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         if (binding != null) {
             String xml = binding.getData();
             try {
-                return XMLSerializer.readFromXml(xml);
+                return getSerializer().doDeserialization(xml);
             } catch (DocumentException e) {
                 log.error("Unable to parse parameters", e);
                 return new ArrayList<>();

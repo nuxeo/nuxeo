@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class XMLSerializer implements Serializer {
 
-    protected static final Log log = LogFactory.getLog(org.nuxeo.template.XMLSerializer.class);
+    protected static final Log log = LogFactory.getLog(XMLSerializer.class);
 
     public static final String XML_NAMESPACE = "http://www.nuxeo.org/DocumentTemplate";
 

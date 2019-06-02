@@ -24,15 +24,28 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.processors.xdocreport.XDocReportProcessor;
+import org.nuxeo.template.serializer.executors.Serializer;
+import org.nuxeo.template.serializer.service.SerializerService;
 
 public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
+
+
+    protected Serializer serializer;
+
+    public Serializer getService() {
+        if (serializer == null) {
+            serializer = Framework.getService(SerializerService.class).getSerializer("xml");
+        }
+        return serializer;
+    }
 
     @Override
     protected void setUp() throws Exception {
@@ -61,13 +74,13 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
             assertTrue(found);
         }
 
-        String xmlParams = XMLSerializer.serialize(inputs);
+        String xmlParams = getService().doSerialization(inputs);
 
         for (TemplateInput input : inputs) {
             assertTrue(xmlParams.contains("name=\"" + input.getName() + "\""));
         }
 
-        List<TemplateInput> inputs2 = XMLSerializer.readFromXml(xmlParams);
+        List<TemplateInput> inputs2 = getService().doDeserialization(xmlParams);
 
         assertEquals(inputs.size(), inputs2.size());
         for (TemplateInput input : inputs) {
@@ -89,7 +102,7 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
 
         List<TemplateInput> inputs = processor.getInitialParametersDefinition(Blobs.createBlob(file));
 
-        String[] expectedVars = new String[] { "StringVar", "DateVar", "Description", "BooleanVar" };
+        String[] expectedVars = new String[]{"StringVar", "DateVar", "Description", "BooleanVar"};
 
         assertEquals(expectedVars.length, inputs.size());
         for (String expected : expectedVars) {
@@ -103,13 +116,13 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
             assertTrue(found);
         }
 
-        String xmlParams = XMLSerializer.serialize(inputs);
+        String xmlParams = getService().doSerialization(inputs);
 
         for (TemplateInput input : inputs) {
             assertTrue(xmlParams.contains("name=\"" + input.getName() + "\""));
         }
 
-        List<TemplateInput> inputs2 = XMLSerializer.readFromXml(xmlParams);
+        List<TemplateInput> inputs2 = getService().doDeserialization(xmlParams);
 
         assertEquals(inputs.size(), inputs2.size());
         for (TemplateInput input : inputs) {
