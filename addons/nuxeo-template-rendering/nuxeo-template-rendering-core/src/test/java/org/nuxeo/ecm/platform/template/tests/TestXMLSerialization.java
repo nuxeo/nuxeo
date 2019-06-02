@@ -27,14 +27,28 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.junit.Test;
-import org.nuxeo.template.XMLSerializer;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.serializer.service.SerializerService;
+import org.nuxeo.template.serializer.executors.Serializer;
+import org.nuxeo.template.serializer.executors.XMLSerializer;
 
+@RunWith(FeaturesRunner.class)
+@Features({CoreFeature.class})
+@Deploy("org.nuxeo.template.manager:OSGI-INF/serializer-service.xml")
+@Deploy("org.nuxeo.template.manager:OSGI-INF/serializer-service-contribution.xml")
 public class TestXMLSerialization extends TestCase {
 
     @Test
     public void testXMLSerialization() throws Exception {
+
+        Serializer xmlSerializer = Framework.getService(SerializerService.class).getSerializer("xml");
 
         List<TemplateInput> params = new ArrayList<>();
 
@@ -66,11 +80,11 @@ public class TestXMLSerialization extends TestCase {
         input6.setType(InputType.Content);
         params.add(input6);
 
-        String xml = XMLSerializer.serialize(params);
+        String xml = xmlSerializer.doSerialization(params);
 
         // System.out.println(xml);
 
-        List<TemplateInput> params2 = XMLSerializer.readFromXml(xml);
+        List<TemplateInput> params2 = xmlSerializer.doDeserialization(xml);
         assertNotNull(params2);
         assertEquals(6, params2.size());
 

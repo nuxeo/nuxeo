@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 @RunWith(FeaturesRunner.class)
 @Features({MockitoFeature.class})
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-public class TestFMBindingAbstract {
+public abstract class TestFMBindingAbstract {
     protected List<TemplateInput> inputParam;
     protected Map<String, Object> ctx;
 
