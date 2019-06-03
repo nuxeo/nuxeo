@@ -10,10 +10,8 @@ import org.nuxeo.template.api.TemplateInput;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.nuxeo.template.api.InputType.StringValue;
 
@@ -130,42 +128,60 @@ public class XMLSerializer implements Serializer {
     public String doSerialization(List<TemplateInput> params) {
         Element root = DocumentFactory.getInstance().createElement(fieldsTag);
 
-        for (TemplateInput input : params) {
-
+        for (TemplateInput param : params) {
             Element field = root.addElement(fieldTag);
-
-            field.addAttribute("name", input.getName());
-
-            InputType type = input.getType();
-            if (type != null) {
-                field.addAttribute("type", type.getValue());
-            } else {
-                log.warn(input.getName() + " is null");
-            }
-
-            if (input.isReadOnly()) {
-                field.addAttribute("readonly", "true");
-            }
-
-            if (input.isAutoLoop()) {
-                field.addAttribute("autoloop", "true");
-            }
-
-            if (StringValue.equals(type)) {
-                field.addAttribute("value", input.getStringValue());
-            } else if (InputType.DateValue.equals(type)) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-                field.addAttribute("value", dateFormat.format(input.getDateValue()));
-            } else if (InputType.BooleanValue.equals(type)) {
-                field.addAttribute("value", input.getBooleanValue().toString());
-            } else {
-                field.addAttribute("source", input.getSource());
-            }
-
-            if (input.getDesciption() != null) {
-                field.setText(input.getDesciption());
+            try {
+                doSerialization(field, param);
+            } catch (TemplateInputBadFormat e) {
+                log.error("Can't Serialize the following param: " + param);
+                root.remove(field);
             }
         }
         return root.asXML();
+    }
+
+    protected void doSerialization(Element field, TemplateInput param) throws TemplateInputBadFormat {
+
+        field.addAttribute("name", param.getName());
+
+        InputType type = param.getType();
+
+        if (type == null) {
+            if (param.getStringValue() == null) {
+                log.warn(param.getName() + " is null");
+                throw new TemplateInputBadFormat();
+            } else
+                type = StringValue;
+        }
+
+        field.addAttribute("type", type.getValue());
+        if (param.isReadOnly()) {
+            field.addAttribute("readonly", "true");
+        }
+        if (param.isAutoLoop()) {
+            field.addAttribute("autoloop", "true");
+        }
+        if (param.getDesciption() != null) {
+            field.setText(param.getDesciption());
+        }
+
+        switch (type) {
+            case StringValue:
+                field.addAttribute("value", param.getStringValue());
+                break;
+            case DateValue:
+                SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+                field.addAttribute("value", dateFormat.format(param.getDateValue()));
+                break;
+            case BooleanValue:
+                field.addAttribute("value", param.getBooleanValue().toString());
+            case DocumentProperty:
+            case PictureProperty:
+            case Content:
+                field.addAttribute("source", param.getSource());
+        }
+    }
+
+    private class TemplateInputBadFormat extends Throwable {
     }
 }
