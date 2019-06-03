@@ -247,8 +247,35 @@ public class TestNXQLQueryBuilder {
         assertEquals("SELECT * FROM Document WHERE dc:title = 'test' OR dc:title = :titleLonger", replacedPattern3);
         assertEquals("SELECT * FROM Document WHERE dc:title = :titleLongest OR dc:title = 'test' OR dc:title = :titleLonger", replacedPattern4);
         assertEquals("SELECT * FROM Document WHERE dc:title = :titleLonger OR dc:title = 'test'", replacedPattern5);
-
     }
 
+    @Test
+    public void shouldSupportNotLikeOperator() {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        assertNotNull(pps);
+        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
 
+        PageProviderDefinition pp = pps.getPageProviderDefinition("DUMMY_NOT_LIKE_PP");
+        WhereClauseDefinition wcd = pp.getWhereClause();
+        String omit = NXQLQueryBuilder.getQuery(model, wcd,null);
+        PredicateDefinition[] predicates = pp.getWhereClause().getPredicates();
+        assertEquals(1, predicates.length);
+        PredicateDefinition predicate = predicates[0];
+        assertEquals("NOT LIKE", predicate.getOperator());
+    }
+
+    @Test
+    public void shouldSupportNotILikeOperator() {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        assertNotNull(pps);
+        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+
+        PageProviderDefinition pp = pps.getPageProviderDefinition("DUMMY_NOT_ILIKE_PP");
+        WhereClauseDefinition wcd = pp.getWhereClause();
+        String omit = NXQLQueryBuilder.getQuery(model, wcd,null);
+        PredicateDefinition[] predicates = pp.getWhereClause().getPredicates();
+        assertEquals(1, predicates.length);
+        PredicateDefinition predicate = predicates[0];
+        assertEquals("NOT ILIKE", predicate.getOperator());
+    }
 }
