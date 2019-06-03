@@ -17,15 +17,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.mockito.MockitoFeature;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.template.api.ContainerTemplateInput;
 import org.nuxeo.template.api.TemplateInput;
-import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,7 +26,7 @@ import java.util.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.nuxeo.template.processors.fm.TemplateInputUtils.*;
+import static org.nuxeo.template.api.InputType.*;
 
 public class TestFMBindingResolver extends TestFMBindingAbstract {
 
@@ -42,7 +34,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsContentAndSourceHTMLPreviewPropValue_shouldAddHTMLPreviewInContext() throws IOException {
         definePropertyInDoc(doc, "file:content", new StringBlob("<h1>Hello<h1> wolrd !", "text/html"));
 
-        TemplateInput param = createContentTemplateInput("myHtmlPreview", "htmlPreview");
+        TemplateInput param = TemplateInput.factory("myHtmlPreview", Content, "htmlPreview");
         inputParam.add(param);
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -59,7 +51,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsContentAndSourceBlobContentPropValue_shouldAddContentInContext() {
         definePropertyInDoc(doc, "blobContent", new StringBlob("Hello buddies !"));
 
-        TemplateInput param = createContentTemplateInput("myContent", "blobContent");
+        TemplateInput param = TemplateInput.factory("myContent", Content,"blobContent");
         inputParam.add(param);
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -77,7 +69,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsContentAndSourceDocPropValueAndValueIsString_shouldAddStringCleaningHTMLIntroduction() {
         definePropertyInDoc(doc, "my:field", "<html><body>Boring to say hello everytime !</body></html>");
 
-        inputParam.add(createContentTemplateInput("stringFieldInSource", "my:field"));
+        inputParam.add(TemplateInput.factory("stringFieldInSource", Content,"my:field"));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -95,7 +87,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsPicturePropertyAndSourceDocPropIsBlob_shouldAddNullAsNotManaged() {
         definePropertyInDoc(doc, "my:field", new StringBlob("This is a picture", "image/png"));
 
-        inputParam.add(createPicturePropertyTemplateProperty("pictureFieldInSource", "my:picture"));
+        inputParam.add(TemplateInput.factory("pictureFieldInSource", PictureProperty, "my:picture"));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -114,7 +106,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
         Blob blob = spy(new StringBlob("This is a picture", null));
         definePropertyInDoc(doc, "my:picture", blob);
 
-        inputParam.add(createPicturePropertyTemplateProperty("pictureFieldInSource", "my:picture"));
+        inputParam.add(TemplateInput.factory("pictureFieldInSource", PictureProperty, "my:picture"));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -133,7 +125,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsPicturePropertyAndSourceDocPropIsBlobAndAutoLoop_shouldAddWrappedValue() {
         definePropertyInDoc(doc, "my:loop", "Value that can be anything (eventually a loop)");
 
-        inputParam.add(createPicturePropertyTemplateProperty("loopInSource", "my:loop", true));
+        inputParam.add(TemplateInput.factory("loopInSource", PictureProperty, "my:loop", null, false, true));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -153,7 +145,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsPicturePropertyAndSourceDocPropIsNull_shouldAddWrappedValue() {
         definePropertyInDoc(doc, "my:loop", null, AnyType.INSTANCE);
 
-        inputParam.add(createPicturePropertyTemplateProperty("loopInSource", "my:loop", true));
+        inputParam.add(TemplateInput.factory("loopInSource", PictureProperty, "my:loop", null, false, true));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -172,7 +164,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsPicturePropertyAndSourceDocPropNotBlob_shouldAddWrappedValue() {
         definePropertyInDoc(doc, "my:field", "Should be wrapped");
 
-        inputParam.add(createPicturePropertyTemplateProperty("pictureNotBlob", "my:field"));
+        inputParam.add(TemplateInput.factory("pictureNotBlob", PictureProperty, "my:field"));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -192,7 +184,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsDocumentPropertyAndSourceDocPropIsBlob_shouldAddWrappedValue() {
         definePropertyInDoc(doc, "my:field", new StringBlob("Should be wrapped"));
 
-        inputParam.add(createDocumentPropertyTemplateInput("docPropertyBlob", "my:field"));
+        inputParam.add(TemplateInput.factory("docPropertyBlob", DocumentProperty, "my:field"));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -214,7 +206,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsDocumentPropertyAndSourceDocPropIsNotBlob_shouldAddNullAsNotManaged() {
         definePropertyInDoc(doc, "my:field", "Should be wrapped");
 
-        inputParam.add(createDocumentPropertyTemplateInput("docPropertyNotBlob", "my:field"));
+        inputParam.add(TemplateInput.factory("docPropertyNotBlob", DocumentProperty, "my:field"));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -234,7 +226,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsDocumentPropertyAndSourceDocPropIsBlobAndAutoLoop_shouldAddWrappedValue() {
         definePropertyInDoc(doc, "my:loop", "Value that can be anything (eventually a loop)");
 
-        inputParam.add(createDocumentPropertyTemplateInput("loopInSource", "my:loop", true));
+        inputParam.add(TemplateInput.factory("loopInSource", DocumentProperty, "my:loop", null, false, true));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -254,7 +246,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsDocumentPropertyAndSourceDocPropBooleanNotSet_shouldAddFalseAsDefault() {
         definePropertyInDoc(doc, "my:field", null, BooleanType.INSTANCE);
 
-        inputParam.add(createDocumentPropertyTemplateInput("defaultBoolean", "my:field"));
+        inputParam.add(TemplateInput.factory("defaultBoolean", DocumentProperty, "my:field"));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -275,7 +267,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
 
         definePropertyInDoc(doc, "my:field", null, DateType.INSTANCE);
 
-        inputParam.add(createDocumentPropertyTemplateInput("defaultDate", "my:field"));
+        inputParam.add(TemplateInput.factory("defaultDate", DocumentProperty, "my:field"));
 
         Thread.sleep(1);
         resolver.resolve(inputParam, ctx, templateBasedDoc);
@@ -307,7 +299,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsDocumentPropertyAndSourceDocPropStringNotSet_shouldAddEmptyStringAsDefault() {
         definePropertyInDoc(doc, "my:field", null, StringType.INSTANCE);
 
-        inputParam.add(createDocumentPropertyTemplateInput("defaultString", "my:field"));
+        inputParam.add(TemplateInput.factory("defaultString", DocumentProperty, "my:field"));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -326,7 +318,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsDocumentPropertyAndSourceDocPropBlobNotSet_shouldAddEmptyStringAsDefault() {
         definePropertyInDoc(doc, "my:field", (Blob) null);
 
-        inputParam.add(createDocumentPropertyTemplateInput("defaultBlob", "my:field"));
+        inputParam.add(TemplateInput.factory("defaultBlob", DocumentProperty, "my:field"));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -345,7 +337,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     public void whenParamIsDocumentPropertyAndSourceDocPropUnknownNotSet_shouldAddNOVALUEStringAsDefault() {
         definePropertyInDoc(doc, "my:field", null, AnyType.INSTANCE);
 
-        inputParam.add(createDocumentPropertyTemplateInput("defaultUnknownType", "my:field"));
+        inputParam.add(TemplateInput.factory("defaultUnknownType", DocumentProperty, "my:field"));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -365,7 +357,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
         when(doc.getProperty("my:fieldThatNotExists")).thenThrow(new PropertyException());
         when(doc.getPropertyValue("my:fieldThatNotExists")).thenThrow(new PropertyException());
 
-        inputParam.add(createDocumentPropertyTemplateInput("fieldNameNotExistingInType", "my:fieldThatNotExists"));
+        inputParam.add(TemplateInput.factory("fieldNameNotExistingInType", DocumentProperty, "my:fieldThatNotExists"));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -383,7 +375,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
         when(doc.getProperty(any())).thenThrow(new PropertyException());
         when(doc.getPropertyValue(any())).thenThrow(new PropertyException());
 
-        inputParam.add(createStringTemplateInput("myString", "stringValue"));
+        inputParam.add(TemplateInput.factory("myString", StringValue, "stringValue"));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -403,8 +395,8 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
         when(doc.getProperty(any())).thenThrow(new PropertyException());
         when(doc.getPropertyValue(any())).thenThrow(new PropertyException());
 
-        inputParam.add(createBooleanTemplateInput("myTrueValue", Boolean.TRUE));
-        inputParam.add(createBooleanTemplateInput("myFalseValue", Boolean.FALSE));
+        inputParam.add(TemplateInput.factory("myTrueValue", BooleanValue, Boolean.TRUE));
+        inputParam.add(TemplateInput.factory("myFalseValue", BooleanValue, Boolean.FALSE));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 
@@ -427,7 +419,7 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
         when(doc.getPropertyValue(any())).thenThrow(new PropertyException());
 
         Date date = new Date();
-        inputParam.add(createDateTemplateInput("myDateValue", date));
+        inputParam.add(TemplateInput.factory("myDateValue", DateValue, date));
 
         resolver.resolve(inputParam, ctx, templateBasedDoc);
 

@@ -2,6 +2,10 @@ package org.nuxeo.template;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.template.api.InputType.ListValue;
+import static org.nuxeo.template.api.InputType.MapValue;
+import static org.nuxeo.template.api.InputType.StringValue;
+import static org.nuxeo.template.api.TemplateInput.factory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +17,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -22,11 +25,11 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
-import org.nuxeo.template.processors.fm.TemplateInputUtils;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -48,13 +51,8 @@ public class TestTemplateRenderingService {
 
     protected static final String WEBVIEW_RENDITION = "webView";
 
-    protected static final String JOE_USERNAME = "joe";
-
     @Inject
     protected CoreSession session;
-
-    @Inject
-    protected AutomationService automationService;
 
     @Inject
     TemplateProcessorService tps;
@@ -98,16 +96,143 @@ public class TestTemplateRenderingService {
     }
 
     @Test
-    public void whenTemplateWithParamFromGivenInputTemplate_String_shouldRenderBlobAsIt() throws IOException {
+    public void whenTemplateWithGivenInputTemplate_String_shouldRenderBlobAsIt() throws IOException {
         TemplateSourceDocument templateSrc = createTemplateSourceDoc("We are introducing ${myStringInCtxt} !", WEBVIEW_RENDITION);
         TemplateBasedDocument templateBase = createTemplateBasedDoc(templateSrc.getAdaptedDoc());
-        List<TemplateInput> params = Arrays.asList(TemplateInputUtils.createStringTemplateInput("myStringInCtxt", "Beautiful String"));
+        List<TemplateInput> params = List.of(
+                factory("myStringInCtxt", StringValue, "Beautiful String")
+        );
         templateBase.saveParams(TEMPLATE_NAME, params, true);
 
         Blob result = templateBase.renderWithTemplate(TEMPLATE_NAME);
         assertNotNull(result);
         assertEquals("We are introducing Beautiful String !", result.getString());
     }
+
+    @Test
+    public void whenTemplateWithGivenInputTemplate_ListString_shouldRenderBlobAsIt() throws IOException {
+        String template = "Song : ${lyrics} \n<#list myListValue as item>${item}, </#list>";
+        TemplateSourceDocument templateSrc = createTemplateSourceDoc(template, WEBVIEW_RENDITION);
+        TemplateBasedDocument templateBase = createTemplateBasedDoc(templateSrc.getAdaptedDoc());
+
+        List<TemplateInput> params = new ArrayList<>();
+        params.add(factory("myListValue", InputType.ListValue, List.of(
+                factory("Anton", StringValue, "Anton"),
+                factory("Ivan", StringValue, "Ivan"),
+                factory("Boris", StringValue, "Boris")
+        )));
+        params.add(TemplateInput.factory("lyrics", StringValue, "https://www.paroles.net/marie-laforet/paroles-ivan-boris-et-moi"));
+
+        templateBase.saveParams(TEMPLATE_NAME, params, true);
+
+        Blob result = templateBase.renderWithTemplate(TEMPLATE_NAME);
+        assertNotNull(result);
+        assertEquals(
+                "Song : https://www.paroles.net/marie-laforet/paroles-ivan-boris-et-moi \nAnton, Ivan, Boris, ",
+                result.getString()
+        );
+    }
+
+    @Test
+    public void whenTemplateWithGivenInputTemplate_ComplexList_shouldRenderBlobAsIt() throws IOException {
+        String template = "<#list myListValue as item>${item.firstname} ${item.lastname}, </#list>";
+        TemplateSourceDocument templateSrc = createTemplateSourceDoc(template, WEBVIEW_RENDITION);
+        TemplateBasedDocument templateBase = createTemplateBasedDoc(templateSrc.getAdaptedDoc());
+
+        List<TemplateInput> params = new ArrayList<>();
+        params.add(createPersonTemplateInputListFromString("myListValue", List.of(
+                "John Fitzgerald Kennedy",
+                "Lee Harvey Oswald",
+                "Barack Hussein Obama"
+        )));
+
+        templateBase.saveParams(TEMPLATE_NAME, params, true);
+
+        Blob result = templateBase.renderWithTemplate(TEMPLATE_NAME);
+        assertNotNull(result);
+        assertEquals(
+                "John Kennedy, Lee Oswald, Barack Obama, ",
+                result.getString()
+        );
+    }
+
+    public TemplateInput createPersonTemplateInputListFromString(String paramName, List<String> persons) {
+        List<TemplateInput> result = new ArrayList<>();
+        int index = 0;
+        for (String person : persons) {
+            List<TemplateInput> personTI = new ArrayList<>();
+            String[] infos = person.split(" ");
+            personTI.add(factory("firstname", StringValue, infos[0]));
+            personTI.add(factory("middleName", StringValue, infos[1]));
+            personTI.add(factory("lastname", StringValue, infos[2]));
+
+            result.add(factory("" + index, MapValue, personTI));
+            index++;
+        }
+        return factory(paramName, ListValue, result);
+    }
+
+    @Test
+    public void whenTemplateWithGivenInputTemplate_MapString_shouldRenderBlobAsIt() throws IOException {
+        String template = "Song : ${lyrics} \n<#list myListValue?values as item>${item}, </#list>";
+        TemplateSourceDocument templateSrc = createTemplateSourceDoc(template, WEBVIEW_RENDITION);
+        TemplateBasedDocument templateBase = createTemplateBasedDoc(templateSrc.getAdaptedDoc());
+
+        List<TemplateInput> params = new ArrayList<>();
+        params.add(factory("myListValue", MapValue, List.of(
+                factory("Anton", StringValue, "Anton Mariano"),
+                factory("Ivan", StringValue, "Ivan Sanchez"),
+                factory("Boris", StringValue, "Boris Sirob")
+        )));
+        params.add(TemplateInput.factory("lyrics", StringValue,"https://www.paroles.net/marie-laforet/paroles-ivan-boris-et-moi"));
+
+        templateBase.saveParams(TEMPLATE_NAME, params, true);
+
+        Blob result = templateBase.renderWithTemplate(TEMPLATE_NAME);
+        assertNotNull(result);
+        assertEquals(
+                "Song : https://www.paroles.net/marie-laforet/paroles-ivan-boris-et-moi \nIvan Sanchez, Anton Mariano, Boris Sirob, ",
+                result.getString()
+        );
+    }
+
+    @Test
+    public void whenTemplateWithGivenInputTemplate_ComplexMap_shouldRenderBlobAsIt() throws IOException {
+        String template = "<#list myListValue?values as item>${item.firstname}, </#list>";
+        TemplateSourceDocument templateSrc = createTemplateSourceDoc(template, WEBVIEW_RENDITION);
+        TemplateBasedDocument templateBase = createTemplateBasedDoc(templateSrc.getAdaptedDoc());
+
+        List<TemplateInput> params = new ArrayList<>();
+        params.add(createPersonTemplateInputMapFromString("myListValue", List.of(
+                "John Fitzgerald Kennedy",
+                "Lee Harvey Oswald",
+                "Barack Hussein Obama"
+        )));
+
+        templateBase.saveParams(TEMPLATE_NAME, params, true);
+
+        Blob result = templateBase.renderWithTemplate(TEMPLATE_NAME);
+        assertNotNull(result);
+        assertEquals(
+                "Lee, Barack, John, ",
+                result.getString()
+        );
+    }
+
+    public TemplateInput createPersonTemplateInputMapFromString(String paramName, List<String> persons) {
+        List<TemplateInput> result = new ArrayList<>();
+        for (String person : persons) {
+            List<TemplateInput> personTI = new ArrayList<>();
+            String[] infos = person.split(" ");
+            personTI.add(factory("firstname", StringValue, infos[0]));
+            personTI.add(factory("middleName", StringValue, infos[1]));
+            personTI.add(factory("lastname", StringValue, infos[2]));
+
+            result.add(factory(infos[2], MapValue, personTI));
+        }
+        return factory(paramName, MapValue, result);
+    }
+
 
     protected TemplateBasedDocument createTemplateBasedDoc(DocumentModel templateDoc) {
 

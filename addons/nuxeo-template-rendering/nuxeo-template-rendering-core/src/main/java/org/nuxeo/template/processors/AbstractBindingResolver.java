@@ -20,8 +20,10 @@ package org.nuxeo.template.processors;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +87,7 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
             } catch (ValueNotFound e) {
                 log.warn("Unable to handle binding for param " + param.getName(), e);
             } catch (NoValueToAddInContext e) {
-
+                log.debug("Skip param to add " + param.getName(), e);
             }
         }
     }
@@ -101,6 +103,27 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                 return param.getDateValue();
             case StringValue:
                 return param.getStringValue();
+            case MapValue:
+                Map<String, Object> resultMap = new HashMap<>();
+                Map<String, TemplateInput> map = param.getMapValue();
+                for (String paramName : map.keySet()) {
+                    try {
+                        resultMap.put(paramName, extractValueFromParam(templateBasedDocument, map.get(paramName)));
+                    } catch (NoValueToAddInContext | ValueNotFound e) {
+                        log.debug("Skip param to add " + paramName + " in " + param.getName(), e);
+                    }
+                }
+                return resultMap;
+            case ListValue:
+                List<Object> resultList = new ArrayList<>();
+                for (TemplateInput childParam : param.getListValue()) {
+                    try {
+                        resultList.add(extractValueFromParam(templateBasedDocument, childParam));
+                    } catch (NoValueToAddInContext | ValueNotFound e) {
+                        log.debug("Skip param to add " + childParam.getName() + " in " + param.getName(), e);
+                    }
+                }
+                return resultList;
             case Content:
                 ContentInputType contentInput = ContentInputType.getByValue(param.getSource());
                 if (BlobContent.equals(contentInput))
@@ -137,17 +160,6 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                     }
                 }
         }
-    }
-
-    protected Object extractValueFromParamCatchingException(TemplateBasedDocument templateBasedDocument, TemplateInput param) {
-        try {
-            return extractValueFromParam(templateBasedDocument, param);
-        } catch (ValueNotFound e) {
-            log.warn("Unable to handle binding for param " + param.getName(), e);
-        } catch (NoValueToAddInContext e) {
-
-        }
-        return "";
     }
 
     protected void addDefaultMimetypeIfRequired(Blob blob) {
@@ -199,7 +211,7 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
             if (property != null) {
                 Type pType = property.getType();
                 if (pType.getName().equals(BooleanType.ID)) {
-                    return new Boolean(false);
+                    return Boolean.FALSE;
                 } else if (pType.getName().equals(DateType.ID)) {
                     return new Date();
                 } else if (pType.getName().equals(StringType.ID)) {
@@ -217,7 +229,7 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
     }
 
     protected Property getDocProperty(TemplateInput param, DocumentModel doc) throws ValueNotFound {
-        Property property = null;
+        Property property;
         try {
             property = doc.getProperty(param.getSource());
         } catch (PropertyException e) {
